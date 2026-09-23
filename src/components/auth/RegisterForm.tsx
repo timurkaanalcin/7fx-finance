@@ -5,7 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const inputClass =
-  "fx-landing-input w-full rounded-xl border border-white/14 bg-[#07090d] px-3.5 py-3 text-[#e8eef6] outline-none transition placeholder:text-white/35 hover:border-[#f83b00]/55 focus:border-[#f83b00] focus:shadow-[0_0_0_4px_rgba(248,59,0,0.2)]";
+  "fx-landing-input w-full rounded-xl border border-white/12 bg-[#07090d] px-3.5 py-3 text-[15px] text-[#e8eef6] outline-none transition placeholder:text-white/30 hover:border-white/22 focus:border-[#f83b00] focus:shadow-[0_0_0_3px_rgba(248,59,0,0.18)]";
+
+const labelClass = "mb-1.5 block text-[13px] font-medium text-[#9aa6b5]";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -68,19 +70,16 @@ export default function RegisterForm() {
   return (
     <>
       <div className="mb-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#f83b00]">Kayıt</p>
-        <h2 className="mt-2 text-2xl tracking-tight text-[#e8eef6] sm:text-[1.75rem]">
-          Hesap oluşturun
-        </h2>
-        <p className="mt-1.5 text-sm text-[#8b97a8]">
-          Aynı alanlarla kayıt; oturum sonrası işlem terminaline yönlendirilirsiniz.
+        <h2 className="text-xl font-semibold tracking-tight text-[#e8eef6]">Kayıt Ol</h2>
+        <p className="mt-1 text-sm text-[#8b97a8]">
+          Hesap oluşturun; oturum sonrası işlem terminaline yönlendirilirsiniz.
         </p>
       </div>
 
       <form onSubmit={onSubmit} className="space-y-3.5" noValidate>
         <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
           <div>
-            <label htmlFor="fx-reg-first" className="mb-1.5 block text-sm font-medium text-[#8b97a8]">
+            <label htmlFor="fx-reg-first" className={labelClass}>
               Ad
             </label>
             <input
@@ -94,7 +93,7 @@ export default function RegisterForm() {
             />
           </div>
           <div>
-            <label htmlFor="fx-reg-last" className="mb-1.5 block text-sm font-medium text-[#8b97a8]">
+            <label htmlFor="fx-reg-last" className={labelClass}>
               Soyad
             </label>
             <input
@@ -109,7 +108,7 @@ export default function RegisterForm() {
           </div>
         </div>
         <div>
-          <label htmlFor="fx-reg-email" className="mb-1.5 block text-sm font-medium text-[#8b97a8]">
+          <label htmlFor="fx-reg-email" className={labelClass}>
             E-posta
           </label>
           <input
@@ -125,8 +124,8 @@ export default function RegisterForm() {
           />
         </div>
         <div>
-          <label htmlFor="fx-reg-phone" className="mb-1.5 block text-sm font-medium text-[#8b97a8]">
-            Telefon <span className="font-normal opacity-70">(isteğe bağlı)</span>
+          <label htmlFor="fx-reg-phone" className={labelClass}>
+            Telefon <span className="font-normal text-[#8b97a8]/80">(isteğe bağlı)</span>
           </label>
           <input
             id="fx-reg-phone"
@@ -138,23 +137,34 @@ export default function RegisterForm() {
             disabled={loading}
           />
         </div>
-        <div>
-          <label htmlFor="fx-reg-referral" className="mb-1.5 block text-sm font-medium text-[#8b97a8]">
+
+        {/* Prominent required referral */}
+        <div className="rounded-xl border border-[#f83b00]/35 bg-[#f83b00]/[0.06] p-3.5 sm:p-4">
+          <label htmlFor="fx-reg-referral" className="mb-1.5 flex items-center gap-1.5 text-[13px] font-semibold text-[#e8eef6]">
             Referans Kodu
+            <span className="text-[#f83b00]" aria-hidden>
+              *
+            </span>
+            <span className="sr-only">(zorunlu)</span>
           </label>
           <input
             id="fx-reg-referral"
-            className={inputClass}
+            className={`${inputClass} border-[#f83b00]/40 bg-[#07090d] focus:border-[#f83b00]`}
             required
+            aria-required="true"
             value={referralCode}
             onChange={(e) => setReferralCode(e.target.value)}
             placeholder="Referans kodunuzu girin"
             disabled={loading}
             autoComplete="off"
           />
+          <p className="mt-2 text-[12px] leading-relaxed text-[#b8c0cc]">
+            Referans kodu zorunludur. Geçerli bir kod olmadan kayıt tamamlanamaz.
+          </p>
         </div>
+
         <div>
-          <label htmlFor="fx-reg-password" className="mb-1.5 block text-sm font-medium text-[#8b97a8]">
+          <label htmlFor="fx-reg-password" className={labelClass}>
             Şifre
           </label>
           <input
@@ -171,7 +181,7 @@ export default function RegisterForm() {
           />
         </div>
         <div>
-          <label htmlFor="fx-reg-password2" className="mb-1.5 block text-sm font-medium text-[#8b97a8]">
+          <label htmlFor="fx-reg-password2" className={labelClass}>
             Şifre tekrar
           </label>
           <input
@@ -191,7 +201,7 @@ export default function RegisterForm() {
         {error && (
           <div
             role="alert"
-            className="rounded-xl border border-rose-400/30 bg-rose-500/10 px-3 py-2.5 text-sm text-rose-200"
+            className="rounded-xl border border-rose-400/25 bg-rose-500/[0.08] px-3.5 py-2.5 text-sm text-rose-200"
           >
             {error}
           </div>
@@ -200,23 +210,18 @@ export default function RegisterForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-xl bg-[#f83b00] py-3.5 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(248,59,0,0.28)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-1 w-full rounded-xl bg-[#f83b00] py-3.5 text-sm font-semibold text-white shadow-[0_10px_28px_rgba(248,59,0,0.32)] transition hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? "Hesap oluşturuluyor…" : "Kayıt Ol"}
         </button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-[#8b97a8]">
+      <div className="mt-7 border-t border-white/[0.07] pt-5 text-center text-sm text-[#8b97a8]">
         Zaten hesabınız var mı?{" "}
         <Link href="/login" className="font-semibold text-[#f83b00] transition hover:brightness-110">
           Giriş yapın
         </Link>
-      </p>
-      <p className="mt-3 text-center text-xs text-[#8b97a8]">
-        <Link href="/" className="transition hover:text-[#e8eef6]">
-          Ana sayfaya dön
-        </Link>
-      </p>
+      </div>
     </>
   );
 }

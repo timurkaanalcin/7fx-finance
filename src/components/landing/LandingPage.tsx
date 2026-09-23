@@ -71,12 +71,9 @@ export default function LandingPage() {
 
       <header className="sticky top-0 z-40 border-b border-white/8 bg-[#07090d]/90 backdrop-blur-xl">
         <div className="mx-auto flex h-[4.25rem] max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-          <Link href="/" className="flex items-center gap-2.5 no-underline">
+          <Link href="/" className="flex items-center no-underline" aria-label="7FX">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/7fx-mark.png" alt="" className="h-9 w-9 object-contain" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/7fx-logo-header.png" alt="7FX" className="hidden h-7 sm:block" />
-            <span className="text-[15px] font-semibold tracking-tight text-[#e8eef6] sm:hidden">7FX</span>
+            <img src="/7fx-logo.png" alt="7FX" className="h-9 w-auto object-contain sm:h-10" />
           </Link>
 
           <nav className="hidden items-center gap-1 md:flex" aria-label="Ana menü">
@@ -427,9 +424,9 @@ export default function LandingPage() {
 
       <footer className="border-t border-white/8 bg-[#07090d]">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-8 text-sm text-[#8b97a8] sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/7fx-mark.png" alt="" className="h-7 w-7 object-contain" />
+            <img src="/7fx-logo.png" alt="7FX" className="h-8 w-auto object-contain" />
             <span>© {new Date().getFullYear()} 7FX</span>
           </div>
           <p className="text-xs">7fx.customer.org.tr · Özgün 7FX varlıkları</p>

@@ -12,97 +12,86 @@ export default function AuthShell({ mode, children }: AuthShellProps) {
   const isLogin = mode === "login";
 
   return (
-    <div className="fx-landing fx-auth-page min-h-screen" data-fx-ui="auth-pages-v1">
-      <div className="relative isolate flex min-h-screen flex-col lg:flex-row">
-        {/* Brand panel */}
-        <aside className="fx-auth-brand relative flex flex-col justify-between overflow-hidden border-b border-white/8 px-6 py-8 sm:px-10 sm:py-10 lg:w-[46%] lg:border-b-0 lg:border-r lg:px-12 lg:py-14">
-          <div className="pointer-events-none absolute inset-0" aria-hidden>
-            <div className="fx-auth-grid absolute inset-0 opacity-[0.35]" />
-            <div className="absolute -left-24 top-10 h-72 w-72 rounded-full bg-[#f83b00]/20 blur-[100px]" />
-            <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-[#00ffc2]/12 blur-[110px]" />
-            <div className="absolute inset-0 bg-gradient-to-br from-[#07090d]/40 via-transparent to-[#0c1017]/80" />
-          </div>
+    <div className="fx-landing fx-auth-page min-h-screen" data-fx-ui="auth-pages-v2">
+      <div className="relative isolate flex min-h-screen flex-col">
+        {/* Ambient background */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+          <div className="fx-auth-grid absolute inset-0 opacity-[0.4]" />
+          <div className="absolute left-1/2 top-0 h-[420px] w-[720px] -translate-x-1/2 rounded-full bg-[#f83b00]/12 blur-[120px]" />
+          <div className="absolute bottom-0 left-[10%] h-72 w-72 rounded-full bg-[#00ffc2]/08 blur-[100px]" />
+          <div className="absolute bottom-[15%] right-[8%] h-64 w-64 rounded-full bg-[#f83b00]/08 blur-[90px]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#07090d]/30 via-transparent to-[#07090d]" />
+        </div>
 
-          <div className="relative z-10">
-            <Link href="/" className="inline-flex items-center gap-2.5 no-underline">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/7fx-mark.png" alt="" className="h-10 w-10 object-contain" />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/7fx-logo-header.png" alt="7FX" className="h-7" />
-            </Link>
+        {/* Top bar */}
+        <header className="relative z-10 mx-auto flex w-full max-w-lg items-center justify-between px-4 pb-2 pt-6 sm:max-w-xl sm:px-6 sm:pt-8">
+          <Link href="/" className="inline-flex items-center no-underline" aria-label="7FX ana sayfa">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/7fx-logo.png"
+              alt="7FX"
+              className="h-11 w-auto object-contain sm:h-12"
+            />
+          </Link>
+          <Link
+            href="/"
+            className="rounded-lg px-2.5 py-1.5 text-sm font-medium text-[#8b97a8] transition hover:bg-white/5 hover:text-[#e8eef6]"
+          >
+            ← Ana sayfa
+          </Link>
+        </header>
 
-            <div className="mt-10 max-w-md lg:mt-16">
-              <p className="inline-flex items-center gap-2 rounded-full border border-[#f83b00]/35 bg-[#07090d]/55 px-3 py-1.5 text-xs font-medium text-[#f83b00] backdrop-blur">
+        {/* Centered card */}
+        <main className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-8 sm:px-6 sm:py-10">
+          <div className="w-full max-w-[440px]">
+            <div className="mb-7 text-center sm:mb-8">
+              <p className="inline-flex items-center gap-2 rounded-full border border-[#f83b00]/30 bg-[#0c1017]/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#f83b00] backdrop-blur">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#00ffc2] shadow-[0_0_8px_#00ffc2]" />
-                Güvenli oturum · 7FX
+                {isLogin ? "Güvenli giriş" : "Yeni hesap"}
               </p>
-              <h1 className="mt-5 text-3xl leading-[1.1] tracking-tight text-[#e8eef6] sm:text-4xl lg:text-[2.75rem]">
+              <h1 className="mt-4 text-[1.65rem] font-semibold leading-tight tracking-tight text-[#e8eef6] sm:text-[1.85rem]">
                 {isLogin ? (
                   <>
-                    Hesabınıza
-                    <span className="fx-accent-text mt-1 block">güvenle dönün.</span>
+                    Hesabınıza{" "}
+                    <span className="fx-accent-text">güvenle dönün</span>
                   </>
                 ) : (
                   <>
-                    Yatırıma
-                    <span className="fx-accent-text mt-1 block">profesyonel başlangıç.</span>
+                    Yatırıma{" "}
+                    <span className="fx-accent-text">profesyonel başlangıç</span>
                   </>
                 )}
               </h1>
-              <p className="mt-4 text-sm leading-relaxed text-[#8b97a8] sm:text-base">
+              <p className="mx-auto mt-2.5 max-w-sm text-sm leading-relaxed text-[#8b97a8]">
                 {isLogin
-                  ? "Kimlik doğrulama tamamlandığında işlem terminali /trade adresinde açılır. Yönetici hesapları /admin’e yönlendirilir."
-                  : "Ad, soyad ve e-posta ile dakikalar içinde hesap oluşturun. Kayıt sonrası terminal erişimi otomatik açılır."}
+                  ? "Kimlik doğrulama sonrası işlem terminali açılır. Yönetici hesapları /admin’e yönlendirilir."
+                  : "Bilgilerinizi girin; kayıt sonrası terminal erişimi otomatik açılır. Referans kodu zorunludur."}
               </p>
             </div>
-          </div>
 
-          <div className="relative z-10 mt-10 hidden lg:block">
-            <ul className="space-y-3 text-sm text-[#8b97a8]">
-              {[
-                "Oturum tabanlı kimlik doğrulama",
-                "Korumalı işlem ve profil alanları",
-                "Türkçe arayüz · 7FX marka deneyimi",
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-2.5">
-                  <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#00ffc2]/15 text-[11px] font-bold text-[#00ffc2]">
-                    ✓
-                  </span>
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <p className="mt-8 text-xs text-[#8b97a8]/80">
-              © {new Date().getFullYear()} 7FX · 7fx.customer.org.tr
-            </p>
-          </div>
-        </aside>
-
-        {/* Form panel */}
-        <main className="relative flex flex-1 flex-col justify-center px-4 py-10 sm:px-8 lg:px-14 lg:py-16">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_70%_0%,rgba(248,59,0,0.08),transparent)]" aria-hidden />
-          <div className="relative mx-auto w-full max-w-[420px]">
-            <div className="mb-8 flex items-center justify-between gap-3 lg:hidden">
-              <Link href="/" className="text-sm font-medium text-[#8b97a8] transition hover:text-[#e8eef6]">
-                ← Ana sayfa
-              </Link>
-            </div>
-
-            <div className="fx-auth-panel relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#0c1017]/95 p-6 shadow-[0_28px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:p-8">
+            <div className="fx-auth-panel relative overflow-hidden rounded-2xl border border-white/[0.09] bg-[#0c1017]/92 p-6 shadow-[0_24px_64px_rgba(0,0,0,0.5)] backdrop-blur-xl sm:rounded-[1.35rem] sm:p-8">
               <div
-                className="pointer-events-none absolute -right-16 -top-12 h-40 w-40 rounded-full bg-[#f83b00]/15 blur-3xl"
+                className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#f83b00]/50 to-transparent"
                 aria-hidden
               />
               <div
-                className="pointer-events-none absolute -bottom-14 -left-10 h-32 w-32 rounded-full bg-[#00ffc2]/08 blur-3xl"
+                className="pointer-events-none absolute -right-20 -top-16 h-44 w-44 rounded-full bg-[#f83b00]/12 blur-3xl"
+                aria-hidden
+              />
+              <div
+                className="pointer-events-none absolute -bottom-16 -left-12 h-36 w-36 rounded-full bg-[#00ffc2]/07 blur-3xl"
                 aria-hidden
               />
               <div className="relative">{children}</div>
             </div>
 
-            <p className="mt-6 text-center text-[11px] leading-relaxed text-[#8b97a8]">
-              Devam ederek 7FX kullanım koşullarını kabul etmiş sayılırsınız. Hassas işlem alanları oturum
-              çerezi ile korunur.
+            <p className="mt-6 text-center text-[11px] leading-relaxed text-[#8b97a8]/90">
+              Devam ederek 7FX kullanım koşullarını kabul etmiş sayılırsınız.
+              <br className="hidden sm:block" />
+              Hassas işlem alanları oturum çerezi ile korunur.
+            </p>
+            <p className="mt-4 text-center text-[11px] text-[#8b97a8]/70">
+              © {new Date().getFullYear()} 7FX · 7fx.customer.org.tr
             </p>
           </div>
         </main>
