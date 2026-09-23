@@ -5,11 +5,11 @@ export function middleware(req: NextRequest) {
   const token = req.cookies.get("deskflow_session")?.value;
   const { pathname } = req.nextUrl;
 
-  if (pathname === "/login") {
+  if (pathname === "/login" || pathname === "/register") {
     if (token) {
       return NextResponse.redirect(new URL("/trade", req.url));
     }
-    return NextResponse.redirect(new URL("/?auth=login", req.url));
+    return NextResponse.next();
   }
 
   if (
@@ -18,12 +18,19 @@ export function middleware(req: NextRequest) {
       pathname.startsWith("/profile")) &&
     !token
   ) {
-    return NextResponse.redirect(new URL("/?auth=login", req.url));
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/trade/:path*", "/login", "/admin/:path*", "/profile", "/profile/:path*"],
+  matcher: [
+    "/trade/:path*",
+    "/login",
+    "/register",
+    "/admin/:path*",
+    "/profile",
+    "/profile/:path*",
+  ],
 };

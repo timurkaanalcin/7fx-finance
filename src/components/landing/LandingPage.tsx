@@ -1,8 +1,7 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import AuthCard, { type AuthTab } from "./AuthCard";
+import { useMemo, useState } from "react";
+import Link from "next/link";
 import TerminalMock from "./TerminalMock";
 
 function scrollToId(id: string) {
@@ -11,111 +10,7 @@ function scrollToId(id: string) {
 }
 
 export default function LandingPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [tab, setTab] = useState<AuthTab>("login");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-
-  const [loginEmail, setLoginEmail] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
-
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [regEmail, setRegEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [regPassword, setRegPassword] = useState("");
-  const [regPasswordConfirm, setRegPasswordConfirm] = useState("");
-
-  useEffect(() => {
-    const auth = searchParams.get("auth");
-    if (auth === "register" || auth === "kayit") setTab("register");
-    else if (auth === "login" || auth === "giris") setTab("login");
-
-    const hash = typeof window !== "undefined" ? window.location.hash.replace("#", "") : "";
-    if (hash === "kayit" || hash === "register") setTab("register");
-    if (hash === "giris" || hash === "login") setTab("login");
-    if (hash === "giris" || hash === "kayit" || hash === "auth") {
-      setTimeout(() => scrollToId("auth"), 50);
-    }
-  }, [searchParams]);
-
-  function openAuth(next: AuthTab) {
-    setTab(next);
-    setError("");
-    setMobileNavOpen(false);
-    const q = next === "register" ? "register" : "login";
-    router.replace(`/?auth=${q}`, { scroll: false });
-    setTimeout(() => scrollToId("auth"), 40);
-  }
-
-  async function afterAuth(role?: string) {
-    router.push(role === "ADMIN" ? "/admin" : "/trade");
-    router.refresh();
-  }
-
-  async function onLogin(e: FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || "Giriş başarısız");
-        return;
-      }
-      await afterAuth(data.user?.role);
-    } catch {
-      setError("Bağlantı hatası");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function onRegister(e: FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    if (regPassword.length < 8) {
-      setError("Şifre en az 8 karakter olmalı");
-      setLoading(false);
-      return;
-    }
-    if (regPassword !== regPasswordConfirm) {
-      setError("Şifreler eşleşmiyor");
-      setLoading(false);
-      return;
-    }
-    try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: regEmail,
-          password: regPassword,
-          firstName,
-          lastName,
-          phone: phone || undefined,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || "Kayıt başarısız");
-        return;
-      }
-      await afterAuth(data.user?.role);
-    } catch {
-      setError("Bağlantı hatası");
-    } finally {
-      setLoading(false);
-    }
-  }
 
   const features = useMemo(
     () => [
@@ -168,21 +63,21 @@ export default function LandingPage() {
   return (
     <div className="fx-landing min-h-screen" data-fx-ui="dark-orange-teal-v1">
       <a
-        href="#auth"
+        href="/login"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-[#f83b00] focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
       >
-        Kimlik doğrulamaya geç
+        Giriş sayfasına geç
       </a>
 
       <header className="sticky top-0 z-40 border-b border-white/8 bg-[#07090d]/90 backdrop-blur-xl">
         <div className="mx-auto flex h-[4.25rem] max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-          <a href="/" className="flex items-center gap-2.5 no-underline">
+          <Link href="/" className="flex items-center gap-2.5 no-underline">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/7fx-mark.png" alt="" className="h-9 w-9 object-contain" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/7fx-logo-header.png" alt="7FX" className="hidden h-7 sm:block" />
             <span className="text-[15px] font-semibold tracking-tight text-[#e8eef6] sm:hidden">7FX</span>
-          </a>
+          </Link>
 
           <nav className="hidden items-center gap-1 md:flex" aria-label="Ana menü">
             {navItems.map((item) => (
@@ -198,20 +93,18 @@ export default function LandingPage() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => openAuth("login")}
+            <Link
+              href="/login"
               className="hidden rounded-xl border border-white/14 px-3.5 py-2 text-sm font-semibold text-[#e8eef6] transition hover:border-white/28 hover:bg-white/5 sm:inline-flex"
             >
               Giriş
-            </button>
-            <button
-              type="button"
-              onClick={() => openAuth("register")}
+            </Link>
+            <Link
+              href="/register"
               className="rounded-xl bg-[#f83b00] px-3.5 py-2 text-sm font-semibold text-white transition hover:brightness-110"
             >
               Kayıt ol
-            </button>
+            </Link>
             <button
               type="button"
               className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/12 text-[#e8eef6] md:hidden"
@@ -248,13 +141,20 @@ export default function LandingPage() {
                   {item.label}
                 </button>
               ))}
-              <button
-                type="button"
+              <Link
+                href="/login"
                 className="mt-1 rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-[#f83b00]"
-                onClick={() => openAuth("login")}
+                onClick={() => setMobileNavOpen(false)}
               >
                 Giriş yap
-              </button>
+              </Link>
+              <Link
+                href="/register"
+                className="rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-[#e8eef6]"
+                onClick={() => setMobileNavOpen(false)}
+              >
+                Kayıt ol
+              </Link>
             </div>
           </div>
         )}
@@ -277,7 +177,7 @@ export default function LandingPage() {
             <div className="fx-hero-overlay absolute inset-0" />
           </div>
 
-          <div className="relative z-10 mx-auto grid max-w-6xl gap-10 px-4 pb-16 pt-12 sm:px-6 lg:grid-cols-[1.12fr_0.88fr] lg:items-start lg:gap-12 lg:pb-24 lg:pt-16">
+          <div className="relative z-10 mx-auto grid max-w-6xl gap-10 px-4 pb-16 pt-12 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:gap-12 lg:pb-24 lg:pt-16">
             <div className="fx-fade-up text-[#e8eef6]">
               <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#f83b00]/35 bg-[#07090d]/55 px-3 py-1.5 text-xs font-medium text-[#f83b00] backdrop-blur">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#00ffc2] shadow-[0_0_8px_#00ffc2]" />
@@ -292,20 +192,18 @@ export default function LandingPage() {
                 sade, güçlü bir deneyim sunar.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <button
-                  type="button"
-                  onClick={() => openAuth("register")}
+                <Link
+                  href="/register"
                   className="rounded-xl bg-[#f83b00] px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_40px_rgba(248,59,0,0.35)] transition hover:brightness-110"
                 >
                   Hesap oluştur
-                </button>
-                <button
-                  type="button"
-                  onClick={() => openAuth("login")}
+                </Link>
+                <Link
+                  href="/login"
                   className="rounded-xl border border-white/22 bg-white/8 px-5 py-3 text-sm font-semibold text-[#e8eef6] backdrop-blur transition hover:border-white/40 hover:bg-white/12"
                 >
                   Giriş yapıp işleme başla
-                </button>
+                </Link>
               </div>
 
               <dl className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
@@ -322,30 +220,56 @@ export default function LandingPage() {
             </div>
 
             <div className="fx-fade-up fx-fade-up--delay lg:sticky lg:top-24">
-              <AuthCard
-                tab={tab}
-                error={error}
-                loading={loading}
-                loginEmail={loginEmail}
-                loginPassword={loginPassword}
-                firstName={firstName}
-                lastName={lastName}
-                regEmail={regEmail}
-                phone={phone}
-                regPassword={regPassword}
-                regPasswordConfirm={regPasswordConfirm}
-                onOpenAuth={openAuth}
-                onLogin={onLogin}
-                onRegister={onRegister}
-                setLoginEmail={setLoginEmail}
-                setLoginPassword={setLoginPassword}
-                setFirstName={setFirstName}
-                setLastName={setLastName}
-                setRegEmail={setRegEmail}
-                setPhone={setPhone}
-                setRegPassword={setRegPassword}
-                setRegPasswordConfirm={setRegPasswordConfirm}
-              />
+              <div className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#0c1017]/90 p-6 shadow-[0_28px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:p-8">
+                <div
+                  className="pointer-events-none absolute -right-16 -top-12 h-40 w-40 rounded-full bg-[#f83b00]/18 blur-3xl"
+                  aria-hidden
+                />
+                <div
+                  className="pointer-events-none absolute -bottom-12 -left-8 h-32 w-32 rounded-full bg-[#00ffc2]/10 blur-3xl"
+                  aria-hidden
+                />
+                <div className="relative">
+                  <div className="mb-4 flex items-center gap-2.5">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/7fx-mark.png" alt="" className="h-9 w-9 object-contain" />
+                    <div>
+                      <p className="text-sm font-semibold text-[#e8eef6]">İşlem terminali</p>
+                      <p className="text-xs text-[#8b97a8]">Giriş sonrası /trade</p>
+                    </div>
+                  </div>
+                  <p className="text-sm leading-relaxed text-[#8b97a8]">
+                    Emir bileti, izleme listesi ve canlı grafikler tek ekranda. Hesabınız yoksa kayıt olun;
+                    varsa giriş yaparak devam edin.
+                  </p>
+                  <div className="mt-6 flex flex-col gap-2.5 sm:flex-row">
+                    <Link
+                      href="/register"
+                      className="inline-flex flex-1 items-center justify-center rounded-xl bg-[#f83b00] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110"
+                    >
+                      Kayıt ol
+                    </Link>
+                    <Link
+                      href="/login"
+                      className="inline-flex flex-1 items-center justify-center rounded-xl border border-white/14 px-4 py-3 text-sm font-semibold text-[#e8eef6] transition hover:border-white/28 hover:bg-white/5"
+                    >
+                      Giriş
+                    </Link>
+                  </div>
+                  <ul className="mt-6 space-y-2 text-xs text-[#8b97a8]">
+                    {[
+                      "Oturum tabanlı güvenli kimlik doğrulama",
+                      "ADMIN → /admin · diğer → /trade",
+                      "Mobil uyumlu 7FX arayüzü",
+                    ].map((t) => (
+                      <li key={t} className="flex items-start gap-2">
+                        <span className="mt-0.5 text-[#00ffc2]">✓</span>
+                        {t}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -408,13 +332,12 @@ export default function LandingPage() {
                   </li>
                 ))}
               </ul>
-              <button
-                type="button"
-                onClick={() => openAuth("register")}
-                className="mt-8 rounded-xl bg-[#e8eef6] px-5 py-3 text-sm font-semibold text-[#07090d] transition hover:bg-white"
+              <Link
+                href="/register"
+                className="mt-8 inline-flex rounded-xl bg-[#e8eef6] px-5 py-3 text-sm font-semibold text-[#07090d] transition hover:bg-white"
               >
                 Hemen başla
-              </button>
+              </Link>
             </div>
             <TerminalMock />
           </div>
@@ -442,7 +365,7 @@ export default function LandingPage() {
                 {[
                   { t: "Oturum tabanlı auth", d: "POST /api/auth/login & register" },
                   { t: "Rol yönlendirme", d: "ADMIN → /admin · diğer → /trade" },
-                  { t: "Türkçe arayüz", d: "Giriş / Kayıt akışları yerelleştirildi" },
+                  { t: "Ayrı auth sayfaları", d: "/login ve /register profesyonel UI" },
                   { t: "7FX varlıkları", d: "Özgün logo, mark ve hero medyası" },
                 ].map((card) => (
                   <div
@@ -485,20 +408,18 @@ export default function LandingPage() {
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <button
-                type="button"
-                onClick={() => openAuth("register")}
+              <Link
+                href="/register"
                 className="rounded-xl bg-[#f83b00] px-5 py-3 text-sm font-semibold text-white"
               >
                 Kayıt ol
-              </button>
-              <button
-                type="button"
-                onClick={() => openAuth("login")}
+              </Link>
+              <Link
+                href="/login"
                 className="rounded-xl border border-white/20 px-5 py-3 text-sm font-semibold text-[#e8eef6]"
               >
                 Giriş
-              </button>
+              </Link>
             </div>
           </div>
         </section>
