@@ -7,3 +7,6 @@ node_modules/
 *.log
 dev.db
 *.tsbuildinfo
+
+._*
+.DS_Store
