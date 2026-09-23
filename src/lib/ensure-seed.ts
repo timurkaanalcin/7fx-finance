@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
 import { ensureTradingSettings } from "./trading-settings";
+import { ensureSystemSettings } from "./system-settings";
 
 const DEMO_EMAIL = "trader@deskflow.local";
 const DEMO_PASSWORD = "Trade123!";
@@ -407,6 +408,7 @@ export function ensureDemoSeed(): Promise<void> {
         await ensureAdminUser();
         await ensureDepositMethods();
         await ensureTradingSettings();
+        await ensureSystemSettings();
         await ensureDesks();
         await ensureCrmDemoMembers();
       } catch (err) {

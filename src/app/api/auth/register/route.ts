@@ -2,12 +2,14 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createSession, hashPassword } from "@/lib/auth";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
+import { ensureSystemSettings, getReferralCode } from "@/lib/system-settings";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(req: Request) {
   try {
     await ensureDemoSeed();
+    await ensureSystemSettings();
     const body = await req.json();
     const email = String(body.email || "").trim().toLowerCase();
     const password = String(body.password || "");
@@ -15,6 +17,7 @@ export async function POST(req: Request) {
     const lastName = String(body.lastName || "").trim();
     const phoneRaw = body.phone != null ? String(body.phone).trim() : "";
     const phone = phoneRaw || null;
+    const referralCode = String(body.referralCode || "").trim();
 
     if (!firstName || !lastName) {
       return NextResponse.json({ error: "Ad ve soyad gerekli" }, { status: 400 });
@@ -24,6 +27,14 @@ export async function POST(req: Request) {
     }
     if (password.length < 8) {
       return NextResponse.json({ error: "Şifre en az 8 karakter olmalı" }, { status: 400 });
+    }
+    if (!referralCode) {
+      return NextResponse.json({ error: "Geçerli bir referans kodu girin." }, { status: 400 });
+    }
+
+    const expected = await getReferralCode();
+    if (referralCode !== expected) {
+      return NextResponse.json({ error: "Geçerli bir referans kodu girin." }, { status: 400 });
     }
 
     const existing = await prisma.user.findUnique({ where: { email } });
@@ -46,6 +57,7 @@ export async function POST(req: Request) {
         role: "TRADER",
         active: true,
         registrationDate: now,
+        referralCodeUsed: referralCode,
         account: {
           create: {
             balance: 10000,

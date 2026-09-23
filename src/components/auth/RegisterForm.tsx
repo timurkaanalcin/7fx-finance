@@ -15,6 +15,7 @@ export default function RegisterForm() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [referralCode, setReferralCode] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -32,6 +33,11 @@ export default function RegisterForm() {
       setLoading(false);
       return;
     }
+    if (!referralCode.trim()) {
+      setError("Geçerli bir referans kodu girin.");
+      setLoading(false);
+      return;
+    }
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
@@ -42,6 +48,7 @@ export default function RegisterForm() {
           firstName,
           lastName,
           phone: phone || undefined,
+          referralCode: referralCode.trim(),
         }),
       });
       const data = await res.json();
@@ -129,6 +136,21 @@ export default function RegisterForm() {
             onChange={(e) => setPhone(e.target.value)}
             placeholder="+90 …"
             disabled={loading}
+          />
+        </div>
+        <div>
+          <label htmlFor="fx-reg-referral" className="mb-1.5 block text-sm font-medium text-[#8b97a8]">
+            Referans Kodu
+          </label>
+          <input
+            id="fx-reg-referral"
+            className={inputClass}
+            required
+            value={referralCode}
+            onChange={(e) => setReferralCode(e.target.value)}
+            placeholder="Referans kodunuzu girin"
+            disabled={loading}
+            autoComplete="off"
           />
         </div>
         <div>

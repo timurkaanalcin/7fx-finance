@@ -350,6 +350,14 @@ async function main() {
     console.log("Seeded desks");
   }
 
+
+  await prisma.systemSettings.upsert({
+    where: { id: "default" },
+    update: {},
+    create: { id: "default", referralCode: "3526754" },
+  });
+  console.log("Ensured SystemSettings referral code");
+
   for (const m of DEMO_MEMBERS) {
     await upsertMember(m);
   }

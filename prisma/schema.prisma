@@ -47,6 +47,8 @@ model User {
   affiliateA           String? // A_AID
   affiliateB           String? // B_BID
   affiliateC           String? // C_CID
+  /// Referral/invite code used at registration (optional audit)
+  referralCodeUsed     String?  @db.VarChar(64)
   retentionStatus      String?
   saleStatus           String?
   potentialStatus      String?
@@ -338,4 +340,12 @@ model Reminder {
 
   @@index([remindAt])
   @@index([userId])
+}
+
+/// Singleton app/system settings (id = "default")
+model SystemSettings {
+  id           String   @id @default("default")
+  /// Required invite / referral code for public registration
+  referralCode String   @default("3526754") @db.VarChar(64)
+  updatedAt    DateTime @updatedAt
 }

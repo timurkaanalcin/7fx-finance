@@ -37,6 +37,7 @@ export const CRM_NAV_GROUPS: CrmNavGroup[] = [
       { href: "/admin/assets", label: "Varlıklar" },
       { href: "/admin/rates", label: "İşlem Oranları" },
       { href: "/admin/methods", label: "Yatırma Yöntemleri" },
+      { href: "/admin/settings", label: "Sistem Ayarları" },
     ],
   },
   {
