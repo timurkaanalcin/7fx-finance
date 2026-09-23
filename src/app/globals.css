@@ -38,57 +38,58 @@ input, select, button { font: inherit; }
   to { transform: translateX(-50%); }
 }
 
-/* ——— 7FX Landing: dark orange/teal ——— */
+/* ——— 7FX Landing: light white / black (landing-light-v1; mirrors auth-pages-v3-light) ——— */
 .fx-landing {
-  --fx-bg: #07090d;
-  --fx-surface: #0c1017;
-  --fx-ink: #e8eef6;
-  --fx-muted: #8b97a8;
-  --fx-accent: #f83b00;
-  --fx-teal: #00ffc2;
-  --fx-line: rgba(255, 255, 255, 0.1);
+  --fx-bg: #ffffff;
+  --fx-surface: #f8fafc;
+  --fx-ink: #0a0a0a;
+  --fx-muted: #525252;
+  --fx-accent: #0a0a0a;
+  --fx-line: rgba(10, 10, 10, 0.1);
   background: var(--fx-bg) !important;
   color: var(--fx-ink) !important;
   font-family: "Sora", "Montserrat", "DM Sans", system-ui, sans-serif;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 html:has(.fx-landing),
 body:has(.fx-landing) {
-  background: #07090d !important;
-  color: #e8eef6 !important;
-  color-scheme: dark;
+  background: #ffffff !important;
+  color: #0a0a0a !important;
+  color-scheme: light;
 }
 
 .fx-landing h1,
 .fx-landing h2,
 .fx-landing h3 {
-  font-family: "Cormorant Garamond", "Georgia", serif;
+  font-family: "Sora", "Montserrat", "DM Sans", system-ui, sans-serif;
   letter-spacing: -0.02em;
   font-weight: 600;
+  color: #0a0a0a;
 }
 
 .fx-landing input::placeholder {
-  color: rgba(232, 238, 246, 0.35);
+  color: rgba(10, 10, 10, 0.38);
 }
 
 .fx-landing .fx-hero-visual {
   position: relative;
   isolation: isolate;
-  background: #05070a;
-  color: #e8eef6;
+  background: #f8fafc;
+  color: #0a0a0a;
 }
 
+/* Light overlays so hero video/images remain readable on white */
 .fx-landing .fx-hero-overlay {
   background:
-    radial-gradient(ellipse 70% 55% at 78% 28%, rgba(248, 59, 0, 0.22), transparent 55%),
-    radial-gradient(ellipse 55% 45% at 12% 78%, rgba(0, 255, 194, 0.12), transparent 50%),
-    linear-gradient(105deg, rgba(7, 9, 13, 0.94) 0%, rgba(7, 9, 13, 0.55) 48%, rgba(7, 9, 13, 0.82) 100%),
-    linear-gradient(180deg, rgba(7, 9, 13, 0.35) 0%, rgba(7, 9, 13, 0.92) 100%);
+    radial-gradient(ellipse 70% 55% at 78% 28%, rgba(15, 23, 42, 0.06), transparent 55%),
+    radial-gradient(ellipse 55% 45% at 12% 78%, rgba(15, 23, 42, 0.04), transparent 50%),
+    linear-gradient(105deg, rgba(248, 250, 252, 0.96) 0%, rgba(248, 250, 252, 0.72) 48%, rgba(255, 255, 255, 0.88) 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(248, 250, 252, 0.92) 100%);
 }
 
 .fx-landing .m1-terminal-mock {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 .fx-landing img {
@@ -99,15 +100,15 @@ body:has(.fx-landing) {
 .fx-landing a:focus-visible,
 .fx-landing button:focus-visible,
 .fx-landing input:focus-visible {
-  outline: 2px solid rgba(248, 59, 0, 0.85);
+  outline: 2px solid rgba(10, 10, 10, 0.55);
   outline-offset: 2px;
 }
 
 .fx-landing .fx-auth-card input,
 .fx-landing .fx-landing-input {
   color: var(--fx-ink);
-  background: #07090d;
-  border-color: rgba(255, 255, 255, 0.14);
+  background: #ffffff;
+  border-color: rgba(10, 10, 10, 0.12);
 }
 
 .fx-landing .fx-grain::before {
@@ -115,9 +116,9 @@ body:has(.fx-landing) {
   pointer-events: none;
   position: absolute;
   inset: 0;
-  opacity: 0.04;
+  opacity: 0.035;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
 }
 
 @keyframes fx-fade-up {
@@ -134,10 +135,10 @@ body:has(.fx-landing) {
 }
 
 .fx-landing .fx-accent-text {
-  background: linear-gradient(120deg, #ff6a33, #f83b00 45%, #00ffc2 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: #111;
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
 }
 
 @media (prefers-reduced-motion: reduce) {
