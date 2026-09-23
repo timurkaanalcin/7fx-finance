@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "7FX",
   description: "7FX — piyasa araçları, hesap yönetimi ve web işlem platformu",
-  themeColor: "#06080c",
+  themeColor: "#f8f9fc",
   openGraph: {
     title: "7FX",
     description: "7FX piyasa araçları, hesap yönetimi ve web işlem platformu",

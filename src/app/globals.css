@@ -38,27 +38,27 @@ input, select, button { font: inherit; }
   to { transform: translateX(-50%); }
 }
 
-/* ——— 7FX Landing redesign v2: refined dark premium ——— */
+/* ——— 7FX Landing: mobile-first white investment (landing-mobile-white-v1) ——— */
 .fx-landing {
-  --fx-bg: #06080c;
-  --fx-surface: #0a0e14;
-  --fx-ink: #eef2f7;
-  --fx-muted: #8b97a8;
-  --fx-dim: #6b7789;
-  --fx-accent: #f83b00;
-  --fx-teal: #00ffc2;
-  --fx-line: rgba(255, 255, 255, 0.08);
+  --fx-bg: #f8f9fc;
+  --fx-surface: #ffffff;
+  --fx-ink: #101425;
+  --fx-muted: #434b68;
+  --fx-dim: #6b738c;
+  --fx-accent: #3558F4;
+  --fx-teal: #12a454;
+  --fx-line: rgba(16, 20, 37, 0.08);
   background: var(--fx-bg) !important;
   color: var(--fx-ink) !important;
   font-family: "Sora", "Montserrat", system-ui, sans-serif;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 html:has(.fx-landing),
 body:has(.fx-landing) {
-  background: #06080c !important;
-  color: #eef2f7 !important;
-  color-scheme: dark;
+  background: #f8f9fc !important;
+  color: #101425 !important;
+  color-scheme: light;
 }
 
 .fx-landing h1,
@@ -67,15 +67,16 @@ body:has(.fx-landing) {
   font-family: "Sora", "Montserrat", system-ui, sans-serif;
   letter-spacing: -0.03em;
   font-weight: 600;
+  color: #101425;
 }
 
 .fx-landing input::placeholder {
-  color: rgba(238, 242, 247, 0.35);
+  color: rgba(16, 20, 37, 0.38);
 }
 
 .fx-landing .fx-nav {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(6, 8, 12, 0.78);
+  border-bottom: 1px solid rgba(16, 20, 37, 0.08);
+  background: rgba(255, 255, 255, 0.86);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
@@ -83,19 +84,33 @@ body:has(.fx-landing) {
 .fx-landing .fx-hero {
   position: relative;
   isolation: isolate;
-  background: #05070a;
-  color: #eef2f7;
+  background: #f8f9fc;
+  color: #101425;
 }
 
 .fx-landing .fx-hero-veil {
   background:
-    radial-gradient(ellipse 55% 50% at 50% 0%, rgba(248, 59, 0, 0.14), transparent 55%),
-    radial-gradient(ellipse 40% 40% at 85% 60%, rgba(0, 255, 194, 0.08), transparent 50%),
-    linear-gradient(180deg, rgba(6, 8, 12, 0.25) 0%, rgba(6, 8, 12, 0.75) 55%, #06080c 100%);
+    radial-gradient(ellipse 50% 45% at 15% 10%, rgba(53, 88, 244, 0.10), transparent 55%),
+    radial-gradient(ellipse 40% 40% at 90% 30%, rgba(53, 88, 244, 0.06), transparent 50%),
+    linear-gradient(180deg, #ffffff 0%, #f8f9fc 55%, #f8f9fc 100%);
 }
 
-.fx-landing .fx-product-preview {
-  color-scheme: dark;
+.fx-landing .fx-product-preview,
+.fx-landing .fx-phone-stage {
+  color-scheme: light;
+}
+
+.fx-landing .fx-float-card {
+  animation: fx-float 5.5s ease-in-out infinite;
+}
+
+.fx-landing .fx-float-card--br {
+  animation-delay: 1.2s;
+}
+
+@keyframes fx-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
 
 .fx-landing img {
@@ -106,26 +121,26 @@ body:has(.fx-landing) {
 .fx-landing a:focus-visible,
 .fx-landing button:focus-visible,
 .fx-landing input:focus-visible {
-  outline: 2px solid rgba(248, 59, 0, 0.85);
+  outline: 2px solid rgba(53, 88, 244, 0.75);
   outline-offset: 2px;
 }
 
 .fx-landing .fx-auth-card input,
 .fx-landing .fx-landing-input {
   color: var(--fx-ink);
-  background: #06080c;
-  border-color: rgba(255, 255, 255, 0.14);
+  background: #ffffff;
+  border-color: rgba(16, 20, 37, 0.14);
 }
 
 .fx-landing .fx-accent-line {
-  background: linear-gradient(105deg, #ff7a45 0%, #f83b00 42%, #00ffc2 100%);
+  background: linear-gradient(105deg, #3558F4 0%, #5b7bff 55%, #101425 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
 .fx-landing .fx-accent-text {
-  background: linear-gradient(120deg, #ff6a33, #f83b00 45%, #00ffc2 100%);
+  background: linear-gradient(120deg, #3558F4, #5b7bff 55%, #101425 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -165,7 +180,8 @@ body:has(.fx-landing) {
   .fx-landing .fx-reveal,
   .fx-landing .fx-fade-up,
   .fx-landing .fx-fade-up--delay,
-  .fx-landing .fx-ticker-track {
+  .fx-landing .fx-ticker-track,
+  .fx-landing .fx-float-card {
     animation: none;
   }
 }
