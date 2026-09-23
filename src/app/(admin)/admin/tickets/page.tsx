@@ -1,0 +1,188 @@
+"use client";
+
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
+import { StatusBadge } from "@/components/crm/StubPage";
+
+type Ticket = {
+  id: string;
+  kind: "DEPOSIT" | "MARGIN";
+  amount: number | null;
+  currency: string;
+  status: string;
+  method: string;
+  customer: string;
+  customerId: string;
+  customerEmail: string;
+  tradingAccountId: string | null;
+  country: string | null;
+  openedAt: string;
+  closedAt: string | null;
+};
+
+export default function TicketsPage() {
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [status, setStatus] = useState("PENDING");
+  const [kind, setKind] = useState("all");
+  const [msg, setMsg] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const load = useCallback(async () => {
+    const params = new URLSearchParams();
+    if (status) params.set("status", status);
+    if (kind !== "all") params.set("kind", kind);
+    const res = await fetch(`/api/admin/tickets?${params}`);
+    if (!res.ok) return;
+    const data = await res.json();
+    setTickets(data.tickets || []);
+  }, [status, kind]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  async function act(t: Ticket, action: "approve" | "reject") {
+    setBusy(true);
+    setMsg("");
+    try {
+      const url =
+        t.kind === "DEPOSIT" ? "/api/admin/deposits" : "/api/admin/balance-requests";
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: t.id, action }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setMsg(data.error || "İşlem başarısız");
+        return;
+      }
+      setMsg(
+        action === "approve"
+          ? "Onaylandı — trading bakiyesi güncellendi"
+          : "Reddedildi"
+      );
+      await load();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div>
+      <h1 className="mb-3 text-lg font-semibold">Biletler / Yatırmalar</h1>
+      <p className="mb-3 text-[11px] text-slate-500">
+        Terminal üst çubuğundaki Para Yatırma ve marjin çağrısı talepleri burada listelenir. Onay,
+        trader&apos;ın 1:1 trading Account bakiyesini kredilendirir.
+      </p>
+      <div className="mb-3 flex flex-wrap gap-2 text-xs">
+        <select
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+          className="rounded border border-slate-700 bg-[#0a1020] px-2 py-1.5"
+        >
+          <option value="">Tüm durumlar</option>
+          <option value="PENDING">PENDING</option>
+          <option value="APPROVED">APPROVED</option>
+          <option value="REJECTED">REJECTED</option>
+        </select>
+        <select
+          value={kind}
+          onChange={(e) => setKind(e.target.value)}
+          className="rounded border border-slate-700 bg-[#0a1020] px-2 py-1.5"
+        >
+          <option value="all">Tüm tipler</option>
+          <option value="deposit">Yatırma</option>
+          <option value="margin">Marjin</option>
+        </select>
+        <Link href="/admin/deposits" className="rounded bg-slate-800 px-2 py-1.5 hover:bg-slate-700">
+          Eski yatırma ekranı
+        </Link>
+        <Link
+          href="/admin/balance-requests"
+          className="rounded bg-slate-800 px-2 py-1.5 hover:bg-slate-700"
+        >
+          Eski marjin ekranı
+        </Link>
+      </div>
+      {msg && <p className="mb-2 text-xs text-emerald-400">{msg}</p>}
+      <div className="overflow-x-auto rounded-lg border border-slate-800">
+        <table className="w-full text-left text-[11px]">
+          <thead className="bg-[#0a1020] text-slate-500">
+            <tr>
+              <th className="px-2 py-2">Tip</th>
+              <th className="px-2 py-2">Tutar</th>
+              <th className="px-2 py-2">Müşteri</th>
+              <th className="px-2 py-2">Account</th>
+              <th className="px-2 py-2">Yöntem</th>
+              <th className="px-2 py-2">Durum</th>
+              <th className="px-2 py-2">Açılış</th>
+              <th className="px-2 py-2">İşlem</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tickets.map((t) => (
+              <tr key={`${t.kind}-${t.id}`} className="border-t border-slate-800">
+                <td className="px-2 py-1.5">
+                  <span
+                    className={`rounded px-1 py-0.5 text-[9px] ${
+                      t.kind === "DEPOSIT" ? "bg-sky-500/20 text-sky-300" : "bg-amber-500/20 text-amber-300"
+                    }`}
+                  >
+                    {t.kind}
+                  </span>
+                </td>
+                <td className="px-2 py-1.5 tabular-nums">
+                  {t.amount != null ? `${t.amount} ${t.currency}` : t.method}
+                </td>
+                <td className="px-2 py-1.5">
+                  <Link href={`/admin/traders/${t.customerId}`} className="text-sky-400 hover:underline">
+                    {t.customer}
+                  </Link>
+                  <div className="text-[9px] text-slate-500">{t.customerEmail}</div>
+                </td>
+                <td className="px-2 py-1.5 font-mono text-[9px] text-slate-500">
+                  {(t.tradingAccountId || "—").slice(0, 12)}
+                </td>
+                <td className="px-2 py-1.5">{t.method}</td>
+                <td className="px-2 py-1.5">
+                  <StatusBadge status={t.status} />
+                </td>
+                <td className="px-2 py-1.5 text-slate-500">
+                  {new Date(t.openedAt).toLocaleString("tr-TR")}
+                </td>
+                <td className="px-2 py-1.5">
+                  {t.status === "PENDING" && (
+                    <div className="flex gap-1">
+                      <button
+                        disabled={busy}
+                        onClick={() => act(t, "approve")}
+                        className="rounded bg-emerald-600/80 px-2 py-0.5 hover:bg-emerald-500"
+                      >
+                        Onay
+                      </button>
+                      <button
+                        disabled={busy}
+                        onClick={() => act(t, "reject")}
+                        className="rounded bg-red-600/80 px-2 py-0.5 hover:bg-red-500"
+                      >
+                        Red
+                      </button>
+                    </div>
+                  )}
+                </td>
+              </tr>
+            ))}
+            {tickets.length === 0 && (
+              <tr>
+                <td colSpan={8} className="px-3 py-8 text-center text-slate-500">
+                  Bilet yok
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}

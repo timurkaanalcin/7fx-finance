@@ -1,0 +1,4 @@
+7FX landing media:
+- /public/7fx-logo.png, 7fx-mark.png, 7fx-logo-header.png — 7FX brand assets
+- /public/landing/hero.mp4, hero-poster.png, feat-*.png — 7FX site assets
+- Remaining webp assets retained from upstream demo stock set where used as fallbacks

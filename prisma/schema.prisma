@@ -1,0 +1,341 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String           @id @default(cuid())
+  email              String           @unique @db.VarChar(191)
+  passwordHash       String
+  name               String
+  role               String           @default("TRADER") // TRADER | ADMIN
+  active             Boolean          @default(true)
+  lastLoginAt        DateTime?
+  /// Fine-grained ADMIN flags (ignored for TRADER)
+  canManageUsers     Boolean          @default(true)
+  canApproveDeposits Boolean          @default(true)
+  canEditRates       Boolean          @default(true)
+  canManageMethods   Boolean          @default(true)
+  canAdjustBalance   Boolean          @default(true)
+
+  /// Identity / üyelik
+  firstName            String?
+  lastName             String?
+  phone                String?
+  birthDate            DateTime?
+  language             String           @default("tr")
+  timezone             String           @default("Europe/Istanbul")
+  country              String?
+  address              String?  @db.Text
+
+  /// Account meta
+  accountType          String           @default("STANDARD")
+  registrationDate     DateTime?
+  registrationCountry  String?
+  isResident           Boolean          @default(false)
+
+  /// Trading / CRM desk fields
+  tradingServer        String?
+  tradingGroup         String?
+  desk                 String?
+  deskId               String?
+  campaign             String?
+  affiliateA           String? // A_AID
+  affiliateB           String? // B_BID
+  affiliateC           String? // C_CID
+  retentionStatus      String?
+  saleStatus           String?
+  potentialStatus      String?
+  validationStatus     String?
+  ftd                  Boolean          @default(false)
+  brokerName           String?
+  assigneeName         String?
+
+  /// Documents stub
+  documentsStatus      String           @default("NONE") // NONE | PENDING | APPROVED | REJECTED
+
+  createdAt          DateTime         @default(now())
+  account            Account?
+  orders             Order[]
+  positions          Position[]
+  deposits           DepositRequest[]
+  balanceRequests    BalanceRequest[]
+  auditLogs          AuditLog[]       @relation("AdminAudits")
+  notes              UserNote[]
+  ledgerEntries      BalanceLedger[]
+  communications     Communication[]
+  documents          DocumentRecord[]
+  reminders          Reminder[]
+}
+
+model Account {
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  balance    Float    @default(10000)
+  equity     Float    @default(10000)
+  margin     Float    @default(0)
+  freeMargin Float    @default(10000)
+  leverage   Int      @default(100)
+  currency   String   @default("USD")
+  credit     Float    @default(0)
+  bonus      Float    @default(0)
+  updatedAt  DateTime @updatedAt
+}
+
+model UserNote {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  authorId   String?
+  authorName String?
+  body       String   @db.Text
+  createdAt  DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model Order {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  symbol     String
+  side       String // BUY | SELL
+  type       String // MARKET | LIMIT | STOP
+  volume     Float
+  price      Float? // for limit/stop
+  openPrice  Float?
+  stopLoss   Float?
+  takeProfit Float?
+  status     String    @default("PENDING") // PENDING | FILLED | CANCELLED | REJECTED
+  filledAt   DateTime?
+  createdAt  DateTime  @default(now())
+  positionId String?
+
+  @@index([userId, status])
+}
+
+model Position {
+  id           String    @id @default(cuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  symbol       String
+  side         String // BUY | SELL
+  volume       Float
+  openPrice    Float
+  currentPrice Float
+  stopLoss     Float?
+  takeProfit   Float?
+  profit       Float     @default(0)
+  margin       Float     @default(0)
+  status       String    @default("OPEN") // OPEN | CLOSED
+  openedAt     DateTime  @default(now())
+  closedAt     DateTime?
+  closePrice   Float?
+  closeProfit  Float?
+
+  @@index([userId, status])
+}
+
+model DepositMethod {
+  id            String           @id @default(cuid())
+  type          String // IBAN | CRYPTO
+  label         String
+  active        Boolean          @default(true)
+  bankName      String?
+  accountHolder String?
+  iban          String?
+  asset         String?
+  network       String?
+  address       String?  @db.Text
+  instructions  String?  @db.Text
+  sortOrder     Int              @default(0)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  requests      DepositRequest[]
+}
+
+model DepositRequest {
+  id         String        @id @default(cuid())
+  userId     String
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  methodId   String
+  method     DepositMethod @relation(fields: [methodId], references: [id])
+  amount     Float
+  currency   String        @default("USD")
+  note       String?  @db.Text
+  status     String        @default("PENDING") // PENDING | APPROVED | REJECTED
+  adminNote  String?  @db.Text
+  createdAt  DateTime      @default(now())
+  reviewedAt DateTime?
+
+  @@index([userId, status])
+  @@index([status])
+}
+
+/// Margin-call recovery requests (reset or add balance). Balance changes only after ADMIN approve.
+model BalanceRequest {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type       String // RESET | ADD
+  amount     Float? // required for ADD; ignored for RESET (uses DEFAULT_RESET_BALANCE)
+  status     String    @default("PENDING") // PENDING | APPROVED | REJECTED
+  reason     String    @default("MARGIN_CALL") @db.VarChar(64) // MARGIN_CALL
+  adminNote  String?  @db.Text
+  equityAt   Float? // snapshot at request time
+  marginLvl  Float?
+  createdAt  DateTime  @default(now())
+  reviewedAt DateTime?
+
+  @@index([userId, status])
+  @@index([status])
+}
+
+/// Singleton-ish global trading rates / risk defaults (id = "default")
+model TradingSettings {
+  id                     String   @id @default("default")
+  /// Multiplier on each symbol's built-in absolute spread
+  spreadMultiplier       Float    @default(1)
+  /// Commission charged per lot on fill (USD)
+  commissionPerLot       Float    @default(0)
+  /// Default account leverage for new accounts / margin calc fallback
+  defaultLeverage        Int      @default(100)
+  /// Margin call when marginLevel < this % (used margin > 0)
+  marginCallThresholdPct Float    @default(50)
+  defaultMinVolume       Float    @default(0.01)
+  defaultMaxVolume       Float    @default(100)
+  /// Multiplier on contract size for P/L and margin
+  defaultContractMult    Float    @default(1)
+  updatedAt              DateTime @updatedAt
+}
+
+/// Per-symbol overrides for spreads, sizing, enablement
+model SymbolSettings {
+  id                 String   @id @default(cuid())
+  symbol             String   @unique @db.VarChar(191)
+  /// Full bid/ask spread in price units (overrides base*multiplier when set)
+  spreadAbs          Float?
+  spreadMultiplier   Float?
+  contractMultiplier Float?
+  minVolume          Float?
+  maxVolume          Float?
+  commissionPerLot   Float?
+  enabled            Boolean  @default(true)
+  updatedAt          DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  adminId   String
+  admin     User     @relation("AdminAudits", fields: [adminId], references: [id], onDelete: Cascade)
+  action    String
+  targetId  String?
+  note      String?  @db.Text
+  meta      String?  @db.Text
+  createdAt DateTime @default(now())
+
+  @@index([adminId, createdAt])
+  @@index([action])
+}
+
+/// Broker desk — CRM organizational unit
+model Desk {
+  id                String   @id @default(cuid())
+  name              String
+  code              String?  @unique @db.VarChar(191)
+  active            Boolean  @default(true)
+  chatStatus        Boolean  @default(true)
+  minimalDeposit    Float    @default(0)
+  maximumDeposit    Float    @default(100000)
+  tradePlatformLink String?
+  defaultEmail      String?
+  office            String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([active])
+}
+
+/// Trading group label for CRM assignment
+model TradingGroup {
+  id             String   @id @default(cuid())
+  name           String   @unique @db.VarChar(191)
+  description    String?  @db.Text
+  customersCount Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+/// Ledger of balance-affecting events (deposits, adjustments, margin resets, etc.)
+model BalanceLedger {
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tradingAccountId String?
+  type             String // DEPOSIT | WITHDRAWAL | BONUS | CREDIT | ADJUSTMENT | RESET | MARGIN_ADD | TRADE_PNL
+  amount           Float
+  balanceBefore    Float
+  balanceAfter     Float
+  currency         String   @default("USD")
+  comment          String?  @db.Text
+  createdById      String?
+  createdByName    String?
+  refType          String? // DepositRequest | BalanceRequest | AuditLog
+  refId            String?
+  createdAt        DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([type])
+  @@index([tradingAccountId])
+}
+
+/// CRM communication stub (chat/call notes)
+model Communication {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String   @default("NOTE") // CHAT | CALL | NOTE
+  title       String?
+  description String   @db.Text
+  workerName  String?
+  workerId    String?
+  createdAt   DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+/// KYC / document stub metadata (no binary storage required)
+model DocumentRecord {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name       String
+  docType    String   @default("OTHER") // ID | ADDRESS | SELFIE | OTHER
+  status     String   @default("PENDING") // PENDING | APPROVED | REJECTED
+  note       String?  @db.Text
+  createdAt  DateTime @default(now())
+  reviewedAt DateTime?
+
+  @@index([userId, status])
+}
+
+/// Calendar reminder stub
+model Reminder {
+  id          String   @id @default(cuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workerId    String?
+  workerName  String?
+  body        String   @db.Text
+  remindAt    DateTime
+  color       String   @default("#3b82f6")
+  createdAt   DateTime @default(now())
+
+  @@index([remindAt])
+  @@index([userId])
+}

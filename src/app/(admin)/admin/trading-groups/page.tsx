@@ -1,0 +1,75 @@
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+
+export default function TradingGroupsPage() {
+  const [groups, setGroups] = useState<
+    { id: string; name: string; customersCount: number; description: string | null }[]
+  >([]);
+  const [name, setName] = useState("");
+
+  const load = useCallback(async () => {
+    const res = await fetch("/api/admin/trading-groups");
+    if (!res.ok) return;
+    const data = await res.json();
+    setGroups(data.groups || []);
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  async function create(e: React.FormEvent) {
+    e.preventDefault();
+    await fetch("/api/admin/trading-groups", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name }),
+    });
+    setName("");
+    await load();
+  }
+
+  return (
+    <div>
+      <h1 className="mb-3 text-lg font-semibold">Trading Grupları</h1>
+      <form onSubmit={create} className="mb-3 flex gap-2 text-xs">
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Grup adı"
+          required
+          className="rounded border border-slate-700 bg-[#0a1020] px-2 py-1.5"
+        />
+        <button type="submit" className="rounded bg-sky-600 px-3 py-1.5">
+          Ekle
+        </button>
+      </form>
+      <div className="overflow-x-auto rounded-lg border border-slate-800">
+        <table className="w-full text-left text-xs">
+          <thead className="bg-[#0a1020] text-slate-500">
+            <tr>
+              <th className="px-3 py-2">Ad</th>
+              <th className="px-3 py-2">Müşteri sayısı</th>
+            </tr>
+          </thead>
+          <tbody>
+            {groups.map((g) => (
+              <tr key={g.id} className="border-t border-slate-800">
+                <td className="px-3 py-2 font-medium">{g.name}</td>
+                <td className="px-3 py-2">{g.customersCount}</td>
+              </tr>
+            ))}
+            {groups.length === 0 && (
+              <tr>
+                <td colSpan={2} className="px-3 py-8 text-center text-slate-500">
+                  Grup yok
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}

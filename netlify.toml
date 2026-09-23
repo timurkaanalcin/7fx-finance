@@ -1,0 +1,18 @@
+# M1 Finance — Netlify (Next.js 14 + Netlify Database)
+# Repo folder: deskflow-trade
+#
+# AUTH_SECRET: set via Netlify UI/API (do not commit).
+#   Generate: openssl rand -base64 32
+# DATABASE_URL: optional locally. On Netlify, @netlify/database getConnectionString()
+#   reads NETLIFY_DB_URL (auto-provisioned with Netlify Database).
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  # @netlify/database requires Node >= 22.12
+  NODE_VERSION = "22"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

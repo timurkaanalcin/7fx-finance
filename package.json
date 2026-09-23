@@ -1,0 +1,50 @@
+{
+  "name": "7fx-finance",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "start": "NODE_ENV=production node server.js",
+    "lint": "next lint",
+    "db:push": "prisma db push",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:setup": "prisma db push && tsx prisma/seed.ts",
+    "postinstall": "prisma generate",
+    "db:migrate": "prisma db push"
+  },
+  "dependencies": {
+    "@netlify/database": "^2.0.1",
+    "@prisma/client": "^5.22.0",
+    "bcryptjs": "^3.0.3",
+    "jose": "^6.2.12",
+    "lightweight-charts": "^5.2.1",
+    "next": "14.2.35",
+    "prisma": "5.22.0",
+    "react": "^18",
+    "react-dom": "^18",
+    "uuid": "^14.0.2",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@netlify/plugin-nextjs": "^5.16.0",
+    "@types/bcryptjs": "^3.0.0",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/uuid": "^11.0.0",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.35",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "tsx": "^4.23.13",
+    "typescript": "^5"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "description": "7FX \u2014 demo trading terminal with real Yahoo Finance market data"
+}
