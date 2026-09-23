@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "7FX",
   description: "7FX — piyasa araçları, hesap yönetimi ve web işlem platformu",
-  themeColor: "#07090d",
+  themeColor: "#06080c",
   openGraph: {
     title: "7FX",
     description: "7FX piyasa araçları, hesap yönetimi ve web işlem platformu",
@@ -22,7 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Montserrat:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
       </head>
