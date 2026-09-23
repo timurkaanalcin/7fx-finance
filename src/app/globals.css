@@ -147,42 +147,80 @@ body:has(.fx-landing) {
   }
 }
 
-/* ——— 7FX Auth pages ——— */
+/* ——— 7FX Auth pages: light white / black (scoped; does not affect .fx-landing) ——— */
 .fx-auth-page {
-  background: #07090d !important;
+  --fx-bg: #f8fafc;
+  --fx-surface: #ffffff;
+  --fx-ink: #0a0a0a;
+  --fx-muted: #525252;
+  --fx-accent: #0a0a0a;
+  --fx-line: rgba(10, 10, 10, 0.12);
+  background: #f8fafc !important;
+  color: #0a0a0a !important;
+  font-family: "Sora", "Montserrat", "DM Sans", system-ui, sans-serif;
+  color-scheme: light;
+}
+
+.fx-auth-page h1,
+.fx-auth-page h2,
+.fx-auth-page h3 {
+  font-family: "Sora", "Montserrat", "DM Sans", system-ui, sans-serif;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  color: #0a0a0a;
 }
 
 .fx-auth-brand {
   background:
-    radial-gradient(ellipse 80% 60% at 20% 20%, rgba(248, 59, 0, 0.14), transparent 55%),
-    radial-gradient(ellipse 60% 50% at 90% 80%, rgba(0, 255, 194, 0.08), transparent 50%),
-    linear-gradient(165deg, #0c1017 0%, #07090d 55%, #05070a 100%);
+    radial-gradient(ellipse 80% 60% at 20% 20%, rgba(15, 23, 42, 0.04), transparent 55%),
+    linear-gradient(165deg, #ffffff 0%, #f8fafc 55%, #f1f5f9 100%);
 }
 
 .fx-auth-page .fx-auth-panel {
+  background: #ffffff;
+  border-color: rgba(10, 10, 10, 0.08);
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
-    0 24px 64px rgba(0, 0, 0, 0.5);
+    0 0 0 1px rgba(10, 10, 10, 0.03) inset,
+    0 16px 48px rgba(15, 23, 42, 0.08);
 }
 
-.fx-auth-grid {
+.fx-auth-page .fx-auth-grid {
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    linear-gradient(rgba(15, 23, 42, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.045) 1px, transparent 1px);
   background-size: 48px 48px;
   mask-image: radial-gradient(ellipse 70% 60% at 40% 40%, #000 20%, transparent 75%);
 }
 
 .fx-auth-page .fx-auth-panel input,
+.fx-auth-page .fx-auth-input,
 .fx-auth-page .fx-landing-input {
-  color: #e8eef6;
-  background: #07090d;
-  border-color: rgba(255, 255, 255, 0.14);
+  color: #0a0a0a !important;
+  background: #ffffff !important;
+  border-color: rgba(10, 10, 10, 0.12);
+}
+
+.fx-auth-page input::placeholder {
+  color: rgba(10, 10, 10, 0.38);
+}
+
+.fx-auth-page .fx-auth-accent-text {
+  color: #111;
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+}
+
+.fx-auth-page a:focus-visible,
+.fx-auth-page button:focus-visible,
+.fx-auth-page input:focus-visible {
+  outline: 2px solid rgba(10, 10, 10, 0.55);
+  outline-offset: 2px;
 }
 
 html:has(.fx-auth-page),
 body:has(.fx-auth-page) {
-  background: #07090d !important;
-  color: #e8eef6 !important;
-  color-scheme: dark;
+  background: #f8fafc !important;
+  color: #0a0a0a !important;
+  color-scheme: light;
 }

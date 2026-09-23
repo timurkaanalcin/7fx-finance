@@ -12,15 +12,14 @@ export default function AuthShell({ mode, children }: AuthShellProps) {
   const isLogin = mode === "login";
 
   return (
-    <div className="fx-landing fx-auth-page min-h-screen" data-fx-ui="auth-pages-v2">
+    <div className="fx-auth-page min-h-screen" data-fx-ui="auth-pages-v3-light">
       <div className="relative isolate flex min-h-screen flex-col">
-        {/* Ambient background */}
+        {/* Ambient background — light, no red/orange glows */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-          <div className="fx-auth-grid absolute inset-0 opacity-[0.4]" />
-          <div className="absolute left-1/2 top-0 h-[420px] w-[720px] -translate-x-1/2 rounded-full bg-[#f83b00]/12 blur-[120px]" />
-          <div className="absolute bottom-0 left-[10%] h-72 w-72 rounded-full bg-[#00ffc2]/08 blur-[100px]" />
-          <div className="absolute bottom-[15%] right-[8%] h-64 w-64 rounded-full bg-[#f83b00]/08 blur-[90px]" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#07090d]/30 via-transparent to-[#07090d]" />
+          <div className="fx-auth-grid absolute inset-0 opacity-[0.55]" />
+          <div className="absolute left-1/2 top-0 h-[380px] w-[680px] -translate-x-1/2 rounded-full bg-slate-200/40 blur-[100px]" />
+          <div className="absolute bottom-0 left-[12%] h-64 w-64 rounded-full bg-slate-100/80 blur-[90px]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-transparent to-[#f8fafc]" />
         </div>
 
         {/* Top bar */}
@@ -35,7 +34,7 @@ export default function AuthShell({ mode, children }: AuthShellProps) {
           </Link>
           <Link
             href="/"
-            className="rounded-lg px-2.5 py-1.5 text-sm font-medium text-[#8b97a8] transition hover:bg-white/5 hover:text-[#e8eef6]"
+            className="rounded-lg px-2.5 py-1.5 text-sm font-medium text-[#525252] transition hover:bg-black/[0.04] hover:text-[#0a0a0a]"
           >
             ← Ana sayfa
           </Link>
@@ -45,52 +44,44 @@ export default function AuthShell({ mode, children }: AuthShellProps) {
         <main className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-8 sm:px-6 sm:py-10">
           <div className="w-full max-w-[440px]">
             <div className="mb-7 text-center sm:mb-8">
-              <p className="inline-flex items-center gap-2 rounded-full border border-[#f83b00]/30 bg-[#0c1017]/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#f83b00] backdrop-blur">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#00ffc2] shadow-[0_0_8px_#00ffc2]" />
+              <p className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#111] shadow-sm">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#0a0a0a]" />
                 {isLogin ? "Güvenli giriş" : "Yeni hesap"}
               </p>
-              <h1 className="mt-4 text-[1.65rem] font-semibold leading-tight tracking-tight text-[#e8eef6] sm:text-[1.85rem]">
+              <h1 className="mt-4 text-[1.65rem] font-semibold leading-tight tracking-tight text-[#0a0a0a] sm:text-[1.85rem]">
                 {isLogin ? (
                   <>
                     Hesabınıza{" "}
-                    <span className="fx-accent-text">güvenle dönün</span>
+                    <span className="fx-auth-accent-text">güvenle dönün</span>
                   </>
                 ) : (
                   <>
                     Yatırıma{" "}
-                    <span className="fx-accent-text">profesyonel başlangıç</span>
+                    <span className="fx-auth-accent-text">profesyonel başlangıç</span>
                   </>
                 )}
               </h1>
-              <p className="mx-auto mt-2.5 max-w-sm text-sm leading-relaxed text-[#8b97a8]">
+              <p className="mx-auto mt-2.5 max-w-sm text-sm leading-relaxed text-[#525252]">
                 {isLogin
                   ? "Kimlik doğrulama sonrası işlem terminali açılır. Yönetici hesapları /admin’e yönlendirilir."
                   : "Bilgilerinizi girin; kayıt sonrası terminal erişimi otomatik açılır. Referans kodu zorunludur."}
               </p>
             </div>
 
-            <div className="fx-auth-panel relative overflow-hidden rounded-2xl border border-white/[0.09] bg-[#0c1017]/92 p-6 shadow-[0_24px_64px_rgba(0,0,0,0.5)] backdrop-blur-xl sm:rounded-[1.35rem] sm:p-8">
+            <div className="fx-auth-panel relative overflow-hidden rounded-2xl border border-black/[0.08] bg-white p-6 shadow-[0_16px_48px_rgba(15,23,42,0.08)] sm:rounded-[1.35rem] sm:p-8">
               <div
-                className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#f83b00]/50 to-transparent"
-                aria-hidden
-              />
-              <div
-                className="pointer-events-none absolute -right-20 -top-16 h-44 w-44 rounded-full bg-[#f83b00]/12 blur-3xl"
-                aria-hidden
-              />
-              <div
-                className="pointer-events-none absolute -bottom-16 -left-12 h-36 w-36 rounded-full bg-[#00ffc2]/07 blur-3xl"
+                className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-black/15 to-transparent"
                 aria-hidden
               />
               <div className="relative">{children}</div>
             </div>
 
-            <p className="mt-6 text-center text-[11px] leading-relaxed text-[#8b97a8]/90">
+            <p className="mt-6 text-center text-[11px] leading-relaxed text-[#737373]">
               Devam ederek 7FX kullanım koşullarını kabul etmiş sayılırsınız.
               <br className="hidden sm:block" />
               Hassas işlem alanları oturum çerezi ile korunur.
             </p>
-            <p className="mt-4 text-center text-[11px] text-[#8b97a8]/70">
+            <p className="mt-4 text-center text-[11px] text-[#a3a3a3]">
               © {new Date().getFullYear()} 7FX · 7fx.customer.org.tr
             </p>
           </div>

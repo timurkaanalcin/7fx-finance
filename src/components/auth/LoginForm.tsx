@@ -5,9 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const inputClass =
-  "fx-landing-input w-full rounded-xl border border-white/12 bg-[#07090d] px-3.5 py-3 text-[15px] text-[#e8eef6] outline-none transition placeholder:text-white/30 hover:border-white/22 focus:border-[#f83b00] focus:shadow-[0_0_0_3px_rgba(248,59,0,0.18)]";
+  "fx-auth-input w-full rounded-xl border border-black/12 bg-white px-3.5 py-3 text-[15px] text-[#0a0a0a] outline-none transition placeholder:text-neutral-400 hover:border-black/25 focus:border-[#111] focus:shadow-[0_0_0_3px_rgba(10,10,10,0.08)]";
 
-const labelClass = "mb-1.5 block text-[13px] font-medium text-[#9aa6b5]";
+const labelClass = "mb-1.5 block text-[13px] font-medium text-[#404040]";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -43,8 +43,8 @@ export default function LoginForm() {
   return (
     <>
       <div className="mb-6">
-        <h2 className="text-xl font-semibold tracking-tight text-[#e8eef6]">Giriş Yap</h2>
-        <p className="mt-1 text-sm text-[#8b97a8]">E-posta ve şifrenizle oturum açın.</p>
+        <h2 className="text-xl font-semibold tracking-tight text-[#0a0a0a]">Giriş Yap</h2>
+        <p className="mt-1 text-sm text-[#525252]">E-posta ve şifrenizle oturum açın.</p>
       </div>
 
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
@@ -84,7 +84,7 @@ export default function LoginForm() {
         {error && (
           <div
             role="alert"
-            className="rounded-xl border border-rose-400/25 bg-rose-500/[0.08] px-3.5 py-2.5 text-sm text-rose-200"
+            className="rounded-xl border border-rose-300 bg-rose-50 px-3.5 py-2.5 text-sm text-rose-800"
           >
             {error}
           </div>
@@ -93,15 +93,15 @@ export default function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="mt-1 w-full rounded-xl bg-[#f83b00] py-3.5 text-sm font-semibold text-white shadow-[0_10px_28px_rgba(248,59,0,0.32)] transition hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-1 w-full rounded-xl bg-[#0a0a0a] py-3.5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(10,10,10,0.18)] transition hover:bg-[#171717] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? "Giriş yapılıyor…" : "Giriş Yap"}
         </button>
       </form>
 
-      <div className="mt-7 border-t border-white/[0.07] pt-5 text-center text-sm text-[#8b97a8]">
+      <div className="mt-7 border-t border-black/[0.08] pt-5 text-center text-sm text-[#525252]">
         Hesabınız yok mu?{" "}
-        <Link href="/register" className="font-semibold text-[#f83b00] transition hover:brightness-110">
+        <Link href="/register" className="font-semibold text-[#0a0a0a] underline-offset-2 transition hover:underline">
           Kayıt olun
         </Link>
       </div>
