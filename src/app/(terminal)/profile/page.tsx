@@ -40,7 +40,7 @@ type Profile = {
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex justify-between gap-4 border-b border-[#1e293b] py-2 text-sm">
+    <div className="flex justify-between gap-4 border-b border-[#2a2a2a] py-2 text-sm">
       <span className="text-slate-500">{label}</span>
       <span className="text-right text-slate-100">{value ?? "—"}</span>
     </div>
@@ -101,7 +101,7 @@ export default function ProfilePage() {
 
   if (!profile) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#0b1220] text-slate-400">
+      <div className="flex min-h-screen items-center justify-center bg-[#000000] text-slate-400">
         Profil yükleniyor…
       </div>
     );
@@ -111,22 +111,22 @@ export default function ProfilePage() {
     n.toLocaleString("en-US", { style: "currency", currency: profile.currency || "USD" });
 
   return (
-    <div className="min-h-screen bg-[#0b1220] text-slate-100">
-      <header className="flex h-12 items-center gap-3 border-b border-[#1e293b] bg-[#0f172a] px-4">
+    <div className="min-h-screen bg-[#000000] text-slate-100">
+      <header className="flex h-12 items-center gap-3 border-b border-[#2a2a2a] bg-[#0a0a0a] px-4">
         <div className="flex h-7 w-7 items-center justify-center rounded-md bg-blue-600 text-[10px] font-bold">
           M1
         </div>
         <span className="text-sm font-semibold">Üyelik Bilgileri</span>
         <Link
           href="/trade"
-          className="ml-auto rounded-md bg-[#1e293b] px-2.5 py-1.5 text-xs hover:bg-[#334155]"
+          className="ml-auto rounded-md bg-[#2a2a2a] px-2.5 py-1.5 text-xs hover:bg-[#1f1f1f]"
         >
           ← Terminal
         </Link>
       </header>
 
       <main className="mx-auto max-w-2xl p-4 md:p-6">
-        <div className="mb-4 rounded-xl border border-[#1e293b] bg-[#0f172a] p-4">
+        <div className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
           <div className="mb-1 text-lg font-semibold">{profile.name}</div>
           <div className="text-xs text-slate-500">{profile.email}</div>
           <div className="mt-2 flex flex-wrap gap-1 text-[10px]">
@@ -146,7 +146,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <section className="mb-4 rounded-xl border border-[#1e293b] bg-[#0f172a] p-4">
+        <section className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
           <h2 className="mb-2 text-sm font-medium text-slate-300">Kimlik / Hesap</h2>
           <Row label="Ad" value={profile.firstName} />
           <Row label="Soyad" value={profile.lastName} />
@@ -178,7 +178,7 @@ export default function ProfilePage() {
           <Row label="Broker" value={profile.brokerName} />
         </section>
 
-        <section className="mb-4 rounded-xl border border-[#1e293b] bg-[#0f172a] p-4">
+        <section className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
           <h2 className="mb-2 text-sm font-medium text-slate-300">Finans özeti</h2>
           <Row label="Bakiye" value={money(profile.balance)} />
           <Row label="Özsermaye" value={money(profile.equity)} />
@@ -187,7 +187,7 @@ export default function ProfilePage() {
           <Row label="Para birimi" value={profile.currency} />
         </section>
 
-        <section className="mb-4 rounded-xl border border-[#1e293b] bg-[#0f172a] p-4">
+        <section className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
           <h2 className="mb-2 text-sm font-medium text-slate-300">Durum (salt okunur)</h2>
           <Row label="Satış" value={profile.saleStatus} />
           <Row label="Retansiyon" value={profile.retentionStatus} />
@@ -197,7 +197,7 @@ export default function ProfilePage() {
           </p>
         </section>
 
-        <form onSubmit={save} className="rounded-xl border border-[#1e293b] bg-[#0f172a] p-4">
+        <form onSubmit={save} className="rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
           <h2 className="mb-3 text-sm font-medium text-slate-300">Düzenlenebilir alanlar</h2>
           {msg && <p className="mb-2 text-xs text-emerald-400">{msg}</p>}
           <div className="grid gap-3 text-xs sm:grid-cols-2">
@@ -206,7 +206,7 @@ export default function ProfilePage() {
               <input
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="rounded border border-[#1e293b] bg-[#0b1220] px-2 py-1.5"
+                className="rounded border border-[#2a2a2a] bg-[#000000] px-2 py-1.5"
               />
             </label>
             <label className="flex flex-col gap-1">
@@ -214,7 +214,7 @@ export default function ProfilePage() {
               <input
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
-                className="rounded border border-[#1e293b] bg-[#0b1220] px-2 py-1.5"
+                className="rounded border border-[#2a2a2a] bg-[#000000] px-2 py-1.5"
               />
             </label>
             <label className="flex flex-col gap-1">
@@ -222,7 +222,7 @@ export default function ProfilePage() {
               <input
                 value={timezone}
                 onChange={(e) => setTimezone(e.target.value)}
-                className="rounded border border-[#1e293b] bg-[#0b1220] px-2 py-1.5"
+                className="rounded border border-[#2a2a2a] bg-[#000000] px-2 py-1.5"
               />
             </label>
             <label className="flex flex-col gap-1 sm:col-span-2">
@@ -230,7 +230,7 @@ export default function ProfilePage() {
               <input
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className="rounded border border-[#1e293b] bg-[#0b1220] px-2 py-1.5"
+                className="rounded border border-[#2a2a2a] bg-[#000000] px-2 py-1.5"
               />
             </label>
           </div>

@@ -11,14 +11,14 @@ const ICONS = [
 
 export default function ToolRail() {
   return (
-    <div className="flex w-10 shrink-0 flex-col items-center gap-1 border-l border-[#3a4658] bg-[#1e293b] py-2">
+    <div className="hidden w-9 shrink-0 flex-col items-center gap-0.5 border-l border-desk-border/80 bg-desk-bg py-2 md:flex">
       {ICONS.map((ic) => (
         <button
           key={ic.title}
           title={ic.title}
-          className="flex h-8 w-8 items-center justify-center rounded text-slate-400 hover:bg-[#334155] hover:text-white"
+          className="flex h-7 w-7 items-center justify-center rounded-[7px] text-desk-muted/70 transition-colors hover:bg-desk-elev hover:text-desk-text"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
             <path d={ic.d} />
           </svg>
         </button>

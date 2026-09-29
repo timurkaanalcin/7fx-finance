@@ -1,0 +1,100 @@
+import { NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { ensureDemoSeed } from "@/lib/ensure-seed";
+
+export const dynamic = "force-dynamic";
+
+export async function GET(req: Request) {
+  await ensureDemoSeed();
+  const admin = await requireAdmin();
+  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+
+  const { searchParams } = new URL(req.url);
+  const status = (searchParams.get("status") || "").trim();
+  const where = status ? { status } : undefined;
+
+  const rows = await prisma.documentRecord.findMany({
+    where,
+    orderBy: { createdAt: "desc" },
+    take: 300,
+    include: { user: { select: { id: true, name: true, email: true, documentsStatus: true, desk: true } } },
+  });
+
+  // Also surface traders with documentsStatus != NONE who may have no DocumentRecord yet
+  const pendingUsers = await prisma.user.findMany({
+    where: { role: "TRADER", documentsStatus: { in: ["PENDING", "REJECTED"] } },
+    select: { id: true, name: true, email: true, documentsStatus: true, desk: true },
+    take: 100,
+  });
+
+  return NextResponse.json({
+    documents: rows.map((d) => ({
+      id: d.id,
+      name: d.name,
+      docType: d.docType,
+      status: d.status,
+      note: d.note,
+      traderId: d.userId,
+      trader: d.user.name,
+      traderEmail: d.user.email,
+      desk: d.user.desk,
+      userDocumentsStatus: d.user.documentsStatus,
+      createdAt: d.createdAt,
+      reviewedAt: d.reviewedAt,
+    })),
+    pendingUsers,
+  });
+}
+
+export async function POST(req: Request) {
+  await ensureDemoSeed();
+  const admin = await requireAdmin();
+  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+
+  const body = await req.json().catch(() => ({}));
+  const action = String(body.action || "create");
+
+  if (action === "create") {
+    const userId = String(body.userId || "").trim();
+    const name = String(body.name || "").trim();
+    const docType = String(body.docType || "OTHER").toUpperCase();
+    if (!userId || !name) {
+      return NextResponse.json({ error: "userId ve name zorunlu" }, { status: 400 });
+    }
+    const row = await prisma.documentRecord.create({
+      data: { userId, name, docType, status: "PENDING", note: body.note ? String(body.note) : null },
+    });
+    await prisma.user.update({
+      where: { id: userId },
+      data: { documentsStatus: "PENDING" },
+    }).catch(() => null);
+    return NextResponse.json({ ok: true, id: row.id });
+  }
+
+  if (action === "review") {
+    const id = String(body.id || "").trim();
+    const status = String(body.status || "").toUpperCase();
+    if (!id || !["APPROVED", "REJECTED", "PENDING"].includes(status)) {
+      return NextResponse.json({ error: "id ve status gerekli" }, { status: 400 });
+    }
+    const row = await prisma.documentRecord.update({
+      where: { id },
+      data: {
+        status,
+        note: body.note != null ? String(body.note) : undefined,
+        reviewedAt: status === "PENDING" ? null : new Date(),
+      },
+    });
+    // Sync user.documentsStatus from latest docs
+    const docs = await prisma.documentRecord.findMany({ where: { userId: row.userId } });
+    let userStatus = "NONE";
+    if (docs.some((d) => d.status === "PENDING")) userStatus = "PENDING";
+    else if (docs.some((d) => d.status === "REJECTED")) userStatus = "REJECTED";
+    else if (docs.length && docs.every((d) => d.status === "APPROVED")) userStatus = "APPROVED";
+    await prisma.user.update({ where: { id: row.userId }, data: { documentsStatus: userStatus } });
+    return NextResponse.json({ ok: true, userStatus });
+  }
+
+  return NextResponse.json({ error: "Bilinmeyen action" }, { status: 400 });
+}

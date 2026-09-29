@@ -9,6 +9,7 @@ type Props = {
   prices: Record<string, PriceTick>;
   selected: string;
   onSelect: (symbol: string) => void;
+  className?: string;
 };
 
 const FILTERS = [
@@ -20,7 +21,7 @@ const FILTERS = [
   { id: "INDEX", label: "Endeks" },
 ];
 
-export default function Watchlist({ symbols, prices, selected, onSelect }: Props) {
+export default function Watchlist({ symbols, prices, selected, onSelect, className = "" }: Props) {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState("ALL");
 
@@ -34,21 +35,39 @@ export default function Watchlist({ symbols, prices, selected, onSelect }: Props
   }, [symbols, q, filter]);
 
   return (
-    <aside className="flex w-[220px] shrink-0 flex-col border-r border-[#3a4658] bg-[#1a2332]">
-      <div className="border-b border-[#3a4658] p-2">
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Sembol ara…"
-          className="w-full rounded-md border border-[#3a4658] bg-[#0f172a] px-2 py-1.5 text-xs outline-none focus:border-blue-500"
-        />
-        <div className="mt-2 flex flex-wrap gap-1">
+    <aside
+      className={`flex w-full shrink-0 flex-col border-r border-desk-border bg-desk-panel md:w-[232px] ${className}`}
+    >
+      <div className="border-b border-desk-border/80 px-3 py-2.5 md:px-2.5 md:py-2">
+        <div className="relative">
+          <svg
+            className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-desk-muted"
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <circle cx="11" cy="11" r="7" />
+            <path d="M20 20l-3-3" />
+          </svg>
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Sembol ara…"
+            className="w-full rounded-[12px] border border-desk-border/80 bg-desk-bg py-2 pl-7 pr-2 text-xs text-desk-text outline-none placeholder:text-desk-muted/70 focus:border-desk-accent md:rounded-control md:py-1.5"
+          />
+        </div>
+        <div className="mt-2 flex gap-1 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:flex-wrap md:overflow-visible">
           {FILTERS.map((f) => (
             <button
               key={f.id}
               onClick={() => setFilter(f.id)}
-              className={`rounded px-1.5 py-0.5 text-[10px] ${
-                filter === f.id ? "bg-blue-600 text-white" : "bg-[#2a3648] text-slate-300"
+              className={`shrink-0 rounded-[8px] px-2 py-1 text-[10px] font-semibold transition-colors md:rounded-[7px] md:px-1.5 md:py-0.5 md:font-medium ${
+                filter === f.id
+                  ? "bg-desk-accent text-white shadow-accent-glow-sm"
+                  : "bg-desk-elev/80 text-desk-muted hover:bg-desk-hover hover:text-desk-text"
               }`}
             >
               {f.label}
@@ -56,34 +75,71 @@ export default function Watchlist({ symbols, prices, selected, onSelect }: Props
           ))}
         </div>
       </div>
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex items-center justify-between px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.1em] text-desk-muted/80 md:px-2.5 md:py-1 md:font-medium md:tracking-[0.08em]">
+        <span>Sembol</span>
+        <span>Bid / Ask · %</span>
+      </div>
+      <div className="min-h-0 flex-1 overflow-y-auto">
         {list.map((s) => {
           const p = prices[s.symbol];
           const up = (p?.change ?? 0) >= 0;
+          const active = selected === s.symbol;
           return (
             <button
               key={s.symbol}
               onClick={() => onSelect(s.symbol)}
-              className={`flex w-full items-center gap-2 border-b border-[#2a3648] px-2 py-2 text-left hover:bg-[#243044] ${
-                selected === s.symbol ? "bg-[#2a3648]" : ""
+              className={`relative flex w-full items-center gap-2.5 border-b border-desk-border/30 px-3 py-2.5 text-left transition-colors hover:bg-desk-hover/80 md:gap-2 md:px-2.5 md:py-1.5 ${
+                active ? "bg-desk-elev/90" : "bg-transparent"
               }`}
             >
-              <span className="text-sm">{s.flag || "•"}</span>
+              {active && (
+                <span
+                  className="absolute bottom-1 left-0 top-1 w-[3px] rounded-r-full bg-desk-accent shadow-[0_0_8px_rgba(79,124,255,0.6)] md:bottom-0.5 md:top-0.5"
+                  aria-hidden
+                />
+              )}
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-desk-bg text-[14px] leading-none ring-1 ring-desk-border/50 md:h-auto md:w-4 md:rounded-none md:bg-transparent md:text-[13px] md:ring-0">
+                {s.flag || "•"}
+              </span>
               <div className="min-w-0 flex-1">
-                <div className="flex items-center justify-between gap-1">
-                  <span className="text-xs font-semibold">{s.symbol}</span>
-                  <span className={`text-[10px] tabular-nums ${up ? "text-emerald-400" : "text-red-400"}`}>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <span
+                      className={`block truncate text-[13px] font-semibold tracking-tight md:text-[12px] ${
+                        active ? "text-desk-accent" : "text-desk-text"
+                      }`}
+                    >
+                      {s.symbol}
+                    </span>
+                    <span className="mt-0.5 block truncate text-[10px] text-desk-muted/70 md:hidden">
+                      {s.name}
+                    </span>
+                  </div>
+                  <span
+                    className={`shrink-0 rounded-[6px] px-1.5 py-0.5 text-[11px] font-semibold tabular-nums md:rounded md:px-1 md:py-px md:text-[10px] ${
+                      up
+                        ? "bg-desk-buy/12 text-desk-buy"
+                        : "bg-desk-sell/12 text-desk-sell"
+                    }`}
+                  >
                     {p ? `${up ? "+" : ""}${p.changePct.toFixed(2)}%` : "—"}
                   </span>
                 </div>
-                <div className="flex justify-between text-[10px] text-slate-400 tabular-nums">
-                  <span>{p ? formatPrice(s.symbol, p.bid) : "—"}</span>
-                  <span>{p ? formatPrice(s.symbol, p.ask) : "—"}</span>
+                <div className="mt-1 flex justify-between gap-2 text-[11px] tabular-nums text-desk-muted md:mt-0.5 md:text-[10px]">
+                  <span className="font-medium text-desk-text/70">
+                    {p ? formatPrice(s.symbol, p.bid) : "—"}
+                  </span>
+                  <span className="font-medium text-desk-text/70">
+                    {p ? formatPrice(s.symbol, p.ask) : "—"}
+                  </span>
                 </div>
               </div>
             </button>
           );
         })}
+        {list.length === 0 && (
+          <div className="px-3 py-8 text-center text-xs text-desk-muted">Sembol bulunamadı</div>
+        )}
       </div>
     </aside>
   );

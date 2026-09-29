@@ -95,22 +95,22 @@ export default function MarginCallModal({
   const hasPending = pendingRequest?.status === "PENDING";
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4 backdrop-blur-[2px]">
       <div
-        className="w-full max-w-md rounded-xl border border-red-500/40 bg-[#1e293b] shadow-2xl"
+        className="w-full max-w-md rounded-modal border border-desk-sell/40 bg-desk-panel shadow-desk-panel"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-[#3a4658] px-4 py-3">
+        <div className="flex items-center justify-between border-b border-desk-border px-4 py-3">
           <div>
-            <h2 className="text-sm font-semibold tracking-wide text-red-400">Marjin Çağrısı</h2>
-            <p className="text-[10px] text-slate-400">
+            <h2 className="text-sm font-semibold tracking-wide text-desk-sell">Marjin Çağrısı</h2>
+            <p className="text-[10px] text-desk-muted">
               Özsermaye {fmtMoney(equity)} · Marj seviyesi %{marginLevel.toFixed(1)} (eşik %{MARGIN_CALL_LEVEL})
             </p>
           </div>
           {(hasPending || success) && (
             <button
               onClick={onClose}
-              className="rounded px-2 py-1 text-slate-400 hover:bg-[#334155] hover:text-white"
+              className="rounded-[8px] px-2 py-1 text-desk-muted hover:bg-desk-hover hover:text-desk-text"
             >
               ✕
             </button>
@@ -119,14 +119,14 @@ export default function MarginCallModal({
 
         <div className="space-y-3 p-4 text-sm">
           {hasPending && pendingRequest && (
-            <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
+            <div className="rounded-[12px] border border-desk-warn/40 bg-desk-warn/10 px-3 py-2 text-xs text-desk-warn">
               Bekleyen talep:{" "}
               <strong>{pendingRequest.type === "RESET" ? "Bakiye Sıfırlama" : "Bakiye Ekle"}</strong>
               {pendingRequest.type === "ADD" && pendingRequest.amount != null
                 ? ` (${fmtMoney(pendingRequest.amount)})`
                 : ""}{" "}
               — durum: <strong>{STATUS_TR[pendingRequest.status] || pendingRequest.status}</strong>
-              <p className="mt-1 text-slate-400">
+              <p className="mt-1 text-desk-muted">
                 Admin onaylayana kadar bakiye değişmez. Reddedilirse hesap aynı kalır.
               </p>
             </div>
@@ -134,7 +134,7 @@ export default function MarginCallModal({
 
           {!hasPending && !success && (
             <>
-              <p className="text-xs text-slate-300">
+              <p className="text-xs text-desk-text/90">
                 Hesabınız marjin çağrısı seviyesine düştü. Lütfen bir seçenek belirleyin. Seçiminiz{" "}
                 <strong>admin onayı</strong> sonrası uygulanır; onaylanana kadar bakiye değişmez.
               </p>
@@ -145,10 +145,10 @@ export default function MarginCallModal({
                     type="button"
                     disabled={loading}
                     onClick={() => submit("RESET")}
-                    className="rounded-lg border border-[#3a4658] bg-[#0f172a] px-4 py-3 text-left hover:border-blue-500 hover:bg-[#243044] disabled:opacity-60"
+                    className="rounded-[12px] border border-desk-border bg-desk-bg px-4 py-3 text-left hover:border-desk-accent hover:bg-desk-hover disabled:opacity-60"
                   >
-                    <div className="font-semibold text-slate-100">1. Bakiye Sıfırlama</div>
-                    <div className="mt-0.5 text-[11px] text-slate-400">
+                    <div className="font-semibold text-desk-text">1. Bakiye Sıfırlama</div>
+                    <div className="mt-0.5 text-[11px] text-desk-muted">
                       Admin onayında bakiye {fmtMoney(DEFAULT_RESET_BALANCE)} yapılır; açık pozisyonlar
                       kapatılır.
                     </div>
@@ -157,10 +157,10 @@ export default function MarginCallModal({
                     type="button"
                     disabled={loading}
                     onClick={() => setMode("add")}
-                    className="rounded-lg border border-[#3a4658] bg-[#0f172a] px-4 py-3 text-left hover:border-blue-500 hover:bg-[#243044] disabled:opacity-60"
+                    className="rounded-[12px] border border-desk-border bg-desk-bg px-4 py-3 text-left hover:border-desk-accent hover:bg-desk-hover disabled:opacity-60"
                   >
-                    <div className="font-semibold text-slate-100">2. Bakiye Ekle</div>
-                    <div className="mt-0.5 text-[11px] text-slate-400">
+                    <div className="font-semibold text-desk-text">2. Bakiye Ekle</div>
+                    <div className="mt-0.5 text-[11px] text-desk-muted">
                       Tutar girin; admin onayında bakiyenize eklenir.
                     </div>
                   </button>
@@ -170,7 +170,7 @@ export default function MarginCallModal({
               {mode === "add" && (
                 <form onSubmit={onAddSubmit} className="space-y-3">
                   <div>
-                    <label className="mb-1 block text-[10px] uppercase tracking-wide text-slate-400">
+                    <label className="mb-1 block text-[10px] uppercase tracking-wide text-desk-muted">
                       Eklenecek tutar (USD)
                     </label>
                     <input
@@ -179,7 +179,7 @@ export default function MarginCallModal({
                       step="0.01"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
-                      className="w-full rounded-md border border-[#3a4658] bg-[#0f172a] px-3 py-2 text-sm outline-none focus:border-blue-500"
+                      className="w-full rounded-[10px] border border-desk-border bg-desk-bg px-3 py-2 text-sm text-desk-text outline-none focus:border-desk-accent"
                       required
                     />
                   </div>
@@ -187,14 +187,14 @@ export default function MarginCallModal({
                     <button
                       type="button"
                       onClick={() => setMode("choose")}
-                      className="flex-1 rounded-lg border border-[#3a4658] py-2 text-xs hover:bg-[#243044]"
+                      className="flex-1 rounded-[10px] border border-desk-border py-2 text-xs hover:bg-desk-hover"
                     >
                       Geri
                     </button>
                     <button
                       type="submit"
                       disabled={loading}
-                      className="flex-1 rounded-lg bg-blue-600 py-2 text-xs font-medium hover:bg-blue-500 disabled:opacity-60"
+                      className="flex-1 rounded-control bg-desk-accent py-2 text-xs font-semibold text-white shadow-accent-glow-sm hover:brightness-110 disabled:opacity-60"
                     >
                       {loading ? "Gönderiliyor…" : "Talep gönder"}
                     </button>
@@ -204,13 +204,13 @@ export default function MarginCallModal({
             </>
           )}
 
-          {error && <div className="rounded bg-red-500/10 px-3 py-2 text-xs text-red-400">{error}</div>}
+          {error && <div className="rounded-[10px] bg-desk-sell/10 px-3 py-2 text-xs text-desk-sell">{error}</div>}
           {success && (
-            <div className="rounded bg-emerald-500/10 px-3 py-2 text-xs text-emerald-400">{success}</div>
+            <div className="rounded-[10px] bg-desk-buy/10 px-3 py-2 text-xs text-desk-buy">{success}</div>
           )}
 
           {loading && mode === "choose" && !success && (
-            <p className="text-center text-xs text-slate-400">Gönderiliyor…</p>
+            <p className="text-center text-xs text-desk-muted">Gönderiliyor…</p>
           )}
         </div>
       </div>

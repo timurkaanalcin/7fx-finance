@@ -11,11 +11,33 @@ type Props = {
   onLogout: () => void;
 };
 
-function Metric({ label, value, danger }: { label: string; value: string; danger?: boolean }) {
+function Metric({
+  label,
+  value,
+  danger,
+  positive,
+  className = "flex",
+}: {
+  label: string;
+  value: string;
+  danger?: boolean;
+  positive?: boolean;
+  /** Display utilities — default `flex`; use `hidden md:flex` for desktop-only chips */
+  className?: string;
+}) {
+  const tone = danger
+    ? "text-desk-sell"
+    : positive
+      ? "text-desk-buy"
+      : "text-desk-text";
   return (
-    <div className="flex flex-col px-3 py-1 min-w-[88px]">
-      <span className="text-[10px] uppercase tracking-wider text-slate-400">{label}</span>
-      <span className={`text-sm font-semibold tabular-nums ${danger ? "text-red-400" : "text-slate-100"}`}>
+    <div
+      className={`${className} min-w-[64px] flex-col rounded-[10px] border border-desk-border/60 bg-desk-elev/40 px-2 py-1 sm:min-w-[86px] sm:px-2.5`}
+    >
+      <span className="text-[8px] font-semibold uppercase tracking-[0.1em] text-desk-muted sm:text-[9px] sm:tracking-[0.08em]">
+        {label}
+      </span>
+      <span className={`text-[12px] font-semibold tabular-nums leading-tight sm:text-[13px] ${tone}`}>
         {value}
       </span>
     </div>
@@ -25,6 +47,7 @@ function Metric({ label, value, danger }: { label: string; value: string; danger
 export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
   const a = account;
   const ml = a?.marginLevel ?? 0;
+  const pnl = a?.profitLoss ?? 0;
   const shortId = `#${user.id.slice(-10)}`;
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -38,70 +61,95 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
   }, []);
 
   return (
-    <header className="flex h-12 shrink-0 items-center border-b border-[#3a4658] bg-[#1e293b] px-3 gap-1">
-      <div className="mr-2 flex items-center gap-2 pr-3 border-r border-[#3a4658]">
-        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-blue-600 text-[10px] font-bold tracking-tight">M1</div>
-        <span className="hidden sm:inline text-sm font-semibold tracking-tight">M1 Finance</span>
+    <header className="fx-desk-glass flex h-11 shrink-0 items-center gap-1.5 border-b border-desk-border/80 px-2.5 md:h-12 md:px-3">
+      <div className="mr-1 flex items-center gap-1.5 border-r border-desk-border/80 pr-2 md:mr-1.5 md:gap-2 md:pr-3">
+        <div className="flex h-6 w-6 items-center justify-center rounded-[8px] bg-desk-accent text-[10px] font-bold tracking-tight text-white shadow-accent-glow-sm md:h-7 md:w-7 md:text-[11px]">
+          7
+        </div>
+        <div className="hidden leading-none sm:block">
+          <span className="text-sm font-semibold tracking-tight text-desk-text">7FX</span>
+          <span className="mt-0.5 block text-[9px] font-medium uppercase tracking-[0.12em] text-desk-muted">
+            Terminal
+          </span>
+        </div>
       </div>
 
-      <div className="flex flex-1 items-center overflow-x-auto">
-        <Metric label="SERMAYE" value={a ? fmtMoney(a.balance) : "—"} />
-        <Metric label="KREDİ" value={a ? fmtMoney(a.credit ?? 0) : "—"} />
-        <Metric label="MARJ" value={a ? fmtMoney(a.margin) : "—"} />
-        <Metric label="ÖZSERMAYE" value={a ? fmtMoney(a.equity) : "—"} />
-        <Metric label="MARJ SEVİYESİ" value={a ? fmtPct(ml) : "—"} danger={ml > 0 && ml < 100} />
-        <Metric label="SERBEST" value={a ? fmtMoney(a.freeMargin) : "—"} />
+      <div className="flex flex-1 items-center gap-1 overflow-x-auto py-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:gap-1.5">
+        {/* Desktop order preserved; mobile shows Bakiye + K/Z only */}
+        <Metric label="Bakiye" value={a ? fmtMoney(a.balance) : "—"} />
         <Metric
-          label="KAR/ZARAR"
-          value={a ? fmtMoney(a.profitLoss ?? 0) : "—"}
-          danger={(a?.profitLoss ?? 0) < 0}
+          label="Özsermaye"
+          value={a ? fmtMoney(a.equity) : "—"}
+          className="hidden md:flex"
         />
+        <Metric
+          label="Marj"
+          value={a ? fmtMoney(a.margin) : "—"}
+          className="hidden md:flex"
+        />
+        <Metric
+          label="Serbest"
+          value={a ? fmtMoney(a.freeMargin) : "—"}
+          className="hidden md:flex"
+        />
+        <Metric
+          label="Marj %"
+          value={a ? fmtPct(ml) : "—"}
+          danger={ml > 0 && ml < 100}
+          className="hidden md:flex"
+        />
+        <Metric
+          label="K/Z"
+          value={a ? fmtMoney(pnl) : "—"}
+          danger={pnl < 0}
+          positive={pnl > 0}
+        />
+        {(a?.credit ?? 0) > 0 && (
+          <Metric
+            label="Kredi"
+            value={fmtMoney(a!.credit ?? 0)}
+            className="hidden md:flex"
+          />
+        )}
       </div>
 
-      <div className="flex items-center gap-2 pl-2">
+      <div className="flex items-center gap-1 pl-1 md:gap-1.5 md:pl-1.5">
         <button
           onClick={onDeposit}
           title="Para Yatır"
-          className="flex h-8 w-8 items-center justify-center rounded-md bg-blue-600 hover:bg-blue-500"
+          className="flex h-7 items-center gap-1 rounded-[9px] bg-desk-accent px-2 text-[11px] font-semibold text-white shadow-accent-glow-sm hover:brightness-110 md:h-8 md:gap-1.5 md:rounded-[10px] md:px-2.5 md:text-xs"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
             <rect x="2" y="6" width="20" height="12" rx="2" />
             <path d="M12 10v4M10 12h4" />
           </svg>
-        </button>
-        <button
-          title="Klasör"
-          className="flex h-8 w-8 items-center justify-center rounded-md bg-blue-600/80 hover:bg-blue-500"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
-          </svg>
+          <span className="hidden sm:inline">Yatır</span>
         </button>
 
-        <div className="relative ml-1" ref={menuRef}>
+        <div className="relative" ref={menuRef}>
           <button
             type="button"
             onClick={() => setMenuOpen((o) => !o)}
-            className="flex items-center gap-2 rounded-full border border-[#3a4658] bg-[#0f172a]/40 py-1 pl-1 pr-3 hover:border-slate-500"
+            className="flex items-center gap-1.5 rounded-full border border-desk-border/80 bg-desk-bg/50 p-0.5 hover:border-desk-accent/50 md:gap-2 md:py-1 md:pl-1 md:pr-2.5"
           >
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-600 text-xs font-bold">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-desk-elev to-desk-hover text-[11px] font-bold text-desk-text ring-1 ring-desk-border/80 md:text-xs">
               {user.name.slice(0, 1).toUpperCase()}
             </div>
-            <div className="leading-tight text-left">
-              <div className="text-xs font-medium">{user.name}</div>
-              <div className="text-[10px] text-slate-400">{shortId}</div>
+            <div className="hidden text-left leading-tight sm:block">
+              <div className="text-xs font-medium text-desk-text">{user.name}</div>
+              <div className="text-[10px] text-desk-muted">{shortId}</div>
             </div>
           </button>
           {menuOpen && (
-            <div className="absolute right-0 z-50 mt-1 w-48 overflow-hidden rounded-lg border border-[#3a4658] bg-[#0f172a] shadow-xl">
+            <div className="absolute right-0 z-50 mt-1.5 w-48 overflow-hidden rounded-modal border border-desk-border bg-desk-panel shadow-desk-panel">
               <a
                 href="/profile"
-                className="block px-3 py-2 text-xs text-slate-200 hover:bg-[#1e293b]"
+                className="block px-3 py-2.5 text-xs text-desk-text hover:bg-desk-hover"
               >
                 Üyelik bilgileri
               </a>
               {user.role === "ADMIN" && (
-                <a href="/admin" className="block px-3 py-2 text-xs text-amber-300 hover:bg-[#1e293b]">
+                <a href="/admin" className="block px-3 py-2.5 text-xs text-desk-warn hover:bg-desk-hover">
                   Admin paneli
                 </a>
               )}
@@ -111,28 +159,13 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
                   setMenuOpen(false);
                   onLogout();
                 }}
-                className="block w-full px-3 py-2 text-left text-xs text-slate-400 hover:bg-[#1e293b] hover:text-white"
+                className="block w-full border-t border-desk-border px-3 py-2.5 text-left text-xs text-desk-muted hover:bg-desk-hover hover:text-desk-text"
               >
                 Çıkış
               </button>
             </div>
           )}
         </div>
-
-        {user.role === "ADMIN" && (
-          <a
-            href="/admin"
-            className="hidden rounded-md px-2 py-1 text-xs text-amber-300 hover:bg-[#334155] sm:inline"
-          >
-            Admin
-          </a>
-        )}
-        <button
-          onClick={onLogout}
-          className="rounded-md px-2 py-1 text-xs text-slate-400 hover:bg-[#334155] hover:text-white"
-        >
-          Çıkış
-        </button>
       </div>
     </header>
   );

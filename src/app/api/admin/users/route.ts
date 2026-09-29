@@ -353,5 +353,21 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true });
   }
 
+  if (action === "resetPassword") {
+    const password = String(body.password || "");
+    if (password.length < 8) {
+      return NextResponse.json({ error: "Şifre en az 8 karakter" }, { status: 400 });
+    }
+    const passwordHash = await hashPassword(password);
+    await prisma.user.update({ where: { id: userId }, data: { passwordHash } });
+    await writeAudit({
+      adminId: admin.id,
+      action: "RESET_PASSWORD",
+      targetId: userId,
+      note: body.note ? String(body.note).slice(0, 500) : "Admin password reset",
+    });
+    return NextResponse.json({ ok: true });
+  }
+
   return NextResponse.json({ error: "Bilinmeyen action" }, { status: 400 });
 }

@@ -7,12 +7,15 @@ type Props = {
   symbols: SymbolDef[];
   prices: Record<string, PriceTick>;
   onSelect: (symbol: string) => void;
+  className?: string;
 };
 
-export default function FooterTicker({ symbols, prices, onSelect }: Props) {
+export default function FooterTicker({ symbols, prices, onSelect, className = "" }: Props) {
   const items = [...symbols, ...symbols];
   return (
-    <footer className="flex h-8 shrink-0 items-center overflow-hidden border-t border-[#3a4658] bg-[#0f172a]">
+    <footer
+      className={`hidden h-7 shrink-0 items-center overflow-hidden border-t border-desk-border/80 bg-desk-panel/60 md:flex ${className}`}
+    >
       <div className="ticker-track flex whitespace-nowrap">
         {items.map((s, idx) => {
           const p = prices[s.symbol];
@@ -21,13 +24,19 @@ export default function FooterTicker({ symbols, prices, onSelect }: Props) {
             <button
               key={`${s.symbol}-${idx}`}
               onClick={() => onSelect(s.symbol)}
-              className="mx-3 inline-flex items-center gap-1.5 text-[11px] hover:text-white"
+              className="mx-2.5 inline-flex items-center gap-1.5 text-[10px] text-desk-muted/80 transition-colors hover:text-desk-text"
             >
-              <span>{s.flag}</span>
-              <span className="font-medium text-slate-200">{s.symbol}</span>
-              <span className={`tabular-nums ${up ? "text-emerald-400" : "text-red-400"}`}>
+              <span className="opacity-80">{s.flag}</span>
+              <span className="font-medium text-desk-text/75">{s.symbol}</span>
+              <span className={`tabular-nums ${up ? "text-desk-buy" : "text-desk-sell"}`}>
                 {p ? formatPrice(s.symbol, p.mid) : "—"}
               </span>
+              {p && (
+                <span className={`tabular-nums ${up ? "text-desk-buy/70" : "text-desk-sell/70"}`}>
+                  {up ? "+" : ""}
+                  {p.changePct.toFixed(2)}%
+                </span>
+              )}
             </button>
           );
         })}

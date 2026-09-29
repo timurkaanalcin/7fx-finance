@@ -46,7 +46,7 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
       const h = String(now.getUTCHours()).padStart(2, "0");
       const m = String(now.getUTCMinutes()).padStart(2, "0");
       const s = String(now.getUTCSeconds()).padStart(2, "0");
-      setUtcClock(`${h}:${m}:${s} (UTC)`);
+      setUtcClock(`${h}:${m}:${s} UTC`);
     }, 1000);
     return () => clearInterval(t);
   }, []);
@@ -55,33 +55,33 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
     if (!containerRef.current) return;
     const chart = createChart(containerRef.current, {
       layout: {
-        background: { type: ColorType.Solid, color: "#1a2332" },
-        textColor: "#94a3b8",
+        background: { type: ColorType.Solid, color: "#000000" },
+        textColor: "#8b97b0",
       },
       grid: {
-        vertLines: { color: "#243044" },
-        horzLines: { color: "#243044" },
+        vertLines: { color: "#141414" },
+        horzLines: { color: "#141414" },
       },
       crosshair: { mode: CrosshairMode.Normal },
-      rightPriceScale: { borderColor: "#3a4658" },
-      timeScale: { borderColor: "#3a4658", timeVisible: true, secondsVisible: false },
+      rightPriceScale: { borderColor: "#2a2a2a" },
+      timeScale: { borderColor: "#2a2a2a", timeVisible: true, secondsVisible: false },
       width: containerRef.current.clientWidth,
       height: containerRef.current.clientHeight,
     });
     chartRef.current = chart;
 
     const candle = chart.addSeries(CandlestickSeries, {
-      upColor: "#22c55e",
-      downColor: "#ef4444",
-      borderUpColor: "#22c55e",
-      borderDownColor: "#ef4444",
-      wickUpColor: "#22c55e",
-      wickDownColor: "#ef4444",
+      upColor: "#16c784",
+      downColor: "#ea3943",
+      borderUpColor: "#16c784",
+      borderDownColor: "#ea3943",
+      wickUpColor: "#16c784",
+      wickDownColor: "#ea3943",
     });
     seriesRef.current = candle;
 
     const line = chart.addSeries(LineSeries, {
-      color: "#3b82f6",
+      color: "#4f7cff",
       lineWidth: 2,
       visible: false,
     });
@@ -110,7 +110,9 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
     let cancelled = false;
     async function load() {
       try {
-        const res = await fetch(`/api/market/ohlc?symbol=${encodeURIComponent(symbol)}&timeframe=${timeframe}`);
+        const res = await fetch(
+          `/api/market/ohlc?symbol=${encodeURIComponent(symbol)}&timeframe=${timeframe}`
+        );
         const data = await res.json();
         if (cancelled || !seriesRef.current) return;
         const bars: CandlestickData<Time>[] = (data.candles || []).map(
@@ -161,47 +163,74 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
   const fmt = (n: number) => n.toFixed(digits);
 
   return (
-    <div className="relative flex min-h-0 flex-1 flex-col bg-[#1a2332]">
-      <div className="absolute left-3 top-2 z-10 flex items-start gap-3">
-        <span className="rounded bg-blue-600 px-2 py-0.5 text-[11px] font-bold tracking-wide">LIVE</span>
+    <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-desk-bg">
+      {/* Symbol + LIVE — more breathing room on mobile */}
+      <div className="absolute left-3 top-3 z-10 flex items-start gap-2 md:left-3 md:top-2.5 md:gap-2.5">
+        <span className="mt-0.5 flex items-center gap-1.5 rounded-full bg-desk-accent/15 px-2.5 py-1 text-[10px] font-bold tracking-[0.08em] text-desk-accent ring-1 ring-desk-accent/35 md:gap-1 md:px-2 md:py-0.5 md:tracking-wide">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-desk-accent shadow-[0_0_6px_rgba(79,124,255,0.8)]" />
+          LIVE
+        </span>
         <div>
-          <div className="text-sm font-semibold">{symbol}</div>
+          <div className="text-[15px] font-semibold tracking-tight text-desk-text md:text-sm">
+            {symbol}
+          </div>
           {ohlc && (
-            <div className="mt-0.5 flex flex-wrap gap-2 text-[10px] text-slate-400 tabular-nums">
-              <span>Aç {fmt(ohlc.o)}</span>
-              <span>Y {fmt(ohlc.h)}</span>
-              <span>D {fmt(ohlc.l)}</span>
-              <span>K {fmt(ohlc.c)}</span>
+            <div className="mt-0.5 flex flex-wrap gap-x-2.5 gap-y-0.5 text-[10px] tabular-nums text-desk-muted">
+              <span>
+                O <span className="text-desk-text/80">{fmt(ohlc.o)}</span>
+              </span>
+              <span>
+                H <span className="text-desk-buy">{fmt(ohlc.h)}</span>
+              </span>
+              <span>
+                L <span className="text-desk-sell">{fmt(ohlc.l)}</span>
+              </span>
+              <span>
+                C <span className="text-desk-text/80">{fmt(ohlc.c)}</span>
+              </span>
             </div>
           )}
         </div>
       </div>
 
-      <div className="absolute right-10 top-2 z-10 flex items-center gap-2">
-        <span className="text-xs tabular-nums text-slate-300">{utcClock}</span>
-        <div className="flex overflow-hidden rounded-md border border-[#3a4658] bg-[#0f172a]/60">
+      {/* TF pills — scroll cleanly on mobile, hide clutter */}
+      <div className="absolute right-2 top-2.5 z-10 flex max-w-[62%] items-center justify-end gap-1.5 sm:right-3 sm:max-w-none md:right-3 md:top-2">
+        <span className="hidden rounded-control border border-desk-border/60 bg-desk-panel/70 px-2 py-1 text-[10px] tabular-nums text-desk-muted sm:inline">
+          {utcClock}
+        </span>
+        <div className="flex max-w-full overflow-x-auto rounded-[12px] border border-desk-border/70 bg-desk-panel/95 p-0.5 shadow-desk-panel [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:rounded-control">
           {TIMEFRAMES.map((tf) => (
             <button
               key={tf.id}
               onClick={() => onTimeframe(tf.id)}
-              className={`px-2 py-1 text-[11px] ${
-                timeframe === tf.id ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-[#334155]"
+              className={`shrink-0 rounded-[9px] px-2.5 py-1.5 text-[11px] font-semibold transition-colors md:rounded-[8px] md:px-2 md:py-1 md:font-medium ${
+                timeframe === tf.id
+                  ? "bg-desk-accent text-white shadow-accent-glow-sm"
+                  : "text-desk-muted hover:bg-desk-hover hover:text-desk-text"
               }`}
             >
               {tf.label}
             </button>
           ))}
         </div>
-        <div className="flex overflow-hidden rounded-md border border-[#3a4658]">
+        <div className="hidden overflow-hidden rounded-control border border-desk-border bg-desk-panel/90 p-0.5 sm:flex">
           <button
             onClick={() => setChartType("candle")}
-            className={`px-2 py-1 text-[11px] ${chartType === "candle" ? "bg-blue-600" : "hover:bg-[#334155]"}`}
+            className={`rounded-[8px] px-2 py-1 text-[11px] font-medium ${
+              chartType === "candle"
+                ? "bg-desk-elev text-desk-text"
+                : "text-desk-muted hover:text-desk-text"
+            }`}
           >
             Mum
           </button>
           <button
             onClick={() => setChartType("line")}
-            className={`px-2 py-1 text-[11px] ${chartType === "line" ? "bg-blue-600" : "hover:bg-[#334155]"}`}
+            className={`rounded-[8px] px-2 py-1 text-[11px] font-medium ${
+              chartType === "line"
+                ? "bg-desk-elev text-desk-text"
+                : "text-desk-muted hover:text-desk-text"
+            }`}
           >
             Çizgi
           </button>
@@ -209,7 +238,7 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
       </div>
 
       {feedError && (
-        <div className="absolute bottom-3 left-1/2 z-20 -translate-x-1/2 rounded-md bg-amber-500/90 px-3 py-1.5 text-[11px] font-medium text-black shadow">
+        <div className="absolute bottom-3 left-1/2 z-20 -translate-x-1/2 rounded-control bg-desk-warn/95 px-3 py-1.5 text-[11px] font-medium text-black shadow-lg">
           {feedError}
         </div>
       )}

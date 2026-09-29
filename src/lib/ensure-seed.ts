@@ -344,6 +344,117 @@ async function ensureCrmDemoMembers() {
   }
 }
 
+
+async function ensureCrmModuleData() {
+  const traders = await prisma.user.findMany({
+    where: { role: "TRADER" },
+    take: 10,
+    orderBy: { createdAt: "asc" },
+  });
+  const admin = await prisma.user.findFirst({ where: { role: "ADMIN" } });
+  const workerName = admin?.name || "7FX Admin";
+  const workerId = admin?.id || null;
+
+  if ((await prisma.communication.count()) === 0 && traders.length) {
+    const samples = [
+      { type: "CALL", title: "İlk arama", description: "Müşteri ile tanışma araması yapıldı. Yatırım ilgisi yüksek." },
+      { type: "CHAT", title: "Platform yardımı", description: "Terminal giriş ve emir girişi konusunda destek verildi." },
+      { type: "NOTE", title: "Takip notu", description: "Belgeler bekleniyor — 48 saat içinde hatırlat." },
+      { type: "CALL", title: "FTD takip", description: "İlk yatırım sonrası memnuniyet araması." },
+      { type: "CHAT", title: "Marjin sorusu", description: "Kaldıraç ve marjin seviyesi açıklandı." },
+    ];
+    for (let i = 0; i < samples.length; i++) {
+      const t = traders[i % traders.length];
+      await prisma.communication.create({
+        data: {
+          userId: t.id,
+          type: samples[i].type,
+          title: samples[i].title,
+          description: samples[i].description,
+          workerName,
+          workerId,
+        },
+      });
+    }
+    console.log("[7fx] Seeded communications");
+  }
+
+  if ((await prisma.documentRecord.count()) === 0 && traders.length) {
+    const docs = [
+      { name: "Kimlik Ön Yüz", docType: "ID", status: "APPROVED" },
+      { name: "Kimlik Arka Yüz", docType: "ID", status: "PENDING" },
+      { name: "İkametgah", docType: "ADDRESS", status: "PENDING" },
+      { name: "Selfie + Kimlik", docType: "SELFIE", status: "REJECTED", note: "Fotoğraf bulanık" },
+      { name: "Pasaport", docType: "ID", status: "APPROVED" },
+    ];
+    for (let i = 0; i < docs.length; i++) {
+      const t = traders[i % traders.length];
+      await prisma.documentRecord.create({
+        data: {
+          userId: t.id,
+          name: docs[i].name,
+          docType: docs[i].docType,
+          status: docs[i].status,
+          note: docs[i].note ?? null,
+          reviewedAt: docs[i].status !== "PENDING" ? new Date() : null,
+        },
+      });
+    }
+    console.log("[7fx] Seeded document records");
+  }
+
+  if ((await prisma.reminder.count()) === 0 && traders.length) {
+    const now = Date.now();
+    const reminders = [
+      { body: "Elena — belge hatırlatması", hours: 4, color: "#f59e0b" },
+      { body: "Mehmet — VIP haftalık check-in", hours: 28, color: "#3b82f6" },
+      { body: "Ahmed — ilk yatırım teklifi", hours: 52, color: "#10b981" },
+      { body: "Desk toplantısı — retention", hours: 76, color: "#8b5cf6" },
+    ];
+    for (let i = 0; i < reminders.length; i++) {
+      const t = traders[i % traders.length];
+      await prisma.reminder.create({
+        data: {
+          userId: t.id,
+          workerId,
+          workerName,
+          body: reminders[i].body,
+          remindAt: new Date(now + reminders[i].hours * 3600_000),
+          color: reminders[i].color,
+        },
+      });
+    }
+    console.log("[7fx] Seeded reminders");
+  }
+
+  if ((await prisma.mailTemplate.count()) === 0) {
+    await prisma.mailTemplate.createMany({
+      data: [
+        {
+          name: "Hoş geldiniz",
+          subject: "7FX hesabınız hazır",
+          body: "Merhaba {{name}},\n\n7FX trading hesabınız oluşturuldu. Terminal: /trade\n\nİyi işlemler.",
+          deskName: "HQ",
+        },
+        {
+          name: "Belge talebi",
+          subject: "KYC belgeleriniz eksik",
+          body: "Merhaba {{name}},\n\nHesap doğrulaması için kimlik ve ikametgah belgenizi yüklemenizi rica ederiz.",
+          deskName: "İstanbul A",
+        },
+        {
+          name: "Yatırım onayı",
+          subject: "Yatırımınız onaylandı",
+          body: "Merhaba {{name}},\n\nYatırım talebiniz onaylandı ve bakiyenize yansıtıldı.",
+          deskName: "HQ",
+        },
+      ],
+    });
+    console.log("[7fx] Seeded mail templates");
+  }
+}
+
+
 /**
  * First-request auto-seed: demo trader, admin, deposit methods, CRM members.
  * Safe to call on every request — runs at most once per cold start.
@@ -411,6 +522,7 @@ export function ensureDemoSeed(): Promise<void> {
         await ensureSystemSettings();
         await ensureDesks();
         await ensureCrmDemoMembers();
+        await ensureCrmModuleData();
       } catch (err) {
         seedPromise = null;
         console.error("[7fx] Auto-seed failed:", err);

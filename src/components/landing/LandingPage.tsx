@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import PhonePreview from "./PhonePreview";
 
@@ -38,11 +38,11 @@ function MarketMiniRows() {
     <div className="fx-viz-market mt-auto space-y-2">
       {rows.map((r) => (
         <div key={r.s} className="fx-viz-market-row flex items-center justify-between gap-2">
-          <span className="text-[12px] font-semibold tracking-wide text-white/90">{r.s}</span>
-          <span className="text-[12px] tabular-nums text-white/55">{r.p}</span>
+          <span className="text-[12px] font-semibold tracking-wide text-[#0b1220]">{r.s}</span>
+          <span className="text-[12px] tabular-nums text-[#5c657a]">{r.p}</span>
           <span
             className={`min-w-[52px] rounded-md px-1.5 py-0.5 text-right text-[11px] font-semibold tabular-nums ${
-              r.up ? "bg-[#12a454]/20 text-[#5dff9a]" : "bg-[#e5484d]/20 text-[#ff8a8f]"
+              r.up ? "bg-[#16c784]/15 text-[#16c784]" : "bg-[#ea3943]/15 text-[#ea3943]"
             }`}
           >
             {r.d}
@@ -55,35 +55,35 @@ function MarketMiniRows() {
 
 function OrderTicketVisual() {
   return (
-    <div className="fx-viz-order mt-auto rounded-[16px] border border-[#e6e9f2] bg-[#f8f9fc] p-3.5">
+    <div className="fx-viz-order mt-auto rounded-[14px] border border-[#2a2a2a] bg-[#0a0a0a] p-3.5">
       <div className="mb-3 flex items-center justify-between">
         <div>
-          <p className="text-[11px] font-medium text-[#687087]">EURUSD</p>
-          <p className="text-[15px] font-semibold tabular-nums text-[#101425]">1.0842</p>
+          <p className="text-[11px] font-medium text-[#8b97b0]">EURUSD</p>
+          <p className="text-[15px] font-semibold tabular-nums text-[#e8eef8]">1.0842</p>
         </div>
-        <span className="rounded-full bg-[#3558F4]/10 px-2 py-0.5 text-[10px] font-semibold text-[#3558F4]">
+        <span className="rounded-full bg-[#4f7cff]/15 px-2 py-0.5 text-[10px] font-semibold text-[#7aa2ff]">
           Market
         </span>
       </div>
       <div className="mb-3 grid grid-cols-2 gap-2">
-        <div className="rounded-xl bg-[#12a454] py-2.5 text-center text-[12px] font-bold text-white shadow-[0_6px_16px_rgba(18,164,84,0.28)]">
+        <div className="rounded-[10px] bg-[#16c784] py-2.5 text-center text-[12px] font-bold text-white shadow-[0_6px_16px_rgba(22,199,132,0.28)]">
           AL
         </div>
-        <div className="rounded-xl bg-[#e5484d] py-2.5 text-center text-[12px] font-bold text-white shadow-[0_6px_16px_rgba(229,72,77,0.28)]">
+        <div className="rounded-[10px] bg-[#ea3943] py-2.5 text-center text-[12px] font-bold text-white shadow-[0_6px_16px_rgba(234,57,67,0.28)]">
           SAT
         </div>
       </div>
       <div className="space-y-1.5">
-        <div className="flex justify-between text-[10px] text-[#687087]">
+        <div className="flex justify-between text-[10px] text-[#8b97b0]">
           <span>Lot</span>
-          <span className="font-semibold text-[#101425]">0.10</span>
+          <span className="font-semibold text-[#e8eef8]">0.10</span>
         </div>
-        <div className="h-1.5 overflow-hidden rounded-full bg-[#e6e9f2]">
-          <div className="h-full w-[42%] rounded-full bg-[#3558F4]" />
+        <div className="h-1.5 overflow-hidden rounded-full bg-[#1f1f1f]">
+          <div className="h-full w-[42%] rounded-full bg-[#4f7cff]" />
         </div>
-        <div className="flex justify-between text-[10px] text-[#687087]">
+        <div className="flex justify-between text-[10px] text-[#8b97b0]">
           <span>Kaldıraç</span>
-          <span className="font-semibold text-[#101425]">1:100</span>
+          <span className="font-semibold text-[#e8eef8]">1:100</span>
         </div>
       </div>
     </div>
@@ -94,9 +94,9 @@ function SecurityBadgeVisual() {
   return (
     <div className="fx-viz-security mt-auto flex flex-col items-center justify-center py-2">
       <div className="relative flex h-[120px] w-[120px] items-center justify-center">
-        <div className="fx-orbit absolute inset-0 rounded-full border border-dashed border-[#3558F4]/25" />
-        <div className="fx-orbit fx-orbit--slow absolute inset-3 rounded-full border border-[#3558F4]/15" />
-        <div className="relative z-10 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#3558F4] shadow-[0_12px_32px_rgba(53,88,244,0.35)]">
+        <div className="fx-orbit absolute inset-0 rounded-full border border-dashed border-[#4f7cff]/30" />
+        <div className="fx-orbit fx-orbit--slow absolute inset-3 rounded-full border border-[#4f7cff]/15" />
+        <div className="relative z-10 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#4f7cff] shadow-[0_12px_32px_rgba(79,124,255,0.4)]">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden>
             <path
               d="M12 3l7 3v5c0 4.5-2.8 8.4-7 10-4.2-1.6-7-5.5-7-10V6l7-3z"
@@ -113,10 +113,10 @@ function SecurityBadgeVisual() {
             />
           </svg>
         </div>
-        <span className="fx-orbit-dot absolute left-2 top-8 h-2 w-2 rounded-full bg-[#3558F4]" />
-        <span className="fx-orbit-dot fx-orbit-dot--2 absolute bottom-4 right-3 h-1.5 w-1.5 rounded-full bg-[#5b7bff]" />
+        <span className="fx-orbit-dot absolute left-2 top-8 h-2 w-2 rounded-full bg-[#4f7cff]" />
+        <span className="fx-orbit-dot fx-orbit-dot--2 absolute bottom-4 right-3 h-1.5 w-1.5 rounded-full bg-[#7aa2ff]" />
       </div>
-      <p className="mt-3 text-center text-[12px] font-medium text-[#687087]">
+      <p className="mt-3 text-center text-[12px] font-medium text-[#5c657a]">
         Oturum korumalı · SSL
       </p>
     </div>
@@ -125,33 +125,33 @@ function SecurityBadgeVisual() {
 
 function PortfolioBoard() {
   const bars = [
-    { h: 42, c: "#c5d0ff" },
-    { h: 58, c: "#9aafff" },
-    { h: 48, c: "#7a95ff" },
-    { h: 72, c: "#3558F4" },
-    { h: 64, c: "#5b7bff" },
-    { h: 88, c: "#3558F4" },
-    { h: 76, c: "#4a6af5" },
-    { h: 94, c: "#3558F4" },
+    { h: 42, c: "#2a3a6a" },
+    { h: 58, c: "#3a5288" },
+    { h: 48, c: "#4a6ab0" },
+    { h: 72, c: "#4f7cff" },
+    { h: 64, c: "#6a92ff" },
+    { h: 88, c: "#4f7cff" },
+    { h: 76, c: "#5a86f5" },
+    { h: 94, c: "#4f7cff" },
   ];
   const alloc = [
-    { name: "Döviz", pct: 34, color: "#3558F4" },
-    { name: "Emtia", pct: 22, color: "#5b7bff" },
-    { name: "Endeks", pct: 28, color: "#12a454" },
-    { name: "Kripto", pct: 16, color: "#687087" },
+    { name: "Döviz", pct: 34, color: "#4f7cff" },
+    { name: "Emtia", pct: 22, color: "#7aa2ff" },
+    { name: "Endeks", pct: 28, color: "#16c784" },
+    { name: "Kripto", pct: 16, color: "#8b97b0" },
   ];
   return (
-    <div className="fx-portfolio-board rounded-[23px] border border-[#e6e9f2] bg-white p-6 shadow-[0_20px_60px_rgba(16,20,37,0.08)] sm:p-8">
+    <div className="fx-portfolio-board rounded-[16px] border border-[#2a2a2a] bg-[#0a0a0a] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.35)] sm:p-8">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-[#687087]">
+          <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-[#8b97b0]">
             Portföy özeti
           </p>
-          <p className="mt-1 text-2xl font-semibold tracking-tight text-[#101425] tabular-nums">
+          <p className="mt-1 text-2xl font-semibold tracking-tight text-[#e8eef8] tabular-nums">
             ₺128.450
           </p>
         </div>
-        <span className="rounded-full bg-[#12a454]/12 px-3 py-1 text-[12px] font-semibold text-[#12a454]">
+        <span className="rounded-full bg-[#16c784]/15 px-3 py-1 text-[12px] font-semibold text-[#16c784]">
           +1,8%
         </span>
       </div>
@@ -170,10 +170,10 @@ function PortfolioBoard() {
         {alloc.map((a) => (
           <div key={a.name}>
             <div className="mb-1 flex justify-between text-[12px]">
-              <span className="font-medium text-[#101425]">{a.name}</span>
-              <span className="tabular-nums text-[#687087]">%{a.pct}</span>
+              <span className="font-medium text-[#e8eef8]">{a.name}</span>
+              <span className="tabular-nums text-[#8b97b0]">%{a.pct}</span>
             </div>
-            <div className="h-1.5 overflow-hidden rounded-full bg-[#eef0f6]">
+            <div className="h-1.5 overflow-hidden rounded-full bg-[#1f1f1f]">
               <div
                 className="h-full rounded-full transition-all"
                 style={{ width: `${a.pct}%`, background: a.color }}
@@ -188,6 +188,21 @@ function PortfolioBoard() {
 
 export default function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showStickyCta, setShowStickyCta] = useState(false);
+  const heroRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const el = heroRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        setShowStickyCta(!(entry.isIntersecting && entry.intersectionRatio >= 0.28));
+      },
+      { threshold: [0, 0.15, 0.28, 0.45, 0.6] }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   const markets = useMemo(
     () => [
@@ -207,24 +222,37 @@ export default function LandingPage() {
     () => [
       {
         key: "markets",
-        dark: true,
         title: "Canlı piyasa görünümü",
         body: "Döviz, emtia, endeks ve kripto araçlarını tek listede izleyin. Fiyat ve değişim net tablolarla.",
         visual: <MarketMiniRows />,
+        icon: (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+            <path d="M4 19V5M4 19h16" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+            <path d="M8 15l3-4 3 2 4-6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        ),
       },
       {
         key: "orders",
-        dark: false,
         title: "Hızlı emir paneli",
         body: "Al / Sat butonları, lot ve kaldıraç ayarları sade bir bilet arayüzünde bir arada.",
         visual: <OrderTicketVisual />,
+        icon: (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+            <path d="M12 3v18M8 8l4-4 4 4M8 16l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        ),
       },
       {
         key: "security",
-        dark: false,
         title: "Güvenli oturum",
         body: "Kimlik doğrulama oturum çerezleri ile çalışır. Hassas alanlar koruma altındadır.",
         visual: <SecurityBadgeVisual />,
+        icon: (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+            <path d="M12 3l7 3v5c0 4.5-2.8 8.4-7 10-4.2-1.6-7-5.5-7-10V6l7-3z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+          </svg>
+        ),
       },
     ],
     []
@@ -288,20 +316,20 @@ export default function LandingPage() {
   );
 
   return (
-    <div className="fx-landing min-h-screen" data-fx-ui="landing-mobile-white-v2">
+    <div className="fx-landing min-h-screen" data-fx-ui="landing-light">
       <a
         href="/login"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-[#3558F4] focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-[#4f7cff] focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
       >
         Giriş sayfasına geç
       </a>
 
       {/* ——— Header ——— */}
       <header className="fx-nav sticky top-0 z-50">
-        <div className="fx-shell flex h-16 items-center justify-between gap-4 sm:h-[4.25rem]">
+        <div className="fx-shell flex h-14 items-center justify-between gap-4 sm:h-[4.25rem]">
           <Link href="/" className="flex items-center no-underline" aria-label="7FX ana sayfa">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/7fx-logo.png" alt="7FX" className="h-8 w-auto object-contain sm:h-9" />
+            <img src="/7fx-logo.png" alt="7FX" className="fx-nav-logo h-9 w-auto object-contain sm:h-9" />
           </Link>
 
           <nav className="hidden items-center gap-0.5 lg:flex" aria-label="Ana menü">
@@ -309,7 +337,7 @@ export default function LandingPage() {
               <button
                 key={item.id}
                 type="button"
-                className="rounded-lg px-3 py-2 text-[13px] font-medium text-[#5e657d] transition hover:bg-[#3558F4]/[0.06] hover:text-[#101425]"
+                className="rounded-lg px-3 py-2 text-[13px] font-medium text-[#5c657a] transition hover:bg-[#f0f0f0] hover:text-[#0b1220]"
                 onClick={() => scrollToId(item.id)}
               >
                 {item.label}
@@ -320,19 +348,19 @@ export default function LandingPage() {
           <div className="flex items-center gap-2">
             <Link
               href="/login"
-              className="hidden rounded-full border border-[#d8dce8] bg-white px-4 py-2 text-[13px] font-semibold text-[#101425] transition hover:border-[#3558F4]/40 hover:bg-[#f8f9fc] sm:inline-flex"
+              className="fx-btn-secondary hidden rounded-full px-4 py-2 text-[13px] font-semibold sm:inline-flex"
             >
               Giriş
             </Link>
             <Link
               href="/register"
-              className="rounded-full bg-[#3558F4] px-4 py-2 text-[13px] font-semibold text-white shadow-[0_8px_24px_rgba(53,88,244,0.28)] transition hover:brightness-110"
+              className="fx-btn-primary rounded-full px-4 py-2 text-[13px] font-semibold"
             >
               Hesap aç
             </Link>
             <button
               type="button"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#d8dce8] bg-white text-[#101425] lg:hidden"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(16,20,37,0.12)] bg-white text-[#0b1220] lg:hidden"
               aria-expanded={menuOpen}
               aria-label={menuOpen ? "Menüyü kapat" : "Menüyü aç"}
               onClick={() => setMenuOpen((v) => !v)}
@@ -350,13 +378,13 @@ export default function LandingPage() {
         </div>
 
         {menuOpen && (
-          <div className="border-t border-[#e6e9f2] bg-white/98 px-4 py-3 backdrop-blur-xl lg:hidden">
+          <div className="border-t border-[rgba(16,20,37,0.08)] bg-white/98 px-4 py-3 backdrop-blur-xl lg:hidden">
             <div className="fx-shell flex flex-col gap-0.5 !px-0">
               {NAV.map((item) => (
                 <button
                   key={item.id}
                   type="button"
-                  className="rounded-lg px-3 py-2.5 text-left text-sm text-[#101425] hover:bg-[#f8f9fc]"
+                  className="rounded-lg px-3 py-2.5 text-left text-sm text-[#0b1220] hover:bg-[#f0f0f0]"
                   onClick={() => {
                     setMenuOpen(false);
                     scrollToId(item.id);
@@ -367,14 +395,14 @@ export default function LandingPage() {
               ))}
               <Link
                 href="/login"
-                className="mt-1 rounded-lg px-3 py-2.5 text-sm font-semibold text-[#3558F4]"
+                className="mt-1 rounded-lg px-3 py-2.5 text-sm font-semibold text-[#4f7cff]"
                 onClick={() => setMenuOpen(false)}
               >
                 Giriş
               </Link>
               <Link
                 href="/register"
-                className="rounded-lg px-3 py-2.5 text-sm font-semibold text-[#5e657d]"
+                className="rounded-lg px-3 py-2.5 text-sm font-semibold text-[#5c657a]"
                 onClick={() => setMenuOpen(false)}
               >
                 Hesap aç
@@ -384,15 +412,15 @@ export default function LandingPage() {
         )}
       </header>
 
-      <main className="pb-[72px] md:pb-0">
+      <main className="fx-main-pad pb-[calc(108px+env(safe-area-inset-bottom,0px))] md:pb-0">
         {/* ——— Hero ——— */}
-        <section className="fx-hero relative overflow-hidden" aria-labelledby="hero-title">
+        <section ref={heroRef} className="fx-hero relative overflow-hidden" aria-labelledby="hero-title">
           <div className="pointer-events-none absolute inset-0" aria-hidden>
             <div className="fx-hero-veil absolute inset-0" />
-            <div className="fx-hero-mesh absolute inset-0 opacity-[0.45]" />
+            <div className="fx-hero-mesh absolute inset-0" />
           </div>
 
-          <div className="fx-shell relative z-10 grid gap-12 pb-16 pt-12 sm:pb-20 sm:pt-16 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:gap-12 lg:pb-28 lg:pt-20">
+          <div className="fx-shell relative z-10 grid gap-7 pb-10 pt-8 sm:gap-12 sm:pb-20 sm:pt-16 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:gap-12 lg:pb-28 lg:pt-20">
             <div className="fx-reveal max-w-[640px]">
               <Eyebrow>Çok varlık yatırım platformu</Eyebrow>
 
@@ -409,13 +437,13 @@ export default function LandingPage() {
               <div className="mt-9 flex flex-wrap items-center gap-3">
                 <Link
                   href="/register"
-                  className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#3558F4] px-8 text-[15px] font-semibold text-white shadow-[0_14px_40px_rgba(53,88,244,0.32)] transition hover:brightness-110"
+                  className="fx-btn-primary inline-flex min-h-[48px] items-center justify-center rounded-full px-6 text-[14px] font-semibold sm:min-h-[52px] sm:px-8 sm:text-[15px]"
                 >
                   Hesap aç
                 </Link>
                 <Link
                   href="/login"
-                  className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-[#d8dce8] bg-white px-8 text-[15px] font-semibold text-[#101425] transition hover:border-[#3558F4]/35 hover:bg-[#f8f9fc]"
+                  className="fx-btn-secondary inline-flex min-h-[48px] items-center justify-center rounded-full px-6 text-[14px] font-semibold sm:min-h-[52px] sm:px-8 sm:text-[15px]"
                 >
                   Giriş yap
                 </Link>
@@ -428,8 +456,8 @@ export default function LandingPage() {
                   { label: "SSL oturum", icon: "▣" },
                   { label: "PWA uyumlu", icon: "◈" },
                 ].map((t) => (
-                  <div key={t.label} className="flex items-center gap-2 text-[13px] text-[#5e657d]">
-                    <span className="text-[10px] text-[#3558F4]" aria-hidden>
+                  <div key={t.label} className="flex items-center gap-2 text-[13px] text-[#5c657a]">
+                    <span className="text-[10px] text-[#4f7cff]" aria-hidden>
                       {t.icon}
                     </span>
                     <span className="font-medium">{t.label}</span>
@@ -438,7 +466,7 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="fx-reveal fx-fade-up--delay flex justify-center lg:justify-end">
+            <div className="fx-reveal fx-fade-up--delay flex w-full justify-center overflow-x-clip px-1 lg:justify-end">
               <PhonePreview />
             </div>
           </div>
@@ -447,26 +475,31 @@ export default function LandingPage() {
         {/* ——— Market strip ——— */}
         <section
           id="piyasalar"
-          className="border-y border-[#e6e9f2] bg-white"
+          className="border-y border-[rgba(16,20,37,0.08)] bg-[#ffffff]"
           aria-label="Örnek piyasalar"
         >
           <div className="fx-shell flex items-center justify-between gap-4 pt-3.5">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#687087]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#5c657a]">
               Piyasalar · örnek / gösterim amaçlı
             </p>
           </div>
-          <div className="fx-ticker overflow-hidden py-4">
-            <div className="fx-ticker-track flex w-max gap-10 px-4">
+          <div className="fx-ticker relative overflow-hidden py-3.5 sm:py-4">
+            <div className="fx-ticker-fade fx-ticker-fade--l" aria-hidden />
+            <div className="fx-ticker-fade fx-ticker-fade--r" aria-hidden />
+            <div className="fx-ticker-track flex w-max gap-3 px-4 sm:gap-4">
               {[...markets, ...markets].map((m, i) => (
-                <div key={`${m.s}-${i}`} className="flex items-center gap-3 text-sm whitespace-nowrap">
-                  <span className="font-semibold text-[#101425]">{m.s}</span>
-                  <span className="text-[12px] text-[#687087]">{m.name}</span>
-                  <span className="tabular-nums text-[#5e657d]">{m.p}</span>
+                <div
+                  key={`${m.s}-${i}`}
+                  className="fx-ticker-item flex items-center gap-2.5 whitespace-nowrap rounded-full border border-[rgba(16,20,37,0.08)] bg-white px-3 py-1.5 text-sm shadow-[0_4px_12px_rgba(16,20,37,0.04)] sm:gap-3"
+                >
+                  <span className="font-semibold text-[#0b1220]">{m.s}</span>
+                  <span className="fx-ticker-name text-[12px] text-[#5c657a]">{m.name}</span>
+                  <span className="tabular-nums text-[#5c657a]">{m.p}</span>
                   <span
                     className={`rounded-md px-1.5 py-0.5 text-xs font-semibold tabular-nums ${
                       m.up
-                        ? "bg-[#12a454]/10 text-[#12a454]"
-                        : "bg-[#e5484d]/10 text-[#e5484d]"
+                        ? "bg-[#16c784]/15 text-[#16c784]"
+                        : "bg-[#ea3943]/15 text-[#ea3943]"
                     }`}
                   >
                     {m.d}
@@ -480,7 +513,7 @@ export default function LandingPage() {
         {/* ——— Platform: 3 feature cards ——— */}
         <section id="platform" className="fx-section">
           <div className="fx-shell">
-            <div className="mb-12 max-w-2xl sm:mb-14">
+            <div className="mb-9 max-w-2xl sm:mb-14">
               <Eyebrow>Platform</Eyebrow>
               <h2 className="fx-h2 mt-4">
                 Yatırım araçları,
@@ -496,24 +529,15 @@ export default function LandingPage() {
               {platformCards.map((card) => (
                 <article
                   key={card.key}
-                  className={`fx-feature-card flex min-h-[380px] flex-col rounded-[23px] p-6 sm:p-7 ${
-                    card.dark
-                      ? "bg-[#111a3a] text-white shadow-[0_24px_60px_rgba(17,26,58,0.28)]"
-                      : "border border-[#e6e9f2] bg-white shadow-[0_12px_40px_rgba(16,20,37,0.06)]"
-                  }`}
+                  className="fx-feature-card flex min-h-[320px] flex-col rounded-[16px] p-5 sm:min-h-[380px] sm:p-7"
                 >
-                  <h3
-                    className={`text-[20px] font-semibold tracking-tight ${
-                      card.dark ? "text-white" : "text-[#101425]"
-                    }`}
-                  >
+                  <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-[10px] bg-[#4f7cff]/12 text-[#4f7cff]">
+                    {card.icon}
+                  </div>
+                  <h3 className="text-[20px] font-semibold tracking-tight text-[#0b1220]">
                     {card.title}
                   </h3>
-                  <p
-                    className={`mt-2.5 text-[14px] leading-relaxed ${
-                      card.dark ? "text-white/65" : "text-[#687087]"
-                    }`}
-                  >
+                  <p className="mt-2.5 text-[14px] leading-relaxed text-[#5c657a]">
                     {card.body}
                   </p>
                   <div className="mt-8 flex flex-1 flex-col">{card.visual}</div>
@@ -524,15 +548,15 @@ export default function LandingPage() {
         </section>
 
         {/* ——— Detail band: 4 stats ——— */}
-        <section className="border-y border-[#e6e9f2] bg-white" aria-label="Öne çıkanlar">
-          <div className="fx-shell grid grid-cols-2 gap-6 py-14 sm:gap-8 lg:grid-cols-4 lg:py-16">
+        <section className="border-y border-[rgba(16,20,37,0.08)] bg-[#ffffff]" aria-label="Öne çıkanlar">
+          <div className="fx-shell grid grid-cols-2 gap-x-5 gap-y-8 py-12 sm:gap-8 sm:py-14 lg:grid-cols-4 lg:py-16">
             {stats.map((s) => (
               <div key={s.k} className="fx-stat">
-                <p className="text-[22px] font-semibold tracking-tight text-[#101425] sm:text-[26px]">
+                <p className="text-[22px] font-semibold tracking-tight text-[#0b1220] sm:text-[26px]">
                   {s.k}
                 </p>
-                <p className="mt-1 text-[14px] font-semibold text-[#3558F4]">{s.v}</p>
-                <p className="mt-1 text-[13px] leading-relaxed text-[#687087]">{s.d}</p>
+                <p className="mt-1 text-[14px] font-semibold text-[#4f7cff]">{s.v}</p>
+                <p className="mt-1 text-[13px] leading-relaxed text-[#5c657a]">{s.d}</p>
               </div>
             ))}
           </div>
@@ -553,21 +577,21 @@ export default function LandingPage() {
               {steps.map((step, i) => (
                 <article
                   key={step.n}
-                  className="fx-step relative rounded-[23px] border border-[#e6e9f2] bg-white p-6 shadow-[0_8px_28px_rgba(16,20,37,0.04)] sm:p-7"
+                  className="fx-step relative rounded-[16px] border border-[rgba(16,20,37,0.08)] bg-white p-6 shadow-[0_12px_32px_rgba(16,20,37,0.06)] sm:p-7"
                 >
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#3558F4]/10 text-[13px] font-bold text-[#3558F4]">
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#4f7cff]/12 text-[13px] font-bold text-[#4f7cff]">
                     {step.n}
                   </span>
                   {i < steps.length - 1 && (
                     <span
-                      className="absolute right-[-12px] top-12 z-10 hidden h-px w-6 bg-[#d8dce8] md:block"
+                      className="absolute right-[-12px] top-12 z-10 hidden h-px w-6 bg-[rgba(16,20,37,0.12)] md:block"
                       aria-hidden
                     />
                   )}
-                  <h3 className="mt-5 text-[18px] font-semibold tracking-tight text-[#101425]">
+                  <h3 className="mt-5 text-[18px] font-semibold tracking-tight text-[#0b1220]">
                     {step.t}
                   </h3>
-                  <p className="mt-2 text-[14px] leading-relaxed text-[#687087]">{step.d}</p>
+                  <p className="mt-2 text-[14px] leading-relaxed text-[#5c657a]">{step.d}</p>
                 </article>
               ))}
             </div>
@@ -575,7 +599,7 @@ export default function LandingPage() {
         </section>
 
         {/* ——— Insight + portfolio board ——— */}
-        <section className="fx-section fx-section--soft border-y border-[#e6e9f2]">
+        <section className="fx-section fx-section--soft border-y border-[rgba(16,20,37,0.08)]">
           <div className="fx-shell grid gap-12 lg:grid-cols-[1fr_1.05fr] lg:items-center lg:gap-16">
             <div>
               <Eyebrow>Portföy görünümü</Eyebrow>
@@ -593,9 +617,9 @@ export default function LandingPage() {
                   "Haftalık örnek performans görseli",
                   "Mobil ve masaüstünde tutarlı düzen",
                 ].map((item) => (
-                  <li key={item} className="flex items-start gap-3 text-[14px] text-[#5e657d]">
+                  <li key={item} className="flex items-start gap-3 text-[14px] text-[#5c657a]">
                     <span
-                      className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#3558F4]/12 text-[10px] font-bold text-[#3558F4]"
+                      className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#4f7cff]/12 text-[10px] font-bold text-[#4f7cff]"
                       aria-hidden
                     >
                       ✓
@@ -618,34 +642,37 @@ export default function LandingPage() {
             </div>
             <div className="mx-auto max-w-3xl space-y-3">
               {faqs.map((f) => (
-                <details key={f.q} className="fx-faq group rounded-[18px] border border-[#e6e9f2] bg-white px-5 py-1 shadow-[0_4px_16px_rgba(16,20,37,0.03)]">
-                  <summary className="cursor-pointer list-none py-4 text-[15px] font-semibold text-[#101425] outline-none marker:content-none [&::-webkit-details-marker]:hidden">
+                <details
+                  key={f.q}
+                  className="fx-faq group rounded-[14px] border border-[rgba(16,20,37,0.08)] bg-white px-5 py-1 shadow-[0_8px_24px_rgba(16,20,37,0.05)]"
+                >
+                  <summary className="cursor-pointer list-none py-4 text-[15px] font-semibold text-[#0b1220] outline-none marker:content-none [&::-webkit-details-marker]:hidden">
                     <span className="flex items-center justify-between gap-4">
                       {f.q}
-                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#f0f2f8] text-[#3558F4] transition group-open:rotate-45">
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#f0f0f0] text-[#4f7cff] transition group-open:rotate-45">
                         +
                       </span>
                     </span>
                   </summary>
-                  <p className="pb-4 text-[14px] leading-relaxed text-[#687087]">{f.a}</p>
+                  <p className="pb-4 text-[14px] leading-relaxed text-[#5c657a]">{f.a}</p>
                 </details>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ——— Mobile dark band ——— */}
-        <section id="mobil" className="fx-mobile-band bg-[#111a3a] text-white">
-          <div className="fx-shell grid gap-12 py-[85px] lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-14 lg:py-[125px]">
+        {/* ——— Mobile band ——— */}
+        <section id="mobil" className="fx-mobile-band border-y border-[rgba(16,20,37,0.08)] bg-[#ffffff]">
+          <div className="fx-shell grid gap-8 py-16 sm:gap-12 sm:py-[85px] lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-14 lg:py-[110px]">
             <div>
-              <p className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#8fa3ff]">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#8fa3ff]" aria-hidden />
+              <p className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#4f7cff]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#4f7cff] shadow-[0_0_8px_rgba(79,124,255,0.45)]" aria-hidden />
                 Mobil deneyim
               </p>
-              <h2 className="mt-4 text-[clamp(32px,4vw,48px)] font-semibold leading-[1.08] tracking-[-0.05em] text-white">
+              <h2 className="mt-4 text-[clamp(30px,8vw,48px)] font-semibold leading-[1.08] tracking-[-0.05em] text-[#0b1220]">
                 Her yerden takip edin
               </h2>
-              <p className="mt-4 max-w-[480px] text-[14px] leading-relaxed text-white/65">
+              <p className="mt-4 max-w-[480px] text-[14px] leading-relaxed text-[#5c657a]">
                 Landing ve auth sayfaları mobil öncelikli tasarlandı. Terminal deneyimi web
                 üzerinden erişilebilir; portföy bakiyesi ve izleme listesi tek bakışta.
               </p>
@@ -655,9 +682,9 @@ export default function LandingPage() {
                   "Telefon önizlemesi ile portföy görünümü",
                   "Giriş / kayıt CTA’ları her ekranda erişilebilir",
                 ].map((item) => (
-                  <li key={item} className="flex items-start gap-3 text-[14px] text-white/70">
+                  <li key={item} className="flex items-start gap-3 text-[14px] text-[#5c657a]">
                     <span
-                      className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/10 text-[10px] font-bold text-[#8fa3ff]"
+                      className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#4f7cff]/12 text-[10px] font-bold text-[#4f7cff]"
                       aria-hidden
                     >
                       ✓
@@ -668,22 +695,22 @@ export default function LandingPage() {
               </ul>
               <Link
                 href="/register"
-                className="mt-9 inline-flex min-h-[48px] items-center rounded-full bg-[#3558F4] px-7 text-sm font-semibold text-white shadow-[0_10px_28px_rgba(53,88,244,0.4)] transition hover:brightness-110"
+                className="fx-btn-primary mt-9 inline-flex min-h-[48px] items-center rounded-full px-7 text-sm font-semibold"
               >
                 Hesap aç
               </Link>
             </div>
 
             <div className="fx-app-panel relative mx-auto w-full max-w-[380px]">
-              <div className="rounded-[28px] border border-white/10 bg-gradient-to-br from-white/10 to-white/[0.03] p-8 shadow-[0_30px_80px_rgba(0,0,0,0.35)] backdrop-blur">
+              <div className="rounded-[20px] border border-[rgba(16,20,37,0.08)] bg-white p-8 shadow-[0_24px_64px_rgba(16,20,37,0.1)]">
                 <div className="mb-6 flex items-center justify-between">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src="/7fx-logo.png"
                     alt="7FX"
-                    className="h-9 w-auto object-contain brightness-0 invert"
+                    className="h-9 w-auto object-contain"
                   />
-                  <span className="rounded-full bg-[#3558F4]/30 px-3 py-1 text-[11px] font-semibold text-[#c5d0ff]">
+                  <span className="rounded-full bg-[#4f7cff]/12 px-3 py-1 text-[11px] font-semibold text-[#4f7cff]">
                     Web uygulama
                   </span>
                 </div>
@@ -695,19 +722,19 @@ export default function LandingPage() {
                   ].map((row) => (
                     <div
                       key={row.t}
-                      className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3.5"
+                      className="flex items-center justify-between rounded-2xl border border-[rgba(16,20,37,0.08)] bg-[#ffffff] px-4 py-3.5"
                     >
                       <div>
-                        <p className="text-[14px] font-semibold text-white">{row.t}</p>
-                        <p className="text-[12px] text-white/50">{row.d}</p>
+                        <p className="text-[14px] font-semibold text-[#0b1220]">{row.t}</p>
+                        <p className="text-[12px] text-[#5c657a]">{row.d}</p>
                       </div>
-                      <span className="text-[#8fa3ff]" aria-hidden>
+                      <span className="text-[#4f7cff]" aria-hidden>
                         →
                       </span>
                     </div>
                   ))}
                 </div>
-                <div className="mt-6 flex items-center gap-3 rounded-2xl bg-[#3558F4] px-4 py-3.5">
+                <div className="mt-6 flex items-center gap-3 rounded-2xl bg-[#4f7cff] px-4 py-3.5 shadow-[0_10px_28px_rgba(79,124,255,0.35)]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/7fx-mark.png" alt="" className="h-8 w-8 rounded-lg object-contain" />
                   <div>
@@ -721,7 +748,7 @@ export default function LandingPage() {
         </section>
 
         {/* ——— Final CTA ——— */}
-        <section className="border-t border-[#e6e9f2] bg-white">
+        <section className="border-t border-[rgba(16,20,37,0.08)] bg-white">
           <div className="fx-shell flex flex-col items-start justify-between gap-8 py-16 md:flex-row md:items-center md:py-20">
             <div>
               <h2 className="fx-h2">Hazır olduğunuzda başlayın</h2>
@@ -733,13 +760,13 @@ export default function LandingPage() {
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/register"
-                className="inline-flex min-h-[48px] items-center rounded-full bg-[#3558F4] px-7 text-sm font-semibold text-white shadow-[0_10px_28px_rgba(53,88,244,0.28)] transition hover:brightness-110"
+                className="fx-btn-primary inline-flex min-h-[48px] items-center rounded-full px-7 text-sm font-semibold"
               >
                 Hesap aç
               </Link>
               <Link
                 href="/login"
-                className="inline-flex min-h-[48px] items-center rounded-full border border-[#d8dce8] bg-white px-7 text-sm font-semibold text-[#101425] transition hover:border-[#3558F4]/35"
+                className="fx-btn-secondary inline-flex min-h-[48px] items-center rounded-full px-7 text-sm font-semibold"
               >
                 Giriş
               </Link>
@@ -748,8 +775,8 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="border-t border-[#e6e9f2] bg-[#f8f9fc]">
-        <div className="fx-shell flex flex-col gap-6 py-12 text-sm text-[#687087] sm:flex-row sm:items-start sm:justify-between">
+      <footer className="fx-footer-pad border-t border-[rgba(16,20,37,0.08)] bg-[#ffffff] pb-[calc(116px+env(safe-area-inset-bottom,0px))] md:pb-0">
+        <div className="fx-shell flex flex-col gap-6 py-12 text-sm text-[#5c657a] sm:flex-row sm:items-start sm:justify-between">
           <div>
             <div className="flex items-center gap-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -762,27 +789,27 @@ export default function LandingPage() {
           </div>
           <div className="flex flex-wrap gap-x-10 gap-y-4 text-[13px]">
             <div className="flex flex-col gap-2">
-              <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#101425]">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#0b1220]">
                 Platform
               </span>
-              <button type="button" className="text-left hover:text-[#101425]" onClick={() => scrollToId("piyasalar")}>
+              <button type="button" className="text-left hover:text-[#0b1220]" onClick={() => scrollToId("piyasalar")}>
                 Piyasalar
               </button>
-              <button type="button" className="text-left hover:text-[#101425]" onClick={() => scrollToId("platform")}>
+              <button type="button" className="text-left hover:text-[#0b1220]" onClick={() => scrollToId("platform")}>
                 Özellikler
               </button>
-              <button type="button" className="text-left hover:text-[#101425]" onClick={() => scrollToId("sss")}>
+              <button type="button" className="text-left hover:text-[#0b1220]" onClick={() => scrollToId("sss")}>
                 SSS
               </button>
             </div>
             <div className="flex flex-col gap-2">
-              <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#101425]">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#0b1220]">
                 Hesap
               </span>
-              <Link href="/login" className="hover:text-[#101425]">
+              <Link href="/login" className="hover:text-[#0b1220]">
                 Giriş
               </Link>
-              <Link href="/register" className="hover:text-[#101425]">
+              <Link href="/register" className="hover:text-[#0b1220]">
                 Hesap aç
               </Link>
               <span>7fx.customer.org.tr</span>
@@ -791,18 +818,25 @@ export default function LandingPage() {
         </div>
       </footer>
 
-      {/* Sticky mobile CTA */}
-      <div className="fx-sticky-cta fixed inset-x-0 bottom-0 z-50 border-t border-[#e6e9f2] bg-white/95 px-4 py-3 backdrop-blur-xl md:hidden">
+      {/* Sticky mobile CTA — hidden while hero is on screen */}
+      <div
+        className={`fx-sticky-cta fixed inset-x-0 bottom-0 z-50 border-t border-[rgba(16,20,37,0.08)] bg-white/95 px-3 pt-2 backdrop-blur-xl transition-transform duration-200 md:hidden ${
+          showStickyCta ? "translate-y-0" : "pointer-events-none translate-y-full"
+        }`}
+        aria-hidden={!showStickyCta}
+      >
         <div className="mx-auto flex max-w-lg items-center gap-2">
           <Link
             href="/login"
-            className="inline-flex h-11 flex-1 items-center justify-center rounded-full border border-[#d8dce8] text-[13px] font-semibold text-[#101425]"
+            tabIndex={showStickyCta ? 0 : -1}
+            className="fx-btn-secondary inline-flex h-9 flex-1 items-center justify-center rounded-full text-[12.5px] font-semibold"
           >
             Giriş
           </Link>
           <Link
             href="/register"
-            className="inline-flex h-11 flex-[1.2] items-center justify-center rounded-full bg-[#3558F4] text-[13px] font-semibold text-white shadow-[0_8px_24px_rgba(53,88,244,0.3)]"
+            tabIndex={showStickyCta ? 0 : -1}
+            className="fx-btn-primary inline-flex h-9 flex-[1.2] items-center justify-center rounded-full text-[12.5px] font-semibold"
           >
             Hesap aç
           </Link>

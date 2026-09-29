@@ -29,6 +29,7 @@ export default function TerminalShell() {
   const [symbol, setSymbol] = useState("AAPL");
   const [timeframe, setTimeframe] = useState("5m");
   const [tab, setTab] = useState<"open" | "closed" | "pending">("open");
+  const [mobileTab, setMobileTab] = useState<"markets" | "order" | "positions">("markets");
   const [openPositions, setOpenPositions] = useState<PositionRow[]>([]);
   const [closedPositions, setClosedPositions] = useState<PositionRow[]>([]);
   const [pendingOrders, setPendingOrders] = useState<OrderRow[]>([]);
@@ -53,7 +54,6 @@ export default function TerminalShell() {
       const latest = list[0] || null;
       setBalanceReqBanner(latest && latest.status !== "APPROVED" ? latest : pending);
       if (latest?.status === "APPROVED") {
-        // keep brief status if just approved; clear after call ends
         setBalanceReqBanner(latest);
       }
     } catch {
@@ -136,7 +136,6 @@ export default function TerminalShell() {
     if (!account) return;
     const inCall = !!account.marginCall;
     if (inCall && !wasInCallRef.current) {
-      // entering new episode
       episodeShownRef.current = false;
     }
     if (!inCall && wasInCallRef.current) {
@@ -177,14 +176,15 @@ export default function TerminalShell() {
 
   if (!ready || !user) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[#1a2332] text-slate-400">
-        Terminal yükleniyor…
+      <div className="fx-desk flex h-screen flex-col items-center justify-center gap-3 bg-desk-bg text-desk-muted">
+        <div className="h-8 w-8 animate-pulse rounded-[8px] bg-desk-accent shadow-accent-glow-sm" />
+        <span className="text-sm">Terminal yükleniyor…</span>
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-[#1a2332]">
+    <div className="fx-desk flex h-screen flex-col overflow-hidden bg-desk-bg text-desk-text">
       <TopBar
         user={user}
         account={account}
@@ -192,12 +192,12 @@ export default function TerminalShell() {
         onLogout={onLogout}
       />
       {priceError && (
-        <div className="bg-amber-500/90 px-3 py-1 text-center text-[11px] font-medium text-black">
+        <div className="border-b border-desk-warn/30 bg-desk-warn/90 px-3 py-1.5 text-center text-[11px] font-medium text-black">
           Piyasa verisi uyarısı: {priceError} (son bilinen fiyatlar gösteriliyor)
         </div>
       )}
       {account?.marginCall && (
-        <div className="flex items-center justify-center gap-3 bg-red-600/90 px-3 py-1 text-center text-[11px] font-medium text-white">
+        <div className="flex items-center justify-center gap-3 border-b border-desk-sell/40 bg-desk-sell/90 px-3 py-1.5 text-center text-[11px] font-medium text-white">
           <span>Marjin çağrısı — özsermaye / marj seviyesi kritik</span>
           <button
             type="button"
@@ -209,7 +209,7 @@ export default function TerminalShell() {
         </div>
       )}
       {balanceReqBanner && balanceReqBanner.status === "PENDING" && (
-        <div className="bg-amber-600/80 px-3 py-1 text-center text-[11px] font-medium text-black">
+        <div className="bg-desk-warn/80 px-3 py-1 text-center text-[11px] font-medium text-black">
           Bakiye talebi {STATUS_TR[balanceReqBanner.status] || balanceReqBanner.status}:{" "}
           {balanceReqBanner.type === "RESET" ? "Bakiye Sıfırlama" : "Bakiye Ekle"}
           {balanceReqBanner.type === "ADD" && balanceReqBanner.amount != null
@@ -219,7 +219,7 @@ export default function TerminalShell() {
         </div>
       )}
       {balanceReqBanner && balanceReqBanner.status === "REJECTED" && account?.marginCall && (
-        <div className="bg-slate-600/80 px-3 py-1 text-center text-[11px] font-medium text-white">
+        <div className="bg-desk-elev/90 px-3 py-1 text-center text-[11px] font-medium text-desk-text">
           Son bakiye talebi reddedildi — hesap değiştirilmedi. Tekrar seçenek seçebilirsiniz.
           <button
             type="button"
@@ -233,22 +233,83 @@ export default function TerminalShell() {
           </button>
         </div>
       )}
-      <div className="flex min-h-0 flex-1">
-        <Watchlist
-          symbols={symbols}
-          prices={prices}
-          selected={symbol}
-          onSelect={setSymbol}
-        />
-        <div className="flex min-w-0 flex-1 flex-col">
-          <div className="flex min-h-0 flex-1">
-            <TradingChart
-              symbol={symbol}
-              timeframe={timeframe}
-              onTimeframe={setTimeframe}
-              price={prices[symbol]}
-            />
-            <ToolRail />
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden md:flex-row">
+        {/* Desktop watchlist sidebar */}
+        <div className="hidden h-full md:flex">
+          <Watchlist
+            symbols={symbols}
+            prices={prices}
+            selected={symbol}
+            onSelect={setSymbol}
+          />
+        </div>
+
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden md:flex-row">
+          {/* Chart + history (desktop history sits under chart, flush with order ticket) */}
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+            <div className="flex min-h-[44vh] flex-[1.2] md:min-h-0 md:flex-[1.2]">
+              <TradingChart
+                symbol={symbol}
+                timeframe={timeframe}
+                onTimeframe={setTimeframe}
+                price={prices[symbol]}
+              />
+              <ToolRail />
+            </div>
+
+            {/* Desktop bottom panels — taller, aligned with right market column */}
+            <div className="hidden min-h-0 md:flex md:h-auto md:min-h-[280px] md:flex-[1] md:flex-col">
+              <BottomPanels
+                tab={tab}
+                onTab={setTab}
+                openPositions={openPositions}
+                closedPositions={closedPositions}
+                pendingOrders={pendingOrders}
+                onClosePosition={onClosePosition}
+                onCancelOrder={onCancelOrder}
+              />
+            </div>
+
+            {/* Mobile tab panel */}
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden border-t border-desk-border/70 bg-desk-panel md:hidden">
+            {mobileTab === "markets" && (
+              <Watchlist
+                className="h-full border-r-0"
+                symbols={symbols}
+                prices={prices}
+                selected={symbol}
+                onSelect={(s) => {
+                  setSymbol(s);
+                  setMobileTab("order");
+                }}
+              />
+            )}
+            {mobileTab === "order" && (
+              <OrderTicket
+                className="h-full border-l-0"
+                symbol={symbol}
+                symbols={symbols}
+                price={prices[symbol]}
+                onPlaced={refreshAll}
+              />
+            )}
+            {mobileTab === "positions" && (
+              <BottomPanels
+                className="h-full border-t-0"
+                tab={tab}
+                onTab={setTab}
+                openPositions={openPositions}
+                closedPositions={closedPositions}
+                pendingOrders={pendingOrders}
+                onClosePosition={onClosePosition}
+                onCancelOrder={onCancelOrder}
+              />
+            )}
+            </div>
+          </div>
+
+          {/* Desktop order ticket — full height beside chart + history */}
+          <div className="hidden h-full shrink-0 md:flex">
             <OrderTicket
               symbol={symbol}
               symbols={symbols}
@@ -256,17 +317,33 @@ export default function TerminalShell() {
               onPlaced={refreshAll}
             />
           </div>
-          <BottomPanels
-            tab={tab}
-            onTab={setTab}
-            openPositions={openPositions}
-            closedPositions={closedPositions}
-            pendingOrders={pendingOrders}
-            onClosePosition={onClosePosition}
-            onCancelOrder={onCancelOrder}
-          />
         </div>
       </div>
+
+      {/* Mobile bottom tab bar — elite segmented control + safe-area */}
+      <nav className="fx-desk-mobile-nav shrink-0 border-t border-desk-border/80 bg-desk-panel/95 px-3 pt-2 md:hidden">
+        <div className="fx-desk-seg">
+          {(
+            [
+              { id: "markets" as const, label: "Piyasalar" },
+              { id: "order" as const, label: "Emir" },
+              { id: "positions" as const, label: "Pozisyonlar" },
+            ] as const
+          ).map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setMobileTab(t.id)}
+              className={`fx-desk-seg__btn ${
+                mobileTab === t.id ? "fx-desk-seg__btn--active" : ""
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </nav>
+
       <FooterTicker symbols={symbols} prices={prices} onSelect={setSymbol} />
       <DepositModal
         open={depositOpen}

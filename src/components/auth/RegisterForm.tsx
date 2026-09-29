@@ -5,9 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const inputClass =
-  "fx-auth-input w-full rounded-xl border border-black/12 bg-white px-3.5 py-3 text-[15px] text-[#0a0a0a] outline-none transition placeholder:text-neutral-400 hover:border-black/25 focus:border-[#111] focus:shadow-[0_0_0_3px_rgba(10,10,10,0.08)]";
+  "fx-auth-input w-full rounded-xl border border-[rgba(16,20,37,0.12)] bg-[#ffffff] px-3.5 py-3 text-[15px] text-[#0b1220] outline-none transition placeholder:text-[#8b93a7] hover:border-[#4f7cff]/40 focus:border-[#4f7cff] focus:shadow-[0_0_0_3px_rgba(79,124,255,0.15)]";
 
-const labelClass = "mb-1.5 block text-[13px] font-medium text-[#404040]";
+const labelClass = "mb-1.5 block text-[13px] font-medium text-[#5c657a]";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -70,8 +70,8 @@ export default function RegisterForm() {
   return (
     <>
       <div className="mb-6">
-        <h2 className="text-xl font-semibold tracking-tight text-[#0a0a0a]">Kayıt Ol</h2>
-        <p className="mt-1 text-sm text-[#525252]">
+        <h2 className="text-xl font-semibold tracking-tight text-[#0b1220]">Kayıt Ol</h2>
+        <p className="mt-1 text-sm text-[#5c657a]">
           Hesap oluşturun; oturum sonrası işlem terminaline yönlendirilirsiniz.
         </p>
       </div>
@@ -125,7 +125,7 @@ export default function RegisterForm() {
         </div>
         <div>
           <label htmlFor="fx-reg-phone" className={labelClass}>
-            Telefon <span className="font-normal text-[#737373]">(isteğe bağlı)</span>
+            Telefon <span className="font-normal text-[#8b93a7]">(isteğe bağlı)</span>
           </label>
           <input
             id="fx-reg-phone"
@@ -139,17 +139,17 @@ export default function RegisterForm() {
         </div>
 
         {/* Prominent required referral — light charcoal, not red */}
-        <div className="rounded-xl border border-black/15 bg-[#f8fafc] p-3.5 sm:p-4">
-          <label htmlFor="fx-reg-referral" className="mb-1.5 flex items-center gap-1.5 text-[13px] font-semibold text-[#0a0a0a]">
+        <div className="rounded-xl border border-[rgba(16,20,37,0.1)] bg-[#ffffff] p-3.5 sm:p-4">
+          <label htmlFor="fx-reg-referral" className="mb-1.5 flex items-center gap-1.5 text-[13px] font-semibold text-[#0b1220]">
             Referans Kodu
-            <span className="text-[#0a0a0a]" aria-hidden>
+            <span className="text-[#0b1220]" aria-hidden>
               *
             </span>
             <span className="sr-only">(zorunlu)</span>
           </label>
           <input
             id="fx-reg-referral"
-            className={`${inputClass} border-black/20 bg-white focus:border-[#111]`}
+            className={`${inputClass} border-[rgba(16,20,37,0.12)] bg-white focus:border-[#4f7cff]`}
             required
             aria-required="true"
             value={referralCode}
@@ -158,7 +158,7 @@ export default function RegisterForm() {
             disabled={loading}
             autoComplete="off"
           />
-          <p className="mt-2 text-[12px] leading-relaxed text-[#525252]">
+          <p className="mt-2 text-[12px] leading-relaxed text-[#5c657a]">
             Referans kodu zorunludur. Geçerli bir kod olmadan kayıt tamamlanamaz.
           </p>
         </div>
@@ -201,7 +201,7 @@ export default function RegisterForm() {
         {error && (
           <div
             role="alert"
-            className="rounded-xl border border-rose-300 bg-rose-50 px-3.5 py-2.5 text-sm text-rose-800"
+            className="rounded-xl border border-[#ea3943]/40 bg-[#ea3943]/10 px-3.5 py-2.5 text-sm text-[#ea3943]"
           >
             {error}
           </div>
@@ -210,15 +210,15 @@ export default function RegisterForm() {
         <button
           type="submit"
           disabled={loading}
-          className="mt-1 w-full rounded-xl bg-[#0a0a0a] py-3.5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(10,10,10,0.18)] transition hover:bg-[#171717] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-1 w-full rounded-xl bg-[#4f7cff] py-3.5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(79,124,255,0.35)] transition hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? "Hesap oluşturuluyor…" : "Kayıt Ol"}
         </button>
       </form>
 
-      <div className="mt-7 border-t border-black/[0.08] pt-5 text-center text-sm text-[#525252]">
+      <div className="mt-7 border-t border-[rgba(16,20,37,0.08)] pt-5 text-center text-sm text-[#5c657a]">
         Zaten hesabınız var mı?{" "}
-        <Link href="/login" className="font-semibold text-[#0a0a0a] underline-offset-2 transition hover:underline">
+        <Link href="/login" className="font-semibold text-[#0b1220] underline-offset-2 transition hover:underline">
           Giriş yapın
         </Link>
       </div>
