@@ -81,7 +81,7 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
     seriesRef.current = candle;
 
     const line = chart.addSeries(LineSeries, {
-      color: "#4f7cff",
+      color: "#68F848",
       lineWidth: 2,
       visible: false,
     });
@@ -167,7 +167,7 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
       {/* Symbol + LIVE — more breathing room on mobile */}
       <div className="absolute left-3 top-3 z-10 flex items-start gap-2 md:left-3 md:top-2.5 md:gap-2.5">
         <span className="mt-0.5 flex items-center gap-1.5 rounded-full bg-desk-accent/15 px-2.5 py-1 text-[10px] font-bold tracking-[0.08em] text-desk-accent ring-1 ring-desk-accent/35 md:gap-1 md:px-2 md:py-0.5 md:tracking-wide">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-desk-accent shadow-[0_0_6px_rgba(79,124,255,0.8)]" />
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-desk-accent shadow-[0_0_6px_rgba(104,248,72,0.8)]" />
           LIVE
         </span>
         <div>

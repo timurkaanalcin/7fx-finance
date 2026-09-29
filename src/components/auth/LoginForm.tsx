@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const inputClass =
-  "fx-auth-input w-full rounded-xl border border-[rgba(16,20,37,0.12)] bg-[#ffffff] px-3.5 py-3 text-[15px] text-[#0b1220] outline-none transition placeholder:text-[#8b93a7] hover:border-[#4f7cff]/40 focus:border-[#4f7cff] focus:shadow-[0_0_0_3px_rgba(79,124,255,0.15)]";
+  "fx-auth-input w-full rounded-xl border border-[rgba(16,20,37,0.12)] bg-[#ffffff] px-3.5 py-3 text-[15px] text-[#0b1220] outline-none transition placeholder:text-[#8b93a7] hover:border-[#68F848]/40 focus:border-[#68F848] focus:shadow-[0_0_0_3px_rgba(104,248,72,0.15)]";
 
 const labelClass = "mb-1.5 block text-[13px] font-medium text-[#5c657a]";
 
@@ -93,7 +93,7 @@ export default function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="mt-1 w-full rounded-xl bg-[#4f7cff] py-3.5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(79,124,255,0.35)] transition hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-1 w-full rounded-xl bg-[#68F848] py-3.5 text-sm font-semibold text-[#0a0a0a] shadow-[0_8px_24px_rgba(104,248,72,0.28)] transition hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? "Giriş yapılıyor…" : "Giriş Yap"}
         </button>

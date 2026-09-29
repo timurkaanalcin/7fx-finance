@@ -16,9 +16,10 @@ export async function GET(req: Request) {
 
   const depWhere = status ? { status: status.toUpperCase() } : {};
   const balWhere = status ? { status: status.toUpperCase() } : {};
+  const wdWhere = status ? { status: status.toUpperCase() } : {};
 
-  const [deposits, balanceReqs] = await Promise.all([
-    kind === "margin"
+  const [deposits, balanceReqs, withdrawals] = await Promise.all([
+    kind === "margin" || kind === "withdraw"
       ? Promise.resolve([])
       : prisma.depositRequest.findMany({
           where: depWhere,
@@ -29,10 +30,20 @@ export async function GET(req: Request) {
           orderBy: { createdAt: "desc" },
           take: 200,
         }),
-    kind === "deposit"
+    kind === "deposit" || kind === "withdraw"
       ? Promise.resolve([])
       : prisma.balanceRequest.findMany({
           where: balWhere,
+          include: {
+            user: { select: { id: true, name: true, email: true, account: true, country: true } },
+          },
+          orderBy: { createdAt: "desc" },
+          take: 200,
+        }),
+    kind === "deposit" || kind === "margin"
+      ? Promise.resolve([])
+      : prisma.withdrawalRequest.findMany({
+          where: wdWhere,
           include: {
             user: { select: { id: true, name: true, email: true, account: true, country: true } },
           },
@@ -72,6 +83,22 @@ export async function GET(req: Request) {
       openedAt: b.createdAt,
       closedAt: b.reviewedAt,
       reason: b.reason,
+    })),
+    ...withdrawals.map((w) => ({
+      id: w.id,
+      kind: "WITHDRAW" as const,
+      amount: w.amount,
+      currency: w.currency,
+      status: w.status,
+      method: w.method,
+      customer: w.user.name,
+      customerId: w.userId,
+      customerEmail: w.user.email,
+      tradingAccountId: w.user.account?.id ?? null,
+      country: w.user.country,
+      openedAt: w.createdAt,
+      closedAt: w.reviewedAt,
+      details: w.details,
     })),
   ].sort((a, b) => +new Date(b.openedAt) - +new Date(a.openedAt));
 

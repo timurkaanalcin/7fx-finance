@@ -12,6 +12,7 @@ function scrollToId(id: string) {
 const NAV = [
   { id: "piyasalar", label: "Piyasalar" },
   { id: "platform", label: "Platform" },
+  { id: "hakkinda", label: "Hakkında" },
   { id: "nasil", label: "Nasıl çalışır" },
   { id: "sss", label: "SSS" },
   { id: "mobil", label: "Mobil" },
@@ -61,7 +62,7 @@ function OrderTicketVisual() {
           <p className="text-[11px] font-medium text-[#8b97b0]">EURUSD</p>
           <p className="text-[15px] font-semibold tabular-nums text-[#e8eef8]">1.0842</p>
         </div>
-        <span className="rounded-full bg-[#4f7cff]/15 px-2 py-0.5 text-[10px] font-semibold text-[#7aa2ff]">
+        <span className="rounded-full bg-[#68F848]/15 px-2 py-0.5 text-[10px] font-semibold text-[#8CFF6E]">
           Market
         </span>
       </div>
@@ -79,7 +80,7 @@ function OrderTicketVisual() {
           <span className="font-semibold text-[#e8eef8]">0.10</span>
         </div>
         <div className="h-1.5 overflow-hidden rounded-full bg-[#1f1f1f]">
-          <div className="h-full w-[42%] rounded-full bg-[#4f7cff]" />
+          <div className="h-full w-[42%] rounded-full bg-[#68F848]" />
         </div>
         <div className="flex justify-between text-[10px] text-[#8b97b0]">
           <span>Kaldıraç</span>
@@ -94,9 +95,9 @@ function SecurityBadgeVisual() {
   return (
     <div className="fx-viz-security mt-auto flex flex-col items-center justify-center py-2">
       <div className="relative flex h-[120px] w-[120px] items-center justify-center">
-        <div className="fx-orbit absolute inset-0 rounded-full border border-dashed border-[#4f7cff]/30" />
-        <div className="fx-orbit fx-orbit--slow absolute inset-3 rounded-full border border-[#4f7cff]/15" />
-        <div className="relative z-10 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#4f7cff] shadow-[0_12px_32px_rgba(79,124,255,0.4)]">
+        <div className="fx-orbit absolute inset-0 rounded-full border border-dashed border-[#68F848]/30" />
+        <div className="fx-orbit fx-orbit--slow absolute inset-3 rounded-full border border-[#68F848]/15" />
+        <div className="relative z-10 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#68F848] shadow-[0_12px_32px_rgba(104,248,72,0.4)]">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden>
             <path
               d="M12 3l7 3v5c0 4.5-2.8 8.4-7 10-4.2-1.6-7-5.5-7-10V6l7-3z"
@@ -113,8 +114,8 @@ function SecurityBadgeVisual() {
             />
           </svg>
         </div>
-        <span className="fx-orbit-dot absolute left-2 top-8 h-2 w-2 rounded-full bg-[#4f7cff]" />
-        <span className="fx-orbit-dot fx-orbit-dot--2 absolute bottom-4 right-3 h-1.5 w-1.5 rounded-full bg-[#7aa2ff]" />
+        <span className="fx-orbit-dot absolute left-2 top-8 h-2 w-2 rounded-full bg-[#68F848]" />
+        <span className="fx-orbit-dot fx-orbit-dot--2 absolute bottom-4 right-3 h-1.5 w-1.5 rounded-full bg-[#8CFF6E]" />
       </div>
       <p className="mt-3 text-center text-[12px] font-medium text-[#5c657a]">
         Oturum korumalı · SSL
@@ -128,15 +129,15 @@ function PortfolioBoard() {
     { h: 42, c: "#2a3a6a" },
     { h: 58, c: "#3a5288" },
     { h: 48, c: "#4a6ab0" },
-    { h: 72, c: "#4f7cff" },
+    { h: 72, c: "#68F848" },
     { h: 64, c: "#6a92ff" },
-    { h: 88, c: "#4f7cff" },
+    { h: 88, c: "#68F848" },
     { h: 76, c: "#5a86f5" },
-    { h: 94, c: "#4f7cff" },
+    { h: 94, c: "#68F848" },
   ];
   const alloc = [
-    { name: "Döviz", pct: 34, color: "#4f7cff" },
-    { name: "Emtia", pct: 22, color: "#7aa2ff" },
+    { name: "Döviz", pct: 34, color: "#68F848" },
+    { name: "Emtia", pct: 22, color: "#8CFF6E" },
     { name: "Endeks", pct: 28, color: "#16c784" },
     { name: "Kripto", pct: 16, color: "#8b97b0" },
   ];
@@ -293,7 +294,7 @@ export default function LandingPage() {
     () => [
       {
         q: "7FX hangi varlıkları sunuyor?",
-        a: "Platform üzerinden döviz çiftleri, altın gibi emtialar, endeksler ve seçili kripto araçlarını tek hesapta takip edebilirsiniz. Gösterilen fiyatlar örnek / bilgilendirme amaçlıdır.",
+        a: "7FX üzerinden hisse / endeks, kripto, forex (döviz) ve emtia (altın, petrol vb.) araçlarını tek hesapta takip edebilirsiniz. Gösterilen fiyatlar örnek / bilgilendirme amaçlıdır.",
       },
       {
         q: "Nasıl hesap açabilirim?",
@@ -319,7 +320,7 @@ export default function LandingPage() {
     <div className="fx-landing min-h-screen" data-fx-ui="landing-light">
       <a
         href="/login"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-[#4f7cff] focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-[#68F848] focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
       >
         Giriş sayfasına geç
       </a>
@@ -395,7 +396,7 @@ export default function LandingPage() {
               ))}
               <Link
                 href="/login"
-                className="mt-1 rounded-lg px-3 py-2.5 text-sm font-semibold text-[#4f7cff]"
+                className="mt-1 rounded-lg px-3 py-2.5 text-sm font-semibold text-[#68F848]"
                 onClick={() => setMenuOpen(false)}
               >
                 Giriş
@@ -430,8 +431,9 @@ export default function LandingPage() {
               </h1>
 
               <p className="fx-hero-body mt-6">
-                Döviz, altın, endeks ve kripto araçlarına tek platformdan erişin. Sade arayüz,
-                güvenli oturum ve mobil öncelikli deneyim — kararlarınızı net bir ekranda alın.
+                7FX; hisse senedi, kripto, forex ve emtia piyasalarına tek hesaptan erişim sunan
+                uluslararası bir ticaret platformudur. Kurumsal güvenlik standartları, sade arayüz ve
+                mobil öncelikli deneyimle kararlarınızı net bir ekranda alın.
               </p>
 
               <div className="mt-9 flex flex-wrap items-center gap-3">
@@ -457,7 +459,7 @@ export default function LandingPage() {
                   { label: "PWA uyumlu", icon: "◈" },
                 ].map((t) => (
                   <div key={t.label} className="flex items-center gap-2 text-[13px] text-[#5c657a]">
-                    <span className="text-[10px] text-[#4f7cff]" aria-hidden>
+                    <span className="text-[10px] text-[#68F848]" aria-hidden>
                       {t.icon}
                     </span>
                     <span className="font-medium">{t.label}</span>
@@ -519,9 +521,10 @@ export default function LandingPage() {
                 Yatırım araçları,
                 <br className="hidden sm:block" /> tek bakışta
               </h2>
-              <p className="fx-section-body mt-4 max-w-[520px]">
-                7FX; canlı fiyat görünümü, sade emir paneli ve güvenli oturum ile bireysel
-                yatırımcılara net bir çok varlık deneyimi sunar.
+              <p className="fx-section-body mt-4 max-w-[560px]">
+                7FX; canlı fiyat görünümü, sade emir paneli ve güvenli oturum ile bireysel ve
+                kurumsal yatırımcılara net bir çok varlık deneyimi sunar. Forex, hisse, kripto ve
+                emtia araçlarını tek terminalde izleyin; bakiyenizi ve pozisyonlarınızı aynı ekrandan yönetin.
               </p>
             </div>
 
@@ -531,7 +534,7 @@ export default function LandingPage() {
                   key={card.key}
                   className="fx-feature-card flex min-h-[320px] flex-col rounded-[16px] p-5 sm:min-h-[380px] sm:p-7"
                 >
-                  <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-[10px] bg-[#4f7cff]/12 text-[#4f7cff]">
+                  <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-[10px] bg-[#68F848]/12 text-[#68F848]">
                     {card.icon}
                   </div>
                   <h3 className="text-[20px] font-semibold tracking-tight text-[#0b1220]">
@@ -547,6 +550,58 @@ export default function LandingPage() {
           </div>
         </section>
 
+
+        {/* ——— Hakkında / kurumsal açıklama ——— */}
+        <section id="hakkinda" className="fx-section fx-section--soft border-y border-[rgba(16,20,37,0.08)]" aria-labelledby="about-title">
+          <div className="fx-shell grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start lg:gap-16">
+            <div>
+              <Eyebrow>Hakkında</Eyebrow>
+              <h2 id="about-title" className="fx-h2 mt-4">
+                7FX nedir?
+              </h2>
+              <p className="fx-section-body mt-5 max-w-[540px]">
+                7FX, küresel piyasalara web üzerinden erişim sağlayan uluslararası bir broker /
+                ticaret platformudur. Amacımız; yatırımcıların hisse senedi, kripto para, forex ve
+                emtia piyasalarını tek hesap altında, şeffaf ve kontrollü bir ortamda takip
+                edebilmesidir.
+              </p>
+              <p className="fx-section-body mt-4 max-w-[540px]">
+                Platform; güvenli oturum altyapısı, SSL korumalı bağlantı ve rol tabanlı erişim ile
+                tasarlanmıştır. Destek ekibimiz hesap, para yatırma / çekme ve işlem süreçlerinde
+                yanınızdadır — web üzerinden 7/24 platform erişimi sunulur.
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {[
+                {
+                  t: "Piyasalar",
+                  d: "Forex çiftleri, hisse ve endeksler, kripto varlıklar ile altın / petrol gibi emtialar.",
+                },
+                {
+                  t: "Güvenlik",
+                  d: "Oturum çerezi ile kimlik doğrulama, korumalı yönetim alanları ve SSL bağlantı.",
+                },
+                {
+                  t: "Destek",
+                  d: "Hesap açılışı, bakiye işlemleri ve terminal kullanımı için platform içi destek.",
+                },
+                {
+                  t: "Erişim",
+                  d: "Masaüstü ve mobil tarayıcıda çalışan, PWA uyumlu çok varlık web terminali.",
+                },
+              ].map((c) => (
+                <div
+                  key={c.t}
+                  className="rounded-[14px] border border-[rgba(16,20,37,0.08)] bg-white p-5 shadow-[0_8px_24px_rgba(16,20,37,0.04)]"
+                >
+                  <p className="text-[13px] font-semibold tracking-tight text-[#0b1220]">{c.t}</p>
+                  <p className="mt-2 text-[13px] leading-relaxed text-[#5c657a]">{c.d}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* ——— Detail band: 4 stats ——— */}
         <section className="border-y border-[rgba(16,20,37,0.08)] bg-[#ffffff]" aria-label="Öne çıkanlar">
           <div className="fx-shell grid grid-cols-2 gap-x-5 gap-y-8 py-12 sm:gap-8 sm:py-14 lg:grid-cols-4 lg:py-16">
@@ -555,7 +610,7 @@ export default function LandingPage() {
                 <p className="text-[22px] font-semibold tracking-tight text-[#0b1220] sm:text-[26px]">
                   {s.k}
                 </p>
-                <p className="mt-1 text-[14px] font-semibold text-[#4f7cff]">{s.v}</p>
+                <p className="mt-1 text-[14px] font-semibold text-[#3DB82A]">{s.v}</p>
                 <p className="mt-1 text-[13px] leading-relaxed text-[#5c657a]">{s.d}</p>
               </div>
             ))}
@@ -579,7 +634,7 @@ export default function LandingPage() {
                   key={step.n}
                   className="fx-step relative rounded-[16px] border border-[rgba(16,20,37,0.08)] bg-white p-6 shadow-[0_12px_32px_rgba(16,20,37,0.06)] sm:p-7"
                 >
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#4f7cff]/12 text-[13px] font-bold text-[#4f7cff]">
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#68F848]/12 text-[13px] font-bold text-[#68F848]">
                     {step.n}
                   </span>
                   {i < steps.length - 1 && (
@@ -619,7 +674,7 @@ export default function LandingPage() {
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-3 text-[14px] text-[#5c657a]">
                     <span
-                      className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#4f7cff]/12 text-[10px] font-bold text-[#4f7cff]"
+                      className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#68F848]/12 text-[10px] font-bold text-[#68F848]"
                       aria-hidden
                     >
                       ✓
@@ -649,7 +704,7 @@ export default function LandingPage() {
                   <summary className="cursor-pointer list-none py-4 text-[15px] font-semibold text-[#0b1220] outline-none marker:content-none [&::-webkit-details-marker]:hidden">
                     <span className="flex items-center justify-between gap-4">
                       {f.q}
-                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#f0f0f0] text-[#4f7cff] transition group-open:rotate-45">
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#f0f0f0] text-[#68F848] transition group-open:rotate-45">
                         +
                       </span>
                     </span>
@@ -665,8 +720,8 @@ export default function LandingPage() {
         <section id="mobil" className="fx-mobile-band border-y border-[rgba(16,20,37,0.08)] bg-[#ffffff]">
           <div className="fx-shell grid gap-8 py-16 sm:gap-12 sm:py-[85px] lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-14 lg:py-[110px]">
             <div>
-              <p className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#4f7cff]">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#4f7cff] shadow-[0_0_8px_rgba(79,124,255,0.45)]" aria-hidden />
+              <p className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#68F848]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#68F848] shadow-[0_0_8px_rgba(104,248,72,0.45)]" aria-hidden />
                 Mobil deneyim
               </p>
               <h2 className="mt-4 text-[clamp(30px,8vw,48px)] font-semibold leading-[1.08] tracking-[-0.05em] text-[#0b1220]">
@@ -684,7 +739,7 @@ export default function LandingPage() {
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-3 text-[14px] text-[#5c657a]">
                     <span
-                      className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#4f7cff]/12 text-[10px] font-bold text-[#4f7cff]"
+                      className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#68F848]/12 text-[10px] font-bold text-[#68F848]"
                       aria-hidden
                     >
                       ✓
@@ -710,7 +765,7 @@ export default function LandingPage() {
                     alt="7FX"
                     className="h-9 w-auto object-contain"
                   />
-                  <span className="rounded-full bg-[#4f7cff]/12 px-3 py-1 text-[11px] font-semibold text-[#4f7cff]">
+                  <span className="rounded-full bg-[#68F848]/12 px-3 py-1 text-[11px] font-semibold text-[#68F848]">
                     Web uygulama
                   </span>
                 </div>
@@ -728,13 +783,13 @@ export default function LandingPage() {
                         <p className="text-[14px] font-semibold text-[#0b1220]">{row.t}</p>
                         <p className="text-[12px] text-[#5c657a]">{row.d}</p>
                       </div>
-                      <span className="text-[#4f7cff]" aria-hidden>
+                      <span className="text-[#68F848]" aria-hidden>
                         →
                       </span>
                     </div>
                   ))}
                 </div>
-                <div className="mt-6 flex items-center gap-3 rounded-2xl bg-[#4f7cff] px-4 py-3.5 shadow-[0_10px_28px_rgba(79,124,255,0.35)]">
+                <div className="mt-6 flex items-center gap-3 rounded-2xl bg-[#68F848] px-4 py-3.5 shadow-[0_10px_28px_rgba(104,248,72,0.35)]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/7fx-mark.png" alt="" className="h-8 w-8 rounded-lg object-contain" />
                   <div>
@@ -782,8 +837,9 @@ export default function LandingPage() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/7fx-logo.png" alt="7FX" className="h-7 w-auto object-contain" />
             </div>
-            <p className="mt-3 max-w-xs text-[13px] leading-relaxed">
-              Çok varlık web yatırım platformu. Fiyatlar örnek / gösterim amaçlıdır.
+            <p className="mt-3 max-w-sm text-[13px] leading-relaxed">
+              7FX — uluslararası çok varlık ticaret platformu. Hisse, kripto, forex ve emtia
+              piyasalarına güvenli web erişimi. Fiyatlar örnek / gösterim amaçlıdır.
             </p>
             <p className="mt-3 text-[12px]">© {new Date().getFullYear()} 7FX</p>
           </div>
@@ -797,6 +853,9 @@ export default function LandingPage() {
               </button>
               <button type="button" className="text-left hover:text-[#0b1220]" onClick={() => scrollToId("platform")}>
                 Özellikler
+              </button>
+              <button type="button" className="text-left hover:text-[#0b1220]" onClick={() => scrollToId("hakkinda")}>
+                Hakkında
               </button>
               <button type="button" className="text-left hover:text-[#0b1220]" onClick={() => scrollToId("sss")}>
                 SSS

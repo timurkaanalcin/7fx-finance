@@ -2,7 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ——— 7FX Night Pulse design tokens ——— */
+/* ——— 7FX brand tokens (logo-matched, corporate restraint) ———
+   Primary neon from mark ≈ #68F848. Use sparingly: CTAs, active, links, focus.
+   Surfaces stay black / near-black; text white / muted gray. Buy/sell stay distinct.
+*/
 :root {
   --bg: #000000;
   --bg-panel: #0a0a0a;
@@ -11,8 +14,12 @@
   --border: #2a2a2a;
   --text: #e8eef8;
   --text-muted: #8b97b0;
-  --accent: #4f7cff;
-  --accent-glow: rgba(79, 124, 255, 0.35);
+  --accent: #68F848;          /* mark neon green */
+  --accent-strong: #3DB82A;   /* deeper green for gradients / hover depth */
+  --accent-soft: #8CFF6E;     /* light tint for text gradients */
+  --accent-ink: #0a0a0a;      /* text on neon CTA fills */
+  --accent-glow: rgba(104, 248, 72, 0.28);
+  --accent-tint: rgba(104, 248, 72, 0.12);
   --buy: #16c784;
   --sell: #ea3943;
   --warn: #f5a524;
@@ -83,8 +90,8 @@ input, select, button { font: inherit; }
   background: linear-gradient(180deg, #1f1f1f 0%, #141414 100%);
   color: #e8eef8;
   box-shadow:
-    0 0 0 1px rgba(79, 124, 255, 0.45),
-    0 4px 14px rgba(79, 124, 255, 0.18),
+    0 0 0 1px rgba(104, 248, 72, 0.45),
+    0 4px 14px rgba(104, 248, 72, 0.18),
     0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
@@ -108,7 +115,7 @@ input, select, button { font: inherit; }
   }
 }
 
-/* ——— 7FX Landing: Light premium ——— */
+/* ——— 7FX Landing: Light corporate + neon accent ——— */
 .fx-landing {
   --fx-bg: #ffffff;
   --fx-bg-soft: #ffffff;
@@ -118,7 +125,8 @@ input, select, button { font: inherit; }
   --fx-ink: #0b1220;
   --fx-muted: #5c657a;
   --fx-dim: #8b93a7;
-  --fx-accent: #4f7cff;
+  --fx-accent: #68F848;
+  --fx-accent-ink: #0a0a0a;
   --fx-buy: #16c784;
   --fx-sell: #ea3943;
   --fx-line: rgba(16, 20, 37, 0.08);
@@ -323,7 +331,7 @@ html:has(.fx-landing) {
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #4f7cff;
+  color: #68F848;
 }
 
 .fx-landing .fx-eyebrow-dot {
@@ -331,8 +339,8 @@ html:has(.fx-landing) {
   width: 6px;
   height: 6px;
   border-radius: 999px;
-  background: #4f7cff;
-  box-shadow: 0 0 10px rgba(79, 124, 255, 0.45);
+  background: #68F848;
+  box-shadow: 0 0 10px rgba(104, 248, 72, 0.45);
   flex-shrink: 0;
 }
 
@@ -369,16 +377,16 @@ html:has(.fx-landing) {
 
 .fx-landing .fx-hero-veil {
   background:
-    radial-gradient(ellipse 55% 50% at 18% 12%, rgba(79, 124, 255, 0.14), transparent 58%),
-    radial-gradient(ellipse 40% 40% at 88% 22%, rgba(79, 124, 255, 0.08), transparent 55%),
+    radial-gradient(ellipse 55% 50% at 18% 12%, rgba(104, 248, 72, 0.14), transparent 58%),
+    radial-gradient(ellipse 40% 40% at 88% 22%, rgba(104, 248, 72, 0.08), transparent 55%),
     radial-gradient(ellipse 35% 30% at 55% 95%, rgba(22, 199, 132, 0.05), transparent 50%),
     linear-gradient(180deg, #ffffff 0%, #ffffff 55%, #ffffff 100%);
 }
 
 .fx-landing .fx-hero-mesh {
   background-image:
-    linear-gradient(rgba(79, 124, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(79, 124, 255, 0.05) 1px, transparent 1px);
+    linear-gradient(rgba(104, 248, 72, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(104, 248, 72, 0.05) 1px, transparent 1px);
   background-size: 56px 56px;
   mask-image: radial-gradient(ellipse 70% 55% at 60% 40%, #000 15%, transparent 72%);
   opacity: 0.55;
@@ -390,7 +398,7 @@ html:has(.fx-landing) {
 }
 
 .fx-landing .fx-phone-glow {
-  background: radial-gradient(ellipse at center, rgba(79, 124, 255, 0.22), transparent 68%);
+  background: radial-gradient(ellipse at center, rgba(104, 248, 72, 0.22), transparent 68%);
 }
 
 .fx-landing .fx-float-card {
@@ -415,8 +423,8 @@ html:has(.fx-landing) {
 
 .fx-landing .fx-feature-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(79, 124, 255, 0.28);
-  box-shadow: 0 20px 48px rgba(16, 20, 37, 0.1), 0 0 0 1px rgba(79, 124, 255, 0.1);
+  border-color: rgba(104, 248, 72, 0.28);
+  box-shadow: 0 20px 48px rgba(16, 20, 37, 0.1), 0 0 0 1px rgba(104, 248, 72, 0.1);
 }
 
 .fx-landing .fx-viz-market-row {
@@ -468,7 +476,7 @@ html:has(.fx-landing) {
   right: -20%;
   width: 60%;
   height: 60%;
-  background: radial-gradient(circle, rgba(79, 124, 255, 0.14), transparent 70%);
+  background: radial-gradient(circle, rgba(104, 248, 72, 0.14), transparent 70%);
   pointer-events: none;
 }
 
@@ -515,33 +523,35 @@ html:has(.fx-landing) {
 .fx-landing button:focus-visible,
 .fx-landing input:focus-visible,
 .fx-landing summary:focus-visible {
-  outline: 2px solid rgba(79, 124, 255, 0.75);
+  outline: 2px solid rgba(104, 248, 72, 0.75);
   outline-offset: 2px;
 }
 
 .fx-landing .fx-accent-line {
-  background: linear-gradient(105deg, #4f7cff 0%, #7aa2ff 45%, #3b5bdb 100%);
+  background: linear-gradient(105deg, #3DB82A 0%, #68F848 55%, #8CFF6E 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
 .fx-landing .fx-accent-text {
-  background: linear-gradient(120deg, #4f7cff, #7aa2ff 55%, #3b5bdb 100%);
+  background: linear-gradient(120deg, #3DB82A, #68F848 50%, #8CFF6E 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
 .fx-landing .fx-btn-primary {
-  background: #4f7cff;
-  color: #fff;
-  box-shadow: 0 10px 32px rgba(79, 124, 255, 0.32);
-  transition: filter 0.2s ease, box-shadow 0.2s ease;
+  background: #68F848;
+  color: #0a0a0a;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(104, 248, 72, 0.28);
+  transition: filter 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 .fx-landing .fx-btn-primary:hover {
-  filter: brightness(1.08);
-  box-shadow: 0 12px 36px rgba(79, 124, 255, 0.4);
+  filter: brightness(1.05);
+  background: #8CFF6E;
+  box-shadow: 0 10px 28px rgba(104, 248, 72, 0.34);
 }
 
 .fx-landing .fx-btn-secondary {
@@ -551,7 +561,7 @@ html:has(.fx-landing) {
   transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 .fx-landing .fx-btn-secondary:hover {
-  border-color: rgba(79, 124, 255, 0.4);
+  border-color: rgba(104, 248, 72, 0.4);
   background: #ffffff;
   box-shadow: 0 4px 14px rgba(16, 20, 37, 0.06);
 }
@@ -604,7 +614,8 @@ html:has(.fx-landing) {
   --fx-surface: #ffffff;
   --fx-ink: #0b1220;
   --fx-muted: #5c657a;
-  --fx-accent: #4f7cff;
+  --fx-accent: #68F848;
+  --fx-accent-ink: #0a0a0a;
   --fx-line: rgba(16, 20, 37, 0.08);
   background: #ffffff !important;
   color: #0b1220 !important;
@@ -623,7 +634,7 @@ html:has(.fx-landing) {
 
 .fx-auth-brand {
   background:
-    radial-gradient(ellipse 80% 60% at 20% 20%, rgba(79, 124, 255, 0.1), transparent 55%),
+    radial-gradient(ellipse 80% 60% at 20% 20%, rgba(104, 248, 72, 0.1), transparent 55%),
     linear-gradient(165deg, #ffffff 0%, #ffffff 55%, #f0f0f0 100%);
 }
 
@@ -631,14 +642,14 @@ html:has(.fx-landing) {
   background: #ffffff;
   border-color: rgba(16, 20, 37, 0.08);
   box-shadow:
-    0 0 0 1px rgba(79, 124, 255, 0.04) inset,
+    0 0 0 1px rgba(104, 248, 72, 0.04) inset,
     0 16px 48px rgba(16, 20, 37, 0.08);
 }
 
 .fx-auth-page .fx-auth-grid {
   background-image:
-    linear-gradient(rgba(79, 124, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(79, 124, 255, 0.05) 1px, transparent 1px);
+    linear-gradient(rgba(104, 248, 72, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(104, 248, 72, 0.05) 1px, transparent 1px);
   background-size: 48px 48px;
   mask-image: radial-gradient(ellipse 70% 60% at 40% 40%, #000 20%, transparent 75%);
 }
@@ -656,7 +667,7 @@ html:has(.fx-landing) {
 }
 
 .fx-auth-page .fx-auth-accent-text {
-  background: linear-gradient(120deg, #4f7cff, #7aa2ff);
+  background: linear-gradient(120deg, #68F848, #8CFF6E);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -665,7 +676,7 @@ html:has(.fx-landing) {
 .fx-auth-page a:focus-visible,
 .fx-auth-page button:focus-visible,
 .fx-auth-page input:focus-visible {
-  outline: 2px solid rgba(79, 124, 255, 0.65);
+  outline: 2px solid rgba(104, 248, 72, 0.65);
   outline-offset: 2px;
 }
 

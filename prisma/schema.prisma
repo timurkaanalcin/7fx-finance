@@ -66,6 +66,7 @@ model User {
   positions          Position[]
   deposits           DepositRequest[]
   balanceRequests    BalanceRequest[]
+  withdrawals        WithdrawalRequest[]
   auditLogs          AuditLog[]       @relation("AdminAudits")
   notes              UserNote[]
   ledgerEntries      BalanceLedger[]
@@ -199,6 +200,26 @@ model BalanceRequest {
 }
 
 /// Singleton-ish global trading rates / risk defaults (id = "default")
+/// Trader withdrawal requests — balance debited only after ADMIN approve.
+model WithdrawalRequest {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount     Float
+  currency   String    @default("USD")
+  method     String    @default("BANK") // BANK | CRYPTO
+  details    String?   @db.Text // IBAN / wallet
+  note       String?   @db.Text
+  status     String    @default("PENDING") // PENDING | APPROVED | REJECTED
+  adminNote  String?   @db.Text
+  createdAt  DateTime  @default(now())
+  reviewedAt DateTime?
+
+  @@index([userId, status])
+  @@index([status])
+}
+
+
 model TradingSettings {
   id                     String   @id @default("default")
   /// Multiplier on each symbol's built-in absolute spread

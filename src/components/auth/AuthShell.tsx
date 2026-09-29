@@ -16,8 +16,8 @@ export default function AuthShell({ mode, children }: AuthShellProps) {
       <div className="relative isolate flex min-h-screen flex-col">
         <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
           <div className="fx-auth-grid absolute inset-0 opacity-[0.45]" />
-          <div className="absolute left-1/2 top-0 h-[380px] w-[680px] -translate-x-1/2 rounded-full bg-[#4f7cff]/12 blur-[100px]" />
-          <div className="absolute bottom-0 left-[12%] h-64 w-64 rounded-full bg-[#4f7cff]/08 blur-[90px]" />
+          <div className="absolute left-1/2 top-0 h-[380px] w-[680px] -translate-x-1/2 rounded-full bg-[#68F848]/12 blur-[100px]" />
+          <div className="absolute bottom-0 left-[12%] h-64 w-64 rounded-full bg-[#68F848]/08 blur-[90px]" />
           <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-transparent to-[#ffffff]" />
         </div>
 
@@ -41,8 +41,8 @@ export default function AuthShell({ mode, children }: AuthShellProps) {
         <main className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-8 sm:px-6 sm:py-10">
           <div className="w-full max-w-[440px]">
             <div className="mb-7 text-center sm:mb-8">
-              <p className="inline-flex items-center gap-2 rounded-full border border-[rgba(16,20,37,0.08)] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#4f7cff] shadow-sm">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#4f7cff] shadow-[0_0_8px_rgba(79,124,255,0.45)]" />
+              <p className="inline-flex items-center gap-2 rounded-full border border-[rgba(16,20,37,0.08)] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#3DB82A] shadow-sm">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#68F848] shadow-[0_0_8px_rgba(104,248,72,0.45)]" />
                 {isLogin ? "Güvenli giriş" : "Yeni hesap"}
               </p>
               <h1 className="mt-4 text-[1.65rem] font-semibold leading-tight tracking-tight text-[#0b1220] sm:text-[1.85rem]">
@@ -67,7 +67,7 @@ export default function AuthShell({ mode, children }: AuthShellProps) {
 
             <div className="fx-auth-panel relative overflow-hidden rounded-2xl border border-[rgba(16,20,37,0.08)] bg-white p-6 shadow-[0_16px_48px_rgba(16,20,37,0.08)] sm:rounded-[1.35rem] sm:p-8">
               <div
-                className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#4f7cff]/40 to-transparent"
+                className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#68F848]/40 to-transparent"
                 aria-hidden
               />
               <div className="relative">{children}</div>

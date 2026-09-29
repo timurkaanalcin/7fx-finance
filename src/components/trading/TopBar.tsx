@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { fmtMoney, fmtPct } from "@/lib/format";
 import type { AccountMetrics, UserInfo } from "./types";
@@ -53,19 +54,33 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    function onDoc(e: MouseEvent) {
+    function onDoc(e: MouseEvent | TouchEvent) {
       if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false);
     }
     document.addEventListener("mousedown", onDoc);
-    return () => document.removeEventListener("mousedown", onDoc);
+    document.addEventListener("touchstart", onDoc);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("touchstart", onDoc);
+    };
   }, []);
 
+  const avatar = (
+    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-desk-elev to-desk-hover text-[11px] font-bold text-desk-text ring-1 ring-desk-border/80 md:text-xs">
+      {user.name.slice(0, 1).toUpperCase()}
+    </div>
+  );
+
   return (
-    <header className="fx-desk-glass flex h-11 shrink-0 items-center gap-1.5 border-b border-desk-border/80 px-2.5 md:h-12 md:px-3">
-      <div className="mr-1 flex items-center gap-1.5 border-r border-desk-border/80 pr-2 md:mr-1.5 md:gap-2 md:pr-3">
-        <div className="flex h-6 w-6 items-center justify-center rounded-[8px] bg-desk-accent text-[10px] font-bold tracking-tight text-white shadow-accent-glow-sm md:h-7 md:w-7 md:text-[11px]">
-          7
-        </div>
+    /* relative z-40: dropdown must stack above terminal content (sibling paints later otherwise) */
+    <header className="fx-desk-glass relative z-40 flex h-11 shrink-0 items-center gap-1.5 border-b border-desk-border/80 px-2.5 md:h-12 md:px-3">
+      <div className="mr-1 flex shrink-0 items-center gap-1.5 border-r border-desk-border/80 pr-2 md:mr-1.5 md:gap-2 md:pr-3">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/icons/icon-192.png"
+          alt=""
+          className="h-6 w-6 rounded-[8px] object-cover ring-1 ring-desk-border/80 md:h-7 md:w-7"
+        />
         <div className="hidden leading-none sm:block">
           <span className="text-sm font-semibold tracking-tight text-desk-text">7FX</span>
           <span className="mt-0.5 block text-[9px] font-medium uppercase tracking-[0.12em] text-desk-muted">
@@ -74,7 +89,7 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
         </div>
       </div>
 
-      <div className="flex flex-1 items-center gap-1 overflow-x-auto py-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:gap-1.5">
+      <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto py-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:gap-1.5">
         {/* Desktop order preserved; mobile shows Bakiye + K/Z only */}
         <Metric label="Bakiye" value={a ? fmtMoney(a.balance) : "—"} />
         <Metric
@@ -113,11 +128,12 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
         )}
       </div>
 
-      <div className="flex items-center gap-1 pl-1 md:gap-1.5 md:pl-1.5">
+      <div className="relative z-10 flex shrink-0 items-center gap-1 pl-1 md:gap-1.5 md:pl-1.5">
         <button
+          type="button"
           onClick={onDeposit}
           title="Para Yatır"
-          className="flex h-7 items-center gap-1 rounded-[9px] bg-desk-accent px-2 text-[11px] font-semibold text-white shadow-accent-glow-sm hover:brightness-110 md:h-8 md:gap-1.5 md:rounded-[10px] md:px-2.5 md:text-xs"
+          className="flex h-7 items-center gap-1 rounded-[9px] bg-desk-accent px-2 text-[11px] font-semibold text-desk-accent-ink shadow-accent-glow-sm hover:brightness-110 md:h-8 md:gap-1.5 md:rounded-[10px] md:px-2.5 md:text-xs"
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
             <rect x="2" y="6" width="20" height="12" rx="2" />
@@ -126,15 +142,24 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
           <span className="hidden sm:inline">Yatır</span>
         </button>
 
-        <div className="relative" ref={menuRef}>
+        {/* Mobile: avatar is a direct link to /profile (tap target must not be swallowed) */}
+        <Link
+          href="/profile"
+          aria-label="Üyelik bilgileri"
+          title="Profil"
+          className="flex touch-manipulation items-center rounded-full border border-desk-border/80 bg-desk-bg/50 p-0.5 hover:border-desk-accent/50 md:hidden"
+        >
+          {avatar}
+        </Link>
+
+        {/* Desktop: dropdown menu */}
+        <div className="relative hidden md:block" ref={menuRef}>
           <button
             type="button"
             onClick={() => setMenuOpen((o) => !o)}
             className="flex items-center gap-1.5 rounded-full border border-desk-border/80 bg-desk-bg/50 p-0.5 hover:border-desk-accent/50 md:gap-2 md:py-1 md:pl-1 md:pr-2.5"
           >
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-desk-elev to-desk-hover text-[11px] font-bold text-desk-text ring-1 ring-desk-border/80 md:text-xs">
-              {user.name.slice(0, 1).toUpperCase()}
-            </div>
+            {avatar}
             <div className="hidden text-left leading-tight sm:block">
               <div className="text-xs font-medium text-desk-text">{user.name}</div>
               <div className="text-[10px] text-desk-muted">{shortId}</div>
@@ -142,16 +167,21 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
           </button>
           {menuOpen && (
             <div className="absolute right-0 z-50 mt-1.5 w-48 overflow-hidden rounded-modal border border-desk-border bg-desk-panel shadow-desk-panel">
-              <a
+              <Link
                 href="/profile"
+                onClick={() => setMenuOpen(false)}
                 className="block px-3 py-2.5 text-xs text-desk-text hover:bg-desk-hover"
               >
                 Üyelik bilgileri
-              </a>
+              </Link>
               {user.role === "ADMIN" && (
-                <a href="/admin" className="block px-3 py-2.5 text-xs text-desk-warn hover:bg-desk-hover">
+                <Link
+                  href="/admin"
+                  onClick={() => setMenuOpen(false)}
+                  className="block px-3 py-2.5 text-xs text-desk-warn hover:bg-desk-hover"
+                >
                   Admin paneli
-                </a>
+                </Link>
               )}
               <button
                 type="button"

@@ -6,7 +6,7 @@ import { StatusBadge } from "@/components/crm/StubPage";
 
 type Ticket = {
   id: string;
-  kind: "DEPOSIT" | "MARGIN";
+  kind: "DEPOSIT" | "MARGIN" | "WITHDRAW";
   amount: number | null;
   currency: string;
   status: string;
@@ -46,7 +46,11 @@ export default function TicketsPage() {
     setMsg("");
     try {
       const url =
-        t.kind === "DEPOSIT" ? "/api/admin/deposits" : "/api/admin/balance-requests";
+        t.kind === "DEPOSIT"
+          ? "/api/admin/deposits"
+          : t.kind === "WITHDRAW"
+            ? "/api/admin/withdrawals"
+            : "/api/admin/balance-requests";
       const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -72,7 +76,7 @@ export default function TicketsPage() {
     <div>
       <h1 className="mb-3 text-lg font-semibold">Biletler / Yatırmalar</h1>
       <p className="mb-3 text-[11px] text-slate-500">
-        Terminal üst çubuğundaki Para Yatırma ve marjin çağrısı talepleri burada listelenir. Onay,
+        Para yatırma, para çekme ve marjin çağrısı talepleri burada listelenir. Onay,
         trader&apos;ın 1:1 trading Account bakiyesini kredilendirir.
       </p>
       <div className="mb-3 flex flex-wrap gap-2 text-xs">
@@ -94,6 +98,7 @@ export default function TicketsPage() {
           <option value="all">Tüm tipler</option>
           <option value="deposit">Yatırma</option>
           <option value="margin">Marjin</option>
+          <option value="withdraw">Para Çekme</option>
         </select>
         <Link href="/admin/deposits" className="rounded bg-slate-800 px-2 py-1.5 hover:bg-slate-700">
           Eski yatırma ekranı
@@ -126,7 +131,11 @@ export default function TicketsPage() {
                 <td className="px-2 py-1.5">
                   <span
                     className={`rounded px-1 py-0.5 text-[9px] ${
-                      t.kind === "DEPOSIT" ? "bg-sky-500/20 text-sky-300" : "bg-amber-500/20 text-amber-300"
+                      t.kind === "DEPOSIT"
+                        ? "bg-sky-500/20 text-sky-300"
+                        : t.kind === "WITHDRAW"
+                          ? "bg-violet-500/20 text-violet-300"
+                          : "bg-amber-500/20 text-amber-300"
                     }`}
                   >
                     {t.kind}

@@ -31,10 +31,10 @@ export default function PhonePreview() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/7fx-logo.png" alt="" className="h-5 w-auto object-contain brightness-0 invert sm:h-6" />
           </div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#4f7cff]/15 px-2 py-0.5 text-[9px] font-semibold text-[#7aa2ff] sm:px-2.5 sm:py-1 sm:text-[10px]">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#68F848]/15 px-2 py-0.5 text-[9px] font-semibold text-[#8CFF6E] sm:px-2.5 sm:py-1 sm:text-[10px]">
             <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#4f7cff] opacity-40" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#4f7cff]" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#68F848] opacity-40" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#68F848]" />
             </span>
             Canlı
           </span>
@@ -55,15 +55,15 @@ export default function PhonePreview() {
           <div className="mt-2.5 overflow-hidden rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-2.5 sm:mt-3.5 sm:rounded-2xl sm:p-3">
             <div className="mb-1 flex items-center justify-between sm:mb-1.5">
               <span className="text-[9px] font-medium text-[#8b97b0] sm:text-[10px]">7 günlük</span>
-              <span className="text-[9px] font-semibold text-[#4f7cff] sm:text-[10px]">+1,8%</span>
+              <span className="text-[9px] font-semibold text-[#68F848] sm:text-[10px]">+1,8%</span>
             </div>
             <svg viewBox="0 0 150 36" className="h-7 w-full sm:h-10" fill="none">
               <path d={`${spark} L148 36 L2 36 Z`} fill="url(#fxSparkFillDark)" opacity="0.45" />
-              <path d={spark} stroke="#4f7cff" strokeWidth="2.4" strokeLinecap="round" />
+              <path d={spark} stroke="#68F848" strokeWidth="2.4" strokeLinecap="round" />
               <defs>
                 <linearGradient id="fxSparkFillDark" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#4f7cff" stopOpacity="0.45" />
-                  <stop offset="100%" stopColor="#4f7cff" stopOpacity="0" />
+                  <stop offset="0%" stopColor="#68F848" stopOpacity="0.45" />
+                  <stop offset="100%" stopColor="#68F848" stopOpacity="0" />
                 </linearGradient>
               </defs>
             </svg>
@@ -73,11 +73,11 @@ export default function PhonePreview() {
             {[
               { label: "Al", bg: "bg-[#16c784]" },
               { label: "Sat", bg: "bg-[#ea3943]" },
-              { label: "Transfer", bg: "bg-[#4f7cff]" },
+              { label: "Transfer", bg: "bg-[#68F848]", ink: "text-[#0a0a0a]" },
             ].map((btn) => (
               <div
                 key={btn.label}
-                className={`rounded-lg ${btn.bg} py-1.5 text-center text-[10px] font-semibold text-white shadow-[0_6px_16px_rgba(0,0,0,0.25)] sm:rounded-xl sm:py-2.5 sm:text-[11px]`}
+                className={`rounded-lg ${btn.bg} py-1.5 text-center text-[10px] font-semibold shadow-[0_6px_16px_rgba(0,0,0,0.25)] sm:rounded-xl sm:py-2.5 sm:text-[11px] ${"ink" in btn && btn.ink ? btn.ink : "text-white"}`}
               >
                 {btn.label}
               </div>
@@ -99,7 +99,7 @@ export default function PhonePreview() {
                 <div className="flex min-w-0 items-center gap-1.5 sm:gap-2.5">
                   <span
                     className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[8px] font-bold text-white sm:h-7 sm:w-7 sm:rounded-lg sm:text-[9px] ${
-                      row.up ? "bg-[#4f7cff]" : "bg-[#8b97b0]"
+                      row.up ? "bg-[#68F848]" : "bg-[#8b97b0]"
                     }`}
                   >
                     {row.s.slice(0, 2)}
@@ -133,10 +133,10 @@ export default function PhonePreview() {
           ].map((item) => (
             <span
               key={item.t}
-              className={`flex flex-col items-center gap-1 ${item.on ? "text-[#4f7cff]" : ""}`}
+              className={`flex flex-col items-center gap-1 ${item.on ? "text-[#68F848]" : ""}`}
             >
               <span
-                className={`h-1.5 w-1.5 rounded-full ${item.on ? "bg-[#4f7cff]" : "bg-[#3a4a68]"}`}
+                className={`h-1.5 w-1.5 rounded-full ${item.on ? "bg-[#68F848]" : "bg-[#3a4a68]"}`}
               />
               {item.t}
             </span>

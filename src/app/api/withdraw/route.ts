@@ -1,0 +1,82 @@
+import { NextResponse } from "next/server";
+import { requireUser } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
+
+/** List current user's withdrawal requests */
+export async function GET() {
+  const user = await requireUser();
+  if (!user) return NextResponse.json({ error: "Oturum yok" }, { status: 401 });
+  const requests = await prisma.withdrawalRequest.findMany({
+    where: { userId: user.id },
+    orderBy: { createdAt: "desc" },
+    take: 50,
+  });
+  return NextResponse.json({ requests });
+}
+
+/**
+ * Submit a withdrawal request.
+ * Does NOT debit balance until admin approves (mirrors deposit flow).
+ */
+export async function POST(req: Request) {
+  const user = await requireUser();
+  if (!user) return NextResponse.json({ error: "Oturum yok" }, { status: 401 });
+
+  const body = await req.json().catch(() => ({}));
+  const amount = Number(body.amount);
+  const method = String(body.method || "BANK").toUpperCase();
+  const details = body.details != null ? String(body.details).trim().slice(0, 500) : null;
+  const note = body.note != null ? String(body.note).trim().slice(0, 500) : null;
+
+  if (!Number.isFinite(amount) || amount <= 0 || amount > 1_000_000) {
+    return NextResponse.json({ error: "Geçersiz tutar" }, { status: 400 });
+  }
+  if (method !== "BANK" && method !== "CRYPTO") {
+    return NextResponse.json({ error: "Geçersiz yöntem (BANK veya CRYPTO)" }, { status: 400 });
+  }
+  if (!details) {
+    return NextResponse.json(
+      { error: method === "BANK" ? "IBAN / hesap bilgisi gerekli" : "Cüzdan adresi gerekli" },
+      { status: 400 }
+    );
+  }
+
+  const account = await prisma.account.findUnique({ where: { userId: user.id } });
+  if (!account) return NextResponse.json({ error: "Hesap bulunamadı" }, { status: 404 });
+
+  const available = Math.min(account.balance, account.freeMargin);
+  if (amount > available + 1e-9) {
+    return NextResponse.json(
+      {
+        error: `Yetersiz bakiye. Çekilebilir: ${available.toFixed(2)} ${account.currency}`,
+      },
+      { status: 400 }
+    );
+  }
+
+  const pending = await prisma.withdrawalRequest.findFirst({
+    where: { userId: user.id, status: "PENDING" },
+  });
+  if (pending) {
+    return NextResponse.json(
+      { error: "Zaten bekleyen bir para çekme talebiniz var" },
+      { status: 400 }
+    );
+  }
+
+  const request = await prisma.withdrawalRequest.create({
+    data: {
+      userId: user.id,
+      amount,
+      currency: account.currency || "USD",
+      method,
+      details,
+      note,
+      status: "PENDING",
+    },
+  });
+
+  return NextResponse.json({ ok: true, request });
+}

@@ -94,7 +94,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
             >
               {active && (
                 <span
-                  className="absolute bottom-1 left-0 top-1 w-[3px] rounded-r-full bg-desk-accent shadow-[0_0_8px_rgba(79,124,255,0.6)] md:bottom-0.5 md:top-0.5"
+                  className="absolute bottom-1 left-0 top-1 w-[3px] rounded-r-full bg-desk-accent shadow-[0_0_8px_rgba(104,248,72,0.6)] md:bottom-0.5 md:top-0.5"
                   aria-hidden
                 />
               )}

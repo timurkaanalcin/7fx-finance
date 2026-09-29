@@ -11,14 +11,26 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: "7FX",
-  description: "7FX — piyasa araçları, hesap yönetimi ve web işlem platformu",
+  description:
+    "7FX — uluslararası çok varlık ticaret platformu. Hisse, kripto, forex ve emtia piyasalarına güvenli web erişimi.",
+  manifest: "/site.webmanifest",
   openGraph: {
     title: "7FX",
-    description: "7FX piyasa araçları, hesap yönetimi ve web işlem platformu",
+    description:
+      "7FX uluslararası broker / ticaret platformu: hisse, kripto, forex ve emtia — güvenli oturum, 7/24 erişim.",
     images: [{ url: "/7fx-logo.png", width: 1200, height: 630, alt: "7FX" }],
   },
   icons: {
-    icon: "/7fx-mark.png",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icons/favicon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/icons/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+    shortcut: ["/favicon.ico"],
   },
 };
 
