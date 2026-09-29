@@ -36,7 +36,7 @@ export default function RegisterForm() {
       return;
     }
     if (!referralCode.trim()) {
-      setError("Geçerli bir referans kodu girin.");
+      setError("Referans kodu zorunludur. / Referral code is required.");
       setLoading(false);
       return;
     }
@@ -153,13 +153,14 @@ export default function RegisterForm() {
             required
             aria-required="true"
             value={referralCode}
-            onChange={(e) => setReferralCode(e.target.value)}
-            placeholder="Referans kodunuzu girin"
+            onChange={(e) => setReferralCode(e.target.value.replace(/[^\d]/g, ""))}
+            placeholder="Referans kodunuz (rakam)"
             disabled={loading}
+            inputMode="numeric"
             autoComplete="off"
           />
           <p className="mt-2 text-[12px] leading-relaxed text-[#5c657a]">
-            Referans kodu zorunludur. Geçerli bir kod olmadan kayıt tamamlanamaz.
+            Referans kodu zorunludur (yalnızca rakam). Geçerli bir kod olmadan kayıt tamamlanamaz. / Referral code required (digits only).
           </p>
         </div>
 

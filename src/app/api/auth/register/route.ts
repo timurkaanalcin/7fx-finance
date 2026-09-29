@@ -2,9 +2,18 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createSession, hashPassword } from "@/lib/auth";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
-import { ensureSystemSettings, getReferralCode } from "@/lib/system-settings";
+import {
+  ensureSystemSettings,
+  getReferralCode,
+  isReferralRequired,
+} from "@/lib/system-settings";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const ERR_REFERRAL =
+  "Geçerli bir referans kodu girin. / Enter a valid referral code.";
+const ERR_REFERRAL_MISSING =
+  "Referans kodu zorunludur. / Referral code is required.";
 
 export async function POST(req: Request) {
   try {
@@ -28,13 +37,16 @@ export async function POST(req: Request) {
     if (password.length < 8) {
       return NextResponse.json({ error: "Şifre en az 8 karakter olmalı" }, { status: 400 });
     }
-    if (!referralCode) {
-      return NextResponse.json({ error: "Geçerli bir referans kodu girin." }, { status: 400 });
-    }
 
-    const expected = await getReferralCode();
-    if (referralCode !== expected) {
-      return NextResponse.json({ error: "Geçerli bir referans kodu girin." }, { status: 400 });
+    const required = await isReferralRequired();
+    if (required) {
+      if (!referralCode) {
+        return NextResponse.json({ error: ERR_REFERRAL_MISSING }, { status: 400 });
+      }
+      const expected = await getReferralCode();
+      if (referralCode !== expected) {
+        return NextResponse.json({ error: ERR_REFERRAL }, { status: 400 });
+      }
     }
 
     const existing = await prisma.user.findUnique({ where: { email } });
@@ -57,7 +69,7 @@ export async function POST(req: Request) {
         role: "TRADER",
         active: true,
         registrationDate: now,
-        referralCodeUsed: referralCode,
+        referralCodeUsed: referralCode || null,
         account: {
           create: {
             balance: 10000,

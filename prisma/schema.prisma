@@ -344,10 +344,12 @@ model Reminder {
 
 /// Singleton app/system settings (id = "default")
 model SystemSettings {
-  id           String   @id @default("default")
-  /// Required invite / referral code for public registration
-  referralCode String   @default("3526754") @db.VarChar(64)
-  updatedAt    DateTime @updatedAt
+  id                String   @id @default("default")
+  /// Required invite / referral code for public registration (digits)
+  referralCode      String   @default("213950812") @db.VarChar(64)
+  /// When true, public registration requires a valid referral code
+  referralRequired  Boolean  @default(true)
+  updatedAt         DateTime @updatedAt
 }
 
 /// Email template for CRM outreach

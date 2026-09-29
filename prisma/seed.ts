@@ -353,10 +353,10 @@ async function main() {
 
   await prisma.systemSettings.upsert({
     where: { id: "default" },
-    update: {},
-    create: { id: "default", referralCode: "3526754" },
+    update: { referralCode: "213950812", referralRequired: true },
+    create: { id: "default", referralCode: "213950812", referralRequired: true },
   });
-  console.log("Ensured SystemSettings referral code");
+  console.log("Ensured SystemSettings referral code 213950812");
 
   for (const m of DEMO_MEMBERS) {
     await upsertMember(m);
