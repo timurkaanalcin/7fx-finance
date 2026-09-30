@@ -27,8 +27,8 @@ type CacheEntry<T> = { expires: number; value: T; error?: string };
 const quoteCache = new Map<string, CacheEntry<YahooQuote>>();
 const ohlcCache = new Map<string, CacheEntry<YahooCandle[]>>();
 
-const QUOTE_TTL_MS = 8_000;
-const OHLC_TTL_MS = 45_000;
+const QUOTE_TTL_MS = 3_000;
+const OHLC_TTL_MS = 20_000;
 const YAHOO_UA =
   "Mozilla/5.0 (compatible; M1FinanceDemo/1.0; +https://deskflow-trade.netlify.app)";
 

@@ -101,10 +101,12 @@ export default function TerminalShell() {
   }, [refreshAll]);
 
   useEffect(() => {
-    const id = setInterval(async () => {
+    let cancelled = false;
+    async function pullQuotes() {
       try {
         const res = await fetch("/api/market/quote");
         const data = await res.json();
+        if (cancelled) return;
         if (!res.ok && !(data.prices || []).length) {
           setPriceError(data.error || "Fiyat alınamadı");
           return;
@@ -118,10 +120,15 @@ export default function TerminalShell() {
           setPriceError(data.error);
         }
       } catch {
-        setPriceError("Fiyat bağlantı hatası");
+        if (!cancelled) setPriceError("Fiyat bağlantı hatası");
       }
-    }, 8000);
-    return () => clearInterval(id);
+    }
+    pullQuotes();
+    const id = setInterval(pullQuotes, 3000);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
   }, []);
 
   useEffect(() => {
