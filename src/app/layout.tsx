@@ -9,7 +9,14 @@ export const viewport: Viewport = {
   themeColor: "#000000",
 };
 
+const appUrl = process.env.NEXT_PUBLIC_APP_URL
+  ? process.env.NEXT_PUBLIC_APP_URL
+  : process.env.RAILWAY_PUBLIC_DOMAIN
+    ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
+    : "https://7fx.customer.org.tr";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(appUrl),
   title: "7FX",
   description:
     "7FX — uluslararası çok varlık ticaret platformu. Hisse, kripto, forex ve emtia piyasalarına güvenli web erişimi.",
