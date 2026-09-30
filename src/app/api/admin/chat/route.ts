@@ -18,7 +18,34 @@ export async function GET(req: Request) {
     where,
     orderBy: { createdAt: "desc" },
     take: 400,
-    include: { user: { select: { id: true, name: true, email: true, desk: true, active: true } } },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          desk: true,
+          active: true,
+          firstName: true,
+          lastName: true,
+          phone: true,
+          language: true,
+          timezone: true,
+          country: true,
+          accountType: true,
+          registrationDate: true,
+          registrationCountry: true,
+          tradingServer: true,
+          ftd: true,
+          brokerName: true,
+          assigneeName: true,
+          affiliateA: true,
+          lastLoginAt: true,
+          createdAt: true,
+          account: { select: { currency: true, balance: true } },
+        },
+      },
+    },
   });
 
   // Group into threads by trader
@@ -31,6 +58,7 @@ export async function GET(req: Request) {
       desk: string | null;
       active: boolean;
       lastAt: string;
+      profile: Record<string, unknown>;
       messages: {
         id: string;
         title: string | null;
@@ -51,6 +79,34 @@ export async function GET(req: Request) {
         desk: c.user.desk,
         active: c.user.active,
         lastAt: c.createdAt.toISOString(),
+        profile: {
+          id: c.user.id,
+          name: c.user.name,
+          email: c.user.email,
+          firstName: c.user.firstName,
+          lastName: c.user.lastName,
+          phone: c.user.phone,
+          language: c.user.language,
+          timezone: c.user.timezone,
+          country: c.user.country,
+          accountType: c.user.accountType,
+          currency: c.user.account?.currency || "USD",
+          balance: c.user.account?.balance ?? 0,
+          registrationDate: c.user.registrationDate?.toISOString() || c.user.createdAt.toISOString(),
+          registrationCountry: c.user.registrationCountry,
+          tradingServer: c.user.tradingServer || "Web Trading Server",
+          ftd: c.user.ftd,
+          brokerName: c.user.brokerName,
+          assigneeName: c.user.assigneeName,
+          affiliateA: c.user.affiliateA,
+          lastLoginAt: c.user.lastLoginAt?.toISOString() || null,
+          createdAt: c.user.createdAt.toISOString(),
+          desk: c.user.desk,
+          active: c.user.active,
+          isActiveTrading: c.user.active,
+          isActiveDeposit: true,
+          isActiveWithdrawal: true,
+        },
         messages: [],
       };
       threadsMap.set(c.userId, t);

@@ -53,7 +53,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#070b14] text-slate-400">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-sky-500 border-t-transparent" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--accent)] border-t-transparent" />
           <span className="text-sm">CRM yükleniyor…</span>
         </div>
       </div>
@@ -72,11 +72,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="flex min-h-screen bg-[#070b14] text-slate-100">
       <aside className="hidden w-60 shrink-0 flex-col border-r border-slate-800/80 bg-[#0a1020] md:flex">
         <div className="flex h-12 items-center gap-2 border-b border-slate-800/80 px-3">
-          <div className="flex h-7 w-7 items-center justify-center rounded bg-sky-600 text-[10px] font-bold tracking-tight">
-            M1
+          <div className="flex h-7 w-7 items-center justify-center rounded bg-[var(--accent)] text-[10px] font-bold tracking-tight text-[var(--accent-ink)]">
+            7FX
           </div>
           <div className="min-w-0">
-            <div className="truncate text-xs font-semibold leading-tight">M1 Finance</div>
+            <div className="truncate text-xs font-semibold leading-tight">7FX</div>
             <div className="text-[9px] uppercase tracking-wider text-slate-500">Desk CRM</div>
           </div>
         </div>
@@ -101,7 +101,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         href={n.href}
                         className={`block rounded px-2.5 py-1.5 font-medium transition ${
                           active
-                            ? "bg-sky-600/90 text-white"
+                            ? "bg-[var(--accent)] text-[var(--accent-ink)]/90 text-white"
                             : "text-slate-400 hover:bg-slate-800/80 hover:text-slate-100"
                         }`}
                       >
@@ -135,7 +135,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 key={n.href}
                 href={n.href}
                 className={`whitespace-nowrap rounded px-2 py-1 text-[10px] ${
-                  isActive(n.href, n.exact) ? "bg-sky-600" : "bg-slate-800"
+                  isActive(n.href, n.exact) ? "bg-[var(--accent)] text-[var(--accent-ink)]" : "bg-slate-800"
                 }`}
               >
                 {n.label}
