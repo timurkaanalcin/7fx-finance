@@ -68,8 +68,8 @@ export default function AdminSettingsPage() {
       <div>
         <h1 className="text-xl font-semibold text-slate-100">Sistem Ayarları</h1>
         <p className="mt-1 text-sm text-slate-400">
-          Kayıt için zorunlu referans kodunu buradan yönetin. Kod tüm domainler için
-          ortaktır (7fx.customer.org.tr, hram.tr). Yanlış kodla kayıt oluşturulamaz.
+          Kayıt için zorunlu referans kodunu buradan yönetin. Bu kod yalnızca 7FX
+          platformu (7fx.customer.org.tr) içindir. Yanlış kodla kayıt oluşturulamaz.
         </p>
       </div>
 
