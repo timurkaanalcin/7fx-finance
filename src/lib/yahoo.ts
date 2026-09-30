@@ -27,7 +27,7 @@ type CacheEntry<T> = { expires: number; value: T; error?: string };
 const quoteCache = new Map<string, CacheEntry<YahooQuote>>();
 const ohlcCache = new Map<string, CacheEntry<YahooCandle[]>>();
 
-const QUOTE_TTL_MS = 3_000;
+const QUOTE_TTL_MS = 750;
 const OHLC_TTL_MS = 20_000;
 const YAHOO_UA =
   "Mozilla/5.0 (compatible; M1FinanceDemo/1.0; +https://deskflow-trade.netlify.app)";
@@ -223,11 +223,28 @@ export async function fetchQuoteFromChart(
   }
 
   try {
-    // Lightweight daily chart — meta.regularMarketPrice is enough for last quote
-    const result = await fetchYahooChart(yahooTicker, "1d", "5d");
+    // Prefer 1m chart meta — regularMarketPrice updates more often during RTH/crypto
+    // than a daily chart, so forming candles can track live mid ≤1s.
+    let result;
+    try {
+      result = await fetchYahooChart(yahooTicker, "1m", "1d");
+    } catch {
+      result = await fetchYahooChart(yahooTicker, "1d", "5d");
+    }
     const meta = result.meta || {};
+    const quote0 = result.indicators?.quote?.[0];
+    const closes: (number | null)[] = quote0?.close || [];
+    let lastClose = 0;
+    for (let i = closes.length - 1; i >= 0; i--) {
+      const c = closes[i];
+      if (c != null && Number.isFinite(c) && c > 0) {
+        lastClose = c;
+        break;
+      }
+    }
     const price =
       Number(meta.regularMarketPrice) ||
+      lastClose ||
       Number(meta.chartPreviousClose) ||
       0;
     const previousClose =

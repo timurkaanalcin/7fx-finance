@@ -109,9 +109,10 @@ export default function TerminalShell() {
     boot();
   }, [refreshAll]);
 
+  // Watchlist batch (~3s) + active symbol fast path (≤1s) so forming candle tracks mid.
   useEffect(() => {
     let cancelled = false;
-    async function pullQuotes() {
+    async function pullBatch() {
       try {
         const res = await fetch("/api/market/quote");
         const data = await res.json();
@@ -123,7 +124,7 @@ export default function TerminalShell() {
         const map: Record<string, PriceTick> = {};
         for (const t of data.prices as PriceTick[]) map[t.symbol] = t;
         if (Object.keys(map).length) {
-          setPrices(map);
+          setPrices((prev) => ({ ...prev, ...map }));
           setPriceError(data.error || null);
         } else if (data.error) {
           setPriceError(data.error);
@@ -132,13 +133,41 @@ export default function TerminalShell() {
         if (!cancelled) setPriceError("Fiyat bağlantı hatası");
       }
     }
-    pullQuotes();
-    const id = setInterval(pullQuotes, 1500);
+    pullBatch();
+    const id = setInterval(pullBatch, 3000);
     return () => {
       cancelled = true;
       clearInterval(id);
     };
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function pullActive() {
+      try {
+        const res = await fetch(
+          `/api/market/quote?symbols=${encodeURIComponent(symbol)}`,
+          { cache: "no-store" }
+        );
+        const data = await res.json();
+        if (cancelled) return;
+        const ticks = (data.prices || []) as PriceTick[];
+        if (!ticks.length) return;
+        const tick = { ...ticks[0], ts: Date.now() };
+        setPrices((prev) => ({ ...prev, [tick.symbol]: tick }));
+        if (data.error) setPriceError(data.error);
+        else setPriceError(null);
+      } catch {
+        /* keep last good */
+      }
+    }
+    pullActive();
+    const id = setInterval(pullActive, 800);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+  }, [symbol]);
 
   useEffect(() => {
     const id = setInterval(() => {

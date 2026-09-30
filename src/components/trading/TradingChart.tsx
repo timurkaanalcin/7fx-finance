@@ -94,15 +94,19 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
   const liveBarRef = useRef<LiveBar | null>(null);
   const lastBarTimeRef = useRef<number | null>(null);
   const lastMidRef = useRef<number | null>(null);
+  const priceRef = useRef<PriceTick | undefined>(price);
+  const lastTickAtRef = useRef<number>(0);
   const timeframeRef = useRef(timeframe);
   const [ohlc, setOhlc] = useState<{ o: number; h: number; l: number; c: number } | null>(null);
   const [chartType, setChartType] = useState<"candle" | "line">("candle");
   const [utcClock, setUtcClock] = useState("");
   const [feedError, setFeedError] = useState<string | null>(null);
   const [livePulse, setLivePulse] = useState(false);
+  const [liveFresh, setLiveFresh] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   timeframeRef.current = timeframe;
+  priceRef.current = price;
 
   useEffect(() => {
     setMounted(true);
@@ -337,7 +341,7 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
     liveBarRef.current = null;
     lastBarTimeRef.current = null;
     load(true);
-    const id = setInterval(() => load(false), 20000);
+    const id = setInterval(() => load(false), 30000);
     return () => {
       cancelled = true;
       clearInterval(id);
@@ -345,13 +349,44 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symbol, timeframe]);
 
-  // Real Yahoo/mid ticks from parent → update forming candle 1:1
+  // Stream forming candle from live mid ≤1s (real Yahoo mid only — no synthetic drift).
+  useEffect(() => {
+    let lastApplied: number | null = null;
+    const tick = () => {
+      const mid = priceRef.current?.mid;
+      if (mid == null || !Number.isFinite(mid) || mid <= 0) {
+        setLiveFresh(Date.now() - lastTickAtRef.current < 2500);
+        return;
+      }
+      const changed = lastApplied == null || Math.abs(mid - lastApplied) > 0;
+      pushRealMid(mid);
+      if (changed) {
+        lastApplied = mid;
+        lastTickAtRef.current = Date.now();
+        setLivePulse(true);
+        window.setTimeout(() => setLivePulse(false), 280);
+      } else if (liveBarRef.current && liveBarRef.current.close !== mid) {
+        // mid equal numerically but bar close stale after history reload
+        pushRealMid(mid);
+        lastTickAtRef.current = Date.now();
+      }
+      setLiveFresh(Date.now() - lastTickAtRef.current < 2500);
+    };
+    tick();
+    const id = window.setInterval(tick, 500);
+    return () => window.clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [symbol, timeframe]);
+
+  // Immediate apply when parent mid/ts updates (active-symbol 800ms poll).
   useEffect(() => {
     if (!price?.mid || !Number.isFinite(price.mid) || price.mid <= 0) return;
     pushRealMid(price.mid);
+    lastTickAtRef.current = Date.now();
+    setLiveFresh(true);
     setLivePulse(true);
-    const t = setTimeout(() => setLivePulse(false), 350);
-    return () => clearTimeout(t);
+    const t = window.setTimeout(() => setLivePulse(false), 280);
+    return () => window.clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [price?.mid, price?.ts, symbol]);
 
@@ -374,11 +409,20 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
     <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-desk-bg">
       <div className="absolute left-3 top-3 z-10 flex items-start gap-2 md:left-3 md:top-2.5 md:gap-2.5">
         <span
-          className={`mt-0.5 flex items-center gap-1.5 rounded-full bg-desk-accent/15 px-2.5 py-1 text-[10px] font-bold tracking-[0.08em] text-desk-accent ring-1 ring-desk-accent/35 md:gap-1 md:px-2 md:py-0.5 md:tracking-wide ${
-            livePulse ? "ring-desk-accent/70 bg-desk-accent/25" : ""
+          className={`mt-0.5 flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-[0.08em] ring-1 md:gap-1 md:px-2 md:py-0.5 md:tracking-wide ${
+            liveFresh
+              ? `bg-desk-accent/15 text-desk-accent ring-desk-accent/35 ${livePulse ? "ring-desk-accent/70 bg-desk-accent/25" : ""}`
+              : "bg-desk-elev/80 text-desk-muted ring-desk-border/60"
           }`}
+          title={liveFresh ? "Canlı Yahoo mid" : "Bekleniyor…"}
         >
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-desk-accent shadow-[0_0_6px_rgba(104,248,72,0.8)]" />
+          <span
+            className={`h-1.5 w-1.5 rounded-full ${
+              liveFresh
+                ? "animate-pulse bg-desk-accent shadow-[0_0_6px_rgba(104,248,72,0.8)]"
+                : "bg-desk-muted"
+            }`}
+          />
           LIVE
         </span>
         <div>
