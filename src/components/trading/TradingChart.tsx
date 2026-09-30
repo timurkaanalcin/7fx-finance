@@ -21,6 +21,7 @@ const TIMEFRAMES = [
   { id: "1h", label: "1s" },
   { id: "4h", label: "4s" },
   { id: "1D", label: "1G" },
+  { id: "1W", label: "W" },
 ];
 
 function timeframeSeconds(tf: string): number {
@@ -37,14 +38,16 @@ function timeframeSeconds(tf: string): number {
       return 14400;
     case "1D":
       return 86400;
+    case "1W":
+      return 604800;
     default:
       return 300;
   }
 }
 
-/** Snap unix seconds to interval open. Daily keeps Yahoo session stamps. */
+/** Snap unix seconds to interval open. Daily/weekly keep Yahoo session stamps. */
 function alignTime(unixSec: number, tf: string): number {
-  if (tf === "1D") return unixSec;
+  if (tf === "1D" || tf === "1W") return unixSec;
   const step = timeframeSeconds(tf);
   return Math.floor(unixSec / step) * step;
 }

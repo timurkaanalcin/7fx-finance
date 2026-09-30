@@ -36,7 +36,7 @@ export default function TerminalShell() {
   const [symbols, setSymbols] = useState<SymbolDef[]>([]);
   const [prices, setPrices] = useState<Record<string, PriceTick>>({});
   const [symbol, setSymbol] = useState("AAPL");
-  const [timeframe, setTimeframe] = useState("5m");
+  const [timeframe, setTimeframe] = useState("1W");
   const [tab, setTab] = useState<"open" | "closed" | "pending">("open");
   const [mobileTab, setMobileTab] = useState<"markets" | "order" | "positions">("markets");
   const [openPositions, setOpenPositions] = useState<PositionRow[]>([]);

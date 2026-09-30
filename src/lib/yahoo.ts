@@ -48,6 +48,8 @@ export function mapTimeframe(tf: string): { interval: string; range: string } {
       return { interval: "60m", range: "3mo" };
     case "1D":
       return { interval: "1d", range: "1y" };
+    case "1W":
+      return { interval: "1wk", range: "5y" };
     default:
       return { interval: "5m", range: "5d" };
   }
@@ -86,6 +88,8 @@ function timeframeStepSec(tf: string): number {
       return 14400;
     case "1D":
       return 86400;
+    case "1W":
+      return 604800;
     default:
       return 300;
   }
@@ -93,7 +97,7 @@ function timeframeStepSec(tf: string): number {
 
 /** Bucket intraday Yahoo stamps so live series.update() never goes backwards. */
 function alignOhlcTime(time: number, timeframe: string): number {
-  if (timeframe === "1D") return time;
+  if (timeframe === "1D" || timeframe === "1W") return time;
   const step = timeframeStepSec(timeframe);
   return Math.floor(time / step) * step;
 }
