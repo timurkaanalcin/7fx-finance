@@ -71,6 +71,52 @@ function aggregateTo4h(candles: YahooCandle[]): YahooCandle[] {
   return Array.from(buckets.values()).sort((a, b) => a.time - b.time);
 }
 
+
+function timeframeStepSec(tf: string): number {
+  switch (tf) {
+    case "1m":
+      return 60;
+    case "5m":
+      return 300;
+    case "15m":
+      return 900;
+    case "1h":
+      return 3600;
+    case "4h":
+      return 14400;
+    case "1D":
+      return 86400;
+    default:
+      return 300;
+  }
+}
+
+/** Bucket intraday Yahoo stamps so live series.update() never goes backwards. */
+function alignOhlcTime(time: number, timeframe: string): number {
+  if (timeframe === "1D") return time;
+  const step = timeframeStepSec(timeframe);
+  return Math.floor(time / step) * step;
+}
+
+function dedupeAligned(candles: YahooCandle[]): YahooCandle[] {
+  const map = new Map<number, YahooCandle>();
+  for (const c of candles) {
+    const prev = map.get(c.time);
+    if (!prev) map.set(c.time, c);
+    else {
+      map.set(c.time, {
+        time: c.time,
+        open: prev.open,
+        high: Math.max(prev.high, c.high),
+        low: Math.min(prev.low, c.low),
+        close: c.close,
+        volume: c.volume != null || prev.volume != null ? (prev.volume || 0) + (c.volume || 0) : undefined,
+      });
+    }
+  }
+  return Array.from(map.values()).sort((a, b) => a.time - b.time);
+}
+
 async function fetchYahooChart(yahooTicker: string, interval: string, range: string) {
   const url = new URL(
     `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooTicker)}`
@@ -142,6 +188,10 @@ export async function fetchOhlc(
     if (timeframe === "4h") {
       candles = aggregateTo4h(candles);
     }
+
+    candles = dedupeAligned(
+      candles.map((c) => ({ ...c, time: alignOhlcTime(c.time, timeframe) }))
+    );
 
     ohlcCache.set(cacheKey, {
       expires: Date.now() + OHLC_TTL_MS,

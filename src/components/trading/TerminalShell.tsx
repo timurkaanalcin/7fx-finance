@@ -1,10 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import TopBar from "./TopBar";
 import Watchlist from "./Watchlist";
-import TradingChart from "./TradingChart";
 import OrderTicket from "./OrderTicket";
 import BottomPanels from "./BottomPanels";
 import FooterTicker from "./FooterTicker";
@@ -19,6 +19,15 @@ import type {
   SymbolDef,
   UserInfo,
 } from "./types";
+
+const TradingChart = dynamic(() => import("./TradingChart"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex min-h-0 flex-1 items-center justify-center bg-desk-bg text-[12px] text-desk-muted">
+      Grafik yükleniyor…
+    </div>
+  ),
+});
 
 export default function TerminalShell() {
   const router = useRouter();
@@ -124,7 +133,7 @@ export default function TerminalShell() {
       }
     }
     pullQuotes();
-    const id = setInterval(pullQuotes, 3000);
+    const id = setInterval(pullQuotes, 1500);
     return () => {
       cancelled = true;
       clearInterval(id);

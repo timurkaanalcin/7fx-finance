@@ -42,15 +42,33 @@ function timeframeSeconds(tf: string): number {
   }
 }
 
-function bucketTime(unixSec: number, tf: string): number {
+/** Snap unix seconds to interval open. Daily keeps Yahoo session stamps. */
+function alignTime(unixSec: number, tf: string): number {
+  if (tf === "1D") return unixSec;
   const step = timeframeSeconds(tf);
   return Math.floor(unixSec / step) * step;
 }
 
-/** Relative noise so FX (~1e0) and equities (~1e2) both tick visibly. */
-function tickNoise(mid: number): number {
-  const bps = mid >= 100 ? 0.00008 : mid >= 10 ? 0.00012 : 0.00025;
-  return (Math.random() - 0.5) * 2 * mid * bps;
+function dedupeBars(bars: CandlestickData<Time>[]): CandlestickData<Time>[] {
+  const map = new Map<number, CandlestickData<Time>>();
+  for (const b of bars) {
+    const t = b.time as number;
+    const prev = map.get(t);
+    if (!prev) {
+      map.set(t, b);
+    } else {
+      map.set(t, {
+        time: b.time,
+        open: prev.open,
+        high: Math.max(prev.high, b.high),
+        low: Math.min(prev.low, b.low),
+        close: b.close,
+      });
+    }
+  }
+  return Array.from(map.entries())
+    .sort((a, b) => a[0] - b[0])
+    .map(([, v]) => v);
 }
 
 type Props = {
@@ -74,19 +92,23 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
   const lineRef = useRef<ISeriesApi<"Line"> | null>(null);
   const liveBarRef = useRef<LiveBar | null>(null);
+  const lastBarTimeRef = useRef<number | null>(null);
   const lastMidRef = useRef<number | null>(null);
-  const anchorMidRef = useRef<number | null>(null);
   const timeframeRef = useRef(timeframe);
   const [ohlc, setOhlc] = useState<{ o: number; h: number; l: number; c: number } | null>(null);
   const [chartType, setChartType] = useState<"candle" | "line">("candle");
   const [utcClock, setUtcClock] = useState("");
   const [feedError, setFeedError] = useState<string | null>(null);
   const [livePulse, setLivePulse] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   timeframeRef.current = timeframe;
 
-  const applyLiveBar = (bar: LiveBar) => {
-    liveBarRef.current = bar;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const safeUpdate = (bar: LiveBar) => {
     const candle: CandlestickData<Time> = {
       time: bar.time as Time,
       open: bar.open,
@@ -94,32 +116,53 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
       low: bar.low,
       close: bar.close,
     };
-    seriesRef.current?.update(candle);
-    lineRef.current?.update({ time: bar.time as Time, value: bar.close });
-    setOhlc({ o: bar.open, h: bar.high, l: bar.low, c: bar.close });
+    const lastT = lastBarTimeRef.current;
+    // lightweight-charts throws if update time < last series time
+    if (lastT != null && bar.time < lastT) {
+      return false;
+    }
+    try {
+      seriesRef.current?.update(candle);
+      lineRef.current?.update({ time: bar.time as Time, value: bar.close });
+      lastBarTimeRef.current = bar.time;
+      liveBarRef.current = bar;
+      setOhlc({ o: bar.open, h: bar.high, l: bar.low, c: bar.close });
+      return true;
+    } catch {
+      return false;
+    }
   };
 
-  const pushTick = (mid: number, fromFeed: boolean) => {
+  /** Drive forming candle from real mid only (no synthetic drift). */
+  const pushRealMid = (mid: number) => {
     if (!Number.isFinite(mid) || mid <= 0 || !seriesRef.current) return;
     lastMidRef.current = mid;
-    if (fromFeed) anchorMidRef.current = mid;
 
+    const tf = timeframeRef.current;
     const nowSec = Math.floor(Date.now() / 1000);
-    const t = bucketTime(nowSec, timeframeRef.current);
-    const prev = liveBarRef.current;
+    let t = alignTime(nowSec, tf);
+    const lastT = lastBarTimeRef.current;
 
+    // Yahoo often stamps the last historical bar with "now" (unbucketed).
+    // Never update with an older time — extend that bar instead.
+    if (lastT != null && t < lastT) {
+      t = lastT;
+    }
+
+    const prev = liveBarRef.current;
     if (!prev || prev.time !== t) {
-      applyLiveBar({
+      const open = prev && prev.time < t ? prev.close : mid;
+      safeUpdate({
         time: t,
-        open: prev?.close ?? mid,
-        high: Math.max(prev?.close ?? mid, mid),
-        low: Math.min(prev?.close ?? mid, mid),
+        open,
+        high: Math.max(open, mid),
+        low: Math.min(open, mid),
         close: mid,
       });
       return;
     }
 
-    applyLiveBar({
+    safeUpdate({
       time: t,
       open: prev.open,
       high: Math.max(prev.high, mid),
@@ -140,8 +183,11 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
   }, []);
 
   useEffect(() => {
-    if (!containerRef.current) return;
-    const chart = createChart(containerRef.current, {
+    if (!mounted || !containerRef.current) return;
+    if (typeof window === "undefined") return;
+
+    const el = containerRef.current;
+    const chart = createChart(el, {
       layout: {
         background: { type: ColorType.Solid, color: "#000000" },
         textColor: "#8b97b0",
@@ -153,8 +199,8 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
       crosshair: { mode: CrosshairMode.Normal },
       rightPriceScale: { borderColor: "#2a2a2a" },
       timeScale: { borderColor: "#2a2a2a", timeVisible: true, secondsVisible: false },
-      width: containerRef.current.clientWidth,
-      height: containerRef.current.clientHeight,
+      width: el.clientWidth || 300,
+      height: el.clientHeight || 240,
     });
     chartRef.current = chart;
 
@@ -175,29 +221,33 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
     });
     lineRef.current = line;
 
-    const ro = new ResizeObserver(() => {
-      if (containerRef.current && chartRef.current) {
-        chartRef.current.applyOptions({
-          width: containerRef.current.clientWidth,
-          height: containerRef.current.clientHeight,
-        });
-      }
-    });
-    ro.observe(containerRef.current);
+    const ro =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(() => {
+            if (containerRef.current && chartRef.current) {
+              chartRef.current.applyOptions({
+                width: containerRef.current.clientWidth,
+                height: containerRef.current.clientHeight,
+              });
+            }
+          })
+        : null;
+    ro?.observe(el);
 
     return () => {
-      ro.disconnect();
+      ro?.disconnect();
       chart.remove();
       chartRef.current = null;
       seriesRef.current = null;
       lineRef.current = null;
+      liveBarRef.current = null;
+      lastBarTimeRef.current = null;
     };
-  }, []);
+  }, [mounted]);
 
-  // Load historical OHLC, then keep backbone in sync (~15s)
+  // Historical backbone; re-sync periodically. Live mid overlays forming candle.
   useEffect(() => {
     let cancelled = false;
-    liveBarRef.current = null;
 
     async function load(fit = false) {
       try {
@@ -206,81 +256,74 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
         );
         const data = await res.json();
         if (cancelled || !seriesRef.current) return;
-        const bars: CandlestickData<Time>[] = (data.candles || []).map(
+
+        const raw: CandlestickData<Time>[] = (data.candles || []).map(
           (c: { time: number; open: number; high: number; low: number; close: number }) => ({
-            time: c.time as Time,
+            time: alignTime(c.time, timeframe) as Time,
             open: c.open,
             high: c.high,
             low: c.low,
             close: c.close,
           })
         );
-        if (bars.length) {
-          // Preserve live forming candle if same bucket is newer than history close
-          const lastHist = bars[bars.length - 1];
-          const live = liveBarRef.current;
-          const mid = lastMidRef.current;
-          let merged = bars;
-          if (live && live.time === (lastHist.time as number)) {
-            merged = [
+        let bars = dedupeBars(raw);
+
+        const mid = lastMidRef.current ?? (price?.mid != null && Number.isFinite(price.mid) ? price.mid : null);
+        if (bars.length && mid != null && mid > 0) {
+          const last = bars[bars.length - 1];
+          const nowSec = Math.floor(Date.now() / 1000);
+          let t = alignTime(nowSec, timeframe);
+          const lastT = last.time as number;
+          if (t < lastT) t = lastT;
+
+          if (t === lastT) {
+            bars = [
               ...bars.slice(0, -1),
               {
-                time: lastHist.time,
-                open: lastHist.open,
-                high: Math.max(lastHist.high, live.high),
-                low: Math.min(lastHist.low, live.low),
-                close: live.close,
+                time: last.time,
+                open: last.open,
+                high: Math.max(last.high, mid),
+                low: Math.min(last.low, mid),
+                close: mid,
               },
             ];
-          } else if (live && (live.time as number) > (lastHist.time as number)) {
-            merged = [...bars, { ...live, time: live.time as Time }];
-          } else if (mid != null) {
-            const t = bucketTime(Math.floor(Date.now() / 1000), timeframe);
-            const base = lastHist;
-            if ((base.time as number) === t) {
-              merged = [
-                ...bars.slice(0, -1),
-                {
-                  time: base.time,
-                  open: base.open,
-                  high: Math.max(base.high, mid),
-                  low: Math.min(base.low, mid),
-                  close: mid,
-                },
-              ];
-            } else if (t > (base.time as number)) {
-              merged = [
-                ...bars,
-                {
-                  time: t as Time,
-                  open: base.close,
-                  high: Math.max(base.close, mid),
-                  low: Math.min(base.close, mid),
-                  close: mid,
-                },
-              ];
-            }
+          } else {
+            bars = [
+              ...bars,
+              {
+                time: t as Time,
+                open: last.close,
+                high: Math.max(last.close, mid),
+                low: Math.min(last.close, mid),
+                close: mid,
+              },
+            ];
           }
-
-          seriesRef.current.setData(merged);
-          if (lineRef.current) {
-            lineRef.current.setData(merged.map((b) => ({ time: b.time, value: b.close })));
-          }
-          const last = merged[merged.length - 1];
-          liveBarRef.current = {
-            time: last.time as number,
-            open: last.open,
-            high: last.high,
-            low: last.low,
-            close: last.close,
-          };
-          if (lastMidRef.current == null) {
-            lastMidRef.current = last.close;
-            anchorMidRef.current = last.close;
-          }
-          setOhlc({ o: last.open, h: last.high, l: last.low, c: last.close });
-          if (fit) chartRef.current?.timeScale().fitContent();
         }
+
+        if (bars.length) {
+          try {
+            seriesRef.current.setData(bars);
+            if (lineRef.current) {
+              lineRef.current.setData(bars.map((b) => ({ time: b.time, value: b.close })));
+            }
+            const last = bars[bars.length - 1];
+            lastBarTimeRef.current = last.time as number;
+            liveBarRef.current = {
+              time: last.time as number,
+              open: last.open,
+              high: last.high,
+              low: last.low,
+              close: last.close,
+            };
+            if (lastMidRef.current == null && mid != null) lastMidRef.current = mid;
+            setOhlc({ o: last.open, h: last.high, l: last.low, c: last.close });
+            if (fit) chartRef.current?.timeScale().fitContent();
+          } catch {
+            setFeedError("Grafik güncellenemedi");
+          }
+        }
+
         if (data.error) {
           setFeedError(data.stale ? `Veri gecikmeli: ${data.error}` : `Piyasa verisi: ${data.error}`);
         } else {
@@ -291,49 +334,44 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
       }
     }
 
+    liveBarRef.current = null;
+    lastBarTimeRef.current = null;
     load(true);
-    const id = setInterval(() => load(false), 15000);
+    const id = setInterval(() => load(false), 20000);
     return () => {
       cancelled = true;
       clearInterval(id);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symbol, timeframe]);
 
-  // Real Yahoo/mid ticks from parent → update forming candle
+  // Real Yahoo/mid ticks from parent → update forming candle 1:1
   useEffect(() => {
-    if (!price?.mid || !Number.isFinite(price.mid)) return;
-    pushTick(price.mid, true);
+    if (!price?.mid || !Number.isFinite(price.mid) || price.mid <= 0) return;
+    pushRealMid(price.mid);
     setLivePulse(true);
-    const t = setTimeout(() => setLivePulse(false), 400);
+    const t = setTimeout(() => setLivePulse(false), 350);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [price?.mid, price?.ts, symbol]);
-
-  // Micro-ticks between feed updates so candles visibly breathe
-  useEffect(() => {
-    const id = setInterval(() => {
-      const anchor = anchorMidRef.current ?? lastMidRef.current;
-      const last = lastMidRef.current;
-      if (anchor == null || last == null || !seriesRef.current) return;
-      // Mean-revert toward last feed mid with small noise
-      const drifted = last + (anchor - last) * 0.18 + tickNoise(anchor);
-      pushTick(drifted, false);
-    }, 450);
-    return () => clearInterval(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [symbol, timeframe]);
 
   useEffect(() => {
     if (seriesRef.current) seriesRef.current.applyOptions({ visible: chartType === "candle" });
     if (lineRef.current) lineRef.current.applyOptions({ visible: chartType === "line" });
   }, [chartType]);
 
-  const digits = price?.mid != null && price.mid > 100 ? 2 : price?.mid != null && price.mid < 10 ? 5 : 2;
+  const digits =
+    price?.mid != null && price.mid >= 100
+      ? 2
+      : price?.mid != null && price.mid < 1
+        ? 6
+        : price?.mid != null && price.mid < 10
+          ? 5
+          : 2;
   const fmt = (n: number) => n.toFixed(digits);
 
   return (
     <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-desk-bg">
-      {/* Symbol + LIVE — more breathing room on mobile */}
       <div className="absolute left-3 top-3 z-10 flex items-start gap-2 md:left-3 md:top-2.5 md:gap-2.5">
         <span
           className={`mt-0.5 flex items-center gap-1.5 rounded-full bg-desk-accent/15 px-2.5 py-1 text-[10px] font-bold tracking-[0.08em] text-desk-accent ring-1 ring-desk-accent/35 md:gap-1 md:px-2 md:py-0.5 md:tracking-wide ${
@@ -366,7 +404,6 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
         </div>
       </div>
 
-      {/* TF pills — scroll cleanly on mobile, hide clutter */}
       <div className="absolute right-2 top-2.5 z-10 flex max-w-[62%] items-center justify-end gap-1.5 sm:right-3 sm:max-w-none md:right-3 md:top-2">
         <span className="hidden rounded-control border border-desk-border/60 bg-desk-panel/70 px-2 py-1 text-[10px] tabular-nums text-desk-muted sm:inline">
           {utcClock}
@@ -390,9 +427,7 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
           <button
             onClick={() => setChartType("candle")}
             className={`rounded-[8px] px-2 py-1 text-[11px] font-medium ${
-              chartType === "candle"
-                ? "bg-desk-elev text-desk-text"
-                : "text-desk-muted hover:text-desk-text"
+              chartType === "candle" ? "bg-desk-elev text-desk-text" : "text-desk-muted hover:text-desk-text"
             }`}
           >
             Mum
@@ -400,9 +435,7 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
           <button
             onClick={() => setChartType("line")}
             className={`rounded-[8px] px-2 py-1 text-[11px] font-medium ${
-              chartType === "line"
-                ? "bg-desk-elev text-desk-text"
-                : "text-desk-muted hover:text-desk-text"
+              chartType === "line" ? "bg-desk-elev text-desk-text" : "text-desk-muted hover:text-desk-text"
             }`}
           >
             Çizgi

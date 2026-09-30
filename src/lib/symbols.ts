@@ -65,6 +65,9 @@ export const SYMBOLS: SymbolDef[] = [
   // —— Crypto ——
   { symbol: "BTCUSD", name: "Bitcoin / USD", class: "CRYPTO", digits: 2, pipSize: 1, contractSize: 1, basePrice: 64250, spread: 25, yahoo: "BTC-USD", flag: "₿" },
   { symbol: "ETHUSD", name: "Ethereum / USD", class: "CRYPTO", digits: 2, pipSize: 0.1, contractSize: 1, basePrice: 3450.5, spread: 2.5, yahoo: "ETH-USD", flag: "Ξ" },
+  { symbol: "TRXUSD", name: "TRON / USD", class: "CRYPTO", digits: 6, pipSize: 0.000001, contractSize: 1, basePrice: 0.34, spread: 0.0002, yahoo: "TRX-USD", flag: "◆" },
+  { symbol: "SOLUSD", name: "Solana / USD", class: "CRYPTO", digits: 3, pipSize: 0.001, contractSize: 1, basePrice: 150, spread: 0.05, yahoo: "SOL-USD", flag: "◎" },
+  { symbol: "XRPUSD", name: "XRP / USD", class: "CRYPTO", digits: 5, pipSize: 0.00001, contractSize: 1, basePrice: 0.55, spread: 0.0005, yahoo: "XRP-USD", flag: "✕" },
 
   // —— Indices ——
   { symbol: "US30", name: "Dow Jones 30", class: "INDEX", digits: 1, pipSize: 0.1, contractSize: 1, basePrice: 39850.5, spread: 2.0, yahoo: "^DJI", flag: "🇺🇸" },
