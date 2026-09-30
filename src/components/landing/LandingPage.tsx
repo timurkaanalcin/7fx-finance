@@ -425,6 +425,22 @@ export default function LandingPage() {
             <div className="fx-reveal max-w-[640px]">
               <Eyebrow>Çok varlık yatırım platformu</Eyebrow>
 
+              <p
+                className="mt-4 inline-flex items-center gap-2 rounded-full border border-[rgba(16,20,37,0.10)] bg-white/90 px-3.5 py-1.5 text-[12.5px] font-semibold tracking-tight text-[#0b1220] shadow-[0_6px_18px_rgba(16,20,37,0.06)]"
+                aria-label="ING Bank iş birliği ile"
+              >
+                <span
+                  className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#FF6200] text-[9px] font-bold text-white"
+                  aria-hidden
+                >
+                  ING
+                </span>
+                <span>
+                  <span className="text-[#FF6200]">ING Bank</span>
+                  {" "}iş birliği ile
+                </span>
+              </p>
+
               <h1 id="hero-title" className="fx-h1 mt-5">
                 Yatırıma 7FX ile
                 <span className="fx-accent-line mt-1 block">daha net başlayın</span>
@@ -453,6 +469,7 @@ export default function LandingPage() {
 
               <div className="fx-trust-row mt-10 flex flex-wrap items-center gap-x-6 gap-y-3">
                 {[
+                  { label: "ING Bank iş birliği ile", icon: "★" },
                   { label: "40+ sembol", icon: "◆" },
                   { label: "7/24 erişim", icon: "●" },
                   { label: "SSL oturum", icon: "▣" },
@@ -841,7 +858,10 @@ export default function LandingPage() {
               7FX — uluslararası çok varlık ticaret platformu. Hisse, kripto, forex ve emtia
               piyasalarına güvenli web erişimi. Fiyatlar örnek / gösterim amaçlıdır.
             </p>
-            <p className="mt-3 text-[12px]">© {new Date().getFullYear()} 7FX</p>
+            <p className="mt-3 text-[12px] font-medium text-[#0b1220]">
+              ING Bank iş birliği ile
+            </p>
+            <p className="mt-2 text-[12px]">© {new Date().getFullYear()} 7FX</p>
           </div>
           <div className="flex flex-wrap gap-x-10 gap-y-4 text-[13px]">
             <div className="flex flex-col gap-2">
