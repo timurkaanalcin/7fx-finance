@@ -310,7 +310,7 @@ export default function TerminalShell() {
                   onTimeframe={setTimeframe}
                   price={prices[symbol]}
                 />
-                <div className="pointer-events-none absolute bottom-[calc(0.75rem+1.45cm)] right-[1.85cm] z-20 md:bottom-[calc(1rem+1.45cm)] md:right-[1.85cm]">
+                <div className="pointer-events-none absolute bottom-[calc(0.75rem+1.60cm)] right-[1.85cm] z-20 md:bottom-[calc(1rem+1.60cm)] md:right-[1.85cm]">
                   <button
                     type="button"
                     onClick={() => openOrder("BUY")}
