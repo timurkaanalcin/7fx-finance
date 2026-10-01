@@ -300,9 +300,10 @@ export default function TerminalShell() {
         <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden md:flex-row">
           {/* Chart + history (desktop history sits under chart, flush with order ticket) */}
           <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-            <div className="relative flex min-h-[44vh] flex-[1.2] md:min-h-0 md:flex-[1.2]">
-              {/* Chart wrapper: İŞLEM overlays chart bottom-right (not ToolRail / panels) */}
-              <div className="relative min-h-0 min-w-0 flex-1">
+            {/* Chart fills main area; bottom history is fixed height (pre-elite proportions) */}
+            <div className="relative flex min-h-[44vh] flex-1 md:min-h-0">
+              {/* Chart canvas wrapper: İŞLEM overlays bottom-right ON the chart */}
+              <div className="relative flex h-full min-h-0 min-w-0 flex-1 flex-col">
                 <TradingChart
                   symbol={symbol}
                   timeframe={timeframe}
@@ -323,8 +324,8 @@ export default function TerminalShell() {
               <ToolRail />
             </div>
 
-            {/* Desktop bottom panels — taller, aligned with right market column */}
-            <div className="hidden min-h-0 md:flex md:h-auto md:min-h-[280px] md:flex-[1] md:flex-col">
+            {/* Desktop bottom panels — fixed height so chart keeps prior larger share */}
+            <div className="hidden md:flex md:h-[220px] md:shrink-0 md:flex-col">
               <BottomPanels
                 tab={tab}
                 onTab={setTab}
