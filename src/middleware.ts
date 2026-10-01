@@ -1,49 +1,11 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { jwtVerify } from "jose";
 
-const COOKIE_NAME = "7fx_session";
-const LEGACY_COOKIE_NAME = "deskflow_session";
-
-function getAuthSecret(): Uint8Array | null {
-  const secret =
-    process.env.AUTH_SECRET ||
-    process.env.JWT_SECRET ||
-    (process.env.NODE_ENV === "production" ? undefined : "deskflow-trade-demo-secret");
-  if (!secret) return null;
-  return new TextEncoder().encode(secret);
-}
-
-async function hasValidSession(req: NextRequest): Promise<boolean> {
+export function middleware(req: NextRequest) {
   const token =
-    req.cookies.get(COOKIE_NAME)?.value ||
-    req.cookies.get(LEGACY_COOKIE_NAME)?.value;
-  if (!token) return false;
-  const secret = getAuthSecret();
-  if (!secret) return Boolean(token); // can't verify — treat presence as ok
-  try {
-    await jwtVerify(token, secret);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function clearSessionCookies(res: NextResponse) {
-  const base = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax" as const,
-    path: "/",
-    maxAge: 0,
-  };
-  res.cookies.set(COOKIE_NAME, "", base);
-  res.cookies.set(LEGACY_COOKIE_NAME, "", base);
-}
-
-export async function middleware(req: NextRequest) {
+    req.cookies.get("7fx_session")?.value ||
+    req.cookies.get("deskflow_session")?.value;
   const { pathname } = req.nextUrl;
-  const valid = await hasValidSession(req);
 
   const applyHeaders = (res: NextResponse) => {
     res.headers.set("X-Frame-Options", "SAMEORIGIN");
@@ -71,29 +33,19 @@ export async function middleware(req: NextRequest) {
   };
 
   if (pathname === "/login" || pathname === "/register") {
-    if (valid) {
+    if (token) {
       return applyHeaders(NextResponse.redirect(new URL("/trade", req.url)));
     }
-    // Stale cookie present but invalid — clear so login can set a fresh one
-    const res = applyHeaders(NextResponse.next());
-    if (
-      req.cookies.get(COOKIE_NAME)?.value ||
-      req.cookies.get(LEGACY_COOKIE_NAME)?.value
-    ) {
-      clearSessionCookies(res);
-    }
-    return res;
+    return applyHeaders(NextResponse.next());
   }
 
   if (
     (pathname.startsWith("/trade") ||
       pathname.startsWith("/admin") ||
       pathname.startsWith("/profile")) &&
-    !valid
+    !token
   ) {
-    const res = applyHeaders(NextResponse.redirect(new URL("/login", req.url)));
-    clearSessionCookies(res);
-    return res;
+    return applyHeaders(NextResponse.redirect(new URL("/login", req.url)));
   }
 
   return applyHeaders(NextResponse.next());
