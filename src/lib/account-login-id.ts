@@ -52,7 +52,7 @@ export async function backfillMissingAccountLoginIds(): Promise<number> {
         data: { accountLoginId },
       });
       updated += 1;
-    } catch (e) {
+    } catch {
       // Unique race — retry once with a fresh ID
       try {
         const retry = await allocateUniqueAccountLoginId();
