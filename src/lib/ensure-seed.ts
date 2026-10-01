@@ -5,8 +5,26 @@ import { ensureSystemSettings } from "./system-settings";
 
 const DEMO_EMAIL = "trader@deskflow.local";
 const DEMO_PASSWORD = "Trade123!";
-const ADMIN_EMAIL = "admin@7fx.local";
-const ADMIN_PASSWORD = "Admin123!";
+/** Dev-only defaults — never used for auto-seed admin in production. */
+const DEV_ADMIN_EMAIL = "admin@7fx.local";
+const DEV_ADMIN_PASSWORD = "Admin123!";
+
+function isProductionRuntime(): boolean {
+  return process.env.NODE_ENV === "production";
+}
+
+function resolveAdminSeedCreds(): { email: string; password: string; source: "env" | "dev" } | null {
+  const email = String(process.env.ADMIN_EMAIL || "").trim().toLowerCase();
+  const password = String(process.env.ADMIN_PASSWORD || "");
+  if (email && password.length >= 8) {
+    return { email, password, source: "env" };
+  }
+  if (!isProductionRuntime()) {
+    return { email: DEV_ADMIN_EMAIL, password: DEV_ADMIN_PASSWORD, source: "dev" };
+  }
+  // Production without ADMIN_EMAIL/ADMIN_PASSWORD: do not create known-default admin.
+  return null;
+}
 
 let seedPromise: Promise<void> | null = null;
 
@@ -121,17 +139,50 @@ async function ensureDepositMethods() {
 }
 
 async function ensureAdminUser() {
-  const existing = await prisma.user.findUnique({ where: { email: ADMIN_EMAIL } });
+  const creds = resolveAdminSeedCreds();
+  if (!creds) {
+    console.warn(
+      "[7fx] Skipping auto-seed admin: set ADMIN_EMAIL and ADMIN_PASSWORD (min 8 chars) in production env."
+    );
+    return;
+  }
+
+  // Disable legacy known-default admin in production if env admin is configured separately.
+  if (isProductionRuntime() && creds.source === "env") {
+    const legacy = await prisma.user.findUnique({ where: { email: DEV_ADMIN_EMAIL } });
+    if (legacy && legacy.email !== creds.email) {
+      const looksLikeDefault =
+        (await bcrypt.compare(DEV_ADMIN_PASSWORD, legacy.passwordHash)) === true;
+      if (looksLikeDefault) {
+        await prisma.user.update({
+          where: { id: legacy.id },
+          data: { active: false, role: "TRADER" },
+        });
+        console.log("[7fx] Disabled legacy default admin account in production");
+      }
+    }
+  }
+
+  const existing = await prisma.user.findUnique({ where: { email: creds.email } });
   if (existing) {
     if (existing.role !== "ADMIN") {
       await prisma.user.update({ where: { id: existing.id }, data: { role: "ADMIN" } });
     }
+    // Rotate password only when ADMIN_PASSWORD env is explicitly set for an existing admin.
+    if (creds.source === "env" && process.env.ADMIN_ROTATE_PASSWORD === "1") {
+      const passwordHash = await bcrypt.hash(creds.password, 10);
+      await prisma.user.update({
+        where: { id: existing.id },
+        data: { passwordHash, active: true, role: "ADMIN" },
+      });
+      console.log("[7fx] Rotated admin password from env for", creds.email);
+    }
     return;
   }
-  const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 10);
+  const passwordHash = await bcrypt.hash(creds.password, 10);
   await prisma.user.create({
     data: {
-      email: ADMIN_EMAIL,
+      email: creds.email,
       passwordHash,
       name: "7FX Admin",
       role: "ADMIN",
@@ -159,7 +210,7 @@ async function ensureAdminUser() {
       },
     },
   });
-  console.log("[7fx] Seeded admin user:", ADMIN_EMAIL);
+  console.log("[7fx] Seeded admin user via", creds.source + ":", creds.email);
 }
 
 const EXTRA_MEMBERS: CrmSeed[] = [
@@ -467,8 +518,10 @@ export function ensureDemoSeed(): Promise<void> {
   if (!seedPromise) {
     seedPromise = (async () => {
       try {
+        const allowDemoSeed =
+          !isProductionRuntime() || process.env.ALLOW_DEMO_SEED === "1";
         const count = await prisma.user.count();
-        if (count === 0) {
+        if (allowDemoSeed && count === 0) {
           const passwordHash = await bcrypt.hash(DEMO_PASSWORD, 10);
           await prisma.user.create({
             data: {
@@ -521,8 +574,10 @@ export function ensureDemoSeed(): Promise<void> {
         await ensureTradingSettings();
         await ensureSystemSettings();
         await ensureDesks();
-        await ensureCrmDemoMembers();
-        await ensureCrmModuleData();
+        if (allowDemoSeed) {
+          await ensureCrmDemoMembers();
+          await ensureCrmModuleData();
+        }
       } catch (err) {
         seedPromise = null;
         console.error("[7fx] Auto-seed failed:", err);

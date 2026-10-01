@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /trade
+Disallow: /profile
+
+Sitemap: https://7fx.customer.org.tr/sitemap.xml

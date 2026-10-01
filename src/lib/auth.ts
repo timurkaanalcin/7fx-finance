@@ -4,7 +4,18 @@ import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
 import { ensureDemoSeed } from "./ensure-seed";
 
-const COOKIE_NAME = "deskflow_session";
+const COOKIE_NAME = "7fx_session";
+const LEGACY_COOKIE_NAME = "deskflow_session";
+
+function sessionCookieOptions(maxAge: number) {
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax" as const,
+    path: "/",
+    maxAge,
+  };
+}
 
 function getAuthSecret(): Uint8Array {
   const secret =
@@ -45,29 +56,24 @@ export async function createSession(payload: SessionPayload) {
     .setExpirationTime("7d")
     .sign(getAuthSecret());
 
-  cookies().set(COOKIE_NAME, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 7,
-  });
+  const opts = sessionCookieOptions(60 * 60 * 24 * 7);
+  cookies().set(COOKIE_NAME, token, opts);
+  // Clear legacy cookie name if present
+  cookies().set(LEGACY_COOKIE_NAME, "", { ...opts, maxAge: 0 });
 
   return token;
 }
 
 export async function destroySession() {
-  cookies().set(COOKIE_NAME, "", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 0,
-  });
+  const opts = sessionCookieOptions(0);
+  cookies().set(COOKIE_NAME, "", opts);
+  cookies().set(LEGACY_COOKIE_NAME, "", opts);
 }
 
 export async function getSession(): Promise<SessionPayload | null> {
-  const token = cookies().get(COOKIE_NAME)?.value;
+  const token =
+    cookies().get(COOKIE_NAME)?.value ||
+    cookies().get(LEGACY_COOKIE_NAME)?.value;
   if (!token) return null;
   try {
     const { payload } = await jwtVerify(token, getAuthSecret());

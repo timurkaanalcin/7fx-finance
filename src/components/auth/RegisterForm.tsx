@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -20,6 +20,29 @@ export default function RegisterForm() {
   const [referralCode, setReferralCode] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [expectedReferral, setExpectedReferral] = useState<string | null>(null);
+  const [referralRequired, setReferralRequired] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/settings/public", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (cancelled) return;
+        setReferralRequired(data.referralRequired !== false);
+        if (typeof data.referralCode === "string" && data.referralCode) {
+          setExpectedReferral(data.referralCode);
+        }
+      } catch {
+        /* keep defaults — server still enforces */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -35,10 +58,18 @@ export default function RegisterForm() {
       setLoading(false);
       return;
     }
-    if (!referralCode.trim()) {
-      setError("Referans kodu zorunludur. / Referral code is required.");
-      setLoading(false);
-      return;
+    const code = referralCode.trim();
+    if (referralRequired) {
+      if (!code) {
+        setError("Referans kodu zorunludur. / Referral code is required.");
+        setLoading(false);
+        return;
+      }
+      if (expectedReferral && code !== expectedReferral) {
+        setError("Geçerli bir referans kodu girin. / Enter a valid referral code.");
+        setLoading(false);
+        return;
+      }
     }
     try {
       const res = await fetch("/api/auth/register", {

@@ -45,11 +45,37 @@ function timeframeSeconds(tf: string): number {
   }
 }
 
-/** Snap unix seconds to interval open. Daily/weekly keep Yahoo session stamps. */
+/** Snap unix seconds to interval open.
+ * Daily/weekly: bucket to period start so live mid does not invent a "now" stamp
+ * ahead of Yahoo's weekly/daily bar (which caused forming-bar distortion).
+ */
 function alignTime(unixSec: number, tf: string): number {
-  if (tf === "1D" || tf === "1W") return unixSec;
+  if (tf === "1D") {
+    return Math.floor(unixSec / 86400) * 86400;
+  }
+  if (tf === "1W") {
+    // Align to Monday 00:00 UTC (Yahoo weekly bars typically start Monday)
+    const day = Math.floor(unixSec / 86400);
+    const thursdayOffset = 4; // 1970-01-01 was Thursday
+    const daysSinceMonday = (day + thursdayOffset) % 7;
+    return (day - daysSinceMonday) * 86400;
+  }
   const step = timeframeSeconds(tf);
   return Math.floor(unixSec / step) * step;
+}
+
+/** Prefer extending last Yahoo bar when still inside the same D/W period. */
+function formingBarTime(nowSec: number, tf: string, lastBarTime: number | null): number {
+  const aligned = alignTime(nowSec, tf);
+  if (lastBarTime == null) return aligned;
+  if (tf === "1D" || tf === "1W") {
+    // Stay on Yahoo's last stamp until a new period bucket starts
+    if (aligned <= lastBarTime) return lastBarTime;
+    const period = tf === "1W" ? 604800 : 86400;
+    if (nowSec - lastBarTime < period) return lastBarTime;
+  }
+  if (aligned < lastBarTime) return lastBarTime;
+  return aligned;
 }
 
 function dedupeBars(bars: CandlestickData<Time>[]): CandlestickData<Time>[] {
@@ -147,14 +173,8 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
 
     const tf = timeframeRef.current;
     const nowSec = Math.floor(Date.now() / 1000);
-    let t = alignTime(nowSec, tf);
     const lastT = lastBarTimeRef.current;
-
-    // Yahoo often stamps the last historical bar with "now" (unbucketed).
-    // Never update with an older time — extend that bar instead.
-    if (lastT != null && t < lastT) {
-      t = lastT;
-    }
+    const t = formingBarTime(nowSec, tf, lastT);
 
     const prev = liveBarRef.current;
     if (!prev || prev.time !== t) {
@@ -279,9 +299,8 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
         if (bars.length && mid != null && mid > 0) {
           const last = bars[bars.length - 1];
           const nowSec = Math.floor(Date.now() / 1000);
-          let t = alignTime(nowSec, timeframe);
           const lastT = last.time as number;
-          if (t < lastT) t = lastT;
+          const t = formingBarTime(nowSec, timeframe, lastT);
 
           if (t === lastT) {
             bars = [

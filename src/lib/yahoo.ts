@@ -95,8 +95,9 @@ function timeframeStepSec(tf: string): number {
   }
 }
 
-/** Bucket intraday Yahoo stamps so live series.update() never goes backwards. */
+/** Bucket stamps so live series.update() never invents a rogue "now" weekly bar. */
 function alignOhlcTime(time: number, timeframe: string): number {
+  // Keep Yahoo's own daily/weekly session stamps — do not re-bucket historical bars.
   if (timeframe === "1D" || timeframe === "1W") return time;
   const step = timeframeStepSec(timeframe);
   return Math.floor(time / step) * step;
@@ -251,10 +252,31 @@ export async function fetchQuoteFromChart(
       lastClose ||
       Number(meta.chartPreviousClose) ||
       0;
-    const previousClose =
+    // Prefer prior completed session close from bar series (fixes XAUUSD/GC=F
+    // chartPreviousClose quirks when futures roll or meta is stale).
+    let priorFromBars = 0;
+    let sawLast = false;
+    for (let i = closes.length - 1; i >= 0; i--) {
+      const c = closes[i];
+      if (c == null || !Number.isFinite(c) || c <= 0) continue;
+      if (!sawLast) {
+        sawLast = true;
+        continue;
+      }
+      priorFromBars = c;
+      break;
+    }
+    const metaPrev =
       Number(meta.chartPreviousClose) ||
       Number(meta.previousClose) ||
-      price;
+      0;
+    let previousClose = priorFromBars || metaPrev || price;
+    // Guard absurd % (e.g. futures meta jump): if |changePct| > 25% vs prior bar, trust bar.
+    if (priorFromBars > 0 && metaPrev > 0) {
+      const pctMeta = Math.abs((price - metaPrev) / metaPrev) * 100;
+      const pctBar = Math.abs((price - priorFromBars) / priorFromBars) * 100;
+      if (pctMeta > 25 && pctBar < pctMeta) previousClose = priorFromBars;
+    }
     if (!price || !Number.isFinite(price)) {
       throw new Error(`No price for ${yahooTicker}`);
     }

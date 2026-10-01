@@ -57,10 +57,18 @@ export async function ensureSystemSettings(): Promise<SystemSettingsRow> {
 
     // One-time migrate known legacy defaults → current DEFAULT_REFERRAL_CODE
     const current = String(row.referralCode || "").trim();
+    const patch: { referralCode?: string; referralRequired?: boolean } = {};
     if (LEGACY_REFERRAL_CODES.has(current) || !current) {
+      patch.referralCode = DEFAULT_REFERRAL_CODE;
+    }
+    // Product default: referral required with exact configured code
+    if (row.referralRequired === false && process.env.FORCE_REFERRAL_REQUIRED !== "0") {
+      patch.referralRequired = true;
+    }
+    if (Object.keys(patch).length) {
       row = await prisma.systemSettings.update({
         where: { id: "default" },
-        data: { referralCode: DEFAULT_REFERRAL_CODE },
+        data: patch,
       });
     }
 

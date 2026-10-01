@@ -12,4 +12,4 @@ Dark fintech landing + demo trading terminal (forked from M1 Finance demo codeba
 - `/trade` and `/admin` keep the M1-style UI unchanged
 
 ## Seed
-- Admin email: `admin@7fx.local` (password in `prisma/seed.ts` / `src/lib/ensure-seed.ts`)
+- Admin: set via env `ADMIN_EMAIL` / `ADMIN_PASSWORD` in production (dev-only default exists locally; never auto-seeded in prod without env).

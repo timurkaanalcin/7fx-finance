@@ -56,6 +56,9 @@ export const SYMBOLS: SymbolDef[] = [
   { symbol: "EURGBP", name: "Euro / Pound", class: "FX", digits: 5, pipSize: 0.0001, contractSize: 100000, basePrice: 0.8512, spread: 0.00014, yahoo: "EURGBP=X", flag: "🇪🇺" },
   { symbol: "GBPNZD", name: "Pound / Kiwi", class: "FX", digits: 5, pipSize: 0.0001, contractSize: 100000, basePrice: 2.34033, spread: 0.0004, yahoo: "GBPNZD=X", flag: "🇬🇧" },
   { symbol: "EURJPY", name: "Euro / Yen", class: "FX", digits: 3, pipSize: 0.01, contractSize: 100000, basePrice: 162.45, spread: 0.02, yahoo: "EURJPY=X", flag: "🇪🇺" },
+  { symbol: "USDTRY", name: "US Dollar / Turkish Lira", class: "FX", digits: 4, pipSize: 0.0001, contractSize: 100000, basePrice: 34.25, spread: 0.02, yahoo: "TRY=X", flag: "🇹🇷" },
+  { symbol: "EURTRY", name: "Euro / Turkish Lira", class: "FX", digits: 4, pipSize: 0.0001, contractSize: 100000, basePrice: 37.15, spread: 0.025, yahoo: "EURTRY=X", flag: "🇹🇷" },
+  { symbol: "GBPTRY", name: "Pound / Turkish Lira", class: "FX", digits: 4, pipSize: 0.0001, contractSize: 100000, basePrice: 43.55, spread: 0.03, yahoo: "GBPTRY=X", flag: "🇹🇷" },
 
   // —— Commodities ——
   { symbol: "XAUUSD", name: "Gold / USD", class: "COMMODITY", digits: 2, pipSize: 0.01, contractSize: 100, basePrice: 2345.5, spread: 0.35, yahoo: "GC=F", flag: "🥇" },

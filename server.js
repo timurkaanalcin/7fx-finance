@@ -18,6 +18,9 @@ app
   .then(() => {
     createServer(async (req, res) => {
       try {
+        res.removeHeader("X-Powered-By");
+        res.setHeader("X-Content-Type-Options", "nosniff");
+        res.setHeader("X-Frame-Options", "SAMEORIGIN");
         const parsedUrl = parse(req.url, true);
         await handle(req, res, parsedUrl);
       } catch (err) {
