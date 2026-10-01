@@ -470,7 +470,7 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
         </div>
       </div>
 
-      <div className="absolute right-2 top-2.5 z-10 flex max-w-[62%] items-center justify-end gap-1.5 sm:right-3 sm:max-w-none md:right-3 md:top-2">
+      <div className="absolute right-[calc(0.5rem+1.5cm)] top-2.5 z-10 flex max-w-[62%] items-center justify-end gap-1.5 sm:right-[calc(0.75rem+1.5cm)] sm:max-w-none md:right-[calc(0.75rem+1.5cm)] md:top-2">
         <span className="hidden rounded-control border border-desk-border/60 bg-desk-panel/70 px-2 py-1 text-[10px] tabular-nums text-desk-muted sm:inline">
           {utcClock}
         </span>
