@@ -301,22 +301,26 @@ export default function TerminalShell() {
           {/* Chart + history (desktop history sits under chart, flush with order ticket) */}
           <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
             <div className="relative flex min-h-[44vh] flex-[1.2] md:min-h-0 md:flex-[1.2]">
-              <TradingChart
-                symbol={symbol}
-                timeframe={timeframe}
-                onTimeframe={setTimeframe}
-                price={prices[symbol]}
-              />
-              <ToolRail />
-              <div className="pointer-events-none absolute inset-x-0 bottom-3 z-20 flex justify-center md:bottom-4">
-                <button
-                  type="button"
-                  onClick={() => openOrder("BUY")}
-                  className="pointer-events-auto rounded-full bg-desk-accent px-8 py-3 text-[13px] font-bold tracking-[0.14em] text-desk-accent-ink shadow-accent-glow-sm transition hover:brightness-110 active:scale-[0.98] md:px-10 md:py-3.5 md:text-sm"
-                >
-                  İŞLEM
-                </button>
+              {/* Chart wrapper: İŞLEM overlays chart bottom-right (not ToolRail / panels) */}
+              <div className="relative min-h-0 min-w-0 flex-1">
+                <TradingChart
+                  symbol={symbol}
+                  timeframe={timeframe}
+                  onTimeframe={setTimeframe}
+                  price={prices[symbol]}
+                />
+                <div className="pointer-events-none absolute bottom-3 right-3 z-20 md:bottom-4 md:right-4">
+                  <button
+                    type="button"
+                    onClick={() => openOrder("BUY")}
+                    aria-label="İşlem emri aç"
+                    className="pointer-events-auto rounded-full bg-desk-accent px-7 py-2.5 text-[13px] font-bold tracking-[0.14em] text-desk-accent-ink shadow-accent-glow-sm transition hover:brightness-110 active:scale-[0.98] md:px-9 md:py-3 md:text-sm"
+                  >
+                    İŞLEM
+                  </button>
+                </div>
               </div>
+              <ToolRail />
             </div>
 
             {/* Desktop bottom panels — taller, aligned with right market column */}
