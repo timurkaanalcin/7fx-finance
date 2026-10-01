@@ -23,6 +23,7 @@ export default function LoginForm() {
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
@@ -31,8 +32,7 @@ export default function LoginForm() {
         setError(data.error || "Giriş başarısız");
         return;
       }
-      router.push(data.user?.role === "ADMIN" ? "/admin" : "/trade");
-      router.refresh();
+      window.location.assign(data.user?.role === "ADMIN" ? "/admin" : "/trade");
     } catch {
       setError("Bağlantı hatası");
     } finally {

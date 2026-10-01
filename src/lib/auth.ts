@@ -49,18 +49,33 @@ export async function verifyPassword(password: string, hash: string) {
   return bcrypt.compare(password, hash);
 }
 
-export async function createSession(payload: SessionPayload) {
-  const token = await new SignJWT({ ...payload })
+export async function signSessionToken(payload: SessionPayload): Promise<string> {
+  return new SignJWT({ ...payload })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("7d")
     .sign(getAuthSecret());
+}
 
+/** Attach session cookies onto a NextResponse (preferred in Route Handlers). */
+export function attachSessionCookie(res: { cookies: { set: (name: string, value: string, opts: Record<string, unknown>) => void } }, token: string) {
+  const opts = sessionCookieOptions(60 * 60 * 24 * 7);
+  res.cookies.set(COOKIE_NAME, token, opts);
+  res.cookies.set(LEGACY_COOKIE_NAME, "", { ...opts, maxAge: 0 });
+}
+
+export function clearSessionCookie(res: { cookies: { set: (name: string, value: string, opts: Record<string, unknown>) => void } }) {
+  const opts = sessionCookieOptions(0);
+  res.cookies.set(COOKIE_NAME, "", opts);
+  res.cookies.set(LEGACY_COOKIE_NAME, "", opts);
+}
+
+/** Legacy helper for Server Components / Server Actions. */
+export async function createSession(payload: SessionPayload) {
+  const token = await signSessionToken(payload);
   const opts = sessionCookieOptions(60 * 60 * 24 * 7);
   cookies().set(COOKIE_NAME, token, opts);
-  // Clear legacy cookie name if present
   cookies().set(LEGACY_COOKIE_NAME, "", { ...opts, maxAge: 0 });
-
   return token;
 }
 

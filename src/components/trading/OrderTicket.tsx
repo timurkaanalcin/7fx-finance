@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { formatPrice } from "@/lib/symbols";
 import type { PriceTick, SymbolDef } from "./types";
 
@@ -9,11 +9,48 @@ type Props = {
   symbols: SymbolDef[];
   price?: PriceTick;
   onPlaced: () => void;
+  onClose?: () => void;
+  /** When true, render as centered modal overlay */
+  modal?: boolean;
+  initialSide?: "BUY" | "SELL";
   className?: string;
 };
 
-export default function OrderTicket({ symbol, symbols, price, onPlaced, className = "" }: Props) {
-  const [side, setSide] = useState<"BUY" | "SELL">("BUY");
+function defaultSlTp(
+  side: "BUY" | "SELL",
+  mid: number,
+  digits: number
+): { sl: string; tp: string } {
+  if (!mid || !Number.isFinite(mid)) return { sl: "", tp: "" };
+  // ~0.5% buffer from mid as a sensible starter (user can edit)
+  const pct = 0.005;
+  const slRaw = side === "BUY" ? mid * (1 - pct) : mid * (1 + pct);
+  const tpRaw = side === "BUY" ? mid * (1 + pct) : mid * (1 - pct);
+  return {
+    sl: slRaw.toFixed(digits),
+    tp: tpRaw.toFixed(digits),
+  };
+}
+
+function fmtUsd(n: number): string {
+  if (!Number.isFinite(n) || n <= 0) return "—";
+  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(2)}M`;
+  if (n >= 10_000) return `$${n.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
+  if (n >= 100) return `$${n.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
+  return `$${n.toFixed(2)}`;
+}
+
+export default function OrderTicket({
+  symbol,
+  symbols,
+  price,
+  onPlaced,
+  onClose,
+  modal = false,
+  initialSide = "BUY",
+  className = "",
+}: Props) {
+  const [side, setSide] = useState<"BUY" | "SELL">(initialSide);
   const [type, setType] = useState<"MARKET" | "LIMIT" | "STOP">("MARKET");
   const [volume, setVolume] = useState("0.10");
   const [limitPrice, setLimitPrice] = useState("");
@@ -25,21 +62,86 @@ export default function OrderTicket({ symbol, symbols, price, onPlaced, classNam
   const [msg, setMsg] = useState("");
 
   const def = symbols.find((s) => s.symbol === symbol);
+  const digits = def?.digits ?? 5;
 
+  // Reset form only when symbol (or initial side) changes — NOT on every live tick
   useEffect(() => {
-    if (price) setLimitPrice(formatPrice(symbol, price.mid));
+    setSide(initialSide);
+    setType("MARKET");
+    setVolume("0.10");
     setSl("");
     setTp("");
     setShowSl(false);
     setShowTp(false);
-  }, [symbol, price]);
+    setMsg("");
+    if (price?.mid) setLimitPrice(formatPrice(symbol, price.mid));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally ignore live price ticks
+  }, [symbol, initialSide]);
+
+  // Keep limit field roughly synced while editing MARKET→LIMIT without wiping SL/TP
+  useEffect(() => {
+    if (type !== "MARKET" && price?.mid && !limitPrice) {
+      setLimitPrice(formatPrice(symbol, price.mid));
+    }
+  }, [type, price?.mid, symbol, limitPrice]);
+
+  const notional = useMemo(() => {
+    const vol = Number(volume);
+    const mid = price?.mid ?? 0;
+    const contract = def?.contractSize ?? 1;
+    if (!Number.isFinite(vol) || vol <= 0 || !mid) return 0;
+    return vol * contract * mid;
+  }, [volume, price?.mid, def?.contractSize]);
+
+  function enableSl() {
+    setShowSl((v) => {
+      if (v) {
+        setSl("");
+        return false;
+      }
+      const mid = (price?.mid ?? Number(limitPrice)) || 0;
+      const d = defaultSlTp(side, mid, digits);
+      setSl(d.sl);
+      return true;
+    });
+  }
+
+  function enableTp() {
+    setShowTp((v) => {
+      if (v) {
+        setTp("");
+        return false;
+      }
+      const mid = (price?.mid ?? Number(limitPrice)) || 0;
+      const d = defaultSlTp(side, mid, digits);
+      setTp(d.tp);
+      return true;
+    });
+  }
 
   async function submit() {
     setBusy(true);
     setMsg("");
     try {
+      const stopLoss =
+        showSl && sl.trim() !== "" && Number.isFinite(Number(sl)) ? Number(sl) : undefined;
+      const takeProfit =
+        showTp && tp.trim() !== "" && Number.isFinite(Number(tp)) ? Number(tp) : undefined;
+
+      if (showSl && stopLoss == null) {
+        setMsg("Stop Loss fiyatı girin");
+        setBusy(false);
+        return;
+      }
+      if (showTp && takeProfit == null) {
+        setMsg("Take Profit fiyatı girin");
+        setBusy(false);
+        return;
+      }
+
       const res = await fetch("/api/orders", {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           symbol,
@@ -47,17 +149,23 @@ export default function OrderTicket({ symbol, symbols, price, onPlaced, classNam
           type,
           volume: Number(volume),
           price: type === "MARKET" ? undefined : Number(limitPrice),
-          stopLoss: showSl && sl ? Number(sl) : undefined,
-          takeProfit: showTp && tp ? Number(tp) : undefined,
+          stopLoss,
+          takeProfit,
         }),
       });
       const data = await res.json();
       if (!res.ok) {
         setMsg(data.error || "Hata");
+        if (res.status === 401) {
+          setMsg("Oturum yok — tekrar giriş yapın");
+        }
         return;
       }
       setMsg(type === "MARKET" ? "Pozisyon açıldı" : "Bekleyen emir oluşturuldu");
       onPlaced();
+      if (onClose) {
+        window.setTimeout(() => onClose(), 650);
+      }
     } catch {
       setMsg("Bağlantı hatası");
     } finally {
@@ -68,17 +176,27 @@ export default function OrderTicket({ symbol, symbols, price, onPlaced, classNam
   const inputCls =
     "w-full rounded-[12px] border border-desk-border/80 bg-desk-bg px-3 py-2.5 text-sm text-desk-text outline-none transition-colors focus:border-desk-accent md:rounded-control md:px-2.5 md:py-2";
 
-  return (
-    <aside
-      className={`flex w-full shrink-0 flex-col border-l border-desk-border bg-desk-panel md:w-[268px] ${className}`}
-    >
+  const body = (
+    <>
       <div className="flex items-center justify-between border-b border-desk-border/80 px-3.5 py-3 md:px-3 md:py-2.5">
         <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-desk-muted">
           Emir Bileti
         </span>
-        <span className="rounded-full border border-desk-border/60 bg-desk-elev/80 px-2.5 py-0.5 text-[10px] font-semibold text-desk-text">
-          {def?.flag} {symbol}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="rounded-full border border-desk-border/60 bg-desk-elev/80 px-2.5 py-0.5 text-[10px] font-semibold text-desk-text">
+            {def?.flag} {symbol}
+          </span>
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Kapat"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-desk-border/60 text-desk-muted hover:bg-desk-hover hover:text-desk-text"
+            >
+              ×
+            </button>
+          )}
+        </div>
       </div>
       <div className="min-h-0 flex-1 space-y-3.5 overflow-y-auto p-3.5 md:space-y-3 md:p-3">
         <div className="grid grid-cols-2 gap-2">
@@ -137,10 +255,18 @@ export default function OrderTicket({ symbol, symbols, price, onPlaced, classNam
         </div>
 
         <div>
-          <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-desk-muted">
-            Hacim (Lot)
+          <div className="mb-1.5 flex items-end justify-between gap-2">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-desk-muted">
+              Hacim (Lot)
+            </span>
+            <span
+              className="text-[10px] font-semibold tabular-nums text-desk-muted"
+              title="Yaklaşık işlem büyüklüğü (lot × kontrat × fiyat)"
+            >
+              ≈ {fmtUsd(notional)}
+            </span>
           </div>
-          <div className="flex items-center gap-2 md:gap-1.5">
+          <div className="relative flex items-center gap-2 md:gap-1.5">
             <button
               type="button"
               onClick={() =>
@@ -173,6 +299,11 @@ export default function OrderTicket({ symbol, symbols, price, onPlaced, classNam
               +
             </button>
           </div>
+          <div className="mt-1 flex justify-end">
+            <span className="text-[10px] tabular-nums text-desk-muted/80">
+              Notional {fmtUsd(notional)}
+            </span>
+          </div>
         </div>
 
         {type !== "MARKET" && (
@@ -191,12 +322,7 @@ export default function OrderTicket({ symbol, symbols, price, onPlaced, classNam
         <div className="grid grid-cols-2 gap-2">
           <button
             type="button"
-            onClick={() => {
-              setShowSl((v) => {
-                if (v) setSl("");
-                return !v;
-              });
-            }}
+            onClick={enableSl}
             className={`rounded-[12px] border py-2.5 text-xs font-semibold transition md:rounded-control md:py-2 ${
               showSl
                 ? "border-desk-sell/50 bg-desk-sell/90 text-white"
@@ -207,12 +333,7 @@ export default function OrderTicket({ symbol, symbols, price, onPlaced, classNam
           </button>
           <button
             type="button"
-            onClick={() => {
-              setShowTp((v) => {
-                if (v) setTp("");
-                return !v;
-              });
-            }}
+            onClick={enableTp}
             className={`rounded-[12px] border py-2.5 text-xs font-semibold transition md:rounded-control md:py-2 ${
               showTp
                 ? "border-desk-buy/50 bg-desk-buy/90 text-white"
@@ -270,6 +391,34 @@ export default function OrderTicket({ symbol, symbols, price, onPlaced, classNam
           </div>
         )}
       </div>
+    </>
+  );
+
+  if (modal) {
+    return (
+      <div
+        className="fixed inset-0 z-[80] flex items-end justify-center bg-black/55 p-0 backdrop-blur-[2px] sm:items-center sm:p-4"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Emir bileti"
+        onClick={(e) => {
+          if (e.target === e.currentTarget && onClose) onClose();
+        }}
+      >
+        <div
+          className={`flex max-h-[92vh] w-full max-w-[420px] flex-col overflow-hidden rounded-t-[20px] border border-desk-border bg-desk-panel shadow-2xl sm:rounded-[16px] ${className}`}
+        >
+          {body}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <aside
+      className={`flex w-full shrink-0 flex-col border-l border-desk-border bg-desk-panel md:w-[268px] ${className}`}
+    >
+      {body}
     </aside>
   );
 }

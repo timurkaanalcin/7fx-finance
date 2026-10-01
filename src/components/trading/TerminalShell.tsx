@@ -46,6 +46,8 @@ export default function TerminalShell() {
   const [depositOpen, setDepositOpen] = useState(false);
   const [priceError, setPriceError] = useState<string | null>(null);
   const [marginModalOpen, setMarginModalOpen] = useState(false);
+  const [orderOpen, setOrderOpen] = useState(false);
+  const [orderSide, setOrderSide] = useState<"BUY" | "SELL">("BUY");
   const [pendingBalanceReq, setPendingBalanceReq] = useState<BalanceRequestRow | null>(null);
   const [balanceReqBanner, setBalanceReqBanner] = useState<BalanceRequestRow | null>(null);
   /** Once per margin-call episode: suppress re-open until call clears */
@@ -54,7 +56,7 @@ export default function TerminalShell() {
 
   const refreshBalanceRequests = useCallback(async () => {
     try {
-      const res = await fetch("/api/balance-requests");
+      const res = await fetch("/api/balance-requests", { credentials: "include" });
       if (!res.ok) return;
       const data = await res.json();
       const list: BalanceRequestRow[] = data.requests || [];
@@ -71,7 +73,7 @@ export default function TerminalShell() {
   }, []);
 
   const refreshAccount = useCallback(async () => {
-    const res = await fetch("/api/auth/me");
+    const res = await fetch("/api/auth/me", { credentials: "include" });
     if (res.status === 401) {
       router.push("/login");
       return;
@@ -83,9 +85,9 @@ export default function TerminalShell() {
 
   const refreshPositions = useCallback(async () => {
     const [openRes, closedRes, ordersRes] = await Promise.all([
-      fetch("/api/positions?status=OPEN"),
-      fetch("/api/positions?status=CLOSED"),
-      fetch("/api/orders"),
+      fetch("/api/positions?status=OPEN", { credentials: "include" }),
+      fetch("/api/positions?status=CLOSED", { credentials: "include" }),
+      fetch("/api/orders", { credentials: "include" }),
     ]);
     if (openRes.ok) setOpenPositions(await openRes.json());
     if (closedRes.ok) setClosedPositions(await closedRes.json());
@@ -196,14 +198,19 @@ export default function TerminalShell() {
   }, [account]);
 
   async function onLogout() {
-    await fetch("/api/auth/logout", { method: "POST" });
-    router.push("/login");
-    router.refresh();
+    await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+    window.location.assign("/login");
+  }
+
+  function openOrder(side: "BUY" | "SELL" = "BUY") {
+    setOrderSide(side);
+    setOrderOpen(true);
   }
 
   async function onClosePosition(id: string) {
     await fetch("/api/positions/close", {
       method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id }),
     });
@@ -213,6 +220,7 @@ export default function TerminalShell() {
   async function onCancelOrder(id: string) {
     await fetch("/api/orders/cancel", {
       method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id }),
     });
@@ -292,7 +300,7 @@ export default function TerminalShell() {
         <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden md:flex-row">
           {/* Chart + history (desktop history sits under chart, flush with order ticket) */}
           <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-            <div className="flex min-h-[44vh] flex-[1.2] md:min-h-0 md:flex-[1.2]">
+            <div className="relative flex min-h-[44vh] flex-[1.2] md:min-h-0 md:flex-[1.2]">
               <TradingChart
                 symbol={symbol}
                 timeframe={timeframe}
@@ -300,6 +308,15 @@ export default function TerminalShell() {
                 price={prices[symbol]}
               />
               <ToolRail />
+              <div className="pointer-events-none absolute inset-x-0 bottom-3 z-20 flex justify-center md:bottom-4">
+                <button
+                  type="button"
+                  onClick={() => openOrder("BUY")}
+                  className="pointer-events-auto rounded-full bg-desk-accent px-8 py-3 text-[13px] font-bold tracking-[0.14em] text-desk-accent-ink shadow-accent-glow-sm transition hover:brightness-110 active:scale-[0.98] md:px-10 md:py-3.5 md:text-sm"
+                >
+                  İŞLEM
+                </button>
+              </div>
             </div>
 
             {/* Desktop bottom panels — taller, aligned with right market column */}
@@ -326,17 +343,21 @@ export default function TerminalShell() {
                 onSelect={(s) => {
                   setSymbol(s);
                   setMobileTab("order");
+                  openOrder("BUY");
                 }}
               />
             )}
             {mobileTab === "order" && (
-              <OrderTicket
-                className="h-full border-l-0"
-                symbol={symbol}
-                symbols={symbols}
-                price={prices[symbol]}
-                onPlaced={refreshAll}
-              />
+              <div className="flex h-full flex-col items-center justify-center gap-3 bg-desk-panel px-6 text-center">
+                <p className="text-sm text-desk-muted">Emir vermek için İŞLEM butonuna dokunun.</p>
+                <button
+                  type="button"
+                  onClick={() => openOrder("BUY")}
+                  className="rounded-full bg-desk-accent px-8 py-3 text-sm font-bold tracking-[0.12em] text-desk-accent-ink shadow-accent-glow-sm"
+                >
+                  İŞLEM
+                </button>
+              </div>
             )}
             {mobileTab === "positions" && (
               <BottomPanels
@@ -353,15 +374,7 @@ export default function TerminalShell() {
             </div>
           </div>
 
-          {/* Desktop order ticket — full height beside chart + history */}
-          <div className="hidden h-full shrink-0 md:flex">
-            <OrderTicket
-              symbol={symbol}
-              symbols={symbols}
-              price={prices[symbol]}
-              onPlaced={refreshAll}
-            />
-          </div>
+          {/* Right Al/Sat panel removed — orders via İŞLEM modal */}
         </div>
       </div>
 
@@ -378,7 +391,10 @@ export default function TerminalShell() {
             <button
               key={t.id}
               type="button"
-              onClick={() => setMobileTab(t.id)}
+              onClick={() => {
+                setMobileTab(t.id);
+                if (t.id === "order") openOrder("BUY");
+              }}
               className={`fx-desk-seg__btn ${
                 mobileTab === t.id ? "fx-desk-seg__btn--active" : ""
               }`}
@@ -390,6 +406,17 @@ export default function TerminalShell() {
       </nav>
 
       <FooterTicker symbols={symbols} prices={prices} onSelect={setSymbol} />
+      {orderOpen && (
+        <OrderTicket
+          modal
+          symbol={symbol}
+          symbols={symbols}
+          price={prices[symbol]}
+          initialSide={orderSide}
+          onPlaced={refreshAll}
+          onClose={() => setOrderOpen(false)}
+        />
+      )}
       <DepositModal
         open={depositOpen}
         onClose={() => setDepositOpen(false)}

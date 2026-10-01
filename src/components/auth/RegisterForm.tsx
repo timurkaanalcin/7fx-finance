@@ -74,6 +74,7 @@ export default function RegisterForm() {
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email,
@@ -89,8 +90,7 @@ export default function RegisterForm() {
         setError(data.error || "Kayıt başarısız");
         return;
       }
-      router.push(data.user?.role === "ADMIN" ? "/admin" : "/trade");
-      router.refresh();
+      window.location.assign("/trade");
     } catch {
       setError("Bağlantı hatası");
     } finally {

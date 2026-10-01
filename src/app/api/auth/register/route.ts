@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { createSession, hashPassword } from "@/lib/auth";
+import { attachSessionCookie, hashPassword, signSessionToken } from "@/lib/auth";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import {
   ensureSystemSettings,
@@ -84,12 +84,18 @@ export async function POST(req: Request) {
     });
 
     const role = user.role || "TRADER";
-    await createSession({ userId: user.id, email: user.email, name: user.name, role });
-
-    return NextResponse.json({
+    const token = await signSessionToken({
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+      role,
+    });
+    const res = NextResponse.json({
       ok: true,
       user: { id: user.id, email: user.email, name: user.name, role },
     });
+    attachSessionCookie(res, token);
+    return res;
   } catch (e) {
     console.error(e);
     return NextResponse.json({ error: "Kayıt hatası" }, { status: 500 });
