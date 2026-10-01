@@ -39,15 +39,15 @@ export default function TradingGroupsPage() {
           onChange={(e) => setName(e.target.value)}
           placeholder="Grup adı"
           required
-          className="rounded border border-slate-700 bg-[#0a1020] px-2 py-1.5"
+          className="rounded border border-neutral-300 bg-[#ffffff] px-2 py-1.5"
         />
-        <button type="submit" className="rounded bg-sky-600 px-3 py-1.5">
+        <button type="submit" className="rounded bg-black text-white px-3 py-1.5">
           Ekle
         </button>
       </form>
-      <div className="overflow-x-auto rounded-lg border border-slate-800">
+      <div className="overflow-x-auto rounded-lg border border-neutral-200">
         <table className="w-full text-left text-xs">
-          <thead className="bg-[#0a1020] text-slate-500">
+          <thead className="bg-[#ffffff] text-neutral-500">
             <tr>
               <th className="px-3 py-2">Ad</th>
               <th className="px-3 py-2">Müşteri sayısı</th>
@@ -55,14 +55,14 @@ export default function TradingGroupsPage() {
           </thead>
           <tbody>
             {groups.map((g) => (
-              <tr key={g.id} className="border-t border-slate-800">
+              <tr key={g.id} className="border-t border-neutral-200">
                 <td className="px-3 py-2 font-medium">{g.name}</td>
                 <td className="px-3 py-2">{g.customersCount}</td>
               </tr>
             ))}
             {groups.length === 0 && (
               <tr>
-                <td colSpan={2} className="px-3 py-8 text-center text-slate-500">
+                <td colSpan={2} className="px-3 py-8 text-center text-neutral-500">
                   Grup yok
                 </td>
               </tr>

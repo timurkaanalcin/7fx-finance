@@ -1,20 +1,23 @@
-# 7FX brand tokens
+# 7FX brand tokens (= HRAM 1:1)
 
-Extracted from `7fx-mark.png` (neon green on black).
+Aligned to HRAM black / white / gray system (`nest-web-prototype` / hram.tr).
 
 | Token | Hex | Use |
 |-------|-----|-----|
-| `--accent` / primary | `#68F848` | CTAs, active, focus, logo match |
-| `--accent-soft` | `#8CFF6E` | Gradient highlight |
-| `--accent-strong` | `#3DB82A` | Text accents on light surfaces, gradient depth |
-| `--accent-ink` | `#0a0a0a` | Text on neon fills |
+| `--accent` / primary | `#111111` | CTAs, active nav, focus (light surfaces + CRM) |
+| `--accent-ink` | `#ffffff` | Text on black fills |
+| `--accent-soft` | `#2a2a2a` | Soft gray highlight |
+| `desk.accent` (trade) | `#ffffff` | Dark terminal chrome accent (HRAM TV) |
+| `desk.accent-ink` | `#000000` | Text on white trade chrome fills |
 | `--bg` | `#000000` | Terminal / dark surfaces |
 | `--bg-panel` | `#0a0a0a` | Panels |
-| `--bg-elevated` | `#141414` | Elevated cards |
-| `--text` | `#e8eef8` | Primary text (dark UI) |
-| `--text-muted` | `#8b97b0` | Secondary text |
-| `--buy` | `#16c784` | Buy / positive (distinct from brand accent) |
-| `--sell` | `#ea3943` | Sell / negative |
+| `--crm-bg` | `#f7f7f7` | Admin/CRM page background |
+| `--crm-card` | `#ffffff` | CRM cards / sidebar |
+| `--text` (dark UI) | `#d1d4dc` | Primary text on dark |
+| `--text-muted` | `#787b86` | Secondary text on dark |
+| Landing / auth ink | `#111111` on `#ffffff` | Marketing + auth |
+| `--buy` | `#26a69a` | Buy / positive (HRAM TV green) |
+| `--sell` | `#ef5350` | Sell / negative (HRAM TV red) |
 | `--warn` | `#f5a524` | Warnings |
 
-Restraint: neon is for accents only — not full-bleed neon backgrounds.
+Landing + auth + CRM stay light; trade terminal stays dark — same split as HRAM.

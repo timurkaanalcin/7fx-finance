@@ -66,7 +66,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
               onClick={() => setFilter(f.id)}
               className={`shrink-0 rounded-[8px] px-2 py-1 text-[10px] font-semibold transition-colors md:rounded-[7px] md:px-1.5 md:py-0.5 md:font-medium ${
                 filter === f.id
-                  ? "bg-desk-accent text-white shadow-accent-glow-sm"
+                  ? "bg-desk-accent text-desk-accent-ink shadow-accent-glow-sm"
                   : "bg-desk-elev/80 text-desk-muted hover:bg-desk-hover hover:text-desk-text"
               }`}
             >
@@ -94,7 +94,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
             >
               {active && (
                 <span
-                  className="absolute bottom-1 left-0 top-1 w-[3px] rounded-r-full bg-desk-accent shadow-[0_0_8px_rgba(104,248,72,0.6)] md:bottom-0.5 md:top-0.5"
+                  className="absolute bottom-1 left-0 top-1 w-[3px] rounded-r-full bg-desk-accent shadow-[0_0_8px_rgba(255,255,255,0.5)] md:bottom-0.5 md:top-0.5"
                   aria-hidden
                 />
               )}

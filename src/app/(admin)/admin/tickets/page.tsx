@@ -75,7 +75,7 @@ export default function TicketsPage() {
   return (
     <div>
       <h1 className="mb-3 text-lg font-semibold">Biletler / Yatırmalar</h1>
-      <p className="mb-3 text-[11px] text-slate-500">
+      <p className="mb-3 text-[11px] text-neutral-500">
         Para yatırma, para çekme ve marjin çağrısı talepleri burada listelenir. Onay,
         trader&apos;ın 1:1 trading Account bakiyesini kredilendirir.
       </p>
@@ -83,7 +83,7 @@ export default function TicketsPage() {
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="rounded border border-slate-700 bg-[#0a1020] px-2 py-1.5"
+          className="rounded border border-neutral-300 bg-[#ffffff] px-2 py-1.5"
         >
           <option value="">Tüm durumlar</option>
           <option value="PENDING">PENDING</option>
@@ -93,27 +93,27 @@ export default function TicketsPage() {
         <select
           value={kind}
           onChange={(e) => setKind(e.target.value)}
-          className="rounded border border-slate-700 bg-[#0a1020] px-2 py-1.5"
+          className="rounded border border-neutral-300 bg-[#ffffff] px-2 py-1.5"
         >
           <option value="all">Tüm tipler</option>
           <option value="deposit">Yatırma</option>
           <option value="margin">Marjin</option>
           <option value="withdraw">Para Çekme</option>
         </select>
-        <Link href="/admin/deposits" className="rounded bg-slate-800 px-2 py-1.5 hover:bg-slate-700">
+        <Link href="/admin/deposits" className="rounded bg-neutral-100 px-2 py-1.5 hover:bg-neutral-200">
           Eski yatırma ekranı
         </Link>
         <Link
           href="/admin/balance-requests"
-          className="rounded bg-slate-800 px-2 py-1.5 hover:bg-slate-700"
+          className="rounded bg-neutral-100 px-2 py-1.5 hover:bg-neutral-200"
         >
           Eski marjin ekranı
         </Link>
       </div>
       {msg && <p className="mb-2 text-xs text-emerald-400">{msg}</p>}
-      <div className="overflow-x-auto rounded-lg border border-slate-800">
+      <div className="overflow-x-auto rounded-lg border border-neutral-200">
         <table className="w-full text-left text-[11px]">
-          <thead className="bg-[#0a1020] text-slate-500">
+          <thead className="bg-[#ffffff] text-neutral-500">
             <tr>
               <th className="px-2 py-2">Tip</th>
               <th className="px-2 py-2">Tutar</th>
@@ -127,7 +127,7 @@ export default function TicketsPage() {
           </thead>
           <tbody>
             {tickets.map((t) => (
-              <tr key={`${t.kind}-${t.id}`} className="border-t border-slate-800">
+              <tr key={`${t.kind}-${t.id}`} className="border-t border-neutral-200">
                 <td className="px-2 py-1.5">
                   <span
                     className={`rounded px-1 py-0.5 text-[9px] ${
@@ -148,16 +148,16 @@ export default function TicketsPage() {
                   <Link href={`/admin/traders/${t.customerId}`} className="text-sky-400 hover:underline">
                     {t.customer}
                   </Link>
-                  <div className="text-[9px] text-slate-500">{t.customerEmail}</div>
+                  <div className="text-[9px] text-neutral-500">{t.customerEmail}</div>
                 </td>
-                <td className="px-2 py-1.5 font-mono text-[9px] text-slate-500">
+                <td className="px-2 py-1.5 font-mono text-[9px] text-neutral-500">
                   {(t.tradingAccountId || "—").slice(0, 12)}
                 </td>
                 <td className="px-2 py-1.5">{t.method}</td>
                 <td className="px-2 py-1.5">
                   <StatusBadge status={t.status} />
                 </td>
-                <td className="px-2 py-1.5 text-slate-500">
+                <td className="px-2 py-1.5 text-neutral-500">
                   {new Date(t.openedAt).toLocaleString("tr-TR")}
                 </td>
                 <td className="px-2 py-1.5">
@@ -184,7 +184,7 @@ export default function TicketsPage() {
             ))}
             {tickets.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-3 py-8 text-center text-slate-500">
+                <td colSpan={8} className="px-3 py-8 text-center text-neutral-500">
                   Bilet yok
                 </td>
               </tr>

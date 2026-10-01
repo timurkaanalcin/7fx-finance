@@ -76,7 +76,7 @@ export default function ReportPage() {
       <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
         <div>
           <h1 className="text-lg font-semibold">Analitik · Rapor</h1>
-          <p className="text-[11px] text-slate-500">
+          <p className="text-[11px] text-neutral-500">
             Anlık özet
             {report ? ` · ${new Date(report.generatedAt).toLocaleString("tr-TR")}` : ""}
           </p>
@@ -86,7 +86,7 @@ export default function ReportPage() {
             type="button"
             disabled={busy}
             onClick={load}
-            className="rounded border border-slate-700 bg-[#0a1020] px-3 py-1.5 text-xs hover:bg-slate-800"
+            className="rounded border border-neutral-300 bg-[#ffffff] px-3 py-1.5 text-xs hover:bg-neutral-100"
           >
             Yenile
           </button>
@@ -94,7 +94,7 @@ export default function ReportPage() {
             type="button"
             disabled={!report}
             onClick={exportCsv}
-            className="rounded bg-sky-600 px-3 py-1.5 text-xs font-medium hover:bg-sky-500 disabled:opacity-50"
+            className="rounded bg-black text-white px-3 py-1.5 text-xs font-medium hover:bg-neutral-800 disabled:opacity-50"
           >
             CSV Export
           </button>
@@ -102,14 +102,14 @@ export default function ReportPage() {
       </div>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((c) => (
-          <div key={c.label} className="rounded-xl border border-slate-800 bg-[#0a1020] p-3">
-            <div className="text-[10px] uppercase text-slate-500">{c.label}</div>
+          <div key={c.label} className="rounded-xl border border-neutral-200 bg-[#ffffff] p-3">
+            <div className="text-[10px] uppercase text-neutral-500">{c.label}</div>
             <div className="mt-1 text-lg font-semibold tabular-nums">{c.value}</div>
-            {c.hint && <div className="mt-0.5 text-[10px] text-slate-600">{c.hint}</div>}
+            {c.hint && <div className="mt-0.5 text-[10px] text-neutral-400">{c.hint}</div>}
           </div>
         ))}
       </div>
-      {!report && <p className="mt-4 text-xs text-slate-500">Yükleniyor…</p>}
+      {!report && <p className="mt-4 text-xs text-neutral-500">Yükleniyor…</p>}
     </div>
   );
 }

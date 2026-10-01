@@ -148,7 +148,7 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
                     type="button"
                     onClick={() => setTab(t)}
                     className={`flex-1 rounded-md py-1.5 text-xs font-medium ${
-                      tab === t ? "bg-desk-accent text-white" : "text-desk-muted hover:bg-desk-hover"
+                      tab === t ? "bg-desk-accent text-desk-accent-ink" : "text-desk-muted hover:bg-desk-hover"
                     }`}
                   >
                     {t === "IBAN" ? "IBAN / Havale" : "Kripto"}
@@ -195,7 +195,7 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
                             <button
                               type="button"
                               onClick={() => onCopy("iban", selected.iban!)}
-                              className="shrink-0 rounded-[8px] bg-desk-accent/80 px-2 py-0.5 text-[10px] hover:bg-desk-accent"
+                              className="shrink-0 rounded-[8px] bg-desk-accent/90 px-2 py-0.5 text-[10px] text-desk-accent-ink hover:bg-desk-accent"
                             >
                               {copied === "iban" ? "Kopyalandı" : "Kopyala"}
                             </button>
@@ -221,7 +221,7 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
                             <button
                               type="button"
                               onClick={() => onCopy("addr", selected.address!)}
-                              className="rounded-[8px] bg-desk-accent/80 px-2 py-0.5 text-[10px] hover:bg-desk-accent"
+                              className="rounded-[8px] bg-desk-accent/90 px-2 py-0.5 text-[10px] text-desk-accent-ink hover:bg-desk-accent"
                             >
                               {copied === "addr" ? "Kopyalandı" : "Kopyala"}
                             </button>
@@ -269,7 +269,7 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
                 <button
                   type="submit"
                   disabled={loading || !selected}
-                  className="w-full rounded-control bg-desk-accent py-2.5 text-sm font-semibold text-white shadow-accent-glow-sm hover:brightness-110 disabled:opacity-60"
+                  className="w-full rounded-control bg-desk-accent py-2.5 text-sm font-semibold text-desk-accent-ink shadow-accent-glow-sm hover:brightness-110 disabled:opacity-60"
                 >
                   {loading ? "Gönderiliyor…" : "Bildirim gönder"}
                 </button>

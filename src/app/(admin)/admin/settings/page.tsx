@@ -66,26 +66,26 @@ export default function AdminSettingsPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-6 p-4 md:p-6">
       <div>
-        <h1 className="text-xl font-semibold text-slate-100">Sistem Ayarları</h1>
-        <p className="mt-1 text-sm text-slate-400">
+        <h1 className="text-xl font-semibold text-neutral-900">Sistem Ayarları</h1>
+        <p className="mt-1 text-sm text-neutral-500">
           Kayıt için zorunlu referans kodunu buradan yönetin. Bu kod yalnızca 7FX
           platformu (7fx.customer.org.tr) içindir. Yanlış kodla kayıt oluşturulamaz.
         </p>
       </div>
 
-      <section className="rounded-xl border border-slate-800 bg-[#0a1020] p-4 md:p-5">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400">
+      <section className="rounded-xl border border-neutral-200 bg-[#ffffff] p-4 md:p-5">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-500">
           Referans Kodu
         </h2>
-        <p className="mt-2 text-sm text-slate-400">
+        <p className="mt-2 text-sm text-neutral-500">
           Yeni kullanıcılar kayıt formunda bu kodu girmek zorundadır (zorunluluk açıkken).
         </p>
 
         {!loaded ? (
-          <p className="mt-4 text-sm text-slate-500">Yükleniyor…</p>
+          <p className="mt-4 text-sm text-neutral-500">Yükleniyor…</p>
         ) : (
           <div className="mt-4 space-y-4">
-            <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-slate-800 bg-[#070b14] px-3 py-3">
+            <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-neutral-200 bg-[#f7f7f7] px-3 py-3">
               <input
                 type="checkbox"
                 className="mt-1 h-4 w-4 rounded border-slate-600 bg-slate-900 text-sky-500"
@@ -97,7 +97,7 @@ export default function AdminSettingsPage() {
                 <span className="block text-sm font-medium text-slate-200">
                   Referans kodu zorunlu
                 </span>
-                <span className="mt-0.5 block text-xs text-slate-500">
+                <span className="mt-0.5 block text-xs text-neutral-500">
                   Kapalıysa kayıt formu kod istemez; açıkken geçerli kod şarttır.
                 </span>
               </span>
@@ -109,7 +109,7 @@ export default function AdminSettingsPage() {
               </label>
               <input
                 id="admin-referral-code"
-                className="w-full rounded-lg border border-slate-700 bg-[#070b14] px-3 py-2.5 font-mono text-slate-100 outline-none focus:border-sky-500"
+                className="w-full rounded-lg border border-neutral-300 bg-[#f7f7f7] px-3 py-2.5 font-mono text-neutral-900 outline-none focus:border-sky-500"
                 value={draft}
                 onChange={(e) => setDraft(e.target.value.replace(/[^\d]/g, ""))}
                 placeholder="Örn. 213950812"
@@ -118,7 +118,7 @@ export default function AdminSettingsPage() {
                 inputMode="numeric"
                 autoComplete="off"
               />
-              <p className="mt-1.5 text-xs text-slate-500">Yalnızca rakam (digits).</p>
+              <p className="mt-1.5 text-xs text-neutral-500">Yalnızca rakam (digits).</p>
               {dirty && (
                 <p className="mt-1.5 text-xs text-amber-400/90">Kaydedilmemiş değişiklik var</p>
               )}
@@ -128,7 +128,7 @@ export default function AdminSettingsPage() {
                 type="button"
                 disabled={busy || !draft.trim() || !dirty}
                 onClick={save}
-                className="rounded-lg bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-lg bg-black text-white px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {busy ? "Kaydediliyor…" : "Kaydet"}
               </button>
@@ -141,7 +141,7 @@ export default function AdminSettingsPage() {
                   setMsg("");
                   setErr("");
                 }}
-                className="rounded-lg border border-slate-700 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 disabled:opacity-50"
+                className="rounded-lg border border-neutral-300 px-4 py-2 text-sm text-slate-300 hover:bg-neutral-100 disabled:opacity-50"
               >
                 İptal
               </button>

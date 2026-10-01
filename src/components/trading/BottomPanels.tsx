@@ -233,7 +233,7 @@ export default function BottomPanels({
               <span
                 className={`rounded-full px-1.5 text-[10px] font-bold ${
                   tab === t.id
-                    ? "bg-desk-accent text-white"
+                    ? "bg-desk-accent text-desk-accent-ink"
                     : "bg-desk-elev text-desk-muted"
                 }`}
               >

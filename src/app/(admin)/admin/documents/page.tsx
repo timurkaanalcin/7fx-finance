@@ -99,15 +99,15 @@ export default function DocumentsPage() {
   return (
     <div>
       <h1 className="mb-1 text-lg font-semibold">Belgeler</h1>
-      <p className="mb-3 text-[11px] text-slate-500">KYC belge meta verileri — onay / red</p>
-      {msg && <p className="mb-2 text-[11px] text-slate-400">{msg}</p>}
+      <p className="mb-3 text-[11px] text-neutral-500">KYC belge meta verileri — onay / red</p>
+      {msg && <p className="mb-2 text-[11px] text-neutral-500">{msg}</p>}
       <div className="mb-3 grid gap-3 lg:grid-cols-3">
-        <div className="lg:col-span-2 overflow-x-auto rounded-lg border border-slate-800">
-          <div className="border-b border-slate-800 bg-[#0a1020] px-3 py-2">
+        <div className="lg:col-span-2 overflow-x-auto rounded-lg border border-neutral-200">
+          <div className="border-b border-neutral-200 bg-[#ffffff] px-3 py-2">
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="rounded border border-slate-700 bg-[#0d1526] px-2 py-1 text-xs"
+              className="rounded border border-neutral-300 bg-[#fafafa] px-2 py-1 text-xs"
             >
               <option value="">Tüm durumlar</option>
               {["PENDING", "APPROVED", "REJECTED"].map((s) => (
@@ -118,7 +118,7 @@ export default function DocumentsPage() {
             </select>
           </div>
           <table className="w-full text-left text-[11px]">
-            <thead className="bg-[#0a1020] text-slate-500">
+            <thead className="bg-[#ffffff] text-neutral-500">
               <tr>
                 <th className="px-2 py-2">Belge</th>
                 <th className="px-2 py-2">Tip</th>
@@ -130,10 +130,10 @@ export default function DocumentsPage() {
             </thead>
             <tbody>
               {docs.map((d) => (
-                <tr key={d.id} className="border-t border-slate-800">
+                <tr key={d.id} className="border-t border-neutral-200">
                   <td className="px-2 py-1.5">
                     <div className="font-medium">{d.name}</div>
-                    {d.note && <div className="text-slate-600">{d.note}</div>}
+                    {d.note && <div className="text-neutral-400">{d.note}</div>}
                   </td>
                   <td className="px-2 py-1.5">{d.docType}</td>
                   <td className="px-2 py-1.5">
@@ -144,7 +144,7 @@ export default function DocumentsPage() {
                   <td className="px-2 py-1.5">
                     <StatusBadge status={d.status} />
                   </td>
-                  <td className="px-2 py-1.5 text-slate-500">
+                  <td className="px-2 py-1.5 text-neutral-500">
                     {new Date(d.createdAt).toLocaleString("tr-TR")}
                   </td>
                   <td className="px-2 py-1.5 space-x-1">
@@ -173,7 +173,7 @@ export default function DocumentsPage() {
               ))}
               {docs.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-3 py-8 text-center text-slate-500">
+                  <td colSpan={6} className="px-3 py-8 text-center text-neutral-500">
                     Belge yok
                   </td>
                 </tr>
@@ -181,13 +181,13 @@ export default function DocumentsPage() {
             </tbody>
           </table>
         </div>
-        <div className="rounded-lg border border-slate-800 bg-[#0a1020] p-3">
+        <div className="rounded-lg border border-neutral-200 bg-[#ffffff] p-3">
           <h2 className="mb-2 text-xs font-semibold text-slate-300">Belge kaydı ekle</h2>
           <div className="space-y-2 text-xs">
             <select
               value={form.userId}
               onChange={(e) => setForm({ ...form, userId: e.target.value })}
-              className="w-full rounded border border-slate-700 bg-[#0d1526] px-2 py-1.5"
+              className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             >
               <option value="">Trader seç…</option>
               {traders.map((t) => (
@@ -200,12 +200,12 @@ export default function DocumentsPage() {
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               placeholder="Belge adı"
-              className="w-full rounded border border-slate-700 bg-[#0d1526] px-2 py-1.5"
+              className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             />
             <select
               value={form.docType}
               onChange={(e) => setForm({ ...form, docType: e.target.value })}
-              className="w-full rounded border border-slate-700 bg-[#0d1526] px-2 py-1.5"
+              className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             >
               {["ID", "ADDRESS", "SELFIE", "OTHER"].map((t) => (
                 <option key={t} value={t}>
@@ -217,13 +217,13 @@ export default function DocumentsPage() {
               value={form.note}
               onChange={(e) => setForm({ ...form, note: e.target.value })}
               placeholder="Not (opsiyonel)"
-              className="w-full rounded border border-slate-700 bg-[#0d1526] px-2 py-1.5"
+              className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             />
             <button
               type="button"
               disabled={busy}
               onClick={create}
-              className="w-full rounded bg-sky-600 px-3 py-1.5 font-medium hover:bg-sky-500 disabled:opacity-50"
+              className="w-full rounded bg-black text-white px-3 py-1.5 font-medium hover:bg-neutral-800 disabled:opacity-50"
             >
               Ekle
             </button>

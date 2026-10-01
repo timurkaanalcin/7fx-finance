@@ -67,11 +67,11 @@ function Field({
   if (options) {
     return (
       <label className="flex flex-col gap-1 text-xs">
-        <span className="text-slate-500">{label}</span>
+        <span className="text-neutral-500">{label}</span>
         <select
           value={value == null ? "" : String(value)}
           onChange={(e) => onChange(e.target.value)}
-          className="rounded border border-[#1e293b] bg-[#0b1220] px-2 py-1.5"
+          className="rounded border border-[#e5e5e5] bg-[#111111] px-2 py-1.5"
         >
           <option value="">—</option>
           {options.map((o) => (
@@ -91,18 +91,18 @@ function Field({
           checked={Boolean(value)}
           onChange={(e) => onChange(e.target.checked ? "true" : "false")}
         />
-        <span className="text-slate-400">{label}</span>
+        <span className="text-neutral-500">{label}</span>
       </label>
     );
   }
   return (
     <label className="flex flex-col gap-1 text-xs">
-      <span className="text-slate-500">{label}</span>
+      <span className="text-neutral-500">{label}</span>
       <input
         type={type}
         value={value == null ? "" : String(value)}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded border border-[#1e293b] bg-[#0b1220] px-2 py-1.5"
+        className="rounded border border-[#e5e5e5] bg-[#111111] px-2 py-1.5"
       />
     </label>
   );
@@ -287,17 +287,17 @@ export default function AdminUserDetailPage() {
   }
 
   if (!user) {
-    return <div className="text-sm text-slate-400">Yükleniyor…</div>;
+    return <div className="text-sm text-neutral-500">Yükleniyor…</div>;
   }
 
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center gap-3">
-        <Link href="/admin/traders" className="text-xs text-slate-400 hover:text-white">
+        <Link href="/admin/traders" className="text-xs text-neutral-500 hover:text-white">
           ← Traderlar
         </Link>
         <h1 className="text-xl font-semibold">{user.name}</h1>
-        <span className="text-xs text-slate-500">{user.email}</span>
+        <span className="text-xs text-neutral-500">{user.email}</span>
         <span
           className={`rounded px-1.5 py-0.5 text-[10px] ${
             user.active ? "bg-emerald-500/20 text-emerald-300" : "bg-red-500/20 text-red-300"
@@ -306,22 +306,22 @@ export default function AdminUserDetailPage() {
           {user.active ? "Aktif" : "Donduruldu"}
         </span>
         {tradingAccountId && (
-          <span className="rounded bg-slate-800 px-2 py-0.5 font-mono text-[10px] text-sky-300">
+          <span className="rounded bg-neutral-100 px-2 py-0.5 font-mono text-[10px] text-sky-300">
             Trading Account: {tradingAccountId}
           </span>
         )}
-        <span className="text-[10px] text-slate-600" title="Session impersonation disabled for safety">
+        <span className="text-[10px] text-neutral-400" title="Session impersonation disabled for safety">
           Terminal impersonation: kapalı
         </span>
       </div>
 
-      <div className="mb-4 flex flex-wrap gap-1 border-b border-[#1e293b] pb-2">
+      <div className="mb-4 flex flex-wrap gap-1 border-b border-[#e5e5e5] pb-2">
         {TABS.map((t) => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
             className={`rounded-md px-3 py-1.5 text-xs font-medium ${
-              tab === t.id ? "bg-blue-600 text-white" : "text-slate-400 hover:bg-[#1e293b]"
+              tab === t.id ? "bg-black text-white text-white" : "text-neutral-500 hover:bg-[#e5e5e5]"
             }`}
           >
             {t.label}
@@ -450,7 +450,7 @@ export default function AdminUserDetailPage() {
           <button
             disabled={busy}
             onClick={saveProfile}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium hover:bg-blue-500"
+            className="rounded-lg bg-black text-white px-4 py-2 text-sm font-medium hover:bg-neutral-800"
           >
             Kaydet
           </button>
@@ -459,7 +459,7 @@ export default function AdminUserDetailPage() {
 
       {tab === "finans" && (
         <div className="max-w-md space-y-3 text-xs">
-          <p className="text-slate-400">
+          <p className="text-neutral-500">
             Özsermaye (equity):{" "}
             <span className="font-semibold text-slate-200">
               {user.equity.toLocaleString("en-US", { style: "currency", currency: user.currency || "USD" })}
@@ -496,7 +496,7 @@ export default function AdminUserDetailPage() {
           <button
             disabled={busy}
             onClick={saveFinance}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium hover:bg-blue-500"
+            className="rounded-lg bg-black text-white px-4 py-2 text-sm font-medium hover:bg-neutral-800"
           >
             Finansı kaydet
           </button>
@@ -505,10 +505,10 @@ export default function AdminUserDetailPage() {
 
       {tab === "iletisim" && (
         <div>
-          <p className="mb-2 text-[11px] text-slate-500">CRM iletişim kayıtları (chat/call/not).</p>
+          <p className="mb-2 text-[11px] text-neutral-500">CRM iletişim kayıtları (chat/call/not).</p>
           <MiniTable cols={["type", "title", "description", "workerName", "createdAt"]} rows={communications} />
           {communications.length === 0 && (
-            <p className="mt-2 text-xs text-slate-600">Henüz kayıt yok — notlar sekmesinden iletişim notu ekleyebilirsiniz.</p>
+            <p className="mt-2 text-xs text-neutral-400">Henüz kayıt yok — notlar sekmesinden iletişim notu ekleyebilirsiniz.</p>
           )}
         </div>
       )}
@@ -517,7 +517,7 @@ export default function AdminUserDetailPage() {
         <div className="space-y-4">
           <div>
             <h2 className="mb-2 text-sm font-medium">Para yatırma talepleri</h2>
-            <p className="mb-2 text-[11px] text-slate-500">
+            <p className="mb-2 text-[11px] text-neutral-500">
               Onaylanan yatırmalar aynı trading Account bakiyesine yazılır.
             </p>
             <MiniTable cols={["amount", "currency", "status", "createdAt"]} rows={deposits} />
@@ -547,7 +547,7 @@ export default function AdminUserDetailPage() {
 
       {tab === "ledger" && (
         <div>
-          <p className="mb-2 text-[11px] text-slate-500">
+          <p className="mb-2 text-[11px] text-neutral-500">
             Balance history — tradingAccountId ile bağlı ledger kayıtları.
           </p>
           <MiniTable
@@ -559,8 +559,8 @@ export default function AdminUserDetailPage() {
 
       {tab === "bonus" && (
         <div className="max-w-md space-y-2 text-xs">
-          <div className="rounded-lg border border-slate-800 bg-[#0a1020] p-3">
-            <div className="text-slate-500">Bonus</div>
+          <div className="rounded-lg border border-neutral-200 bg-[#ffffff] p-3">
+            <div className="text-neutral-500">Bonus</div>
             <div className="text-lg font-semibold tabular-nums">
               {Number(user.bonus || 0).toLocaleString("en-US", {
                 style: "currency",
@@ -568,8 +568,8 @@ export default function AdminUserDetailPage() {
               })}
             </div>
           </div>
-          <div className="rounded-lg border border-slate-800 bg-[#0a1020] p-3">
-            <div className="text-slate-500">Kredi</div>
+          <div className="rounded-lg border border-neutral-200 bg-[#ffffff] p-3">
+            <div className="text-neutral-500">Kredi</div>
             <div className="text-lg font-semibold tabular-nums">
               {Number(user.credit || 0).toLocaleString("en-US", {
                 style: "currency",
@@ -577,13 +577,13 @@ export default function AdminUserDetailPage() {
               })}
             </div>
           </div>
-          <p className="text-slate-500">Düzenlemek için Finans sekmesini kullanın.</p>
+          <p className="text-neutral-500">Düzenlemek için Finans sekmesini kullanın.</p>
         </div>
       )}
 
       {tab === "belgeler" && (
         <div>
-          <p className="mb-2 text-[11px] text-slate-500">
+          <p className="mb-2 text-[11px] text-neutral-500">
             Belge durumu (üyelik): {String(form.documentsStatus || "NONE")}
           </p>
           <MiniTable cols={["name", "docType", "status", "createdAt"]} rows={documents} />
@@ -603,26 +603,26 @@ export default function AdminUserDetailPage() {
               value={noteText}
               onChange={(e) => setNoteText(e.target.value)}
               placeholder="Yeni not…"
-              className="flex-1 rounded border border-[#1e293b] bg-[#0b1220] px-3 py-2 text-sm"
+              className="flex-1 rounded border border-[#e5e5e5] bg-[#111111] px-3 py-2 text-sm"
             />
             <button
               disabled={busy}
               onClick={addNote}
-              className="rounded bg-blue-600 px-3 py-2 text-sm hover:bg-blue-500"
+              className="rounded bg-black text-white px-3 py-2 text-sm hover:bg-neutral-800"
             >
               Ekle
             </button>
           </div>
           <ul className="space-y-2">
             {notes.map((n) => (
-              <li key={n.id} className="rounded-lg border border-[#1e293b] bg-[#0f172a] p-3 text-xs">
-                <div className="mb-1 text-slate-500">
+              <li key={n.id} className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] p-3 text-xs">
+                <div className="mb-1 text-neutral-500">
                   {n.authorName || "—"} · {new Date(n.createdAt).toLocaleString("tr-TR")}
                 </div>
                 <div className="whitespace-pre-wrap text-slate-200">{n.body}</div>
               </li>
             ))}
-            {notes.length === 0 && <li className="text-slate-500">Henüz not yok</li>}
+            {notes.length === 0 && <li className="text-neutral-500">Henüz not yok</li>}
           </ul>
         </div>
       )}
@@ -632,9 +632,9 @@ export default function AdminUserDetailPage() {
 
 function MiniTable({ cols, rows }: { cols: string[]; rows: Record<string, unknown>[] }) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-[#1e293b]">
+    <div className="overflow-x-auto rounded-xl border border-[#e5e5e5]">
       <table className="w-full text-left text-xs">
-        <thead className="bg-[#0f172a] text-slate-500">
+        <thead className="bg-[#ffffff] text-neutral-500">
           <tr>
             {cols.map((c) => (
               <th key={c} className="px-3 py-2">
@@ -645,7 +645,7 @@ function MiniTable({ cols, rows }: { cols: string[]; rows: Record<string, unknow
         </thead>
         <tbody>
           {rows.map((r, i) => (
-            <tr key={String(r.id || i)} className="border-t border-[#1e293b]">
+            <tr key={String(r.id || i)} className="border-t border-[#e5e5e5]">
               {cols.map((c) => (
                 <td key={c} className="px-3 py-2 tabular-nums">
                   {r[c] == null
@@ -659,7 +659,7 @@ function MiniTable({ cols, rows }: { cols: string[]; rows: Record<string, unknow
           ))}
           {rows.length === 0 && (
             <tr>
-              <td colSpan={cols.length} className="px-3 py-8 text-center text-slate-500">
+              <td colSpan={cols.length} className="px-3 py-8 text-center text-neutral-500">
                 Kayıt yok
               </td>
             </tr>

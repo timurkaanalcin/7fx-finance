@@ -30,9 +30,9 @@ export default function WorkersPage() {
   return (
     <div>
       <h1 className="mb-3 text-lg font-semibold">Çalışanlar / Workers</h1>
-      <div className="overflow-x-auto rounded-lg border border-slate-800">
+      <div className="overflow-x-auto rounded-lg border border-neutral-200">
         <table className="w-full text-left text-xs">
-          <thead className="bg-[#0a1020] text-slate-500">
+          <thead className="bg-[#ffffff] text-neutral-500">
             <tr>
               <th className="px-3 py-2">Ad</th>
               <th className="px-3 py-2">E-posta</th>
@@ -45,12 +45,12 @@ export default function WorkersPage() {
           </thead>
           <tbody>
             {rows.map((u) => (
-              <tr key={u.id} className="border-t border-slate-800">
+              <tr key={u.id} className="border-t border-neutral-200">
                 <td className="px-3 py-2 font-medium">{u.name}</td>
-                <td className="px-3 py-2 text-slate-400">{u.email}</td>
+                <td className="px-3 py-2 text-neutral-500">{u.email}</td>
                 <td className="px-3 py-2">{u.desk || "—"}</td>
                 <td className="px-3 py-2">{u.active ? "Aktif" : "Kapalı"}</td>
-                <td className="px-3 py-2 text-[9px] text-slate-500">
+                <td className="px-3 py-2 text-[9px] text-neutral-500">
                   {[
                     u.canManageUsers && "Users",
                     u.canApproveDeposits && "Deposits",
@@ -61,7 +61,7 @@ export default function WorkersPage() {
                     .filter(Boolean)
                     .join(", ") || "—"}
                 </td>
-                <td className="px-3 py-2 text-[10px] text-slate-500">
+                <td className="px-3 py-2 text-[10px] text-neutral-500">
                   {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString("tr-TR") : "—"}
                 </td>
                 <td className="px-3 py-2">

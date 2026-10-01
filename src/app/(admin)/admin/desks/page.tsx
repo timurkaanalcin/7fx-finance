@@ -61,22 +61,22 @@ export default function DesksPage() {
           onChange={(e) => setName(e.target.value)}
           placeholder="Desk adı"
           required
-          className="rounded border border-slate-700 bg-[#0a1020] px-2 py-1.5"
+          className="rounded border border-neutral-300 bg-[#ffffff] px-2 py-1.5"
         />
         <input
           value={code}
           onChange={(e) => setCode(e.target.value)}
           placeholder="Kod (opsiyonel)"
-          className="rounded border border-slate-700 bg-[#0a1020] px-2 py-1.5"
+          className="rounded border border-neutral-300 bg-[#ffffff] px-2 py-1.5"
         />
-        <button type="submit" className="rounded bg-sky-600 px-3 py-1.5 hover:bg-sky-500">
+        <button type="submit" className="rounded bg-black text-white px-3 py-1.5 hover:bg-neutral-800">
           Ekle
         </button>
         {msg && <span className="self-center text-emerald-400">{msg}</span>}
       </form>
-      <div className="overflow-x-auto rounded-lg border border-slate-800">
+      <div className="overflow-x-auto rounded-lg border border-neutral-200">
         <table className="w-full text-left text-xs">
-          <thead className="bg-[#0a1020] text-slate-500">
+          <thead className="bg-[#ffffff] text-neutral-500">
             <tr>
               <th className="px-3 py-2">Ad</th>
               <th className="px-3 py-2">Kod</th>
@@ -90,9 +90,9 @@ export default function DesksPage() {
           </thead>
           <tbody>
             {desks.map((d) => (
-              <tr key={d.id} className="border-t border-slate-800 hover:bg-[#0a1020]/50">
+              <tr key={d.id} className="border-t border-neutral-200 hover:bg-[#ffffff]/50">
                 <td className="px-3 py-2 font-medium">{d.name}</td>
-                <td className="px-3 py-2 font-mono text-[10px] text-slate-500">{d.code || "—"}</td>
+                <td className="px-3 py-2 font-mono text-[10px] text-neutral-500">{d.code || "—"}</td>
                 <td className="px-3 py-2">{d.active ? "✓" : "✗"}</td>
                 <td className="px-3 py-2">{d.chatStatus ? "Açık" : "Kapalı"}</td>
                 <td className="px-3 py-2 tabular-nums">
@@ -101,7 +101,7 @@ export default function DesksPage() {
                 <td className="px-3 py-2">{d.tradersCount}</td>
                 <td className="px-3 py-2">{d.workersCount}</td>
                 <td className="px-3 py-2">
-                  <Link href={`/admin/desks/${d.id}`} className="rounded bg-sky-600/80 px-2 py-1">
+                  <Link href={`/admin/desks/${d.id}`} className="rounded bg-black text-white/80 px-2 py-1">
                     Detay
                   </Link>
                 </td>
@@ -109,7 +109,7 @@ export default function DesksPage() {
             ))}
             {desks.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-3 py-8 text-center text-slate-500">
+                <td colSpan={8} className="px-3 py-8 text-center text-neutral-500">
                   Desk yok — seed veya yukarıdan ekleyin
                 </td>
               </tr>

@@ -77,7 +77,7 @@ export default function AdminBalanceRequestsPage() {
             <button
               key={f || "ALL"}
               onClick={() => setFilter(f)}
-              className={`rounded px-2 py-1 text-xs ${filter === f ? "bg-blue-600" : "bg-[#243044]"}`}
+              className={`rounded px-2 py-1 text-xs ${filter === f ? "bg-black text-white" : "bg-[#e5e5e5]"}`}
             >
               {f ? STATUS_TR[f] || f : "Tümü"}
             </button>
@@ -85,7 +85,7 @@ export default function AdminBalanceRequestsPage() {
         </div>
       </div>
 
-      <div className="mb-4 space-y-1 rounded-lg border border-[#3a4658] bg-[#0f172a]/50 p-3 text-[11px] text-slate-400">
+      <div className="mb-4 space-y-1 rounded-lg border border-[#e5e5e5] bg-[#ffffff]/50 p-3 text-[11px] text-neutral-500">
         <p className="font-medium text-slate-300">Kurallar (admin)</p>
         <p>
           {ruleTr ||
@@ -103,9 +103,9 @@ export default function AdminBalanceRequestsPage() {
       </div>
 
       {msg && <p className="mb-3 text-xs text-emerald-400">{msg}</p>}
-      <div className="overflow-x-auto rounded-lg border border-[#3a4658]">
+      <div className="overflow-x-auto rounded-lg border border-[#e5e5e5]">
         <table className="w-full text-left text-xs">
-          <thead className="bg-[#1e293b] text-slate-400">
+          <thead className="bg-[#e5e5e5] text-neutral-500">
             <tr>
               <th className="px-3 py-2">Tarih</th>
               <th className="px-3 py-2">Kullanıcı</th>
@@ -118,13 +118,13 @@ export default function AdminBalanceRequestsPage() {
           </thead>
           <tbody>
             {rows.map((r) => (
-              <tr key={r.id} className="border-t border-[#3a4658]">
+              <tr key={r.id} className="border-t border-[#e5e5e5]">
                 <td className="px-3 py-2 whitespace-nowrap">
                   {new Date(r.createdAt).toLocaleString("tr-TR")}
                 </td>
                 <td className="px-3 py-2">
                   <div>{r.user.name}</div>
-                  <div className="text-slate-500">{r.user.email}</div>
+                  <div className="text-neutral-500">{r.user.email}</div>
                 </td>
                 <td className="px-3 py-2">
                   {r.type === "RESET" ? "Bakiye Sıfırlama" : "Bakiye Ekle"}
@@ -134,7 +134,7 @@ export default function AdminBalanceRequestsPage() {
                     ? r.amount.toLocaleString("en-US", { style: "currency", currency: "USD" })
                     : `→ ${DEFAULT_RESET_BALANCE.toLocaleString("en-US")} USD`}
                 </td>
-                <td className="px-3 py-2 tabular-nums text-slate-400">
+                <td className="px-3 py-2 tabular-nums text-neutral-500">
                   {r.equityAt != null ? r.equityAt.toFixed(2) : "—"} /{" "}
                   {r.marginLvl != null ? `%${r.marginLvl.toFixed(1)}` : "—"}
                 </td>
@@ -158,14 +158,14 @@ export default function AdminBalanceRequestsPage() {
                       </button>
                     </div>
                   ) : (
-                    <span className="text-slate-500">—</span>
+                    <span className="text-neutral-500">—</span>
                   )}
                 </td>
               </tr>
             ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-3 py-8 text-center text-slate-500">
+                <td colSpan={7} className="px-3 py-8 text-center text-neutral-500">
                   Kayıt yok
                 </td>
               </tr>

@@ -167,7 +167,7 @@ export default function AdminUsersPage() {
         <h1 className="text-xl font-semibold">Traderlar</h1>
         <button
           onClick={() => setShowCreate(true)}
-          className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium hover:bg-blue-500"
+          className="rounded-lg bg-black text-white px-3 py-1.5 text-xs font-medium hover:bg-neutral-800"
         >
           + Yeni üye
         </button>
@@ -175,7 +175,7 @@ export default function AdminUsersPage() {
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="E-posta, ad, telefon, broker…"
-          className="ml-auto w-full max-w-xs rounded-lg border border-[#1e293b] bg-[#0f172a] px-3 py-1.5 text-sm"
+          className="ml-auto w-full max-w-xs rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-3 py-1.5 text-sm"
         />
       </div>
 
@@ -183,7 +183,7 @@ export default function AdminUsersPage() {
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="rounded-lg border border-[#1e293b] bg-[#0f172a] px-2 py-1.5"
+          className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
         >
           <option value="all">Tüm durumlar</option>
           <option value="active">Aktif</option>
@@ -192,7 +192,7 @@ export default function AdminUsersPage() {
         <select
           value={desk}
           onChange={(e) => setDesk(e.target.value)}
-          className="rounded-lg border border-[#1e293b] bg-[#0f172a] px-2 py-1.5"
+          className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
         >
           <option value="">Tüm deskler</option>
           {desks.map((d) => (
@@ -205,12 +205,12 @@ export default function AdminUsersPage() {
           value={country}
           onChange={(e) => setCountry(e.target.value)}
           placeholder="Ülke"
-          className="w-20 rounded-lg border border-[#1e293b] bg-[#0f172a] px-2 py-1.5"
+          className="w-20 rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
         />
         <select
           value={saleStatus}
           onChange={(e) => setSaleStatus(e.target.value)}
-          className="rounded-lg border border-[#1e293b] bg-[#0f172a] px-2 py-1.5"
+          className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
         >
           <option value="">Satış durumu</option>
           {["NEW", "CONTACTED", "INTERESTED", "NO_ANSWER", "DEPOSITED", "LOST"].map((s) => (
@@ -222,7 +222,7 @@ export default function AdminUsersPage() {
         <select
           value={retentionStatus}
           onChange={(e) => setRetentionStatus(e.target.value)}
-          className="rounded-lg border border-[#1e293b] bg-[#0f172a] px-2 py-1.5"
+          className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
         >
           <option value="">Retansiyon</option>
           {["ACTIVE", "INACTIVE", "AT_RISK", "CHURNED", "VIP"].map((s) => (
@@ -231,7 +231,7 @@ export default function AdminUsersPage() {
             </option>
           ))}
         </select>
-        <label className="flex items-center gap-1 text-slate-400">
+        <label className="flex items-center gap-1 text-neutral-500">
           <input
             type="checkbox"
             checked={ftdOnly}
@@ -242,8 +242,8 @@ export default function AdminUsersPage() {
       </div>
 
       {selected.size > 0 && (
-        <div className="mb-3 flex flex-wrap items-center gap-2 rounded-lg border border-[#1e293b] bg-[#0f172a] p-2 text-xs">
-          <span className="text-slate-400">{selected.size} seçili</span>
+        <div className="mb-3 flex flex-wrap items-center gap-2 rounded-lg border border-[#e5e5e5] bg-[#ffffff] p-2 text-xs">
+          <span className="text-neutral-500">{selected.size} seçili</span>
           <button
             disabled={busy}
             onClick={() => bulk("freeze")}
@@ -262,12 +262,12 @@ export default function AdminUsersPage() {
             value={bulkDesk}
             onChange={(e) => setBulkDesk(e.target.value)}
             placeholder="Desk ata"
-            className="w-28 rounded border border-[#1e293b] bg-[#0b1220] px-2 py-1"
+            className="w-28 rounded border border-[#e5e5e5] bg-[#111111] px-2 py-1"
           />
           <button
             disabled={busy}
             onClick={() => bulk("assignDesk", { desk: bulkDesk })}
-            className="rounded bg-[#1e293b] px-2 py-1 hover:bg-[#334155]"
+            className="rounded bg-[#e5e5e5] px-2 py-1 hover:bg-[#f0f0f0]"
           >
             Desk ata
           </button>
@@ -275,12 +275,12 @@ export default function AdminUsersPage() {
             value={bulkBroker}
             onChange={(e) => setBulkBroker(e.target.value)}
             placeholder="Broker ata"
-            className="w-28 rounded border border-[#1e293b] bg-[#0b1220] px-2 py-1"
+            className="w-28 rounded border border-[#e5e5e5] bg-[#111111] px-2 py-1"
           />
           <button
             disabled={busy}
             onClick={() => bulk("assignBroker", { brokerName: bulkBroker })}
-            className="rounded bg-[#1e293b] px-2 py-1 hover:bg-[#334155]"
+            className="rounded bg-[#e5e5e5] px-2 py-1 hover:bg-[#f0f0f0]"
           >
             Broker ata
           </button>
@@ -289,9 +289,9 @@ export default function AdminUsersPage() {
 
       {msg && <p className="mb-3 text-xs text-emerald-400">{msg}</p>}
 
-      <div className="overflow-x-auto rounded-xl border border-[#1e293b]">
+      <div className="overflow-x-auto rounded-xl border border-[#e5e5e5]">
         <table className="w-full text-left text-xs">
-          <thead className="bg-[#0f172a] text-slate-500">
+          <thead className="bg-[#ffffff] text-neutral-500">
             <tr>
               <th className="px-2 py-2.5">
                 <input
@@ -315,23 +315,23 @@ export default function AdminUsersPage() {
           </thead>
           <tbody>
             {rows.map((u) => (
-              <tr key={u.id} className="border-t border-[#1e293b] hover:bg-[#0f172a]/60">
+              <tr key={u.id} className="border-t border-[#e5e5e5] hover:bg-[#ffffff]/60">
                 <td className="px-2 py-2.5">
                   <input type="checkbox" checked={selected.has(u.id)} onChange={() => toggle(u.id)} />
                 </td>
                 <td className="px-3 py-2.5">
-                  <div className="font-mono text-[9px] text-slate-600">{u.id.slice(0, 8)}…</div>
+                  <div className="font-mono text-[9px] text-neutral-400">{u.id.slice(0, 8)}…</div>
                   <div className="font-medium">{u.name}</div>
-                  <div className="text-slate-500">{u.email}</div>
+                  <div className="text-neutral-500">{u.email}</div>
                   <div className="mt-0.5 flex flex-wrap gap-1">
                     <span
                       className={`rounded px-1 py-0.5 text-[9px] font-semibold ${
-                        u.role === "ADMIN" ? "bg-amber-500/20 text-amber-300" : "bg-slate-700 text-slate-300"
+                        u.role === "ADMIN" ? "bg-amber-500/20 text-amber-300" : "bg-neutral-200 text-slate-300"
                       }`}
                     >
                       {u.role}
                     </span>
-                    <span className="rounded bg-slate-800 px-1 py-0.5 text-[9px] text-slate-400">
+                    <span className="rounded bg-neutral-100 px-1 py-0.5 text-[9px] text-neutral-500">
                       {u.accountType}
                     </span>
                     {u.ftd && (
@@ -341,12 +341,12 @@ export default function AdminUsersPage() {
                     )}
                   </div>
                 </td>
-                <td className="px-3 py-2.5 text-slate-400">{u.phone || "—"}</td>
+                <td className="px-3 py-2.5 text-neutral-500">{u.phone || "—"}</td>
                 <td className="px-3 py-2.5 text-slate-300">{u.desk || "—"}</td>
                 <td className="px-3 py-2.5">{u.country || "—"}</td>
                 <td className="px-3 py-2.5">
                   <div>{u.saleStatus || "—"}</div>
-                  <div className="text-slate-500">{u.retentionStatus || "—"}</div>
+                  <div className="text-neutral-500">{u.retentionStatus || "—"}</div>
                 </td>
                 <td className="px-3 py-2.5 tabular-nums">
                   <div>
@@ -355,7 +355,7 @@ export default function AdminUsersPage() {
                       currency: u.currency || "USD",
                     })}
                   </div>
-                  <div className="text-[9px] text-slate-500">
+                  <div className="text-[9px] text-neutral-500">
                     eq{" "}
                     {u.equity.toLocaleString("en-US", {
                       style: "currency",
@@ -363,7 +363,7 @@ export default function AdminUsersPage() {
                     })}
                   </div>
                 </td>
-                <td className="px-3 py-2.5 font-mono text-[9px] text-slate-500">
+                <td className="px-3 py-2.5 font-mono text-[9px] text-neutral-500">
                   {(u as { tradingAccountId?: string }).tradingAccountId?.slice(0, 10) || "—"}
                 </td>
                 <td className="px-3 py-2.5">
@@ -375,14 +375,14 @@ export default function AdminUsersPage() {
                     {u.active ? "Aktif" : "Donduruldu"}
                   </span>
                 </td>
-                <td className="px-3 py-2.5 text-slate-400">{u.brokerName || "—"}</td>
-                <td className="px-3 py-2.5 text-[10px] text-slate-500">
+                <td className="px-3 py-2.5 text-neutral-500">{u.brokerName || "—"}</td>
+                <td className="px-3 py-2.5 text-[10px] text-neutral-500">
                   {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString("tr-TR") : "—"}
                 </td>
                 <td className="px-3 py-2.5">
                   <Link
                     href={`/admin/traders/${u.id}`}
-                    className="rounded bg-sky-600/80 px-2 py-1 hover:bg-sky-500"
+                    className="rounded bg-black text-white/80 px-2 py-1 hover:bg-neutral-800"
                   >
                     Detay
                   </Link>
@@ -391,7 +391,7 @@ export default function AdminUsersPage() {
             ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={11} className="px-3 py-10 text-center text-slate-500">
+                <td colSpan={11} className="px-3 py-10 text-center text-neutral-500">
                   Trader bulunamadı
                 </td>
               </tr>
@@ -404,7 +404,7 @@ export default function AdminUsersPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <form
             onSubmit={createMember}
-            className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl border border-[#1e293b] bg-[#0f172a] p-4"
+            className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl border border-[#e5e5e5] bg-[#ffffff] p-4"
           >
             <h2 className="mb-3 text-sm font-semibold">Yeni üye oluştur</h2>
             <div className="grid grid-cols-2 gap-2 text-xs">
@@ -424,25 +424,25 @@ export default function AdminUsersPage() {
                 ] as const
               ).map(([key, label, type]) => (
                 <label key={key} className="flex flex-col gap-1">
-                  <span className="text-slate-500">{label}</span>
+                  <span className="text-neutral-500">{label}</span>
                   <input
                     type={type}
                     required={key === "email" || key === "password"}
                     value={createForm[key]}
                     onChange={(e) => setCreateForm({ ...createForm, [key]: e.target.value })}
-                    className="rounded border border-[#1e293b] bg-[#0b1220] px-2 py-1.5"
+                    className="rounded border border-[#e5e5e5] bg-[#111111] px-2 py-1.5"
                   />
                 </label>
               ))}
             </div>
             <div className="mt-4 flex gap-2">
-              <button type="submit" disabled={busy} className="rounded bg-blue-600 px-3 py-1.5 text-sm">
+              <button type="submit" disabled={busy} className="rounded bg-black text-white px-3 py-1.5 text-sm">
                 Oluştur
               </button>
               <button
                 type="button"
                 onClick={() => setShowCreate(false)}
-                className="rounded bg-[#1e293b] px-3 py-1.5 text-sm"
+                className="rounded bg-[#e5e5e5] px-3 py-1.5 text-sm"
               >
                 İptal
               </button>

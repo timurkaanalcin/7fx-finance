@@ -131,12 +131,12 @@ function ProfileRow({
   return (
     <div className="group flex items-start justify-between gap-2 border-b border-white/[0.04] py-2.5">
       <div className="min-w-0">
-        <p className="text-[10px] font-medium uppercase tracking-wide text-slate-500">
+        <p className="text-[10px] font-medium uppercase tracking-wide text-neutral-500">
           {label}
         </p>
         <p
           className={`mt-0.5 break-words text-[13px] font-medium ${
-            danger ? "text-red-400" : "text-slate-100"
+            danger ? "text-red-400" : "text-neutral-900"
           }`}
         >
           {value || "—"}
@@ -346,16 +346,16 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="-mx-1 flex h-[calc(100dvh-3.5rem)] min-h-[560px] flex-col overflow-hidden rounded-xl border border-slate-800/80 bg-[#0a0a0a] shadow-lg md:-mx-0">
+    <div className="-mx-1 flex h-[calc(100dvh-3.5rem)] min-h-[560px] flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-lg md:-mx-0">
       {/* Top bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 px-3 py-2.5 sm:px-4">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-200 px-3 py-2.5 sm:px-4">
         <div className="flex items-center gap-2">
-          <span className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-[11px] font-bold tracking-wide text-[var(--accent-ink)]">
+          <span className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-[11px] font-bold tracking-wide text-white">
             CRM
           </span>
           <div>
-            <p className="text-sm font-semibold text-slate-100">Canlı Destek Masası</p>
-            <p className="text-[11px] text-slate-500">
+            <p className="text-sm font-semibold text-neutral-900">Canlı Destek Masası</p>
+            <p className="text-[11px] text-neutral-500">
               7FX · {threads.length} konuşma · {unanswered} yanıt bekliyor
             </p>
           </div>
@@ -363,7 +363,7 @@ export default function ChatPage() {
         <button
           type="button"
           onClick={() => setCreateOpen(true)}
-          className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-[11px] font-semibold text-[var(--accent-ink)] hover:brightness-110"
+          className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-[11px] font-semibold text-white hover:brightness-110"
         >
           Create chat
         </button>
@@ -371,11 +371,11 @@ export default function ChatPage() {
 
       <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(260px,320px)_minmax(0,1fr)_minmax(260px,320px)]">
         {/* LEFT */}
-        <aside className="flex min-h-0 flex-col border-b border-slate-800/80 lg:border-b-0 lg:border-r">
-          <div className="space-y-2 border-b border-slate-800/80 p-3">
+        <aside className="flex min-h-0 flex-col border-b border-neutral-200 lg:border-b-0 lg:border-r">
+          <div className="space-y-2 border-b border-neutral-200 p-3">
             <div className="relative">
               <svg
-                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
+                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500"
                 width="15"
                 height="15"
                 viewBox="0 0 24 24"
@@ -388,11 +388,11 @@ export default function ChatPage() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search"
-                className="w-full rounded-xl border border-slate-800 bg-[#111] py-2 pl-9 pr-3 text-sm text-slate-100 outline-none focus:border-[var(--accent)]/40"
+                className="w-full rounded-xl border border-neutral-200 bg-[#f5f5f5] py-2 pl-9 pr-3 text-sm text-neutral-900 outline-none focus:border-[var(--accent)]/40"
                 aria-label="Ara"
               />
             </div>
-            <div className="flex gap-1 rounded-xl bg-[#111] p-1">
+            <div className="flex gap-1 rounded-xl bg-[#f5f5f5] p-1">
               {(
                 [
                   ["all", "All"],
@@ -407,12 +407,12 @@ export default function ChatPage() {
                   className={`relative flex-1 rounded-lg px-2 py-1.5 text-[11px] font-semibold transition ${
                     tab === id
                       ? "bg-[var(--accent-tint)] text-[var(--accent)] shadow-sm ring-1 ring-[var(--accent)]/25"
-                      : "text-slate-500 hover:text-slate-200"
+                      : "text-neutral-500 hover:text-slate-200"
                   }`}
                 >
                   {label}
                   {id === "unanswered" && unanswered > 0 && (
-                    <span className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--accent)] px-1 text-[9px] text-[var(--accent-ink)]">
+                    <span className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--accent)] px-1 text-[9px] text-white">
                       {unanswered}
                     </span>
                   )}
@@ -423,7 +423,7 @@ export default function ChatPage() {
 
           <ul className="min-h-0 flex-1 space-y-0.5 overflow-y-auto p-2">
             {list.length === 0 && (
-              <li className="rounded-xl px-3 py-8 text-center text-sm text-slate-500">
+              <li className="rounded-xl px-3 py-8 text-center text-sm text-neutral-500">
                 Sohbet yok — Create chat ile başlatın.
               </li>
             )}
@@ -450,17 +450,17 @@ export default function ChatPage() {
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="flex items-center justify-between gap-2">
-                        <span className="truncate text-[13px] font-semibold text-slate-100">
+                        <span className="truncate text-[13px] font-semibold text-neutral-900">
                           {t.trader}
                         </span>
-                        <span className="shrink-0 text-[10px] text-slate-500">
+                        <span className="shrink-0 text-[10px] text-neutral-500">
                           {relativeTimeTr(t.lastAt)}
                         </span>
                       </span>
                       <span className="mt-0.5 flex items-center gap-1.5">
                         <span
                           className={`truncate text-[11px] ${
-                            unread ? "font-semibold text-slate-200" : "text-slate-500"
+                            unread ? "font-semibold text-slate-200" : "text-neutral-500"
                           }`}
                         >
                           {last?.body || t.traderEmail}
@@ -475,7 +475,7 @@ export default function ChatPage() {
               );
             })}
           </ul>
-          <p className="border-t border-slate-800/80 px-3 py-2 text-center text-[10px] text-slate-600">
+          <p className="border-t border-neutral-200 px-3 py-2 text-center text-[10px] text-neutral-400">
             All Chats Loaded
           </p>
         </aside>
@@ -483,12 +483,12 @@ export default function ChatPage() {
         {/* CENTER */}
         <section className="flex min-h-0 flex-col bg-[#070707]">
           {!active ? (
-            <div className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-sm text-slate-500">
+            <div className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-sm text-neutral-500">
               <p>Soldan bir konuşma seçin veya Create chat</p>
             </div>
           ) : (
             <>
-              <div className="flex items-center justify-between gap-2 border-b border-slate-800/80 bg-[#0a0a0a] px-4 py-3">
+              <div className="flex items-center justify-between gap-2 border-b border-neutral-200 bg-white px-4 py-3">
                 <div className="flex min-w-0 items-center gap-2.5">
                   <span
                     className="flex h-9 w-9 items-center justify-center rounded-full text-[11px] font-bold text-white"
@@ -503,7 +503,7 @@ export default function ChatPage() {
                     >
                       {active.trader}
                     </Link>
-                    <p className="truncate text-[11px] text-slate-500">
+                    <p className="truncate text-[11px] text-neutral-500">
                       {active.traderEmail} · {active.desk || "—"}
                     </p>
                   </div>
@@ -523,7 +523,7 @@ export default function ChatPage() {
                 {messageBlocks.map((block) => (
                   <div key={block.key} className="space-y-2.5">
                     <div className="flex justify-center">
-                      <span className="rounded-full bg-[#141414] px-3 py-1 text-[10px] font-medium text-slate-500 ring-1 ring-white/5">
+                      <span className="rounded-full bg-[#141414] px-3 py-1 text-[10px] font-medium text-neutral-500 ring-1 ring-white/5">
                         {block.label}
                       </span>
                     </div>
@@ -537,7 +537,7 @@ export default function ChatPage() {
                           <div
                             className={`max-w-[78%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed shadow-sm ${
                               agent
-                                ? "rounded-br-md bg-[#1a2a16] text-slate-100 ring-1 ring-[var(--accent)]/20"
+                                ? "rounded-br-md bg-[#1a2a16] text-neutral-900 ring-1 ring-[var(--accent)]/20"
                                 : "rounded-bl-md bg-[#141414] text-slate-200 ring-1 ring-white/5"
                             }`}
                           >
@@ -547,12 +547,12 @@ export default function ChatPage() {
                               </p>
                             )}
                             {m.title && m.title !== "Sohbet" && (
-                              <p className="mb-0.5 text-[11px] font-medium text-slate-400">
+                              <p className="mb-0.5 text-[11px] font-medium text-neutral-500">
                                 {m.title}
                               </p>
                             )}
                             <p className="whitespace-pre-wrap break-words">{m.body}</p>
-                            <p className="mt-1 text-right text-[10px] text-slate-500">
+                            <p className="mt-1 text-right text-[10px] text-neutral-500">
                               {formatClock(m.createdAt)}
                             </p>
                           </div>
@@ -566,10 +566,10 @@ export default function ChatPage() {
 
               <form
                 onSubmit={onSend}
-                className="relative border-t border-slate-800/80 bg-[#0a0a0a] p-3"
+                className="relative border-t border-neutral-200 bg-white p-3"
               >
                 {emojiOpen && (
-                  <div className="absolute bottom-full left-3 mb-2 flex gap-1 rounded-xl border border-slate-800 bg-[#141414] p-2 shadow-lg">
+                  <div className="absolute bottom-full left-3 mb-2 flex gap-1 rounded-xl border border-neutral-200 bg-[#141414] p-2 shadow-lg">
                     {EMOJIS.map((e) => (
                       <button
                         key={e}
@@ -597,7 +597,7 @@ export default function ChatPage() {
                 <div className="flex items-end gap-2">
                   <button
                     type="button"
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-800 text-slate-500 hover:bg-white/5"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-neutral-200 text-neutral-500 hover:bg-white/5"
                     title="Sesli not"
                     aria-label="Ses"
                   >
@@ -611,14 +611,14 @@ export default function ChatPage() {
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Enter message"
-                    className="min-w-0 flex-1 rounded-xl border border-slate-800 bg-[#111] px-3 py-2.5 text-sm text-slate-100 outline-none focus:border-[var(--accent)]/40"
+                    className="min-w-0 flex-1 rounded-xl border border-neutral-200 bg-[#f5f5f5] px-3 py-2.5 text-sm text-neutral-900 outline-none focus:border-[var(--accent)]/40"
                     aria-label="Yanıt"
                     disabled={busy}
                   />
                   <button
                     type="button"
                     onClick={() => setEmojiOpen((v) => !v)}
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-800 text-slate-500 hover:bg-white/5"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-neutral-200 text-neutral-500 hover:bg-white/5"
                     aria-label="Emoji"
                   >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -631,7 +631,7 @@ export default function ChatPage() {
                   <button
                     type="button"
                     onClick={() => fileRef.current?.click()}
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-800 text-slate-500 hover:bg-white/5"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-neutral-200 text-neutral-500 hover:bg-white/5"
                     aria-label="Dosya ekle"
                   >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -656,7 +656,7 @@ export default function ChatPage() {
                   <button
                     type="submit"
                     disabled={busy || !message.trim()}
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent)] text-[var(--accent-ink)] disabled:opacity-40"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent)] text-white disabled:opacity-40"
                     aria-label="Gönder"
                   >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -670,9 +670,9 @@ export default function ChatPage() {
         </section>
 
         {/* RIGHT profile */}
-        <aside className="hidden min-h-0 flex-col overflow-y-auto border-l border-slate-800/80 bg-[#0a0a0a] lg:flex">
+        <aside className="hidden min-h-0 flex-col overflow-y-auto border-l border-neutral-200 bg-white lg:flex">
           {!profileDraft ? (
-            <div className="flex flex-1 items-center justify-center p-6 text-sm text-slate-500">
+            <div className="flex flex-1 items-center justify-center p-6 text-sm text-neutral-500">
               Profil için sohbet seçin
             </div>
           ) : (
@@ -690,7 +690,7 @@ export default function ChatPage() {
                       );
                       flash("Kopyalandı");
                     }}
-                    className="text-slate-500 hover:text-slate-200"
+                    className="text-neutral-500 hover:text-slate-200"
                     aria-label="Kopyala"
                   >
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
@@ -699,7 +699,7 @@ export default function ChatPage() {
                     </svg>
                   </button>
                 </div>
-                <p className="mt-0.5 text-[12px] text-slate-500">
+                <p className="mt-0.5 text-[12px] text-neutral-500">
                   ID: {profileDraft.id.slice(0, 12)}…
                 </p>
               </div>
@@ -810,19 +810,19 @@ export default function ChatPage() {
           role="presentation"
         >
           <div
-            className="w-full max-w-md rounded-2xl border border-slate-800 bg-[#0a0a0a] p-4 shadow-2xl"
+            className="w-full max-w-md rounded-2xl border border-neutral-200 bg-white p-4 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-label="Create chat"
           >
-            <h3 className="text-sm font-semibold text-slate-100">Create chat</h3>
-            <p className="mt-1 text-[11px] text-slate-500">
+            <h3 className="text-sm font-semibold text-neutral-900">Create chat</h3>
+            <p className="mt-1 text-[11px] text-neutral-500">
               Trader seçin — ilk mesaj 7FX karşılama olarak gönderilebilir.
             </p>
             <select
               value={newUserId}
               onChange={(e) => setNewUserId(e.target.value)}
-              className="mt-3 w-full rounded-xl border border-slate-800 bg-[#111] px-3 py-2 text-sm"
+              className="mt-3 w-full rounded-xl border border-neutral-200 bg-[#f5f5f5] px-3 py-2 text-sm"
             >
               <option value="">Trader seç…</option>
               {traders.map((t) => (
@@ -836,7 +836,7 @@ export default function ChatPage() {
               onChange={(e) => setMessage(e.target.value)}
               rows={4}
               placeholder="İlk mesaj"
-              className="mt-2 w-full rounded-xl border border-slate-800 bg-[#111] px-3 py-2 text-sm"
+              className="mt-2 w-full rounded-xl border border-neutral-200 bg-[#f5f5f5] px-3 py-2 text-sm"
             />
             <div className="mt-2 flex flex-wrap gap-2">
               <button
@@ -850,7 +850,7 @@ export default function ChatPage() {
               <button
                 type="button"
                 onClick={() => setCreateOpen(false)}
-                className="rounded-lg px-3 py-1.5 text-xs text-slate-400 hover:bg-white/5"
+                className="rounded-lg px-3 py-1.5 text-xs text-neutral-500 hover:bg-white/5"
               >
                 İptal
               </button>
@@ -858,7 +858,7 @@ export default function ChatPage() {
                 type="button"
                 disabled={busy || !newUserId || !message.trim()}
                 onClick={() => void send(newUserId)}
-                className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-semibold text-[var(--accent-ink)] disabled:opacity-40"
+                className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-40"
               >
                 Başlat
               </button>
@@ -868,7 +868,7 @@ export default function ChatPage() {
       )}
 
       {toast && (
-        <div className="fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-full bg-[var(--accent)] px-4 py-2 text-xs font-medium text-[var(--accent-ink)] shadow-lg">
+        <div className="fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-full bg-[var(--accent)] px-4 py-2 text-xs font-medium text-white shadow-lg">
           {toast}
         </div>
       )}

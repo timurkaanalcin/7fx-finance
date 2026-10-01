@@ -232,17 +232,17 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
     chartRef.current = chart;
 
     const candle = chart.addSeries(CandlestickSeries, {
-      upColor: "#16c784",
-      downColor: "#ea3943",
-      borderUpColor: "#16c784",
-      borderDownColor: "#ea3943",
-      wickUpColor: "#16c784",
-      wickDownColor: "#ea3943",
+      upColor: "#26a69a",
+      downColor: "#ef5350",
+      borderUpColor: "#26a69a",
+      borderDownColor: "#ef5350",
+      wickUpColor: "#26a69a",
+      wickDownColor: "#ef5350",
     });
     seriesRef.current = candle;
 
     const line = chart.addSeries(LineSeries, {
-      color: "#68F848",
+      color: "#ffffff",
       lineWidth: 2,
       visible: false,
     });
@@ -441,7 +441,7 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
           <span
             className={`h-1.5 w-1.5 rounded-full ${
               liveFresh
-                ? "animate-pulse bg-desk-accent shadow-[0_0_6px_rgba(104,248,72,0.8)]"
+                ? "animate-pulse bg-desk-accent shadow-[0_0_6px_rgba(255,255,255,0.7)]"
                 : "bg-desk-muted"
             }`}
           />
@@ -481,7 +481,7 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
               onClick={() => onTimeframe(tf.id)}
               className={`shrink-0 rounded-[9px] px-2.5 py-1.5 text-[11px] font-semibold transition-colors md:rounded-[8px] md:px-2 md:py-1 md:font-medium ${
                 timeframe === tf.id
-                  ? "bg-desk-accent text-white shadow-accent-glow-sm"
+                  ? "bg-desk-accent text-desk-accent-ink shadow-accent-glow-sm"
                   : "text-desk-muted hover:bg-desk-hover hover:text-desk-text"
               }`}
             >

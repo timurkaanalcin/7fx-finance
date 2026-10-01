@@ -77,14 +77,14 @@ export default function CommunicationsPage() {
   return (
     <div>
       <h1 className="mb-1 text-lg font-semibold">İletişimler</h1>
-      <p className="mb-3 text-[11px] text-slate-500">Chat / Call / Note kayıtları</p>
+      <p className="mb-3 text-[11px] text-neutral-500">Chat / Call / Note kayıtları</p>
       <div className="mb-3 grid gap-3 lg:grid-cols-3">
-        <div className="lg:col-span-2 overflow-x-auto rounded-lg border border-slate-800">
-          <div className="border-b border-slate-800 bg-[#0a1020] px-3 py-2">
+        <div className="lg:col-span-2 overflow-x-auto rounded-lg border border-neutral-200">
+          <div className="border-b border-neutral-200 bg-[#ffffff] px-3 py-2">
             <select
               value={type}
               onChange={(e) => setType(e.target.value)}
-              className="rounded border border-slate-700 bg-[#0d1526] px-2 py-1 text-xs"
+              className="rounded border border-neutral-300 bg-[#fafafa] px-2 py-1 text-xs"
             >
               <option value="">Tüm tipler</option>
               {["CHAT", "CALL", "NOTE"].map((t) => (
@@ -95,7 +95,7 @@ export default function CommunicationsPage() {
             </select>
           </div>
           <table className="w-full text-left text-[11px]">
-            <thead className="bg-[#0a1020] text-slate-500">
+            <thead className="bg-[#ffffff] text-neutral-500">
               <tr>
                 <th className="px-2 py-2">Tip</th>
                 <th className="px-2 py-2">Başlık</th>
@@ -106,30 +106,30 @@ export default function CommunicationsPage() {
             </thead>
             <tbody>
               {rows.map((r) => (
-                <tr key={r.id} className="border-t border-slate-800 align-top">
+                <tr key={r.id} className="border-t border-neutral-200 align-top">
                   <td className="px-2 py-1.5">
                     <StatusBadge status={r.type === "CALL" ? "OPEN" : r.type === "CHAT" ? "PENDING" : "NEW"} />
-                    <span className="ml-1 text-slate-400">{r.type}</span>
+                    <span className="ml-1 text-neutral-500">{r.type}</span>
                   </td>
                   <td className="px-2 py-1.5">
                     <div className="font-medium">{r.title || "—"}</div>
-                    <div className="max-w-[280px] truncate text-slate-500">{r.description}</div>
+                    <div className="max-w-[280px] truncate text-neutral-500">{r.description}</div>
                   </td>
                   <td className="px-2 py-1.5">
                     <Link href={`/admin/traders/${r.traderId}`} className="text-sky-400 hover:underline">
                       {r.trader}
                     </Link>
-                    <div className="text-slate-600">{r.desk || "—"}</div>
+                    <div className="text-neutral-400">{r.desk || "—"}</div>
                   </td>
-                  <td className="px-2 py-1.5 text-slate-400">{r.workerName || "—"}</td>
-                  <td className="px-2 py-1.5 text-slate-500">
+                  <td className="px-2 py-1.5 text-neutral-500">{r.workerName || "—"}</td>
+                  <td className="px-2 py-1.5 text-neutral-500">
                     {new Date(r.createdAt).toLocaleString("tr-TR")}
                   </td>
                 </tr>
               ))}
               {rows.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-3 py-8 text-center text-slate-500">
+                  <td colSpan={5} className="px-3 py-8 text-center text-neutral-500">
                     Kayıt yok
                   </td>
                 </tr>
@@ -137,13 +137,13 @@ export default function CommunicationsPage() {
             </tbody>
           </table>
         </div>
-        <div className="rounded-lg border border-slate-800 bg-[#0a1020] p-3">
+        <div className="rounded-lg border border-neutral-200 bg-[#ffffff] p-3">
           <h2 className="mb-2 text-xs font-semibold text-slate-300">Yeni kayıt</h2>
           <div className="space-y-2 text-xs">
             <select
               value={form.userId}
               onChange={(e) => setForm({ ...form, userId: e.target.value })}
-              className="w-full rounded border border-slate-700 bg-[#0d1526] px-2 py-1.5"
+              className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             >
               <option value="">Trader seç…</option>
               {traders.map((t) => (
@@ -155,7 +155,7 @@ export default function CommunicationsPage() {
             <select
               value={form.type}
               onChange={(e) => setForm({ ...form, type: e.target.value })}
-              className="w-full rounded border border-slate-700 bg-[#0d1526] px-2 py-1.5"
+              className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             >
               {["NOTE", "CALL", "CHAT"].map((t) => (
                 <option key={t} value={t}>
@@ -167,24 +167,24 @@ export default function CommunicationsPage() {
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
               placeholder="Başlık"
-              className="w-full rounded border border-slate-700 bg-[#0d1526] px-2 py-1.5"
+              className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             />
             <textarea
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               placeholder="Açıklama"
               rows={4}
-              className="w-full rounded border border-slate-700 bg-[#0d1526] px-2 py-1.5"
+              className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             />
             <button
               type="button"
               disabled={busy}
               onClick={create}
-              className="w-full rounded bg-sky-600 px-3 py-1.5 text-xs font-medium hover:bg-sky-500 disabled:opacity-50"
+              className="w-full rounded bg-black text-white px-3 py-1.5 text-xs font-medium hover:bg-neutral-800 disabled:opacity-50"
             >
               Kaydet
             </button>
-            {msg && <p className="text-[11px] text-slate-400">{msg}</p>}
+            {msg && <p className="text-[11px] text-neutral-500">{msg}</p>}
           </div>
         </div>
       </div>

@@ -38,26 +38,26 @@ export default function AdminSummaryPage() {
   return (
     <div>
       <h1 className="mb-1 text-xl font-semibold">Hesap Özeti</h1>
-      <p className="mb-4 text-sm text-slate-500">Tüm trader hesaplarının bakiyesi, özsermaye ve açık pozisyonları</p>
+      <p className="mb-4 text-sm text-neutral-500">Tüm trader hesaplarının bakiyesi, özsermaye ve açık pozisyonları</p>
       {totals && (
         <div className="mb-4 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-xl border border-[#1e293b] bg-[#0f172a] p-3">
-            <div className="text-[10px] uppercase text-slate-500">Toplam Bakiye</div>
+          <div className="rounded-xl border border-[#e5e5e5] bg-[#ffffff] p-3">
+            <div className="text-[10px] uppercase text-neutral-500">Toplam Bakiye</div>
             <div className="mt-1 text-lg font-semibold tabular-nums">{fmt(totals.balance)}</div>
           </div>
-          <div className="rounded-xl border border-[#1e293b] bg-[#0f172a] p-3">
-            <div className="text-[10px] uppercase text-slate-500">Toplam Özsermaye</div>
+          <div className="rounded-xl border border-[#e5e5e5] bg-[#ffffff] p-3">
+            <div className="text-[10px] uppercase text-neutral-500">Toplam Özsermaye</div>
             <div className="mt-1 text-lg font-semibold tabular-nums">{fmt(totals.equity)}</div>
           </div>
-          <div className="rounded-xl border border-[#1e293b] bg-[#0f172a] p-3">
-            <div className="text-[10px] uppercase text-slate-500">Kullanılan Marj</div>
+          <div className="rounded-xl border border-[#e5e5e5] bg-[#ffffff] p-3">
+            <div className="text-[10px] uppercase text-neutral-500">Kullanılan Marj</div>
             <div className="mt-1 text-lg font-semibold tabular-nums">{fmt(totals.margin)}</div>
           </div>
         </div>
       )}
-      <div className="overflow-x-auto rounded-xl border border-[#1e293b]">
+      <div className="overflow-x-auto rounded-xl border border-[#e5e5e5]">
         <table className="w-full text-left text-xs">
-          <thead className="bg-[#0f172a] text-slate-500">
+          <thead className="bg-[#ffffff] text-neutral-500">
             <tr>
               <th className="px-3 py-2">Hesap</th>
               <th className="px-3 py-2">Bakiye</th>
@@ -71,13 +71,13 @@ export default function AdminSummaryPage() {
           </thead>
           <tbody>
             {rows.map((r) => (
-              <tr key={r.userId} className="border-t border-[#1e293b]">
+              <tr key={r.userId} className="border-t border-[#e5e5e5]">
                 <td className="px-3 py-2">
                   <div className="font-medium">
                     {r.name}{" "}
                     {!r.active && <span className="text-red-400">(donuk)</span>}
                   </div>
-                  <div className="text-slate-500">{r.email}</div>
+                  <div className="text-neutral-500">{r.email}</div>
                 </td>
                 <td className="px-3 py-2 tabular-nums">{fmt(r.balance)}</td>
                 <td className="px-3 py-2 tabular-nums">{fmt(r.equity)}</td>
@@ -96,7 +96,7 @@ export default function AdminSummaryPage() {
             ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-3 py-8 text-center text-slate-500">
+                <td colSpan={8} className="px-3 py-8 text-center text-neutral-500">
                   Hesap yok
                 </td>
               </tr>

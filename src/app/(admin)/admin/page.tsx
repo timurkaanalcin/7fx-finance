@@ -24,10 +24,10 @@ function Card({
 }) {
   const inner = (
     <div
-      className={`rounded-lg border border-slate-800 bg-[#0a1020] p-3 shadow-sm ${accent || ""}`}
+      className={`rounded-lg border border-neutral-200 bg-[#ffffff] p-3 shadow-sm ${accent || ""}`}
     >
-      <div className="text-[10px] uppercase tracking-wider text-slate-500">{label}</div>
-      <div className="mt-1.5 text-xl font-semibold tabular-nums text-white">{value}</div>
+      <div className="text-[10px] uppercase tracking-wider text-neutral-500">{label}</div>
+      <div className="mt-1.5 text-xl font-semibold tabular-nums text-neutral-900">{value}</div>
     </div>
   );
   return href ? <Link href={href}>{inner}</Link> : inner;
@@ -51,13 +51,13 @@ export default function AdminDashboard() {
     <div>
       <div className="mb-4">
         <h1 className="text-lg font-semibold">Gösterge Paneli</h1>
-        <p className="mt-0.5 text-xs text-slate-500">
+        <p className="mt-0.5 text-xs text-neutral-500">
           M1 Finance Desk CRM · Trade engine ile 1:1 Account bağlantısı
         </p>
       </div>
       {err && <p className="mb-3 text-sm text-red-400">{err}</p>}
       {!kpis && !err && (
-        <div className="flex items-center gap-2 text-sm text-slate-500">
+        <div className="flex items-center gap-2 text-sm text-neutral-500">
           <div className="h-4 w-4 animate-spin rounded-full border-2 border-sky-500 border-t-transparent" />
           Yükleniyor…
         </div>
@@ -95,10 +95,10 @@ export default function AdminDashboard() {
           <Link
             key={x.href}
             href={x.href}
-            className="rounded-lg border border-slate-800 bg-[#0a1020] p-3 transition hover:border-sky-500/40"
+            className="rounded-lg border border-neutral-200 bg-[#ffffff] p-3 transition hover:border-neutral-400"
           >
             <div className="text-xs font-semibold">{x.title}</div>
-            <div className="mt-0.5 text-[10px] text-slate-500">{x.desc}</div>
+            <div className="mt-0.5 text-[10px] text-neutral-500">{x.desc}</div>
           </Link>
         ))}
       </div>

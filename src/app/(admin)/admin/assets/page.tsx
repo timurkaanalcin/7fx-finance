@@ -45,7 +45,7 @@ export default function AssetsPage() {
       <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
         <div>
           <h1 className="text-lg font-semibold">Varlıklar</h1>
-          <p className="text-[11px] text-slate-500">
+          <p className="text-[11px] text-neutral-500">
             Sembol kataloğu — efektif spread/komisyon için{" "}
             <Link href="/admin/rates" className="text-sky-400 hover:underline">
               İşlem Oranları
@@ -53,7 +53,7 @@ export default function AssetsPage() {
           </p>
         </div>
         {counts && (
-          <div className="flex gap-3 text-[11px] text-slate-400">
+          <div className="flex gap-3 text-[11px] text-neutral-500">
             <span>{counts.total} sembol</span>
             <span className="text-emerald-400">{counts.enabled} aktif</span>
           </div>
@@ -63,7 +63,7 @@ export default function AssetsPage() {
         <select
           value={cls}
           onChange={(e) => setCls(e.target.value)}
-          className="rounded border border-slate-700 bg-[#0a1020] px-2 py-1.5 text-xs"
+          className="rounded border border-neutral-300 bg-[#ffffff] px-2 py-1.5 text-xs"
         >
           <option value="">Tüm sınıflar</option>
           {["STOCK", "FX", "CRYPTO", "INDEX", "COMMODITY"].map((c) => (
@@ -74,9 +74,9 @@ export default function AssetsPage() {
           ))}
         </select>
       </div>
-      <div className="overflow-x-auto rounded-lg border border-slate-800">
+      <div className="overflow-x-auto rounded-lg border border-neutral-200">
         <table className="w-full text-left text-[11px]">
-          <thead className="bg-[#0a1020] text-slate-500">
+          <thead className="bg-[#ffffff] text-neutral-500">
             <tr>
               <th className="px-2 py-2">Sembol</th>
               <th className="px-2 py-2">Ad</th>
@@ -90,16 +90,16 @@ export default function AssetsPage() {
           </thead>
           <tbody>
             {filtered.map((a) => (
-              <tr key={a.symbol} className="border-t border-slate-800">
+              <tr key={a.symbol} className="border-t border-neutral-200">
                 <td className="px-2 py-1.5 font-medium">
                   {a.flag ? `${a.flag} ` : ""}
                   {a.symbol}
                 </td>
-                <td className="px-2 py-1.5 text-slate-400">{a.name}</td>
+                <td className="px-2 py-1.5 text-neutral-500">{a.name}</td>
                 <td className="px-2 py-1.5">{a.class}</td>
                 <td className="px-2 py-1.5 tabular-nums">{a.effectiveSpread}</td>
                 <td className="px-2 py-1.5 tabular-nums">{a.effectiveContract}</td>
-                <td className="px-2 py-1.5 tabular-nums text-slate-400">
+                <td className="px-2 py-1.5 tabular-nums text-neutral-500">
                   {a.minVolume}–{a.maxVolume}
                 </td>
                 <td className="px-2 py-1.5 tabular-nums">{a.commissionPerLot}</td>
@@ -110,7 +110,7 @@ export default function AssetsPage() {
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-3 py-8 text-center text-slate-500">
+                <td colSpan={8} className="px-3 py-8 text-center text-neutral-500">
                   Varlık yok
                 </td>
               </tr>

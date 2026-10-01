@@ -9,5 +9,5 @@ export default function UserDetailRedirect() {
   useEffect(() => {
     router.replace(`/admin/traders/${params?.id}`);
   }, [router, params]);
-  return <div className="text-xs text-slate-500">Trader detayına yönlendiriliyor…</div>;
+  return <div className="text-xs text-neutral-500">Trader detayına yönlendiriliyor…</div>;
 }

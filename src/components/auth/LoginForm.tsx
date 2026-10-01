@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const inputClass =
-  "fx-auth-input w-full rounded-xl border border-[rgba(16,20,37,0.12)] bg-[#ffffff] px-3.5 py-3 text-[15px] text-[#0b1220] outline-none transition placeholder:text-[#8b93a7] hover:border-[#68F848]/40 focus:border-[#68F848] focus:shadow-[0_0_0_3px_rgba(104,248,72,0.15)]";
+  "fx-auth-input w-full rounded-xl border border-[rgba(16,20,37,0.12)] bg-[#ffffff] px-3.5 py-3 text-[15px] text-[#111111] outline-none transition placeholder:text-[#8b93a7] hover:border-[#111111]/40 focus:border-[#111111] focus:shadow-[0_0_0_3px_rgba(17,17,17,0.15)]";
 
 const labelClass = "mb-1.5 block text-[13px] font-medium text-[#5c657a]";
 
@@ -43,7 +43,7 @@ export default function LoginForm() {
   return (
     <>
       <div className="mb-6">
-        <h2 className="text-xl font-semibold tracking-tight text-[#0b1220]">Giriş Yap</h2>
+        <h2 className="text-xl font-semibold tracking-tight text-[#111111]">Giriş Yap</h2>
         <p className="mt-1 text-sm text-[#5c657a]">E-posta ve şifrenizle oturum açın.</p>
       </div>
 
@@ -84,7 +84,7 @@ export default function LoginForm() {
         {error && (
           <div
             role="alert"
-            className="rounded-xl border border-[#ea3943]/40 bg-[#ea3943]/10 px-3.5 py-2.5 text-sm text-[#ea3943]"
+            className="rounded-xl border border-[#ef5350]/40 bg-[#ef5350]/10 px-3.5 py-2.5 text-sm text-[#ef5350]"
           >
             {error}
           </div>
@@ -93,7 +93,7 @@ export default function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="mt-1 w-full rounded-xl bg-[#68F848] py-3.5 text-sm font-semibold text-[#0a0a0a] shadow-[0_8px_24px_rgba(104,248,72,0.28)] transition hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-1 w-full rounded-xl bg-[#111111] py-3.5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(17,17,17,0.28)] transition hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? "Giriş yapılıyor…" : "Giriş Yap"}
         </button>
@@ -101,7 +101,7 @@ export default function LoginForm() {
 
       <div className="mt-7 border-t border-[rgba(16,20,37,0.08)] pt-5 text-center text-sm text-[#5c657a]">
         Hesabınız yok mu?{" "}
-        <Link href="/register" className="font-semibold text-[#0b1220] underline-offset-2 transition hover:underline">
+        <Link href="/register" className="font-semibold text-[#111111] underline-offset-2 transition hover:underline">
           Kayıt olun
         </Link>
       </div>

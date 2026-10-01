@@ -118,14 +118,14 @@ export default function AdminRatesPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-semibold">İşlem Oranları / Sembol Ayarları</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-neutral-500">
           Spread, komisyon, sözleşme çarpanı ve hacim limitleri — emir bileti, marj ve K/Z hesabına anında yansır.
         </p>
       </div>
       {msg && <p className="text-xs text-emerald-400">{msg}</p>}
 
       {global && (
-        <section className="rounded-xl border border-[#1e293b] bg-[#0f172a] p-4">
+        <section className="rounded-xl border border-[#e5e5e5] bg-[#ffffff] p-4">
           <h2 className="mb-3 text-sm font-semibold">Global Varsayılanlar</h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {(
@@ -139,14 +139,14 @@ export default function AdminRatesPage() {
                 ["defaultContractMult", "Sözleşme çarpanı"],
               ] as const
             ).map(([key, label]) => (
-              <label key={key} className="block text-[11px] text-slate-400">
+              <label key={key} className="block text-[11px] text-neutral-500">
                 {label}
                 <input
                   type="number"
                   step="any"
                   value={global[key]}
                   onChange={(e) => setGlobal({ ...global, [key]: Number(e.target.value) })}
-                  className="mt-1 w-full rounded-md border border-[#1e293b] bg-[#0b1220] px-2 py-1.5 text-sm text-white tabular-nums"
+                  className="mt-1 w-full rounded-md border border-[#e5e5e5] bg-[#111111] px-2 py-1.5 text-sm text-white tabular-nums"
                 />
               </label>
             ))}
@@ -154,18 +154,18 @@ export default function AdminRatesPage() {
           <button
             disabled={busy}
             onClick={saveGlobal}
-            className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium hover:bg-blue-500 disabled:opacity-50"
+            className="mt-4 rounded-lg bg-black text-white px-4 py-2 text-sm font-medium hover:bg-neutral-800 disabled:opacity-50"
           >
             Global Kaydet
           </button>
         </section>
       )}
 
-      <section className="rounded-xl border border-[#1e293b] bg-[#0f172a] p-4">
+      <section className="rounded-xl border border-[#e5e5e5] bg-[#ffffff] p-4">
         <h2 className="mb-3 text-sm font-semibold">Sembol Oranları (efektif)</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="text-slate-500">
+            <thead className="text-neutral-500">
               <tr>
                 <th className="px-2 py-2">Sembol</th>
                 <th className="px-2 py-2">Durum</th>
@@ -178,7 +178,7 @@ export default function AdminRatesPage() {
             </thead>
             <tbody>
               {effective.map((e) => (
-                <tr key={e.symbol} className="border-t border-[#1e293b]">
+                <tr key={e.symbol} className="border-t border-[#e5e5e5]">
                   <td className="px-2 py-2 font-medium">{e.symbol}</td>
                   <td className="px-2 py-2">
                     <span
@@ -198,7 +198,7 @@ export default function AdminRatesPage() {
                   <td className="px-2 py-2">
                     <button
                       onClick={() => startEdit(e.symbol)}
-                      className="rounded bg-[#1e293b] px-2 py-1 hover:bg-[#334155]"
+                      className="rounded bg-[#e5e5e5] px-2 py-1 hover:bg-[#f0f0f0]"
                     >
                       Düzenle
                     </button>
@@ -212,7 +212,7 @@ export default function AdminRatesPage() {
 
       {editSym && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-md rounded-xl border border-[#1e293b] bg-[#0f172a] p-4">
+          <div className="w-full max-w-md rounded-xl border border-[#e5e5e5] bg-[#ffffff] p-4">
             <h3 className="mb-3 text-sm font-semibold">{editSym} — sembol override</h3>
             <div className="grid grid-cols-2 gap-2">
               {(
@@ -225,13 +225,13 @@ export default function AdminRatesPage() {
                   ["commissionPerLot", "Komisyon/lot"],
                 ] as const
               ).map(([k, label]) => (
-                <label key={k} className="text-[11px] text-slate-400">
+                <label key={k} className="text-[11px] text-neutral-500">
                   {label}
                   <input
                     value={symForm[k]}
                     onChange={(e) => setSymForm({ ...symForm, [k]: e.target.value })}
                     placeholder="boş = global"
-                    className="mt-1 w-full rounded border border-[#1e293b] bg-[#0b1220] px-2 py-1.5 text-sm"
+                    className="mt-1 w-full rounded border border-[#e5e5e5] bg-[#111111] px-2 py-1.5 text-sm"
                   />
                 </label>
               ))}
@@ -245,10 +245,10 @@ export default function AdminRatesPage() {
               İşleme açık
             </label>
             <div className="mt-4 flex gap-2">
-              <button onClick={saveSymbol} disabled={busy} className="rounded bg-blue-600 px-3 py-1.5 text-sm">
+              <button onClick={saveSymbol} disabled={busy} className="rounded bg-black text-white px-3 py-1.5 text-sm">
                 Kaydet
               </button>
-              <button onClick={() => setEditSym(null)} className="rounded bg-[#1e293b] px-3 py-1.5 text-sm">
+              <button onClick={() => setEditSym(null)} className="rounded bg-[#e5e5e5] px-3 py-1.5 text-sm">
                 İptal
               </button>
             </div>

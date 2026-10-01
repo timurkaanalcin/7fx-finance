@@ -194,7 +194,7 @@ export default function MarginCallModal({
                     <button
                       type="submit"
                       disabled={loading}
-                      className="flex-1 rounded-control bg-desk-accent py-2 text-xs font-semibold text-white shadow-accent-glow-sm hover:brightness-110 disabled:opacity-60"
+                      className="flex-1 rounded-control bg-desk-accent py-2 text-xs font-semibold text-desk-accent-ink shadow-accent-glow-sm hover:brightness-110 disabled:opacity-60"
                     >
                       {loading ? "Gönderiliyor…" : "Talep gönder"}
                     </button>

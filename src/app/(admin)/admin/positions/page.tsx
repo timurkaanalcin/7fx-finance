@@ -30,7 +30,7 @@ export default function PositionsPage() {
   return (
     <div>
       <h1 className="mb-3 text-lg font-semibold">Pozisyonlar / Emirler</h1>
-      <p className="mb-3 text-[11px] text-slate-500">
+      <p className="mb-3 text-[11px] text-neutral-500">
         Trade engine verisi — her satır trader üyeliğinin 1:1 Account kaydına bağlıdır.
       </p>
       <div className="mb-3 flex gap-1">
@@ -38,15 +38,15 @@ export default function PositionsPage() {
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`rounded px-3 py-1 text-xs ${tab === t ? "bg-sky-600" : "bg-slate-800 text-slate-400"}`}
+            className={`rounded px-3 py-1 text-xs ${tab === t ? "bg-black text-white" : "bg-neutral-100 text-neutral-500"}`}
           >
             {t === "OPEN" ? "Açık" : t === "CLOSED" ? "Kapalı" : t === "ALL" ? "Tümü" : "Emirler"}
           </button>
         ))}
       </div>
-      <div className="overflow-x-auto rounded-lg border border-slate-800">
+      <div className="overflow-x-auto rounded-lg border border-neutral-200">
         <table className="w-full text-left text-[11px]">
-          <thead className="bg-[#0a1020] text-slate-500">
+          <thead className="bg-[#ffffff] text-neutral-500">
             {tab === "ORDERS" ? (
               <tr>
                 <th className="px-2 py-2">Sembol</th>
@@ -77,7 +77,7 @@ export default function PositionsPage() {
               ? orders.map((o) => {
                   const u = o.user as { id: string; name: string } | undefined;
                   return (
-                    <tr key={String(o.id)} className="border-t border-slate-800">
+                    <tr key={String(o.id)} className="border-t border-neutral-200">
                       <td className="px-2 py-1.5 font-medium">{String(o.symbol)}</td>
                       <td className="px-2 py-1.5">{String(o.side)}</td>
                       <td className="px-2 py-1.5">{String(o.type)}</td>
@@ -94,14 +94,14 @@ export default function PositionsPage() {
                       <td className="px-2 py-1.5">
                         <StatusBadge status={String(o.status)} />
                       </td>
-                      <td className="px-2 py-1.5 text-slate-500">
+                      <td className="px-2 py-1.5 text-neutral-500">
                         {new Date(String(o.createdAt)).toLocaleString("tr-TR")}
                       </td>
                     </tr>
                   );
                 })
               : rows.map((p) => (
-                  <tr key={String(p.id)} className="border-t border-slate-800">
+                  <tr key={String(p.id)} className="border-t border-neutral-200">
                     <td className="px-2 py-1.5 font-medium">{String(p.symbol)}</td>
                     <td className="px-2 py-1.5">{String(p.side)}</td>
                     <td className="px-2 py-1.5 tabular-nums">{String(p.volume)}</td>
@@ -122,8 +122,8 @@ export default function PositionsPage() {
                         {String(p.traderName)}
                       </Link>
                     </td>
-                    <td className="px-2 py-1.5 text-slate-400">{String(p.broker || "—")}</td>
-                    <td className="px-2 py-1.5 font-mono text-[9px] text-slate-500">
+                    <td className="px-2 py-1.5 text-neutral-500">{String(p.broker || "—")}</td>
+                    <td className="px-2 py-1.5 font-mono text-[9px] text-neutral-500">
                       {String(p.tradingAccountId || "—").slice(0, 10)}
                     </td>
                     <td className="px-2 py-1.5">
