@@ -20,6 +20,8 @@ export default function RegisterForm() {
   const [loading, setLoading] = useState(false);
   const [expectedReferral, setExpectedReferral] = useState<string | null>(null);
   const [referralRequired, setReferralRequired] = useState(true);
+  const [assignedAccountId, setAssignedAccountId] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -88,12 +90,66 @@ export default function RegisterForm() {
         setError(data.error || "Kayıt başarısız");
         return;
       }
-      window.location.assign("/trade");
+      const id = data.user?.accountLoginId ? String(data.user.accountLoginId) : null;
+      if (id) {
+        setAssignedAccountId(id);
+      } else {
+        window.location.assign("/trade");
+      }
     } catch {
       setError("Bağlantı hatası");
     } finally {
       setLoading(false);
     }
+  }
+
+  async function copyAccountId() {
+    if (!assignedAccountId) return;
+    try {
+      await navigator.clipboard.writeText(assignedAccountId);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* ignore */
+    }
+  }
+
+  if (assignedAccountId) {
+    return (
+      <>
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold tracking-tight text-[#111111]">Kayıt tamamlandı</h2>
+          <p className="mt-1 text-sm text-[#5c657a]">
+            Hesabınız oluşturuldu. Giriş için e-posta veya aşağıdaki hesap kimliğini kullanabilirsiniz.
+          </p>
+        </div>
+        <div className="rounded-xl border border-[rgba(16,20,37,0.1)] bg-[#f7f8fa] p-4">
+          <div className="text-[13px] font-medium text-[#5c657a]">Hesap kimliği</div>
+          <div className="mt-1 font-mono text-xl font-semibold tracking-wider text-[#111111]">
+            {assignedAccountId}
+          </div>
+          <p className="mt-2 text-[12px] leading-relaxed text-[#5c657a]">
+            Bu 16 haneli numarayı saklayın. Şifrenizle birlikte giriş yapabilirsiniz.
+          </p>
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+            <button
+              type="button"
+              onClick={copyAccountId}
+              className="flex-1 rounded-xl border border-[rgba(16,20,37,0.15)] bg-white py-3 text-sm font-semibold text-[#111111] transition hover:bg-[#f0f1f4]"
+            >
+              {copied ? "Kopyalandı" : "Kimliği kopyala"}
+            </button>
+            <button
+              type="button"
+              onClick={() => window.location.assign("/trade")}
+              className="flex-1 rounded-xl bg-[#111111] py-3 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(17,17,17,0.28)] transition hover:brightness-110"
+            >
+              Terminale git
+            </button>
+          </div>
+        </div>
+      </>
+    );
   }
 
   return (

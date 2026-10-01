@@ -2,6 +2,10 @@ import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
 import { ensureTradingSettings } from "./trading-settings";
 import { ensureSystemSettings } from "./system-settings";
+import {
+  allocateUniqueAccountLoginId,
+  backfillMissingAccountLoginIds,
+} from "./account-login-id";
 
 const DEMO_EMAIL = "trader@deskflow.local";
 const DEMO_PASSWORD = "Trade123!";
@@ -180,9 +184,11 @@ async function ensureAdminUser() {
     return;
   }
   const passwordHash = await bcrypt.hash(creds.password, 10);
+  const accountLoginId = await allocateUniqueAccountLoginId();
   await prisma.user.create({
     data: {
       email: creds.email,
+      accountLoginId,
       passwordHash,
       name: "7FX Admin",
       role: "ADMIN",
@@ -340,9 +346,11 @@ async function ensureCrmDemoMembers() {
     const bal = m.balance;
     const credit = m.credit ?? 0;
     const bonus = m.bonus ?? 0;
+    const accountLoginId = await allocateUniqueAccountLoginId();
     const user = await prisma.user.create({
       data: {
         email: m.email,
+        accountLoginId,
         passwordHash,
         name: m.name,
         role: "TRADER",
@@ -523,9 +531,11 @@ export function ensureDemoSeed(): Promise<void> {
         const count = await prisma.user.count();
         if (allowDemoSeed && count === 0) {
           const passwordHash = await bcrypt.hash(DEMO_PASSWORD, 10);
+          const accountLoginId = await allocateUniqueAccountLoginId();
           await prisma.user.create({
             data: {
               email: DEMO_EMAIL,
+              accountLoginId,
               passwordHash,
               name: "Demo Trader",
               role: "TRADER",
@@ -578,6 +588,7 @@ export function ensureDemoSeed(): Promise<void> {
           await ensureCrmDemoMembers();
           await ensureCrmModuleData();
         }
+        await backfillMissingAccountLoginIds();
       } catch (err) {
         seedPromise = null;
         console.error("[7fx] Auto-seed failed:", err);

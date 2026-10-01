@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { refreshAccountMetrics } from "@/lib/trading";
 import { parseMembershipUpdate, serializeUserMembership } from "@/lib/membership";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
+import { allocateUniqueAccountLoginId } from "@/lib/account-login-id";
 import { recordLedger } from "@/lib/ledger";
 
 export const dynamic = "force-dynamic";
@@ -28,6 +29,7 @@ export async function GET(req: Request) {
     and.push({
       OR: [
         { email: { contains: q } },
+        { accountLoginId: { contains: q } },
         { name: { contains: q } },
         { firstName: { contains: q } },
         { lastName: { contains: q } },
@@ -99,6 +101,7 @@ export async function POST(req: Request) {
       email.split("@")[0];
 
     const passwordHash = await hashPassword(password);
+    const accountLoginId = await allocateUniqueAccountLoginId();
     const balance = Number.isFinite(Number(body.balance)) ? Number(body.balance) : 10000;
     const currency = String(body.currency || "USD").slice(0, 8);
     const credit = Number.isFinite(Number(body.credit)) ? Number(body.credit) : 0;
@@ -108,6 +111,7 @@ export async function POST(req: Request) {
     const user = await prisma.user.create({
       data: {
         email,
+        accountLoginId,
         passwordHash,
         name,
         role,

@@ -23,6 +23,7 @@ export async function GET() {
     profile: {
       id: m.id,
       email: m.email,
+      accountLoginId: m.accountLoginId ?? null,
       name: m.name,
       role: m.role,
       active: m.active,

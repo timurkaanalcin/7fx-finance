@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 type UserRow = {
   id: string;
   email: string;
+  accountLoginId?: string | null;
   name: string;
   role: string;
   active: boolean;
@@ -174,7 +175,7 @@ export default function AdminUsersPage() {
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="E-posta, ad, telefon, broker…"
+          placeholder="E-posta, hesap kimliği, ad, telefon, broker…"
           className="ml-auto w-full max-w-xs rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-3 py-1.5 text-sm"
         />
       </div>
@@ -323,6 +324,11 @@ export default function AdminUsersPage() {
                   <div className="font-mono text-[9px] text-neutral-400">{u.id.slice(0, 8)}…</div>
                   <div className="font-medium">{u.name}</div>
                   <div className="text-neutral-500">{u.email}</div>
+                  {u.accountLoginId && (
+                    <div className="font-mono text-[10px] tracking-wide text-sky-600">
+                      Hesap kimliği: {u.accountLoginId}
+                    </div>
+                  )}
                   <div className="mt-0.5 flex flex-wrap gap-1">
                     <span
                       className={`rounded px-1 py-0.5 text-[9px] font-semibold ${

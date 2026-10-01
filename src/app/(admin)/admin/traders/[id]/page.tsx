@@ -27,6 +27,7 @@ type Tab =
 type Membership = Record<string, unknown> & {
   id: string;
   email: string;
+  accountLoginId?: string | null;
   name: string;
   role: string;
   active: boolean;
@@ -298,6 +299,11 @@ export default function AdminUserDetailPage() {
         </Link>
         <h1 className="text-xl font-semibold">{user.name}</h1>
         <span className="text-xs text-neutral-500">{user.email}</span>
+        {user.accountLoginId && (
+          <span className="rounded bg-sky-50 px-2 py-0.5 font-mono text-[10px] text-sky-700">
+            Hesap kimliği: {user.accountLoginId}
+          </span>
+        )}
         <span
           className={`rounded px-1.5 py-0.5 text-[10px] ${
             user.active ? "bg-emerald-500/20 text-emerald-300" : "bg-red-500/20 text-red-300"
@@ -338,6 +344,11 @@ export default function AdminUserDetailPage() {
             <Field label="Ad" value={form.firstName as string} onChange={(v) => setF("firstName", v)} />
             <Field label="Soyad" value={form.lastName as string} onChange={(v) => setF("lastName", v)} />
             <Field label="E-posta" value={user.email} onChange={() => {}} />
+            <Field
+              label="Hesap kimliği"
+              value={(user.accountLoginId as string) || "—"}
+              onChange={() => {}}
+            />
             <Field label="Telefon" value={form.phone as string} onChange={(v) => setF("phone", v)} />
             <Field
               label="Doğum tarihi"

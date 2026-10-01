@@ -15,6 +15,7 @@ export async function GET() {
       name: user.name,
       role: user.role || "TRADER",
       active: (user as { active?: boolean }).active !== false,
+      accountLoginId: (user as { accountLoginId?: string | null }).accountLoginId ?? null,
     },
     account: metrics,
     permissions: permissionsOf(user),

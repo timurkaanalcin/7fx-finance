@@ -9,7 +9,7 @@ const inputClass =
 const labelClass = "mb-1.5 block text-[13px] font-medium text-[#5c657a]";
 
 export default function LoginForm() {
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -23,7 +23,7 @@ export default function LoginForm() {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: identifier.trim(), password }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -42,24 +42,27 @@ export default function LoginForm() {
     <>
       <div className="mb-6">
         <h2 className="text-xl font-semibold tracking-tight text-[#111111]">Giriş Yap</h2>
-        <p className="mt-1 text-sm text-[#5c657a]">E-posta ve şifrenizle oturum açın.</p>
+        <p className="mt-1 text-sm text-[#5c657a]">
+          E-posta veya hesap kimliği ve şifrenizle oturum açın.
+        </p>
       </div>
 
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
         <div>
-          <label htmlFor="fx-login-email" className={labelClass}>
-            E-posta
+          <label htmlFor="fx-login-identifier" className={labelClass}>
+            E-posta veya Hesap kimliği
           </label>
           <input
-            id="fx-login-email"
+            id="fx-login-identifier"
             className={inputClass}
-            type="email"
+            type="text"
             autoComplete="username"
             required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="ornek@eposta.com"
+            value={identifier}
+            onChange={(e) => setIdentifier(e.target.value)}
+            placeholder="ornek@eposta.com veya 16 haneli kimlik"
             disabled={loading}
+            inputMode="email"
           />
         </div>
         <div>

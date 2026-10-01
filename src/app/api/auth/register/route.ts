@@ -7,6 +7,7 @@ import {
   getReferralCode,
   isReferralRequired,
 } from "@/lib/system-settings";
+import { allocateUniqueAccountLoginId } from "@/lib/account-login-id";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -57,10 +58,12 @@ export async function POST(req: Request) {
     const passwordHash = await hashPassword(password);
     const name = `${firstName} ${lastName}`.trim();
     const now = new Date();
+    const accountLoginId = await allocateUniqueAccountLoginId();
 
     const user = await prisma.user.create({
       data: {
         email,
+        accountLoginId,
         passwordHash,
         name,
         firstName,
@@ -92,7 +95,13 @@ export async function POST(req: Request) {
     });
     const res = NextResponse.json({
       ok: true,
-      user: { id: user.id, email: user.email, name: user.name, role },
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role,
+        accountLoginId: user.accountLoginId,
+      },
     });
     attachSessionCookie(res, token);
     return res;

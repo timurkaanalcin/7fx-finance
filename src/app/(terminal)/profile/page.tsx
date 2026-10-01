@@ -7,6 +7,7 @@ import { FormEvent, useCallback, useEffect, useState } from "react";
 type Profile = {
   id: string;
   email: string;
+  accountLoginId: string | null;
   name: string;
   role: string;
   active: boolean;
@@ -212,6 +213,12 @@ export default function ProfilePage() {
         <div className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
           <div className="mb-1 text-lg font-semibold">{profile.name}</div>
           <div className="text-xs text-slate-500">{profile.email}</div>
+          {profile.accountLoginId && (
+            <div className="mt-1 text-xs text-slate-400">
+              Hesap kimliği:{" "}
+              <span className="font-mono tracking-wider text-slate-200">{profile.accountLoginId}</span>
+            </div>
+          )}
           <div className="mt-2 flex flex-wrap gap-1 text-[10px]">
             <span className="rounded bg-slate-700 px-1.5 py-0.5">{profile.accountType}</span>
             <span
@@ -231,6 +238,7 @@ export default function ProfilePage() {
 
         <section className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
           <h2 className="mb-2 text-sm font-medium text-slate-300">Kimlik / Hesap</h2>
+          <Row label="Hesap kimliği" value={profile.accountLoginId || "—"} />
           <Row label="Ad" value={profile.firstName} />
           <Row label="Soyad" value={profile.lastName} />
           <Row label="Ülke" value={profile.country} />

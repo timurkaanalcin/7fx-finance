@@ -1,7 +1,26 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { randomInt } from "crypto";
 
 const prisma = new PrismaClient();
+
+function generateAccountLoginId(): string {
+  let id = String(randomInt(1, 10));
+  for (let i = 0; i < 15; i++) id += String(randomInt(0, 10));
+  return id;
+}
+
+async function allocateUniqueAccountLoginId(): Promise<string> {
+  for (let i = 0; i < 24; i++) {
+    const candidate = generateAccountLoginId();
+    const existing = await prisma.user.findUnique({
+      where: { accountLoginId: candidate },
+      select: { id: true },
+    });
+    if (!existing) return candidate;
+  }
+  throw new Error("ACCOUNT_LOGIN_ID_ALLOC_FAILED");
+}
 
 type DemoMember = {
   email: string;
@@ -260,6 +279,7 @@ async function upsertMember(m: DemoMember) {
     },
     create: {
       email: m.email,
+      accountLoginId: await allocateUniqueAccountLoginId(),
       passwordHash,
       name: m.name,
       role,
@@ -350,7 +370,6 @@ async function main() {
     console.log("Seeded desks");
   }
 
-
   await prisma.systemSettings.upsert({
     where: { id: "default" },
     update: { referralCode: "213950812", referralRequired: true },
@@ -389,6 +408,21 @@ async function main() {
       ],
     });
     console.log("Seeded deposit methods");
+  }
+
+  // Backfill hesap kimliği for any users still missing it
+  const missingIds = await prisma.user.findMany({
+    where: { OR: [{ accountLoginId: null }, { accountLoginId: "" }] },
+    select: { id: true },
+  });
+  for (const row of missingIds) {
+    await prisma.user.update({
+      where: { id: row.id },
+      data: { accountLoginId: await allocateUniqueAccountLoginId() },
+    });
+  }
+  if (missingIds.length) {
+    console.log(`Backfilled accountLoginId for ${missingIds.length} user(s)`);
   }
 }
 
