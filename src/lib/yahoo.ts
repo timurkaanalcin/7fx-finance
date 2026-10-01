@@ -230,11 +230,15 @@ export async function fetchQuoteFromChart(
   try {
     // Prefer 1m chart meta — regularMarketPrice updates more often during RTH/crypto
     // than a daily chart, so forming candles can track live mid ≤1s.
+    // Daily gain/loss % MUST use session previousClose from meta — never the prior
+    // 1m bar (that yields near-zero "fake" minute deltas instead of günlük %).
     let result;
+    let usedInterval: "1m" | "1d" = "1m";
     try {
       result = await fetchYahooChart(yahooTicker, "1m", "1d");
     } catch {
       result = await fetchYahooChart(yahooTicker, "1d", "5d");
+      usedInterval = "1d";
     }
     const meta = result.meta || {};
     const quote0 = result.indicators?.quote?.[0];
@@ -252,8 +256,7 @@ export async function fetchQuoteFromChart(
       lastClose ||
       Number(meta.chartPreviousClose) ||
       0;
-    // Prefer prior completed session close from bar series (fixes XAUUSD/GC=F
-    // chartPreviousClose quirks when futures roll or meta is stale).
+    // Prior *completed* bar from the series — only meaningful as session close on 1d.
     let priorFromBars = 0;
     let sawLast = false;
     for (let i = closes.length - 1; i >= 0; i--) {
@@ -270,13 +273,43 @@ export async function fetchQuoteFromChart(
       Number(meta.chartPreviousClose) ||
       Number(meta.previousClose) ||
       0;
-    let previousClose = priorFromBars || metaPrev || price;
-    // Guard absurd % (e.g. futures meta jump): if |changePct| > 25% vs prior bar, trust bar.
-    if (priorFromBars > 0 && metaPrev > 0) {
+    // Session previous close for real daily % (equity / FX / crypto / commodity).
+    let previousClose = metaPrev || (usedInterval === "1d" ? priorFromBars : 0) || price;
+    // Futures roll / stale meta: if |daily %| vs meta is absurd (>25%) and we only
+    // have intraday bars, re-fetch 1d chart for a trustworthy prior session close.
+    if (metaPrev > 0 && price > 0) {
       const pctMeta = Math.abs((price - metaPrev) / metaPrev) * 100;
-      const pctBar = Math.abs((price - priorFromBars) / priorFromBars) * 100;
-      if (pctMeta > 25 && pctBar < pctMeta) previousClose = priorFromBars;
+      if (pctMeta > 25) {
+        if (usedInterval === "1d" && priorFromBars > 0) {
+          previousClose = priorFromBars;
+        } else {
+          try {
+            const daily = await fetchYahooChart(yahooTicker, "1d", "5d");
+            const dCloses: (number | null)[] = daily.indicators?.quote?.[0]?.close || [];
+            const dMeta = daily.meta || {};
+            let dPrior = 0;
+            let skip = false;
+            for (let i = dCloses.length - 1; i >= 0; i--) {
+              const c = dCloses[i];
+              if (c == null || !Number.isFinite(c) || c <= 0) continue;
+              if (!skip) {
+                skip = true;
+                continue;
+              }
+              dPrior = c;
+              break;
+            }
+            const dMetaPrev =
+              Number(dMeta.chartPreviousClose) || Number(dMeta.previousClose) || 0;
+            if (dPrior > 0) previousClose = dPrior;
+            else if (dMetaPrev > 0) previousClose = dMetaPrev;
+          } catch {
+            /* keep metaPrev */
+          }
+        }
+      }
     }
+    if (!previousClose || !Number.isFinite(previousClose)) previousClose = price;
     if (!price || !Number.isFinite(price)) {
       throw new Error(`No price for ${yahooTicker}`);
     }

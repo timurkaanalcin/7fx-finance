@@ -315,7 +315,7 @@ export default function TerminalShell() {
                     type="button"
                     onClick={() => openOrder("BUY")}
                     aria-label="İşlem emri aç"
-                    className="pointer-events-auto rounded-full bg-desk-accent px-7 py-2.5 text-[13px] font-bold tracking-[0.14em] text-desk-accent-ink shadow-accent-glow-sm transition hover:brightness-110 active:scale-[0.98] md:px-9 md:py-3 md:text-sm"
+                    className="pointer-events-auto min-h-[22px] min-w-[52px] rounded-full bg-desk-accent px-3.5 py-[5px] text-[10px] font-bold tracking-[0.12em] text-desk-accent-ink shadow-accent-glow-sm transition hover:brightness-110 active:scale-[0.98] md:min-h-[26px] md:min-w-[60px] md:px-[18px] md:py-1.5 md:text-[11px]"
                   >
                     İŞLEM
                   </button>
@@ -358,7 +358,7 @@ export default function TerminalShell() {
                 <button
                   type="button"
                   onClick={() => openOrder("BUY")}
-                  className="rounded-full bg-desk-accent px-8 py-3 text-sm font-bold tracking-[0.12em] text-desk-accent-ink shadow-accent-glow-sm"
+                  className="min-h-[26px] min-w-[60px] rounded-full bg-desk-accent px-4 py-1.5 text-[11px] font-bold tracking-[0.12em] text-desk-accent-ink shadow-accent-glow-sm"
                 >
                   İŞLEM
                 </button>

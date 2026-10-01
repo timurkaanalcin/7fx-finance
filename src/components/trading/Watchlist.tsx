@@ -77,7 +77,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
       </div>
       <div className="flex items-center justify-between px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.1em] text-desk-muted/80 md:px-2.5 md:py-1 md:font-medium md:tracking-[0.08em]">
         <span>Sembol</span>
-        <span>Bid / Ask · %</span>
+        <span>BİD / ASK · %</span>
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto">
         {list.map((s) => {
@@ -115,23 +115,25 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
                       {s.name}
                     </span>
                   </div>
-                  <span
-                    className={`shrink-0 rounded-[6px] px-1.5 py-0.5 text-[11px] font-semibold tabular-nums md:rounded md:px-1 md:py-px md:text-[10px] ${
-                      up
-                        ? "bg-desk-buy/12 text-desk-buy"
-                        : "bg-desk-sell/12 text-desk-sell"
-                    }`}
-                  >
-                    {p ? `${up ? "+" : ""}${p.changePct.toFixed(2)}%` : "—"}
-                  </span>
-                </div>
-                <div className="mt-1 flex justify-between gap-2 text-[11px] tabular-nums text-desk-muted md:mt-0.5 md:text-[10px]">
-                  <span className="font-medium text-desk-text/70">
-                    {p ? formatPrice(s.symbol, p.bid) : "—"}
-                  </span>
-                  <span className="font-medium text-desk-text/70">
-                    {p ? formatPrice(s.symbol, p.ask) : "—"}
-                  </span>
+                  <div className="flex shrink-0 flex-col items-end gap-0.5 tabular-nums">
+                    <div className="flex items-baseline gap-1.5 text-[11px] font-medium text-desk-text/80 md:gap-1 md:text-[10px]">
+                      <span title="Bid">{p ? formatPrice(s.symbol, p.bid) : "—"}</span>
+                      <span className="text-desk-muted/50">/</span>
+                      <span title="Ask">{p ? formatPrice(s.symbol, p.ask) : "—"}</span>
+                    </div>
+                    <span
+                      className={`rounded-[6px] px-1.5 py-0.5 text-[11px] font-semibold md:rounded md:px-1 md:py-px md:text-[10px] ${
+                        !p
+                          ? "text-desk-muted"
+                          : up
+                            ? "bg-desk-buy/12 text-desk-buy"
+                            : "bg-desk-sell/12 text-desk-sell"
+                      }`}
+                      title="Günlük değişim %"
+                    >
+                      {p ? `${up ? "+" : ""}${p.changePct.toFixed(2)}%` : "—"}
+                    </span>
+                  </div>
                 </div>
               </div>
             </button>
