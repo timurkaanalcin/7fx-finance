@@ -47,7 +47,8 @@ html, body {
 
 input, select, button { font: inherit; }
 
-.ticker-track { animation: ticker-scroll 40s linear infinite; }
+/* 1x ticker speed: one full loop takes 80s for a calmer read pace. */
+.ticker-track { animation: ticker-scroll 80s linear infinite; }
 @keyframes ticker-scroll {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
