@@ -59,7 +59,7 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
         const first = list.find((m) => m.type === initialTab);
         setMethodId(first?.id || "");
       })
-      .catch(() => setError("Yöntemler yüklenemedi"))
+      .catch(() => setError("Could not load methods"))
       .finally(() => setLoading(false));
   }, [open]);
 
@@ -92,12 +92,12 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
     setError("");
     setSuccess("");
     if (!selected) {
-      setError("Aktif yöntem yok");
+      setError("No active methods");
       return;
     }
     const amt = Number(amount);
     if (!Number.isFinite(amt) || amt <= 0) {
-      setError("Geçerli tutar girin");
+      setError("Enter a valid amount");
       return;
     }
     setLoading(true);
@@ -109,13 +109,13 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Talep gönderilemedi");
+        setError(data.error || "Could not submit request");
         return;
       }
-      setSuccess("Bildirim gönderildi. Admin onayından sonra bakiyenize yansır.");
+      setSuccess("Noteification sent. It will reflect in your balance after admin approval.");
       onSubmitted?.();
     } catch {
-      setError("Bağlantı hatası");
+      setError("Connection error");
     } finally {
       setLoading(false);
     }
@@ -128,7 +128,7 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-desk-border px-4 py-3">
-          <h2 className="text-sm font-semibold tracking-wide">Para Yatırma</h2>
+          <h2 className="text-sm font-semibold tracking-wide">Depositma</h2>
           <button onClick={onClose} className="rounded-[8px] px-2 py-1 text-desk-muted hover:bg-desk-hover hover:text-desk-text">
             ✕
           </button>
@@ -136,7 +136,7 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
 
         <div className="p-4">
           {availableTypes.length === 0 && !loading && (
-            <p className="text-sm text-desk-muted">Şu an aktif yatırma yöntemi yok. Lütfen daha sonra tekrar deneyin.</p>
+            <p className="text-sm text-desk-muted">No active deposit methods right now. Please try again later.</p>
           )}
 
           {availableTypes.length > 0 && (
@@ -151,7 +151,7 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
                       tab === t ? "bg-desk-accent text-desk-accent-ink" : "text-desk-muted hover:bg-desk-hover"
                     }`}
                   >
-                    {t === "IBAN" ? "IBAN / Havale" : "Kripto"}
+                    {t === "IBAN" ? "IBAN / Wire" : "Crypto"}
                   </button>
                 ))}
               </div>
@@ -177,13 +177,13 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
                     <>
                       {selected.bankName && (
                         <div className="flex justify-between gap-2">
-                          <span className="text-desk-muted">Banka</span>
+                          <span className="text-desk-muted">Bank</span>
                           <span>{selected.bankName}</span>
                         </div>
                       )}
                       {selected.accountHolder && (
                         <div className="flex justify-between gap-2">
-                          <span className="text-desk-muted">Alıcı</span>
+                          <span className="text-desk-muted">Recipient</span>
                           <span className="text-right">{selected.accountHolder}</span>
                         </div>
                       )}
@@ -197,7 +197,7 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
                               onClick={() => onCopy("iban", selected.iban!)}
                               className="shrink-0 rounded-[8px] bg-desk-accent/90 px-2 py-0.5 text-[10px] text-desk-accent-ink hover:bg-desk-accent"
                             >
-                              {copied === "iban" ? "Kopyalandı" : "Kopyala"}
+                              {copied === "iban" ? "Copied" : "Copy"}
                             </button>
                           </div>
                         </div>
@@ -207,23 +207,23 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
                   {selected.type === "CRYPTO" && (
                     <>
                       <div className="flex justify-between gap-2">
-                        <span className="text-desk-muted">Varlık</span>
+                        <span className="text-desk-muted">Asset</span>
                         <span>{selected.asset}</span>
                       </div>
                       <div className="flex justify-between gap-2">
-                        <span className="text-desk-muted">Ağ</span>
+                        <span className="text-desk-muted">Network</span>
                         <span>{selected.network}</span>
                       </div>
                       {selected.address && (
                         <div className="space-y-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-desk-muted">Cüzdan</span>
+                            <span className="text-desk-muted">Wallet</span>
                             <button
                               type="button"
                               onClick={() => onCopy("addr", selected.address!)}
                               className="rounded-[8px] bg-desk-accent/90 px-2 py-0.5 text-[10px] text-desk-accent-ink hover:bg-desk-accent"
                             >
-                              {copied === "addr" ? "Kopyalandı" : "Kopyala"}
+                              {copied === "addr" ? "Copied" : "Copy"}
                             </button>
                           </div>
                           <code className="block break-all rounded-[8px] bg-desk-bg p-2 text-[11px]">{selected.address}</code>
@@ -244,7 +244,7 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
 
               <form onSubmit={onSubmit} className="space-y-3">
                 <div>
-                  <label className="mb-1 block text-[10px] uppercase tracking-wide text-desk-muted">Tutar (USD)</label>
+                  <label className="mb-1 block text-[10px] uppercase tracking-wide text-desk-muted">Amount (USD)</label>
                   <input
                     type="number"
                     min={1}
@@ -256,11 +256,11 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-[10px] uppercase tracking-wide text-desk-muted">Not (opsiyonel)</label>
+                  <label className="mb-1 block text-[10px] uppercase tracking-wide text-desk-muted">Note (opsiyonel)</label>
                   <input
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
-                    placeholder="İşlem referansı / tx hash"
+                    placeholder="Transaction reference / tx hash"
                     className="w-full rounded-[10px] border border-desk-border bg-desk-bg px-3 py-2 text-sm text-desk-text outline-none focus:border-desk-accent"
                   />
                 </div>
@@ -271,7 +271,7 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
                   disabled={loading || !selected}
                   className="w-full rounded-control bg-desk-accent py-2.5 text-sm font-semibold text-desk-accent-ink shadow-accent-glow-sm hover:brightness-110 disabled:opacity-60"
                 >
-                  {loading ? "Gönderiliyor…" : "Bildirim gönder"}
+                  {loading ? "Submitting…" : "Send notification"}
                 </button>
               </form>
             </>

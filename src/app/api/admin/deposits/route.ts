@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
   const admin = await requireAdminPerm("canApproveDeposits");
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   const { searchParams } = new URL(req.url);
   const status = searchParams.get("status");
   const where = status ? { status: status.toUpperCase() } : {};
@@ -27,7 +27,7 @@ export async function GET(req: Request) {
 /** Approve or reject a deposit request */
 export async function POST(req: Request) {
   const admin = await requireAdminPerm("canApproveDeposits");
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   const body = await req.json().catch(() => ({}));
   const id = String(body.id || "");
   const action = String(body.action || "").toLowerCase();
@@ -38,9 +38,9 @@ export async function POST(req: Request) {
   }
 
   const request = await prisma.depositRequest.findUnique({ where: { id } });
-  if (!request) return NextResponse.json({ error: "Talep bulunamadı" }, { status: 404 });
+  if (!request) return NextResponse.json({ error: "Request not found" }, { status: 404 });
   if (request.status !== "PENDING") {
-    return NextResponse.json({ error: "Talep zaten işlenmiş" }, { status: 400 });
+    return NextResponse.json({ error: "Request already processed" }, { status: 400 });
   }
 
   if (action === "reject") {
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
 
   // Approve: credit balance
   const account = await prisma.account.findUnique({ where: { userId: request.userId } });
-  if (!account) return NextResponse.json({ error: "Kullanıcı hesabı yok" }, { status: 404 });
+  if (!account) return NextResponse.json({ error: "User has no account" }, { status: 404 });
 
   const balanceBefore = account.balance;
   const balanceAfter = balanceBefore + request.amount;

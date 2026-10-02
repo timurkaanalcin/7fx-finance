@@ -77,7 +77,7 @@ async function ensureDesks() {
     data: [
       {
         id: "desk-ist-a",
-        name: "İstanbul A",
+        name: "Istanbul A",
         code: "DESK-IST-A",
         office: "TR",
         tradePlatformLink: "/trade",
@@ -118,13 +118,13 @@ async function ensureDepositMethods() {
     data: [
       {
         type: "IBAN",
-        label: "TRY Banka Havalesi (Demo)",
+        label: "TRY Bank Transfer (Demo)",
         active: true,
-        bankName: "Demo Bank A.Ş.",
+        bankName: "Demo Bank Inc.",
         accountHolder: "7FX Demo Ltd.",
         iban: "TR00 0000 0000 0000 0000 0000 00",
         instructions:
-          "Açıklama alanına kullanıcı e-postanızı yazın. Bildirim gönderdikten sonra admin onayı bekleyin.",
+          "Enter your user email in the description field. After sending the notification, wait for admin approval.",
         sortOrder: 1,
       },
       {
@@ -134,7 +134,7 @@ async function ensureDepositMethods() {
         asset: "USDT",
         network: "TRC20",
         address: "TDemoWalletAddress7FXFinanceXXXXXXXX",
-        instructions: "Sadece USDT-TRC20 gönderin. Yanlış ağda gönderilen fonlar kurtarılamaz.",
+        instructions: "Send USDT-TRC20 only. Funds sent on the wrong network cannot be recovered.",
         sortOrder: 2,
       },
     ],
@@ -171,7 +171,7 @@ async function ensureAdminUser() {
   if (existing) {
     // Always keep the configured env/dev admin unfrozen + ADMIN.
     // Previously only ADMIN_ROTATE_PASSWORD=1 restored active:true, so a freeze
-    // (or accidental seed) left prod admin stuck on "Hesap dondurulmuş".
+    // (or accidental seed) left prod admin stuck on "Account frozen".
     const patch: { role: string; active: boolean; passwordHash?: string } = {
       role: "ADMIN",
       active: true,
@@ -206,7 +206,7 @@ async function ensureAdminUser() {
       role: "ADMIN",
       firstName: "7FX",
       lastName: "Admin",
-      language: "tr",
+      language: "en",
       timezone: "Europe/Istanbul",
       country: "TR",
       accountType: "PRO",
@@ -242,7 +242,7 @@ const EXTRA_MEMBERS: CrmSeed[] = [
     country: "TR",
     address: "Kadıköy, İstanbul",
     accountType: "VIP",
-    desk: "İstanbul A",
+    desk: "Istanbul A",
     deskId: "DESK-IST-A",
     campaign: "facebook_ads",
     affiliateA: "AFF-100",
@@ -261,7 +261,7 @@ const EXTRA_MEMBERS: CrmSeed[] = [
     balance: 25000,
     credit: 500,
     bonus: 250,
-    note: "VIP müşteri — yüksek hacim",
+    note: "VIP client — high volume",
   },
   {
     email: "elena.petrova@demo.7fx",
@@ -293,7 +293,7 @@ const EXTRA_MEMBERS: CrmSeed[] = [
     registrationCountry: "RU",
     documentsStatus: "PENDING",
     balance: 1500,
-    note: "Belgeler bekleniyor",
+    note: "Documents pending",
   },
   {
     email: "ahmed.hassan@demo.7fx",
@@ -324,7 +324,7 @@ const EXTRA_MEMBERS: CrmSeed[] = [
     documentsStatus: "NONE",
     balance: 5000,
     bonus: 100,
-    note: "İlk arama yapıldı",
+    note: "First call completed",
   },
   {
     email: "frozen.user@demo.7fx",
@@ -335,7 +335,7 @@ const EXTRA_MEMBERS: CrmSeed[] = [
     phone: "+90 555 999 0000",
     country: "TR",
     accountType: "STANDARD",
-    desk: "İstanbul B",
+    desk: "Istanbul B",
     deskId: "DESK-IST-B",
     retentionStatus: "CHURNED",
     saleStatus: "LOST",
@@ -346,7 +346,7 @@ const EXTRA_MEMBERS: CrmSeed[] = [
     documentsStatus: "REJECTED",
     balance: 50,
     active: false,
-    note: "Hesap donduruldu — risk",
+    note: "Account frozen — risk",
   },
 ];
 
@@ -428,11 +428,11 @@ async function ensureCrmModuleData() {
 
   if ((await prisma.communication.count()) === 0 && traders.length) {
     const samples = [
-      { type: "CALL", title: "İlk arama", description: "Müşteri ile tanışma araması yapıldı. Yatırım ilgisi yüksek." },
-      { type: "CHAT", title: "Platform yardımı", description: "Terminal giriş ve emir girişi konusunda destek verildi." },
-      { type: "NOTE", title: "Takip notu", description: "Belgeler bekleniyor — 48 saat içinde hatırlat." },
-      { type: "CALL", title: "FTD takip", description: "İlk yatırım sonrası memnuniyet araması." },
-      { type: "CHAT", title: "Marjin sorusu", description: "Kaldıraç ve marjin seviyesi açıklandı." },
+      { type: "CALL", title: "First call", description: "Introductory call completed. High investment interest." },
+      { type: "CHAT", title: "Platform help", description: "Support provided on terminal login and order entry." },
+      { type: "NOTE", title: "Takip notu", description: "Documents pending — remind within 48 hours." },
+      { type: "CALL", title: "FTD takip", description: "Satisfaction call after first deposit." },
+      { type: "CHAT", title: "Margin sorusu", description: "Leverage and margin level explained." },
     ];
     for (let i = 0; i < samples.length; i++) {
       const t = traders[i % traders.length];
@@ -452,11 +452,11 @@ async function ensureCrmModuleData() {
 
   if ((await prisma.documentRecord.count()) === 0 && traders.length) {
     const docs = [
-      { name: "Kimlik Ön Yüz", docType: "ID", status: "APPROVED" },
-      { name: "Kimlik Arka Yüz", docType: "ID", status: "PENDING" },
-      { name: "İkametgah", docType: "ADDRESS", status: "PENDING" },
-      { name: "Selfie + Kimlik", docType: "SELFIE", status: "REJECTED", note: "Fotoğraf bulanık" },
-      { name: "Pasaport", docType: "ID", status: "APPROVED" },
+      { name: "ID Front", docType: "ID", status: "APPROVED" },
+      { name: "ID Back", docType: "ID", status: "PENDING" },
+      { name: "Proof of address", docType: "ADDRESS", status: "PENDING" },
+      { name: "Selfie + ID", docType: "SELFIE", status: "REJECTED", note: "Photo blurry" },
+      { name: "Passport", docType: "ID", status: "APPROVED" },
     ];
     for (let i = 0; i < docs.length; i++) {
       const t = traders[i % traders.length];
@@ -477,10 +477,10 @@ async function ensureCrmModuleData() {
   if ((await prisma.reminder.count()) === 0 && traders.length) {
     const now = Date.now();
     const reminders = [
-      { body: "Elena — belge hatırlatması", hours: 4, color: "#f59e0b" },
-      { body: "Mehmet — VIP haftalık check-in", hours: 28, color: "#3b82f6" },
-      { body: "Ahmed — ilk yatırım teklifi", hours: 52, color: "#10b981" },
-      { body: "Desk toplantısı — retention", hours: 76, color: "#8b5cf6" },
+      { body: "Elena — document reminder", hours: 4, color: "#f59e0b" },
+      { body: "Mehmet — VIP weekly check-in", hours: 28, color: "#3b82f6" },
+      { body: "Ahmed — first deposit offer", hours: 52, color: "#10b981" },
+      { body: "Desk meeting — retention", hours: 76, color: "#8b5cf6" },
     ];
     for (let i = 0; i < reminders.length; i++) {
       const t = traders[i % traders.length];
@@ -502,21 +502,21 @@ async function ensureCrmModuleData() {
     await prisma.mailTemplate.createMany({
       data: [
         {
-          name: "Hoş geldiniz",
-          subject: "7FX hesabınız hazır",
-          body: "Merhaba {{name}},\n\n7FX trading hesabınız oluşturuldu. Terminal: /trade\n\nİyi işlemler.",
+          name: "Welcome",
+          subject: "Your 7FX account is ready",
+          body: "Hello {{name}},\n\nYour 7FX trading account was created. Terminal: /trade\n\nHappy trading.",
           deskName: "HQ",
         },
         {
           name: "Belge talebi",
           subject: "KYC belgeleriniz eksik",
-          body: "Merhaba {{name}},\n\nHesap doğrulaması için kimlik ve ikametgah belgenizi yüklemenizi rica ederiz.",
-          deskName: "İstanbul A",
+          body: "Hello {{name}},\n\nPlease upload your ID and proof of address for account verification.",
+          deskName: "Istanbul A",
         },
         {
-          name: "Yatırım onayı",
-          subject: "Yatırımınız onaylandı",
-          body: "Merhaba {{name}},\n\nYatırım talebiniz onaylandı ve bakiyenize yansıtıldı.",
+          name: "Deposit approval",
+          subject: "Your deposit was approved",
+          body: "Hello {{name}},\n\nYour deposit request was approved and credited to your balance.",
           deskName: "HQ",
         },
       ],
@@ -530,6 +530,60 @@ async function ensureCrmModuleData() {
  * First-request auto-seed: demo trader, admin, deposit methods, CRM members.
  * Safe to call on every request — runs at most once per cold start.
  */
+
+/** Ensure Nejat Yücel has one CLOSED position with +102 USD realized PnL (idempotent). */
+async function ensureNejatClosedTrade() {
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { email: "n.yucel@hotmail.com" },
+        { name: { contains: "Nejat" } },
+        { AND: [{ firstName: "Nejat" }, { lastName: { contains: "cel" } }] },
+      ],
+    },
+  });
+  if (!user) {
+    console.log("[7fx] Nejat Yücel not found — skip closed +102 trade ensure");
+    return;
+  }
+  const existing = await prisma.position.findFirst({
+    where: {
+      userId: user.id,
+      status: "CLOSED",
+      OR: [{ closeProfit: 102 }, { profit: 102 }],
+    },
+  });
+  if (existing) {
+    if (existing.closeProfit !== 102 || existing.profit !== 102) {
+      await prisma.position.update({
+        where: { id: existing.id },
+        data: { closeProfit: 102, profit: 102, status: "CLOSED" },
+      });
+    }
+    return;
+  }
+  const openedAt = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
+  const closedAt = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000);
+  await prisma.position.create({
+    data: {
+      userId: user.id,
+      symbol: "EURUSD",
+      side: "BUY",
+      volume: 0.1,
+      openPrice: 1.085,
+      currentPrice: 1.0952,
+      profit: 102,
+      margin: 108.5,
+      status: "CLOSED",
+      openedAt,
+      closedAt,
+      closePrice: 1.0952,
+      closeProfit: 102,
+    },
+  });
+  console.log("[7fx] Ensured Nejat Yücel CLOSED EURUSD +102 USD trade");
+}
+
 export function ensureDemoSeed(): Promise<void> {
   if (process.env.NEXT_PHASE === "phase-production-build") {
     return Promise.resolve();
@@ -557,7 +611,7 @@ export function ensureDemoSeed(): Promise<void> {
               country: "TR",
               address: "Levent, İstanbul",
               accountType: "STANDARD",
-              desk: "İstanbul A",
+              desk: "Istanbul A",
               deskId: "DESK-IST-A",
               campaign: "organic",
               retentionStatus: "ACTIVE",
@@ -569,7 +623,7 @@ export function ensureDemoSeed(): Promise<void> {
               assigneeName: "Ayşe Kaya",
               tradingServer: "7FX-Live-01",
               tradingGroup: "STD-USD",
-              language: "tr",
+              language: "en",
               timezone: "Europe/Istanbul",
               isResident: true,
               registrationCountry: "TR",
@@ -601,6 +655,7 @@ export function ensureDemoSeed(): Promise<void> {
           await ensureCrmModuleData();
         }
         await backfillMissingAccountLoginIds();
+        await ensureNejatClosedTrade();
       } catch (err) {
         seedPromise = null;
         console.error("[7fx] Auto-seed failed:", err);

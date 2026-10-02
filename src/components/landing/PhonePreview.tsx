@@ -2,7 +2,7 @@
 
 const watch = [
   { s: "EURUSD", name: "Euro / Dolar", p: "1.0842", d: "+0.14%", up: true },
-  { s: "XAUUSD", name: "Altın", p: "2.341,20", d: "+0.32%", up: true },
+  { s: "XAUUSD", name: "Gold", p: "2.341,20", d: "+0.32%", up: true },
   { s: "US100", name: "NASDAQ 100", p: "19.840", d: "+0.41%", up: true },
   { s: "BTCUSD", name: "Bitcoin", p: "67.420", d: "−0.81%", up: false },
 ];
@@ -15,11 +15,11 @@ export default function PhonePreview() {
       <div className="fx-phone-glow pointer-events-none absolute -inset-4 sm:-inset-8 -z-10 rounded-[50%] opacity-80" />
 
       <div className="fx-float-card fx-float-card--tl absolute -left-5 top-14 z-20 hidden sm:block rounded-2xl border border-[#2a2a2a] bg-[#0a0a0a]/95 px-3.5 py-3 shadow-[0_16px_40px_rgba(16,20,37,0.18)] backdrop-blur">
-        <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[#8b97b0]">Günlük P&amp;L</p>
+        <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[#8b97b0]">Daily P&amp;L</p>
         <p className="mt-1 text-sm font-semibold tabular-nums text-[#26a69a]">+₺1.284</p>
       </div>
       <div className="fx-float-card fx-float-card--br absolute -right-3 bottom-24 z-20 hidden sm:block rounded-2xl border border-[#2a2a2a] bg-[#0a0a0a]/95 px-3.5 py-3 shadow-[0_16px_40px_rgba(16,20,37,0.18)] backdrop-blur">
-        <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[#8b97b0]">Açık pozisyon</p>
+        <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[#8b97b0]">Open position</p>
         <p className="mt-1 text-sm font-semibold tabular-nums text-[#e8eef8]">3 aktif</p>
       </div>
 
@@ -36,12 +36,12 @@ export default function PhonePreview() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#111111] opacity-40" />
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#111111]" />
             </span>
-            Canlı
+            Live
           </span>
         </div>
 
         <div className="px-3.5 pb-2 sm:px-5 sm:pb-3">
-          <p className="text-[10px] font-medium text-[#8b97b0] sm:text-[11px]">Portföy bakiyesi</p>
+          <p className="text-[10px] font-medium text-[#8b97b0] sm:text-[11px]">Portfolio bakiyesi</p>
           <p className="mt-0.5 text-[1.25rem] font-semibold tracking-tight text-[#e8eef8] tabular-nums leading-none sm:text-[1.75rem]">
             ₺128.450,20
           </p>
@@ -49,12 +49,12 @@ export default function PhonePreview() {
             <span className="inline-flex items-center rounded-full bg-[#26a69a]/15 px-2 py-0.5 font-semibold tabular-nums text-[#26a69a]">
               +₺2.140,50
             </span>
-            <span className="text-[#8b97b0]">bugün · örnek</span>
+            <span className="text-[#8b97b0]">today · sample</span>
           </div>
 
           <div className="mt-2.5 overflow-hidden rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-2.5 sm:mt-3.5 sm:rounded-2xl sm:p-3">
             <div className="mb-1 flex items-center justify-between sm:mb-1.5">
-              <span className="text-[9px] font-medium text-[#8b97b0] sm:text-[10px]">7 günlük</span>
+              <span className="text-[9px] font-medium text-[#8b97b0] sm:text-[10px]">7-day</span>
               <span className="text-[9px] font-semibold text-[#111111] sm:text-[10px]">+1,8%</span>
             </div>
             <svg viewBox="0 0 150 36" className="h-7 w-full sm:h-10" fill="none">
@@ -87,8 +87,8 @@ export default function PhonePreview() {
 
         <div className="px-3 pb-1.5 sm:px-4 sm:pb-2">
           <div className="flex items-center justify-between px-1 pb-1.5 sm:pb-2">
-            <p className="text-[10px] font-semibold text-[#e8eef8] sm:text-[11px]">İzleme listesi</p>
-            <p className="text-[9px] text-[#8b97b0] sm:text-[10px]">Örnek veriler</p>
+            <p className="text-[10px] font-semibold text-[#e8eef8] sm:text-[11px]">Watchlist</p>
+            <p className="text-[9px] text-[#8b97b0] sm:text-[10px]">Sample data</p>
           </div>
           <ul className="space-y-1 sm:space-y-1.5">
             {watch.map((row, i) => (
@@ -126,10 +126,10 @@ export default function PhonePreview() {
 
         <div className="mt-1 flex items-center justify-around border-t border-[#2a2a2a] bg-[#0a0a0a] px-2 py-2.5 pb-4 text-[9px] font-medium text-[#8b97b0] sm:mt-2 sm:py-3.5 sm:pb-6 sm:text-[10px]">
           {[
-            { t: "Ana", on: true },
-            { t: "Piyasa", on: false },
-            { t: "İşlem", on: false },
-            { t: "Hesap", on: false },
+            { t: "Main", on: true },
+            { t: "Market", on: false },
+            { t: "Trade", on: false },
+            { t: "Account", on: false },
           ].map((item) => (
             <span
               key={item.t}

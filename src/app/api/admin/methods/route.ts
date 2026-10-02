@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const admin = await requireAdminPerm("canApproveDeposits");
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   await ensureDemoSeed();
   const methods = await prisma.depositMethod.findMany({
     orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
@@ -17,11 +17,11 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const admin = await requireAdminPerm("canApproveDeposits");
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   const body = await req.json().catch(() => ({}));
   const type = String(body.type || "").toUpperCase();
   if (type !== "IBAN" && type !== "CRYPTO") {
-    return NextResponse.json({ error: "type IBAN veya CRYPTO olmalı" }, { status: 400 });
+    return NextResponse.json({ error: "type must be IBAN or CRYPTO" }, { status: 400 });
   }
   const label = String(body.label || "").trim();
   if (!label) return NextResponse.json({ error: "label gerekli" }, { status: 400 });
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
 
 export async function PATCH(req: Request) {
   const admin = await requireAdminPerm("canApproveDeposits");
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   const body = await req.json().catch(() => ({}));
   const id = String(body.id || "");
   if (!id) return NextResponse.json({ error: "id gerekli" }, { status: 400 });
@@ -67,7 +67,7 @@ export async function PATCH(req: Request) {
 
 export async function DELETE(req: Request) {
   const admin = await requireAdminPerm("canApproveDeposits");
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
   if (!id) return NextResponse.json({ error: "id gerekli" }, { status: 400 });

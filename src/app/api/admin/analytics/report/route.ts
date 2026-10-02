@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   await ensureDemoSeed();
   const admin = await requireAdmin();
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const [
     depositsSum,

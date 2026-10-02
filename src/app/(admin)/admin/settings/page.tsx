@@ -15,7 +15,7 @@ export default function AdminSettingsPage() {
   const load = useCallback(async () => {
     const res = await fetch("/api/admin/settings");
     if (!res.ok) {
-      setErr("Ayarlar yüklenemedi");
+      setErr("Could not load settings");
       return;
     }
     const data = await res.json();
@@ -50,14 +50,14 @@ export default function AdminSettingsPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setErr(data.error || "Kayıt başarısız");
+        setErr(data.error || "Registration failed");
         return;
       }
       setReferralCode(data.referralCode);
       setDraft(data.referralCode);
       setReferralRequired(data.referralRequired !== false);
       setDraftRequired(data.referralRequired !== false);
-      setMsg("Sistem ayarları kaydedildi");
+      setMsg("System settings saved");
     } finally {
       setBusy(false);
     }
@@ -66,22 +66,22 @@ export default function AdminSettingsPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-6 p-4 md:p-6">
       <div>
-        <h1 className="text-xl font-semibold text-neutral-900">Sistem Ayarları</h1>
+        <h1 className="text-xl font-semibold text-neutral-900">System Settings</h1>
         <p className="mt-1 text-sm text-neutral-500">
-          Kayıt için zorunlu referans kodunu buradan yönetin. Bu kod yalnızca 7FX
-          platformu (7fx.customer.org.tr) içindir. Yanlış kodla kayıt oluşturulamaz.
+          Manage the required referral code for registration here. This code is for the 7FX
+          platform (7fx.customer.org.tr) only. Registration cannot complete with an invalid code.
         </p>
       </div>
 
       <section className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-4 md:p-5">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-emerald-800">
-          Canlı CRM aktivitesi
+          Live CRM aktivitesi
         </h2>
         <p className="mt-2 text-sm text-emerald-900/80">
-          Trader terminalindeki emir ve pozisyon aç/kapa işlemleri aynı veritabanına
-          yazılır. Admin <strong>Pozisyonlar</strong> ve gösterge paneli birkaç saniyede
-          bir yenilenerek canlı trade aktivitesini gösterir. Trader detayındaki Pozisyonlar
-          sekmesi de canlıdır.
+          Order and position open/close actions from the trader terminal write to the same database.
+          The admin <strong>Positions</strong> page and dashboard refresh every few seconds
+          to show live trade activity. The Positions tab on the trader detail
+          is also live.
         </p>
       </section>
 
@@ -90,11 +90,11 @@ export default function AdminSettingsPage() {
           Referans Kodu
         </h2>
         <p className="mt-2 text-sm text-neutral-500">
-          Yeni kullanıcılar kayıt formunda bu kodu girmek zorundadır (zorunluluk açıkken).
+          New users must enter this code on the registration form (when required).
         </p>
 
         {!loaded ? (
-          <p className="mt-4 text-sm text-neutral-500">Yükleniyor…</p>
+          <p className="mt-4 text-sm text-neutral-500">Loading…</p>
         ) : (
           <div className="mt-4 space-y-4">
             <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-neutral-200 bg-[#f7f7f7] px-3 py-3">
@@ -107,32 +107,32 @@ export default function AdminSettingsPage() {
               />
               <span>
                 <span className="block text-sm font-medium text-slate-200">
-                  Referans kodu zorunlu
+                  Referral code zorunlu
                 </span>
                 <span className="mt-0.5 block text-xs text-neutral-500">
-                  Kapalıysa kayıt formu kod istemez; açıkken geçerli kod şarttır.
+                  When closed, the registration form does not ask for a code; when open, a valid code is required.
                 </span>
               </span>
             </label>
 
             <div>
               <label htmlFor="admin-referral-code" className="mb-1.5 block text-sm text-slate-300">
-                Aktif kod
+                Active kod
               </label>
               <input
                 id="admin-referral-code"
                 className="w-full rounded-lg border border-neutral-300 bg-[#f7f7f7] px-3 py-2.5 font-mono text-neutral-900 outline-none focus:border-sky-500"
                 value={draft}
                 onChange={(e) => setDraft(e.target.value.replace(/[^\d]/g, ""))}
-                placeholder="Örn. 213950812"
+                placeholder="e.g. 213950812"
                 disabled={busy}
                 maxLength={64}
                 inputMode="numeric"
                 autoComplete="off"
               />
-              <p className="mt-1.5 text-xs text-neutral-500">Yalnızca rakam (digits).</p>
+              <p className="mt-1.5 text-xs text-neutral-500">Digits only.</p>
               {dirty && (
-                <p className="mt-1.5 text-xs text-amber-400/90">Kaydedilmemiş değişiklik var</p>
+                <p className="mt-1.5 text-xs text-amber-400/90">You have unsaved changes</p>
               )}
             </div>
             <div className="flex flex-wrap gap-2">
@@ -142,7 +142,7 @@ export default function AdminSettingsPage() {
                 onClick={save}
                 className="rounded-lg bg-black text-white px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {busy ? "Kaydediliyor…" : "Kaydet"}
+                {busy ? "Saving…" : "Save"}
               </button>
               <button
                 type="button"
@@ -155,7 +155,7 @@ export default function AdminSettingsPage() {
                 }}
                 className="rounded-lg border border-neutral-300 px-4 py-2 text-sm text-slate-300 hover:bg-neutral-100 disabled:opacity-50"
               >
-                İptal
+                Cancel
               </button>
             </div>
           </div>

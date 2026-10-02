@@ -165,20 +165,20 @@ export async function placeOrder(input: {
 }) {
   await ensureTicked();
   const def = getSymbol(input.symbol);
-  if (!def) throw new Error("Geçersiz sembol");
-  if (input.volume <= 0) throw new Error("Hacim geçersiz");
+  if (!def) throw new Error("Invalid symbol");
+  if (input.volume <= 0) throw new Error("Invalid volume");
 
   const rates = await getEffectiveRates(input.symbol);
-  if (!rates || !rates.enabled) throw new Error("Sembol işlemeye kapalı");
+  if (!rates || !rates.enabled) throw new Error("Symbol is closed for trading");
   if (input.volume < rates.minVolume || input.volume > rates.maxVolume) {
-    throw new Error(`Hacim ${rates.minVolume}–${rates.maxVolume} arasında olmalı`);
+    throw new Error(`Volume must be between ${rates.minVolume}–${rates.maxVolume}`);
   }
 
   const tick = await getPrice(input.symbol);
-  if (!tick) throw new Error("Fiyat yok");
+  if (!tick) throw new Error("Price yok");
 
   const account = await prisma.account.findUnique({ where: { userId: input.userId } });
-  if (!account) throw new Error("Hesap bulunamadı");
+  if (!account) throw new Error("Account not found");
 
   if (input.type === "MARKET") {
     const fillPrice = input.side === "BUY" ? tick.ask : tick.bid;
@@ -204,7 +204,7 @@ export async function placeOrder(input: {
   }
 
   if (input.price == null || input.price <= 0) {
-    throw new Error("Limit/Stop için fiyat gerekli");
+    throw new Error("Price required for Limit/Stop");
   }
 
   return prisma.order.create({
@@ -227,14 +227,14 @@ export async function closePosition(userId: string, positionId: string) {
   const pos = await prisma.position.findFirst({
     where: { id: positionId, userId, status: "OPEN" },
   });
-  if (!pos) throw new Error("Pozisyon bulunamadı");
+  if (!pos) throw new Error("Position not found");
 
   const tick = await getPrice(pos.symbol);
-  if (!tick) throw new Error("Fiyat yok");
+  if (!tick) throw new Error("Price yok");
 
   const closePrice = pos.side === "BUY" ? tick.bid : tick.ask;
   const rates = await getEffectiveRates(pos.symbol);
-  if (!rates) throw new Error("Sembol ayarı yok");
+  if (!rates) throw new Error("No symbol settings");
   const profit = calcProfitWithRates(
     rates,
     pos.side as "BUY" | "SELL",
@@ -343,7 +343,7 @@ export async function applyBalanceReset(userId: string) {
 
 export async function applyBalanceAdd(userId: string, amount: number) {
   const account = await prisma.account.findUnique({ where: { userId } });
-  if (!account) throw new Error("Hesap bulunamadı");
+  if (!account) throw new Error("Account not found");
   await prisma.account.update({
     where: { userId },
     data: { balance: account.balance + amount },

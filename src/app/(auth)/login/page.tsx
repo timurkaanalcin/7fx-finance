@@ -7,8 +7,8 @@ import LoginForm from "@/components/auth/LoginForm";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Giriş · 7FX",
-  description: "7FX hesabınıza güvenli giriş yapın",
+  title: "Sign In · 7FX",
+  description: "Securely sign in to your 7FX account",
 };
 
 export default async function LoginPage() {

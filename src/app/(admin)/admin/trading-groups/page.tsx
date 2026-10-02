@@ -32,12 +32,12 @@ export default function TradingGroupsPage() {
 
   return (
     <div>
-      <h1 className="mb-3 text-lg font-semibold">Trading Grupları</h1>
+      <h1 className="mb-3 text-lg font-semibold">Trading Groups</h1>
       <form onSubmit={create} className="mb-3 flex gap-2 text-xs">
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Grup adı"
+          placeholder="Group name"
           required
           className="rounded border border-neutral-300 bg-[#ffffff] px-2 py-1.5"
         />
@@ -49,8 +49,8 @@ export default function TradingGroupsPage() {
         <table className="w-full text-left text-xs">
           <thead className="bg-[#ffffff] text-neutral-500">
             <tr>
-              <th className="px-3 py-2">Ad</th>
-              <th className="px-3 py-2">Müşteri sayısı</th>
+              <th className="px-3 py-2">Name</th>
+              <th className="px-3 py-2">Client count</th>
             </tr>
           </thead>
           <tbody>

@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 /** List current user's balance / margin-call requests */
 export async function GET() {
   const user = await requireUser();
-  if (!user) return NextResponse.json({ error: "Oturum yok" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "No session" }, { status: 401 });
   const requests = await prisma.balanceRequest.findMany({
     where: { userId: user.id },
     orderBy: { createdAt: "desc" },
@@ -24,23 +24,23 @@ export async function GET() {
  */
 export async function POST(req: Request) {
   const user = await requireUser();
-  if (!user) return NextResponse.json({ error: "Oturum yok" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "No session" }, { status: 401 });
 
   await processPendingOrders(user.id);
   await checkSlTp(user.id);
   const metrics = await refreshAccountMetrics(user.id);
-  if (!metrics) return NextResponse.json({ error: "Hesap yok" }, { status: 404 });
+  if (!metrics) return NextResponse.json({ error: "Account yok" }, { status: 404 });
 
   const body = await req.json().catch(() => ({}));
   const type = String(body.type || "").toUpperCase();
   const amount = body.amount != null ? Number(body.amount) : null;
 
   if (type !== "RESET" && type !== "ADD") {
-    return NextResponse.json({ error: "type RESET veya ADD olmalı" }, { status: 400 });
+    return NextResponse.json({ error: "type must be RESET or ADD" }, { status: 400 });
   }
   if (type === "ADD") {
     if (!Number.isFinite(amount) || amount == null || amount <= 0 || amount > 1_000_000) {
-      return NextResponse.json({ error: "Geçersiz tutar" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
     }
   }
 
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
   });
   if (!inCall) {
     return NextResponse.json(
-      { error: "Marjin çağrısı koşulu sağlanmıyor; talep oluşturulamıyor" },
+      { error: "Margin-call condition not met; cannot create request" },
       { status: 400 }
     );
   }

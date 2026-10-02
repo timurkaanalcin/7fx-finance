@@ -1,4 +1,4 @@
-/** Shared CRM / üyelik field helpers for admin + trader profile */
+/** Shared CRM / membership field helpers for admin + trader profile */
 
 export const ACCOUNT_TYPES = ["STANDARD", "VIP", "PRO", "DEMO"] as const;
 export const ACCOUNT_CURRENCIES = ["USD", "EUR", "TRY", "GBP", "CHF", "JPY", "AUD", "CAD"] as const;

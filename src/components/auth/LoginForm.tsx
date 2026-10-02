@@ -27,12 +27,12 @@ export default function LoginForm() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Giriş başarısız");
+        setError(data.error || "Sign-in failed");
         return;
       }
       window.location.assign(data.user?.role === "ADMIN" ? "/admin" : "/trade");
     } catch {
-      setError("Bağlantı hatası");
+      setError("Connection error");
     } finally {
       setLoading(false);
     }
@@ -41,16 +41,16 @@ export default function LoginForm() {
   return (
     <>
       <div className="mb-6">
-        <h2 className="text-xl font-semibold tracking-tight text-[#111111]">Giriş Yap</h2>
+        <h2 className="text-xl font-semibold tracking-tight text-[#111111]">Sign In</h2>
         <p className="mt-1 text-sm text-[#5c657a]">
-          E-posta veya hesap kimliği ve şifrenizle oturum açın.
+          Sign in with your email or account ID and password.
         </p>
       </div>
 
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
         <div>
           <label htmlFor="fx-login-identifier" className={labelClass}>
-            E-posta veya Hesap kimliği
+            Email or Account ID
           </label>
           <input
             id="fx-login-identifier"
@@ -67,7 +67,7 @@ export default function LoginForm() {
         </div>
         <div>
           <label htmlFor="fx-login-password" className={labelClass}>
-            Şifre
+            Password
           </label>
           <input
             id="fx-login-password"
@@ -96,14 +96,14 @@ export default function LoginForm() {
           disabled={loading}
           className="mt-1 w-full rounded-xl bg-[#111111] py-3.5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(17,17,17,0.28)] transition hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {loading ? "Giriş yapılıyor…" : "Giriş Yap"}
+          {loading ? "Signing in…" : "Sign In"}
         </button>
       </form>
 
       <div className="mt-7 border-t border-[rgba(16,20,37,0.08)] pt-5 text-center text-sm text-[#5c657a]">
-        Hesabınız yok mu?{" "}
+        Don't have an account?{" "}
         <Link href="/register" className="font-semibold text-[#111111] underline-offset-2 transition hover:underline">
-          Kayıt olun
+          Register
         </Link>
       </div>
     </>

@@ -45,12 +45,12 @@ export default function MailPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "Kayıt başarısız");
+        setMsg(data.error || "Registration failed");
         return;
       }
       setForm({ name: "", subject: "", body: "", deskName: "" });
       setEditId(null);
-      setMsg(editId ? "Şablon güncellendi" : "Şablon eklendi");
+      setMsg(editId ? "Template updated" : "Template eklendi");
       await load();
     } finally {
       setBusy(false);
@@ -78,9 +78,9 @@ export default function MailPage() {
 
   return (
     <div>
-      <h1 className="mb-1 text-lg font-semibold">Mail Şablonları</h1>
+      <h1 className="mb-1 text-lg font-semibold">Mail Templates</h1>
       <p className="mb-3 text-[11px] text-neutral-500">
-        CRM e-posta şablonları — {"{{name}}"} yer tutucusu kullanılabilir
+        CRM email templates — {"{{name}}"} placeholder is supported
       </p>
       <div className="grid gap-3 lg:grid-cols-3">
         <div className="lg:col-span-2 grid gap-3 sm:grid-cols-2">
@@ -90,12 +90,12 @@ export default function MailPage() {
                 <h2 className="text-sm font-semibold">{t.name}</h2>
                 <StatusBadge status={t.active ? "ACTIVE" : "CLOSED"} />
               </div>
-              <p className="text-[11px] text-neutral-500">Konu: {t.subject}</p>
+              <p className="text-[11px] text-neutral-500">Subject: {t.subject}</p>
               <p className="mt-2 line-clamp-4 whitespace-pre-wrap text-[11px] text-slate-300">{t.body}</p>
               <p className="mt-2 text-[10px] text-neutral-400">Desk: {t.deskName || "—"}</p>
               <div className="mt-2 flex gap-2 text-[10px]">
                 <button type="button" onClick={() => startEdit(t)} className="text-sky-400 hover:underline">
-                  Düzenle
+                  Edit
                 </button>
                 <button
                   type="button"
@@ -103,39 +103,39 @@ export default function MailPage() {
                   onClick={() => remove(t.id)}
                   className="text-red-400 hover:underline"
                 >
-                  Sil
+                  Delete
                 </button>
               </div>
             </div>
           ))}
           {templates.length === 0 && (
             <p className="col-span-2 rounded-lg border border-dashed border-neutral-200 px-3 py-8 text-center text-xs text-neutral-500">
-              Şablon yok
+              Template yok
             </p>
           )}
         </div>
         <div className="rounded-lg border border-neutral-200 bg-[#ffffff] p-3">
           <h2 className="mb-2 text-xs font-semibold text-slate-300">
-            {editId ? "Şablon düzenle" : "Yeni şablon"}
+            {editId ? "Edit template" : "New template"}
           </h2>
           <div className="space-y-2 text-xs">
             <input
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              placeholder="Ad"
+              placeholder="Name"
               className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             />
             <input
               value={form.subject}
               onChange={(e) => setForm({ ...form, subject: e.target.value })}
-              placeholder="Konu"
+              placeholder="Subject"
               className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             />
             <textarea
               value={form.body}
               onChange={(e) => setForm({ ...form, body: e.target.value })}
               rows={8}
-              placeholder="Gövde"
+              placeholder="Body"
               className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5 font-mono text-[11px]"
             />
             <input
@@ -150,7 +150,7 @@ export default function MailPage() {
               onClick={save}
               className="w-full rounded bg-black text-white px-3 py-1.5 font-medium hover:bg-neutral-800 disabled:opacity-50"
             >
-              {editId ? "Güncelle" : "Kaydet"}
+              {editId ? "Update" : "Save"}
             </button>
             {editId && (
               <button
@@ -161,7 +161,7 @@ export default function MailPage() {
                 }}
                 className="w-full text-[11px] text-neutral-500 hover:text-neutral-700"
               >
-                İptal
+                Cancel
               </button>
             )}
             {msg && <p className="text-[11px] text-neutral-500">{msg}</p>}

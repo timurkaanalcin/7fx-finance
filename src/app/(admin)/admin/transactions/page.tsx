@@ -21,16 +21,16 @@ export default function TransactionsPage() {
 
   return (
     <div>
-      <h1 className="mb-3 text-lg font-semibold">İşlemler (Balance Ledger)</h1>
+      <h1 className="mb-3 text-lg font-semibold">Tradeler (Balance Ledger)</h1>
       <p className="mb-3 text-[11px] text-neutral-500">
-        Yatırma onayı, marjin reset/add ve finans düzeltmeleri aynı trading bakiyesine işlenir.
+        Deposit approval, margin reset/add and finance adjustments post to the same trading balance.
       </p>
       <select
         value={type}
         onChange={(e) => setType(e.target.value)}
         className="mb-3 rounded border border-neutral-300 bg-[#ffffff] px-2 py-1.5 text-xs"
       >
-        <option value="">Tüm tipler</option>
+        <option value="">All types</option>
         {["DEPOSIT", "MARGIN_ADD", "RESET", "ADJUSTMENT", "FINANCE_SET", "BONUS", "CREDIT"].map(
           (t) => (
             <option key={t} value={t}>
@@ -44,13 +44,13 @@ export default function TransactionsPage() {
           <thead className="bg-[#ffffff] text-neutral-500">
             <tr>
               <th className="px-2 py-2">Tip</th>
-              <th className="px-2 py-2">Tutar</th>
-              <th className="px-2 py-2">Önce → Sonra</th>
+              <th className="px-2 py-2">Amount</th>
+              <th className="px-2 py-2">Before → After</th>
               <th className="px-2 py-2">Trader</th>
               <th className="px-2 py-2">Account</th>
-              <th className="px-2 py-2">Oluşturan</th>
+              <th className="px-2 py-2">Createan</th>
               <th className="px-2 py-2">Yorum</th>
-              <th className="px-2 py-2">Tarih</th>
+              <th className="px-2 py-2">Date</th>
             </tr>
           </thead>
           <tbody>
@@ -74,14 +74,14 @@ export default function TransactionsPage() {
                   {String(r.comment || "—")}
                 </td>
                 <td className="px-2 py-1.5 text-neutral-500">
-                  {new Date(String(r.createdAt)).toLocaleString("tr-TR")}
+                  {new Date(String(r.createdAt)).toLocaleString("en-US")}
                 </td>
               </tr>
             ))}
             {rows.length === 0 && (
               <tr>
                 <td colSpan={8} className="px-3 py-8 text-center text-neutral-500">
-                  Kayıt yok
+                  Registered yok
                 </td>
               </tr>
             )}

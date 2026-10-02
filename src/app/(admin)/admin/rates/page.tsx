@@ -62,10 +62,10 @@ export default function AdminRatesPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "Kayıt başarısız");
+        setMsg(data.error || "Registration failed");
         return;
       }
-      setMsg("Global oranlar kaydedildi — canlıya uygulandı");
+      setMsg("Global rates saved — applied live");
       await load();
     } finally {
       setBusy(false);
@@ -89,10 +89,10 @@ export default function AdminRatesPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "Kayıt başarısız");
+        setMsg(data.error || "Registration failed");
         return;
       }
-      setMsg(`${editSym} güncellendi`);
+      setMsg(`${editSym} updated`);
       setEditSym(null);
       await load();
     } finally {
@@ -117,26 +117,26 @@ export default function AdminRatesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold">İşlem Oranları / Sembol Ayarları</h1>
+        <h1 className="text-xl font-semibold">Trading Rates / Symbol Settings</h1>
         <p className="mt-1 text-sm text-neutral-500">
-          Spread, komisyon, sözleşme çarpanı ve hacim limitleri — emir bileti, marj ve K/Z hesabına anında yansır.
+          Spread, commission, contract multiplier and volume limits — applied instantly to the order ticket, margin and P/L.
         </p>
       </div>
       {msg && <p className="text-xs text-emerald-400">{msg}</p>}
 
       {global && (
         <section className="rounded-xl border border-[#e5e5e5] bg-[#ffffff] p-4">
-          <h2 className="mb-3 text-sm font-semibold">Global Varsayılanlar</h2>
+          <h2 className="mb-3 text-sm font-semibold">Global Defaultlar</h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {(
               [
-                ["spreadMultiplier", "Spread çarpanı"],
-                ["commissionPerLot", "Komisyon / lot (USD)"],
-                ["defaultLeverage", "Varsayılan kaldıraç (dahili)"],
-                ["marginCallThresholdPct", "Marjin çağrısı eşiği %"],
+                ["spreadMultiplier", "Spread multiplier"],
+                ["commissionPerLot", "Commission / lot (USD)"],
+                ["defaultLeverage", "Default leverage (internal)"],
+                ["marginCallThresholdPct", "Margin call threshold %"],
                 ["defaultMinVolume", "Min hacim"],
                 ["defaultMaxVolume", "Max hacim"],
-                ["defaultContractMult", "Sözleşme çarpanı"],
+                ["defaultContractMult", "Contract multiplier"],
               ] as const
             ).map(([key, label]) => (
               <label key={key} className="block text-[11px] text-neutral-500">
@@ -156,23 +156,23 @@ export default function AdminRatesPage() {
             onClick={saveGlobal}
             className="mt-4 rounded-lg bg-black text-white px-4 py-2 text-sm font-medium hover:bg-neutral-800 disabled:opacity-50"
           >
-            Global Kaydet
+            Global Save
           </button>
         </section>
       )}
 
       <section className="rounded-xl border border-[#e5e5e5] bg-[#ffffff] p-4">
-        <h2 className="mb-3 text-sm font-semibold">Sembol Oranları (efektif)</h2>
+        <h2 className="mb-3 text-sm font-semibold">Symbol Rates (effective)</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="text-neutral-500">
               <tr>
-                <th className="px-2 py-2">Sembol</th>
-                <th className="px-2 py-2">Durum</th>
+                <th className="px-2 py-2">Symbol</th>
+                <th className="px-2 py-2">Status</th>
                 <th className="px-2 py-2">Spread</th>
                 <th className="px-2 py-2">Kontrat</th>
                 <th className="px-2 py-2">Min/Max</th>
-                <th className="px-2 py-2">Komisyon</th>
+                <th className="px-2 py-2">Commission</th>
                 <th className="px-2 py-2"></th>
               </tr>
             </thead>
@@ -186,7 +186,7 @@ export default function AdminRatesPage() {
                         e.enabled ? "bg-emerald-500/20 text-emerald-300" : "bg-red-500/20 text-red-300"
                       }`}
                     >
-                      {e.enabled ? "Açık" : "Kapalı"}
+                      {e.enabled ? "Open" : "Closed"}
                     </span>
                   </td>
                   <td className="px-2 py-2 tabular-nums">{e.spread}</td>
@@ -200,7 +200,7 @@ export default function AdminRatesPage() {
                       onClick={() => startEdit(e.symbol)}
                       className="rounded bg-[#e5e5e5] px-2 py-1 hover:bg-[#f0f0f0]"
                     >
-                      Düzenle
+                      Edit
                     </button>
                   </td>
                 </tr>
@@ -218,11 +218,11 @@ export default function AdminRatesPage() {
               {(
                 [
                   ["spreadAbs", "Spread (mutlak)"],
-                  ["spreadMultiplier", "Spread çarpanı"],
-                  ["contractMultiplier", "Kontrat çarpanı"],
+                  ["spreadMultiplier", "Spread multiplier"],
+                  ["contractMultiplier", "Contract multiplier"],
                   ["minVolume", "Min hacim"],
                   ["maxVolume", "Max hacim"],
-                  ["commissionPerLot", "Komisyon/lot"],
+                  ["commissionPerLot", "Commission/lot"],
                 ] as const
               ).map(([k, label]) => (
                 <label key={k} className="text-[11px] text-neutral-500">
@@ -230,7 +230,7 @@ export default function AdminRatesPage() {
                   <input
                     value={symForm[k]}
                     onChange={(e) => setSymForm({ ...symForm, [k]: e.target.value })}
-                    placeholder="boş = global"
+                    placeholder="empty = global"
                     className="mt-1 w-full rounded border border-[#e5e5e5] bg-[#111111] px-2 py-1.5 text-sm"
                   />
                 </label>
@@ -242,14 +242,14 @@ export default function AdminRatesPage() {
                 checked={symForm.enabled}
                 onChange={(e) => setSymForm({ ...symForm, enabled: e.target.checked })}
               />
-              İşleme açık
+              Tradable
             </label>
             <div className="mt-4 flex gap-2">
               <button onClick={saveSymbol} disabled={busy} className="rounded bg-black text-white px-3 py-1.5 text-sm">
-                Kaydet
+                Save
               </button>
               <button onClick={() => setEditSym(null)} className="rounded bg-[#e5e5e5] px-3 py-1.5 text-sm">
-                İptal
+                Cancel
               </button>
             </div>
           </div>

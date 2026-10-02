@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   await ensureDemoSeed();
   const admin = await requireAdmin();
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const templates = await prisma.mailTemplate.findMany({ orderBy: { name: "asc" } });
   return NextResponse.json({ templates });
@@ -17,7 +17,7 @@ export async function GET() {
 export async function POST(req: Request) {
   await ensureDemoSeed();
   const admin = await requireAdmin();
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const body = await req.json().catch(() => ({}));
   const action = String(body.action || "create");

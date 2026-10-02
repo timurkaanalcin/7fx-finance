@@ -1,5 +1,5 @@
 /**
- * 16-digit numeric login account ID (Hesap kimliği).
+ * 16-digit numeric login account ID (Account ID).
  * Digits only, unique per user, assigned on registration / backfill.
  */
 import { randomInt } from "crypto";

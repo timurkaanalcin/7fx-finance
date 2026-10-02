@@ -63,11 +63,11 @@ export default function CommunicationsPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "Kayıt başarısız");
+        setMsg(data.error || "Registration failed");
         return;
       }
       setForm((f) => ({ ...f, title: "", description: "" }));
-      setMsg("İletişim kaydı eklendi");
+      setMsg("Communication record added");
       await load();
     } finally {
       setBusy(false);
@@ -76,8 +76,8 @@ export default function CommunicationsPage() {
 
   return (
     <div>
-      <h1 className="mb-1 text-lg font-semibold">İletişimler</h1>
-      <p className="mb-3 text-[11px] text-neutral-500">Chat / Call / Note kayıtları</p>
+      <h1 className="mb-1 text-lg font-semibold">Communications</h1>
+      <p className="mb-3 text-[11px] text-neutral-500">Chat / Call / Note records</p>
       <div className="mb-3 grid gap-3 lg:grid-cols-3">
         <div className="lg:col-span-2 overflow-x-auto rounded-lg border border-neutral-200">
           <div className="border-b border-neutral-200 bg-[#ffffff] px-3 py-2">
@@ -86,7 +86,7 @@ export default function CommunicationsPage() {
               onChange={(e) => setType(e.target.value)}
               className="rounded border border-neutral-300 bg-[#fafafa] px-2 py-1 text-xs"
             >
-              <option value="">Tüm tipler</option>
+              <option value="">All types</option>
               {["CHAT", "CALL", "NOTE"].map((t) => (
                 <option key={t} value={t}>
                   {t}
@@ -98,10 +98,10 @@ export default function CommunicationsPage() {
             <thead className="bg-[#ffffff] text-neutral-500">
               <tr>
                 <th className="px-2 py-2">Tip</th>
-                <th className="px-2 py-2">Başlık</th>
+                <th className="px-2 py-2">Title</th>
                 <th className="px-2 py-2">Trader</th>
-                <th className="px-2 py-2">Çalışan</th>
-                <th className="px-2 py-2">Tarih</th>
+                <th className="px-2 py-2">Worker</th>
+                <th className="px-2 py-2">Date</th>
               </tr>
             </thead>
             <tbody>
@@ -123,14 +123,14 @@ export default function CommunicationsPage() {
                   </td>
                   <td className="px-2 py-1.5 text-neutral-500">{r.workerName || "—"}</td>
                   <td className="px-2 py-1.5 text-neutral-500">
-                    {new Date(r.createdAt).toLocaleString("tr-TR")}
+                    {new Date(r.createdAt).toLocaleString("en-US")}
                   </td>
                 </tr>
               ))}
               {rows.length === 0 && (
                 <tr>
                   <td colSpan={5} className="px-3 py-8 text-center text-neutral-500">
-                    Kayıt yok
+                    Registered yok
                   </td>
                 </tr>
               )}
@@ -138,14 +138,14 @@ export default function CommunicationsPage() {
           </table>
         </div>
         <div className="rounded-lg border border-neutral-200 bg-[#ffffff] p-3">
-          <h2 className="mb-2 text-xs font-semibold text-slate-300">Yeni kayıt</h2>
+          <h2 className="mb-2 text-xs font-semibold text-slate-300">New record</h2>
           <div className="space-y-2 text-xs">
             <select
               value={form.userId}
               onChange={(e) => setForm({ ...form, userId: e.target.value })}
               className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             >
-              <option value="">Trader seç…</option>
+              <option value="">Select trader…</option>
               {traders.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.name} ({t.email})
@@ -166,13 +166,13 @@ export default function CommunicationsPage() {
             <input
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
-              placeholder="Başlık"
+              placeholder="Title"
               className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             />
             <textarea
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
-              placeholder="Açıklama"
+              placeholder="Description"
               rows={4}
               className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             />
@@ -182,7 +182,7 @@ export default function CommunicationsPage() {
               onClick={create}
               className="w-full rounded bg-black text-white px-3 py-1.5 text-xs font-medium hover:bg-neutral-800 disabled:opacity-50"
             >
-              Kaydet
+              Save
             </button>
             {msg && <p className="text-[11px] text-neutral-500">{msg}</p>}
           </div>

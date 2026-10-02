@@ -17,10 +17,10 @@ type Row = {
   user: { id: string; email: string; name: string };
 };
 
-const STATUS_TR: Record<string, string> = {
+const STATUS_LABEL: Record<string, string> = {
   PENDING: "Bekliyor",
-  APPROVED: "Onaylandı",
-  REJECTED: "Reddedildi",
+  APPROVED: "Approved",
+  REJECTED: "Rejected",
 };
 
 export default function AdminBalanceRequestsPage() {
@@ -54,13 +54,13 @@ export default function AdminBalanceRequestsPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "İşlem başarısız");
+        setMsg(data.error || "Action failed");
         return;
       }
       setMsg(
         action === "approve"
-          ? "Onaylandı — bakiye / pozisyonlar güncellendi"
-          : "Reddedildi — hesap değiştirilmedi"
+          ? "Approved — balance / positions updated"
+          : "Rejected — account unchanged"
       );
       await load();
     } finally {
@@ -71,7 +71,7 @@ export default function AdminBalanceRequestsPage() {
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center gap-2">
-        <h1 className="text-lg font-semibold">Marjin / Bakiye Talepleri</h1>
+        <h1 className="text-lg font-semibold">Margin / Balance Talepleri</h1>
         <div className="ml-auto flex gap-1">
           {["PENDING", "APPROVED", "REJECTED", ""].map((f) => (
             <button
@@ -79,7 +79,7 @@ export default function AdminBalanceRequestsPage() {
               onClick={() => setFilter(f)}
               className={`rounded px-2 py-1 text-xs ${filter === f ? "bg-black text-white" : "bg-[#e5e5e5]"}`}
             >
-              {f ? STATUS_TR[f] || f : "Tümü"}
+              {f ? STATUS_LABEL[f] || f : "All"}
             </button>
           ))}
         </div>
@@ -89,16 +89,16 @@ export default function AdminBalanceRequestsPage() {
         <p className="font-medium text-slate-300">Kurallar (admin)</p>
         <p>
           {ruleTr ||
-            `Marjin çağrısı: özsermaye ≤ 0 veya marj seviyesi < %${MARGIN_CALL_LEVEL}. Bakiye sıfırlama onayı → ${DEFAULT_RESET_BALANCE.toLocaleString("en-US")} USD + açık pozisyonlar kapatılır.`}
+            `Margin call: equity ≤ 0 or margin level < %${MARGIN_CALL_LEVEL}. Balance reset approval → ${DEFAULT_RESET_BALANCE.toLocaleString("en-US")} USD + open positions are closed.`}
         </p>
         <p>
-          <strong className="text-slate-300">Bakiye Sıfırlama (RESET):</strong> onayda açık pozisyonlar
-          kapatılır (PnL bakiyeye uygulanmaz), bekleyen emirler iptal, bakiye{" "}
-          {DEFAULT_RESET_BALANCE.toLocaleString("en-US")} USD yapılır.
+          <strong className="text-slate-300">Balance Reset (RESET):</strong> on approval open positions
+          are closed (PnL is not applied to balance), pending orders cancelled, balance set to{" "}
+          {DEFAULT_RESET_BALANCE.toLocaleString("en-US")} USD.
         </p>
         <p>
-          <strong className="text-slate-300">Bakiye Ekle (ADD):</strong> onayda istenen tutar bakiyeye
-          eklenir. Red: hesap olduğu gibi kalır.
+          <strong className="text-slate-300">Add Balance (ADD):</strong> on approval the requested amount is added to the balance
+          is added. Reject: account stays as-is.
         </p>
       </div>
 
@@ -107,27 +107,27 @@ export default function AdminBalanceRequestsPage() {
         <table className="w-full text-left text-xs">
           <thead className="bg-[#e5e5e5] text-neutral-500">
             <tr>
-              <th className="px-3 py-2">Tarih</th>
-              <th className="px-3 py-2">Kullanıcı</th>
+              <th className="px-3 py-2">Date</th>
+              <th className="px-3 py-2">User</th>
               <th className="px-3 py-2">Tip</th>
-              <th className="px-3 py-2">Tutar</th>
-              <th className="px-3 py-2">Özsermaye / Marj%</th>
-              <th className="px-3 py-2">Durum</th>
-              <th className="px-3 py-2">İşlem</th>
+              <th className="px-3 py-2">Amount</th>
+              <th className="px-3 py-2">Equity / Marj%</th>
+              <th className="px-3 py-2">Status</th>
+              <th className="px-3 py-2">Trade</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((r) => (
               <tr key={r.id} className="border-t border-[#e5e5e5]">
                 <td className="px-3 py-2 whitespace-nowrap">
-                  {new Date(r.createdAt).toLocaleString("tr-TR")}
+                  {new Date(r.createdAt).toLocaleString("en-US")}
                 </td>
                 <td className="px-3 py-2">
                   <div>{r.user.name}</div>
                   <div className="text-neutral-500">{r.user.email}</div>
                 </td>
                 <td className="px-3 py-2">
-                  {r.type === "RESET" ? "Bakiye Sıfırlama" : "Bakiye Ekle"}
+                  {r.type === "RESET" ? "Balance Reset" : "Add Balance"}
                 </td>
                 <td className="px-3 py-2 tabular-nums font-medium">
                   {r.type === "ADD" && r.amount != null
@@ -138,7 +138,7 @@ export default function AdminBalanceRequestsPage() {
                   {r.equityAt != null ? r.equityAt.toFixed(2) : "—"} /{" "}
                   {r.marginLvl != null ? `%${r.marginLvl.toFixed(1)}` : "—"}
                 </td>
-                <td className="px-3 py-2">{STATUS_TR[r.status] || r.status}</td>
+                <td className="px-3 py-2">{STATUS_LABEL[r.status] || r.status}</td>
                 <td className="px-3 py-2">
                   {r.status === "PENDING" ? (
                     <div className="flex gap-1">
@@ -147,14 +147,14 @@ export default function AdminBalanceRequestsPage() {
                         onClick={() => act(r.id, "approve")}
                         className="rounded bg-emerald-600 px-2 py-1 hover:bg-emerald-500 disabled:opacity-50"
                       >
-                        Onayla
+                        Approve
                       </button>
                       <button
                         disabled={busy === r.id}
                         onClick={() => act(r.id, "reject")}
                         className="rounded bg-red-600/80 px-2 py-1 hover:bg-red-500 disabled:opacity-50"
                       >
-                        Reddet
+                        Reject
                       </button>
                     </div>
                   ) : (
@@ -166,7 +166,7 @@ export default function AdminBalanceRequestsPage() {
             {rows.length === 0 && (
               <tr>
                 <td colSpan={7} className="px-3 py-8 text-center text-neutral-500">
-                  Kayıt yok
+                  Registered yok
                 </td>
               </tr>
             )}

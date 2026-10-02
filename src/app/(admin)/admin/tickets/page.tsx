@@ -58,13 +58,13 @@ export default function TicketsPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "İşlem başarısız");
+        setMsg(data.error || "Action failed");
         return;
       }
       setMsg(
         action === "approve"
-          ? "Onaylandı — trading bakiyesi güncellendi"
-          : "Reddedildi"
+          ? "Approved — trading balance updated"
+          : "Rejected"
       );
       await load();
     } finally {
@@ -74,10 +74,10 @@ export default function TicketsPage() {
 
   return (
     <div>
-      <h1 className="mb-3 text-lg font-semibold">Biletler / Yatırmalar</h1>
+      <h1 className="mb-3 text-lg font-semibold">Tickets / Deposits</h1>
       <p className="mb-3 text-[11px] text-neutral-500">
-        Para yatırma, para çekme ve marjin çağrısı talepleri burada listelenir. Onay,
-        trader&apos;ın 1:1 trading Account bakiyesini kredilendirir.
+        Deposit, withdrawal and margin-call requests are listed here. Approval
+        credits the trader&apos;s 1:1 trading account balance.
       </p>
       <div className="mb-3 flex flex-wrap gap-2 text-xs">
         <select
@@ -85,7 +85,7 @@ export default function TicketsPage() {
           onChange={(e) => setStatus(e.target.value)}
           className="rounded border border-neutral-300 bg-[#ffffff] px-2 py-1.5"
         >
-          <option value="">Tüm durumlar</option>
+          <option value="">All statuses</option>
           <option value="PENDING">PENDING</option>
           <option value="APPROVED">APPROVED</option>
           <option value="REJECTED">REJECTED</option>
@@ -95,19 +95,19 @@ export default function TicketsPage() {
           onChange={(e) => setKind(e.target.value)}
           className="rounded border border-neutral-300 bg-[#ffffff] px-2 py-1.5"
         >
-          <option value="all">Tüm tipler</option>
-          <option value="deposit">Yatırma</option>
-          <option value="margin">Marjin</option>
-          <option value="withdraw">Para Çekme</option>
+          <option value="all">All types</option>
+          <option value="deposit">Deposit</option>
+          <option value="margin">Margin</option>
+          <option value="withdraw">Para Withdrawal</option>
         </select>
         <Link href="/admin/deposits" className="rounded bg-neutral-100 px-2 py-1.5 hover:bg-neutral-200">
-          Eski yatırma ekranı
+          Legacy deposit screen
         </Link>
         <Link
           href="/admin/balance-requests"
           className="rounded bg-neutral-100 px-2 py-1.5 hover:bg-neutral-200"
         >
-          Eski marjin ekranı
+          Legacy margin screen
         </Link>
       </div>
       {msg && <p className="mb-2 text-xs text-emerald-400">{msg}</p>}
@@ -116,13 +116,13 @@ export default function TicketsPage() {
           <thead className="bg-[#ffffff] text-neutral-500">
             <tr>
               <th className="px-2 py-2">Tip</th>
-              <th className="px-2 py-2">Tutar</th>
-              <th className="px-2 py-2">Müşteri</th>
+              <th className="px-2 py-2">Amount</th>
+              <th className="px-2 py-2">Client</th>
               <th className="px-2 py-2">Account</th>
-              <th className="px-2 py-2">Yöntem</th>
-              <th className="px-2 py-2">Durum</th>
-              <th className="px-2 py-2">Açılış</th>
-              <th className="px-2 py-2">İşlem</th>
+              <th className="px-2 py-2">Method</th>
+              <th className="px-2 py-2">Status</th>
+              <th className="px-2 py-2">Open</th>
+              <th className="px-2 py-2">Trade</th>
             </tr>
           </thead>
           <tbody>
@@ -158,7 +158,7 @@ export default function TicketsPage() {
                   <StatusBadge status={t.status} />
                 </td>
                 <td className="px-2 py-1.5 text-neutral-500">
-                  {new Date(t.openedAt).toLocaleString("tr-TR")}
+                  {new Date(t.openedAt).toLocaleString("en-US")}
                 </td>
                 <td className="px-2 py-1.5">
                   {t.status === "PENDING" && (

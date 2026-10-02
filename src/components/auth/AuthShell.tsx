@@ -34,7 +34,7 @@ export default function AuthShell({ mode, children }: AuthShellProps) {
             href="/"
             className="rounded-lg px-2.5 py-1.5 text-sm font-medium text-[#5c657a] transition hover:bg-[#f0f0f0] hover:text-[#111111]"
           >
-            ← Ana sayfa
+            ← Main sayfa
           </Link>
         </header>
 
@@ -43,25 +43,25 @@ export default function AuthShell({ mode, children }: AuthShellProps) {
             <div className="mb-7 text-center sm:mb-8">
               <p className="inline-flex items-center gap-2 rounded-full border border-[rgba(16,20,37,0.08)] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#111111] shadow-sm">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#111111] shadow-[0_0_8px_rgba(17,17,17,0.45)]" />
-                {isLogin ? "Güvenli giriş" : "Yeni hesap"}
+                {isLogin ? "Secure sign-in" : "New account"}
               </p>
               <h1 className="mt-4 text-[1.65rem] font-semibold leading-tight tracking-tight text-[#111111] sm:text-[1.85rem]">
                 {isLogin ? (
                   <>
-                    Hesabınıza{" "}
-                    <span className="fx-auth-accent-text">güvenle dönün</span>
+                    Return to your account{" "}
+                    <span className="fx-auth-accent-text">safely</span>
                   </>
                 ) : (
                   <>
-                    Yatırıma{" "}
-                    <span className="fx-auth-accent-text">profesyonel başlangıç</span>
+                    A professional start{" "}
+                    <span className="fx-auth-accent-text">to investing</span>
                   </>
                 )}
               </h1>
               <p className="mx-auto mt-2.5 max-w-sm text-sm leading-relaxed text-[#5c657a]">
                 {isLogin
-                  ? "Kimlik doğrulama sonrası işlem terminali açılır. Yönetici hesapları /admin’e yönlendirilir."
-                  : "Bilgilerinizi girin; kayıt sonrası terminal erişimi otomatik açılır. Referans kodu zorunludur."}
+                  ? "After authentication the trading terminal opens. Admin accounts are redirected to /admin."
+                  : "Enter your details; terminal access opens automatically after registration. Referral code is required."}
               </p>
             </div>
 
@@ -74,9 +74,9 @@ export default function AuthShell({ mode, children }: AuthShellProps) {
             </div>
 
             <p className="mt-6 text-center text-[11px] leading-relaxed text-[#8b93a7]">
-              Devam ederek 7FX kullanım koşullarını kabul etmiş sayılırsınız.
+              By continuing you accept the 7FX terms of use.
               <br className="hidden sm:block" />
-              Hassas işlem alanları oturum çerezi ile korunur.
+              Sensitive trading areas are protected with a session cookie.
             </p>
             <p className="mt-4 text-center text-[11px] text-[#8b93a7]">
               © {new Date().getFullYear()} 7FX · 7fx.customer.org.tr

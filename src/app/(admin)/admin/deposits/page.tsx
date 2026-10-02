@@ -44,10 +44,10 @@ export default function AdminDepositsPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "İşlem başarısız");
+        setMsg(data.error || "Action failed");
         return;
       }
-      setMsg(action === "approve" ? "Onaylandı — bakiye güncellendi" : "Reddedildi");
+      setMsg(action === "approve" ? "Approved — balance updated" : "Rejected");
       await load();
     } finally {
       setBusy(null);
@@ -57,7 +57,7 @@ export default function AdminDepositsPage() {
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center gap-2">
-        <h1 className="text-lg font-semibold">Yatırma Talepleri</h1>
+        <h1 className="text-lg font-semibold">Deposit Talepleri</h1>
         <div className="ml-auto flex gap-1">
           {["PENDING", "APPROVED", "REJECTED", ""].map((f) => (
             <button
@@ -65,7 +65,7 @@ export default function AdminDepositsPage() {
               onClick={() => setFilter(f)}
               className={`rounded px-2 py-1 text-xs ${filter === f ? "bg-black text-white" : "bg-[#e5e5e5]"}`}
             >
-              {f || "Tümü"}
+              {f || "All"}
             </button>
           ))}
         </div>
@@ -75,19 +75,19 @@ export default function AdminDepositsPage() {
         <table className="w-full text-left text-xs">
           <thead className="bg-[#e5e5e5] text-neutral-500">
             <tr>
-              <th className="px-3 py-2">Tarih</th>
-              <th className="px-3 py-2">Kullanıcı</th>
-              <th className="px-3 py-2">Yöntem</th>
-              <th className="px-3 py-2">Tutar</th>
-              <th className="px-3 py-2">Not</th>
-              <th className="px-3 py-2">Durum</th>
-              <th className="px-3 py-2">İşlem</th>
+              <th className="px-3 py-2">Date</th>
+              <th className="px-3 py-2">User</th>
+              <th className="px-3 py-2">Method</th>
+              <th className="px-3 py-2">Amount</th>
+              <th className="px-3 py-2">Note</th>
+              <th className="px-3 py-2">Status</th>
+              <th className="px-3 py-2">Trade</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((r) => (
               <tr key={r.id} className="border-t border-[#e5e5e5]">
-                <td className="px-3 py-2 whitespace-nowrap">{new Date(r.createdAt).toLocaleString("tr-TR")}</td>
+                <td className="px-3 py-2 whitespace-nowrap">{new Date(r.createdAt).toLocaleString("en-US")}</td>
                 <td className="px-3 py-2">
                   <div>{r.user.name}</div>
                   <div className="text-neutral-500">{r.user.email}</div>
@@ -108,14 +108,14 @@ export default function AdminDepositsPage() {
                         onClick={() => act(r.id, "approve")}
                         className="rounded bg-emerald-600 px-2 py-1 hover:bg-emerald-500 disabled:opacity-50"
                       >
-                        Onayla
+                        Approve
                       </button>
                       <button
                         disabled={busy === r.id}
                         onClick={() => act(r.id, "reject")}
                         className="rounded bg-red-600/80 px-2 py-1 hover:bg-red-500 disabled:opacity-50"
                       >
-                        Reddet
+                        Reject
                       </button>
                     </div>
                   ) : (
@@ -127,7 +127,7 @@ export default function AdminDepositsPage() {
             {rows.length === 0 && (
               <tr>
                 <td colSpan={7} className="px-3 py-8 text-center text-neutral-500">
-                  Kayıt yok
+                  Registered yok
                 </td>
               </tr>
             )}

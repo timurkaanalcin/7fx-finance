@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const admin = await requireAdminPerm("canEditRates");
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   await ensureTradingSettings();
   const [global, overrides, effective] = await Promise.all([
@@ -40,7 +40,7 @@ export async function GET() {
 
 export async function PUT(req: Request) {
   const admin = await requireAdminPerm("canEditRates");
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const body = await req.json().catch(() => ({}));
 

@@ -130,11 +130,11 @@ export type AdminPermission =
   | "canAdjustBalance";
 
 export const ADMIN_PERMISSIONS: { key: AdminPermission; label: string; desc: string }[] = [
-  { key: "canManageUsers", label: "Kullanıcı yönetimi", desc: "Rol, dondurma, arama" },
-  { key: "canApproveDeposits", label: "Yatırma onayları", desc: "Para yatırma ve marjin talepleri" },
-  { key: "canEditRates", label: "İşlem oranları", desc: "Spread, komisyon, hacim, sembol" },
-  { key: "canManageMethods", label: "Yatırma yöntemleri", desc: "IBAN / kripto yöntemleri" },
-  { key: "canAdjustBalance", label: "Bakiye düzeltme", desc: "Doğrudan bakiye ekle/çıkar + log" },
+  { key: "canManageUsers", label: "User management", desc: "Role, dondurma, arama" },
+  { key: "canApproveDeposits", label: "Deposit approvals", desc: "Deposit and margin requests" },
+  { key: "canEditRates", label: "Trading rates", desc: "Spread, commission, volume, symbol" },
+  { key: "canManageMethods", label: "Deposit methods", desc: "IBAN / crypto methods" },
+  { key: "canAdjustBalance", label: "Balance adjustment", desc: "Direct balance add/remove + log" },
 ];
 
 export async function requireAdminPerm(perm?: AdminPermission) {

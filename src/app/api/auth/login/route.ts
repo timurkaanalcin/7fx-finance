@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     const password = String(body.password || "");
     if (!raw || !password) {
       return NextResponse.json(
-        { error: "E-posta veya hesap kimliği ve şifre gerekli" },
+        { error: "Email or account ID and password are required" },
         { status: 400 }
       );
     }
@@ -24,10 +24,10 @@ export async function POST(req: Request) {
       : await prisma.user.findUnique({ where: { email: raw.toLowerCase() } });
 
     if (!user || !(await verifyPassword(password, user.passwordHash))) {
-      return NextResponse.json({ error: "Geçersiz kimlik bilgileri" }, { status: 401 });
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
     if ((user as { active?: boolean }).active === false) {
-      return NextResponse.json({ error: "Hesap dondurulmuş" }, { status: 403 });
+      return NextResponse.json({ error: "Account frozen" }, { status: 403 });
     }
     await prisma.user.update({
       where: { id: user.id },
@@ -54,6 +54,6 @@ export async function POST(req: Request) {
     return res;
   } catch (e) {
     console.error(e);
-    return NextResponse.json({ error: "Giriş hatası" }, { status: 500 });
+    return NextResponse.json({ error: "Sign-in error" }, { status: 500 });
   }
 }

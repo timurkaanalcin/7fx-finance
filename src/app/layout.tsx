@@ -19,12 +19,12 @@ export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
   title: "7FX",
   description:
-    "7FX — uluslararası çok varlık ticaret platformu. Hisse, kripto, forex ve emtia piyasalarına güvenli web erişimi.",
+    "7FX — international multi-asset trading platform. Secure web access to stocks, crypto, forex and commodities.",
   manifest: "/site.webmanifest",
   openGraph: {
     title: "7FX",
     description:
-      "7FX uluslararası broker / ticaret platformu: hisse, kripto, forex ve emtia — güvenli oturum, 7/24 erişim.",
+      "7FX international broker / trading platform: stocks, crypto, forex and commodities — secure session, 24/7 access.",
     images: [{ url: "/7fx-logo.png", width: 1200, height: 630, alt: "7FX" }],
   },
   icons: {
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="tr">
+    <html lang="en">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

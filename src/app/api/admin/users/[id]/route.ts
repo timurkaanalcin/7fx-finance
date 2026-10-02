@@ -11,7 +11,7 @@ type Ctx = { params: { id: string } };
 export async function GET(_req: Request, ctx: Ctx) {
   await ensureDemoSeed();
   const admin = await requireAdminPerm("canManageUsers");
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const id = ctx.params.id;
   const user = await prisma.user.findUnique({
@@ -21,7 +21,7 @@ export async function GET(_req: Request, ctx: Ctx) {
       notes: { orderBy: { createdAt: "desc" }, take: 100 },
     },
   });
-  if (!user) return NextResponse.json({ error: "Kullanıcı yok" }, { status: 404 });
+  if (!user) return NextResponse.json({ error: "User yok" }, { status: 404 });
 
   const [positions, orders, deposits, balanceRequests, ledger, communications, documents, reminders] =
     await Promise.all([
@@ -88,11 +88,11 @@ export async function GET(_req: Request, ctx: Ctx) {
 export async function PATCH(req: Request, ctx: Ctx) {
   await ensureDemoSeed();
   const admin = await requireAdminPerm("canManageUsers");
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const id = ctx.params.id;
   const target = await prisma.user.findUnique({ where: { id } });
-  if (!target) return NextResponse.json({ error: "Kullanıcı yok" }, { status: 404 });
+  if (!target) return NextResponse.json({ error: "User yok" }, { status: 404 });
 
   const body = await req.json().catch(() => ({}));
 
@@ -100,7 +100,7 @@ export async function PATCH(req: Request, ctx: Ctx) {
   if (body.addNote) {
     const noteBody = String(body.addNote).trim().slice(0, 2000);
     if (!noteBody) {
-      return NextResponse.json({ error: "Not boş olamaz" }, { status: 400 });
+      return NextResponse.json({ error: "Note cannot be empty" }, { status: 400 });
     }
     const note = await prisma.userNote.create({
       data: {
@@ -122,12 +122,12 @@ export async function PATCH(req: Request, ctx: Ctx) {
   const data = parseMembershipUpdate(body);
   if (body.active !== undefined && typeof body.active === "boolean") {
     if (target.id === admin.id && !body.active) {
-      return NextResponse.json({ error: "Kendinizi donduramazsınız" }, { status: 400 });
+      return NextResponse.json({ error: "You cannot freeze yourself" }, { status: 400 });
     }
     const envAdmin = String(process.env.ADMIN_EMAIL || "").trim().toLowerCase();
     if (!body.active && envAdmin && target.email === envAdmin) {
       return NextResponse.json(
-        { error: "Prod ADMIN_EMAIL hesabı dondurulamaz" },
+        { error: "Production ADMIN_EMAIL account cannot be frozen" },
         { status: 400 }
       );
     }
@@ -137,14 +137,14 @@ export async function PATCH(req: Request, ctx: Ctx) {
     const role = String(body.role).toUpperCase();
     if (role === "ADMIN" || role === "TRADER") {
       if (target.id === admin.id && role !== "ADMIN") {
-        return NextResponse.json({ error: "Kendi admin rolünüzü kaldıramazsınız" }, { status: 400 });
+        return NextResponse.json({ error: "You cannot remove your own admin role" }, { status: 400 });
       }
       data.role = role;
     }
   }
 
   if (!Object.keys(data).length) {
-    return NextResponse.json({ error: "Güncellenecek alan yok" }, { status: 400 });
+    return NextResponse.json({ error: "No fields to update" }, { status: 400 });
   }
 
   // Sync name from first/last if needed

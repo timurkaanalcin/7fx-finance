@@ -56,11 +56,11 @@ export default function CalendarPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "Kayıt başarısız");
+        setMsg(data.error || "Registration failed");
         return;
       }
       setForm((f) => ({ ...f, body: "", remindAt: "" }));
-      setMsg("Hatırlatıcı eklendi");
+      setMsg("Reminder added");
       await load();
     } finally {
       setBusy(false);
@@ -85,8 +85,8 @@ export default function CalendarPage() {
 
   return (
     <div>
-      <h1 className="mb-1 text-lg font-semibold">Takvim</h1>
-      <p className="mb-3 text-[11px] text-neutral-500">Hatırlatıcılar / takip listesi</p>
+      <h1 className="mb-1 text-lg font-semibold">Calendar</h1>
+      <p className="mb-3 text-[11px] text-neutral-500">Reminderlar / takip listesi</p>
       <div className="grid gap-3 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-2">
           {reminders.map((r) => {
@@ -101,8 +101,8 @@ export default function CalendarPage() {
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium">{r.body}</p>
                   <p className={`text-[11px] ${overdue ? "text-amber-400" : "text-neutral-500"}`}>
-                    {new Date(r.remindAt).toLocaleString("tr-TR")}
-                    {overdue ? " · gecikmiş" : ""}
+                    {new Date(r.remindAt).toLocaleString("en-US")}
+                    {overdue ? " · overdue" : ""}
                     {r.workerName ? ` · ${r.workerName}` : ""}
                     {r.trader ? (
                       <>
@@ -120,25 +120,25 @@ export default function CalendarPage() {
                   onClick={() => remove(r.id)}
                   className="text-[10px] text-neutral-500 hover:text-red-400"
                 >
-                  Sil
+                  Delete
                 </button>
               </div>
             );
           })}
           {reminders.length === 0 && (
             <p className="rounded-lg border border-dashed border-neutral-200 px-3 py-8 text-center text-xs text-neutral-500">
-              Hatırlatıcı yok
+              Reminder yok
             </p>
           )}
         </div>
         <div className="rounded-lg border border-neutral-200 bg-[#ffffff] p-3">
-          <h2 className="mb-2 text-xs font-semibold text-slate-300">Yeni hatırlatıcı</h2>
+          <h2 className="mb-2 text-xs font-semibold text-slate-300">New reminder</h2>
           <div className="space-y-2 text-xs">
             <textarea
               value={form.body}
               onChange={(e) => setForm({ ...form, body: e.target.value })}
               rows={3}
-              placeholder="Ne hatırlatılsın?"
+              placeholder="What should be reminded?"
               className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             />
             <input

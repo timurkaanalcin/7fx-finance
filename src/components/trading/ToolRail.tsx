@@ -1,12 +1,12 @@
 "use client";
 
 const ICONS = [
-  { title: "İmleç", d: "M4 4l7 16 2-6 6-2L4 4z" },
-  { title: "Çizgi", d: "M4 20L20 4" },
+  { title: "Cursor", d: "M4 4l7 16 2-6 6-2L4 4z" },
+  { title: "Line", d: "M4 20L20 4" },
   { title: "Fibonacci", d: "M4 6h16M4 12h16M4 18h16" },
-  { title: "Göstergeler", d: "M4 16l4-6 4 3 4-8 4 5" },
-  { title: "Sohbet", d: "M4 6h16v10H8l-4 4V6z" },
-  { title: "Takvim", d: "M6 4v2M18 4v2M4 8h16M6 10h2v2H6zm4 0h2v2h-2zm4 0h2v2h-2zM4 6a2 2 0 012-2h12a2 2 0 012 2v14H4V6z" },
+  { title: "Indicators", d: "M4 16l4-6 4 3 4-8 4 5" },
+  { title: "Chat", d: "M4 6h16v10H8l-4 4V6z" },
+  { title: "Calendar", d: "M6 4v2M18 4v2M4 8h16M6 10h2v2H6zm4 0h2v2h-2zm4 0h2v2h-2zM4 6a2 2 0 012-2h12a2 2 0 012 2v14H4V6z" },
 ];
 
 export default function ToolRail() {

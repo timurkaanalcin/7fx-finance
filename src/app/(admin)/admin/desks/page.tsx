@@ -43,23 +43,23 @@ export default function DesksPage() {
     });
     const data = await res.json();
     if (!res.ok) {
-      setMsg(data.error || "Hata");
+      setMsg(data.error || "Error");
       return;
     }
     setName("");
     setCode("");
-    setMsg("Desk oluşturuldu");
+    setMsg("Desk created");
     await load();
   }
 
   return (
     <div>
-      <h1 className="mb-3 text-lg font-semibold">Desklar</h1>
+      <h1 className="mb-3 text-lg font-semibold">Desks</h1>
       <form onSubmit={createDesk} className="mb-4 flex flex-wrap gap-2 text-xs">
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Desk adı"
+          placeholder="Desk name"
           required
           className="rounded border border-neutral-300 bg-[#ffffff] px-2 py-1.5"
         />
@@ -78,13 +78,13 @@ export default function DesksPage() {
         <table className="w-full text-left text-xs">
           <thead className="bg-[#ffffff] text-neutral-500">
             <tr>
-              <th className="px-3 py-2">Ad</th>
+              <th className="px-3 py-2">Name</th>
               <th className="px-3 py-2">Kod</th>
-              <th className="px-3 py-2">Aktif</th>
+              <th className="px-3 py-2">Active</th>
               <th className="px-3 py-2">Chat</th>
               <th className="px-3 py-2">Min/Max</th>
               <th className="px-3 py-2">Trader</th>
-              <th className="px-3 py-2">Çalışan</th>
+              <th className="px-3 py-2">Worker</th>
               <th className="px-3 py-2"></th>
             </tr>
           </thead>
@@ -94,7 +94,7 @@ export default function DesksPage() {
                 <td className="px-3 py-2 font-medium">{d.name}</td>
                 <td className="px-3 py-2 font-mono text-[10px] text-neutral-500">{d.code || "—"}</td>
                 <td className="px-3 py-2">{d.active ? "✓" : "✗"}</td>
-                <td className="px-3 py-2">{d.chatStatus ? "Açık" : "Kapalı"}</td>
+                <td className="px-3 py-2">{d.chatStatus ? "Open" : "Closed"}</td>
                 <td className="px-3 py-2 tabular-nums">
                   {d.minimalDeposit} / {d.maximumDeposit}
                 </td>
@@ -102,7 +102,7 @@ export default function DesksPage() {
                 <td className="px-3 py-2">{d.workersCount}</td>
                 <td className="px-3 py-2">
                   <Link href={`/admin/desks/${d.id}`} className="rounded bg-black text-white/80 px-2 py-1">
-                    Detay
+                    Detail
                   </Link>
                 </td>
               </tr>
@@ -110,7 +110,7 @@ export default function DesksPage() {
             {desks.length === 0 && (
               <tr>
                 <td colSpan={8} className="px-3 py-8 text-center text-neutral-500">
-                  Desk yok — seed veya yukarıdan ekleyin
+                  No desks — seed or add above
                 </td>
               </tr>
             )}

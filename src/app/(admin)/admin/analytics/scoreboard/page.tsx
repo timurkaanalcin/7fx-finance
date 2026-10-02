@@ -30,21 +30,21 @@ export default function ScoreboardPage() {
 
   return (
     <div>
-      <h1 className="mb-1 text-lg font-semibold">Analitik · Skor Tablosu</h1>
-      <p className="mb-3 text-[11px] text-neutral-500">Desk bazlı trader / FTD / yatırım özeti</p>
+      <h1 className="mb-1 text-lg font-semibold">Analytics · Scoreboard</h1>
+      <p className="mb-3 text-[11px] text-neutral-500">Desk-based trader / FTD / deposit summary</p>
       <div className="overflow-x-auto rounded-lg border border-neutral-200">
         <table className="w-full text-left text-[11px]">
           <thead className="bg-[#ffffff] text-neutral-500">
             <tr>
               <th className="px-2 py-2">Desk</th>
               <th className="px-2 py-2">Trader</th>
-              <th className="px-2 py-2">Aktif</th>
+              <th className="px-2 py-2">Active</th>
               <th className="px-2 py-2">FTD</th>
-              <th className="px-2 py-2">Yatırım #</th>
-              <th className="px-2 py-2">Yatırım $</th>
+              <th className="px-2 py-2">Deposits #</th>
+              <th className="px-2 py-2">Deposits $</th>
               <th className="px-2 py-2">Ort.</th>
-              <th className="px-2 py-2">Çekim #</th>
-              <th className="px-2 py-2">Çekim $</th>
+              <th className="px-2 py-2">Withdrawals #</th>
+              <th className="px-2 py-2">Withdrawals $</th>
               <th className="px-2 py-2">Net</th>
             </tr>
           </thead>

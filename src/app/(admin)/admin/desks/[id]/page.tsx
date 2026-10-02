@@ -28,23 +28,23 @@ export default function DeskDetailPage() {
     load();
   }, [load]);
 
-  if (!desk) return <div className="text-xs text-neutral-500">Yükleniyor…</div>;
+  if (!desk) return <div className="text-xs text-neutral-500">Loading…</div>;
 
   return (
     <div>
       <div className="mb-3 flex items-center gap-3">
         <Link href="/admin/desks" className="text-xs text-neutral-500 hover:text-white">
-          ← Desklar
+          ← Desks
         </Link>
         <h1 className="text-lg font-semibold">{String(desk.name)}</h1>
       </div>
       <div className="mb-3 flex gap-1 border-b border-neutral-200 pb-2">
         {(
           [
-            ["info", "Bilgi"],
-            ["traders", "Traderlar"],
-            ["workers", "Çalışanlar"],
-            ["analytics", "Analitik"],
+            ["info", "Info"],
+            ["traders", "Traders"],
+            ["workers", "Workers"],
+            ["analytics", "Analytics"],
           ] as const
         ).map(([k, l]) => (
           <button
@@ -60,12 +60,12 @@ export default function DeskDetailPage() {
         <div className="grid max-w-xl gap-2 text-xs sm:grid-cols-2">
           {[
             ["Kod", desk.code],
-            ["Aktif", desk.active ? "Evet" : "Hayır"],
-            ["Chat", desk.chatStatus ? "Açık" : "Kapalı"],
-            ["Min yatırma", desk.minimalDeposit],
-            ["Max yatırma", desk.maximumDeposit],
+            ["Active", desk.active ? "Yes" : "No"],
+            ["Chat", desk.chatStatus ? "Open" : "Closed"],
+            ["Min deposit", desk.minimalDeposit],
+            ["Max deposit", desk.maximumDeposit],
             ["Ofis", desk.office],
-            ["E-posta", desk.defaultEmail],
+            ["Email", desk.defaultEmail],
             ["Platform", desk.tradePlatformLink],
           ].map(([l, v]) => (
             <div key={String(l)} className="rounded border border-neutral-200 bg-[#ffffff] px-3 py-2">
@@ -100,7 +100,7 @@ export default function DeskDetailPage() {
               {String(w.name)} · {String(w.email)}
             </li>
           ))}
-          {workers.length === 0 && <li className="text-neutral-500">Çalışan yok</li>}
+          {workers.length === 0 && <li className="text-neutral-500">Worker yok</li>}
         </ul>
       )}
       {tab === "analytics" && analytics && (
@@ -111,11 +111,11 @@ export default function DeskDetailPage() {
               <div className="text-xl font-semibold">{String(analytics.tradersCount)}</div>
             </div>
             <div className="rounded border border-neutral-200 bg-[#ffffff] p-3">
-              <div className="text-neutral-500">Çalışan</div>
+              <div className="text-neutral-500">Worker</div>
               <div className="text-xl font-semibold">{String(analytics.workersCount)}</div>
             </div>
             <div className="rounded border border-neutral-200 bg-[#ffffff] p-3">
-              <div className="text-neutral-500">Toplam bakiye</div>
+              <div className="text-neutral-500">Total bakiye</div>
               <div className="text-xl font-semibold tabular-nums">
                 {Number(analytics.totalBalance || 0).toLocaleString("en-US", {
                   style: "currency",

@@ -62,30 +62,30 @@ function indexOpen(now: Date): boolean {
 export function getMarketStatus(symbol: string, now = new Date()): MarketStatus {
   const def = getSymbol(symbol);
   if (!def) {
-    return { open: true, class: "UNKNOWN", label: "Bilinmiyor", blockOrdersWhenClosed: false };
+    return { open: true, class: "UNKNOWN", label: "Unknown", blockOrdersWhenClosed: false };
   }
   switch (def.class) {
     case "CRYPTO":
-      return { open: true, class: "CRYPTO", label: "7/24 açık", blockOrdersWhenClosed: false };
+      return { open: true, class: "CRYPTO", label: "Open 24/7", blockOrdersWhenClosed: false };
     case "FX":
       return {
         open: forexOpen(now),
         class: "FX",
-        label: forexOpen(now) ? "Forex açık" : "Forex kapalı",
+        label: forexOpen(now) ? "Forex open" : "Forex closed",
         blockOrdersWhenClosed: false,
       };
     case "COMMODITY":
       return {
         open: commodityOpen(now),
         class: "COMMODITY",
-        label: commodityOpen(now) ? "Emtia açık" : "Emtia kapalı",
+        label: commodityOpen(now) ? "Commodities open" : "Commodities closed",
         blockOrdersWhenClosed: false,
       };
     case "INDEX":
       return {
         open: indexOpen(now),
         class: "INDEX",
-        label: indexOpen(now) ? "Endeks açık" : "Endeks kapalı",
+        label: indexOpen(now) ? "Indices open" : "Indices closed",
         blockOrdersWhenClosed: false,
       };
     case "STOCK": {
@@ -96,11 +96,11 @@ export function getMarketStatus(symbol: string, now = new Date()): MarketStatus 
       return {
         open,
         class: "STOCK",
-        label: open ? (isBist ? "BIST açık" : "US hisse açık") : (isBist ? "BIST kapalı" : "US hisse kapalı"),
+        label: open ? (isBist ? "BIST open" : "US stocks open") : (isBist ? "BIST closed" : "US stocks closed"),
         blockOrdersWhenClosed: true,
       };
     }
     default:
-      return { open: true, class: def.class, label: "Açık", blockOrdersWhenClosed: false };
+      return { open: true, class: def.class, label: "Open", blockOrdersWhenClosed: false };
   }
 }

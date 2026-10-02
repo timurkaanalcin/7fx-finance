@@ -34,10 +34,8 @@ function defaultSlTp(
 
 function fmtUsd(n: number): string {
   if (!Number.isFinite(n) || n <= 0) return "—";
-  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(2)}M`;
-  if (n >= 10_000) return `$${n.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
-  if (n >= 100) return `$${n.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
-  return `$${n.toFixed(2)}`;
+  // Full amount — never abbreviate as K / M
+  return `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 export default function OrderTicket({
@@ -129,12 +127,12 @@ export default function OrderTicket({
         showTp && tp.trim() !== "" && Number.isFinite(Number(tp)) ? Number(tp) : undefined;
 
       if (showSl && stopLoss == null) {
-        setMsg("Stop Loss fiyatı girin");
+        setMsg("Enter Stop Loss price");
         setBusy(false);
         return;
       }
       if (showTp && takeProfit == null) {
-        setMsg("Take Profit fiyatı girin");
+        setMsg("Enter Take Profit price");
         setBusy(false);
         return;
       }
@@ -155,19 +153,19 @@ export default function OrderTicket({
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "Hata");
+        setMsg(data.error || "Error");
         if (res.status === 401) {
-          setMsg("Oturum yok — tekrar giriş yapın");
+          setMsg("No session — please sign in again");
         }
         return;
       }
-      setMsg(type === "MARKET" ? "Pozisyon açıldı" : "Bekleyen emir oluşturuldu");
+      setMsg(type === "MARKET" ? "Position opened" : "Pending order created");
       onPlaced();
       if (onClose) {
         window.setTimeout(() => onClose(), 650);
       }
     } catch {
-      setMsg("Bağlantı hatası");
+      setMsg("Connection error");
     } finally {
       setBusy(false);
     }
@@ -180,7 +178,7 @@ export default function OrderTicket({
     <>
       <div className="flex items-center justify-between border-b border-desk-border/80 px-3.5 py-3 md:px-3 md:py-2.5">
         <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-desk-muted">
-          Emir Bileti
+          Order Ticket
         </span>
         <div className="flex items-center gap-2">
           <span className="rounded-full border border-desk-border/60 bg-desk-elev/80 px-2.5 py-0.5 text-[10px] font-semibold text-desk-text">
@@ -190,7 +188,7 @@ export default function OrderTicket({
             <button
               type="button"
               onClick={onClose}
-              aria-label="Kapat"
+              aria-label="Close"
               className="flex h-8 w-8 items-center justify-center rounded-full border border-desk-border/60 text-desk-muted hover:bg-desk-hover hover:text-desk-text"
             >
               ×
@@ -201,13 +199,13 @@ export default function OrderTicket({
       <div className="min-h-0 flex-1 space-y-3.5 overflow-y-auto p-3.5 md:space-y-3 md:p-3">
         <div className="grid grid-cols-2 gap-2">
           <div className="rounded-[12px] border border-desk-border/60 bg-desk-bg/80 px-2.5 py-2.5 text-center md:rounded-control md:py-2">
-            <div className="text-[9px] font-semibold uppercase tracking-wider text-desk-muted">Alış</div>
+            <div className="text-[9px] font-semibold uppercase tracking-wider text-desk-muted">Buy</div>
             <div className="mt-0.5 text-[15px] font-bold tabular-nums text-desk-buy md:text-sm md:font-semibold">
               {price ? formatPrice(symbol, price.ask) : "—"}
             </div>
           </div>
           <div className="rounded-[12px] border border-desk-border/60 bg-desk-bg/80 px-2.5 py-2.5 text-center md:rounded-control md:py-2">
-            <div className="text-[9px] font-semibold uppercase tracking-wider text-desk-muted">Satış</div>
+            <div className="text-[9px] font-semibold uppercase tracking-wider text-desk-muted">Sell</div>
             <div className="mt-0.5 text-[15px] font-bold tabular-nums text-desk-sell md:text-sm md:font-semibold">
               {price ? formatPrice(symbol, price.bid) : "—"}
             </div>
@@ -241,14 +239,14 @@ export default function OrderTicket({
 
         <div>
           <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-desk-muted">
-            Emir Türü
+            Order Type
           </div>
           <select
             value={type}
             onChange={(e) => setType(e.target.value as "MARKET" | "LIMIT" | "STOP")}
             className={inputCls}
           >
-            <option value="MARKET">Piyasa</option>
+            <option value="MARKET">Market</option>
             <option value="LIMIT">Limit</option>
             <option value="STOP">Stop</option>
           </select>
@@ -257,11 +255,11 @@ export default function OrderTicket({
         <div>
           <div className="mb-1.5 flex items-end justify-between gap-2">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-desk-muted">
-              Hacim (Lot)
+              Volume (Lot)
             </span>
             <span
               className="text-[10px] font-semibold tabular-nums text-desk-muted"
-              title="Yaklaşık işlem büyüklüğü (lot × kontrat × fiyat)"
+              title="Approx. trade size (lot × contract × price)"
             >
               ≈ {fmtUsd(notional)}
             </span>
@@ -309,7 +307,7 @@ export default function OrderTicket({
         {type !== "MARKET" && (
           <div>
             <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-desk-muted">
-              Fiyat
+              Price
             </div>
             <input
               value={limitPrice}
@@ -352,7 +350,7 @@ export default function OrderTicket({
             <input
               value={sl}
               onChange={(e) => setSl(e.target.value)}
-              placeholder="Fiyat"
+              placeholder="Price"
               autoFocus
               className="w-full rounded-[12px] border border-desk-sell/40 bg-desk-bg px-3 py-2.5 text-sm tabular-nums text-desk-text outline-none focus:border-desk-sell md:rounded-control md:px-2.5 md:py-2"
             />
@@ -367,7 +365,7 @@ export default function OrderTicket({
             <input
               value={tp}
               onChange={(e) => setTp(e.target.value)}
-              placeholder="Fiyat"
+              placeholder="Price"
               className="w-full rounded-[12px] border border-desk-buy/40 bg-desk-bg px-3 py-2.5 text-sm tabular-nums text-desk-text outline-none focus:border-desk-buy md:rounded-control md:px-2.5 md:py-2"
             />
           </div>
@@ -383,7 +381,7 @@ export default function OrderTicket({
               : "bg-desk-sell shadow-sell-glow hover:brightness-110"
           }`}
         >
-          {busy ? "Gönderiliyor…" : side === "BUY" ? "Alış Emri Gönder" : "Satış Emri Gönder"}
+          {busy ? "Submitting…" : side === "BUY" ? "Submit Buy Order" : "Submit Sell Order"}
         </button>
         {msg && (
           <div className="rounded-[12px] bg-desk-accent/10 px-2.5 py-2 text-center text-xs font-medium text-desk-accent md:rounded-control md:px-2 md:py-1.5">
@@ -400,7 +398,7 @@ export default function OrderTicket({
         className="fixed inset-0 z-[80] flex items-end justify-center bg-black/55 p-0 backdrop-blur-[2px] sm:items-center sm:p-4"
         role="dialog"
         aria-modal="true"
-        aria-label="Emir bileti"
+        aria-label="Order ticket"
         onClick={(e) => {
           if (e.target === e.currentTarget && onClose) onClose();
         }}

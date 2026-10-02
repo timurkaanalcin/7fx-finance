@@ -3,13 +3,13 @@ import { requireAdminPerm } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { applyBalanceAdd, applyBalanceReset } from "@/lib/trading";
 import { recordLedger } from "@/lib/ledger";
-import { DEFAULT_RESET_BALANCE, MARGIN_CALL_LEVEL, MARGIN_CALL_RULE_TR } from "@/lib/margin-call";
+import { DEFAULT_RESET_BALANCE, MARGIN_CALL_LEVEL, MARGIN_CALL_RULE_EN } from "@/lib/margin-call";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
   const admin = await requireAdminPerm("canApproveDeposits");
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   const { searchParams } = new URL(req.url);
   const status = searchParams.get("status");
   const where = status ? { status: status.toUpperCase() } : {};
@@ -26,7 +26,7 @@ export async function GET(req: Request) {
     config: {
       defaultResetBalance: DEFAULT_RESET_BALANCE,
       marginCallLevel: MARGIN_CALL_LEVEL,
-      ruleTr: MARGIN_CALL_RULE_TR,
+      ruleTr: MARGIN_CALL_RULE_EN,
     },
   });
 }
@@ -34,7 +34,7 @@ export async function GET(req: Request) {
 /** Approve or reject a balance request */
 export async function POST(req: Request) {
   const admin = await requireAdminPerm("canApproveDeposits");
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   const body = await req.json().catch(() => ({}));
   const id = String(body.id || "");
   const action = String(body.action || "").toLowerCase();
@@ -45,9 +45,9 @@ export async function POST(req: Request) {
   }
 
   const request = await prisma.balanceRequest.findUnique({ where: { id } });
-  if (!request) return NextResponse.json({ error: "Talep bulunamadı" }, { status: 404 });
+  if (!request) return NextResponse.json({ error: "Request not found" }, { status: 404 });
   if (request.status !== "PENDING") {
-    return NextResponse.json({ error: "Talep zaten işlenmiş" }, { status: 400 });
+    return NextResponse.json({ error: "Request already processed" }, { status: 400 });
   }
 
   if (action === "reject") {
@@ -67,7 +67,7 @@ export async function POST(req: Request) {
   } else if (request.type === "ADD") {
     const amt = request.amount;
     if (amt == null || !Number.isFinite(amt) || amt <= 0) {
-      return NextResponse.json({ error: "Talep tutarı geçersiz" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid request amount" }, { status: 400 });
     }
     await applyBalanceAdd(request.userId, amt);
   } else {

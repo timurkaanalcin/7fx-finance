@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 /** List current user's withdrawal requests */
 export async function GET() {
   const user = await requireUser();
-  if (!user) return NextResponse.json({ error: "Oturum yok" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "No session" }, { status: 401 });
   const requests = await prisma.withdrawalRequest.findMany({
     where: { userId: user.id },
     orderBy: { createdAt: "desc" },
@@ -22,7 +22,7 @@ export async function GET() {
  */
 export async function POST(req: Request) {
   const user = await requireUser();
-  if (!user) return NextResponse.json({ error: "Oturum yok" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "No session" }, { status: 401 });
 
   const body = await req.json().catch(() => ({}));
   const amount = Number(body.amount);
@@ -31,26 +31,26 @@ export async function POST(req: Request) {
   const note = body.note != null ? String(body.note).trim().slice(0, 500) : null;
 
   if (!Number.isFinite(amount) || amount <= 0 || amount > 1_000_000) {
-    return NextResponse.json({ error: "Geçersiz tutar" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
   }
   if (method !== "BANK" && method !== "CRYPTO") {
-    return NextResponse.json({ error: "Geçersiz yöntem (BANK veya CRYPTO)" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid method (BANK or CRYPTO)" }, { status: 400 });
   }
   if (!details) {
     return NextResponse.json(
-      { error: method === "BANK" ? "IBAN / hesap bilgisi gerekli" : "Cüzdan adresi gerekli" },
+      { error: method === "BANK" ? "IBAN / hesap bilgisi gerekli" : "Wallet address required" },
       { status: 400 }
     );
   }
 
   const account = await prisma.account.findUnique({ where: { userId: user.id } });
-  if (!account) return NextResponse.json({ error: "Hesap bulunamadı" }, { status: 404 });
+  if (!account) return NextResponse.json({ error: "Account not found" }, { status: 404 });
 
   const available = Math.min(account.balance, account.freeMargin);
   if (amount > available + 1e-9) {
     return NextResponse.json(
       {
-        error: `Yetersiz bakiye. Çekilebilir: ${available.toFixed(2)} ${account.currency}`,
+        error: `Insufficient balance. Withdrawable: ${available.toFixed(2)} ${account.currency}`,
       },
       { status: 400 }
     );
@@ -61,7 +61,7 @@ export async function POST(req: Request) {
   });
   if (pending) {
     return NextResponse.json(
-      { error: "Zaten bekleyen bir para çekme talebiniz var" },
+      { error: "You already have a pending withdrawal request" },
       { status: 400 }
     );
   }

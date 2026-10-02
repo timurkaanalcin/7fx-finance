@@ -70,7 +70,7 @@ export default function AdminDashboard() {
   const load = useCallback(async () => {
     try {
       const r = await fetch("/api/admin/stats", { cache: "no-store" });
-      if (!r.ok) throw new Error("Yüklenemedi");
+      if (!r.ok) throw new Error("Failed to load");
       const d = await r.json();
       setKpis(d.kpis);
       setPositions(d.recentActivity?.positions || []);
@@ -78,7 +78,7 @@ export default function AdminDashboard() {
       setUpdatedAt(d.generatedAt || new Date().toISOString());
       setErr("");
     } catch {
-      setErr("KPI verileri alınamadı");
+      setErr("Could not load KPI data");
     }
   }, []);
 
@@ -92,11 +92,11 @@ export default function AdminDashboard() {
     <div>
       <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
         <div>
-          <h1 className="text-lg font-semibold">Gösterge Paneli</h1>
+          <h1 className="text-lg font-semibold">Dashboard</h1>
           <p className="mt-0.5 text-xs text-neutral-500">
-            7FX Desk CRM · Trade engine ile canlı Account bağlantısı
+            7FX Desk CRM · Live account link to the trade engine
             {updatedAt
-              ? ` · ${new Date(updatedAt).toLocaleTimeString("tr-TR")}`
+              ? ` · ${new Date(updatedAt).toLocaleTimeString("en-US")}`
               : ""}
           </p>
         </div>
@@ -104,33 +104,33 @@ export default function AdminDashboard() {
           href="/admin/positions"
           className="rounded bg-black px-3 py-1.5 text-[11px] font-medium text-white"
         >
-          Canlı pozisyonlar →
+          Live pozisyonlar →
         </Link>
       </div>
       {err && <p className="mb-3 text-sm text-red-400">{err}</p>}
       {!kpis && !err && (
         <div className="flex items-center gap-2 text-sm text-neutral-500">
           <div className="h-4 w-4 animate-spin rounded-full border-2 border-sky-500 border-t-transparent" />
-          Yükleniyor…
+          Loading…
         </div>
       )}
       {kpis && (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          <Card label="Traderlar" value={kpis.users} href="/admin/traders" />
-          <Card label="Açık Pozisyonlar" value={kpis.openPositions} href="/admin/positions" />
+          <Card label="Traders" value={kpis.users} href="/admin/traders" />
+          <Card label="Open Positions" value={kpis.openPositions} href="/admin/positions" />
           <Card
-            label="Bekleyen Yatırmalar"
+            label="Pending Deposits"
             value={kpis.pendingDeposits}
             href="/admin/tickets?kind=deposit"
             accent={kpis.pendingDeposits > 0 ? "ring-1 ring-amber-500/40" : ""}
           />
           <Card
-            label="Marjin Talepleri"
+            label="Margin Talepleri"
             value={kpis.pendingBalanceRequests}
             href="/admin/tickets?kind=margin"
             accent={kpis.pendingBalanceRequests > 0 ? "ring-1 ring-amber-500/40" : ""}
           />
-          <Card label="Toplam Hacim (lot)" value={Number(kpis.totalVolume).toFixed(2)} />
+          <Card label="Total Volume (lot)" value={Number(kpis.totalVolume).toFixed(2)} />
         </div>
       )}
 
@@ -141,19 +141,19 @@ export default function AdminDashboard() {
               Son pozisyonlar
             </h2>
             <Link href="/admin/positions" className="text-[10px] text-sky-600 hover:underline">
-              Tümü
+              All
             </Link>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-[11px]">
               <thead className="text-neutral-500">
                 <tr>
-                  <th className="px-2 py-1.5">Sembol</th>
+                  <th className="px-2 py-1.5">Symbol</th>
                   <th className="px-2 py-1.5">Side</th>
                   <th className="px-2 py-1.5">Vol</th>
                   <th className="px-2 py-1.5">Kâr</th>
                   <th className="px-2 py-1.5">Trader</th>
-                  <th className="px-2 py-1.5">Durum</th>
+                  <th className="px-2 py-1.5">Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -180,7 +180,7 @@ export default function AdminDashboard() {
                 {positions.length === 0 && (
                   <tr>
                     <td colSpan={6} className="px-2 py-4 text-center text-neutral-400">
-                      Henüz pozisyon yok
+                      No positions yet
                     </td>
                   </tr>
                 )}
@@ -198,19 +198,19 @@ export default function AdminDashboard() {
               href="/admin/positions?tab=orders"
               className="text-[10px] text-sky-600 hover:underline"
             >
-              Tümü
+              All
             </Link>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-[11px]">
               <thead className="text-neutral-500">
                 <tr>
-                  <th className="px-2 py-1.5">Sembol</th>
+                  <th className="px-2 py-1.5">Symbol</th>
                   <th className="px-2 py-1.5">Tip</th>
                   <th className="px-2 py-1.5">Side</th>
                   <th className="px-2 py-1.5">Vol</th>
                   <th className="px-2 py-1.5">Trader</th>
-                  <th className="px-2 py-1.5">Durum</th>
+                  <th className="px-2 py-1.5">Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -231,7 +231,7 @@ export default function AdminDashboard() {
                 {orders.length === 0 && (
                   <tr>
                     <td colSpan={6} className="px-2 py-4 text-center text-neutral-400">
-                      Henüz emir yok
+                      No orders yet
                     </td>
                   </tr>
                 )}
@@ -243,14 +243,14 @@ export default function AdminDashboard() {
 
       <div className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          { href: "/admin/traders", title: "Traderlar", desc: "Filtreler, üyelik, trading Account" },
-          { href: "/admin/tickets", title: "Biletler", desc: "Yatırma + marjin onayı → bakiye" },
-          { href: "/admin/positions", title: "Pozisyonlar", desc: "Canlı trade engine pozisyonları" },
-          { href: "/admin/desks", title: "Desklar", desc: "Trader / çalışan / analitik stub" },
-          { href: "/admin/transactions", title: "Ledger", desc: "Bakiye geçmişi" },
-          { href: "/admin/rates", title: "İşlem Oranları", desc: "Spread, komisyon, hacim" },
-          { href: "/admin/workers", title: "Çalışanlar", desc: "Admin kullanıcılar ve izinler" },
-          { href: "/admin/methods", title: "Yatırma Yöntemleri", desc: "IBAN / kripto" },
+          { href: "/admin/traders", title: "Traders", desc: "Filters, membership, trading Account" },
+          { href: "/admin/tickets", title: "Biletler", desc: "Deposit + margin approval → balance" },
+          { href: "/admin/positions", title: "Positions", desc: "Live trade engine positions" },
+          { href: "/admin/desks", title: "Desks", desc: "Trader / worker / analytics stub" },
+          { href: "/admin/transactions", title: "Ledger", desc: "Balance history" },
+          { href: "/admin/rates", title: "Trading Rates", desc: "Spread, komisyon, hacim" },
+          { href: "/admin/workers", title: "Workers", desc: "Admin users and permissions" },
+          { href: "/admin/methods", title: "Deposit Methods", desc: "IBAN / crypto" },
         ].map((x) => (
           <Link
             key={x.href}

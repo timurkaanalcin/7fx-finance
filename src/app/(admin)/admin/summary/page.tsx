@@ -37,20 +37,20 @@ export default function AdminSummaryPage() {
 
   return (
     <div>
-      <h1 className="mb-1 text-xl font-semibold">Hesap Özeti</h1>
-      <p className="mb-4 text-sm text-neutral-500">Tüm trader hesaplarının bakiyesi, özsermaye ve açık pozisyonları</p>
+      <h1 className="mb-1 text-xl font-semibold">Account Summary</h1>
+      <p className="mb-4 text-sm text-neutral-500">Balance, equity and open positions across all trader accounts</p>
       {totals && (
         <div className="mb-4 grid gap-3 sm:grid-cols-3">
           <div className="rounded-xl border border-[#e5e5e5] bg-[#ffffff] p-3">
-            <div className="text-[10px] uppercase text-neutral-500">Toplam Bakiye</div>
+            <div className="text-[10px] uppercase text-neutral-500">Total Balance</div>
             <div className="mt-1 text-lg font-semibold tabular-nums">{fmt(totals.balance)}</div>
           </div>
           <div className="rounded-xl border border-[#e5e5e5] bg-[#ffffff] p-3">
-            <div className="text-[10px] uppercase text-neutral-500">Toplam Özsermaye</div>
+            <div className="text-[10px] uppercase text-neutral-500">Total Equity</div>
             <div className="mt-1 text-lg font-semibold tabular-nums">{fmt(totals.equity)}</div>
           </div>
           <div className="rounded-xl border border-[#e5e5e5] bg-[#ffffff] p-3">
-            <div className="text-[10px] uppercase text-neutral-500">Kullanılan Marj</div>
+            <div className="text-[10px] uppercase text-neutral-500">Used Margin</div>
             <div className="mt-1 text-lg font-semibold tabular-nums">{fmt(totals.margin)}</div>
           </div>
         </div>
@@ -59,14 +59,14 @@ export default function AdminSummaryPage() {
         <table className="w-full text-left text-xs">
           <thead className="bg-[#ffffff] text-neutral-500">
             <tr>
-              <th className="px-3 py-2">Hesap</th>
-              <th className="px-3 py-2">Bakiye</th>
-              <th className="px-3 py-2">Özsermaye</th>
+              <th className="px-3 py-2">Account</th>
+              <th className="px-3 py-2">Balance</th>
+              <th className="px-3 py-2">Equity</th>
               <th className="px-3 py-2">Marj</th>
               <th className="px-3 py-2">Serbest</th>
-              <th className="px-3 py-2">Açık</th>
-              <th className="px-3 py-2">K/Z</th>
-              <th className="px-3 py-2">Hacim</th>
+              <th className="px-3 py-2">Open</th>
+              <th className="px-3 py-2">P/L</th>
+              <th className="px-3 py-2">Volume</th>
             </tr>
           </thead>
           <tbody>
@@ -97,7 +97,7 @@ export default function AdminSummaryPage() {
             {rows.length === 0 && (
               <tr>
                 <td colSpan={8} className="px-3 py-8 text-center text-neutral-500">
-                  Hesap yok
+                  Account yok
                 </td>
               </tr>
             )}

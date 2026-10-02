@@ -18,50 +18,50 @@ export type CrmNavGroup = {
 export const CRM_NAV_GROUPS: CrmNavGroup[] = [
   {
     id: "main",
-    label: "Ana",
+    label: "Main",
     items: [
-      { href: "/admin", label: "Gösterge Paneli", exact: true },
-      { href: "/admin/traders", label: "Traderlar" },
-      { href: "/admin/tickets", label: "Biletler / Yatırmalar" },
-      { href: "/admin/positions", label: "Pozisyonlar" },
-      { href: "/admin/transactions", label: "İşlemler (Ledger)" },
+      { href: "/admin", label: "Dashboard", exact: true },
+      { href: "/admin/traders", label: "Traders" },
+      { href: "/admin/tickets", label: "Tickets / Deposits" },
+      { href: "/admin/positions", label: "Positions" },
+      { href: "/admin/transactions", label: "Transactions (Ledger)" },
     ],
   },
   {
     id: "ops",
-    label: "Operasyon",
+    label: "Operations",
     items: [
-      { href: "/admin/desks", label: "Desklar" },
-      { href: "/admin/workers", label: "Çalışanlar" },
-      { href: "/admin/trading-groups", label: "Trading Grupları" },
-      { href: "/admin/assets", label: "Varlıklar" },
-      { href: "/admin/rates", label: "İşlem Oranları" },
-      { href: "/admin/methods", label: "Yatırma Yöntemleri" },
-      { href: "/admin/settings", label: "Sistem Ayarları" },
+      { href: "/admin/desks", label: "Desks" },
+      { href: "/admin/workers", label: "Workers" },
+      { href: "/admin/trading-groups", label: "Trading Groups" },
+      { href: "/admin/assets", label: "Assets" },
+      { href: "/admin/rates", label: "Trading Rates" },
+      { href: "/admin/methods", label: "Deposit Methods" },
+      { href: "/admin/settings", label: "System Settings" },
     ],
   },
   {
     id: "comms",
-    label: "İletişim",
+    label: "Communications",
     items: [
-      { href: "/admin/communications", label: "İletişimler" },
-      { href: "/admin/chat", label: "Sohbet" },
-      { href: "/admin/documents", label: "Belgeler" },
-      { href: "/admin/calendar", label: "Takvim" },
-      { href: "/admin/mail", label: "Mail Şablonları" },
+      { href: "/admin/communications", label: "Communications" },
+      { href: "/admin/chat", label: "Chat" },
+      { href: "/admin/documents", label: "Documents" },
+      { href: "/admin/calendar", label: "Calendar" },
+      { href: "/admin/mail", label: "Mail Templates" },
     ],
   },
   {
     id: "analytics",
-    label: "Analitik",
+    label: "Analytics",
     items: [
-      { href: "/admin/analytics/finance", label: "Finans" },
-      { href: "/admin/analytics/scoreboard", label: "Skor Tablosu" },
-      { href: "/admin/analytics/report", label: "Rapor" },
-      { href: "/admin/summary", label: "Hesap Özeti" },
+      { href: "/admin/analytics/finance", label: "Finance" },
+      { href: "/admin/analytics/scoreboard", label: "Scoreboard" },
+      { href: "/admin/analytics/report", label: "Report" },
+      { href: "/admin/summary", label: "Account Summary" },
     ],
   },
 ];
 
 export const CRM_STUB_NOTE =
-  "Bu modül yapı iskeleti olarak hazırdır. Canlı veri bağları sonraki iterasyonda genişletilecek.";
+  "This module is a structural stub. Live data connections will be expanded in a later iteration.";

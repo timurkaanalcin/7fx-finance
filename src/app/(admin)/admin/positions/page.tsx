@@ -19,7 +19,7 @@ export default function PositionsPage() {
       if (tab === "ORDERS") {
         const res = await fetch("/api/admin/positions?tab=orders", { cache: "no-store" });
         if (!res.ok) {
-          setErr("Emirler yüklenemedi");
+          setErr("Could not load orders");
           return;
         }
         const data = await res.json();
@@ -30,7 +30,7 @@ export default function PositionsPage() {
       }
       const res = await fetch(`/api/admin/positions?status=${tab}`, { cache: "no-store" });
       if (!res.ok) {
-        setErr("Pozisyonlar yüklenemedi");
+        setErr("Could not load positions");
         return;
       }
       const data = await res.json();
@@ -38,7 +38,7 @@ export default function PositionsPage() {
       setUpdatedAt(data.generatedAt || new Date().toISOString());
       setErr("");
     } catch {
-      setErr("Bağlantı hatası");
+      setErr("Connection error");
     }
   }, [tab]);
 
@@ -58,11 +58,11 @@ export default function PositionsPage() {
     <div>
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-lg font-semibold">Pozisyonlar / Emirler</h1>
+          <h1 className="text-lg font-semibold">Positions / Orderler</h1>
           <p className="mt-0.5 text-[11px] text-neutral-500">
-            Trade engine verisi — trader emir/pozisyon aç-kapa anında CRM&apos;e yansır
+            Trade engine data — trader order/position open-close reflects in CRM immediately
             {updatedAt
-              ? ` · son güncelleme ${new Date(updatedAt).toLocaleTimeString("tr-TR")}`
+              ? ` · last update ${new Date(updatedAt).toLocaleTimeString("en-US")}`
               : ""}
           </p>
         </div>
@@ -73,7 +73,7 @@ export default function PositionsPage() {
             onChange={(e) => setLive(e.target.checked)}
             className="rounded border-neutral-300"
           />
-          Canlı ({POLL_MS / 1000}sn)
+          Live ({POLL_MS / 1000}sn)
         </label>
       </div>
       {err && <p className="mb-2 text-xs text-red-500">{err}</p>}
@@ -84,7 +84,7 @@ export default function PositionsPage() {
             onClick={() => setTab(t)}
             className={`rounded px-3 py-1 text-xs ${tab === t ? "bg-black text-white" : "bg-neutral-100 text-neutral-500"}`}
           >
-            {t === "OPEN" ? "Açık" : t === "CLOSED" ? "Kapalı" : t === "ALL" ? "Tümü" : "Emirler"}
+            {t === "OPEN" ? "Open" : t === "CLOSED" ? "Closed" : t === "ALL" ? "All" : "Orderler"}
           </button>
         ))}
         <button
@@ -92,7 +92,7 @@ export default function PositionsPage() {
           onClick={() => load()}
           className="ml-auto rounded bg-neutral-100 px-3 py-1 text-xs text-neutral-600 hover:bg-neutral-200"
         >
-          Yenile
+          Refresh
         </button>
       </div>
       <div className="overflow-x-auto rounded-lg border border-neutral-200">
@@ -100,26 +100,26 @@ export default function PositionsPage() {
           <thead className="bg-[#ffffff] text-neutral-500">
             {tab === "ORDERS" ? (
               <tr>
-                <th className="px-2 py-2">Sembol</th>
+                <th className="px-2 py-2">Symbol</th>
                 <th className="px-2 py-2">Side</th>
                 <th className="px-2 py-2">Tip</th>
-                <th className="px-2 py-2">Hacim</th>
+                <th className="px-2 py-2">Volume</th>
                 <th className="px-2 py-2">Trader</th>
-                <th className="px-2 py-2">Durum</th>
-                <th className="px-2 py-2">Tarih</th>
+                <th className="px-2 py-2">Status</th>
+                <th className="px-2 py-2">Date</th>
               </tr>
             ) : (
               <tr>
-                <th className="px-2 py-2">Sembol</th>
+                <th className="px-2 py-2">Symbol</th>
                 <th className="px-2 py-2">Side</th>
-                <th className="px-2 py-2">Hacim</th>
-                <th className="px-2 py-2">Açılış</th>
-                <th className="px-2 py-2">Güncel</th>
+                <th className="px-2 py-2">Volume</th>
+                <th className="px-2 py-2">Open</th>
+                <th className="px-2 py-2">Current</th>
                 <th className="px-2 py-2">Kâr</th>
                 <th className="px-2 py-2">Trader</th>
                 <th className="px-2 py-2">Broker</th>
                 <th className="px-2 py-2">Account</th>
-                <th className="px-2 py-2">Durum</th>
+                <th className="px-2 py-2">Status</th>
               </tr>
             )}
           </thead>
@@ -146,7 +146,7 @@ export default function PositionsPage() {
                         <StatusBadge status={String(o.status)} />
                       </td>
                       <td className="px-2 py-1.5 text-neutral-500">
-                        {new Date(String(o.createdAt)).toLocaleString("tr-TR")}
+                        {new Date(String(o.createdAt)).toLocaleString("en-US")}
                       </td>
                     </tr>
                   );
@@ -185,14 +185,14 @@ export default function PositionsPage() {
             {tab === "ORDERS" && orders.length === 0 && (
               <tr>
                 <td colSpan={7} className="px-2 py-6 text-center text-neutral-400">
-                  Emir yok
+                  Order yok
                 </td>
               </tr>
             )}
             {tab !== "ORDERS" && rows.length === 0 && (
               <tr>
                 <td colSpan={10} className="px-2 py-6 text-center text-neutral-400">
-                  Pozisyon yok
+                  No positions
                 </td>
               </tr>
             )}

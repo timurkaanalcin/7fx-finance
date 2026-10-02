@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export async function GET(req: Request) {
   await ensureDemoSeed();
   const admin = await requireAdmin();
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const { searchParams } = new URL(req.url);
   const workerId = (searchParams.get("workerId") || "").trim();
@@ -55,7 +55,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   await ensureDemoSeed();
   const admin = await requireAdmin();
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const body = await req.json().catch(() => ({}));
   const action = String(body.action || "create");

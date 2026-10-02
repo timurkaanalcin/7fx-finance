@@ -5,16 +5,16 @@ import { parseMembershipUpdate, serializeUserMembership } from "@/lib/membership
 
 export const dynamic = "force-dynamic";
 
-/** Trader self-view of üyelik bilgileri (non-sensitive + limited edit) */
+/** Trader self-view of membership details (non-sensitive + limited edit) */
 export async function GET() {
   const user = await requireUser();
-  if (!user) return NextResponse.json({ error: "Oturum yok" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "No session" }, { status: 401 });
 
   const full = await prisma.user.findUnique({
     where: { id: user.id },
     include: { account: true },
   });
-  if (!full) return NextResponse.json({ error: "Kullanıcı yok" }, { status: 404 });
+  if (!full) return NextResponse.json({ error: "User yok" }, { status: 404 });
 
   const m = serializeUserMembership(full as unknown as Record<string, unknown>);
 
@@ -61,7 +61,7 @@ export async function GET() {
 
 export async function PATCH(req: Request) {
   const user = await requireUser();
-  if (!user) return NextResponse.json({ error: "Oturum yok" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "No session" }, { status: 401 });
 
   const body = await req.json().catch(() => ({}));
 
@@ -73,29 +73,29 @@ export async function PATCH(req: Request) {
 
     if (!currentPassword || !newPassword || !confirmPassword) {
       return NextResponse.json(
-        { error: "Mevcut şifre, yeni şifre ve tekrar alanları zorunlu" },
+        { error: "Current password, new password and confirmation are required" },
         { status: 400 }
       );
     }
     if (newPassword.length < 8) {
-      return NextResponse.json({ error: "Yeni şifre en az 8 karakter olmalı" }, { status: 400 });
+      return NextResponse.json({ error: "New password must be at least 8 characters" }, { status: 400 });
     }
     if (newPassword !== confirmPassword) {
-      return NextResponse.json({ error: "Yeni şifreler eşleşmiyor" }, { status: 400 });
+      return NextResponse.json({ error: "New passwords do not match" }, { status: 400 });
     }
     if (currentPassword === newPassword) {
       return NextResponse.json(
-        { error: "Yeni şifre mevcut şifreyle aynı olamaz" },
+        { error: "New password cannot be the same as the current password" },
         { status: 400 }
       );
     }
 
     const full = await prisma.user.findUnique({ where: { id: user.id } });
-    if (!full) return NextResponse.json({ error: "Kullanıcı yok" }, { status: 404 });
+    if (!full) return NextResponse.json({ error: "User yok" }, { status: 404 });
 
     const ok = await verifyPassword(currentPassword, full.passwordHash);
     if (!ok) {
-      return NextResponse.json({ error: "Mevcut şifre hatalı" }, { status: 400 });
+      return NextResponse.json({ error: "Current password is incorrect" }, { status: 400 });
     }
 
     const passwordHash = await hashPassword(newPassword);
@@ -109,7 +109,7 @@ export async function PATCH(req: Request) {
 
   const data = parseMembershipUpdate(body, { traderSelf: true });
   if (!Object.keys(data).length) {
-    return NextResponse.json({ error: "Güncellenecek alan yok" }, { status: 400 });
+    return NextResponse.json({ error: "No fields to update" }, { status: 400 });
   }
 
   const updated = await prisma.user.update({

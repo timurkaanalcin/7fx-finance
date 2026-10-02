@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   await ensureDemoSeed();
   const admin = await requireAdmin();
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const [desks, users, deposits, ledgers] = await Promise.all([
     prisma.desk.findMany({ orderBy: { name: "asc" } }),
@@ -61,10 +61,10 @@ export async function GET() {
 
   // Seed desk names
   for (const d of desks) bucket(d.name);
-  bucket("— Atanmamış");
+  bucket("— Unassigned");
 
   for (const u of users) {
-    const key = u.desk || desks.find((d) => d.id === u.deskId || d.code === u.deskId)?.name || "— Atanmamış";
+    const key = u.desk || desks.find((d) => d.id === u.deskId || d.code === u.deskId)?.name || "— Unassigned";
     const a = bucket(key);
     a.traders += 1;
     if (u.active) a.active += 1;
@@ -72,14 +72,14 @@ export async function GET() {
   }
 
   for (const d of deposits) {
-    const key = d.user.desk || "— Atanmamış";
+    const key = d.user.desk || "— Unassigned";
     const a = bucket(key);
     a.depositCount += 1;
     a.depositAmount += d.amount;
   }
 
   for (const l of ledgers) {
-    const key = l.user.desk || "— Atanmamış";
+    const key = l.user.desk || "— Unassigned";
     const a = bucket(key);
     if (l.type === "WITHDRAWAL") {
       a.withdrawalCount += 1;

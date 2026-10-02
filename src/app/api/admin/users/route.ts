@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
 export async function GET(req: Request) {
   await ensureDemoSeed();
   const admin = await requireAdminPerm("canManageUsers");
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const { searchParams } = new URL(req.url);
   const q = (searchParams.get("q") || "").trim();
@@ -75,7 +75,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   await ensureDemoSeed();
   const admin = await requireAdminPerm("canManageUsers");
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const body = await req.json().catch(() => ({}));
   const action = String(body.action || "");
@@ -87,14 +87,14 @@ export async function POST(req: Request) {
       .toLowerCase();
     const password = String(body.password || "");
     if (!email || !email.includes("@")) {
-      return NextResponse.json({ error: "Geçerli e-posta gerekli" }, { status: 400 });
+      return NextResponse.json({ error: "Valid email required" }, { status: 400 });
     }
     if (password.length < 6) {
-      return NextResponse.json({ error: "Şifre en az 6 karakter" }, { status: 400 });
+      return NextResponse.json({ error: "Password must be at least 6 characters" }, { status: 400 });
     }
     const exists = await prisma.user.findUnique({ where: { email } });
     if (exists) {
-      return NextResponse.json({ error: "E-posta zaten kayıtlı" }, { status: 409 });
+      return NextResponse.json({ error: "Email already registered" }, { status: 409 });
     }
 
     const membership = parseMembershipUpdate(body);
@@ -110,7 +110,7 @@ export async function POST(req: Request) {
     const balance = Number.isFinite(Number(body.balance)) ? Number(body.balance) : 10000;
     if (body.currency != null && body.currency !== "" && !isSupportedAccountCurrency(body.currency)) {
       return NextResponse.json(
-        { error: "Geçersiz para birimi. Desteklenen: USD, EUR, TRY, GBP, CHF, JPY, AUD, CAD" },
+        { error: "Invalid currency. Supported: USD, EUR, TRY, GBP, CHF, JPY, AUD, CAD" },
         { status: 400 }
       );
     }
@@ -227,15 +227,15 @@ export async function POST(req: Request) {
   }
 
   const target = await prisma.user.findUnique({ where: { id: userId }, include: { account: true } });
-  if (!target) return NextResponse.json({ error: "Kullanıcı yok" }, { status: 404 });
+  if (!target) return NextResponse.json({ error: "User yok" }, { status: 404 });
 
-  if (action === "setRole") {
+  if (action === "setRolee") {
     const role = String(body.role || "").toUpperCase();
     if (role !== "ADMIN" && role !== "TRADER") {
-      return NextResponse.json({ error: "Geçersiz rol" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid role" }, { status: 400 });
     }
     if (target.id === admin.id && role !== "ADMIN") {
-      return NextResponse.json({ error: "Kendi admin rolünüzü kaldıramazsınız" }, { status: 400 });
+      return NextResponse.json({ error: "You cannot remove your own admin role" }, { status: 400 });
     }
     await prisma.user.update({ where: { id: userId }, data: { role } });
     await writeAudit({
@@ -250,12 +250,12 @@ export async function POST(req: Request) {
   if (action === "setActive") {
     const active = Boolean(body.active);
     if (target.id === admin.id && !active) {
-      return NextResponse.json({ error: "Kendinizi donduramazsınız" }, { status: 400 });
+      return NextResponse.json({ error: "You cannot freeze yourself" }, { status: 400 });
     }
     const envAdmin = String(process.env.ADMIN_EMAIL || "").trim().toLowerCase();
     if (!active && envAdmin && target.email === envAdmin) {
       return NextResponse.json(
-        { error: "Prod ADMIN_EMAIL hesabı dondurulamaz" },
+        { error: "Production ADMIN_EMAIL account cannot be frozen" },
         { status: 400 }
       );
     }
@@ -270,7 +270,7 @@ export async function POST(req: Request) {
 
   if (action === "setPermissions") {
     if (target.role !== "ADMIN") {
-      return NextResponse.json({ error: "İzinler yalnızca ADMIN için" }, { status: 400 });
+      return NextResponse.json({ error: "Permissions are for ADMIN only" }, { status: 400 });
     }
     const data: Record<string, boolean> = {};
     for (const key of [
@@ -294,17 +294,17 @@ export async function POST(req: Request) {
 
   if (action === "adjustBalance") {
     const balAdmin = await requireAdminPerm("canAdjustBalance");
-    if (!balAdmin) return NextResponse.json({ error: "Bakiye düzeltme yetkisi yok" }, { status: 403 });
+    if (!balAdmin) return NextResponse.json({ error: "No permission to adjust balance" }, { status: 403 });
     const amount = Number(body.amount);
     const note = String(body.note || "").trim();
     if (!Number.isFinite(amount) || amount === 0) {
-      return NextResponse.json({ error: "Geçerli tutar gerekli" }, { status: 400 });
+      return NextResponse.json({ error: "Valid amount required" }, { status: 400 });
     }
     if (!note) {
       return NextResponse.json({ error: "Denetim notu zorunlu" }, { status: 400 });
     }
     if (!target.account) {
-      return NextResponse.json({ error: "Hesap yok" }, { status: 404 });
+      return NextResponse.json({ error: "Account yok" }, { status: 404 });
     }
     const balanceBefore = target.account.balance;
     const balanceAfter = balanceBefore + amount;
@@ -337,9 +337,9 @@ export async function POST(req: Request) {
 
   if (action === "updateFinance") {
     const balAdmin = await requireAdminPerm("canAdjustBalance");
-    if (!balAdmin) return NextResponse.json({ error: "Bakiye düzeltme yetkisi yok" }, { status: 403 });
+    if (!balAdmin) return NextResponse.json({ error: "No permission to adjust balance" }, { status: 403 });
     if (!target.account) {
-      return NextResponse.json({ error: "Hesap yok" }, { status: 404 });
+      return NextResponse.json({ error: "Account yok" }, { status: 404 });
     }
     const data: Record<string, number | string> = {};
     if (body.balance !== undefined && Number.isFinite(Number(body.balance))) {
@@ -354,14 +354,14 @@ export async function POST(req: Request) {
     if (body.currency !== undefined) {
       if (!isSupportedAccountCurrency(body.currency)) {
         return NextResponse.json(
-          { error: "Geçersiz para birimi. Desteklenen: USD, EUR, TRY, GBP, CHF, JPY, AUD, CAD" },
+          { error: "Invalid currency. Supported: USD, EUR, TRY, GBP, CHF, JPY, AUD, CAD" },
           { status: 400 }
         );
       }
       data.currency = normalizeAccountCurrency(body.currency);
     }
     if (!Object.keys(data).length) {
-      return NextResponse.json({ error: "Güncellenecek alan yok" }, { status: 400 });
+      return NextResponse.json({ error: "No fields to update" }, { status: 400 });
     }
     const balanceBefore = target.account.balance;
     const currencyBefore = target.account.currency;
@@ -429,7 +429,7 @@ export async function POST(req: Request) {
   if (action === "resetPassword") {
     const password = String(body.password || "");
     if (password.length < 8) {
-      return NextResponse.json({ error: "Şifre en az 8 karakter" }, { status: 400 });
+      return NextResponse.json({ error: "Password en az 8 karakter" }, { status: 400 });
     }
     const passwordHash = await hashPassword(password);
     await prisma.user.update({ where: { id: userId }, data: { passwordHash } });

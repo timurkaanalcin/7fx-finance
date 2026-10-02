@@ -22,7 +22,7 @@ const EXACT = new Set([
 
 export async function POST() {
   const admin = await requireAdmin();
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const users = await prisma.user.findMany({
     select: { id: true, email: true, role: true },

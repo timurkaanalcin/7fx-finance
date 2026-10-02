@@ -6,7 +6,7 @@ import { getMarketStatus } from "@/lib/market-hours";
 
 export async function GET() {
   const user = await requireUser();
-  if (!user) return NextResponse.json({ error: "Oturum yok" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "No session" }, { status: 401 });
   await processPendingOrders(user.id);
   await checkSlTp(user.id);
   const orders = await prisma.order.findMany({
@@ -19,7 +19,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const user = await requireUser();
-  if (!user) return NextResponse.json({ error: "Oturum yok" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "No session" }, { status: 401 });
   try {
     const body = await req.json();
     const symbol = String(body.symbol || "");
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     if (mkt.blockOrdersWhenClosed && !mkt.open) {
       return NextResponse.json(
         {
-          error: `Piyasa kapalı (${mkt.label}). Hisse emirleri yalnızca seans saatlerinde.`,
+          error: `Market closed (${mkt.label}). Stock orders only during session hours.`,
         },
         { status: 403 }
       );
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     });
     return NextResponse.json({ ok: true, result });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "Emir hatası";
+    const msg = e instanceof Error ? e.message : "Order error";
     return NextResponse.json({ error: msg }, { status: 400 });
   }
 }

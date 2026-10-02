@@ -37,13 +37,13 @@ export const SYMBOLS: SymbolDef[] = [
   { symbol: "DIS", name: "Walt Disney Co.", class: "STOCK", digits: 2, pipSize: 0.01, contractSize: 1, basePrice: 100, spread: 0.02, yahoo: "DIS", flag: "🇺🇸" },
 
   // —— BIST (Istanbul) ——
-  { symbol: "THYAO", name: "Türk Hava Yolları", class: "STOCK", digits: 2, pipSize: 0.01, contractSize: 1, basePrice: 300, spread: 0.05, yahoo: "THYAO.IS", flag: "🇹🇷" },
+  { symbol: "THYAO", name: "Turkish Airlines", class: "STOCK", digits: 2, pipSize: 0.01, contractSize: 1, basePrice: 300, spread: 0.05, yahoo: "THYAO.IS", flag: "🇹🇷" },
   { symbol: "GARAN", name: "Garanti BBVA", class: "STOCK", digits: 2, pipSize: 0.01, contractSize: 1, basePrice: 120, spread: 0.03, yahoo: "GARAN.IS", flag: "🇹🇷" },
   { symbol: "AKBNK", name: "Akbank", class: "STOCK", digits: 2, pipSize: 0.01, contractSize: 1, basePrice: 60, spread: 0.02, yahoo: "AKBNK.IS", flag: "🇹🇷" },
-  { symbol: "EREGL", name: "Ereğli Demir Çelik", class: "STOCK", digits: 2, pipSize: 0.01, contractSize: 1, basePrice: 50, spread: 0.02, yahoo: "EREGL.IS", flag: "🇹🇷" },
-  { symbol: "BIMAS", name: "BİM Birleşik Mağazalar", class: "STOCK", digits: 2, pipSize: 0.01, contractSize: 1, basePrice: 500, spread: 0.1, yahoo: "BIMAS.IS", flag: "🇹🇷" },
+  { symbol: "EREGL", name: "Eregli Iron & Steel", class: "STOCK", digits: 2, pipSize: 0.01, contractSize: 1, basePrice: 50, spread: 0.02, yahoo: "EREGL.IS", flag: "🇹🇷" },
+  { symbol: "BIMAS", name: "BIM Combined Stores", class: "STOCK", digits: 2, pipSize: 0.01, contractSize: 1, basePrice: 500, spread: 0.1, yahoo: "BIMAS.IS", flag: "🇹🇷" },
   { symbol: "ASELS", name: "Aselsan", class: "STOCK", digits: 2, pipSize: 0.01, contractSize: 1, basePrice: 80, spread: 0.03, yahoo: "ASELS.IS", flag: "🇹🇷" },
-  { symbol: "SISE", name: "Şişecam", class: "STOCK", digits: 2, pipSize: 0.01, contractSize: 1, basePrice: 45, spread: 0.02, yahoo: "SISE.IS", flag: "🇹🇷" },
+  { symbol: "SISE", name: "Sisecam", class: "STOCK", digits: 2, pipSize: 0.01, contractSize: 1, basePrice: 45, spread: 0.02, yahoo: "SISE.IS", flag: "🇹🇷" },
 
   // —— FX majors + liquid crosses + TRY / liquid exotics (Yahoo =X verified) ——
   { symbol: "EURUSD", name: "Euro / US Dollar", class: "FX", digits: 5, pipSize: 0.0001, contractSize: 100000, basePrice: 1.0852, spread: 0.00012, yahoo: "EURUSD=X", flag: "🇪🇺" },
@@ -96,7 +96,7 @@ export const SYMBOLS: SymbolDef[] = [
 
   // —— Commodities (Yahoo futures — verified) ——
   { symbol: "XAUUSD", name: "Gold / USD", class: "COMMODITY", digits: 2, pipSize: 0.01, contractSize: 100, basePrice: 4200, spread: 0.35, yahoo: "GC=F", flag: "🥇" },
-  { symbol: "XAGUSD", name: "Silver / USD", class: "COMMODITY", digits: 3, pipSize: 0.001, contractSize: 5000, basePrice: 61, spread: 0.02, yahoo: "SI=F", flag: "🥈" },
+  { symbol: "XAGUSD", name: "Deletever / USD", class: "COMMODITY", digits: 3, pipSize: 0.001, contractSize: 5000, basePrice: 61, spread: 0.02, yahoo: "SI=F", flag: "🥈" },
   { symbol: "XPTUSD", name: "Platinum / USD", class: "COMMODITY", digits: 2, pipSize: 0.01, contractSize: 50, basePrice: 1730, spread: 0.8, yahoo: "PL=F", flag: "⚪" },
   { symbol: "XPDUSD", name: "Palladium / USD", class: "COMMODITY", digits: 2, pipSize: 0.01, contractSize: 100, basePrice: 1200, spread: 1.2, yahoo: "PA=F", flag: "🔘" },
   { symbol: "WTIUSD", name: "Crude Oil WTI", class: "COMMODITY", digits: 2, pipSize: 0.01, contractSize: 1000, basePrice: 91, spread: 0.04, yahoo: "CL=F", flag: "🛢️" },
@@ -223,7 +223,7 @@ export const SYMBOLS: SymbolDef[] = [
   { symbol: "LEOUSD", name: "UNUS SED LEO / USD", class: "CRYPTO", digits: 3, pipSize: 0.001, contractSize: 1, basePrice: 8.84, spread: 0.015, yahoo: "LEO-USD", flag: "🦁" },
   { symbol: "NEXOUSD", name: "Nexo / USD", class: "CRYPTO", digits: 4, pipSize: 0.0001, contractSize: 1, basePrice: 0.832, spread: 0.0015, yahoo: "NEXO-USD", flag: "🅽" },
   { symbol: "GTUSD", name: "GateToken / USD", class: "CRYPTO", digits: 3, pipSize: 0.001, contractSize: 1, basePrice: 11.08, spread: 0.02, yahoo: "GT-USD", flag: "🅶" },
-  { symbol: "NOTUSD", name: "Notcoin / USD", class: "CRYPTO", digits: 7, pipSize: 0.0000001, contractSize: 1, basePrice: 0.0005, spread: 0.000001, yahoo: "NOT-USD", flag: "📝" },
+  { symbol: "NOTUSD", name: "Notecoin / USD", class: "CRYPTO", digits: 7, pipSize: 0.0000001, contractSize: 1, basePrice: 0.0005, spread: 0.000001, yahoo: "NOT-USD", flag: "📝" },
   { symbol: "LPTUSD", name: "Livepeer / USD", class: "CRYPTO", digits: 3, pipSize: 0.001, contractSize: 1, basePrice: 1.75, spread: 0.004, yahoo: "LPT-USD", flag: "🎥" },
   { symbol: "SSVUSD", name: "ssv.network / USD", class: "CRYPTO", digits: 3, pipSize: 0.001, contractSize: 1, basePrice: 3.15, spread: 0.008, yahoo: "SSV-USD", flag: "🔐" },
   { symbol: "RPLUSD", name: "Rocket Pool / USD", class: "CRYPTO", digits: 3, pipSize: 0.001, contractSize: 1, basePrice: 1.95, spread: 0.005, yahoo: "RPL-USD", flag: "🚀" },

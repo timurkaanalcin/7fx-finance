@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   await ensureDemoSeed();
   const admin = await requireAdmin();
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   let groups = await prisma.tradingGroup.findMany({ orderBy: { name: "asc" } });
   if (!groups.length) {
@@ -49,10 +49,10 @@ export async function GET() {
 export async function POST(req: Request) {
   await ensureDemoSeed();
   const admin = await requireAdmin();
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   const body = await req.json().catch(() => ({}));
   const name = String(body.name || "").trim();
-  if (!name) return NextResponse.json({ error: "İsim gerekli" }, { status: 400 });
+  if (!name) return NextResponse.json({ error: "Name gerekli" }, { status: 400 });
   const group = await prisma.tradingGroup.create({
     data: {
       name,

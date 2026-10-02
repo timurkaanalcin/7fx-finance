@@ -31,4 +31,4 @@ export function isMarginCall(m: MarginSnapshot, thresholdPct: number = MARGIN_CA
   return false;
 }
 
-export const MARGIN_CALL_RULE_TR = `Marjin çağrısı: özsermaye ≤ 0, veya kullanılan marj varken serbest marj ≤ 0 / marj seviyesi < %${MARGIN_CALL_LEVEL}. Bakiye sıfırlama onayı → hesap ${DEFAULT_RESET_BALANCE.toLocaleString("en-US")} USD'ye resetlenir ve açık pozisyonlar kapatılır.`;
+export const MARGIN_CALL_RULE_EN = `Margin call: equity ≤ 0, or when margin is used free margin ≤ 0 / margin level < %${MARGIN_CALL_LEVEL}. Balance reset approval → ${DEFAULT_RESET_BALANCE.toLocaleString("en-US")} USD + open positions are closed.`;

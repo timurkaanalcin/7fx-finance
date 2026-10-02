@@ -231,7 +231,7 @@ export async function fetchQuoteFromChart(
     // Prefer 1m chart meta — regularMarketPrice updates more often during RTH/crypto
     // than a daily chart, so forming candles can track live mid ≤1s.
     // Daily gain/loss % MUST use session previousClose from meta — never the prior
-    // 1m bar (that yields near-zero "fake" minute deltas instead of günlük %).
+    // 1m bar (that yields near-zero "fake" minute deltas instead of daily %).
     let result;
     let usedInterval: "1m" | "1d" = "1m";
     try {

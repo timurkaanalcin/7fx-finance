@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export async function GET(req: Request) {
   await ensureDemoSeed();
   const admin = await requireAdmin();
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const { searchParams } = new URL(req.url);
   const type = (searchParams.get("type") || "").trim();
@@ -41,7 +41,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   await ensureDemoSeed();
   const admin = await requireAdmin();
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const body = await req.json().catch(() => ({}));
   const userId = String(body.userId || "").trim();
@@ -52,10 +52,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "userId ve description zorunlu" }, { status: 400 });
   }
   if (!["CHAT", "CALL", "NOTE"].includes(type)) {
-    return NextResponse.json({ error: "Geçersiz tip" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid type" }, { status: 400 });
   }
   const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (!user) return NextResponse.json({ error: "Trader bulunamadı" }, { status: 404 });
+  if (!user) return NextResponse.json({ error: "Trader not found" }, { status: 404 });
 
   const row = await prisma.communication.create({
     data: {

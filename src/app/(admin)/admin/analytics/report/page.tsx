@@ -59,15 +59,15 @@ export default function ReportPage() {
 
   const cards = report
     ? [
-        { label: "Yatırımlar", value: fmt(report.depositsAmount), hint: `${report.depositsCount} adet` },
-        { label: "Çekimler", value: fmt(report.withdrawalsAmount), hint: `${report.withdrawalsCount} adet` },
-        { label: "Açık Pozisyon", value: String(report.openPositions), hint: `${report.closedPositions} kapalı` },
-        { label: "Bekleyen Bilet", value: String(report.pendingTickets), hint: "yatırım + marjin" },
-        { label: "Aktif Trader", value: String(report.activeTraders), hint: `${report.frozenTraders} donuk` },
-        { label: "Aktif Desk", value: String(report.activeDesks), hint: "" },
-        { label: "Bekleyen Belge", value: String(report.pendingDocs), hint: "KYC" },
-        { label: "İletişim", value: String(report.communications), hint: "" },
-        { label: "FTD", value: String(report.ftdCount), hint: "ilk yatırım yapan" },
+        { label: "Deposits", value: fmt(report.depositsAmount), hint: `${report.depositsCount} adet` },
+        { label: "Withdrawals", value: fmt(report.withdrawalsAmount), hint: `${report.withdrawalsCount} adet` },
+        { label: "Open Positions", value: String(report.openPositions), hint: `${report.closedPositions} closed` },
+        { label: "Pending Bilet", value: String(report.pendingTickets), hint: "deposit + margin" },
+        { label: "Active Trader", value: String(report.activeTraders), hint: `${report.frozenTraders} donuk` },
+        { label: "Active Desk", value: String(report.activeDesks), hint: "" },
+        { label: "Pending Belge", value: String(report.pendingDocs), hint: "KYC" },
+        { label: "Communications", value: String(report.communications), hint: "" },
+        { label: "FTD", value: String(report.ftdCount), hint: "first-time depositor" },
       ]
     : [];
 
@@ -75,10 +75,10 @@ export default function ReportPage() {
     <div>
       <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
         <div>
-          <h1 className="text-lg font-semibold">Analitik · Rapor</h1>
+          <h1 className="text-lg font-semibold">Analytics · Report</h1>
           <p className="text-[11px] text-neutral-500">
-            Anlık özet
-            {report ? ` · ${new Date(report.generatedAt).toLocaleString("tr-TR")}` : ""}
+            Instant summary
+            {report ? ` · ${new Date(report.generatedAt).toLocaleString("en-US")}` : ""}
           </p>
         </div>
         <div className="flex gap-2">
@@ -88,7 +88,7 @@ export default function ReportPage() {
             onClick={load}
             className="rounded border border-neutral-300 bg-[#ffffff] px-3 py-1.5 text-xs hover:bg-neutral-100"
           >
-            Yenile
+            Refresh
           </button>
           <button
             type="button"
@@ -109,7 +109,7 @@ export default function ReportPage() {
           </div>
         ))}
       </div>
-      {!report && <p className="mt-4 text-xs text-neutral-500">Yükleniyor…</p>}
+      {!report && <p className="mt-4 text-xs text-neutral-500">Loading…</p>}
     </div>
   );
 }

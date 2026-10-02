@@ -24,10 +24,10 @@ type Props = {
   onSubmitted: (req: BalanceRequestRow) => void;
 };
 
-const STATUS_TR: Record<string, string> = {
+const STATUS_LABEL: Record<string, string> = {
   PENDING: "Bekliyor",
-  APPROVED: "Onaylandı",
-  REJECTED: "Reddedildi",
+  APPROVED: "Approved",
+  REJECTED: "Rejected",
 };
 
 export default function MarginCallModal({
@@ -67,18 +67,18 @@ export default function MarginCallModal({
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Talep gönderilemedi");
+        setError(data.error || "Could not submit request");
         if (data.request) onSubmitted(data.request);
         return;
       }
       setSuccess(
         type === "RESET"
-          ? "Bakiye sıfırlama talebi gönderildi. Admin onayı bekleniyor."
-          : "Bakiye ekleme talebi gönderildi. Admin onayı bekleniyor."
+          ? "Balance reset request submitted. Waiting for admin approval."
+          : "Add-balance request submitted. Waiting for admin approval."
       );
       onSubmitted(data.request);
     } catch {
-      setError("Bağlantı hatası");
+      setError("Connection error");
     } finally {
       setLoading(false);
     }
@@ -88,7 +88,7 @@ export default function MarginCallModal({
     e.preventDefault();
     const amt = Number(amount);
     if (!Number.isFinite(amt) || amt <= 0) {
-      setError("Geçerli tutar girin");
+      setError("Enter a valid amount");
       return;
     }
     submit("ADD", amt);
@@ -104,9 +104,9 @@ export default function MarginCallModal({
       >
         <div className="flex items-center justify-between border-b border-desk-border px-4 py-3">
           <div>
-            <h2 className="text-sm font-semibold tracking-wide text-desk-sell">Marjin Çağrısı</h2>
+            <h2 className="text-sm font-semibold tracking-wide text-desk-sell">Margin Call</h2>
             <p className="text-[10px] text-desk-muted">
-              Özsermaye {fmtMoney(equity, 2, currency)} · Marj seviyesi %{marginLevel.toFixed(1)} (eşik %{MARGIN_CALL_LEVEL})
+              Equity {fmtMoney(equity, 2, currency)} · Margin level %{marginLevel.toFixed(1)} (threshold %{MARGIN_CALL_LEVEL})
             </p>
           </div>
           {(hasPending || success) && (
@@ -122,14 +122,14 @@ export default function MarginCallModal({
         <div className="space-y-3 p-4 text-sm">
           {hasPending && pendingRequest && (
             <div className="rounded-[12px] border border-desk-warn/40 bg-desk-warn/10 px-3 py-2 text-xs text-desk-warn">
-              Bekleyen talep:{" "}
-              <strong>{pendingRequest.type === "RESET" ? "Bakiye Sıfırlama" : "Bakiye Ekle"}</strong>
+              Pending talep:{" "}
+              <strong>{pendingRequest.type === "RESET" ? "Balance Reset" : "Add Balance"}</strong>
               {pendingRequest.type === "ADD" && pendingRequest.amount != null
                 ? ` (${fmtMoney(pendingRequest.amount, 2, currency)})`
                 : ""}{" "}
-              — durum: <strong>{STATUS_TR[pendingRequest.status] || pendingRequest.status}</strong>
+              — status: <strong>{STATUS_LABEL[pendingRequest.status] || pendingRequest.status}</strong>
               <p className="mt-1 text-desk-muted">
-                Admin onaylayana kadar bakiye değişmez. Reddedilirse hesap aynı kalır.
+                Balance does not change until admin approval. If rejected, the account stays the same.
               </p>
             </div>
           )}
@@ -137,8 +137,8 @@ export default function MarginCallModal({
           {!hasPending && !success && (
             <>
               <p className="text-xs text-desk-text/90">
-                Hesabınız marjin çağrısı seviyesine düştü. Lütfen bir seçenek belirleyin. Seçiminiz{" "}
-                <strong>admin onayı</strong> sonrası uygulanır; onaylanana kadar bakiye değişmez.
+                Your account has reached margin-call level. Please choose an option. Your choice{" "}
+                <strong>admin approval</strong> is applied after approval; balance does not change until then.
               </p>
 
               {mode === "choose" && (
@@ -149,10 +149,10 @@ export default function MarginCallModal({
                     onClick={() => submit("RESET")}
                     className="rounded-[12px] border border-desk-border bg-desk-bg px-4 py-3 text-left hover:border-desk-accent hover:bg-desk-hover disabled:opacity-60"
                   >
-                    <div className="font-semibold text-desk-text">1. Bakiye Sıfırlama</div>
+                    <div className="font-semibold text-desk-text">1. Balance Reset</div>
                     <div className="mt-0.5 text-[11px] text-desk-muted">
-                      Admin onayında bakiye {fmtMoney(DEFAULT_RESET_BALANCE, 2, currency)} yapılır; açık pozisyonlar
-                      kapatılır.
+                      On admin approval balance becomes {fmtMoney(DEFAULT_RESET_BALANCE, 2, currency)}; open positions
+                      are closed.
                     </div>
                   </button>
                   <button
@@ -161,9 +161,9 @@ export default function MarginCallModal({
                     onClick={() => setMode("add")}
                     className="rounded-[12px] border border-desk-border bg-desk-bg px-4 py-3 text-left hover:border-desk-accent hover:bg-desk-hover disabled:opacity-60"
                   >
-                    <div className="font-semibold text-desk-text">2. Bakiye Ekle</div>
+                    <div className="font-semibold text-desk-text">2. Add Balance</div>
                     <div className="mt-0.5 text-[11px] text-desk-muted">
-                      Tutar girin; admin onayında bakiyenize eklenir.
+                      Enter an amount; it is added to your balance on admin approval.
                     </div>
                   </button>
                 </div>
@@ -191,14 +191,14 @@ export default function MarginCallModal({
                       onClick={() => setMode("choose")}
                       className="flex-1 rounded-[10px] border border-desk-border py-2 text-xs hover:bg-desk-hover"
                     >
-                      Geri
+                      Back
                     </button>
                     <button
                       type="submit"
                       disabled={loading}
                       className="flex-1 rounded-control bg-desk-accent py-2 text-xs font-semibold text-desk-accent-ink shadow-accent-glow-sm hover:brightness-110 disabled:opacity-60"
                     >
-                      {loading ? "Gönderiliyor…" : "Talep gönder"}
+                      {loading ? "Submitting…" : "Submit request"}
                     </button>
                   </div>
                 </form>
@@ -212,7 +212,7 @@ export default function MarginCallModal({
           )}
 
           {loading && mode === "choose" && !success && (
-            <p className="text-center text-xs text-desk-muted">Gönderiliyor…</p>
+            <p className="text-center text-xs text-desk-muted">Submitting…</p>
           )}
         </div>
       </div>
@@ -220,4 +220,4 @@ export default function MarginCallModal({
   );
 }
 
-export { STATUS_TR };
+export { STATUS_LABEL };

@@ -54,7 +54,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="flex min-h-screen items-center justify-center bg-[#f7f7f7] text-neutral-500">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--accent)] border-t-transparent" />
-          <span className="text-sm">CRM yükleniyor…</span>
+          <span className="text-sm">Loading CRM…</span>
         </div>
       </div>
     );
@@ -157,7 +157,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               }}
               className="rounded px-2 py-1 hover:bg-neutral-100 hover:text-black"
             >
-              Çıkış
+              Sign out
             </button>
           </div>
         </header>

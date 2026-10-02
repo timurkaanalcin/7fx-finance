@@ -64,10 +64,10 @@ export default function DocumentsPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "İşlem başarısız");
+        setMsg(data.error || "Action failed");
         return;
       }
-      setMsg(next === "APPROVED" ? "Belge onaylandı" : "Belge reddedildi");
+      setMsg(next === "APPROVED" ? "Document approved" : "Document rejected");
       await load();
     } finally {
       setBusy(false);
@@ -85,11 +85,11 @@ export default function DocumentsPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "Kayıt başarısız");
+        setMsg(data.error || "Registration failed");
         return;
       }
       setForm((f) => ({ ...f, name: "", note: "" }));
-      setMsg("Belge kaydı eklendi");
+      setMsg("Document record added");
       await load();
     } finally {
       setBusy(false);
@@ -98,7 +98,7 @@ export default function DocumentsPage() {
 
   return (
     <div>
-      <h1 className="mb-1 text-lg font-semibold">Belgeler</h1>
+      <h1 className="mb-1 text-lg font-semibold">Documents</h1>
       <p className="mb-3 text-[11px] text-neutral-500">KYC belge meta verileri — onay / red</p>
       {msg && <p className="mb-2 text-[11px] text-neutral-500">{msg}</p>}
       <div className="mb-3 grid gap-3 lg:grid-cols-3">
@@ -109,7 +109,7 @@ export default function DocumentsPage() {
               onChange={(e) => setStatus(e.target.value)}
               className="rounded border border-neutral-300 bg-[#fafafa] px-2 py-1 text-xs"
             >
-              <option value="">Tüm durumlar</option>
+              <option value="">All statuses</option>
               {["PENDING", "APPROVED", "REJECTED"].map((s) => (
                 <option key={s} value={s}>
                   {s}
@@ -123,8 +123,8 @@ export default function DocumentsPage() {
                 <th className="px-2 py-2">Belge</th>
                 <th className="px-2 py-2">Tip</th>
                 <th className="px-2 py-2">Trader</th>
-                <th className="px-2 py-2">Durum</th>
-                <th className="px-2 py-2">Tarih</th>
+                <th className="px-2 py-2">Status</th>
+                <th className="px-2 py-2">Date</th>
                 <th className="px-2 py-2"></th>
               </tr>
             </thead>
@@ -145,7 +145,7 @@ export default function DocumentsPage() {
                     <StatusBadge status={d.status} />
                   </td>
                   <td className="px-2 py-1.5 text-neutral-500">
-                    {new Date(d.createdAt).toLocaleString("tr-TR")}
+                    {new Date(d.createdAt).toLocaleString("en-US")}
                   </td>
                   <td className="px-2 py-1.5 space-x-1">
                     {d.status === "PENDING" && (
@@ -182,14 +182,14 @@ export default function DocumentsPage() {
           </table>
         </div>
         <div className="rounded-lg border border-neutral-200 bg-[#ffffff] p-3">
-          <h2 className="mb-2 text-xs font-semibold text-slate-300">Belge kaydı ekle</h2>
+          <h2 className="mb-2 text-xs font-semibold text-slate-300">Add document record</h2>
           <div className="space-y-2 text-xs">
             <select
               value={form.userId}
               onChange={(e) => setForm({ ...form, userId: e.target.value })}
               className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             >
-              <option value="">Trader seç…</option>
+              <option value="">Select trader…</option>
               {traders.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.name}
@@ -199,7 +199,7 @@ export default function DocumentsPage() {
             <input
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              placeholder="Belge adı"
+              placeholder="Document name"
               className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             />
             <select
@@ -216,7 +216,7 @@ export default function DocumentsPage() {
             <input
               value={form.note}
               onChange={(e) => setForm({ ...form, note: e.target.value })}
-              placeholder="Not (opsiyonel)"
+              placeholder="Note (opsiyonel)"
               className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             />
             <button

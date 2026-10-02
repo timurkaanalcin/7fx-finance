@@ -10,7 +10,7 @@ import BottomPanels from "./BottomPanels";
 import FooterTicker from "./FooterTicker";
 import ToolRail from "./ToolRail";
 import DepositModal from "./DepositModal";
-import MarginCallModal, { type BalanceRequestRow, STATUS_TR } from "./MarginCallModal";
+import MarginCallModal, { type BalanceRequestRow, STATUS_LABEL } from "./MarginCallModal";
 import type {
   AccountMetrics,
   OrderRow,
@@ -24,7 +24,7 @@ const TradingChart = dynamic(() => import("./TradingChart"), {
   ssr: false,
   loading: () => (
     <div className="flex min-h-0 flex-1 items-center justify-center bg-desk-bg text-[12px] text-desk-muted">
-      Grafik yükleniyor…
+      Loading chart…
     </div>
   ),
 });
@@ -120,7 +120,7 @@ export default function TerminalShell() {
         const data = await res.json();
         if (cancelled) return;
         if (!res.ok && !(data.prices || []).length) {
-          setPriceError(data.error || "Fiyat alınamadı");
+          setPriceError(data.error || "Could not fetch price");
           return;
         }
         const map: Record<string, PriceTick> = {};
@@ -132,7 +132,7 @@ export default function TerminalShell() {
           setPriceError(data.error);
         }
       } catch {
-        if (!cancelled) setPriceError("Fiyat bağlantı hatası");
+        if (!cancelled) setPriceError("Price connection error");
       }
     }
     pullBatch();
@@ -231,7 +231,7 @@ export default function TerminalShell() {
     return (
       <div className="fx-desk flex h-screen flex-col items-center justify-center gap-3 bg-desk-bg text-desk-muted">
         <div className="h-8 w-8 animate-pulse rounded-[8px] bg-desk-accent shadow-accent-glow-sm" />
-        <span className="text-sm">Terminal yükleniyor…</span>
+        <span className="text-sm">Loading terminal…</span>
       </div>
     );
   }
@@ -246,34 +246,34 @@ export default function TerminalShell() {
       />
       {priceError && (
         <div className="border-b border-desk-warn/30 bg-desk-warn/90 px-3 py-1.5 text-center text-[11px] font-medium text-black">
-          Piyasa verisi uyarısı: {priceError} (son bilinen fiyatlar gösteriliyor)
+          Market data warning: {priceError} (showing last known prices)
         </div>
       )}
       {account?.marginCall && (
         <div className="flex items-center justify-center gap-3 border-b border-desk-sell/40 bg-desk-sell/90 px-3 py-1.5 text-center text-[11px] font-medium text-white">
-          <span>Marjin çağrısı — özsermaye / marj seviyesi kritik</span>
+          <span>Margin call — equity / margin level critical</span>
           <button
             type="button"
             onClick={() => setMarginModalOpen(true)}
             className="rounded bg-white/20 px-2 py-0.5 hover:bg-white/30"
           >
-            Seçenekler
+            Options
           </button>
         </div>
       )}
       {balanceReqBanner && balanceReqBanner.status === "PENDING" && (
         <div className="bg-desk-warn/80 px-3 py-1 text-center text-[11px] font-medium text-black">
-          Bakiye talebi {STATUS_TR[balanceReqBanner.status] || balanceReqBanner.status}:{" "}
-          {balanceReqBanner.type === "RESET" ? "Bakiye Sıfırlama" : "Bakiye Ekle"}
+          Balance request {STATUS_LABEL[balanceReqBanner.status] || balanceReqBanner.status}:{" "}
+          {balanceReqBanner.type === "RESET" ? "Balance Reset" : "Add Balance"}
           {balanceReqBanner.type === "ADD" && balanceReqBanner.amount != null
             ? ` (${balanceReqBanner.amount} USD)`
             : ""}{" "}
-          — admin onayı bekleniyor
+          — waiting for admin approval
         </div>
       )}
       {balanceReqBanner && balanceReqBanner.status === "REJECTED" && account?.marginCall && (
         <div className="bg-desk-elev/90 px-3 py-1 text-center text-[11px] font-medium text-desk-text">
-          Son bakiye talebi reddedildi — hesap değiştirilmedi. Tekrar seçenek seçebilirsiniz.
+          Last balance request was rejected — account unchanged. You can choose an option again.
           <button
             type="button"
             className="ml-2 underline"
@@ -282,7 +282,7 @@ export default function TerminalShell() {
               setMarginModalOpen(true);
             }}
           >
-            Aç
+            Open
           </button>
         </div>
       )}
@@ -302,7 +302,7 @@ export default function TerminalShell() {
           <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
             {/* Chart fills main area; bottom history is fixed height (pre-elite proportions) */}
             <div className="relative flex min-h-[44vh] flex-1 md:min-h-0">
-              {/* Chart canvas wrapper: İŞLEM overlays bottom-right ON the chart */}
+              {/* Chart canvas wrapper: TRADE overlays bottom-right ON the chart */}
               <div className="relative flex h-full min-h-0 min-w-0 flex-1 flex-col">
                 <TradingChart
                   symbol={symbol}
@@ -314,10 +314,10 @@ export default function TerminalShell() {
                   <button
                     type="button"
                     onClick={() => openOrder("BUY")}
-                    aria-label="İşlem emri aç"
+                    aria-label="Open trade order"
                     className="pointer-events-auto min-h-[22px] min-w-[52px] rounded-full bg-desk-accent px-3.5 py-[5px] text-[10px] font-bold tracking-[0.12em] text-desk-accent-ink shadow-accent-glow-sm transition hover:brightness-110 active:scale-[0.98] md:min-h-[26px] md:min-w-[60px] md:px-[18px] md:py-1.5 md:text-[11px]"
                   >
-                    İŞLEM
+                    TRADE
                   </button>
                 </div>
               </div>
@@ -354,13 +354,13 @@ export default function TerminalShell() {
             )}
             {mobileTab === "order" && (
               <div className="flex h-full flex-col items-center justify-center gap-3 bg-desk-panel px-6 text-center">
-                <p className="text-sm text-desk-muted">Emir vermek için İŞLEM butonuna dokunun.</p>
+                <p className="text-sm text-desk-muted">Tap TRADE to place an order.</p>
                 <button
                   type="button"
                   onClick={() => openOrder("BUY")}
                   className="min-h-[26px] min-w-[60px] rounded-full bg-desk-accent px-4 py-1.5 text-[11px] font-bold tracking-[0.12em] text-desk-accent-ink shadow-accent-glow-sm"
                 >
-                  İŞLEM
+                  TRADE
                 </button>
               </div>
             )}
@@ -379,7 +379,7 @@ export default function TerminalShell() {
             </div>
           </div>
 
-          {/* Right Al/Sat panel removed — orders via İŞLEM modal */}
+          {/* Right Al/Sat panel removed — orders via TRADE modal */}
         </div>
       </div>
 
@@ -388,9 +388,9 @@ export default function TerminalShell() {
         <div className="fx-desk-seg">
           {(
             [
-              { id: "markets" as const, label: "Piyasalar" },
-              { id: "order" as const, label: "Emir" },
-              { id: "positions" as const, label: "Pozisyonlar" },
+              { id: "markets" as const, label: "Markets" },
+              { id: "order" as const, label: "Order" },
+              { id: "positions" as const, label: "Positions" },
             ] as const
           ).map((t) => (
             <button

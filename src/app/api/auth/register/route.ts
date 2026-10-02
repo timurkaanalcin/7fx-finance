@@ -12,9 +12,9 @@ import { allocateUniqueAccountLoginId } from "@/lib/account-login-id";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const ERR_REFERRAL =
-  "Geçerli bir referans kodu girin. / Enter a valid referral code.";
+  "Enter a valid referral code.";
 const ERR_REFERRAL_MISSING =
-  "Referans kodu zorunludur. / Referral code is required.";
+  "Referral code zorunludur. / Referral code is required.";
 
 export async function POST(req: Request) {
   try {
@@ -30,13 +30,13 @@ export async function POST(req: Request) {
     const referralCode = String(body.referralCode || "").trim();
 
     if (!firstName || !lastName) {
-      return NextResponse.json({ error: "Ad ve soyad gerekli" }, { status: 400 });
+      return NextResponse.json({ error: "First name and last name are required" }, { status: 400 });
     }
     if (!email || !EMAIL_RE.test(email)) {
-      return NextResponse.json({ error: "Geçerli bir e-posta girin" }, { status: 400 });
+      return NextResponse.json({ error: "Enter a valid email" }, { status: 400 });
     }
     if (password.length < 8) {
-      return NextResponse.json({ error: "Şifre en az 8 karakter olmalı" }, { status: 400 });
+      return NextResponse.json({ error: "Password must be at least 8 characters" }, { status: 400 });
     }
 
     const required = await isReferralRequired();
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
 
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
-      return NextResponse.json({ error: "Bu e-posta zaten kayıtlı" }, { status: 409 });
+      return NextResponse.json({ error: "This email is already registered" }, { status: 409 });
     }
 
     const passwordHash = await hashPassword(password);
@@ -107,6 +107,6 @@ export async function POST(req: Request) {
     return res;
   } catch (e) {
     console.error(e);
-    return NextResponse.json({ error: "Kayıt hatası" }, { status: 500 });
+    return NextResponse.json({ error: "Registration error" }, { status: 500 });
   }
 }

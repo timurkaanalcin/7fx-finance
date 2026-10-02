@@ -13,12 +13,12 @@ type Props = {
 };
 
 const FILTERS = [
-  { id: "ALL", label: "Tümü" },
-  { id: "STOCK", label: "Hisse" },
+  { id: "ALL", label: "All" },
+  { id: "STOCK", label: "Stocks" },
   { id: "FX", label: "FX" },
-  { id: "CRYPTO", label: "Kripto" },
-  { id: "COMMODITY", label: "Emtia" },
-  { id: "INDEX", label: "Endeks" },
+  { id: "CRYPTO", label: "Crypto" },
+  { id: "COMMODITY", label: "Commodities" },
+  { id: "INDEX", label: "Indices" },
 ];
 
 export default function Watchlist({ symbols, prices, selected, onSelect, className = "" }: Props) {
@@ -55,7 +55,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Sembol ara…"
+            placeholder="Symbol ara…"
             className="w-full rounded-[12px] border border-desk-border/80 bg-desk-bg py-2 pl-7 pr-2 text-xs text-desk-text outline-none placeholder:text-desk-muted/70 focus:border-desk-accent md:rounded-control md:py-1.5"
           />
         </div>
@@ -76,8 +76,8 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
         </div>
       </div>
       <div className="flex items-center justify-between px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.1em] text-desk-muted/80 md:px-2.5 md:py-1 md:font-medium md:tracking-[0.08em]">
-        <span>Sembol</span>
-        <span>BİD / ASK · %</span>
+        <span>Symbol</span>
+        <span>BID / ASK · %</span>
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto">
         {list.map((s) => {
@@ -129,7 +129,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
                             ? "bg-desk-buy/12 text-desk-buy"
                             : "bg-desk-sell/12 text-desk-sell"
                       }`}
-                      title="Günlük değişim %"
+                      title="Daily change %"
                     >
                       {p ? `${up ? "+" : ""}${p.changePct.toFixed(2)}%` : "—"}
                     </span>
@@ -140,7 +140,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
           );
         })}
         {list.length === 0 && (
-          <div className="px-3 py-8 text-center text-xs text-desk-muted">Sembol bulunamadı</div>
+          <div className="px-3 py-8 text-center text-xs text-desk-muted">Symbol not found</div>
         )}
       </div>
     </aside>

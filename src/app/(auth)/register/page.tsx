@@ -7,8 +7,8 @@ import RegisterForm from "@/components/auth/RegisterForm";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Kayıt · 7FX",
-  description: "7FX hesabı oluşturun",
+  title: "Register · 7FX",
+  description: "Create your 7FX account",
 };
 
 export default async function RegisterPage() {

@@ -11,7 +11,7 @@ type Ctx = { params: { id: string } };
 export async function GET(_req: Request, ctx: Ctx) {
   await ensureDemoSeed();
   const admin = await requireAdminPerm("canManageUsers");
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const id = ctx.params.id;
   const desk = await prisma.desk.findUnique({ where: { id } });
@@ -44,7 +44,7 @@ export async function GET(_req: Request, ctx: Ctx) {
       tradersCount: traders.length,
       workersCount: workers.length,
       totalBalance: traders.reduce((s, u) => s + (u.account?.balance || 0), 0),
-      note: "Analitik stub — finans / affiliation / scoreboard desk bazında sonraki iterasyonda",
+      note: "Analytics stub — finance / affiliation / scoreboard per desk in a later iteration",
     },
   });
 }
@@ -52,7 +52,7 @@ export async function GET(_req: Request, ctx: Ctx) {
 export async function PATCH(req: Request, ctx: Ctx) {
   await ensureDemoSeed();
   const admin = await requireAdminPerm("canManageUsers");
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   const id = ctx.params.id;
   const body = await req.json().catch(() => ({}));
   const data: Record<string, unknown> = {};

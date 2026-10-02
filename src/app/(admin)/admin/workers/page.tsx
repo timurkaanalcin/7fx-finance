@@ -29,17 +29,17 @@ export default function WorkersPage() {
 
   return (
     <div>
-      <h1 className="mb-3 text-lg font-semibold">Çalışanlar / Workers</h1>
+      <h1 className="mb-3 text-lg font-semibold">Workers / Workers</h1>
       <div className="overflow-x-auto rounded-lg border border-neutral-200">
         <table className="w-full text-left text-xs">
           <thead className="bg-[#ffffff] text-neutral-500">
             <tr>
-              <th className="px-3 py-2">Ad</th>
-              <th className="px-3 py-2">E-posta</th>
+              <th className="px-3 py-2">Name</th>
+              <th className="px-3 py-2">Email</th>
               <th className="px-3 py-2">Desk</th>
-              <th className="px-3 py-2">Aktif</th>
-              <th className="px-3 py-2">İzinler</th>
-              <th className="px-3 py-2">Son giriş</th>
+              <th className="px-3 py-2">Active</th>
+              <th className="px-3 py-2">Permissions</th>
+              <th className="px-3 py-2">Last login</th>
               <th className="px-3 py-2"></th>
             </tr>
           </thead>
@@ -49,7 +49,7 @@ export default function WorkersPage() {
                 <td className="px-3 py-2 font-medium">{u.name}</td>
                 <td className="px-3 py-2 text-neutral-500">{u.email}</td>
                 <td className="px-3 py-2">{u.desk || "—"}</td>
-                <td className="px-3 py-2">{u.active ? "Aktif" : "Kapalı"}</td>
+                <td className="px-3 py-2">{u.active ? "Active" : "Closed"}</td>
                 <td className="px-3 py-2 text-[9px] text-neutral-500">
                   {[
                     u.canManageUsers && "Users",
@@ -62,11 +62,11 @@ export default function WorkersPage() {
                     .join(", ") || "—"}
                 </td>
                 <td className="px-3 py-2 text-[10px] text-neutral-500">
-                  {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString("tr-TR") : "—"}
+                  {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString("en-US") : "—"}
                 </td>
                 <td className="px-3 py-2">
                   <Link href={`/admin/traders/${u.id}`} className="text-sky-400 hover:underline">
-                    Profil
+                    Profile
                   </Link>
                 </td>
               </tr>

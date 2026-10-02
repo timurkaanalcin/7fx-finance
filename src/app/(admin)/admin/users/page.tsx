@@ -8,5 +8,5 @@ export default function UsersRedirect() {
   useEffect(() => {
     router.replace("/admin/traders");
   }, [router]);
-  return <div className="text-xs text-neutral-500">Traderlar sayfasına yönlendiriliyor…</div>;
+  return <div className="text-xs text-neutral-500">Redirecting to Traders…</div>;
 }

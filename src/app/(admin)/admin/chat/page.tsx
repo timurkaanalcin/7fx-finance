@@ -10,7 +10,7 @@ type Msg = {
   workerName: string | null;
   createdAt: string;
 };
-type Profile = {
+type Profilee = {
   id: string;
   name: string;
   email: string;
@@ -46,30 +46,30 @@ type Thread = {
   active: boolean;
   lastAt: string;
   messages: Msg[];
-  profile?: Profile;
+  profile?: Profilee;
 };
 type TraderOpt = { id: string; name: string; email: string };
 
 type Tab = "all" | "new" | "unanswered";
 
 const GREETING_7FX =
-  "Merhaba, 7FX Canlı Destek'e hoş geldiniz. Size nasıl yardımcı olabilirim?\n\n7FX Destek";
+  "Hello, welcome to 7FX Live Support. How can I help you?\n\n7FX Support";
 
 const EMOJIS = ["👍", "🙏", "✅", "😊", "👋", "💼", "⚡", "📌"];
 
 function relativeTimeTr(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
-  if (!Number.isFinite(diff) || diff < 0) return "az önce";
+  if (!Number.isFinite(diff) || diff < 0) return "just now";
   const sec = Math.floor(diff / 1000);
-  if (sec < 45) return "birkaç saniye önce";
+  if (sec < 45) return "a few seconds ago";
   const min = Math.floor(sec / 60);
-  if (min < 60) return `${min} dakika önce`;
+  if (min < 60) return `${min} minutes ago`;
   const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr} saat önce`;
+  if (hr < 24) return `${hr} hours ago`;
   const day = Math.floor(hr / 24);
-  if (day === 1) return "bir gün önce";
-  if (day < 30) return `${day} gün önce`;
-  return new Date(iso).toLocaleDateString("tr-TR");
+  if (day === 1) return "one day ago";
+  if (day < 30) return `${day} days ago`;
+  return new Date(iso).toLocaleDateString("en-US");
 }
 
 function initials(name: string): string {
@@ -86,14 +86,14 @@ function avatarHue(seed: string): string {
 }
 
 function formatClock(iso: string) {
-  return new Date(iso).toLocaleTimeString("tr-TR", {
+  return new Date(iso).toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
   });
 }
 
 function formatDateSep(iso: string) {
-  return new Date(iso).toLocaleDateString("tr-TR", {
+  return new Date(iso).toLocaleDateString("en-US", {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -115,7 +115,7 @@ function isNew(t: Thread): boolean {
   return t.messages.length <= 1;
 }
 
-function ProfileRow({
+function ProfileeRow({
   label,
   value,
   danger,
@@ -148,7 +148,7 @@ function ProfileRow({
             type="button"
             onClick={onEdit}
             className="rounded-md p-1 hover:bg-white/5"
-            aria-label={`${label} düzenle`}
+            aria-label={`Edit ${label}`}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
               <path d="M4 20h4l10-10-4-4L4 16v4Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
@@ -185,7 +185,7 @@ export default function ChatPage() {
   const [emojiOpen, setEmojiOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [newUserId, setNewUserId] = useState("");
-  const [profileDraft, setProfileDraft] = useState<Profile | null>(null);
+  const [profileDraft, setProfileeDraft] = useState<Profilee | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -228,9 +228,9 @@ export default function ChatPage() {
 
   useEffect(() => {
     if (active && active.traderId !== selected) setSelected(active.traderId);
-    if (active?.profile) setProfileDraft({ ...active.profile });
+    if (active?.profile) setProfileeDraft({ ...active.profile });
     else if (active) {
-      setProfileDraft({
+      setProfileeDraft({
         id: active.traderId,
         name: active.trader,
         email: active.traderEmail,
@@ -239,7 +239,7 @@ export default function ChatPage() {
         accountType: "STANDARD",
         currency: "USD",
         timezone: "Europe/Istanbul",
-        language: "tr",
+        language: "en",
         tradingServer: "Web Trading Server",
         ftd: false,
         brokerName: null,
@@ -248,7 +248,7 @@ export default function ChatPage() {
         isActiveDeposit: true,
         isActiveWithdrawal: true,
       });
-    } else setProfileDraft(null);
+    } else setProfileeDraft(null);
   }, [active, selected]);
 
   useEffect(() => {
@@ -268,11 +268,11 @@ export default function ChatPage() {
       const res = await fetch("/api/admin/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, message: text, title: "Sohbet" }),
+        body: JSON.stringify({ userId, message: text, title: "Chat" }),
       });
       const data = await res.json();
       if (!res.ok) {
-        flash(data.error || "Gönderilemedi");
+        flash(data.error || "Sendilemedi");
         return;
       }
       setMessage("");
@@ -280,13 +280,13 @@ export default function ChatPage() {
       setSelected(userId);
       setCreateOpen(false);
       await load();
-      flash("Yanıt gönderildi");
+      flash("Reply sent");
     } finally {
       setBusy(false);
     }
   }
 
-  async function saveProfileField(key: string, value: string | boolean) {
+  async function saveProfileeField(key: string, value: string | boolean) {
     if (!profileDraft) return;
     setBusy(true);
     try {
@@ -302,28 +302,28 @@ export default function ChatPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        flash(data.error || "Kayıt başarısız");
+        flash(data.error || "Registration failed");
         return;
       }
-      setProfileDraft((p) => (p ? { ...p, [key]: value } : p));
+      setProfileeDraft((p) => (p ? { ...p, [key]: value } : p));
       await load();
-      flash("Profil güncellendi");
+      flash("Profilee updated");
     } finally {
       setBusy(false);
     }
   }
 
-  function editField(key: keyof Profile, label: string) {
+  function editField(key: keyof Profilee, label: string) {
     if (!profileDraft) return;
     const current = String(profileDraft[key] ?? "");
     const next = window.prompt(label, current);
     if (next == null) return;
-    void saveProfileField(key, next);
+    void saveProfileeField(key, next);
   }
 
   function toggleBool(key: "active" | "ftd") {
     if (!profileDraft) return;
-    void saveProfileField(key, !Boolean(profileDraft[key]));
+    void saveProfileeField(key, !Boolean(profileDraft[key]));
   }
 
   const messageBlocks = useMemo(() => {
@@ -354,9 +354,9 @@ export default function ChatPage() {
             CRM
           </span>
           <div>
-            <p className="text-sm font-semibold text-neutral-900">Canlı Destek Masası</p>
+            <p className="text-sm font-semibold text-neutral-900">Live Support Desk</p>
             <p className="text-[11px] text-neutral-500">
-              7FX · {threads.length} konuşma · {unanswered} yanıt bekliyor
+              7FX · {threads.length} conversations · {unanswered} awaiting reply
             </p>
           </div>
         </div>
@@ -389,7 +389,7 @@ export default function ChatPage() {
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search"
                 className="w-full rounded-xl border border-neutral-200 bg-[#f5f5f5] py-2 pl-9 pr-3 text-sm text-neutral-900 outline-none focus:border-[var(--accent)]/40"
-                aria-label="Ara"
+                aria-label="Search"
               />
             </div>
             <div className="flex gap-1 rounded-xl bg-[#f5f5f5] p-1">
@@ -397,7 +397,7 @@ export default function ChatPage() {
                 [
                   ["all", "All"],
                   ["new", "New"],
-                  ["unanswered", "Not Answered"],
+                  ["unanswered", "Note Answered"],
                 ] as const
               ).map(([id, label]) => (
                 <button
@@ -424,7 +424,7 @@ export default function ChatPage() {
           <ul className="min-h-0 flex-1 space-y-0.5 overflow-y-auto p-2">
             {list.length === 0 && (
               <li className="rounded-xl px-3 py-8 text-center text-sm text-neutral-500">
-                Sohbet yok — Create chat ile başlatın.
+                No chats — start with Create chat.
               </li>
             )}
             {list.map((t) => {
@@ -484,7 +484,7 @@ export default function ChatPage() {
         <section className="flex min-h-0 flex-col bg-[#070707]">
           {!active ? (
             <div className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-sm text-neutral-500">
-              <p>Soldan bir konuşma seçin veya Create chat</p>
+              <p>Select a conversation on the left or Create chat</p>
             </div>
           ) : (
             <>
@@ -515,7 +515,7 @@ export default function ChatPage() {
                       : "bg-red-500/15 text-red-400"
                   }`}
                 >
-                  {active.active ? "Aktif" : "Donuk"}
+                  {active.active ? "Active" : "Donuk"}
                 </span>
               </div>
 
@@ -543,10 +543,10 @@ export default function ChatPage() {
                           >
                             {agent && (
                               <p className="mb-1 text-[10px] font-semibold text-[var(--accent)]">
-                                {m.workerName || "7FX Destek"}
+                                {m.workerName || "7FX Support"}
                               </p>
                             )}
-                            {m.title && m.title !== "Sohbet" && (
+                            {m.title && m.title !== "Chat" && (
                               <p className="mb-0.5 text-[11px] font-medium text-neutral-500">
                                 {m.title}
                               </p>
@@ -591,7 +591,7 @@ export default function ChatPage() {
                     onClick={() => setMessage(GREETING_7FX)}
                     className="rounded-full bg-[var(--accent-tint)] px-2.5 py-1 text-[10px] font-semibold text-[var(--accent)] ring-1 ring-[var(--accent)]/20"
                   >
-                    7FX karşılama
+                    7FX welcome
                   </button>
                 </div>
                 <div className="flex items-end gap-2">
@@ -612,7 +612,7 @@ export default function ChatPage() {
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Enter message"
                     className="min-w-0 flex-1 rounded-xl border border-neutral-200 bg-[#f5f5f5] px-3 py-2.5 text-sm text-neutral-900 outline-none focus:border-[var(--accent)]/40"
-                    aria-label="Yanıt"
+                    aria-label="Reply"
                     disabled={busy}
                   />
                   <button
@@ -657,7 +657,7 @@ export default function ChatPage() {
                     type="submit"
                     disabled={busy || !message.trim()}
                     className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent)] text-white disabled:opacity-40"
-                    aria-label="Gönder"
+                    aria-label="Send"
                   >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                       <path d="M4 12 20 4l-5.5 16-2.5-6.5L4 12Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
@@ -673,7 +673,7 @@ export default function ChatPage() {
         <aside className="hidden min-h-0 flex-col overflow-y-auto border-l border-neutral-200 bg-white lg:flex">
           {!profileDraft ? (
             <div className="flex flex-1 items-center justify-center p-6 text-sm text-neutral-500">
-              Profil için sohbet seçin
+              Select a chat for the profile
             </div>
           ) : (
             <div className="p-4">
@@ -688,10 +688,10 @@ export default function ChatPage() {
                       void navigator.clipboard?.writeText(
                         `${profileDraft.name} · ${profileDraft.id}`,
                       );
-                      flash("Kopyalandı");
+                      flash("Copied");
                     }}
                     className="text-neutral-500 hover:text-slate-200"
-                    aria-label="Kopyala"
+                    aria-label="Copy"
                   >
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
                       <rect x="8" y="8" width="11" height="11" rx="2" stroke="currentColor" strokeWidth="1.6" />
@@ -704,63 +704,63 @@ export default function ChatPage() {
                 </p>
               </div>
 
-              <ProfileRow
+              <ProfileeRow
                 label="Name"
                 value={profileDraft.name}
                 onEdit={() => editField("name", "Name")}
               />
-              <ProfileRow
+              <ProfileeRow
                 label="Account Type"
                 value={profileDraft.accountType || "STANDARD"}
                 onEdit={() => editField("accountType", "Account Type")}
               />
-              <ProfileRow
+              <ProfileeRow
                 label="Currency"
                 value={profileDraft.currency || "USD"}
               />
-              <ProfileRow
+              <ProfileeRow
                 label="Timezone"
                 value={profileDraft.timezone || "Europe/Istanbul"}
                 onEdit={() => editField("timezone", "Timezone")}
               />
-              <ProfileRow
+              <ProfileeRow
                 label="Language"
                 value={profileDraft.language || "tr"}
                 onEdit={() => editField("language", "Language")}
               />
-              <ProfileRow
+              <ProfileeRow
                 label="Is Active"
                 value={profileDraft.active ? "Yes" : "No"}
                 danger={!profileDraft.active}
                 onEdit={() => toggleBool("active")}
               />
-              <ProfileRow
+              <ProfileeRow
                 label="Is Active Trading"
                 value={profileDraft.isActiveTrading ? "Yes" : "No"}
                 danger={!profileDraft.isActiveTrading}
               />
-              <ProfileRow
+              <ProfileeRow
                 label="Is Active Deposit"
                 value={profileDraft.isActiveDeposit !== false ? "Yes" : "No"}
               />
-              <ProfileRow
+              <ProfileeRow
                 label="Is Active Withdrawal"
                 value={profileDraft.isActiveWithdrawal !== false ? "Yes" : "No"}
               />
-              <ProfileRow
+              <ProfileeRow
                 label="Trading Server"
                 value={profileDraft.tradingServer || "Web Trading Server"}
                 onEdit={() => editField("tradingServer", "Trading Server")}
               />
-              <ProfileRow
+              <ProfileeRow
                 label="Registered At"
                 value={
                   profileDraft.registrationDate
-                    ? new Date(profileDraft.registrationDate).toLocaleString("tr-TR")
+                    ? new Date(profileDraft.registrationDate).toLocaleString("en-US")
                     : "—"
                 }
               />
-              <ProfileRow
+              <ProfileeRow
                 label="Registration Country"
                 value={
                   profileDraft.registrationCountry ||
@@ -769,30 +769,30 @@ export default function ChatPage() {
                 }
                 onEdit={() => editField("registrationCountry", "Registration Country")}
               />
-              <ProfileRow label="Registration IP" value="—" />
-              <ProfileRow
+              <ProfileeRow label="Registration IP" value="—" />
+              <ProfileeRow
                 label="Last Login At"
                 value={
                   profileDraft.lastLoginAt
-                    ? new Date(profileDraft.lastLoginAt).toLocaleString("tr-TR")
+                    ? new Date(profileDraft.lastLoginAt).toLocaleString("en-US")
                     : "—"
                 }
               />
-              <ProfileRow
+              <ProfileeRow
                 label="Mark FTD"
                 value={profileDraft.ftd ? "Yes" : "No"}
                 danger={!profileDraft.ftd}
                 onEdit={() => toggleBool("ftd")}
               />
-              <ProfileRow
+              <ProfileeRow
                 label="Mark Ftd Broker"
-                value={profileDraft.brokerName || "Not Assigned"}
+                value={profileDraft.brokerName || "Note Assigned"}
                 danger={!profileDraft.brokerName}
                 onEdit={() => editField("brokerName", "Mark Ftd Broker")}
-                onClear={() => void saveProfileField("brokerName", "")}
+                onClear={() => void saveProfileeField("brokerName", "")}
               />
-              <ProfileRow label="Withdrawal Details" value="Empty" danger />
-              <ProfileRow
+              <ProfileeRow label="Withdrawal Details" value="Empty" danger />
+              <ProfileeRow
                 label="Assignment Affiliate"
                 value={profileDraft.affiliateA || "-"}
                 onEdit={() => editField("affiliateA", "Assignment Affiliate")}
@@ -817,14 +817,14 @@ export default function ChatPage() {
           >
             <h3 className="text-sm font-semibold text-neutral-900">Create chat</h3>
             <p className="mt-1 text-[11px] text-neutral-500">
-              Trader seçin — ilk mesaj 7FX karşılama olarak gönderilebilir.
+              Select a trader — the first message can be sent as a 7FX welcome.
             </p>
             <select
               value={newUserId}
               onChange={(e) => setNewUserId(e.target.value)}
               className="mt-3 w-full rounded-xl border border-neutral-200 bg-[#f5f5f5] px-3 py-2 text-sm"
             >
-              <option value="">Trader seç…</option>
+              <option value="">Select trader…</option>
               {traders.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.name} · {t.email}
@@ -835,7 +835,7 @@ export default function ChatPage() {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={4}
-              placeholder="İlk mesaj"
+              placeholder="First message"
               className="mt-2 w-full rounded-xl border border-neutral-200 bg-[#f5f5f5] px-3 py-2 text-sm"
             />
             <div className="mt-2 flex flex-wrap gap-2">
@@ -844,7 +844,7 @@ export default function ChatPage() {
                 onClick={() => setMessage(GREETING_7FX)}
                 className="rounded-full bg-[var(--accent-tint)] px-2.5 py-1 text-[10px] font-semibold text-[var(--accent)]"
               >
-                7FX karşılama
+                7FX welcome
               </button>
               <div className="flex-1" />
               <button
@@ -852,7 +852,7 @@ export default function ChatPage() {
                 onClick={() => setCreateOpen(false)}
                 className="rounded-lg px-3 py-1.5 text-xs text-neutral-500 hover:bg-white/5"
               >
-                İptal
+                Cancel
               </button>
               <button
                 type="button"
@@ -860,7 +860,7 @@ export default function ChatPage() {
                 onClick={() => void send(newUserId)}
                 className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-40"
               >
-                Başlat
+                Start
               </button>
             </div>
           </div>

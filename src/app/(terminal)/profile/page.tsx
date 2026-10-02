@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 
-type Profile = {
+type Profilee = {
   id: string;
   email: string;
   accountLoginId: string | null;
@@ -60,15 +60,15 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
-const STATUS_TR: Record<string, string> = {
+const STATUS_LABEL: Record<string, string> = {
   PENDING: "Bekliyor",
-  APPROVED: "Onaylandı",
-  REJECTED: "Reddedildi",
+  APPROVED: "Approved",
+  REJECTED: "Rejected",
 };
 
-export default function ProfilePage() {
+export default function ProfileePage() {
   const router = useRouter();
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [profile, setProfilee] = useState<Profilee | null>(null);
   const [phone, setPhone] = useState("");
   const [language, setLanguage] = useState("tr");
   const [timezone, setTimezone] = useState("Europe/Istanbul");
@@ -114,7 +114,7 @@ export default function ProfilePage() {
       })
       .then((d) => {
         if (!d?.profile) return;
-        setProfile(d.profile);
+        setProfilee(d.profile);
         setPhone(d.profile.phone || "");
         setLanguage(d.profile.language || "tr");
         setTimezone(d.profile.timezone || "Europe/Istanbul");
@@ -136,11 +136,11 @@ export default function ProfilePage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "Kayıt başarısız");
+        setMsg(data.error || "Registration failed");
         return;
       }
       setMsg("Kaydedildi");
-      setProfile((p) => (p ? { ...p, phone, language, timezone, address } : p));
+      setProfilee((p) => (p ? { ...p, phone, language, timezone, address } : p));
     } finally {
       setBusy(false);
     }
@@ -153,15 +153,15 @@ export default function ProfilePage() {
     setPwErr("");
     try {
       if (!currentPassword || !newPassword || !confirmPassword) {
-        setPwErr("Tüm şifre alanlarını doldurun");
+        setPwErr("Fill in all password fields");
         return;
       }
       if (newPassword.length < 8) {
-        setPwErr("Yeni şifre en az 8 karakter olmalı");
+        setPwErr("New password must be at least 8 characters");
         return;
       }
       if (newPassword !== confirmPassword) {
-        setPwErr("Yeni şifreler eşleşmiyor");
+        setPwErr("New passwords do not match");
         return;
       }
       const res = await fetch("/api/profile", {
@@ -176,15 +176,15 @@ export default function ProfilePage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setPwErr(data.error || "Şifre değiştirilemedi");
+        setPwErr(data.error || "Could not change password");
         return;
       }
-      setPwMsg("Şifreniz güncellendi");
+      setPwMsg("Your password was updated");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch {
-      setPwErr("Bağlantı hatası");
+      setPwErr("Connection error");
     } finally {
       setPwBusy(false);
     }
@@ -208,15 +208,15 @@ export default function ProfilePage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setWdErr(data.error || "Talep gönderilemedi");
+        setWdErr(data.error || "Could not submit request");
         return;
       }
-      setWdMsg("Para çekme talebi gönderildi. Admin onayından sonra bakiyenizden düşülür.");
+      setWdMsg("Withdrawal request submitted. Balance will be deducted after admin approval.");
       setWdDetails("");
       setWdNote("");
       await loadWithdrawals();
     } catch {
-      setWdErr("Bağlantı hatası");
+      setWdErr("Connection error");
     } finally {
       setWdBusy(false);
     }
@@ -231,7 +231,7 @@ export default function ProfilePage() {
   if (!profile) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#000000] text-slate-400">
-        Profil yükleniyor…
+        Loading profile…
       </div>
     );
   }
@@ -244,7 +244,7 @@ export default function ProfilePage() {
       <header className="sticky top-0 z-30 flex h-12 items-center gap-3 border-b border-[#2a2a2a] bg-[#0a0a0a] px-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/icons/icon-192.png" alt="" className="h-7 w-7 rounded-md object-cover ring-1 ring-[#2a2a2a]" />
-        <span className="text-sm font-semibold">Üyelik Bilgileri</span>
+        <span className="text-sm font-semibold">Membership Details</span>
         <Link
           href="/trade"
           className="ml-auto rounded-md bg-[#2a2a2a] px-2.5 py-1.5 text-xs hover:bg-[#1f1f1f]"
@@ -256,7 +256,7 @@ export default function ProfilePage() {
           onClick={onLogout}
           className="rounded-md border border-[#2a2a2a] px-2.5 py-1.5 text-xs text-slate-400 hover:bg-[#1f1f1f] hover:text-slate-200"
         >
-          Çıkış
+          Sign out
         </button>
       </header>
 
@@ -266,7 +266,7 @@ export default function ProfilePage() {
           <div className="text-xs text-slate-500">{profile.email}</div>
           {profile.accountLoginId && (
             <div className="mt-1 text-xs text-slate-400">
-              Hesap kimliği:{" "}
+              Account ID:{" "}
               <span className="font-mono tracking-wider text-slate-200">{profile.accountLoginId}</span>
             </div>
           )}
@@ -277,42 +277,42 @@ export default function ProfilePage() {
                 profile.active ? "bg-emerald-500/20 text-emerald-300" : "bg-red-500/20 text-red-300"
               }`}
             >
-              {profile.active ? "Aktif" : "Donduruldu"}
+              {profile.active ? "Active" : "Freezeuldu"}
             </span>
             {profile.documentsStatus && profile.documentsStatus !== "NONE" && (
               <span className="rounded bg-blue-500/20 px-1.5 py-0.5 text-blue-300">
-                Belgeler: {profile.documentsStatus}
+                Documents: {profile.documentsStatus}
               </span>
             )}
           </div>
         </div>
 
         <section className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
-          <h2 className="mb-2 text-sm font-medium text-slate-300">Kimlik / Hesap</h2>
-          <Row label="Hesap kimliği" value={profile.accountLoginId || "—"} />
-          <Row label="Ad" value={profile.firstName} />
-          <Row label="Soyad" value={profile.lastName} />
-          <Row label="Ülke" value={profile.country} />
+          <h2 className="mb-2 text-sm font-medium text-slate-300">ID / Account</h2>
+          <Row label="Account ID" value={profile.accountLoginId || "—"} />
+          <Row label="First name" value={profile.firstName} />
+          <Row label="Last name" value={profile.lastName} />
+          <Row label="Country" value={profile.country} />
           <Row
-            label="Doğum tarihi"
+            label="Date of birth"
             value={
-              profile.birthDate ? new Date(profile.birthDate).toLocaleDateString("tr-TR") : "—"
+              profile.birthDate ? new Date(profile.birthDate).toLocaleDateString("en-US") : "—"
             }
           />
           <Row
-            label="Kayıt"
+            label="Registered"
             value={
               profile.registrationDate
-                ? new Date(profile.registrationDate).toLocaleDateString("tr-TR")
+                ? new Date(profile.registrationDate).toLocaleDateString("en-US")
                 : "—"
             }
           />
-          <Row label="Kayıt ülkesi" value={profile.registrationCountry} />
-          <Row label="Yerleşik" value={profile.isResident ? "Evet" : "Hayır"} />
+          <Row label="Registration country" value={profile.registrationCountry} />
+          <Row label="Resident" value={profile.isResident ? "Yes" : "No"} />
           <Row
-            label="Son giriş"
+            label="Last login"
             value={
-              profile.lastLoginAt ? new Date(profile.lastLoginAt).toLocaleString("tr-TR") : "—"
+              profile.lastLoginAt ? new Date(profile.lastLoginAt).toLocaleString("en-US") : "—"
             }
           />
           <Row label="Desk" value={profile.desk} />
@@ -321,30 +321,30 @@ export default function ProfilePage() {
         </section>
 
         <section className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
-          <h2 className="mb-2 text-sm font-medium text-slate-300">Finans özeti</h2>
-          <Row label="Bakiye" value={money(profile.balance)} />
-          <Row label="Özsermaye" value={money(profile.equity)} />
-          <Row label="Kredi" value={money(profile.credit)} />
+          <h2 className="mb-2 text-sm font-medium text-slate-300">Finance summary</h2>
+          <Row label="Balance" value={money(profile.balance)} />
+          <Row label="Equity" value={money(profile.equity)} />
+          <Row label="Credit" value={money(profile.credit)} />
           <Row label="Bonus" value={money(profile.bonus)} />
           <Row label="Para birimi" value={profile.currency} />
         </section>
 
         <section className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
-          <h2 className="mb-2 text-sm font-medium text-slate-300">Durum (salt okunur)</h2>
-          <Row label="Satış" value={profile.saleStatus} />
+          <h2 className="mb-2 text-sm font-medium text-slate-300">Status (salt okunur)</h2>
+          <Row label="Sell" value={profile.saleStatus} />
           <Row label="Retansiyon" value={profile.retentionStatus} />
-          <Row label="FTD" value={profile.ftd ? "Evet" : "Hayır"} />
+          <Row label="FTD" value={profile.ftd ? "Yes" : "No"} />
           <p className="mt-2 text-[10px] text-slate-600">
-            CRM durum alanları yalnızca masa tarafından yönetilir; düzenlenemez.
+            CRM status fields are managed by the desk only; not editable.
           </p>
         </section>
 
         <form onSubmit={save} className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
-          <h2 className="mb-3 text-sm font-medium text-slate-300">Düzenlenebilir alanlar</h2>
+          <h2 className="mb-3 text-sm font-medium text-slate-300">Editable fields</h2>
           {msg && <p className="mb-2 text-xs text-emerald-400">{msg}</p>}
           <div className="grid gap-3 text-xs sm:grid-cols-2">
             <label className="flex flex-col gap-1">
-              <span className="text-slate-500">Telefon</span>
+              <span className="text-slate-500">Phone</span>
               <input
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
@@ -352,7 +352,7 @@ export default function ProfilePage() {
               />
             </label>
             <label className="flex flex-col gap-1">
-              <span className="text-slate-500">Dil</span>
+              <span className="text-slate-500">Language</span>
               <input
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
@@ -360,7 +360,7 @@ export default function ProfilePage() {
               />
             </label>
             <label className="flex flex-col gap-1">
-              <span className="text-slate-500">Saat dilimi</span>
+              <span className="text-slate-500">Timezone</span>
               <input
                 value={timezone}
                 onChange={(e) => setTimezone(e.target.value)}
@@ -368,7 +368,7 @@ export default function ProfilePage() {
               />
             </label>
             <label className="flex flex-col gap-1 sm:col-span-2">
-              <span className="text-slate-500">Adres</span>
+              <span className="text-slate-500">Address</span>
               <input
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
@@ -381,7 +381,7 @@ export default function ProfilePage() {
             disabled={busy}
             className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium hover:bg-blue-500 disabled:opacity-50"
           >
-            Kaydet
+            Save
           </button>
         </form>
 
@@ -389,15 +389,15 @@ export default function ProfilePage() {
           onSubmit={changePassword}
           className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4"
         >
-          <h2 className="mb-1 text-sm font-medium text-slate-300">Şifre Değiştir</h2>
+          <h2 className="mb-1 text-sm font-medium text-slate-300">Change Password</h2>
           <p className="mb-3 text-[11px] text-slate-500">
-            Güvenliğiniz için mevcut şifrenizi girin, ardından yeni şifreyi iki kez yazın.
+            For your security, enter your current password, then the new password twice.
           </p>
           {pwMsg && <p className="mb-2 text-xs text-emerald-400">{pwMsg}</p>}
           {pwErr && <p className="mb-2 text-xs text-red-400">{pwErr}</p>}
           <div className="grid gap-3 text-xs sm:grid-cols-1">
             <label className="flex flex-col gap-1">
-              <span className="text-slate-500">Mevcut şifre</span>
+              <span className="text-slate-500">Current password</span>
               <input
                 type="password"
                 autoComplete="current-password"
@@ -407,7 +407,7 @@ export default function ProfilePage() {
               />
             </label>
             <label className="flex flex-col gap-1">
-              <span className="text-slate-500">Yeni şifre</span>
+              <span className="text-slate-500">New password</span>
               <input
                 type="password"
                 autoComplete="new-password"
@@ -418,7 +418,7 @@ export default function ProfilePage() {
               />
             </label>
             <label className="flex flex-col gap-1">
-              <span className="text-slate-500">Yeni şifre (tekrar)</span>
+              <span className="text-slate-500">New password (confirm)</span>
               <input
                 type="password"
                 autoComplete="new-password"
@@ -434,19 +434,19 @@ export default function ProfilePage() {
             disabled={pwBusy}
             className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium hover:bg-blue-500 disabled:opacity-50"
           >
-            Şifreyi güncelle
+            Update password
           </button>
         </form>
 
-        {/* Para Çekme — bottom of profile */}
+        {/* Para Withdrawal — bottom of profile */}
         <section
           id="para-cekme"
           className="rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4"
         >
-          <h2 className="mb-1 text-sm font-medium text-slate-300">Para Çekme</h2>
+          <h2 className="mb-1 text-sm font-medium text-slate-300">Para Withdrawal</h2>
           <p className="mb-3 text-[11px] text-slate-500">
-            Talep admin onayından sonra bakiyenizden düşülür. Çekilebilir tutar bakiyeniz ve serbest
-            marjınız ile sınırlıdır ({money(profile.balance)}).
+            The request is deducted from your balance after admin approval. Withdrawable amount is limited by your balance and free
+            margin ({money(profile.balance)}).
           </p>
 
           <form onSubmit={onWithdraw} className="space-y-3">
@@ -462,13 +462,13 @@ export default function ProfilePage() {
                       : "text-slate-400 hover:bg-[#1f1f1f]"
                   }`}
                 >
-                  {m === "BANK" ? "IBAN / Havale" : "Kripto"}
+                  {m === "BANK" ? "IBAN / Wire" : "Crypto"}
                 </button>
               ))}
             </div>
 
             <label className="flex flex-col gap-1 text-xs">
-              <span className="text-slate-500">Tutar ({profile.currency || "USD"})</span>
+              <span className="text-slate-500">Amount ({profile.currency || "USD"})</span>
               <input
                 type="number"
                 min={1}
@@ -482,7 +482,7 @@ export default function ProfilePage() {
 
             <label className="flex flex-col gap-1 text-xs">
               <span className="text-slate-500">
-                {wdMethod === "BANK" ? "IBAN / Hesap bilgisi" : "Cüzdan adresi"}
+                {wdMethod === "BANK" ? "IBAN / Account bilgisi" : "Wallet address"}
               </span>
               <input
                 required
@@ -496,11 +496,11 @@ export default function ProfilePage() {
             </label>
 
             <label className="flex flex-col gap-1 text-xs">
-              <span className="text-slate-500">Not (opsiyonel)</span>
+              <span className="text-slate-500">Note (opsiyonel)</span>
               <input
                 value={wdNote}
                 onChange={(e) => setWdNote(e.target.value)}
-                placeholder="Banka adı / ağ (TRC20) vb."
+                placeholder="Bank name / network (TRC20) etc."
                 className="rounded border border-[#2a2a2a] bg-[#000000] px-3 py-2 text-sm"
               />
             </label>
@@ -519,7 +519,7 @@ export default function ProfilePage() {
               disabled={wdBusy}
               className="w-full rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-50"
             >
-              {wdBusy ? "Gönderiliyor…" : "Para Çekme Talebi Gönder"}
+              {wdBusy ? "Submitting…" : "Submit Withdrawal Request"}
             </button>
           </form>
 
@@ -539,7 +539,7 @@ export default function ProfilePage() {
                         {money(w.amount)} · {w.method}
                       </div>
                       <div className="text-[10px] text-slate-500">
-                        {new Date(w.createdAt).toLocaleString("tr-TR")}
+                        {new Date(w.createdAt).toLocaleString("en-US")}
                       </div>
                     </div>
                     <span
@@ -551,7 +551,7 @@ export default function ProfilePage() {
                             : "bg-red-500/15 text-red-300"
                       }`}
                     >
-                      {STATUS_TR[w.status] || w.status}
+                      {STATUS_LABEL[w.status] || w.status}
                     </span>
                   </li>
                 ))}

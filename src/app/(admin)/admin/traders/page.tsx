@@ -97,7 +97,7 @@ export default function AdminUsersPage() {
 
   async function bulk(bulkAction: string, extra: Record<string, unknown> = {}) {
     if (!selected.size) {
-      setMsg("Önce kullanıcı seçin");
+      setMsg("Select a user first");
       return;
     }
     setBusy(true);
@@ -115,10 +115,10 @@ export default function AdminUsersPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "İşlem başarısız");
+        setMsg(data.error || "Action failed");
         return;
       }
-      setMsg(`Toplu işlem: ${data.count} kullanıcı`);
+      setMsg(`Bulk action: ${data.count} users`);
       setSelected(new Set());
       await load();
     } finally {
@@ -151,10 +151,10 @@ export default function AdminUsersPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "Oluşturma başarısız");
+        setMsg(data.error || "Create failed");
         return;
       }
-      setMsg("Üye oluşturuldu");
+      setMsg("Member created");
       setShowCreate(false);
       setCreateForm(emptyCreate);
       await load();
@@ -166,17 +166,17 @@ export default function AdminUsersPage() {
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center gap-3">
-        <h1 className="text-xl font-semibold">Traderlar</h1>
+        <h1 className="text-xl font-semibold">Traders</h1>
         <button
           onClick={() => setShowCreate(true)}
           className="rounded-lg bg-black text-white px-3 py-1.5 text-xs font-medium hover:bg-neutral-800"
         >
-          + Yeni üye
+          + New member
         </button>
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="E-posta, hesap kimliği, ad, telefon, broker…"
+          placeholder="Email, account ID, name, phone, broker…"
           className="ml-auto w-full max-w-xs rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-3 py-1.5 text-sm"
         />
       </div>
@@ -187,16 +187,16 @@ export default function AdminUsersPage() {
           onChange={(e) => setStatus(e.target.value)}
           className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
         >
-          <option value="all">Tüm durumlar</option>
-          <option value="active">Aktif</option>
-          <option value="frozen">Donduruldu</option>
+          <option value="all">All statuses</option>
+          <option value="active">Active</option>
+          <option value="frozen">Freezeuldu</option>
         </select>
         <select
           value={desk}
           onChange={(e) => setDesk(e.target.value)}
           className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
         >
-          <option value="">Tüm deskler</option>
+          <option value="">All desks</option>
           {desks.map((d) => (
             <option key={d} value={d}>
               {d}
@@ -206,7 +206,7 @@ export default function AdminUsersPage() {
         <input
           value={country}
           onChange={(e) => setCountry(e.target.value)}
-          placeholder="Ülke"
+          placeholder="Country"
           className="w-20 rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
         />
         <select
@@ -214,7 +214,7 @@ export default function AdminUsersPage() {
           onChange={(e) => setSaleStatus(e.target.value)}
           className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
         >
-          <option value="">Satış durumu</option>
+          <option value="">Sale status</option>
           {["NEW", "CONTACTED", "INTERESTED", "NO_ANSWER", "DEPOSITED", "LOST"].map((s) => (
             <option key={s} value={s}>
               {s}
@@ -245,20 +245,20 @@ export default function AdminUsersPage() {
 
       {selected.size > 0 && (
         <div className="mb-3 flex flex-wrap items-center gap-2 rounded-lg border border-[#e5e5e5] bg-[#ffffff] p-2 text-xs">
-          <span className="text-neutral-500">{selected.size} seçili</span>
+          <span className="text-neutral-500">{selected.size} selected</span>
           <button
             disabled={busy}
             onClick={() => bulk("freeze")}
             className="rounded bg-red-600/80 px-2 py-1 hover:bg-red-500"
           >
-            Dondur
+            Freeze
           </button>
           <button
             disabled={busy}
             onClick={() => bulk("activate")}
             className="rounded bg-emerald-600/80 px-2 py-1 hover:bg-emerald-500"
           >
-            Aktifleştir
+            Activate
           </button>
           <input
             value={bulkDesk}
@@ -302,16 +302,16 @@ export default function AdminUsersPage() {
                   onChange={toggleAll}
                 />
               </th>
-              <th className="px-3 py-2.5">ID / Üye</th>
-              <th className="px-3 py-2.5">Telefon</th>
+              <th className="px-3 py-2.5">ID / Member</th>
+              <th className="px-3 py-2.5">Phone</th>
               <th className="px-3 py-2.5">Desk</th>
-              <th className="px-3 py-2.5">Ülke</th>
-              <th className="px-3 py-2.5">Satış / Ret.</th>
-              <th className="px-3 py-2.5">Bakiye</th>
-              <th className="px-3 py-2.5">Hesap</th>
-              <th className="px-3 py-2.5">Durum</th>
+              <th className="px-3 py-2.5">Country</th>
+              <th className="px-3 py-2.5">Sell / Ret.</th>
+              <th className="px-3 py-2.5">Balance</th>
+              <th className="px-3 py-2.5">Account</th>
+              <th className="px-3 py-2.5">Status</th>
               <th className="px-3 py-2.5">Broker</th>
-              <th className="px-3 py-2.5">Son giriş</th>
+              <th className="px-3 py-2.5">Last login</th>
               <th className="px-3 py-2.5"></th>
             </tr>
           </thead>
@@ -327,7 +327,7 @@ export default function AdminUsersPage() {
                   <div className="text-neutral-500">{u.email}</div>
                   {u.accountLoginId && (
                     <div className="font-mono text-[10px] tracking-wide text-sky-600">
-                      Hesap kimliği: {u.accountLoginId}
+                      Account ID: {u.accountLoginId}
                     </div>
                   )}
                   <div className="mt-0.5 flex flex-wrap gap-1">
@@ -379,19 +379,19 @@ export default function AdminUsersPage() {
                       u.active ? "bg-emerald-500/20 text-emerald-300" : "bg-red-500/20 text-red-300"
                     }`}
                   >
-                    {u.active ? "Aktif" : "Donduruldu"}
+                    {u.active ? "Active" : "Freezeuldu"}
                   </span>
                 </td>
                 <td className="px-3 py-2.5 text-neutral-500">{u.brokerName || "—"}</td>
                 <td className="px-3 py-2.5 text-[10px] text-neutral-500">
-                  {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString("tr-TR") : "—"}
+                  {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString("en-US") : "—"}
                 </td>
                 <td className="px-3 py-2.5">
                   <Link
                     href={`/admin/traders/${u.id}`}
                     className="rounded bg-black text-white/80 px-2 py-1 hover:bg-neutral-800"
                   >
-                    Detay
+                    Detail
                   </Link>
                 </td>
               </tr>
@@ -399,7 +399,7 @@ export default function AdminUsersPage() {
             {rows.length === 0 && (
               <tr>
                 <td colSpan={11} className="px-3 py-10 text-center text-neutral-500">
-                  Trader bulunamadı
+                  Trader not found
                 </td>
               </tr>
             )}
@@ -413,20 +413,20 @@ export default function AdminUsersPage() {
             onSubmit={createMember}
             className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl border border-[#e5e5e5] bg-[#ffffff] p-4"
           >
-            <h2 className="mb-3 text-sm font-semibold">Yeni üye oluştur</h2>
+            <h2 className="mb-3 text-sm font-semibold">Create new member</h2>
             <div className="grid grid-cols-2 gap-2 text-xs">
               {(
                 [
-                  ["email", "E-posta *", "email"],
-                  ["password", "Şifre *", "password"],
-                  ["firstName", "Ad", "text"],
-                  ["lastName", "Soyad", "text"],
-                  ["phone", "Telefon", "text"],
-                  ["country", "Ülke", "text"],
+                  ["email", "Email *", "email"],
+                  ["password", "Password *", "password"],
+                  ["firstName", "First name", "text"],
+                  ["lastName", "Last name", "text"],
+                  ["phone", "Phone", "text"],
+                  ["country", "Country", "text"],
                   ["desk", "Desk", "text"],
                   ["brokerName", "Broker", "text"],
-                  ["accountType", "Hesap tipi", "text"],
-                  ["balance", "Başlangıç bakiyesi", "number"],
+                  ["accountType", "Account tipi", "text"],
+                  ["balance", "Starting balance", "number"],
                 ] as const
               ).map(([key, label, type]) => (
                 <label key={key} className="flex flex-col gap-1">
@@ -457,14 +457,14 @@ export default function AdminUsersPage() {
             </div>
             <div className="mt-4 flex gap-2">
               <button type="submit" disabled={busy} className="rounded bg-black text-white px-3 py-1.5 text-sm">
-                Oluştur
+                Create
               </button>
               <button
                 type="button"
                 onClick={() => setShowCreate(false)}
                 className="rounded bg-[#e5e5e5] px-3 py-1.5 text-sm"
               >
-                İptal
+                Cancel
               </button>
             </div>
           </form>

@@ -10,11 +10,11 @@ function scrollToId(id: string) {
 }
 
 const NAV = [
-  { id: "piyasalar", label: "Piyasalar" },
+  { id: "piyasalar", label: "Markets" },
   { id: "platform", label: "Platform" },
-  { id: "hakkinda", label: "Hakkında" },
-  { id: "nasil", label: "Nasıl çalışır" },
-  { id: "mobil", label: "Mobil" },
+  { id: "hakkinda", label: "About" },
+  { id: "nasil", label: "How it works" },
+  { id: "mobil", label: "Mobile" },
 ];
 
 function Eyebrow({ children }: { children: ReactNode }) {
@@ -82,7 +82,7 @@ function OrderTicketVisual() {
           <div className="h-full w-[42%] rounded-full bg-[#111111]" />
         </div>
         <div className="flex justify-between text-[10px] text-[#8b97b0]">
-          <span>Kaldıraç</span>
+          <span>Leverage</span>
           <span className="font-semibold text-[#e8eef8]">1:100</span>
         </div>
       </div>
@@ -117,7 +117,7 @@ function SecurityBadgeVisual() {
         <span className="fx-orbit-dot fx-orbit-dot--2 absolute bottom-4 right-3 h-1.5 w-1.5 rounded-full bg-[#2a2a2a]" />
       </div>
       <p className="mt-3 text-center text-[12px] font-medium text-[#5c657a]">
-        Oturum korumalı · SSL
+        Session protected · SSL
       </p>
     </div>
   );
@@ -135,17 +135,17 @@ function PortfolioBoard() {
     { h: 94, c: "#111111" },
   ];
   const alloc = [
-    { name: "Döviz", pct: 34, color: "#111111" },
-    { name: "Emtia", pct: 22, color: "#2a2a2a" },
-    { name: "Endeks", pct: 28, color: "#26a69a" },
-    { name: "Kripto", pct: 16, color: "#8b97b0" },
+    { name: "FX", pct: 34, color: "#111111" },
+    { name: "Commodities", pct: 22, color: "#2a2a2a" },
+    { name: "Indices", pct: 28, color: "#26a69a" },
+    { name: "Crypto", pct: 16, color: "#8b97b0" },
   ];
   return (
     <div className="fx-portfolio-board rounded-[16px] border border-[#2a2a2a] bg-[#0a0a0a] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.35)] sm:p-8">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-[#8b97b0]">
-            Portföy özeti
+            Portfolio summary
           </p>
           <p className="mt-1 text-2xl font-semibold tracking-tight text-[#e8eef8] tabular-nums">
             ₺128.450
@@ -207,7 +207,7 @@ export default function LandingPage() {
   const markets = useMemo(
     () => [
       { s: "EURUSD", name: "Euro / Dolar", p: "1.0842", d: "+0.14%", up: true },
-      { s: "XAUUSD", name: "Altın Ons", p: "2.341,20", d: "+0.32%", up: true },
+      { s: "XAUUSD", name: "Gold ounce", p: "2.341,20", d: "+0.32%", up: true },
       { s: "US100", name: "NASDAQ 100", p: "19.840", d: "+0.41%", up: true },
       { s: "BTCUSD", name: "Bitcoin", p: "67.420", d: "−0.81%", up: false },
       { s: "GBPUSD", name: "Sterlin / Dolar", p: "1.2634", d: "+0.09%", up: true },
@@ -222,8 +222,8 @@ export default function LandingPage() {
     () => [
       {
         key: "markets",
-        title: "Canlı piyasa görünümü",
-        body: "Döviz, emtia, endeks ve kripto araçlarını tek listede izleyin. Fiyat ve değişim net tablolarla.",
+        title: "Live market view",
+        body: "Watch FX, commodities, indices and crypto instruments in one list. Clear price and change tables.",
         visual: <MarketMiniRows />,
         icon: (
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -234,8 +234,8 @@ export default function LandingPage() {
       },
       {
         key: "orders",
-        title: "Hızlı emir paneli",
-        body: "Al / Sat butonları, lot ve kaldıraç ayarları sade bir bilet arayüzünde bir arada.",
+        title: "Quick order panel",
+        body: "Buy / Sell buttons, lot and leverage settings together in a clean order ticket.",
         visual: <OrderTicketVisual />,
         icon: (
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -245,8 +245,8 @@ export default function LandingPage() {
       },
       {
         key: "security",
-        title: "Güvenli oturum",
-        body: "Kimlik doğrulama oturum çerezleri ile çalışır. Hassas alanlar koruma altındadır.",
+        title: "Secure session",
+        body: "Authentication works with session cookies. Sensitive areas are protected.",
         visual: <SecurityBadgeVisual />,
         icon: (
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -260,10 +260,10 @@ export default function LandingPage() {
 
   const stats = useMemo(
     () => [
-      { k: "7/24", v: "Platform erişimi", d: "Web üzerinden her an takip" },
-      { k: "Tek ekran", v: "Birleşik terminal", d: "Fiyat, emir ve bakiye birlikte" },
-      { k: "Çoklu varlık", v: "Geniş sembol seti", d: "Döviz · emtia · endeks · kripto" },
-      { k: "PWA", v: "Mobil uyumlu", d: "Telefon ve tablet öncelikli" },
+      { k: "7/24", v: "Platform access", d: "Track anytime via the web" },
+      { k: "Tek ekran", v: "Unified terminal", d: "Price, emir ve bakiye birlikte" },
+      { k: "Multi-asset", v: "Broad symbol set", d: "FX · commodities · indices · crypto" },
+      { k: "PWA", v: "Mobile ready", d: "Phone and tablet first" },
     ],
     []
   );
@@ -272,18 +272,18 @@ export default function LandingPage() {
     () => [
       {
         n: "01",
-        t: "Hesap oluşturun",
-        d: "Kayıt formunu doldurun, yönlendirme kodunuz varsa girin ve hesabınızı açın.",
+        t: "Create an account",
+        d: "Fill in the registration form, enter your referral code if you have one, and open your account.",
       },
       {
         n: "02",
-        t: "Piyasaları inceleyin",
-        d: "İzleme listesi ve canlı fiyatlarla ilgilendiğiniz sembolleri takip edin.",
+        t: "Explore the markets",
+        d: "Follow the symbols you care about with a watchlist and live prices.",
       },
       {
         n: "03",
-        t: "İşlem terminaline geçin",
-        d: "Giriş sonrası trade ekranında emir verin, bakiyenizi yönetin.",
+        t: "Go to the trading terminal",
+        d: "After login, place orders on the trade screen and manage your balance.",
       },
     ],
     []
@@ -296,7 +296,7 @@ export default function LandingPage() {
         href="/login"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-[#111111] focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
       >
-        Giriş sayfasına geç
+        Go to Sign In
       </a>
 
       {/* ——— Header ——— */}
@@ -307,7 +307,7 @@ export default function LandingPage() {
             <img src="/7fx-logo.png" alt="7FX" className="fx-nav-logo h-9 w-auto object-contain sm:h-9" />
           </Link>
 
-          <nav className="hidden items-center gap-0.5 lg:flex" aria-label="Ana menü">
+          <nav className="hidden items-center gap-0.5 lg:flex" aria-label="Main menu">
             {NAV.map((item) => (
               <button
                 key={item.id}
@@ -325,19 +325,19 @@ export default function LandingPage() {
               href="/login"
               className="fx-btn-secondary hidden rounded-full px-4 py-2 text-[13px] font-semibold sm:inline-flex"
             >
-              Giriş
+              Sign In
             </Link>
             <Link
               href="/register"
               className="fx-btn-primary rounded-full px-4 py-2 text-[13px] font-semibold"
             >
-              Hesap aç
+              Open account
             </Link>
             <button
               type="button"
               className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(16,20,37,0.12)] bg-white text-[#111111] lg:hidden"
               aria-expanded={menuOpen}
-              aria-label={menuOpen ? "Menüyü kapat" : "Menüyü aç"}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
               onClick={() => setMenuOpen((v) => !v)}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -373,14 +373,14 @@ export default function LandingPage() {
                 className="mt-1 rounded-lg px-3 py-2.5 text-sm font-semibold text-[#111111]"
                 onClick={() => setMenuOpen(false)}
               >
-                Giriş
+                Sign In
               </Link>
               <Link
                 href="/register"
                 className="rounded-lg px-3 py-2.5 text-sm font-semibold text-[#5c657a]"
                 onClick={() => setMenuOpen(false)}
               >
-                Hesap aç
+                Open account
               </Link>
             </div>
           </div>
@@ -397,11 +397,11 @@ export default function LandingPage() {
 
           <div className="fx-shell relative z-10 grid gap-7 pb-10 pt-8 sm:gap-12 sm:pb-20 sm:pt-16 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:gap-12 lg:pb-28 lg:pt-20">
             <div className="fx-reveal max-w-[640px]">
-              <Eyebrow>Çok varlık yatırım platformu</Eyebrow>
+              <Eyebrow>Multi-asset investment platform</Eyebrow>
 
               <p
                 className="mt-4 inline-flex items-center gap-2.5 rounded-full border border-[rgba(16,20,37,0.10)] bg-white/90 px-3.5 py-1.5 text-[12.5px] font-semibold tracking-tight text-[#111111] shadow-[0_6px_18px_rgba(16,20,37,0.06)]"
-                aria-label="ING Bank iş birliği ile"
+                aria-label="In partnership with ING Bank"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -409,18 +409,18 @@ export default function LandingPage() {
                   alt="ING"
                   className="h-5 w-auto object-contain"
                 />
-                <span className="text-[#5c657a]">iş birliği ile</span>
+                <span className="text-[#5c657a]">in partnership with</span>
               </p>
 
               <h1 id="hero-title" className="fx-h1 mt-5">
-                Yatırıma 7FX ile
-                <span className="fx-accent-line mt-1 block">daha net başlayın</span>
+                Invest 7FX ile
+                <span className="fx-accent-line mt-1 block">start with more clarity</span>
               </h1>
 
               <p className="fx-hero-body mt-6">
-                7FX; hisse senedi, kripto, forex ve emtia piyasalarına tek hesaptan erişim sunan
-                uluslararası bir ticaret platformudur. Kurumsal güvenlik standartları, sade arayüz ve
-                mobil öncelikli deneyimle kararlarınızı net bir ekranda alın.
+                7FX offers access to stocks, crypto, forex and commodity markets from a single account — an
+                international trading platform. Corporate-grade security, a clean interface and a
+                mobile-first experience help you decide on a clear screen.
               </p>
 
               <div className="mt-9 flex flex-wrap items-center gap-3">
@@ -428,13 +428,13 @@ export default function LandingPage() {
                   href="/register"
                   className="fx-btn-primary inline-flex min-h-[48px] items-center justify-center rounded-full px-6 text-[14px] font-semibold sm:min-h-[52px] sm:px-8 sm:text-[15px]"
                 >
-                  Hesap aç
+                  Open account
                 </Link>
                 <Link
                   href="/login"
                   className="fx-btn-secondary inline-flex min-h-[48px] items-center justify-center rounded-full px-6 text-[14px] font-semibold sm:min-h-[52px] sm:px-8 sm:text-[15px]"
                 >
-                  Giriş yap
+                  Sign In yap
                 </Link>
                 <a
                   href="/apk"
@@ -443,16 +443,16 @@ export default function LandingPage() {
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
                     <path d="M17.6 9.48l1.84-3.18a.5.5 0 00-.86-.5l-1.86 3.22A7.9 7.9 0 0012 7.5c-1.62 0-3.12.48-4.36 1.3L5.78 5.8a.5.5 0 10-.86.5L6.76 9.48A7.96 7.96 0 004 15.5v.5h16v-.5a7.96 7.96 0 00-2.4-6.02zM8.5 13.25a.75.75 0 110-1.5.75.75 0 010 1.5zm7 0a.75.75 0 110-1.5.75.75 0 010 1.5zM7 17.5h10v1.25c0 .69-.56 1.25-1.25 1.25H8.25C7.56 20 7 19.44 7 18.75V17.5z" />
                   </svg>
-                  Uygulamayı yükle
+                  Download the app
                 </a>
               </div>
 
               <div className="fx-trust-row mt-10 flex flex-wrap items-center gap-x-6 gap-y-3">
                 {[
-                  { label: "ING Bank iş birliği ile", icon: "★" },
+                  { label: "In partnership with ING Bank", icon: "★" },
                   { label: "40+ sembol", icon: "◆" },
-                  { label: "7/24 erişim", icon: "●" },
-                  { label: "SSL oturum", icon: "▣" },
+                  { label: "24/7 access", icon: "●" },
+                  { label: "SSL session", icon: "▣" },
                   { label: "PWA uyumlu", icon: "◈" },
                 ].map((t) => (
                   <div key={t.label} className="flex items-center gap-2 text-[13px] text-[#5c657a]">
@@ -475,11 +475,11 @@ export default function LandingPage() {
         <section
           id="piyasalar"
           className="border-y border-[rgba(16,20,37,0.08)] bg-[#ffffff]"
-          aria-label="Örnek piyasalar"
+          aria-label="Sample markets"
         >
           <div className="fx-shell flex items-center justify-between gap-4 pt-3.5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#5c657a]">
-              Piyasalar
+              Markets
             </p>
           </div>
           <div className="fx-ticker relative overflow-hidden py-3.5 sm:py-4">
@@ -515,13 +515,13 @@ export default function LandingPage() {
             <div className="mb-9 max-w-2xl sm:mb-14">
               <Eyebrow>Platform</Eyebrow>
               <h2 className="fx-h2 mt-4">
-                Yatırım araçları,
-                <br className="hidden sm:block" /> tek bakışta
+                Investment instruments,
+                <br className="hidden sm:block" /> at a glance
               </h2>
               <p className="fx-section-body mt-4 max-w-[560px]">
-                7FX; canlı fiyat görünümü, sade emir paneli ve güvenli oturum ile bireysel ve
-                kurumsal yatırımcılara net bir çok varlık deneyimi sunar. Forex, hisse, kripto ve
-                emtia araçlarını tek terminalde izleyin; bakiyenizi ve pozisyonlarınızı aynı ekrandan yönetin.
+                7FX delivers a clear multi-asset experience for retail and
+                institutional investors with live prices, a simple order panel and secure sessions. Watch forex, stocks, crypto and
+                commodity instruments in one terminal; manage balance and positions from the same screen.
               </p>
             </div>
 
@@ -548,43 +548,43 @@ export default function LandingPage() {
         </section>
 
 
-        {/* ——— Hakkında / kurumsal açıklama ——— */}
+        {/* ——— About / corporate blurb ——— */}
         <section id="hakkinda" className="fx-section fx-section--soft border-y border-[rgba(16,20,37,0.08)]" aria-labelledby="about-title">
           <div className="fx-shell grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start lg:gap-16">
             <div>
-              <Eyebrow>Hakkında</Eyebrow>
+              <Eyebrow>About</Eyebrow>
               <h2 id="about-title" className="fx-h2 mt-4">
                 7FX nedir?
               </h2>
               <p className="fx-section-body mt-5 max-w-[540px]">
-                7FX, küresel piyasalara web üzerinden erişim sağlayan uluslararası bir broker /
-                ticaret platformudur. Amacımız; yatırımcıların hisse senedi, kripto para, forex ve
-                emtia piyasalarını tek hesap altında, şeffaf ve kontrollü bir ortamda takip
-                edebilmesidir.
+                7FX is an international broker / trading platform providing web access to global markets.
+                Our goal is for investors to follow stocks, crypto, forex and
+                commodity markets under one account in a transparent, controlled
+                environment.
               </p>
               <p className="fx-section-body mt-4 max-w-[540px]">
-                Platform; güvenli oturum altyapısı, SSL korumalı bağlantı ve rol tabanlı erişim ile
-                tasarlanmıştır. Destek ekibimiz hesap, para yatırma / çekme ve işlem süreçlerinde
-                yanınızdadır — web üzerinden 7/24 platform erişimi sunulur.
+                The platform is built with secure session infrastructure, SSL-protected connections and role-based access.
+                Our support team is with you for account, deposit / withdrawal and trading processes
+                — 24/7 platform access is available via the web.
               </p>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               {[
                 {
-                  t: "Piyasalar",
-                  d: "Forex çiftleri, hisse ve endeksler, kripto varlıklar ile altın / petrol gibi emtialar.",
+                  t: "Markets",
+                  d: "Forex pairs, stocks and indices, crypto assets, and commodities such as gold / oil.",
                 },
                 {
-                  t: "Güvenlik",
-                  d: "Oturum çerezi ile kimlik doğrulama, korumalı yönetim alanları ve SSL bağlantı.",
+                  t: "Security",
+                  d: "Session-cookie authentication, protected admin areas and SSL connection.",
                 },
                 {
-                  t: "Destek",
-                  d: "Hesap açılışı, bakiye işlemleri ve terminal kullanımı için platform içi destek.",
+                  t: "Support",
+                  d: "In-platform support for account opening, balance operations and terminal use.",
                 },
                 {
-                  t: "Erişim",
-                  d: "Masaüstü ve mobil tarayıcıda çalışan, PWA uyumlu çok varlık web terminali.",
+                  t: "Access",
+                  d: "Multi-asset web terminal that works in desktop and mobile browsers, PWA-ready.",
                 },
               ].map((c) => (
                 <div
@@ -600,7 +600,7 @@ export default function LandingPage() {
         </section>
 
         {/* ——— Detail band: 4 stats ——— */}
-        <section className="border-y border-[rgba(16,20,37,0.08)] bg-[#ffffff]" aria-label="Öne çıkanlar">
+        <section className="border-y border-[rgba(16,20,37,0.08)] bg-[#ffffff]" aria-label="Highlights">
           <div className="fx-shell grid grid-cols-2 gap-x-5 gap-y-8 py-12 sm:gap-8 sm:py-14 lg:grid-cols-4 lg:py-16">
             {stats.map((s) => (
               <div key={s.k} className="fx-stat">
@@ -618,10 +618,10 @@ export default function LandingPage() {
         <section id="nasil" className="fx-section">
           <div className="fx-shell">
             <div className="mb-12 max-w-2xl sm:mb-14">
-              <Eyebrow>Nasıl çalışır</Eyebrow>
-              <h2 className="fx-h2 mt-4">Üç adımda terminale</h2>
+              <Eyebrow>How it works</Eyebrow>
+              <h2 className="fx-h2 mt-4">To the terminal in three steps</h2>
               <p className="fx-section-body mt-4 max-w-[520px]">
-                Kayıttan canlı fiyatlara ve emir paneline kadar akış sade tutuldu.
+                From registration to live prices and the order panel, the flow stays simple.
               </p>
             </div>
 
@@ -654,20 +654,20 @@ export default function LandingPage() {
         <section className="fx-section fx-section--soft border-y border-[rgba(16,20,37,0.08)]">
           <div className="fx-shell grid gap-12 lg:grid-cols-[1fr_1.05fr] lg:items-center lg:gap-16">
             <div>
-              <Eyebrow>Portföy görünümü</Eyebrow>
+              <Eyebrow>Portfolio view</Eyebrow>
               <h2 className="fx-h2 mt-4">
-                Dağılımı ve
-                <br className="hidden sm:block" /> trendi tek yerde görün
+                See allocation and
+                <br className="hidden sm:block" /> trend in one place
               </h2>
               <p className="fx-section-body mt-4 max-w-[480px]">
-                Bakiye, varlık dağılımı ve performans çubukları ile portföyünüzü sade bir
+                See your portfolio clearly with balance, asset allocation and performance bars
                 panelde takip edin.
               </p>
               <ul className="mt-8 space-y-3">
                 {[
-                  "Varlık sınıflarına göre dağılım çubukları",
-                  "Haftalık performans görseli",
-                  "Mobil ve masaüstünde tutarlı düzen",
+                  "Allocation bars by asset class",
+                  "Weekly performance chart",
+                  "Consistent layout on mobile and desktop",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-3 text-[14px] text-[#5c657a]">
                     <span
@@ -692,20 +692,20 @@ export default function LandingPage() {
             <div>
               <p className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#111111]">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#111111] shadow-[0_0_8px_rgba(17,17,17,0.45)]" aria-hidden />
-                Mobil deneyim
+                Mobile experience
               </p>
               <h2 className="mt-4 text-[clamp(30px,8vw,48px)] font-semibold leading-[1.08] tracking-[-0.05em] text-[#111111]">
                 Her yerden takip edin
               </h2>
               <p className="mt-4 max-w-[480px] text-[14px] leading-relaxed text-[#5c657a]">
-                Landing ve auth sayfaları mobil öncelikli tasarlandı. Terminal deneyimi web
-                üzerinden erişilebilir; portföy bakiyesi ve izleme listesi tek bakışta.
+                Landing and auth pages are mobile-first. The terminal experience is available on the web;
+                portfolio balance and watchlist at a glance.
               </p>
               <ul className="mt-7 space-y-3">
                 {[
-                  "Responsive header ve hamburger menü",
-                  "Telefon önizlemesi ile portföy görünümü",
-                  "Giriş / kayıt CTA’ları her ekranda erişilebilir",
+                  "Responsive header and hamburger menu",
+                  "Portfolio view with phone preview",
+                  "Login / register CTAs reachable on every screen",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-3 text-[14px] text-[#5c657a]">
                     <span
@@ -723,7 +723,7 @@ export default function LandingPage() {
                   href="/register"
                   className="fx-btn-primary inline-flex min-h-[48px] items-center rounded-full px-7 text-sm font-semibold"
                 >
-                  Hesap aç
+                  Open account
                 </Link>
                 <a
                   href="/apk"
@@ -732,7 +732,7 @@ export default function LandingPage() {
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
                     <path d="M17.6 9.48l1.84-3.18a.5.5 0 00-.86-.5l-1.86 3.22A7.9 7.9 0 0012 7.5c-1.62 0-3.12.48-4.36 1.3L5.78 5.8a.5.5 0 10-.86.5L6.76 9.48A7.96 7.96 0 004 15.5v.5h16v-.5a7.96 7.96 0 00-2.4-6.02zM8.5 13.25a.75.75 0 110-1.5.75.75 0 010 1.5zm7 0a.75.75 0 110-1.5.75.75 0 010 1.5zM7 17.5h10v1.25c0 .69-.56 1.25-1.25 1.25H8.25C7.56 20 7 19.44 7 18.75V17.5z" />
                   </svg>
-                  Uygulamayı yükle
+                  Download the app
                 </a>
               </div>
             </div>
@@ -752,9 +752,9 @@ export default function LandingPage() {
                 </div>
                 <div className="space-y-3">
                   {[
-                    { t: "Canlı fiyatlar", d: "İzleme listesi" },
-                    { t: "Emir paneli", d: "Al / Sat" },
-                    { t: "Portföy", d: "Bakiye & P&L" },
+                    { t: "Live prices", d: "Watchlist" },
+                    { t: "Order paneli", d: "Al / Sat" },
+                    { t: "Portfolio", d: "Balance & P&L" },
                   ].map((row) => (
                     <div
                       key={row.t}
@@ -775,7 +775,7 @@ export default function LandingPage() {
                   <img src="/7fx-mark.png" alt="" className="h-8 w-8 rounded-lg object-contain" />
                   <div>
                     <p className="text-[13px] font-semibold text-white">7FX ile devam edin</p>
-                    <p className="text-[11px] text-white/70">Giriş veya hesap oluşturun</p>
+                    <p className="text-[11px] text-white/70">Sign in or create an account</p>
                   </div>
                 </div>
               </div>
@@ -787,10 +787,10 @@ export default function LandingPage() {
         <section className="border-t border-[rgba(16,20,37,0.08)] bg-white">
           <div className="fx-shell flex flex-col items-start justify-between gap-8 py-16 md:flex-row md:items-center md:py-20">
             <div>
-              <h2 className="fx-h2">Hazır olduğunuzda başlayın</h2>
+              <h2 className="fx-h2">Start when you are ready</h2>
               <p className="fx-section-body mt-3 max-w-lg">
-                Hesap oluşturun veya mevcut hesabınızla giriş yapın. Destek için platform içi
-                kanalları kullanın.
+                Create an account or sign in with your existing one. Use in-platform
+                channels for support.
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
@@ -798,13 +798,13 @@ export default function LandingPage() {
                 href="/register"
                 className="fx-btn-primary inline-flex min-h-[48px] items-center rounded-full px-7 text-sm font-semibold"
               >
-                Hesap aç
+                Open account
               </Link>
               <Link
                 href="/login"
                 className="fx-btn-secondary inline-flex min-h-[48px] items-center rounded-full px-7 text-sm font-semibold"
               >
-                Giriş
+                Sign In
               </Link>
             </div>
           </div>
@@ -819,13 +819,13 @@ export default function LandingPage() {
               <img src="/7fx-logo.png" alt="7FX" className="h-7 w-auto object-contain" />
             </div>
             <p className="mt-3 max-w-sm text-[13px] leading-relaxed">
-              7FX — uluslararası çok varlık ticaret platformu. Hisse, kripto, forex ve emtia
-              piyasalarına güvenli web erişimi.
+              7FX — international multi-asset trading platform. Secure web access to stocks, crypto, forex and
+              commodity markets.
             </p>
             <p className="mt-3 inline-flex items-center gap-2 text-[12px] font-medium text-[#111111]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/ing-logo.png" alt="ING" className="h-4 w-auto object-contain" />
-              <span>iş birliği ile</span>
+              <span>in partnership with</span>
             </p>
             <p className="mt-2 text-[12px]">© {new Date().getFullYear()} 7FX</p>
           </div>
@@ -835,24 +835,24 @@ export default function LandingPage() {
                 Platform
               </span>
               <button type="button" className="text-left hover:text-[#111111]" onClick={() => scrollToId("piyasalar")}>
-                Piyasalar
+                Markets
               </button>
               <button type="button" className="text-left hover:text-[#111111]" onClick={() => scrollToId("platform")}>
-                Özellikler
+                Features
               </button>
               <button type="button" className="text-left hover:text-[#111111]" onClick={() => scrollToId("hakkinda")}>
-                Hakkında
+                About
               </button>
             </div>
             <div className="flex flex-col gap-2">
               <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#111111]">
-                Hesap
+                Account
               </span>
               <Link href="/login" className="hover:text-[#111111]">
-                Giriş
+                Sign In
               </Link>
               <Link href="/register" className="hover:text-[#111111]">
-                Hesap aç
+                Open account
               </Link>
               <span>7fx.customer.org.tr</span>
             </div>
@@ -873,14 +873,14 @@ export default function LandingPage() {
             tabIndex={showStickyCta ? 0 : -1}
             className="fx-btn-secondary inline-flex h-9 flex-1 items-center justify-center rounded-full text-[12.5px] font-semibold"
           >
-            Giriş
+            Sign In
           </Link>
           <Link
             href="/register"
             tabIndex={showStickyCta ? 0 : -1}
             className="fx-btn-primary inline-flex h-9 flex-[1.2] items-center justify-center rounded-full text-[12.5px] font-semibold"
           >
-            Hesap aç
+            Open account
           </Link>
         </div>
       </div>

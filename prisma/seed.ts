@@ -72,7 +72,7 @@ const DEMO_MEMBERS: DemoMember[] = [
     country: "TR",
     address: "Levent, İstanbul",
     accountType: "STANDARD",
-    desk: "İstanbul A",
+    desk: "Istanbul A",
     deskId: "DESK-IST-A",
     campaign: "organic",
     retentionStatus: "ACTIVE",
@@ -84,13 +84,13 @@ const DEMO_MEMBERS: DemoMember[] = [
     assigneeName: "Ayşe Kaya",
     tradingServer: "7FX-Live-01",
     tradingGroup: "STD-USD",
-    language: "tr",
+    language: "en",
     timezone: "Europe/Istanbul",
     isResident: true,
     registrationCountry: "TR",
     documentsStatus: "APPROVED",
     balance: 10000,
-    note: "Ana demo trader hesabı",
+    note: "Main demo trader account",
   },
   {
     email: "admin@7fx.local",
@@ -107,8 +107,8 @@ const DEMO_MEMBERS: DemoMember[] = [
     retentionStatus: "VIP",
     saleStatus: "DEPOSITED",
     validationStatus: "VERIFIED",
-    brokerName: "Sistem",
-    language: "tr",
+    brokerName: "System",
+    language: "en",
     timezone: "Europe/Istanbul",
     isResident: true,
     registrationCountry: "TR",
@@ -125,7 +125,7 @@ const DEMO_MEMBERS: DemoMember[] = [
     country: "TR",
     address: "Kadıköy, İstanbul",
     accountType: "VIP",
-    desk: "İstanbul A",
+    desk: "Istanbul A",
     deskId: "DESK-IST-A",
     campaign: "facebook_ads",
     affiliateA: "AFF-100",
@@ -144,7 +144,7 @@ const DEMO_MEMBERS: DemoMember[] = [
     balance: 25000,
     credit: 500,
     bonus: 250,
-    note: "VIP müşteri — yüksek hacim",
+    note: "VIP client — high volume",
   },
   {
     email: "elena.petrova@demo.7fx",
@@ -176,7 +176,7 @@ const DEMO_MEMBERS: DemoMember[] = [
     registrationCountry: "RU",
     documentsStatus: "PENDING",
     balance: 1500,
-    note: "Belgeler bekleniyor",
+    note: "Documents pending",
   },
   {
     email: "ahmed.hassan@demo.7fx",
@@ -208,7 +208,7 @@ const DEMO_MEMBERS: DemoMember[] = [
     balance: 5000,
     credit: 0,
     bonus: 100,
-    note: "İlk arama yapıldı",
+    note: "First call completed",
   },
   {
     email: "frozen.user@demo.7fx",
@@ -219,7 +219,7 @@ const DEMO_MEMBERS: DemoMember[] = [
     phone: "+90 555 999 0000",
     country: "TR",
     accountType: "STANDARD",
-    desk: "İstanbul B",
+    desk: "Istanbul B",
     deskId: "DESK-IST-B",
     retentionStatus: "CHURNED",
     saleStatus: "LOST",
@@ -230,7 +230,7 @@ const DEMO_MEMBERS: DemoMember[] = [
     documentsStatus: "REJECTED",
     balance: 50,
     active: false,
-    note: "Hesap donduruldu — risk",
+    note: "Account frozen — risk",
   },
 ];
 
@@ -361,7 +361,7 @@ async function main() {
   if (deskCount === 0) {
     await prisma.desk.createMany({
       data: [
-        { id: "desk-ist-a", name: "İstanbul A", code: "DESK-IST-A", office: "TR", tradePlatformLink: "/trade" },
+        { id: "desk-ist-a", name: "Istanbul A", code: "DESK-IST-A", office: "TR", tradePlatformLink: "/trade" },
         { id: "desk-hq", name: "HQ", code: "DESK-HQ", office: "TR", tradePlatformLink: "/trade" },
         { id: "desk-eu-1", name: "EU Retention 1", code: "DESK-EU-1", office: "EU", tradePlatformLink: "/trade" },
         { id: "desk-mena", name: "MENA Sales", code: "DESK-MENA", office: "AE", tradePlatformLink: "/trade" },
@@ -387,12 +387,12 @@ async function main() {
       data: [
         {
           type: "IBAN",
-          label: "TRY Banka Havalesi (Demo)",
+          label: "TRY Bank Transfer (Demo)",
           active: true,
-          bankName: "Demo Bank A.Ş.",
+          bankName: "Demo Bank Inc.",
           accountHolder: "7FX Demo Ltd.",
           iban: "TR00 0000 0000 0000 0000 0000 00",
-          instructions: "Açıklama alanına kullanıcı e-postanızı yazın.",
+          instructions: "Enter your user email in the description field.",
           sortOrder: 1,
         },
         {
@@ -402,7 +402,7 @@ async function main() {
           asset: "USDT",
           network: "TRC20",
           address: "TDemoWalletAddress7FXFinanceXXXXXXXX",
-          instructions: "Sadece USDT-TRC20 gönderin.",
+          instructions: "Send USDT-TRC20 only.",
           sortOrder: 2,
         },
       ],
@@ -410,7 +410,7 @@ async function main() {
     console.log("Seeded deposit methods");
   }
 
-  // Backfill hesap kimliği for any users still missing it
+  // Backfill account login ID for any users still missing it
   const missingIds = await prisma.user.findMany({
     where: { OR: [{ accountLoginId: null }, { accountLoginId: "" }] },
     select: { id: true },

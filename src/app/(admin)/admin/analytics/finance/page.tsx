@@ -42,16 +42,16 @@ export default function FinanceAnalyticsPage() {
 
   return (
     <div>
-      <h1 className="mb-1 text-lg font-semibold">Analitik · Finans</h1>
-      <p className="mb-4 text-[11px] text-neutral-500">Ledger / yatırma / pozisyon özetleri</p>
+      <h1 className="mb-1 text-lg font-semibold">Analytics · Finance</h1>
+      <p className="mb-4 text-[11px] text-neutral-500">Ledger / deposit / position summaries</p>
       {kpis && (
         <>
           <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { label: "Gelir (Income)", value: fmt(kpis.income), tone: "text-emerald-400" },
-              { label: "Gider (Outcome)", value: fmt(kpis.outcome), tone: "text-rose-400" },
+              { label: "Revenue (Income)", value: fmt(kpis.income), tone: "text-emerald-400" },
+              { label: "Expense (Outcome)", value: fmt(kpis.outcome), tone: "text-rose-400" },
               { label: "Net", value: fmt(kpis.net), tone: "text-sky-400" },
-              { label: "Onaylı Yatırım", value: fmt(kpis.depositsApproved), tone: "text-emerald-300" },
+              { label: "Approved Deposits", value: fmt(kpis.depositsApproved), tone: "text-emerald-300" },
             ].map((c) => (
               <div key={c.label} className="rounded-xl border border-neutral-200 bg-[#ffffff] p-3">
                 <div className="text-[10px] uppercase text-neutral-500">{c.label}</div>
@@ -61,12 +61,12 @@ export default function FinanceAnalyticsPage() {
           </div>
           <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { label: "Bekleyen Yatırım", value: `${fmt(kpis.depositsPending)} (${kpis.depositsPendingCount})` },
-              { label: "Açık Pozisyon", value: String(kpis.openPositions) },
-              { label: "Açık Hacim", value: kpis.openVolume.toFixed(2) },
-              { label: "Floating K/Z", value: fmt(kpis.floatingPnL) },
-              { label: "Toplam Bakiye", value: fmt(kpis.totalBalance) },
-              { label: "Toplam Equity", value: fmt(kpis.totalEquity) },
+              { label: "Pending Deposit", value: `${fmt(kpis.depositsPending)} (${kpis.depositsPendingCount})` },
+              { label: "Open Positions", value: String(kpis.openPositions) },
+              { label: "Open Volume", value: kpis.openVolume.toFixed(2) },
+              { label: "Floating P/L", value: fmt(kpis.floatingPnL) },
+              { label: "Total Balance", value: fmt(kpis.totalBalance) },
+              { label: "Total Equity", value: fmt(kpis.totalEquity) },
               { label: "Credit", value: fmt(kpis.totalCredit) },
               { label: "Bonus", value: fmt(kpis.totalBonus) },
             ].map((c) => (
@@ -78,7 +78,7 @@ export default function FinanceAnalyticsPage() {
           </div>
           <div className="grid gap-4 lg:grid-cols-2">
             <div className="rounded-xl border border-neutral-200 bg-[#ffffff] p-4">
-              <h2 className="mb-3 text-xs font-semibold text-slate-300">Gelir / Gider</h2>
+              <h2 className="mb-3 text-xs font-semibold text-slate-300">Revenue / Expense</h2>
               <div className="flex h-40 items-end gap-4 px-4">
                 <div className="flex flex-1 flex-col items-center gap-1">
                   <div
@@ -109,13 +109,13 @@ export default function FinanceAnalyticsPage() {
                     </span>
                   </div>
                 ))}
-                {byType.length === 0 && <p className="text-neutral-500">Ledger kaydı yok</p>}
+                {byType.length === 0 && <p className="text-neutral-500">No ledger records</p>}
               </div>
             </div>
           </div>
         </>
       )}
-      {!kpis && <p className="text-xs text-neutral-500">Yükleniyor…</p>}
+      {!kpis && <p className="text-xs text-neutral-500">Loading…</p>}
     </div>
   );
 }

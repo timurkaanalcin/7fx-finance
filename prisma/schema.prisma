@@ -10,7 +10,7 @@ datasource db {
 model User {
   id                 String           @id @default(cuid())
   email              String           @unique @db.VarChar(191)
-  /// 16-digit numeric login ID (Hesap kimliği) — digits only, unique
+  /// 16-digit numeric login ID (Account ID) — digits only, unique
   accountLoginId     String?          @unique @db.VarChar(16)
   passwordHash       String
   name               String
@@ -24,12 +24,12 @@ model User {
   canManageMethods   Boolean          @default(true)
   canAdjustBalance   Boolean          @default(true)
 
-  /// Identity / üyelik
+  /// Identity / membership
   firstName            String?
   lastName             String?
   phone                String?
   birthDate            DateTime?
-  language             String           @default("tr")
+  language             String           @default("en")
   timezone             String           @default("Europe/Istanbul")
   country              String?
   address              String?  @db.Text

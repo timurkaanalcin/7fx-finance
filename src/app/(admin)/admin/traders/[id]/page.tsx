@@ -41,16 +41,16 @@ type Membership = Record<string, unknown> & {
 };
 
 const TABS: { id: Tab; label: string }[] = [
-  { id: "profil", label: "Profil" },
-  { id: "iletisim", label: "İletişimler" },
-  { id: "biletler", label: "Biletler / Yatırmalar" },
-  { id: "pozisyonlar", label: "Pozisyonlar" },
-  { id: "ledger", label: "Bakiye geçmişi" },
+  { id: "profil", label: "Profile" },
+  { id: "iletisim", label: "Communications" },
+  { id: "biletler", label: "Tickets / Deposits" },
+  { id: "pozisyonlar", label: "Positions" },
+  { id: "ledger", label: "Balance history" },
   { id: "bonus", label: "Bonuslar" },
-  { id: "belgeler", label: "Belgeler" },
-  { id: "takvim", label: "Takvim" },
-  { id: "finans", label: "Finans" },
-  { id: "notlar", label: "Notlar" },
+  { id: "belgeler", label: "Documents" },
+  { id: "takvim", label: "Calendar" },
+  { id: "finans", label: "Finance" },
+  { id: "notlar", label: "Notes" },
 ];
 
 function Field({
@@ -226,7 +226,7 @@ export default function AdminUserDetailPage() {
     }
   }
 
-  async function saveProfile() {
+  async function saveProfilee() {
     setBusy(true);
     setMsg("");
     try {
@@ -238,10 +238,10 @@ export default function AdminUserDetailPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "Kayıt başarısız");
+        setMsg(data.error || "Registration failed");
         return;
       }
-      setMsg("Profil kaydedildi");
+      setMsg("Profile kaydedildi");
       await load();
     } finally {
       setBusy(false);
@@ -267,10 +267,10 @@ export default function AdminUserDetailPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "Finans kaydı başarısız");
+        setMsg(data.error || "Finance record failed");
         return;
       }
-      setMsg("Finans kaydedildi");
+      setMsg("Finance kaydedildi");
       await load();
     } finally {
       setBusy(false);
@@ -289,11 +289,11 @@ export default function AdminUserDetailPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "Not eklenemedi");
+        setMsg(data.error || "Note eklenemedi");
         return;
       }
       setNoteText("");
-      setMsg("Not eklendi");
+      setMsg("Note eklendi");
       await load();
     } finally {
       setBusy(false);
@@ -301,20 +301,20 @@ export default function AdminUserDetailPage() {
   }
 
   if (!user) {
-    return <div className="text-sm text-neutral-500">Yükleniyor…</div>;
+    return <div className="text-sm text-neutral-500">Loading…</div>;
   }
 
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <Link href="/admin/traders" className="text-xs text-neutral-500 hover:text-white">
-          ← Traderlar
+          ← Traders
         </Link>
         <h1 className="text-xl font-semibold">{user.name}</h1>
         <span className="text-xs text-neutral-500">{user.email}</span>
         {user.accountLoginId && (
           <span className="rounded bg-sky-50 px-2 py-0.5 font-mono text-[10px] text-sky-700">
-            Hesap kimliği: {user.accountLoginId}
+            Account ID: {user.accountLoginId}
           </span>
         )}
         <span
@@ -322,7 +322,7 @@ export default function AdminUserDetailPage() {
             user.active ? "bg-emerald-500/20 text-emerald-300" : "bg-red-500/20 text-red-300"
           }`}
         >
-          {user.active ? "Aktif" : "Donduruldu"}
+          {user.active ? "Active" : "Freezeuldu"}
         </span>
         {tradingAccountId && (
           <span className="rounded bg-neutral-100 px-2 py-0.5 font-mono text-[10px] text-sky-300">
@@ -330,7 +330,7 @@ export default function AdminUserDetailPage() {
           </span>
         )}
         <span className="text-[10px] text-neutral-400" title="Session impersonation disabled for safety">
-          Terminal impersonation: kapalı
+          Terminal impersonation: off
         </span>
       </div>
 
@@ -352,68 +352,68 @@ export default function AdminUserDetailPage() {
 
       {tab === "profil" && (
         <div>
-          <h2 className="mb-2 text-sm font-medium text-slate-300">Kimlik</h2>
+          <h2 className="mb-2 text-sm font-medium text-slate-300">ID</h2>
           <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            <Field label="Ad" value={form.firstName as string} onChange={(v) => setF("firstName", v)} />
-            <Field label="Soyad" value={form.lastName as string} onChange={(v) => setF("lastName", v)} />
-            <Field label="E-posta" value={user.email} onChange={() => {}} />
+            <Field label="First name" value={form.firstName as string} onChange={(v) => setF("firstName", v)} />
+            <Field label="Last name" value={form.lastName as string} onChange={(v) => setF("lastName", v)} />
+            <Field label="Email" value={user.email} onChange={() => {}} />
             <Field
-              label="Hesap kimliği"
+              label="Account ID"
               value={(user.accountLoginId as string) || "—"}
               onChange={() => {}}
             />
-            <Field label="Telefon" value={form.phone as string} onChange={(v) => setF("phone", v)} />
+            <Field label="Phone" value={form.phone as string} onChange={(v) => setF("phone", v)} />
             <Field
-              label="Doğum tarihi"
+              label="Date of birth"
               value={form.birthDate as string}
               onChange={(v) => setF("birthDate", v)}
               type="date"
             />
-            <Field label="Dil" value={form.language as string} onChange={(v) => setF("language", v)} />
-            <Field label="Saat dilimi" value={form.timezone as string} onChange={(v) => setF("timezone", v)} />
-            <Field label="Ülke" value={form.country as string} onChange={(v) => setF("country", v)} />
-            <Field label="Adres" value={form.address as string} onChange={(v) => setF("address", v)} />
+            <Field label="Language" value={form.language as string} onChange={(v) => setF("language", v)} />
+            <Field label="Timezone" value={form.timezone as string} onChange={(v) => setF("timezone", v)} />
+            <Field label="Country" value={form.country as string} onChange={(v) => setF("country", v)} />
+            <Field label="Address" value={form.address as string} onChange={(v) => setF("address", v)} />
           </div>
 
-          <h2 className="mb-2 text-sm font-medium text-slate-300">Hesap</h2>
+          <h2 className="mb-2 text-sm font-medium text-slate-300">Account</h2>
           <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
             <Field
-              label="Hesap tipi"
+              label="Account tipi"
               value={form.accountType as string}
               onChange={(v) => setF("accountType", v)}
               options={ACCOUNT_TYPES}
             />
             <Field
-              label="Kayıt tarihi"
+              label="Registration date"
               value={form.registrationDate as string}
               onChange={(v) => setF("registrationDate", v)}
               type="date"
             />
             <Field
-              label="Kayıt ülkesi"
+              label="Registration country"
               value={form.registrationCountry as string}
               onChange={(v) => setF("registrationCountry", v)}
             />
             <Field
-              label="Yerleşik"
+              label="Resident"
               value={form.isResident as boolean}
               onChange={(v) => setF("isResident", v)}
               type="checkbox"
             />
             <Field
-              label="Aktif"
+              label="Active"
               value={form.active as boolean}
               onChange={(v) => setF("active", v)}
               type="checkbox"
             />
             <Field
-              label="Rol"
+              label="Role"
               value={form.role as string}
               onChange={(v) => setF("role", v)}
               options={["TRADER", "ADMIN"]}
             />
             <Field
-              label="Belgeler"
+              label="Documents"
               value={form.documentsStatus as string}
               onChange={(v) => setF("documentsStatus", v)}
               options={DOC_STATUSES}
@@ -445,7 +445,7 @@ export default function AdminUserDetailPage() {
               options={RETENTION_STATUSES}
             />
             <Field
-              label="Satış durumu"
+              label="Sale status"
               value={form.saleStatus as string}
               onChange={(v) => setF("saleStatus", v)}
               options={SALE_STATUSES}
@@ -457,7 +457,7 @@ export default function AdminUserDetailPage() {
               options={POTENTIAL_STATUSES}
             />
             <Field
-              label="Doğrulama"
+              label="Verification"
               value={form.validationStatus as string}
               onChange={(v) => setF("validationStatus", v)}
               options={VALIDATION_STATUSES}
@@ -473,10 +473,10 @@ export default function AdminUserDetailPage() {
 
           <button
             disabled={busy}
-            onClick={saveProfile}
+            onClick={saveProfilee}
             className="rounded-lg bg-black text-white px-4 py-2 text-sm font-medium hover:bg-neutral-800"
           >
-            Kaydet
+            Save
           </button>
         </div>
       )}
@@ -484,19 +484,19 @@ export default function AdminUserDetailPage() {
       {tab === "finans" && (
         <div className="max-w-md space-y-3 text-xs">
           <p className="text-neutral-500">
-            Özsermaye (equity):{" "}
+            Equity (equity):{" "}
             <span className="font-semibold text-slate-200">
               {user.equity.toLocaleString("en-US", { style: "currency", currency: user.currency || "USD" })}
             </span>
           </p>
           <Field
-            label="Bakiye"
+            label="Balance"
             value={finance.balance}
             onChange={(v) => setFinance({ ...finance, balance: v })}
             type="number"
           />
           <Field
-            label="Kredi"
+            label="Credit"
             value={finance.credit}
             onChange={(v) => setFinance({ ...finance, credit: v })}
             type="number"
@@ -515,7 +515,7 @@ export default function AdminUserDetailPage() {
             allowEmpty={false}
           />
           <p className="text-[11px] text-neutral-500">
-            Hesap para birimini değiştirir; terminal bakiyeleri bu koda göre gösterilir. Tutarlar dönüştürülmez.
+            Changes the account currency; terminal balances are shown in this code. Amounts are not converted.
           </p>
           <Field
             label="Denetim notu (opsiyonel)"
@@ -527,17 +527,17 @@ export default function AdminUserDetailPage() {
             onClick={saveFinance}
             className="rounded-lg bg-black text-white px-4 py-2 text-sm font-medium hover:bg-neutral-800"
           >
-            Finansı kaydet
+            Save finance
           </button>
         </div>
       )}
 
       {tab === "iletisim" && (
         <div>
-          <p className="mb-2 text-[11px] text-neutral-500">CRM iletişim kayıtları (chat/call/not).</p>
+          <p className="mb-2 text-[11px] text-neutral-500">CRM communication records (chat/call/note).</p>
           <MiniTable cols={["type", "title", "description", "workerName", "createdAt"]} rows={communications} />
           {communications.length === 0 && (
-            <p className="mt-2 text-xs text-neutral-400">Henüz kayıt yok — notlar sekmesinden iletişim notu ekleyebilirsiniz.</p>
+            <p className="mt-2 text-xs text-neutral-400">No records yet — you can add a communication note from the Notes tab.</p>
           )}
         </div>
       )}
@@ -545,14 +545,14 @@ export default function AdminUserDetailPage() {
       {tab === "biletler" && (
         <div className="space-y-4">
           <div>
-            <h2 className="mb-2 text-sm font-medium">Para yatırma talepleri</h2>
+            <h2 className="mb-2 text-sm font-medium">Deposit requests</h2>
             <p className="mb-2 text-[11px] text-neutral-500">
-              Onaylanan yatırmalar aynı trading Account bakiyesine yazılır.
+              Approved deposits post to the same trading account balance.
             </p>
             <MiniTable cols={["amount", "currency", "status", "createdAt"]} rows={deposits} />
           </div>
           <div>
-            <h2 className="mb-2 text-sm font-medium">Marjin / bakiye talepleri</h2>
+            <h2 className="mb-2 text-sm font-medium">Margin / bakiye talepleri</h2>
             <MiniTable cols={["type", "amount", "status", "reason", "createdAt"]} rows={balanceRequests} />
           </div>
         </div>
@@ -561,14 +561,14 @@ export default function AdminUserDetailPage() {
       {tab === "pozisyonlar" && (
         <div className="space-y-4">
           <div>
-            <h2 className="mb-2 text-sm font-medium">Canlı pozisyonlar (trade engine)</h2>
+            <h2 className="mb-2 text-sm font-medium">Live pozisyonlar (trade engine)</h2>
             <MiniTable
               cols={["symbol", "side", "volume", "openPrice", "currentPrice", "profit", "status", "openedAt"]}
               rows={positions}
             />
           </div>
           <div>
-            <h2 className="mb-2 text-sm font-medium">Emirler</h2>
+            <h2 className="mb-2 text-sm font-medium">Orderler</h2>
             <MiniTable cols={["symbol", "side", "type", "volume", "status", "createdAt"]} rows={orders} />
           </div>
         </div>
@@ -577,7 +577,7 @@ export default function AdminUserDetailPage() {
       {tab === "ledger" && (
         <div>
           <p className="mb-2 text-[11px] text-neutral-500">
-            Balance history — tradingAccountId ile bağlı ledger kayıtları.
+            Balance history — ledger records linked by tradingAccountId.
           </p>
           <MiniTable
             cols={["type", "amount", "balanceBefore", "balanceAfter", "comment", "createdByName", "createdAt"]}
@@ -598,7 +598,7 @@ export default function AdminUserDetailPage() {
             </div>
           </div>
           <div className="rounded-lg border border-neutral-200 bg-[#ffffff] p-3">
-            <div className="text-neutral-500">Kredi</div>
+            <div className="text-neutral-500">Credit</div>
             <div className="text-lg font-semibold tabular-nums">
               {Number(user.credit || 0).toLocaleString("en-US", {
                 style: "currency",
@@ -606,14 +606,14 @@ export default function AdminUserDetailPage() {
               })}
             </div>
           </div>
-          <p className="text-neutral-500">Düzenlemek için Finans sekmesini kullanın.</p>
+          <p className="text-neutral-500">Use the Finance tab to edit.</p>
         </div>
       )}
 
       {tab === "belgeler" && (
         <div>
           <p className="mb-2 text-[11px] text-neutral-500">
-            Belge durumu (üyelik): {String(form.documentsStatus || "NONE")}
+            Document status (membership): {String(form.documentsStatus || "NONE")}
           </p>
           <MiniTable cols={["name", "docType", "status", "createdAt"]} rows={documents} />
         </div>
@@ -646,12 +646,12 @@ export default function AdminUserDetailPage() {
             {notes.map((n) => (
               <li key={n.id} className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] p-3 text-xs">
                 <div className="mb-1 text-neutral-500">
-                  {n.authorName || "—"} · {new Date(n.createdAt).toLocaleString("tr-TR")}
+                  {n.authorName || "—"} · {new Date(n.createdAt).toLocaleString("en-US")}
                 </div>
                 <div className="whitespace-pre-wrap text-slate-200">{n.body}</div>
               </li>
             ))}
-            {notes.length === 0 && <li className="text-neutral-500">Henüz not yok</li>}
+            {notes.length === 0 && <li className="text-neutral-500">No notes yet</li>}
           </ul>
         </div>
       )}
@@ -680,7 +680,7 @@ function MiniTable({ cols, rows }: { cols: string[]; rows: Record<string, unknow
                   {r[c] == null
                     ? "—"
                     : c.toLowerCase().includes("at") || c === "createdAt"
-                      ? new Date(String(r[c])).toLocaleString("tr-TR")
+                      ? new Date(String(r[c])).toLocaleString("en-US")
                       : String(r[c])}
                 </td>
               ))}
@@ -689,7 +689,7 @@ function MiniTable({ cols, rows }: { cols: string[]; rows: Record<string, unknow
           {rows.length === 0 && (
             <tr>
               <td colSpan={cols.length} className="px-3 py-8 text-center text-neutral-500">
-                Kayıt yok
+                Registered yok
               </td>
             </tr>
           )}

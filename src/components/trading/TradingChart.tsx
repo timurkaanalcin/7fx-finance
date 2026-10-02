@@ -346,17 +346,17 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
             setOhlc({ o: last.open, h: last.high, l: last.low, c: last.close });
             if (fit) chartRef.current?.timeScale().fitContent();
           } catch {
-            setFeedError("Grafik güncellenemedi");
+            setFeedError("Could not update chart");
           }
         }
 
         if (data.error) {
-          setFeedError(data.stale ? `Veri gecikmeli: ${data.error}` : `Piyasa verisi: ${data.error}`);
+          setFeedError(data.stale ? `Veri gecikmeli: ${data.error}` : `Market verisi: ${data.error}`);
         } else {
           setFeedError(null);
         }
       } catch {
-        if (!cancelled) setFeedError("Grafik verisi alınamadı");
+        if (!cancelled) setFeedError("Could not load chart data");
       }
     }
 
@@ -436,7 +436,7 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
               ? `bg-desk-accent/15 text-desk-accent ring-desk-accent/35 ${livePulse ? "ring-desk-accent/70 bg-desk-accent/25" : ""}`
               : "bg-desk-elev/80 text-desk-muted ring-desk-border/60"
           }`}
-          title={liveFresh ? "Canlı Yahoo mid" : "Bekleniyor…"}
+          title={liveFresh ? "Live Yahoo mid" : "Waiting…"}
         >
           <span
             className={`h-1.5 w-1.5 rounded-full ${
@@ -504,7 +504,7 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
               chartType === "line" ? "bg-desk-elev text-desk-text" : "text-desk-muted hover:text-desk-text"
             }`}
           >
-            Çizgi
+            Line
           </button>
         </div>
       </div>

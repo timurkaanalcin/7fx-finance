@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   await ensureDemoSeed();
   const admin = await requireAdminPerm("canManageUsers");
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const desks = await prisma.desk.findMany({ orderBy: { name: "asc" }, take: 200 });
   const enriched = await Promise.all(
@@ -33,10 +33,10 @@ export async function GET() {
 export async function POST(req: Request) {
   await ensureDemoSeed();
   const admin = await requireAdminPerm("canManageUsers");
-  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   const body = await req.json().catch(() => ({}));
   const name = String(body.name || "").trim();
-  if (!name) return NextResponse.json({ error: "İsim gerekli" }, { status: 400 });
+  if (!name) return NextResponse.json({ error: "Name gerekli" }, { status: 400 });
 
   const desk = await prisma.desk.create({
     data: {

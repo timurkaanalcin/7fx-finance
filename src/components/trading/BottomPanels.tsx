@@ -67,13 +67,13 @@ function OpenCard({
       </div>
       <div className="mt-2.5 grid grid-cols-3 gap-2 text-[11px]">
         <div className="rounded-[8px] bg-desk-bg/60 px-2 py-1.5">
-          <div className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">Açılış</div>
+          <div className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">Open</div>
           <div className="mt-0.5 font-medium tabular-nums text-desk-text">
             {formatPrice(p.symbol, p.openPrice)}
           </div>
         </div>
         <div className="rounded-[8px] bg-desk-bg/60 px-2 py-1.5">
-          <div className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">Güncel</div>
+          <div className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">Current</div>
           <div className="mt-0.5 font-medium tabular-nums text-desk-text">
             {formatPrice(p.symbol, p.currentPrice)}
           </div>
@@ -91,7 +91,7 @@ function OpenCard({
         onClick={() => onClose(p.id)}
         className="mt-2.5 w-full rounded-[10px] bg-desk-sell/90 py-2 text-[12px] font-bold text-white hover:bg-desk-sell"
       >
-        Pozisyonu Kapat
+        Close Position
       </button>
     </div>
   );
@@ -128,13 +128,13 @@ function ClosedCard({ p }: { p: PositionRow }) {
       </div>
       <div className="mt-2.5 grid grid-cols-2 gap-2 text-[11px]">
         <div className="rounded-[8px] bg-desk-bg/60 px-2 py-1.5">
-          <div className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">Açılış</div>
+          <div className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">Open</div>
           <div className="mt-0.5 font-medium tabular-nums">
             {formatPrice(p.symbol, p.openPrice)}
           </div>
         </div>
         <div className="rounded-[8px] bg-desk-bg/60 px-2 py-1.5">
-          <div className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">Kapanış</div>
+          <div className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">Close</div>
           <div className="mt-0.5 font-medium tabular-nums">
             {p.closePrice != null ? formatPrice(p.symbol, p.closePrice) : "—"}
           </div>
@@ -180,7 +180,7 @@ function PendingCard({
       </div>
       <div className="mt-2.5 flex items-center justify-between gap-2 text-[11px]">
         <div className="rounded-[8px] bg-desk-bg/60 px-2 py-1.5">
-          <span className="text-desk-muted">Fiyat </span>
+          <span className="text-desk-muted">Price </span>
           <span className="font-medium tabular-nums">
             {o.price != null ? formatPrice(o.symbol, o.price) : "—"}
           </span>
@@ -189,7 +189,7 @@ function PendingCard({
           onClick={() => onCancel(o.id)}
           className="rounded-[10px] border border-desk-border bg-desk-elev px-3 py-1.5 text-[11px] font-semibold text-desk-muted hover:bg-desk-hover hover:text-desk-text"
         >
-          İptal
+          Cancel
         </button>
       </div>
     </div>
@@ -207,9 +207,9 @@ export default function BottomPanels({
   className = "",
 }: Props) {
   const tabs: { id: Tab; label: string; shortLabel: string; count?: number }[] = [
-    { id: "open", label: "Açık İşlemler", shortLabel: "Açık", count: openPositions.length || undefined },
-    { id: "closed", label: "Kapatılmış", shortLabel: "Kapalı", count: closedPositions.length || undefined },
-    { id: "pending", label: "Bekleyen", shortLabel: "Bekleyen", count: pendingOrders.length || undefined },
+    { id: "open", label: "Open Trades", shortLabel: "Open", count: openPositions.length || undefined },
+    { id: "closed", label: "Closed", shortLabel: "Closed", count: closedPositions.length || undefined },
+    { id: "pending", label: "Pending", shortLabel: "Pending", count: pendingOrders.length || undefined },
   ];
 
   return (
@@ -257,7 +257,7 @@ export default function BottomPanels({
         {tab === "open" && (
           <>
             {openPositions.length === 0 && (
-              <div className="px-3 py-10 text-center text-xs text-desk-muted">Açık işlem yok</div>
+              <div className="px-3 py-10 text-center text-xs text-desk-muted">No open trades</div>
             )}
             {openPositions.map((p) => (
               <OpenCard key={p.id} p={p} onClose={onClosePosition} />
@@ -268,7 +268,7 @@ export default function BottomPanels({
           <>
             {closedPositions.length === 0 && (
               <div className="px-3 py-10 text-center text-xs text-desk-muted">
-                Kapatılmış pozisyon yok
+                No closed positions
               </div>
             )}
             {closedPositions.map((p) => (
@@ -279,7 +279,7 @@ export default function BottomPanels({
         {tab === "pending" && (
           <>
             {pendingOrders.length === 0 && (
-              <div className="px-3 py-10 text-center text-xs text-desk-muted">Bekleyen emir yok</div>
+              <div className="px-3 py-10 text-center text-xs text-desk-muted">Pending emir yok</div>
             )}
             {pendingOrders.map((o) => (
               <PendingCard key={o.id} o={o} onCancel={onCancelOrder} />
@@ -296,27 +296,27 @@ export default function BottomPanels({
               <tr>
                 <th className="px-2 py-2">#</th>
                 <th className="px-2 py-2">Zaman</th>
-                <th className="px-2 py-2">Tür</th>
-                <th className="px-2 py-2">Varlık</th>
-                <th className="px-2 py-2">Hacim</th>
+                <th className="px-2 py-2">Type</th>
+                <th className="px-2 py-2">Asset</th>
+                <th className="px-2 py-2">Volume</th>
                 <th className="px-2 py-2">Pip</th>
-                <th className="px-2 py-2">Açılış</th>
-                <th className="px-2 py-2">Güncel</th>
+                <th className="px-2 py-2">Open</th>
+                <th className="px-2 py-2">Current</th>
                 <th className="px-2 py-2">SL</th>
                 <th className="px-2 py-2">TP</th>
                 <th className="px-2 py-2">Takas</th>
-                <th className="px-2 py-2">Komisyon</th>
+                <th className="px-2 py-2">Commission</th>
                 <th className="px-2 py-2">Tic. Kom.</th>
-                <th className="px-2 py-2">Kar</th>
-                <th className="px-2 py-2">Net Kar</th>
-                <th className="px-2 py-2">Kapat</th>
+                <th className="px-2 py-2">Profit</th>
+                <th className="px-2 py-2">Net Profit</th>
+                <th className="px-2 py-2">Close</th>
               </tr>
             </thead>
             <tbody>
               {openPositions.length === 0 && (
                 <tr>
                   <td colSpan={16} className="px-3 py-8 text-center text-desk-muted">
-                    Açık işlem yok
+                    No open trades
                   </td>
                 </tr>
               )}
@@ -338,7 +338,7 @@ export default function BottomPanels({
                         p.side === "BUY" ? "text-desk-buy" : "text-desk-sell"
                       }`}
                     >
-                      {p.side === "BUY" ? "Alış" : "Satış"}
+                      {p.side === "BUY" ? "Buy" : "Sell"}
                     </td>
                     <td className="px-2 py-1.5 font-medium text-desk-text">{p.symbol}</td>
                     <td className="px-2 py-1.5 tabular-nums">{fmtNum(p.volume, 2)}</td>
@@ -371,7 +371,7 @@ export default function BottomPanels({
                         onClick={() => onClosePosition(p.id)}
                         className="rounded-[7px] bg-desk-sell/85 px-2 py-0.5 text-[10px] font-semibold text-white hover:bg-desk-sell"
                       >
-                        Kapat
+                        Close
                       </button>
                     </td>
                   </tr>
@@ -387,22 +387,22 @@ export default function BottomPanels({
               <tr>
                 <th className="px-2 py-2">#</th>
                 <th className="px-2 py-2">Zaman</th>
-                <th className="px-2 py-2">Tür</th>
-                <th className="px-2 py-2">Varlık</th>
-                <th className="px-2 py-2">Hacim</th>
-                <th className="px-2 py-2">Açılış</th>
-                <th className="px-2 py-2">Kapanış</th>
+                <th className="px-2 py-2">Type</th>
+                <th className="px-2 py-2">Asset</th>
+                <th className="px-2 py-2">Volume</th>
+                <th className="px-2 py-2">Open</th>
+                <th className="px-2 py-2">Close</th>
                 <th className="px-2 py-2">SL</th>
                 <th className="px-2 py-2">TP</th>
-                <th className="px-2 py-2">Kar</th>
-                <th className="px-2 py-2">Net Kar</th>
+                <th className="px-2 py-2">Profit</th>
+                <th className="px-2 py-2">Net Profit</th>
               </tr>
             </thead>
             <tbody>
               {closedPositions.length === 0 && (
                 <tr>
                   <td colSpan={11} className="px-3 py-8 text-center text-desk-muted">
-                    Kapatılmış pozisyon yok
+                    No closed positions
                   </td>
                 </tr>
               )}
@@ -420,7 +420,7 @@ export default function BottomPanels({
                       p.side === "BUY" ? "text-desk-buy" : "text-desk-sell"
                     }`}
                   >
-                    {p.side === "BUY" ? "Alış" : "Satış"}
+                    {p.side === "BUY" ? "Buy" : "Sell"}
                   </td>
                   <td className="px-2 py-1.5 font-medium">{p.symbol}</td>
                   <td className="px-2 py-1.5 tabular-nums">{fmtNum(p.volume, 2)}</td>
@@ -462,21 +462,21 @@ export default function BottomPanels({
               <tr>
                 <th className="px-2 py-2">#</th>
                 <th className="px-2 py-2">Zaman</th>
-                <th className="px-2 py-2">Tür</th>
-                <th className="px-2 py-2">Emir</th>
-                <th className="px-2 py-2">Varlık</th>
-                <th className="px-2 py-2">Hacim</th>
-                <th className="px-2 py-2">Fiyat</th>
+                <th className="px-2 py-2">Type</th>
+                <th className="px-2 py-2">Order</th>
+                <th className="px-2 py-2">Asset</th>
+                <th className="px-2 py-2">Volume</th>
+                <th className="px-2 py-2">Price</th>
                 <th className="px-2 py-2">SL</th>
                 <th className="px-2 py-2">TP</th>
-                <th className="px-2 py-2">İptal</th>
+                <th className="px-2 py-2">Cancel</th>
               </tr>
             </thead>
             <tbody>
               {pendingOrders.length === 0 && (
                 <tr>
                   <td colSpan={10} className="px-3 py-8 text-center text-desk-muted">
-                    Bekleyen emir yok
+                    Pending emir yok
                   </td>
                 </tr>
               )}
@@ -494,7 +494,7 @@ export default function BottomPanels({
                       o.side === "BUY" ? "text-desk-buy" : "text-desk-sell"
                     }`}
                   >
-                    {o.side === "BUY" ? "Alış" : "Satış"}
+                    {o.side === "BUY" ? "Buy" : "Sell"}
                   </td>
                   <td className="px-2 py-1.5">{o.type}</td>
                   <td className="px-2 py-1.5 font-medium">{o.symbol}</td>
@@ -513,7 +513,7 @@ export default function BottomPanels({
                       onClick={() => onCancelOrder(o.id)}
                       className="rounded-[7px] border border-desk-border bg-desk-elev px-2 py-0.5 text-[10px] font-medium text-desk-muted hover:bg-desk-hover hover:text-desk-text"
                     >
-                      İptal
+                      Cancel
                     </button>
                   </td>
                 </tr>

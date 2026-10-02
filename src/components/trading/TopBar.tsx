@@ -90,10 +90,10 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
       </div>
 
       <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto py-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:gap-1.5">
-        {/* Desktop order preserved; mobile shows Bakiye + K/Z only */}
-        <Metric label="Bakiye" value={a ? fmtMoney(a.balance, 2, a.currency) : "—"} />
+        {/* Desktop order preserved; mobile shows Balance + P/L only */}
+        <Metric label="Balance" value={a ? fmtMoney(a.balance, 2, a.currency) : "—"} />
         <Metric
-          label="Özsermaye"
+          label="Equity"
           value={a ? fmtMoney(a.equity, 2, a.currency) : "—"}
           className="hidden md:flex"
         />
@@ -114,14 +114,14 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
           className="hidden md:flex"
         />
         <Metric
-          label="K/Z"
+          label="P/L"
           value={a ? fmtMoney(pnl, 2, a.currency) : "—"}
           danger={pnl < 0}
           positive={pnl > 0}
         />
         {(a?.credit ?? 0) > 0 && (
           <Metric
-            label="Kredi"
+            label="Credit"
             value={fmtMoney(a!.credit ?? 0, 2, a!.currency)}
             className="hidden md:flex"
           />
@@ -132,21 +132,21 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
         <button
           type="button"
           onClick={onDeposit}
-          title="Para Yatır"
+          title="Deposit"
           className="flex h-7 items-center gap-1 rounded-[9px] bg-desk-accent px-2 text-[11px] font-semibold text-desk-accent-ink shadow-accent-glow-sm hover:brightness-110 md:h-8 md:gap-1.5 md:rounded-[10px] md:px-2.5 md:text-xs"
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
             <rect x="2" y="6" width="20" height="12" rx="2" />
             <path d="M12 10v4M10 12h4" />
           </svg>
-          <span className="hidden sm:inline">Yatır</span>
+          <span className="hidden sm:inline">Deposit</span>
         </button>
 
         {/* Mobile: avatar is a direct link to /profile (tap target must not be swallowed) */}
         <Link
           href="/profile"
-          aria-label="Üyelik bilgileri"
-          title="Profil"
+          aria-label="Membership details"
+          title="Profile"
           className="flex touch-manipulation items-center rounded-full border border-desk-border/80 bg-desk-bg/50 p-0.5 hover:border-desk-accent/50 md:hidden"
         >
           {avatar}
@@ -172,7 +172,7 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
                 onClick={() => setMenuOpen(false)}
                 className="block px-3 py-2.5 text-xs text-desk-text hover:bg-desk-hover"
               >
-                Üyelik bilgileri
+                Membership details
               </Link>
               {user.role === "ADMIN" && (
                 <Link
@@ -180,7 +180,7 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
                   onClick={() => setMenuOpen(false)}
                   className="block px-3 py-2.5 text-xs text-desk-warn hover:bg-desk-hover"
                 >
-                  Admin paneli
+                  Admin panel
                 </Link>
               )}
               <button
@@ -191,7 +191,7 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
                 }}
                 className="block w-full border-t border-desk-border px-3 py-2.5 text-left text-xs text-desk-muted hover:bg-desk-hover hover:text-desk-text"
               >
-                Çıkış
+                Sign out
               </button>
             </div>
           )}

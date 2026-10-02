@@ -3,15 +3,18 @@ export function fmtMoney(n: number, digits = 2, currency = "USD"): string {
     .trim()
     .toUpperCase()
     .slice(0, 8) || "USD";
-  const abs = Math.abs(n);
-  if (abs >= 1_000_000) {
-    return `${code} ${(n / 1_000_000).toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Mn`;
+  if (!Number.isFinite(n)) {
+    return `${code} ${Number(0).toLocaleString("en-US", { minimumFractionDigits: digits, maximumFractionDigits: digits })}`;
   }
-  return `${code} ${n.toLocaleString("tr-TR", { minimumFractionDigits: digits, maximumFractionDigits: digits })}`;
+  // Full amount — never abbreviate as K / M / Mn
+  return `${code} ${n.toLocaleString("en-US", { minimumFractionDigits: digits, maximumFractionDigits: digits })}`;
 }
 
 export function fmtNum(n: number, digits = 2): string {
-  return n.toLocaleString("tr-TR", { minimumFractionDigits: digits, maximumFractionDigits: digits });
+  if (!Number.isFinite(n)) {
+    return Number(0).toLocaleString("en-US", { minimumFractionDigits: digits, maximumFractionDigits: digits });
+  }
+  return n.toLocaleString("en-US", { minimumFractionDigits: digits, maximumFractionDigits: digits });
 }
 
 export function fmtPct(n: number): string {
@@ -21,7 +24,7 @@ export function fmtPct(n: number): string {
 export function fmtDateTime(iso: string | Date | null | undefined): string {
   if (!iso) return "—";
   const d = typeof iso === "string" ? new Date(iso) : iso;
-  return d.toLocaleString("tr-TR", {
+  return d.toLocaleString("en-US", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -39,7 +42,7 @@ export function fmtDuration(from: string | Date, to?: string | Date | null): str
   const h = Math.floor(sec / 3600);
   const m = Math.floor((sec % 3600) / 60);
   const s = sec % 60;
-  if (h > 0) return `${h}s ${m}dk`;
-  if (m > 0) return `${m}dk ${s}sn`;
-  return `${s}sn`;
+  if (h > 0) return `${h}h ${m}m`;
+  if (m > 0) return `${m}m ${s}s`;
+  return `${s}s`;
 }

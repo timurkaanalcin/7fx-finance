@@ -44,11 +44,11 @@ export default function AssetsPage() {
     <div>
       <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
         <div>
-          <h1 className="text-lg font-semibold">Varlıklar</h1>
+          <h1 className="text-lg font-semibold">Assets</h1>
           <p className="text-[11px] text-neutral-500">
-            Sembol kataloğu — efektif spread/komisyon için{" "}
+            Symbol catalog — for effective spread/commission see{" "}
             <Link href="/admin/rates" className="text-sky-400 hover:underline">
-              İşlem Oranları
+              Trading Rates
             </Link>
           </p>
         </div>
@@ -65,7 +65,7 @@ export default function AssetsPage() {
           onChange={(e) => setCls(e.target.value)}
           className="rounded border border-neutral-300 bg-[#ffffff] px-2 py-1.5 text-xs"
         >
-          <option value="">Tüm sınıflar</option>
+          <option value="">All classes</option>
           {["STOCK", "FX", "CRYPTO", "INDEX", "COMMODITY"].map((c) => (
             <option key={c} value={c}>
               {c}
@@ -78,14 +78,14 @@ export default function AssetsPage() {
         <table className="w-full text-left text-[11px]">
           <thead className="bg-[#ffffff] text-neutral-500">
             <tr>
-              <th className="px-2 py-2">Sembol</th>
-              <th className="px-2 py-2">Ad</th>
-              <th className="px-2 py-2">Sınıf</th>
+              <th className="px-2 py-2">Symbol</th>
+              <th className="px-2 py-2">Name</th>
+              <th className="px-2 py-2">Class</th>
               <th className="px-2 py-2">Spread</th>
               <th className="px-2 py-2">Kontrat</th>
-              <th className="px-2 py-2">Hacim</th>
-              <th className="px-2 py-2">Komisyon</th>
-              <th className="px-2 py-2">Durum</th>
+              <th className="px-2 py-2">Volume</th>
+              <th className="px-2 py-2">Commission</th>
+              <th className="px-2 py-2">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -111,7 +111,7 @@ export default function AssetsPage() {
             {filtered.length === 0 && (
               <tr>
                 <td colSpan={8} className="px-3 py-8 text-center text-neutral-500">
-                  Varlık yok
+                  Asset yok
                 </td>
               </tr>
             )}
