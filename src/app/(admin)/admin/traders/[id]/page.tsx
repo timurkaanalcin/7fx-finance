@@ -75,7 +75,7 @@ function Field({
         <select
           value={value == null ? "" : String(value)}
           onChange={(e) => onChange(e.target.value)}
-          className="rounded border border-[#e5e5e5] bg-[#111111] px-2 py-1.5"
+          className="rounded border border-[#111111] bg-white px-2 py-1.5 text-sm text-[#111111] outline-none focus:ring-1 focus:ring-[#111111]/30"
         >
           {allowEmpty && <option value="">—</option>}
           {options.map((o) => (
@@ -106,7 +106,7 @@ function Field({
         type={type}
         value={value == null ? "" : String(value)}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded border border-[#e5e5e5] bg-[#111111] px-2 py-1.5"
+        className="rounded border border-[#111111] bg-white px-2 py-1.5 text-sm text-[#111111] outline-none focus:ring-1 focus:ring-[#111111]/30"
       />
     </label>
   );
@@ -434,7 +434,7 @@ export default function AdminUserDetailPage() {
             />
             <Field label="Desk" value={form.desk as string} onChange={(v) => setF("desk", v)} />
             <Field label="Desk ID" value={form.deskId as string} onChange={(v) => setF("deskId", v)} />
-            <Field label="Kampanya" value={form.campaign as string} onChange={(v) => setF("campaign", v)} />
+            <Field label="Campaign" value={form.campaign as string} onChange={(v) => setF("campaign", v)} />
             <Field label="A_AID" value={form.affiliateA as string} onChange={(v) => setF("affiliateA", v)} />
             <Field label="B_BID" value={form.affiliateB as string} onChange={(v) => setF("affiliateB", v)} />
             <Field label="C_CID" value={form.affiliateC as string} onChange={(v) => setF("affiliateC", v)} />
@@ -632,7 +632,7 @@ export default function AdminUserDetailPage() {
               value={noteText}
               onChange={(e) => setNoteText(e.target.value)}
               placeholder="Yeni not…"
-              className="flex-1 rounded border border-[#e5e5e5] bg-[#111111] px-3 py-2 text-sm"
+              className="flex-1 rounded border border-[#111111] bg-white px-3 py-2 text-sm text-[#111111]"
             />
             <button
               disabled={busy}

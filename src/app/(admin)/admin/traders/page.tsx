@@ -264,7 +264,7 @@ export default function AdminUsersPage() {
             value={bulkDesk}
             onChange={(e) => setBulkDesk(e.target.value)}
             placeholder="Desk ata"
-            className="w-28 rounded border border-[#e5e5e5] bg-[#111111] px-2 py-1"
+            className="w-28 rounded border border-[#111111] bg-white px-2 py-1 text-sm text-[#111111]"
           />
           <button
             disabled={busy}
@@ -277,7 +277,7 @@ export default function AdminUsersPage() {
             value={bulkBroker}
             onChange={(e) => setBulkBroker(e.target.value)}
             placeholder="Broker ata"
-            className="w-28 rounded border border-[#e5e5e5] bg-[#111111] px-2 py-1"
+            className="w-28 rounded border border-[#111111] bg-white px-2 py-1 text-sm text-[#111111]"
           />
           <button
             disabled={busy}
@@ -436,7 +436,7 @@ export default function AdminUsersPage() {
                     required={key === "email" || key === "password"}
                     value={createForm[key]}
                     onChange={(e) => setCreateForm({ ...createForm, [key]: e.target.value })}
-                    className="rounded border border-[#e5e5e5] bg-[#111111] px-2 py-1.5"
+                    className="rounded border border-[#111111] bg-white px-2 py-1.5 text-sm text-[#111111]"
                   />
                 </label>
               ))}
@@ -445,7 +445,7 @@ export default function AdminUsersPage() {
                 <select
                   value={createForm.currency}
                   onChange={(e) => setCreateForm({ ...createForm, currency: e.target.value })}
-                  className="rounded border border-[#e5e5e5] bg-[#111111] px-2 py-1.5"
+                  className="rounded border border-[#111111] bg-white px-2 py-1.5 text-sm text-[#111111]"
                 >
                   {ACCOUNT_CURRENCIES.map((c) => (
                     <option key={c} value={c}>

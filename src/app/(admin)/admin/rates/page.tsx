@@ -146,7 +146,7 @@ export default function AdminRatesPage() {
                   step="any"
                   value={global[key]}
                   onChange={(e) => setGlobal({ ...global, [key]: Number(e.target.value) })}
-                  className="mt-1 w-full rounded-md border border-[#e5e5e5] bg-[#111111] px-2 py-1.5 text-sm text-white tabular-nums"
+                  className="mt-1 w-full rounded-md border border-[#111111] bg-white px-2 py-1.5 text-sm text-[#111111] tabular-nums"
                 />
               </label>
             ))}
@@ -231,7 +231,7 @@ export default function AdminRatesPage() {
                     value={symForm[k]}
                     onChange={(e) => setSymForm({ ...symForm, [k]: e.target.value })}
                     placeholder="empty = global"
-                    className="mt-1 w-full rounded border border-[#e5e5e5] bg-[#111111] px-2 py-1.5 text-sm"
+                    className="mt-1 w-full rounded border border-[#111111] bg-white px-2 py-1.5 text-sm text-[#111111] text-sm"
                   />
                 </label>
               ))}

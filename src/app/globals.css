@@ -755,3 +755,19 @@ body:has(.fx-auth-page) {
 }
 .fx-crm .crm-pl-pos { color: #26a69a; }
 .fx-crm .crm-pl-neg { color: #ef5350; }
+
+.fx-crm input:not([type="checkbox"]):not([type="radio"]),
+.fx-crm select,
+.fx-crm textarea {
+  background: #ffffff !important;
+  color: #111111 !important;
+  border: 1px solid #111111 !important;
+  box-shadow: none !important;
+  outline: none;
+}
+.fx-crm input:not([type="checkbox"]):not([type="radio"]):focus,
+.fx-crm select:focus,
+.fx-crm textarea:focus {
+  border-color: #111111 !important;
+  box-shadow: 0 0 0 1px rgba(17, 17, 17, 0.2) !important;
+}
