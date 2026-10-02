@@ -14,7 +14,6 @@ const NAV = [
   { id: "platform", label: "Platform" },
   { id: "hakkinda", label: "Hakkında" },
   { id: "nasil", label: "Nasıl çalışır" },
-  { id: "sss", label: "SSS" },
   { id: "mobil", label: "Mobil" },
 ];
 
@@ -290,31 +289,6 @@ export default function LandingPage() {
     []
   );
 
-  const faqs = useMemo(
-    () => [
-      {
-        q: "7FX hangi varlıkları sunuyor?",
-        a: "7FX üzerinden hisse / endeks, kripto, forex (döviz) ve emtia (altın, petrol vb.) araçlarını tek hesapta takip edebilirsiniz. Gösterilen fiyatlar örnek / bilgilendirme amaçlıdır.",
-      },
-      {
-        q: "Nasıl hesap açabilirim?",
-        a: "Hesap aç butonuyla kayıt sayfasına gidin. Gerekli alanları doldurun; yönlendirme kodu ayarı açıksa kod girmeniz istenir.",
-      },
-      {
-        q: "Mobil cihazlarda çalışır mı?",
-        a: "Evet. Landing, giriş ve işlem arayüzleri mobil öncelikli tasarlandı. Modern tarayıcılarda PWA benzeri bir deneyim sunulur.",
-      },
-      {
-        q: "Oturum güvenliği nasıl sağlanır?",
-        a: "Kimlik doğrulama oturum çerezleri ile yapılır. Hassas işlem ve yönetim sayfaları oturum kontrolü altındadır; demo şifre paylaşılmaz.",
-      },
-      {
-        q: "Admin ve yatırımcı ekranları farklı mı?",
-        a: "Evet. ADMIN rolü /admin paneline, diğer hesaplar /trade işlem terminaline yönlendirilir.",
-      },
-    ],
-    []
-  );
 
   return (
     <div className="fx-landing min-h-screen" data-fx-ui="landing-light">
@@ -426,19 +400,16 @@ export default function LandingPage() {
               <Eyebrow>Çok varlık yatırım platformu</Eyebrow>
 
               <p
-                className="mt-4 inline-flex items-center gap-2 rounded-full border border-[rgba(16,20,37,0.10)] bg-white/90 px-3.5 py-1.5 text-[12.5px] font-semibold tracking-tight text-[#111111] shadow-[0_6px_18px_rgba(16,20,37,0.06)]"
+                className="mt-4 inline-flex items-center gap-2.5 rounded-full border border-[rgba(16,20,37,0.10)] bg-white/90 px-3.5 py-1.5 text-[12.5px] font-semibold tracking-tight text-[#111111] shadow-[0_6px_18px_rgba(16,20,37,0.06)]"
                 aria-label="ING Bank iş birliği ile"
               >
-                <span
-                  className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#FF6200] text-[9px] font-bold text-white"
-                  aria-hidden
-                >
-                  ING
-                </span>
-                <span>
-                  <span className="text-[#FF6200]">ING Bank</span>
-                  {" "}iş birliği ile
-                </span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/ing-logo.png"
+                  alt="ING"
+                  className="h-5 w-auto object-contain"
+                />
+                <span className="text-[#5c657a]">iş birliği ile</span>
               </p>
 
               <h1 id="hero-title" className="fx-h1 mt-5">
@@ -465,6 +436,15 @@ export default function LandingPage() {
                 >
                   Giriş yap
                 </Link>
+                <a
+                  href="/apk"
+                  className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full border border-[rgba(16,20,37,0.14)] bg-[#111111] px-5 text-[14px] font-semibold text-white shadow-[0_10px_24px_rgba(0,0,0,0.18)] transition hover:bg-[#2a2a2a] sm:min-h-[52px] sm:px-6 sm:text-[15px]"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                    <path d="M17.6 9.48l1.84-3.18a.5.5 0 00-.86-.5l-1.86 3.22A7.9 7.9 0 0012 7.5c-1.62 0-3.12.48-4.36 1.3L5.78 5.8a.5.5 0 10-.86.5L6.76 9.48A7.96 7.96 0 004 15.5v.5h16v-.5a7.96 7.96 0 00-2.4-6.02zM8.5 13.25a.75.75 0 110-1.5.75.75 0 010 1.5zm7 0a.75.75 0 110-1.5.75.75 0 010 1.5zM7 17.5h10v1.25c0 .69-.56 1.25-1.25 1.25H8.25C7.56 20 7 19.44 7 18.75V17.5z" />
+                  </svg>
+                  Uygulamayı yükle
+                </a>
               </div>
 
               <div className="fx-trust-row mt-10 flex flex-wrap items-center gap-x-6 gap-y-3">
@@ -499,7 +479,7 @@ export default function LandingPage() {
         >
           <div className="fx-shell flex items-center justify-between gap-4 pt-3.5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#5c657a]">
-              Piyasalar · örnek / gösterim amaçlı
+              Piyasalar
             </p>
           </div>
           <div className="fx-ticker relative overflow-hidden py-3.5 sm:py-4">
@@ -680,13 +660,13 @@ export default function LandingPage() {
                 <br className="hidden sm:block" /> trendi tek yerde görün
               </h2>
               <p className="fx-section-body mt-4 max-w-[480px]">
-                Bakiye, varlık dağılımı ve örnek performans çubukları ile portföyünüzü sade bir
-                panelde takip edin. Veriler gösterim amaçlıdır.
+                Bakiye, varlık dağılımı ve performans çubukları ile portföyünüzü sade bir
+                panelde takip edin.
               </p>
               <ul className="mt-8 space-y-3">
                 {[
                   "Varlık sınıflarına göre dağılım çubukları",
-                  "Haftalık örnek performans görseli",
+                  "Haftalık performans görseli",
                   "Mobil ve masaüstünde tutarlı düzen",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-3 text-[14px] text-[#5c657a]">
@@ -705,33 +685,6 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ——— FAQ ——— */}
-        <section id="sss" className="fx-section">
-          <div className="fx-shell">
-            <div className="mb-10 max-w-2xl sm:mb-12">
-              <Eyebrow>SSS</Eyebrow>
-              <h2 className="fx-h2 mt-4">Sık sorulan sorular</h2>
-            </div>
-            <div className="mx-auto max-w-3xl space-y-3">
-              {faqs.map((f) => (
-                <details
-                  key={f.q}
-                  className="fx-faq group rounded-[14px] border border-[rgba(16,20,37,0.08)] bg-white px-5 py-1 shadow-[0_8px_24px_rgba(16,20,37,0.05)]"
-                >
-                  <summary className="cursor-pointer list-none py-4 text-[15px] font-semibold text-[#111111] outline-none marker:content-none [&::-webkit-details-marker]:hidden">
-                    <span className="flex items-center justify-between gap-4">
-                      {f.q}
-                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#f0f0f0] text-[#111111] transition group-open:rotate-45">
-                        +
-                      </span>
-                    </span>
-                  </summary>
-                  <p className="pb-4 text-[14px] leading-relaxed text-[#5c657a]">{f.a}</p>
-                </details>
-              ))}
-            </div>
-          </div>
-        </section>
 
         {/* ——— Mobile band ——— */}
         <section id="mobil" className="fx-mobile-band border-y border-[rgba(16,20,37,0.08)] bg-[#ffffff]">
@@ -765,12 +718,23 @@ export default function LandingPage() {
                   </li>
                 ))}
               </ul>
-              <Link
-                href="/register"
-                className="fx-btn-primary mt-9 inline-flex min-h-[48px] items-center rounded-full px-7 text-sm font-semibold"
-              >
-                Hesap aç
-              </Link>
+              <div className="mt-9 flex flex-wrap gap-3">
+                <Link
+                  href="/register"
+                  className="fx-btn-primary inline-flex min-h-[48px] items-center rounded-full px-7 text-sm font-semibold"
+                >
+                  Hesap aç
+                </Link>
+                <a
+                  href="/apk"
+                  className="inline-flex min-h-[48px] items-center gap-2 rounded-full bg-[#111111] px-6 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(0,0,0,0.18)] transition hover:bg-[#2a2a2a]"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                    <path d="M17.6 9.48l1.84-3.18a.5.5 0 00-.86-.5l-1.86 3.22A7.9 7.9 0 0012 7.5c-1.62 0-3.12.48-4.36 1.3L5.78 5.8a.5.5 0 10-.86.5L6.76 9.48A7.96 7.96 0 004 15.5v.5h16v-.5a7.96 7.96 0 00-2.4-6.02zM8.5 13.25a.75.75 0 110-1.5.75.75 0 010 1.5zm7 0a.75.75 0 110-1.5.75.75 0 010 1.5zM7 17.5h10v1.25c0 .69-.56 1.25-1.25 1.25H8.25C7.56 20 7 19.44 7 18.75V17.5z" />
+                  </svg>
+                  Uygulamayı yükle
+                </a>
+              </div>
             </div>
 
             <div className="fx-app-panel relative mx-auto w-full max-w-[380px]">
@@ -856,10 +820,12 @@ export default function LandingPage() {
             </div>
             <p className="mt-3 max-w-sm text-[13px] leading-relaxed">
               7FX — uluslararası çok varlık ticaret platformu. Hisse, kripto, forex ve emtia
-              piyasalarına güvenli web erişimi. Fiyatlar örnek / gösterim amaçlıdır.
+              piyasalarına güvenli web erişimi.
             </p>
-            <p className="mt-3 text-[12px] font-medium text-[#111111]">
-              ING Bank iş birliği ile
+            <p className="mt-3 inline-flex items-center gap-2 text-[12px] font-medium text-[#111111]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/ing-logo.png" alt="ING" className="h-4 w-auto object-contain" />
+              <span>iş birliği ile</span>
             </p>
             <p className="mt-2 text-[12px]">© {new Date().getFullYear()} 7FX</p>
           </div>
@@ -876,9 +842,6 @@ export default function LandingPage() {
               </button>
               <button type="button" className="text-left hover:text-[#111111]" onClick={() => scrollToId("hakkinda")}>
                 Hakkında
-              </button>
-              <button type="button" className="text-left hover:text-[#111111]" onClick={() => scrollToId("sss")}>
-                SSS
               </button>
             </div>
             <div className="flex flex-col gap-2">
