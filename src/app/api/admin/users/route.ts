@@ -2,7 +2,12 @@ import { NextResponse } from "next/server";
 import { requireAdminPerm, writeAudit, ADMIN_PERMISSIONS, hashPassword } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { refreshAccountMetrics } from "@/lib/trading";
-import { parseMembershipUpdate, serializeUserMembership } from "@/lib/membership";
+import {
+  isSupportedAccountCurrency,
+  normalizeAccountCurrency,
+  parseMembershipUpdate,
+  serializeUserMembership,
+} from "@/lib/membership";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { allocateUniqueAccountLoginId } from "@/lib/account-login-id";
 import { recordLedger } from "@/lib/ledger";
@@ -103,7 +108,13 @@ export async function POST(req: Request) {
     const passwordHash = await hashPassword(password);
     const accountLoginId = await allocateUniqueAccountLoginId();
     const balance = Number.isFinite(Number(body.balance)) ? Number(body.balance) : 10000;
-    const currency = String(body.currency || "USD").slice(0, 8);
+    if (body.currency != null && body.currency !== "" && !isSupportedAccountCurrency(body.currency)) {
+      return NextResponse.json(
+        { error: "Geçersiz para birimi. Desteklenen: USD, EUR, TRY, GBP, CHF, JPY, AUD, CAD" },
+        { status: 400 }
+      );
+    }
+    const currency = normalizeAccountCurrency(body.currency, "USD");
     const credit = Number.isFinite(Number(body.credit)) ? Number(body.credit) : 0;
     const bonus = Number.isFinite(Number(body.bonus)) ? Number(body.bonus) : 0;
     const role = String(body.role || "TRADER").toUpperCase() === "ADMIN" ? "ADMIN" : "TRADER";
@@ -341,36 +352,78 @@ export async function POST(req: Request) {
       data.bonus = Number(body.bonus);
     }
     if (body.currency !== undefined) {
-      data.currency = String(body.currency).slice(0, 8);
+      if (!isSupportedAccountCurrency(body.currency)) {
+        return NextResponse.json(
+          { error: "Geçersiz para birimi. Desteklenen: USD, EUR, TRY, GBP, CHF, JPY, AUD, CAD" },
+          { status: 400 }
+        );
+      }
+      data.currency = normalizeAccountCurrency(body.currency);
     }
     if (!Object.keys(data).length) {
       return NextResponse.json({ error: "Güncellenecek alan yok" }, { status: 400 });
     }
     const balanceBefore = target.account.balance;
+    const currencyBefore = target.account.currency;
+    const note = body.note != null && String(body.note).trim() ? String(body.note).trim().slice(0, 500) : null;
     await prisma.account.update({ where: { userId }, data });
-    if (typeof data.balance === "number") {
+    const currencyAfter =
+      typeof data.currency === "string" ? data.currency : target.account.currency;
+    if (typeof data.balance === "number" && data.balance !== balanceBefore) {
       await recordLedger({
         userId,
         type: "FINANCE_SET",
         amount: data.balance - balanceBefore,
         balanceBefore,
         balanceAfter: data.balance,
-        currency: typeof data.currency === "string" ? data.currency : target.account.currency,
-        comment: body.note ? String(body.note).slice(0, 500) : "Finance update",
+        currency: currencyAfter,
+        comment: note || "Finance update",
+        createdById: balAdmin.id,
+        createdByName: balAdmin.name,
+        refType: "AuditLog",
+      });
+    } else if (typeof data.currency === "string" && data.currency !== currencyBefore) {
+      await recordLedger({
+        userId,
+        type: "CURRENCY_CHANGE",
+        amount: 0,
+        balanceBefore,
+        balanceAfter: balanceBefore,
+        currency: currencyAfter,
+        comment: note || `Para birimi: ${currencyBefore} → ${currencyAfter}`,
         createdById: balAdmin.id,
         createdByName: balAdmin.name,
         refType: "AuditLog",
       });
     }
-    await refreshAccountMetrics(userId);
+    const updated = await refreshAccountMetrics(userId);
     await writeAudit({
       adminId: balAdmin.id,
-      action: "UPDATE_FINANCE",
+      action:
+        typeof data.currency === "string" && data.currency !== currencyBefore
+          ? "UPDATE_CURRENCY"
+          : "UPDATE_FINANCE",
       targetId: userId,
-      note: body.note ? String(body.note).slice(0, 500) : null,
-      meta: data,
+      note,
+      meta: {
+        ...data,
+        previousCurrency: currencyBefore,
+        previousBalance: balanceBefore,
+      },
     });
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({
+      ok: true,
+      currency: currencyAfter,
+      account: updated
+        ? {
+            balance: updated.balance,
+            equity: updated.equity,
+            credit: updated.credit,
+            bonus: updated.bonus,
+            currency: updated.currency,
+          }
+        : { currency: currencyAfter },
+    });
   }
 
   if (action === "resetPassword") {

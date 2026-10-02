@@ -1,9 +1,13 @@
-export function fmtMoney(n: number, digits = 2): string {
+export function fmtMoney(n: number, digits = 2, currency = "USD"): string {
+  const code = String(currency || "USD")
+    .trim()
+    .toUpperCase()
+    .slice(0, 8) || "USD";
   const abs = Math.abs(n);
   if (abs >= 1_000_000) {
-    return `USD ${(n / 1_000_000).toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Mn`;
+    return `${code} ${(n / 1_000_000).toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Mn`;
   }
-  return `USD ${n.toLocaleString("tr-TR", { minimumFractionDigits: digits, maximumFractionDigits: digits })}`;
+  return `${code} ${n.toLocaleString("tr-TR", { minimumFractionDigits: digits, maximumFractionDigits: digits })}`;
 }
 
 export function fmtNum(n: number, digits = 2): string {

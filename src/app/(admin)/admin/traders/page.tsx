@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ACCOUNT_CURRENCIES } from "@/lib/membership";
 import { useCallback, useEffect, useState } from "react";
 
 type UserRow = {
@@ -426,7 +427,6 @@ export default function AdminUsersPage() {
                   ["brokerName", "Broker", "text"],
                   ["accountType", "Hesap tipi", "text"],
                   ["balance", "Başlangıç bakiyesi", "number"],
-                  ["currency", "Para birimi", "text"],
                 ] as const
               ).map(([key, label, type]) => (
                 <label key={key} className="flex flex-col gap-1">
@@ -440,6 +440,20 @@ export default function AdminUsersPage() {
                   />
                 </label>
               ))}
+              <label className="flex flex-col gap-1">
+                <span className="text-neutral-500">Para birimi</span>
+                <select
+                  value={createForm.currency}
+                  onChange={(e) => setCreateForm({ ...createForm, currency: e.target.value })}
+                  className="rounded border border-[#e5e5e5] bg-[#111111] px-2 py-1.5"
+                >
+                  {ACCOUNT_CURRENCIES.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+              </label>
             </div>
             <div className="mt-4 flex gap-2">
               <button type="submit" disabled={busy} className="rounded bg-black text-white px-3 py-1.5 text-sm">

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireUser } from "@/lib/auth";
+import { hashPassword, requireUser, verifyPassword } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { parseMembershipUpdate, serializeUserMembership } from "@/lib/membership";
 
@@ -64,6 +64,49 @@ export async function PATCH(req: Request) {
   if (!user) return NextResponse.json({ error: "Oturum yok" }, { status: 401 });
 
   const body = await req.json().catch(() => ({}));
+
+  // Password change (current + new + confirm)
+  if (body.changePassword === true || body.currentPassword != null || body.newPassword != null) {
+    const currentPassword = String(body.currentPassword || "");
+    const newPassword = String(body.newPassword || "");
+    const confirmPassword = String(body.confirmPassword || "");
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return NextResponse.json(
+        { error: "Mevcut şifre, yeni şifre ve tekrar alanları zorunlu" },
+        { status: 400 }
+      );
+    }
+    if (newPassword.length < 8) {
+      return NextResponse.json({ error: "Yeni şifre en az 8 karakter olmalı" }, { status: 400 });
+    }
+    if (newPassword !== confirmPassword) {
+      return NextResponse.json({ error: "Yeni şifreler eşleşmiyor" }, { status: 400 });
+    }
+    if (currentPassword === newPassword) {
+      return NextResponse.json(
+        { error: "Yeni şifre mevcut şifreyle aynı olamaz" },
+        { status: 400 }
+      );
+    }
+
+    const full = await prisma.user.findUnique({ where: { id: user.id } });
+    if (!full) return NextResponse.json({ error: "Kullanıcı yok" }, { status: 404 });
+
+    const ok = await verifyPassword(currentPassword, full.passwordHash);
+    if (!ok) {
+      return NextResponse.json({ error: "Mevcut şifre hatalı" }, { status: 400 });
+    }
+
+    const passwordHash = await hashPassword(newPassword);
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { passwordHash },
+    });
+
+    return NextResponse.json({ ok: true, passwordChanged: true });
+  }
+
   const data = parseMembershipUpdate(body, { traderSelf: true });
   if (!Object.keys(data).length) {
     return NextResponse.json({ error: "Güncellenecek alan yok" }, { status: 400 });

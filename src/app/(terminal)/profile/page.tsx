@@ -76,6 +76,13 @@ export default function ProfilePage() {
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
 
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [pwMsg, setPwMsg] = useState("");
+  const [pwErr, setPwErr] = useState("");
+  const [pwBusy, setPwBusy] = useState(false);
+
   const [wdAmount, setWdAmount] = useState("100");
   const [wdMethod, setWdMethod] = useState<"BANK" | "CRYPTO">("BANK");
   const [wdDetails, setWdDetails] = useState("");
@@ -136,6 +143,50 @@ export default function ProfilePage() {
       setProfile((p) => (p ? { ...p, phone, language, timezone, address } : p));
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function changePassword(e: FormEvent) {
+    e.preventDefault();
+    setPwBusy(true);
+    setPwMsg("");
+    setPwErr("");
+    try {
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        setPwErr("Tüm şifre alanlarını doldurun");
+        return;
+      }
+      if (newPassword.length < 8) {
+        setPwErr("Yeni şifre en az 8 karakter olmalı");
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        setPwErr("Yeni şifreler eşleşmiyor");
+        return;
+      }
+      const res = await fetch("/api/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          changePassword: true,
+          currentPassword,
+          newPassword,
+          confirmPassword,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setPwErr(data.error || "Şifre değiştirilemedi");
+        return;
+      }
+      setPwMsg("Şifreniz güncellendi");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch {
+      setPwErr("Bağlantı hatası");
+    } finally {
+      setPwBusy(false);
     }
   }
 
@@ -331,6 +382,59 @@ export default function ProfilePage() {
             className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium hover:bg-blue-500 disabled:opacity-50"
           >
             Kaydet
+          </button>
+        </form>
+
+        <form
+          onSubmit={changePassword}
+          className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4"
+        >
+          <h2 className="mb-1 text-sm font-medium text-slate-300">Şifre Değiştir</h2>
+          <p className="mb-3 text-[11px] text-slate-500">
+            Güvenliğiniz için mevcut şifrenizi girin, ardından yeni şifreyi iki kez yazın.
+          </p>
+          {pwMsg && <p className="mb-2 text-xs text-emerald-400">{pwMsg}</p>}
+          {pwErr && <p className="mb-2 text-xs text-red-400">{pwErr}</p>}
+          <div className="grid gap-3 text-xs sm:grid-cols-1">
+            <label className="flex flex-col gap-1">
+              <span className="text-slate-500">Mevcut şifre</span>
+              <input
+                type="password"
+                autoComplete="current-password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                className="rounded border border-[#2a2a2a] bg-[#000000] px-2 py-1.5"
+              />
+            </label>
+            <label className="flex flex-col gap-1">
+              <span className="text-slate-500">Yeni şifre</span>
+              <input
+                type="password"
+                autoComplete="new-password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="rounded border border-[#2a2a2a] bg-[#000000] px-2 py-1.5"
+                minLength={8}
+              />
+            </label>
+            <label className="flex flex-col gap-1">
+              <span className="text-slate-500">Yeni şifre (tekrar)</span>
+              <input
+                type="password"
+                autoComplete="new-password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="rounded border border-[#2a2a2a] bg-[#000000] px-2 py-1.5"
+                minLength={8}
+              />
+            </label>
+          </div>
+          <button
+            type="submit"
+            disabled={pwBusy}
+            className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium hover:bg-blue-500 disabled:opacity-50"
+          >
+            Şifreyi güncelle
           </button>
         </form>
 

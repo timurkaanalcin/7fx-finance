@@ -431,6 +431,7 @@ export default function TerminalShell() {
         open={marginModalOpen}
         equity={account?.equity ?? 0}
         marginLevel={account?.marginLevel ?? 0}
+        currency={account?.currency || "USD"}
         pendingRequest={pendingBalanceReq}
         onClose={() => setMarginModalOpen(false)}
         onSubmitted={(req) => {

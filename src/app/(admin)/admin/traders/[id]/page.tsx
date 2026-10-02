@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import {
+  ACCOUNT_CURRENCIES,
   ACCOUNT_TYPES,
   DOC_STATUSES,
   POTENTIAL_STATUSES,
@@ -58,12 +59,14 @@ function Field({
   onChange,
   type = "text",
   options,
+  allowEmpty = true,
 }: {
   label: string;
   value: string | number | boolean | null | undefined;
   onChange: (v: string) => void;
   type?: string;
   options?: readonly string[];
+  allowEmpty?: boolean;
 }) {
   if (options) {
     return (
@@ -74,7 +77,7 @@ function Field({
           onChange={(e) => onChange(e.target.value)}
           className="rounded border border-[#e5e5e5] bg-[#111111] px-2 py-1.5"
         >
-          <option value="">—</option>
+          {allowEmpty && <option value="">—</option>}
           {options.map((o) => (
             <option key={o} value={o}>
               {o}
@@ -259,7 +262,7 @@ export default function AdminUserDetailPage() {
           credit: Number(finance.credit),
           bonus: Number(finance.bonus),
           currency: finance.currency,
-          note: finance.note || "Finans güncelleme",
+          note: finance.note.trim() || undefined,
         }),
       });
       const data = await res.json();
@@ -508,9 +511,14 @@ export default function AdminUserDetailPage() {
             label="Para birimi"
             value={finance.currency}
             onChange={(v) => setFinance({ ...finance, currency: v })}
+            options={ACCOUNT_CURRENCIES}
+            allowEmpty={false}
           />
+          <p className="text-[11px] text-neutral-500">
+            Hesap para birimini değiştirir; terminal bakiyeleri bu koda göre gösterilir. Tutarlar dönüştürülmez.
+          </p>
           <Field
-            label="Denetim notu"
+            label="Denetim notu (opsiyonel)"
             value={finance.note}
             onChange={(v) => setFinance({ ...finance, note: v })}
           />

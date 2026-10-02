@@ -91,20 +91,20 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
 
       <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto py-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:gap-1.5">
         {/* Desktop order preserved; mobile shows Bakiye + K/Z only */}
-        <Metric label="Bakiye" value={a ? fmtMoney(a.balance) : "—"} />
+        <Metric label="Bakiye" value={a ? fmtMoney(a.balance, 2, a.currency) : "—"} />
         <Metric
           label="Özsermaye"
-          value={a ? fmtMoney(a.equity) : "—"}
+          value={a ? fmtMoney(a.equity, 2, a.currency) : "—"}
           className="hidden md:flex"
         />
         <Metric
           label="Marj"
-          value={a ? fmtMoney(a.margin) : "—"}
+          value={a ? fmtMoney(a.margin, 2, a.currency) : "—"}
           className="hidden md:flex"
         />
         <Metric
           label="Serbest"
-          value={a ? fmtMoney(a.freeMargin) : "—"}
+          value={a ? fmtMoney(a.freeMargin, 2, a.currency) : "—"}
           className="hidden md:flex"
         />
         <Metric
@@ -115,14 +115,14 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
         />
         <Metric
           label="K/Z"
-          value={a ? fmtMoney(pnl) : "—"}
+          value={a ? fmtMoney(pnl, 2, a.currency) : "—"}
           danger={pnl < 0}
           positive={pnl > 0}
         />
         {(a?.credit ?? 0) > 0 && (
           <Metric
             label="Kredi"
-            value={fmtMoney(a!.credit ?? 0)}
+            value={fmtMoney(a!.credit ?? 0, 2, a!.currency)}
             className="hidden md:flex"
           />
         )}

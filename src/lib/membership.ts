@@ -1,6 +1,29 @@
 /** Shared CRM / üyelik field helpers for admin + trader profile */
 
 export const ACCOUNT_TYPES = ["STANDARD", "VIP", "PRO", "DEMO"] as const;
+export const ACCOUNT_CURRENCIES = ["USD", "EUR", "TRY", "GBP", "CHF", "JPY", "AUD", "CAD"] as const;
+export type AccountCurrency = (typeof ACCOUNT_CURRENCIES)[number];
+
+export function normalizeAccountCurrency(value: unknown, fallback = "USD"): AccountCurrency {
+  const raw = String(value ?? "")
+    .trim()
+    .toUpperCase()
+    .slice(0, 8);
+  if ((ACCOUNT_CURRENCIES as readonly string[]).includes(raw)) {
+    return raw as AccountCurrency;
+  }
+  return (ACCOUNT_CURRENCIES as readonly string[]).includes(fallback)
+    ? (fallback as AccountCurrency)
+    : "USD";
+}
+
+export function isSupportedAccountCurrency(value: unknown): value is AccountCurrency {
+  const raw = String(value ?? "")
+    .trim()
+    .toUpperCase();
+  return (ACCOUNT_CURRENCIES as readonly string[]).includes(raw);
+}
+
 export const DOC_STATUSES = ["NONE", "PENDING", "APPROVED", "REJECTED"] as const;
 
 export const SALE_STATUSES = [

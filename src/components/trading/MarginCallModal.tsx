@@ -18,6 +18,7 @@ type Props = {
   open: boolean;
   equity: number;
   marginLevel: number;
+  currency?: string;
   pendingRequest: BalanceRequestRow | null;
   onClose: () => void;
   onSubmitted: (req: BalanceRequestRow) => void;
@@ -33,6 +34,7 @@ export default function MarginCallModal({
   open,
   equity,
   marginLevel,
+  currency = "USD",
   pendingRequest,
   onClose,
   onSubmitted,
@@ -104,7 +106,7 @@ export default function MarginCallModal({
           <div>
             <h2 className="text-sm font-semibold tracking-wide text-desk-sell">Marjin Çağrısı</h2>
             <p className="text-[10px] text-desk-muted">
-              Özsermaye {fmtMoney(equity)} · Marj seviyesi %{marginLevel.toFixed(1)} (eşik %{MARGIN_CALL_LEVEL})
+              Özsermaye {fmtMoney(equity, 2, currency)} · Marj seviyesi %{marginLevel.toFixed(1)} (eşik %{MARGIN_CALL_LEVEL})
             </p>
           </div>
           {(hasPending || success) && (
@@ -123,7 +125,7 @@ export default function MarginCallModal({
               Bekleyen talep:{" "}
               <strong>{pendingRequest.type === "RESET" ? "Bakiye Sıfırlama" : "Bakiye Ekle"}</strong>
               {pendingRequest.type === "ADD" && pendingRequest.amount != null
-                ? ` (${fmtMoney(pendingRequest.amount)})`
+                ? ` (${fmtMoney(pendingRequest.amount, 2, currency)})`
                 : ""}{" "}
               — durum: <strong>{STATUS_TR[pendingRequest.status] || pendingRequest.status}</strong>
               <p className="mt-1 text-desk-muted">
@@ -149,7 +151,7 @@ export default function MarginCallModal({
                   >
                     <div className="font-semibold text-desk-text">1. Bakiye Sıfırlama</div>
                     <div className="mt-0.5 text-[11px] text-desk-muted">
-                      Admin onayında bakiye {fmtMoney(DEFAULT_RESET_BALANCE)} yapılır; açık pozisyonlar
+                      Admin onayında bakiye {fmtMoney(DEFAULT_RESET_BALANCE, 2, currency)} yapılır; açık pozisyonlar
                       kapatılır.
                     </div>
                   </button>
@@ -171,7 +173,7 @@ export default function MarginCallModal({
                 <form onSubmit={onAddSubmit} className="space-y-3">
                   <div>
                     <label className="mb-1 block text-[10px] uppercase tracking-wide text-desk-muted">
-                      Eklenecek tutar (USD)
+                      Eklenecek tutar ({currency})
                     </label>
                     <input
                       type="number"
