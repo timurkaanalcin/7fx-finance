@@ -2,6 +2,8 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
+import { useI18n } from "@/lib/i18n/context";
+import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 
 const inputClass =
   "fx-auth-input w-full rounded-xl border border-[rgba(16,20,37,0.12)] bg-[#ffffff] px-3.5 py-3 text-[15px] text-[#111111] outline-none transition placeholder:text-[#8b93a7] hover:border-[#111111]/40 focus:border-[#111111] focus:shadow-[0_0_0_3px_rgba(17,17,17,0.15)]";
@@ -9,6 +11,7 @@ const inputClass =
 const labelClass = "mb-1.5 block text-[13px] font-medium text-[#5c657a]";
 
 export default function LoginForm() {
+  const { t } = useI18n();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -27,12 +30,12 @@ export default function LoginForm() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Sign-in failed");
+        setError(data.error || t("auth.loginFailed"));
         return;
       }
       window.location.assign(data.user?.role === "ADMIN" ? "/admin" : "/trade");
     } catch {
-      setError("Connection error");
+      setError(t("auth.connectionError"));
     } finally {
       setLoading(false);
     }
@@ -41,16 +44,19 @@ export default function LoginForm() {
   return (
     <>
       <div className="mb-6">
-        <h2 className="text-xl font-semibold tracking-tight text-[#111111]">Sign In</h2>
+        <div className="mb-2 flex items-start justify-between gap-3">
+          <h2 className="text-xl font-semibold tracking-tight text-[#111111]">{t("auth.loginTitle")}</h2>
+          <LanguageSwitcher compact tone="light" />
+        </div>
         <p className="mt-1 text-sm text-[#5c657a]">
-          Sign in with your email or account ID and password.
+          {t("auth.loginSubtitle")}
         </p>
       </div>
 
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
         <div>
           <label htmlFor="fx-login-identifier" className={labelClass}>
-            Email or Account ID
+            {t("auth.identifier")}
           </label>
           <input
             id="fx-login-identifier"
@@ -60,14 +66,14 @@ export default function LoginForm() {
             required
             value={identifier}
             onChange={(e) => setIdentifier(e.target.value)}
-            placeholder="ornek@eposta.com veya 16 haneli kimlik"
+            placeholder={t("auth.identifierPh")}
             disabled={loading}
             inputMode="email"
           />
         </div>
         <div>
           <label htmlFor="fx-login-password" className={labelClass}>
-            Password
+            {t("common.password")}
           </label>
           <input
             id="fx-login-password"
@@ -96,7 +102,7 @@ export default function LoginForm() {
           disabled={loading}
           className="mt-1 w-full rounded-xl bg-[#111111] py-3.5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(17,17,17,0.28)] transition hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {loading ? "Signing in…" : "Sign In"}
+          {loading ? t("auth.signingIn") : t("common.signIn")}
         </button>
       </form>
 

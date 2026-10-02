@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { fmtMoney, fmtPct } from "@/lib/format";
 import type { AccountMetrics, UserInfo } from "./types";
+import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
+import { useI18n } from "@/lib/i18n/context";
 
 type Props = {
   user: UserInfo;
@@ -46,6 +48,7 @@ function Metric({
 }
 
 export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
+  const { t } = useI18n();
   const a = account;
   const ml = a?.marginLevel ?? 0;
   const pnl = a?.profitLoss ?? 0;
@@ -146,12 +149,13 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
         <Link
           href="/profile"
           aria-label="Membership details"
-          title="Profile"
+          title={t("common.profile")}
           className="flex touch-manipulation items-center rounded-full border border-desk-border/80 bg-desk-bg/50 p-0.5 hover:border-desk-accent/50 md:hidden"
         >
           {avatar}
         </Link>
 
+        <LanguageSwitcher compact tone="dark" />
         {/* Desktop: dropdown menu */}
         <div className="relative hidden md:block" ref={menuRef}>
           <button

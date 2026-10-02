@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
+import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 
 const inputClass =
   "fx-auth-input w-full rounded-xl border border-[rgba(16,20,37,0.12)] bg-[#ffffff] px-3.5 py-3 text-[15px] text-[#111111] outline-none transition placeholder:text-[#8b93a7] hover:border-[#111111]/40 focus:border-[#111111] focus:shadow-[0_0_0_3px_rgba(17,17,17,0.15)]";
@@ -118,7 +119,8 @@ export default function RegisterForm() {
     return (
       <>
         <div className="mb-6">
-          <h2 className="text-xl font-semibold tracking-tight text-[#111111]">Registration complete</h2>
+          <div className="mb-2 flex items-start justify-between gap-3"><h2 className="text-xl font-semibold tracking-tight text-[#111111]">Registration complete</h2>
+        <LanguageSwitcher compact tone="light" /></div>
           <p className="mt-1 text-sm text-[#5c657a]">
             Your account was created. You can sign in with your email or the account ID below.
           </p>

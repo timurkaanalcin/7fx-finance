@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useCallback, useEffect, useState } from "react";
+import { LOCALES, LOCALE_META, type Locale } from "@/lib/i18n/locales";
+import { useI18n } from "@/lib/i18n/context";
+import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 
 type Profilee = {
   id: string;
@@ -70,7 +73,7 @@ export default function ProfileePage() {
   const router = useRouter();
   const [profile, setProfilee] = useState<Profilee | null>(null);
   const [phone, setPhone] = useState("");
-  const [language, setLanguage] = useState("tr");
+  const [language, setLanguage] = useState("en");
   const [timezone, setTimezone] = useState("Europe/Istanbul");
   const [address, setAddress] = useState("");
   const [msg, setMsg] = useState("");
@@ -353,11 +356,21 @@ export default function ProfileePage() {
             </label>
             <label className="flex flex-col gap-1">
               <span className="text-slate-500">Language</span>
-              <input
+              <select
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
                 className="rounded border border-[#2a2a2a] bg-[#000000] px-2 py-1.5"
-              />
+              >
+                {LOCALES.map((code) => (
+                  <option key={code} value={code}>
+                    {LOCALE_META[code as Locale].native}
+                  </option>
+                ))}
+              </select>
+              <span className="mt-1 text-[10px] text-slate-500">
+                Site language:{' '}
+                <LanguageSwitcher compact tone="dark" />
+              </span>
             </label>
             <label className="flex flex-col gap-1">
               <span className="text-slate-500">Timezone</span>

@@ -4,10 +4,14 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CRM_NAV_GROUPS } from "@/lib/crm-nav";
+import CrmI18n from "@/components/i18n/CrmI18n";
+import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
+import { useI18n } from "@/lib/i18n/context";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+function AdminChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { t, dir } = useI18n();
   const [ready, setReady] = useState(false);
   const [name, setName] = useState("");
   const [perms, setPerms] = useState<Record<string, boolean>>({});
@@ -41,7 +45,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, [router]);
 
   useEffect(() => {
-    // Auto-expand group containing active route
     for (const g of CRM_NAV_GROUPS) {
       if (g.items.some((n) => (n.exact ? pathname === n.href : pathname?.startsWith(n.href)))) {
         setOpenGroups((prev) => ({ ...prev, [g.id]: true }));
@@ -54,7 +57,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="flex min-h-screen items-center justify-center bg-[#f7f7f7] text-neutral-500">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--accent)] border-t-transparent" />
-          <span className="text-sm">Loading CRM…</span>
+          <span className="text-sm">{t("crm.loading")}</span>
         </div>
       </div>
     );
@@ -69,15 +72,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const flatMobile = CRM_NAV_GROUPS.flatMap((g) => g.items);
 
   return (
-    <div className="fx-crm flex min-h-screen bg-[#f7f7f7] text-black">
+    <div className="fx-crm flex min-h-screen bg-[#f7f7f7] text-black" dir={dir}>
       <aside className="hidden w-[200px] shrink-0 flex-col border-r border-black/10 bg-white text-black md:flex">
         <div className="flex h-11 items-center gap-2 border-b border-black/10 px-3">
           <div className="flex h-7 w-7 items-center justify-center rounded bg-black text-[10px] font-bold tracking-tight text-white">
             7FX
           </div>
           <div className="min-w-0">
-            <div className="truncate text-[12px] font-bold leading-tight text-black">7FX Desk</div>
-            <div className="text-[9px] uppercase tracking-wider text-neutral-500">Broker CRM</div>
+            <div className="truncate text-[12px] font-bold leading-tight text-black">{t("crm.desk")}</div>
+            <div className="text-[9px] uppercase tracking-wider text-neutral-500">{t("crm.brokerCrm")}</div>
           </div>
         </div>
         <nav className="flex-1 space-y-3 overflow-y-auto p-2 text-[11px]">
@@ -88,7 +91,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 onClick={() => setOpenGroups((p) => ({ ...p, [g.id]: !p[g.id] }))}
                 className="mb-0.5 flex w-full items-center justify-between px-2 py-1 text-[9px] font-semibold uppercase tracking-wider text-neutral-500 hover:text-neutral-700"
               >
-                {g.label}
+                {t(g.labelKey)}
                 <span className="text-neutral-400">{openGroups[g.id] ? "▾" : "▸"}</span>
               </button>
               {openGroups[g.id] && (
@@ -105,7 +108,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900"
                         }`}
                       >
-                        {n.label}
+                        {t(n.labelKey)}
                       </Link>
                     );
                   })}
@@ -115,7 +118,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           ))}
         </nav>
         <div className="border-t border-neutral-200 p-2.5 text-[9px] text-neutral-500">
-          <div className="mb-1 font-medium text-neutral-500">Yetkiler</div>
+          <div className="mb-1 font-medium text-neutral-500">{t("crm.permissions")}</div>
           {Object.entries(perms)
             .filter(([k]) => k.startsWith("can"))
             .map(([k, v]) => (
@@ -129,7 +132,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex h-11 items-center gap-2 border-b border-black/10 bg-white px-3">
-          <div className="flex max-w-[60%] gap-1 overflow-x-auto md:hidden">
+          <div className="flex max-w-[50%] gap-1 overflow-x-auto md:hidden">
             {flatMobile.slice(0, 8).map((n) => (
               <Link
                 key={n.href}
@@ -138,17 +141,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   isActive(n.href, n.exact) ? "bg-black text-white" : "bg-neutral-100 text-black"
                 }`}
               >
-                {n.label}
+                {t(n.labelKey)}
               </Link>
             ))}
           </div>
           <div className="ml-auto flex items-center gap-2 text-[11px] text-neutral-500">
+            <LanguageSwitcher compact tone="crm" />
             <span className="hidden sm:inline">{name}</span>
             <Link
               href="/trade"
               className="rounded bg-neutral-100 px-2 py-1 hover:bg-neutral-100 hover:text-black"
             >
-              Terminal
+              {t("crm.terminal")}
             </Link>
             <button
               onClick={async () => {
@@ -157,12 +161,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               }}
               className="rounded px-2 py-1 hover:bg-neutral-100 hover:text-black"
             >
-              Sign out
+              {t("crm.signOut")}
             </button>
           </div>
         </header>
         <main className="flex-1 overflow-auto p-3 md:p-4">{children}</main>
       </div>
     </div>
+  );
+}
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <CrmI18n>
+      <AdminChrome>{children}</AdminChrome>
+    </CrmI18n>
   );
 }

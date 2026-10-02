@@ -3,19 +3,13 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import PhonePreview from "./PhonePreview";
+import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
+import { useI18n } from "@/lib/i18n/context";
 
 function scrollToId(id: string) {
   const el = document.getElementById(id);
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
-
-const NAV = [
-  { id: "piyasalar", label: "Markets" },
-  { id: "platform", label: "Platform" },
-  { id: "hakkinda", label: "About" },
-  { id: "nasil", label: "How it works" },
-  { id: "mobil", label: "Mobile" },
-];
 
 function Eyebrow({ children }: { children: ReactNode }) {
   return (
@@ -187,6 +181,14 @@ function PortfolioBoard() {
 }
 
 export default function LandingPage() {
+  const { t } = useI18n();
+  const NAV = [
+    { id: "piyasalar", label: t("landing.nav.markets") },
+    { id: "platform", label: t("landing.nav.platform") },
+    { id: "hakkinda", label: t("landing.nav.about") },
+    { id: "nasil", label: t("landing.nav.how") },
+    { id: "mobil", label: t("landing.nav.mobile") },
+  ];
   const [menuOpen, setMenuOpen] = useState(false);
   const [showStickyCta, setShowStickyCta] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
@@ -206,24 +208,24 @@ export default function LandingPage() {
 
   const markets = useMemo(
     () => [
-      { s: "EURUSD", name: "Euro / Dolar", p: "1.0842", d: "+0.14%", up: true },
-      { s: "XAUUSD", name: "Gold ounce", p: "2.341,20", d: "+0.32%", up: true },
+      { s: "EURUSD", name: t("landing.m.eurusd"), p: "1.0842", d: "+0.14%", up: true },
+      { s: "XAUUSD", name: t("landing.m.xauusd"), p: "2.341,20", d: "+0.32%", up: true },
       { s: "US100", name: "NASDAQ 100", p: "19.840", d: "+0.41%", up: true },
-      { s: "BTCUSD", name: "Bitcoin", p: "67.420", d: "−0.81%", up: false },
-      { s: "GBPUSD", name: "Sterlin / Dolar", p: "1.2634", d: "+0.09%", up: true },
-      { s: "USDTRY", name: "Dolar / TL", p: "34,12", d: "+0.05%", up: true },
-      { s: "UKOIL", name: "Brent Petrol", p: "82,40", d: "−0.22%", up: false },
-      { s: "ETHUSD", name: "Ethereum", p: "3.420", d: "+1.12%", up: true },
+      { s: "BTCUSD", name: t("landing.m.btcusd"), p: "67.420", d: "−0.81%", up: false },
+      { s: "GBPUSD", name: t("landing.m.gbpusd"), p: "1.2634", d: "+0.09%", up: true },
+      { s: "USDTRY", name: t("landing.m.usdtry"), p: "34,12", d: "+0.05%", up: true },
+      { s: "UKOIL", name: t("landing.m.ukoil"), p: "82,40", d: "−0.22%", up: false },
+      { s: "ETHUSD", name: t("landing.m.ethusd"), p: "3.420", d: "+1.12%", up: true },
     ],
-    []
+    [t]
   );
 
   const platformCards = useMemo(
     () => [
       {
         key: "markets",
-        title: "Live market view",
-        body: "Watch FX, commodities, indices and crypto instruments in one list. Clear price and change tables.",
+        title: t("landing.card.markets.title"),
+        body: t("landing.card.markets.body"),
         visual: <MarketMiniRows />,
         icon: (
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -234,8 +236,8 @@ export default function LandingPage() {
       },
       {
         key: "orders",
-        title: "Quick order panel",
-        body: "Buy / Sell buttons, lot and leverage settings together in a clean order ticket.",
+        title: t("landing.card.orders.title"),
+        body: t("landing.card.orders.body"),
         visual: <OrderTicketVisual />,
         icon: (
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -245,8 +247,8 @@ export default function LandingPage() {
       },
       {
         key: "security",
-        title: "Secure session",
-        body: "Authentication works with session cookies. Sensitive areas are protected.",
+        title: t("landing.card.security.title"),
+        body: t("landing.card.security.body"),
         visual: <SecurityBadgeVisual />,
         icon: (
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -255,38 +257,38 @@ export default function LandingPage() {
         ),
       },
     ],
-    []
+    [t]
   );
 
   const stats = useMemo(
     () => [
-      { k: "7/24", v: "Platform access", d: "Track anytime via the web" },
-      { k: "Tek ekran", v: "Unified terminal", d: "Price, emir ve bakiye birlikte" },
-      { k: "Multi-asset", v: "Broad symbol set", d: "FX · commodities · indices · crypto" },
-      { k: "PWA", v: "Mobile ready", d: "Phone and tablet first" },
+      { k: "7/24", v: t("landing.stat.access.v"), d: t("landing.stat.access.d") },
+      { k: t("landing.stat.terminal.k"), v: t("landing.stat.terminal.v"), d: "Price, emir ve bakiye birlikte" },
+      { k: "Multi-asset", v: t("landing.stat.multi.v"), d: t("landing.stat.multi.d") },
+      { k: "PWA", v: t("landing.stat.pwa.v"), d: t("landing.stat.pwa.d") },
     ],
-    []
+    [t]
   );
 
   const steps = useMemo(
     () => [
       {
         n: "01",
-        t: "Create an account",
-        d: "Fill in the registration form, enter your referral code if you have one, and open your account.",
+        t: t("landing.step1.t"),
+        d: t("landing.step1.d"),
       },
       {
         n: "02",
-        t: "Explore the markets",
-        d: "Follow the symbols you care about with a watchlist and live prices.",
+        t: t("landing.step2.t"),
+        d: t("landing.step2.d"),
       },
       {
         n: "03",
-        t: "Go to the trading terminal",
-        d: "After login, place orders on the trade screen and manage your balance.",
+        t: t("landing.step3.t"),
+        d: t("landing.step3.d"),
       },
     ],
-    []
+    [t]
   );
 
 
@@ -295,9 +297,7 @@ export default function LandingPage() {
       <a
         href="/login"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-[#111111] focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
-      >
-        Go to Sign In
-      </a>
+      >{t("landing.skipLogin")}</a>
 
       {/* ——— Header ——— */}
       <header className="fx-nav sticky top-0 z-50">
@@ -307,7 +307,7 @@ export default function LandingPage() {
             <img src="/7fx-logo.png" alt="7FX" className="fx-nav-logo h-9 w-auto object-contain sm:h-9" />
           </Link>
 
-          <nav className="hidden items-center gap-0.5 lg:flex" aria-label="Main menu">
+          <nav className="hidden items-center gap-0.5 lg:flex" aria-label={t("landing.mainMenu")}>
             {NAV.map((item) => (
               <button
                 key={item.id}
@@ -321,17 +321,18 @@ export default function LandingPage() {
           </nav>
 
           <div className="flex items-center gap-2">
+            <LanguageSwitcher compact tone="light" />
             <Link
               href="/login"
               className="fx-btn-secondary hidden rounded-full px-4 py-2 text-[13px] font-semibold sm:inline-flex"
             >
-              Sign In
+              {t("common.signIn")}
             </Link>
             <Link
               href="/register"
               className="fx-btn-primary rounded-full px-4 py-2 text-[13px] font-semibold"
             >
-              Open account
+              {t("landing.openAccount")}
             </Link>
             <button
               type="button"
@@ -372,16 +373,12 @@ export default function LandingPage() {
                 href="/login"
                 className="mt-1 rounded-lg px-3 py-2.5 text-sm font-semibold text-[#111111]"
                 onClick={() => setMenuOpen(false)}
-              >
-                Sign In
-              </Link>
+              >{t("common.signIn")}</Link>
               <Link
                 href="/register"
                 className="rounded-lg px-3 py-2.5 text-sm font-semibold text-[#5c657a]"
                 onClick={() => setMenuOpen(false)}
-              >
-                Open account
-              </Link>
+              >{t("landing.openAccount")}</Link>
             </div>
           </div>
         )}
@@ -413,29 +410,23 @@ export default function LandingPage() {
               </p>
 
               <h1 id="hero-title" className="fx-h1 mt-5">
-                Invest 7FX ile
-                <span className="fx-accent-line mt-1 block">start with more clarity</span>
+                {t("landing.heroTitle")}
+              
               </h1>
 
               <p className="fx-hero-body mt-6">
-                7FX offers access to stocks, crypto, forex and commodity markets from a single account — an
-                international trading platform. Corporate-grade security, a clean interface and a
-                mobile-first experience help you decide on a clear screen.
+                {t("landing.heroBody")}
               </p>
 
               <div className="mt-9 flex flex-wrap items-center gap-3">
                 <Link
                   href="/register"
                   className="fx-btn-primary inline-flex min-h-[48px] items-center justify-center rounded-full px-6 text-[14px] font-semibold sm:min-h-[52px] sm:px-8 sm:text-[15px]"
-                >
-                  Open account
-                </Link>
+                >{t("landing.openAccount")}</Link>
                 <Link
                   href="/login"
                   className="fx-btn-secondary inline-flex min-h-[48px] items-center justify-center rounded-full px-6 text-[14px] font-semibold sm:min-h-[52px] sm:px-8 sm:text-[15px]"
-                >
-                  Sign in
-                </Link>
+                >{t("common.signIn")}</Link>
                                 <a
                   href="/apk"
                   className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full border border-[rgba(16,20,37,0.14)] bg-[#111111] px-5 text-[14px] font-semibold text-white shadow-[0_10px_24px_rgba(0,0,0,0.18)] transition hover:bg-[#2a2a2a] sm:min-h-[52px] sm:px-6 sm:text-[15px]"
@@ -458,11 +449,11 @@ export default function LandingPage() {
 
               <div className="fx-trust-row mt-10 flex flex-wrap items-center gap-x-6 gap-y-3">
                 {[
-                  { label: "In partnership with ING Bank", icon: "★" },
-                  { label: "40+ symbols", icon: "◆" },
-                  { label: "24/7 access", icon: "●" },
-                  { label: "SSL session", icon: "▣" },
-                  { label: "PWA ready", icon: "◈" },
+                  { label: t("landing.trust.ing"), icon: "★" },
+                  { label: t("landing.trust.symbols"), icon: "◆" },
+                  { label: t("landing.trust.access"), icon: "●" },
+                  { label: t("landing.trust.ssl"), icon: "▣" },
+                  { label: t("landing.trust.pwa"), icon: "◈" },
                 ].map((t) => (
                   <div key={t.label} className="flex items-center gap-2 text-[13px] text-[#5c657a]">
                     <span className="text-[10px] text-[#111111]" aria-hidden>
@@ -488,7 +479,7 @@ export default function LandingPage() {
         >
           <div className="fx-shell flex items-center justify-between gap-4 pt-3.5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#5c657a]">
-              Markets
+              {t("landing.marketsTitle")}
             </p>
           </div>
           <div className="fx-ticker relative overflow-hidden py-3.5 sm:py-4">
@@ -522,10 +513,9 @@ export default function LandingPage() {
         <section id="platform" className="fx-section">
           <div className="fx-shell">
             <div className="mb-9 max-w-2xl sm:mb-14">
-              <Eyebrow>Platform</Eyebrow>
+              <Eyebrow>{t("landing.platformEyebrow")}</Eyebrow>
               <h2 className="fx-h2 mt-4">
-                Investment instruments,
-                <br className="hidden sm:block" /> at a glance
+                {t("landing.platformTitle")}
               </h2>
               <p className="fx-section-body mt-4 max-w-[560px]">
                 7FX delivers a clear multi-asset experience for retail and
@@ -561,9 +551,8 @@ export default function LandingPage() {
         <section id="hakkinda" className="fx-section fx-section--soft border-y border-[rgba(16,20,37,0.08)]" aria-labelledby="about-title">
           <div className="fx-shell grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start lg:gap-16">
             <div>
-              <Eyebrow>About</Eyebrow>
-              <h2 id="about-title" className="fx-h2 mt-4">
-                What is 7FX?
+              <Eyebrow>{t("landing.aboutEyebrow")}</Eyebrow>
+              <h2 id="about-title" className="fx-h2 mt-4">{t("landing.aboutTitle")}
               </h2>
               <p className="fx-section-body mt-5 max-w-[540px]">
                 7FX is an international broker / trading platform providing web access to global markets.
@@ -627,7 +616,7 @@ export default function LandingPage() {
         <section id="nasil" className="fx-section">
           <div className="fx-shell">
             <div className="mb-12 max-w-2xl sm:mb-14">
-              <Eyebrow>How it works</Eyebrow>
+              <Eyebrow>{t("landing.howEyebrow")}</Eyebrow>
               <h2 className="fx-h2 mt-4">To the terminal in three steps</h2>
               <p className="fx-section-body mt-4 max-w-[520px]">
                 From registration to live prices and the order panel, the flow stays simple.
@@ -707,8 +696,7 @@ export default function LandingPage() {
                 Her yerden takip edin
               </h2>
               <p className="mt-4 max-w-[480px] text-[14px] leading-relaxed text-[#5c657a]">
-                Landing and auth pages are mobile-first. Install on Android (APK) or iOS (Add to Home Screen / PWA)
-                for an app-like experience — portfolio, watchlist and trade terminal at a glance.
+                {t("landing.mobileBody")}
               </p>
               <ul className="mt-7 space-y-3">
                 {[
@@ -732,9 +720,7 @@ export default function LandingPage() {
                 <Link
                   href="/register"
                   className="fx-btn-primary inline-flex min-h-[48px] items-center rounded-full px-7 text-sm font-semibold"
-                >
-                  Open account
-                </Link>
+                >{t("landing.openAccount")}</Link>
                                 <a
                   href="/apk"
                   className="inline-flex min-h-[48px] items-center gap-2 rounded-full bg-[#111111] px-6 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(0,0,0,0.18)] transition hover:bg-[#2a2a2a]"
@@ -771,9 +757,9 @@ export default function LandingPage() {
                 </div>
                 <div className="space-y-3">
                   {[
-                    { t: "Live prices", d: "Watchlist" },
-                    { t: "Order panel", d: "Buy / Sell" },
-                    { t: "Portfolio", d: "Balance & P&L" },
+                    { t: t("landing.livePrices"), d: t("landing.watchlist") },
+                    { t: t("landing.orderPanel"), d: t("landing.buySell") },
+                    { t: t("landing.portfolio"), d: t("landing.balancePnl") },
                   ].map((row) => (
                     <div
                       key={row.t}
@@ -793,8 +779,8 @@ export default function LandingPage() {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/7fx-mark.png" alt="" className="h-8 w-8 rounded-lg object-contain" />
                   <div>
-                    <p className="text-[13px] font-semibold text-white">Continue with 7FX</p>
-                    <p className="text-[11px] text-white/70">Sign in or create an account</p>
+                    <p className="text-[13px] font-semibold text-white">{t("landing.continue7fx")}</p>
+                    <p className="text-[11px] text-white/70">{t("landing.signInOrCreate")}</p>
                   </div>
                 </div>
               </div>
@@ -816,15 +802,11 @@ export default function LandingPage() {
               <Link
                 href="/register"
                 className="fx-btn-primary inline-flex min-h-[48px] items-center rounded-full px-7 text-sm font-semibold"
-              >
-                Open account
-              </Link>
+              >{t("landing.openAccount")}</Link>
               <Link
                 href="/login"
                 className="fx-btn-secondary inline-flex min-h-[48px] items-center rounded-full px-7 text-sm font-semibold"
-              >
-                Sign In
-              </Link>
+              >{t("common.signIn")}</Link>
             </div>
           </div>
         </section>
@@ -854,7 +836,7 @@ export default function LandingPage() {
                 Platform
               </span>
               <button type="button" className="text-left hover:text-[#111111]" onClick={() => scrollToId("piyasalar")}>
-                Markets
+                {t("landing.marketsTitle")}
               </button>
               <button type="button" className="text-left hover:text-[#111111]" onClick={() => scrollToId("platform")}>
                 Features
@@ -867,12 +849,8 @@ export default function LandingPage() {
               <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#111111]">
                 Account
               </span>
-              <Link href="/login" className="hover:text-[#111111]">
-                Sign In
-              </Link>
-              <Link href="/register" className="hover:text-[#111111]">
-                Open account
-              </Link>
+              <Link href="/login" className="hover:text-[#111111]">{t("common.signIn")}</Link>
+              <Link href="/register" className="hover:text-[#111111]">{t("landing.openAccount")}</Link>
               <span>7fx.customer.org.tr</span>
             </div>
           </div>
@@ -891,16 +869,12 @@ export default function LandingPage() {
             href="/login"
             tabIndex={showStickyCta ? 0 : -1}
             className="fx-btn-secondary inline-flex h-9 flex-1 items-center justify-center rounded-full text-[12.5px] font-semibold"
-          >
-            Sign In
-          </Link>
+          >{t("common.signIn")}</Link>
           <Link
             href="/register"
             tabIndex={showStickyCta ? 0 : -1}
             className="fx-btn-primary inline-flex h-9 flex-[1.2] items-center justify-center rounded-full text-[12.5px] font-semibold"
-          >
-            Open account
-          </Link>
+          >{t("landing.openAccount")}</Link>
         </div>
       </div>
     </div>

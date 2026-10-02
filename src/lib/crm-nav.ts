@@ -1,64 +1,63 @@
-/** M1 Finance admin CRM navigation — broker-desk structure (Turkish labels).
- * Do NOT copy Prime CRM logos, CSS, or trademarks.
- */
+/** 7FX admin CRM navigation — labelKey maps to i18n (CRM default locale = Turkish). */
 
 export type CrmNavItem = {
   href: string;
-  label: string;
+  /** i18n key under crm.nav.* or full key */
+  labelKey: string;
   exact?: boolean;
   group?: string;
 };
 
 export type CrmNavGroup = {
   id: string;
-  label: string;
+  labelKey: string;
   items: CrmNavItem[];
 };
 
 export const CRM_NAV_GROUPS: CrmNavGroup[] = [
   {
     id: "main",
-    label: "Main",
+    labelKey: "crm.group.main",
     items: [
-      { href: "/admin", label: "Dashboard", exact: true },
-      { href: "/admin/traders", label: "Traders" },
-      { href: "/admin/tickets", label: "Tickets / Deposits" },
-      { href: "/admin/positions", label: "Positions" },
-      { href: "/admin/transactions", label: "Transactions (Ledger)" },
+      { href: "/admin", labelKey: "crm.nav.dashboard", exact: true },
+      { href: "/admin/traders", labelKey: "crm.nav.traders" },
+      { href: "/admin/tickets", labelKey: "crm.nav.tickets" },
+      { href: "/admin/positions", labelKey: "crm.nav.positions" },
+      { href: "/admin/transactions", labelKey: "crm.nav.transactions" },
     ],
   },
   {
     id: "ops",
-    label: "Operations",
+    labelKey: "crm.group.ops",
     items: [
-      { href: "/admin/desks", label: "Desks" },
-      { href: "/admin/workers", label: "Workers" },
-      { href: "/admin/trading-groups", label: "Trading Groups" },
-      { href: "/admin/assets", label: "Assets" },
-      { href: "/admin/rates", label: "Trading Rates" },
-      { href: "/admin/methods", label: "Deposit Methods" },
-      { href: "/admin/settings", label: "System Settings" },
+      { href: "/admin/desks", labelKey: "crm.nav.desks" },
+      { href: "/admin/workers", labelKey: "crm.nav.workers" },
+      { href: "/admin/trading-groups", labelKey: "crm.nav.tradingGroups" },
+      { href: "/admin/assets", labelKey: "crm.nav.assets" },
+      { href: "/admin/rates", labelKey: "crm.nav.rates" },
+      { href: "/admin/methods", labelKey: "crm.nav.methods" },
+      { href: "/admin/settings", labelKey: "crm.nav.settings" },
     ],
   },
   {
     id: "comms",
-    label: "Communications",
+    labelKey: "crm.group.comms",
     items: [
-      { href: "/admin/communications", label: "Communications" },
-      { href: "/admin/chat", label: "Chat" },
-      { href: "/admin/documents", label: "Documents" },
-      { href: "/admin/calendar", label: "Calendar" },
-      { href: "/admin/mail", label: "Mail Templates" },
+      { href: "/admin/communications", labelKey: "crm.nav.communications" },
+      { href: "/admin/chat", labelKey: "crm.nav.chat" },
+      { href: "/admin/documents", labelKey: "crm.nav.documents" },
+      { href: "/admin/calendar", labelKey: "crm.nav.calendar" },
+      { href: "/admin/mail", labelKey: "crm.nav.mail" },
     ],
   },
   {
     id: "analytics",
-    label: "Analytics",
+    labelKey: "crm.group.analytics",
     items: [
-      { href: "/admin/analytics/finance", label: "Finance" },
-      { href: "/admin/analytics/scoreboard", label: "Scoreboard" },
-      { href: "/admin/analytics/report", label: "Report" },
-      { href: "/admin/summary", label: "Account Summary" },
+      { href: "/admin/analytics/finance", labelKey: "crm.nav.finance" },
+      { href: "/admin/analytics/scoreboard", labelKey: "crm.nav.scoreboard" },
+      { href: "/admin/analytics/report", labelKey: "crm.nav.report" },
+      { href: "/admin/summary", labelKey: "crm.nav.summary" },
     ],
   },
 ];

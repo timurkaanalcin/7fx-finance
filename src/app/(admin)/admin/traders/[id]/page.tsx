@@ -1,3 +1,4 @@
+import { LOCALES } from "@/lib/i18n/locales";
 "use client";
 
 import Link from "next/link";
@@ -369,7 +370,7 @@ export default function AdminUserDetailPage() {
               onChange={(v) => setF("birthDate", v)}
               type="date"
             />
-            <Field label="Language" value={form.language as string} onChange={(v) => setF("language", v)} />
+            <Field label="Language" value={form.language as string} onChange={(v) => setF("language", v)} options={LOCALES} allowEmpty={false} />
             <Field label="Timezone" value={form.timezone as string} onChange={(v) => setF("timezone", v)} />
             <Field label="Country" value={form.country as string} onChange={(v) => setF("country", v)} />
             <Field label="Address" value={form.address as string} onChange={(v) => setF("address", v)} />

@@ -218,7 +218,7 @@ export function serializeUserMembership(u: Record<string, unknown>) {
     lastName: u.lastName ?? null,
     phone: u.phone ?? null,
     birthDate: u.birthDate ?? null,
-    language: u.language ?? "tr",
+    language: u.language ?? "en",
     timezone: u.timezone ?? "Europe/Istanbul",
     country: u.country ?? null,
     address: u.address ?? null,
