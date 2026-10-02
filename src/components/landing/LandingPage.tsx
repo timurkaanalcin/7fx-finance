@@ -563,7 +563,7 @@ export default function LandingPage() {
             <div>
               <Eyebrow>About</Eyebrow>
               <h2 id="about-title" className="fx-h2 mt-4">
-                7FX nedir?
+                What is 7FX?
               </h2>
               <p className="fx-section-body mt-5 max-w-[540px]">
                 7FX is an international broker / trading platform providing web access to global markets.
