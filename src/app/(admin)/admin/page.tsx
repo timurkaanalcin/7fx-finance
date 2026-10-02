@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 
 type Kpis = {
@@ -10,6 +10,33 @@ type Kpis = {
   pendingBalanceRequests: number;
   totalVolume: number;
 };
+
+type ActivityPos = {
+  id: string;
+  symbol: string;
+  side: string;
+  volume: number;
+  status: string;
+  profit: number;
+  openedAt: string;
+  closedAt?: string | null;
+  traderId: string;
+  traderName: string;
+};
+
+type ActivityOrder = {
+  id: string;
+  symbol: string;
+  side: string;
+  type: string;
+  volume: number;
+  status: string;
+  createdAt: string;
+  traderId: string;
+  traderName: string;
+};
+
+const POLL_MS = 5000;
 
 function Card({
   label,
@@ -35,25 +62,50 @@ function Card({
 
 export default function AdminDashboard() {
   const [kpis, setKpis] = useState<Kpis | null>(null);
+  const [positions, setPositions] = useState<ActivityPos[]>([]);
+  const [orders, setOrders] = useState<ActivityOrder[]>([]);
+  const [updatedAt, setUpdatedAt] = useState<string | null>(null);
   const [err, setErr] = useState("");
 
-  useEffect(() => {
-    fetch("/api/admin/stats")
-      .then(async (r) => {
-        if (!r.ok) throw new Error("Yüklenemedi");
-        return r.json();
-      })
-      .then((d) => setKpis(d.kpis))
-      .catch(() => setErr("KPI verileri alınamadı"));
+  const load = useCallback(async () => {
+    try {
+      const r = await fetch("/api/admin/stats", { cache: "no-store" });
+      if (!r.ok) throw new Error("Yüklenemedi");
+      const d = await r.json();
+      setKpis(d.kpis);
+      setPositions(d.recentActivity?.positions || []);
+      setOrders(d.recentActivity?.orders || []);
+      setUpdatedAt(d.generatedAt || new Date().toISOString());
+      setErr("");
+    } catch {
+      setErr("KPI verileri alınamadı");
+    }
   }, []);
+
+  useEffect(() => {
+    load();
+    const id = window.setInterval(load, POLL_MS);
+    return () => window.clearInterval(id);
+  }, [load]);
 
   return (
     <div>
-      <div className="mb-4">
-        <h1 className="text-lg font-semibold">Gösterge Paneli</h1>
-        <p className="mt-0.5 text-xs text-neutral-500">
-          M1 Finance Desk CRM · Trade engine ile 1:1 Account bağlantısı
-        </p>
+      <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
+        <div>
+          <h1 className="text-lg font-semibold">Gösterge Paneli</h1>
+          <p className="mt-0.5 text-xs text-neutral-500">
+            7FX Desk CRM · Trade engine ile canlı Account bağlantısı
+            {updatedAt
+              ? ` · ${new Date(updatedAt).toLocaleTimeString("tr-TR")}`
+              : ""}
+          </p>
+        </div>
+        <Link
+          href="/admin/positions"
+          className="rounded bg-black px-3 py-1.5 text-[11px] font-medium text-white"
+        >
+          Canlı pozisyonlar →
+        </Link>
       </div>
       {err && <p className="mb-3 text-sm text-red-400">{err}</p>}
       {!kpis && !err && (
@@ -81,6 +133,114 @@ export default function AdminDashboard() {
           <Card label="Toplam Hacim (lot)" value={Number(kpis.totalVolume).toFixed(2)} />
         </div>
       )}
+
+      <div className="mt-6 grid gap-4 lg:grid-cols-2">
+        <section className="rounded-lg border border-neutral-200 bg-[#ffffff]">
+          <div className="flex items-center justify-between border-b border-neutral-200 px-3 py-2">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
+              Son pozisyonlar
+            </h2>
+            <Link href="/admin/positions" className="text-[10px] text-sky-600 hover:underline">
+              Tümü
+            </Link>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-[11px]">
+              <thead className="text-neutral-500">
+                <tr>
+                  <th className="px-2 py-1.5">Sembol</th>
+                  <th className="px-2 py-1.5">Side</th>
+                  <th className="px-2 py-1.5">Vol</th>
+                  <th className="px-2 py-1.5">Kâr</th>
+                  <th className="px-2 py-1.5">Trader</th>
+                  <th className="px-2 py-1.5">Durum</th>
+                </tr>
+              </thead>
+              <tbody>
+                {positions.map((p) => (
+                  <tr key={p.id} className="border-t border-neutral-100">
+                    <td className="px-2 py-1.5 font-medium">{p.symbol}</td>
+                    <td className="px-2 py-1.5">{p.side}</td>
+                    <td className="px-2 py-1.5 tabular-nums">{p.volume}</td>
+                    <td
+                      className={`px-2 py-1.5 tabular-nums ${
+                        Number(p.profit) >= 0 ? "text-emerald-600" : "text-red-500"
+                      }`}
+                    >
+                      {Number(p.profit).toFixed(2)}
+                    </td>
+                    <td className="px-2 py-1.5">
+                      <Link href={`/admin/traders/${p.traderId}`} className="text-sky-600 hover:underline">
+                        {p.traderName}
+                      </Link>
+                    </td>
+                    <td className="px-2 py-1.5">{p.status}</td>
+                  </tr>
+                ))}
+                {positions.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="px-2 py-4 text-center text-neutral-400">
+                      Henüz pozisyon yok
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section className="rounded-lg border border-neutral-200 bg-[#ffffff]">
+          <div className="flex items-center justify-between border-b border-neutral-200 px-3 py-2">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
+              Son emirler
+            </h2>
+            <Link
+              href="/admin/positions?tab=orders"
+              className="text-[10px] text-sky-600 hover:underline"
+            >
+              Tümü
+            </Link>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-[11px]">
+              <thead className="text-neutral-500">
+                <tr>
+                  <th className="px-2 py-1.5">Sembol</th>
+                  <th className="px-2 py-1.5">Tip</th>
+                  <th className="px-2 py-1.5">Side</th>
+                  <th className="px-2 py-1.5">Vol</th>
+                  <th className="px-2 py-1.5">Trader</th>
+                  <th className="px-2 py-1.5">Durum</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orders.map((o) => (
+                  <tr key={o.id} className="border-t border-neutral-100">
+                    <td className="px-2 py-1.5 font-medium">{o.symbol}</td>
+                    <td className="px-2 py-1.5">{o.type}</td>
+                    <td className="px-2 py-1.5">{o.side}</td>
+                    <td className="px-2 py-1.5 tabular-nums">{o.volume}</td>
+                    <td className="px-2 py-1.5">
+                      <Link href={`/admin/traders/${o.traderId}`} className="text-sky-600 hover:underline">
+                        {o.traderName}
+                      </Link>
+                    </td>
+                    <td className="px-2 py-1.5">{o.status}</td>
+                  </tr>
+                ))}
+                {orders.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="px-2 py-4 text-center text-neutral-400">
+                      Henüz emir yok
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
       <div className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
         {[
           { href: "/admin/traders", title: "Traderlar", desc: "Filtreler, üyelik, trading Account" },

@@ -124,6 +124,13 @@ export async function PATCH(req: Request, ctx: Ctx) {
     if (target.id === admin.id && !body.active) {
       return NextResponse.json({ error: "Kendinizi donduramazsınız" }, { status: 400 });
     }
+    const envAdmin = String(process.env.ADMIN_EMAIL || "").trim().toLowerCase();
+    if (!body.active && envAdmin && target.email === envAdmin) {
+      return NextResponse.json(
+        { error: "Prod ADMIN_EMAIL hesabı dondurulamaz" },
+        { status: 400 }
+      );
+    }
     data.active = body.active;
   }
   if (body.role !== undefined) {

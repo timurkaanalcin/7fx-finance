@@ -4,35 +4,79 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { StatusBadge } from "@/components/crm/StubPage";
 
+const POLL_MS = 4000;
+
 export default function PositionsPage() {
   const [tab, setTab] = useState<"OPEN" | "CLOSED" | "ALL" | "ORDERS">("OPEN");
   const [rows, setRows] = useState<Record<string, unknown>[]>([]);
   const [orders, setOrders] = useState<Record<string, unknown>[]>([]);
+  const [updatedAt, setUpdatedAt] = useState<string | null>(null);
+  const [live, setLive] = useState(true);
+  const [err, setErr] = useState("");
 
   const load = useCallback(async () => {
-    if (tab === "ORDERS") {
-      const res = await fetch("/api/admin/positions?tab=orders");
-      if (!res.ok) return;
+    try {
+      if (tab === "ORDERS") {
+        const res = await fetch("/api/admin/positions?tab=orders", { cache: "no-store" });
+        if (!res.ok) {
+          setErr("Emirler yüklenemedi");
+          return;
+        }
+        const data = await res.json();
+        setOrders(data.orders || []);
+        setUpdatedAt(data.generatedAt || new Date().toISOString());
+        setErr("");
+        return;
+      }
+      const res = await fetch(`/api/admin/positions?status=${tab}`, { cache: "no-store" });
+      if (!res.ok) {
+        setErr("Pozisyonlar yüklenemedi");
+        return;
+      }
       const data = await res.json();
-      setOrders(data.orders || []);
-      return;
+      setRows(data.positions || []);
+      setUpdatedAt(data.generatedAt || new Date().toISOString());
+      setErr("");
+    } catch {
+      setErr("Bağlantı hatası");
     }
-    const res = await fetch(`/api/admin/positions?status=${tab}`);
-    if (!res.ok) return;
-    const data = await res.json();
-    setRows(data.positions || []);
   }, [tab]);
 
   useEffect(() => {
     load();
   }, [load]);
 
+  useEffect(() => {
+    if (!live) return;
+    const id = window.setInterval(() => {
+      load();
+    }, POLL_MS);
+    return () => window.clearInterval(id);
+  }, [live, load]);
+
   return (
     <div>
-      <h1 className="mb-3 text-lg font-semibold">Pozisyonlar / Emirler</h1>
-      <p className="mb-3 text-[11px] text-neutral-500">
-        Trade engine verisi — her satır trader üyeliğinin 1:1 Account kaydına bağlıdır.
-      </p>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h1 className="text-lg font-semibold">Pozisyonlar / Emirler</h1>
+          <p className="mt-0.5 text-[11px] text-neutral-500">
+            Trade engine verisi — trader emir/pozisyon aç-kapa anında CRM&apos;e yansır
+            {updatedAt
+              ? ` · son güncelleme ${new Date(updatedAt).toLocaleTimeString("tr-TR")}`
+              : ""}
+          </p>
+        </div>
+        <label className="flex items-center gap-2 text-[11px] text-neutral-600">
+          <input
+            type="checkbox"
+            checked={live}
+            onChange={(e) => setLive(e.target.checked)}
+            className="rounded border-neutral-300"
+          />
+          Canlı ({POLL_MS / 1000}sn)
+        </label>
+      </div>
+      {err && <p className="mb-2 text-xs text-red-500">{err}</p>}
       <div className="mb-3 flex gap-1">
         {(["OPEN", "CLOSED", "ALL", "ORDERS"] as const).map((t) => (
           <button
@@ -43,6 +87,13 @@ export default function PositionsPage() {
             {t === "OPEN" ? "Açık" : t === "CLOSED" ? "Kapalı" : t === "ALL" ? "Tümü" : "Emirler"}
           </button>
         ))}
+        <button
+          type="button"
+          onClick={() => load()}
+          className="ml-auto rounded bg-neutral-100 px-3 py-1 text-xs text-neutral-600 hover:bg-neutral-200"
+        >
+          Yenile
+        </button>
       </div>
       <div className="overflow-x-auto rounded-lg border border-neutral-200">
         <table className="w-full text-left text-[11px]">
@@ -131,6 +182,20 @@ export default function PositionsPage() {
                     </td>
                   </tr>
                 ))}
+            {tab === "ORDERS" && orders.length === 0 && (
+              <tr>
+                <td colSpan={7} className="px-2 py-6 text-center text-neutral-400">
+                  Emir yok
+                </td>
+              </tr>
+            )}
+            {tab !== "ORDERS" && rows.length === 0 && (
+              <tr>
+                <td colSpan={10} className="px-2 py-6 text-center text-neutral-400">
+                  Pozisyon yok
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

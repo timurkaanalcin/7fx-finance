@@ -169,17 +169,29 @@ async function ensureAdminUser() {
 
   const existing = await prisma.user.findUnique({ where: { email: creds.email } });
   if (existing) {
-    if (existing.role !== "ADMIN") {
-      await prisma.user.update({ where: { id: existing.id }, data: { role: "ADMIN" } });
-    }
-    // Rotate password only when ADMIN_PASSWORD env is explicitly set for an existing admin.
+    // Always keep the configured env/dev admin unfrozen + ADMIN.
+    // Previously only ADMIN_ROTATE_PASSWORD=1 restored active:true, so a freeze
+    // (or accidental seed) left prod admin stuck on "Hesap dondurulmuş".
+    const patch: { role: string; active: boolean; passwordHash?: string } = {
+      role: "ADMIN",
+      active: true,
+    };
+    let rotated = false;
     if (creds.source === "env" && process.env.ADMIN_ROTATE_PASSWORD === "1") {
-      const passwordHash = await bcrypt.hash(creds.password, 10);
-      await prisma.user.update({
-        where: { id: existing.id },
-        data: { passwordHash, active: true, role: "ADMIN" },
-      });
-      console.log("[7fx] Rotated admin password from env for", creds.email);
+      patch.passwordHash = await bcrypt.hash(creds.password, 10);
+      rotated = true;
+    }
+    const needsPatch =
+      existing.role !== "ADMIN" ||
+      existing.active === false ||
+      rotated;
+    if (needsPatch) {
+      await prisma.user.update({ where: { id: existing.id }, data: patch });
+      if (rotated) {
+        console.log("[7fx] Rotated admin password from env for", creds.email);
+      } else if (existing.active === false) {
+        console.log("[7fx] Re-activated frozen seed admin", creds.email);
+      }
     }
     return;
   }

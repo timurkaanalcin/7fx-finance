@@ -73,6 +73,18 @@ export default function AdminSettingsPage() {
         </p>
       </div>
 
+      <section className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-4 md:p-5">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-emerald-800">
+          Canlı CRM aktivitesi
+        </h2>
+        <p className="mt-2 text-sm text-emerald-900/80">
+          Trader terminalindeki emir ve pozisyon aç/kapa işlemleri aynı veritabanına
+          yazılır. Admin <strong>Pozisyonlar</strong> ve gösterge paneli birkaç saniyede
+          bir yenilenerek canlı trade aktivitesini gösterir. Trader detayındaki Pozisyonlar
+          sekmesi de canlıdır.
+        </p>
+      </section>
+
       <section className="rounded-xl border border-neutral-200 bg-[#ffffff] p-4 md:p-5">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-500">
           Referans Kodu

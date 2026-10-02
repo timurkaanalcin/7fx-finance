@@ -205,6 +205,16 @@ export default function AdminUserDetailPage() {
     load();
   }, [load]);
 
+  // Live refresh while viewing trading tabs so CRM mirrors terminal open/close.
+  useEffect(() => {
+    if (!id) return;
+    if (tab !== "pozisyonlar" && tab !== "finans") return;
+    const timer = window.setInterval(() => {
+      load();
+    }, 5000);
+    return () => window.clearInterval(timer);
+  }, [id, tab, load]);
+
   function setF(key: string, v: string) {
     if (key === "isResident" || key === "ftd" || key === "active") {
       setForm((prev) => ({ ...prev, [key]: v === "true" }));

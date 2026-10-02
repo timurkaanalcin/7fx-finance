@@ -160,7 +160,16 @@ export async function POST(req: Request) {
 
     if (bulkAction === "freeze" || bulkAction === "activate") {
       const active = bulkAction === "activate";
-      const ids = userIds.filter((id) => !(id === admin.id && !active));
+      const envAdmin = String(process.env.ADMIN_EMAIL || "").trim().toLowerCase();
+      let ids = userIds.filter((id) => !(id === admin.id && !active));
+      if (!active && envAdmin) {
+        const protectedRows = await prisma.user.findMany({
+          where: { id: { in: ids }, email: envAdmin },
+          select: { id: true },
+        });
+        const blocked = new Set(protectedRows.map((r) => r.id));
+        ids = ids.filter((id) => !blocked.has(id));
+      }
       await prisma.user.updateMany({
         where: { id: { in: ids } },
         data: { active },
@@ -231,6 +240,13 @@ export async function POST(req: Request) {
     const active = Boolean(body.active);
     if (target.id === admin.id && !active) {
       return NextResponse.json({ error: "Kendinizi donduramazsınız" }, { status: 400 });
+    }
+    const envAdmin = String(process.env.ADMIN_EMAIL || "").trim().toLowerCase();
+    if (!active && envAdmin && target.email === envAdmin) {
+      return NextResponse.json(
+        { error: "Prod ADMIN_EMAIL hesabı dondurulamaz" },
+        { status: 400 }
+      );
     }
     await prisma.user.update({ where: { id: userId }, data: { active } });
     await writeAudit({
