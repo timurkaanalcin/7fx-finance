@@ -91,6 +91,11 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
+  const entity = String(body.entity || body.kind || "position").toLowerCase();
+  if (entity === "order") {
+    return patchOrder(admin.id, body);
+  }
+
   const id = String(body.id || "").trim();
   if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
 
@@ -98,6 +103,24 @@ export async function PATCH(req: Request) {
   if (!existing) return NextResponse.json({ error: "Position not found" }, { status: 404 });
 
   const data: Record<string, unknown> = {};
+
+  if (body.symbol != null && String(body.symbol).trim()) {
+    data.symbol = String(body.symbol).trim().toUpperCase();
+  }
+  if (body.side != null) {
+    const side = String(body.side).toUpperCase();
+    if (side !== "BUY" && side !== "SELL") {
+      return NextResponse.json({ error: "side must be BUY or SELL" }, { status: 400 });
+    }
+    data.side = side;
+  }
+  if (body.openedAt != null && body.openedAt !== "") {
+    const d = new Date(String(body.openedAt));
+    if (Number.isNaN(d.getTime())) {
+      return NextResponse.json({ error: "Invalid openedAt" }, { status: 400 });
+    }
+    data.openedAt = d;
+  }
 
   if (body.volume != null) {
     const v = Number(body.volume);
@@ -249,4 +272,88 @@ export async function PATCH(req: Request) {
   });
 
   return NextResponse.json({ ok: true, position: updated });
+}
+
+
+/** PATCH order row (admin): symbol, side, type, volume, price, status, createdAt */
+async function patchOrder(adminId: string, body: Record<string, unknown>) {
+  const id = String(body.id || "").trim();
+  if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
+  const existing = await prisma.order.findUnique({ where: { id } });
+  if (!existing) return NextResponse.json({ error: "Order not found" }, { status: 404 });
+
+  const data: Record<string, unknown> = {};
+  if (body.symbol != null && String(body.symbol).trim()) {
+    data.symbol = String(body.symbol).trim().toUpperCase();
+  }
+  if (body.side != null) {
+    const side = String(body.side).toUpperCase();
+    if (side !== "BUY" && side !== "SELL") {
+      return NextResponse.json({ error: "side must be BUY or SELL" }, { status: 400 });
+    }
+    data.side = side;
+  }
+  if (body.type != null) {
+    const typ = String(body.type).toUpperCase();
+    if (!["MARKET", "LIMIT", "STOP"].includes(typ)) {
+      return NextResponse.json({ error: "Invalid order type" }, { status: 400 });
+    }
+    data.type = typ;
+  }
+  if (body.volume != null) {
+    const v = Number(body.volume);
+    if (!Number.isFinite(v) || v <= 0) {
+      return NextResponse.json({ error: "Invalid volume" }, { status: 400 });
+    }
+    data.volume = v;
+  }
+  if (body.price !== undefined) {
+    if (body.price === null || body.price === "") data.price = null;
+    else {
+      const v = Number(body.price);
+      if (!Number.isFinite(v)) return NextResponse.json({ error: "Invalid price" }, { status: 400 });
+      data.price = v;
+    }
+  }
+  if (body.openPrice !== undefined) {
+    if (body.openPrice === null || body.openPrice === "") data.openPrice = null;
+    else {
+      const v = Number(body.openPrice);
+      if (!Number.isFinite(v)) return NextResponse.json({ error: "Invalid openPrice" }, { status: 400 });
+      data.openPrice = v;
+    }
+  }
+  if (body.status != null) {
+    const st = String(body.status).toUpperCase();
+    if (!["PENDING", "FILLED", "CANCELLED", "REJECTED"].includes(st)) {
+      return NextResponse.json({ error: "Invalid order status" }, { status: 400 });
+    }
+    data.status = st;
+  }
+  if (body.createdAt != null && body.createdAt !== "") {
+    const d = new Date(String(body.createdAt));
+    if (Number.isNaN(d.getTime())) {
+      return NextResponse.json({ error: "Invalid createdAt" }, { status: 400 });
+    }
+    data.createdAt = d;
+  }
+  if (body.filledAt !== undefined) {
+    if (body.filledAt === null || body.filledAt === "") data.filledAt = null;
+    else {
+      const d = new Date(String(body.filledAt));
+      if (Number.isNaN(d.getTime())) {
+        return NextResponse.json({ error: "Invalid filledAt" }, { status: 400 });
+      }
+      data.filledAt = d;
+    }
+  }
+
+  const updated = await prisma.order.update({ where: { id }, data });
+  await writeAudit({
+    adminId,
+    action: "EDIT_ORDER",
+    targetId: id,
+    meta: { before: existing, after: updated },
+  });
+  return NextResponse.json({ ok: true, order: updated });
 }

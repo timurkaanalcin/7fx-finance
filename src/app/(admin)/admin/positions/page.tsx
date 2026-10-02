@@ -4,6 +4,12 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { StatusBadge } from "@/components/crm/StubPage";
 import { fmtMoney, fmtNum } from "@/lib/format";
+import {
+  fmtCrmDate,
+  fromDatetimeLocalValue,
+  toDatetimeLocalValue,
+} from "@/lib/crm-format";
+import EditableOrdersTable from "@/components/crm/EditableOrdersTable";
 
 const POLL_MS = 4000;
 
@@ -11,6 +17,8 @@ type PosRow = Record<string, unknown>;
 
 type EditDraft = {
   id: string;
+  symbol: string;
+  side: string;
   volume: string;
   openPrice: string;
   currentPrice: string;
@@ -18,16 +26,20 @@ type EditDraft = {
   profit: string;
   closeProfit: string;
   status: "OPEN" | "CLOSED";
+  openedAt: string;
+  closedAt: string;
 };
 
 function toDraft(p: PosRow): EditDraft {
   return {
     id: String(p.id),
+    symbol: String(p.symbol ?? ""),
+    side: String(p.side ?? "BUY").toUpperCase() === "SELL" ? "SELL" : "BUY",
     volume: String(p.volume ?? ""),
     openPrice: String(p.openPrice ?? ""),
     currentPrice: String(p.currentPrice ?? ""),
     closePrice: p.closePrice != null ? String(p.closePrice) : "",
-    profit: String(p.profit ?? "0"),
+    profit: Number.isFinite(Number(p.profit)) ? String(Number(p.profit)) : "0",
     closeProfit:
       p.closeProfit != null
         ? String(p.closeProfit)
@@ -35,6 +47,8 @@ function toDraft(p: PosRow): EditDraft {
           ? String(p.profit ?? "0")
           : "",
     status: String(p.status) === "CLOSED" ? "CLOSED" : "OPEN",
+    openedAt: toDatetimeLocalValue(p.openedAt),
+    closedAt: toDatetimeLocalValue(p.closedAt),
   };
 }
 
@@ -109,14 +123,19 @@ export default function PositionsPage() {
     setMsg("");
     setErr("");
     try {
+      const openedAt = fromDatetimeLocalValue(draft.openedAt);
+      const closedAt = fromDatetimeLocalValue(draft.closedAt);
       const payload: Record<string, unknown> = {
         id: draft.id,
+        symbol: draft.symbol.trim().toUpperCase(),
+        side: draft.side,
         volume: Number(draft.volume),
         openPrice: Number(draft.openPrice),
         currentPrice: Number(draft.currentPrice),
         profit: Number(draft.profit),
         status: draft.status,
       };
+      if (openedAt) payload.openedAt = openedAt;
       if (draft.closePrice !== "") payload.closePrice = Number(draft.closePrice);
       if (draft.closeProfit !== "") payload.closeProfit = Number(draft.closeProfit);
       // When closing, ensure custom PnL is applied (e.g. Nejat +102)
@@ -128,6 +147,7 @@ export default function PositionsPage() {
         if (draft.closePrice === "") {
           payload.closePrice = Number(draft.currentPrice);
         }
+        if (closedAt) payload.closedAt = closedAt;
       } else {
         payload.clearCloseFields = true;
       }
@@ -204,21 +224,13 @@ export default function PositionsPage() {
           Refresh
         </button>
       </div>
+      {tab === "ORDERS" ? (
+        <EditableOrdersTable rows={orders} onSaved={() => load()} />
+      ) : (
       <div className="overflow-x-auto rounded-lg border border-neutral-200">
         <table className="w-full text-left text-[11px]">
           <thead className="bg-[#ffffff] text-neutral-500">
-            {tab === "ORDERS" ? (
-              <tr>
-                <th className="px-2 py-2">Symbol</th>
-                <th className="px-2 py-2">Side</th>
-                <th className="px-2 py-2">Type</th>
-                <th className="px-2 py-2">Volume</th>
-                <th className="px-2 py-2">Trader</th>
-                <th className="px-2 py-2">Status</th>
-                <th className="px-2 py-2">Date</th>
-              </tr>
-            ) : (
-              <tr>
+            <tr>
                 <th className="px-2 py-2">Symbol</th>
                 <th className="px-2 py-2">Side</th>
                 <th className="px-2 py-2">Volume</th>
@@ -227,44 +239,19 @@ export default function PositionsPage() {
                 <th className="px-2 py-2">Close</th>
                 <th className="px-2 py-2">Profit</th>
                 <th className="px-2 py-2">Realized</th>
+                <th className="px-2 py-2">Opened</th>
+                <th className="px-2 py-2">Closed</th>
                 <th className="px-2 py-2">Trader</th>
                 <th className="px-2 py-2">Status</th>
                 <th className="px-2 py-2">Edit</th>
               </tr>
-            )}
           </thead>
           <tbody>
-            {tab === "ORDERS"
-              ? orders.map((o) => {
-                  const u = o.user as { id: string; name: string } | undefined;
-                  return (
-                    <tr key={String(o.id)} className="border-t border-neutral-200">
-                      <td className="px-2 py-1.5 font-medium">{String(o.symbol)}</td>
-                      <td className="px-2 py-1.5">{String(o.side)}</td>
-                      <td className="px-2 py-1.5">{String(o.type)}</td>
-                      <td className="px-2 py-1.5 tabular-nums">{fmtNum(Number(o.volume), 2)}</td>
-                      <td className="px-2 py-1.5">
-                        {u ? (
-                          <Link href={`/admin/traders/${u.id}`} className="text-sky-400 hover:underline">
-                            {u.name}
-                          </Link>
-                        ) : (
-                          "—"
-                        )}
-                      </td>
-                      <td className="px-2 py-1.5">
-                        <StatusBadge status={String(o.status)} />
-                      </td>
-                      <td className="px-2 py-1.5 text-neutral-500">
-                        {new Date(String(o.createdAt)).toLocaleString("en-US")}
-                      </td>
-                    </tr>
-                  );
-                })
-              : rows.map((p) => {
+            {rows.map((p) => {
                   const id = String(p.id);
                   const isEdit = editingId === id && draft;
-                  const profit = Number(isEdit ? draft!.profit : p.profit);
+                  const profitRaw = Number(isEdit ? draft!.profit : p.profit);
+                  const profit = Number.isFinite(profitRaw) ? profitRaw : 0;
                   const realized =
                     isEdit && draft!.closeProfit !== ""
                       ? Number(draft!.closeProfit)
@@ -276,8 +263,31 @@ export default function PositionsPage() {
                       key={id}
                       className={`border-t border-neutral-200 ${isEdit ? "bg-amber-50/60" : ""}`}
                     >
-                      <td className="px-2 py-1.5 font-medium">{String(p.symbol)}</td>
-                      <td className="px-2 py-1.5">{String(p.side)}</td>
+                      <td className="px-2 py-1.5 font-medium">
+                        {isEdit ? (
+                          <input
+                            className="w-20 rounded border border-neutral-300 px-1 py-0.5"
+                            value={draft!.symbol}
+                            onChange={(e) => setDraft({ ...draft!, symbol: e.target.value })}
+                          />
+                        ) : (
+                          String(p.symbol)
+                        )}
+                      </td>
+                      <td className="px-2 py-1.5">
+                        {isEdit ? (
+                          <select
+                            className="rounded border border-neutral-300 px-1 py-0.5"
+                            value={draft!.side}
+                            onChange={(e) => setDraft({ ...draft!, side: e.target.value })}
+                          >
+                            <option value="BUY">BUY</option>
+                            <option value="SELL">SELL</option>
+                          </select>
+                        ) : (
+                          String(p.side)
+                        )}
+                      </td>
                       <td className="px-2 py-1.5 tabular-nums">
                         {isEdit ? (
                           <input
@@ -366,6 +376,31 @@ export default function PositionsPage() {
                           "—"
                         )}
                       </td>
+                      <td className="px-2 py-1.5 whitespace-nowrap text-neutral-600">
+                        {isEdit ? (
+                          <input
+                            type="datetime-local"
+                            className="rounded border border-neutral-300 px-1 py-0.5"
+                            value={draft!.openedAt}
+                            onChange={(e) => setDraft({ ...draft!, openedAt: e.target.value })}
+                          />
+                        ) : (
+                          fmtCrmDate(p.openedAt)
+                        )}
+                      </td>
+                      <td className="px-2 py-1.5 whitespace-nowrap text-neutral-600">
+                        {isEdit ? (
+                          <input
+                            type="datetime-local"
+                            className="rounded border border-neutral-300 px-1 py-0.5"
+                            value={draft!.closedAt}
+                            disabled={draft!.status !== "CLOSED"}
+                            onChange={(e) => setDraft({ ...draft!, closedAt: e.target.value })}
+                          />
+                        ) : (
+                          fmtCrmDate(p.closedAt)
+                        )}
+                      </td>
                       <td className="px-2 py-1.5">
                         <Link
                           href={`/admin/traders/${(p.user as { id: string }).id}`}
@@ -426,16 +461,9 @@ export default function PositionsPage() {
                     </tr>
                   );
                 })}
-            {tab === "ORDERS" && orders.length === 0 && (
+            {rows.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-2 py-6 text-center text-neutral-400">
-                  No orders
-                </td>
-              </tr>
-            )}
-            {tab !== "ORDERS" && rows.length === 0 && (
-              <tr>
-                <td colSpan={11} className="px-2 py-6 text-center text-neutral-400">
+                <td colSpan={13} className="px-2 py-6 text-center text-neutral-400">
                   No positions
                 </td>
               </tr>
@@ -443,6 +471,7 @@ export default function PositionsPage() {
           </tbody>
         </table>
       </div>
+      )}
       {editingId && draft?.status === "CLOSED" && (
         <p className="mt-2 text-[11px] text-neutral-500">
           Tip: set <strong>Realized</strong> to the closed PnL (e.g. <code>102</code> for +102.00 USD)

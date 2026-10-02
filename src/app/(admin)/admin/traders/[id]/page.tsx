@@ -1,6 +1,9 @@
 "use client";
 
 import { LOCALES } from "@/lib/i18n/locales";
+import EditablePositionsTable from "@/components/crm/EditablePositionsTable";
+import EditableOrdersTable from "@/components/crm/EditableOrdersTable";
+import { fmtCrmDate, fmtCrmMoney } from "@/lib/crm-format";
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -563,15 +566,15 @@ export default function AdminUserDetailPage() {
       {tab === "pozisyonlar" && (
         <div className="space-y-4">
           <div>
-            <h2 className="mb-2 text-sm font-medium">Live pozisyonlar (trade engine)</h2>
-            <MiniTable
-              cols={["symbol", "side", "volume", "openPrice", "currentPrice", "profit", "status", "openedAt"]}
-              rows={positions}
-            />
+            <h2 className="mb-2 text-sm font-medium">Positions (full edit)</h2>
+            <p className="mb-2 text-[11px] text-neutral-500">
+              Edit symbol, side, volume, prices, profit / realized PnL, status, opened/closed dates. Save writes to the trade engine DB.
+            </p>
+            <EditablePositionsTable rows={positions} onSaved={() => load()} />
           </div>
           <div>
-            <h2 className="mb-2 text-sm font-medium">Orderler</h2>
-            <MiniTable cols={["symbol", "side", "type", "volume", "status", "createdAt"]} rows={orders} />
+            <h2 className="mb-2 text-sm font-medium">Orders (full edit)</h2>
+            <EditableOrdersTable rows={orders} onSaved={() => load()} />
           </div>
         </div>
       )}
@@ -661,6 +664,25 @@ export default function AdminUserDetailPage() {
   );
 }
 
+function cellValue(col: string, value: unknown): string {
+  if (value == null || value === "") return "—";
+  const lc = col.toLowerCase();
+  if (lc.includes("at") || lc === "createdat" || lc === "remindat" || lc.endsWith("date")) {
+    return fmtCrmDate(value);
+  }
+  if (
+    ["profit", "closeprofit", "volume", "openprice", "currentprice", "closeprice", "amount", "balance", "balancebefore", "balanceafter", "credit", "bonus", "margin"].includes(
+      lc
+    )
+  ) {
+    const n = Number(value);
+    if (!Number.isFinite(n)) return "—";
+    const digits = lc.includes("price") ? 5 : 2;
+    return fmtCrmMoney(n, digits);
+  }
+  return String(value);
+}
+
 function MiniTable({ cols, rows }: { cols: string[]; rows: Record<string, unknown>[] }) {
   return (
     <div className="overflow-x-auto rounded-xl border border-[#e5e5e5]">
@@ -679,11 +701,7 @@ function MiniTable({ cols, rows }: { cols: string[]; rows: Record<string, unknow
             <tr key={String(r.id || i)} className="border-t border-[#e5e5e5]">
               {cols.map((c) => (
                 <td key={c} className="px-3 py-2 tabular-nums">
-                  {r[c] == null
-                    ? "—"
-                    : c.toLowerCase().includes("at") || c === "createdAt"
-                      ? new Date(String(r[c])).toLocaleString("en-US")
-                      : String(r[c])}
+                  {cellValue(c, r[c])}
                 </td>
               ))}
             </tr>
@@ -691,7 +709,7 @@ function MiniTable({ cols, rows }: { cols: string[]; rows: Record<string, unknow
           {rows.length === 0 && (
             <tr>
               <td colSpan={cols.length} className="px-3 py-8 text-center text-neutral-500">
-                Registered yok
+                No records
               </td>
             </tr>
           )}
