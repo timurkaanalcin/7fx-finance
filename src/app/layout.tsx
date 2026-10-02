@@ -27,6 +27,15 @@ export const metadata: Metadata = {
       "7FX international broker / trading platform: stocks, crypto, forex and commodities — secure session, 24/7 access.",
     images: [{ url: "/7fx-logo.png", width: 1200, height: 630, alt: "7FX" }],
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "7FX",
+  },
+  applicationName: "7FX",
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -52,7 +61,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        {children}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){})})}`,
+          }}
+        />
+      </body>
     </html>
   );
 }

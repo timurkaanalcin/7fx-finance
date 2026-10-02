@@ -434,26 +434,35 @@ export default function LandingPage() {
                   href="/login"
                   className="fx-btn-secondary inline-flex min-h-[48px] items-center justify-center rounded-full px-6 text-[14px] font-semibold sm:min-h-[52px] sm:px-8 sm:text-[15px]"
                 >
-                  Sign In yap
+                  Sign in
                 </Link>
-                <a
+                                <a
                   href="/apk"
                   className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full border border-[rgba(16,20,37,0.14)] bg-[#111111] px-5 text-[14px] font-semibold text-white shadow-[0_10px_24px_rgba(0,0,0,0.18)] transition hover:bg-[#2a2a2a] sm:min-h-[52px] sm:px-6 sm:text-[15px]"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
                     <path d="M17.6 9.48l1.84-3.18a.5.5 0 00-.86-.5l-1.86 3.22A7.9 7.9 0 0012 7.5c-1.62 0-3.12.48-4.36 1.3L5.78 5.8a.5.5 0 10-.86.5L6.76 9.48A7.96 7.96 0 004 15.5v.5h16v-.5a7.96 7.96 0 00-2.4-6.02zM8.5 13.25a.75.75 0 110-1.5.75.75 0 010 1.5zm7 0a.75.75 0 110-1.5.75.75 0 010 1.5zM7 17.5h10v1.25c0 .69-.56 1.25-1.25 1.25H8.25C7.56 20 7 19.44 7 18.75V17.5z" />
                   </svg>
-                  Download the app
+                  Android · Install app
                 </a>
+                <Link
+                  href="/ios"
+                  className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full border border-[rgba(16,20,37,0.14)] bg-white px-5 text-[14px] font-semibold text-[#111111] shadow-[0_8px_20px_rgba(16,20,37,0.06)] transition hover:bg-[#f7f8fa] sm:min-h-[52px] sm:px-6 sm:text-[15px]"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.22-1.98 1.08-3.13-1.05.04-2.31.7-3.06 1.58-.67.78-1.25 2.05-1.09 3.25 1.15.09 2.33-.66 3.07-1.7z" />
+                  </svg>
+                  iOS · Add to Home Screen
+                </Link>
               </div>
 
               <div className="fx-trust-row mt-10 flex flex-wrap items-center gap-x-6 gap-y-3">
                 {[
                   { label: "In partnership with ING Bank", icon: "★" },
-                  { label: "40+ sembol", icon: "◆" },
+                  { label: "40+ symbols", icon: "◆" },
                   { label: "24/7 access", icon: "●" },
                   { label: "SSL session", icon: "▣" },
-                  { label: "PWA uyumlu", icon: "◈" },
+                  { label: "PWA ready", icon: "◈" },
                 ].map((t) => (
                   <div key={t.label} className="flex items-center gap-2 text-[13px] text-[#5c657a]">
                     <span className="text-[10px] text-[#111111]" aria-hidden>
@@ -698,14 +707,15 @@ export default function LandingPage() {
                 Her yerden takip edin
               </h2>
               <p className="mt-4 max-w-[480px] text-[14px] leading-relaxed text-[#5c657a]">
-                Landing and auth pages are mobile-first. The terminal experience is available on the web;
-                portfolio balance and watchlist at a glance.
+                Landing and auth pages are mobile-first. Install on Android (APK) or iOS (Add to Home Screen / PWA)
+                for an app-like experience — portfolio, watchlist and trade terminal at a glance.
               </p>
               <ul className="mt-7 space-y-3">
                 {[
                   "Responsive header and hamburger menu",
                   "Portfolio view with phone preview",
                   "Login / register CTAs reachable on every screen",
+                  "Android APK download · iOS Home Screen install",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-3 text-[14px] text-[#5c657a]">
                     <span
@@ -725,15 +735,24 @@ export default function LandingPage() {
                 >
                   Open account
                 </Link>
-                <a
+                                <a
                   href="/apk"
                   className="inline-flex min-h-[48px] items-center gap-2 rounded-full bg-[#111111] px-6 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(0,0,0,0.18)] transition hover:bg-[#2a2a2a]"
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
                     <path d="M17.6 9.48l1.84-3.18a.5.5 0 00-.86-.5l-1.86 3.22A7.9 7.9 0 0012 7.5c-1.62 0-3.12.48-4.36 1.3L5.78 5.8a.5.5 0 10-.86.5L6.76 9.48A7.96 7.96 0 004 15.5v.5h16v-.5a7.96 7.96 0 00-2.4-6.02zM8.5 13.25a.75.75 0 110-1.5.75.75 0 010 1.5zm7 0a.75.75 0 110-1.5.75.75 0 010 1.5zM7 17.5h10v1.25c0 .69-.56 1.25-1.25 1.25H8.25C7.56 20 7 19.44 7 18.75V17.5z" />
                   </svg>
-                  Download the app
+                  Android · Install app
                 </a>
+                <Link
+                  href="/ios"
+                  className="inline-flex min-h-[48px] items-center gap-2 rounded-full border border-[rgba(16,20,37,0.14)] bg-white px-6 text-sm font-semibold text-[#111111] shadow-[0_8px_20px_rgba(16,20,37,0.06)] transition hover:bg-[#f7f8fa]"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.22-1.98 1.08-3.13-1.05.04-2.31.7-3.06 1.58-.67.78-1.25 2.05-1.09 3.25 1.15.09 2.33-.66 3.07-1.7z" />
+                  </svg>
+                  iOS · Add to Home Screen
+                </Link>
               </div>
             </div>
 
@@ -747,13 +766,13 @@ export default function LandingPage() {
                     className="h-9 w-auto object-contain"
                   />
                   <span className="rounded-full bg-[#111111]/12 px-3 py-1 text-[11px] font-semibold text-[#111111]">
-                    Web uygulama
+                    Web app
                   </span>
                 </div>
                 <div className="space-y-3">
                   {[
                     { t: "Live prices", d: "Watchlist" },
-                    { t: "Order paneli", d: "Al / Sat" },
+                    { t: "Order panel", d: "Buy / Sell" },
                     { t: "Portfolio", d: "Balance & P&L" },
                   ].map((row) => (
                     <div
@@ -774,7 +793,7 @@ export default function LandingPage() {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/7fx-mark.png" alt="" className="h-8 w-8 rounded-lg object-contain" />
                   <div>
-                    <p className="text-[13px] font-semibold text-white">7FX ile devam edin</p>
+                    <p className="text-[13px] font-semibold text-white">Continue with 7FX</p>
                     <p className="text-[11px] text-white/70">Sign in or create an account</p>
                   </div>
                 </div>
