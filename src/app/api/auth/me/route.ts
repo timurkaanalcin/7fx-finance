@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
-import { requireUser, permissionsOf } from "@/lib/auth";
+import { requireUser, permissionsOf, getSession } from "@/lib/auth";
 import { refreshAccountMetrics, processPendingOrders, checkSlTp } from "@/lib/trading";
 
 export async function GET() {
   const user = await requireUser();
   if (!user) return NextResponse.json({ error: "No session" }, { status: 401 });
+  const session = await getSession();
   await processPendingOrders(user.id);
   await checkSlTp(user.id);
   const metrics = await refreshAccountMetrics(user.id);
@@ -16,6 +17,7 @@ export async function GET() {
       role: user.role || "TRADER",
       active: (user as { active?: boolean }).active !== false,
       accountLoginId: (user as { accountLoginId?: string | null }).accountLoginId ?? null,
+      impersonatedBy: session?.impersonatedBy ?? null,
     },
     account: metrics,
     permissions: permissionsOf(user),

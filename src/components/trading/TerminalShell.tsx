@@ -244,6 +244,25 @@ export default function TerminalShell() {
         onDeposit={() => setDepositOpen(true)}
         onLogout={onLogout}
       />
+      {user.impersonatedBy && (
+        <div className="flex items-center justify-center gap-3 border-b border-sky-500/40 bg-sky-600/90 px-3 py-1.5 text-center text-[11px] font-medium text-white">
+          <span>
+            Viewing terminal as <strong>{user.name}</strong> ({user.email}) — admin impersonation
+          </span>
+          <button
+            type="button"
+            className="rounded bg-white/20 px-2 py-0.5 hover:bg-white/30"
+            onClick={async () => {
+              const res = await fetch("/api/admin/impersonate", { method: "DELETE" });
+              const data = await res.json().catch(() => ({}));
+              if (res.ok) window.location.href = data.redirect || "/admin";
+              else alert(data.error || "Could not exit impersonation");
+            }}
+          >
+            Back to admin
+          </button>
+        </div>
+      )}
       {priceError && (
         <div className="border-b border-desk-warn/30 bg-desk-warn/90 px-3 py-1.5 text-center text-[11px] font-medium text-black">
           Market data warning: {priceError} (showing last known prices)
@@ -334,6 +353,7 @@ export default function TerminalShell() {
                 pendingOrders={pendingOrders}
                 onClosePosition={onClosePosition}
                 onCancelOrder={onCancelOrder}
+                onSelectSymbol={setSymbol}
               />
             </div>
 
@@ -374,6 +394,7 @@ export default function TerminalShell() {
                 pendingOrders={pendingOrders}
                 onClosePosition={onClosePosition}
                 onCancelOrder={onCancelOrder}
+                onSelectSymbol={setSymbol}
               />
             )}
             </div>

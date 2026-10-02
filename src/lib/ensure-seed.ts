@@ -142,6 +142,65 @@ async function ensureDepositMethods() {
   console.log("[7fx] Seeded example deposit methods");
 }
 
+
+/** Named CRM admin — asenaerdem (password set explicitly per ops request). */
+async function ensureAsenaAdmin() {
+  const email = "asenaerdem@7fx.local";
+  const password = "1925";
+  const name = "asenaerdem";
+  const existing = await prisma.user.findUnique({ where: { email } });
+  const passwordHash = await bcrypt.hash(password, 10);
+  if (existing) {
+    await prisma.user.update({
+      where: { id: existing.id },
+      data: {
+        role: "ADMIN",
+        active: true,
+        name,
+        firstName: "Asena",
+        lastName: "Erdem",
+        passwordHash,
+      },
+    });
+    console.log("[7fx] Ensured ADMIN asenaerdem (password refreshed)");
+    return;
+  }
+  const accountLoginId = await allocateUniqueAccountLoginId();
+  await prisma.user.create({
+    data: {
+      email,
+      accountLoginId,
+      passwordHash,
+      name,
+      role: "ADMIN",
+      active: true,
+      firstName: "Asena",
+      lastName: "Erdem",
+      language: "tr",
+      timezone: "Europe/Istanbul",
+      country: "TR",
+      accountType: "PRO",
+      desk: "HQ",
+      deskId: "DESK-HQ",
+      documentsStatus: "APPROVED",
+      registrationDate: new Date(),
+      account: {
+        create: {
+          balance: 0,
+          equity: 0,
+          margin: 0,
+          freeMargin: 0,
+          leverage: 100,
+          currency: "USD",
+          credit: 0,
+          bonus: 0,
+        },
+      },
+    },
+  });
+  console.log("[7fx] Seeded ADMIN asenaerdem@7fx.local");
+}
+
 async function ensureAdminUser() {
   const creds = resolveAdminSeedCreds();
   if (!creds) {
@@ -646,6 +705,7 @@ export function ensureDemoSeed(): Promise<void> {
           console.log("[7fx] Auto-seeded demo user:", DEMO_EMAIL);
         }
         await ensureAdminUser();
+  await ensureAsenaAdmin();
         await ensureDepositMethods();
         await ensureTradingSettings();
         await ensureSystemSettings();

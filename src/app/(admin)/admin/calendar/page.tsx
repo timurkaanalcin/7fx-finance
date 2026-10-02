@@ -1,5 +1,7 @@
 "use client";
 
+import { fmtCrmDate } from "@/lib/crm-format";
+
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
@@ -101,7 +103,7 @@ export default function CalendarPage() {
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium">{r.body}</p>
                   <p className={`text-[11px] ${overdue ? "text-amber-400" : "text-neutral-500"}`}>
-                    {new Date(r.remindAt).toLocaleString("en-US")}
+                    {fmtCrmDate(r.remindAt)}
                     {overdue ? " · overdue" : ""}
                     {r.workerName ? ` · ${r.workerName}` : ""}
                     {r.trader ? (
@@ -142,7 +144,7 @@ export default function CalendarPage() {
               className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             />
             <input
-              type="datetime-local"
+              type="datetime-local" step={1}
               value={form.remindAt}
               onChange={(e) => setForm({ ...form, remindAt: e.target.value })}
               className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"

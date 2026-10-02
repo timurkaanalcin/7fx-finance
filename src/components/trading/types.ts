@@ -17,6 +17,7 @@ export type UserInfo = {
   email: string;
   name: string;
   role?: string;
+  impersonatedBy?: string | null;
 };
 
 export type PriceTick = {
@@ -32,6 +33,8 @@ export type PriceTick = {
 export type PositionRow = {
   id: string;
   symbol: string;
+  /** Catalog symbol for chart / live feed; null/undefined = use symbol */
+  chartSymbol?: string | null;
   side: string;
   volume: number;
   openPrice: number;

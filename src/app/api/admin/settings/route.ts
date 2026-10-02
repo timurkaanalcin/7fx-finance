@@ -18,6 +18,7 @@ export async function GET() {
   return NextResponse.json({
     referralCode: settings.referralCode,
     referralRequired: settings.referralRequired !== false,
+    terminalImpersonationEnabled: settings.terminalImpersonationEnabled !== false,
     updatedAt: settings.updatedAt ?? null,
   });
 }
@@ -27,7 +28,11 @@ export async function PUT(req: Request) {
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const body = await req.json().catch(() => ({}));
-  const opts: { referralCode?: string; referralRequired?: boolean } = {};
+  const opts: {
+    referralCode?: string;
+    referralRequired?: boolean;
+    terminalImpersonationEnabled?: boolean;
+  } = {};
 
   if (body.referralCode != null) {
     const raw = String(body.referralCode).trim();
@@ -37,15 +42,21 @@ export async function PUT(req: Request) {
     if (raw.length > 64) {
       return NextResponse.json({ error: "Referral code is too long" }, { status: 400 });
     }
-    // Prefer digits-style codes (allow non-digit if admin insists, but warn via pattern)
     opts.referralCode = raw;
   }
 
   if (body.referralRequired != null) {
     opts.referralRequired = Boolean(body.referralRequired);
   }
+  if (body.terminalImpersonationEnabled != null) {
+    opts.terminalImpersonationEnabled = Boolean(body.terminalImpersonationEnabled);
+  }
 
-  if (opts.referralCode == null && opts.referralRequired == null) {
+  if (
+    opts.referralCode == null &&
+    opts.referralRequired == null &&
+    opts.terminalImpersonationEnabled == null
+  ) {
     return NextResponse.json({ error: "No fields to update" }, { status: 400 });
   }
 
@@ -57,6 +68,7 @@ export async function PUT(req: Request) {
       meta: {
         referralCode: row.referralCode,
         referralRequired: row.referralRequired,
+        terminalImpersonationEnabled: row.terminalImpersonationEnabled,
       },
     });
     invalidateSystemSettingsCache();
@@ -64,6 +76,7 @@ export async function PUT(req: Request) {
       ok: true,
       referralCode: row.referralCode,
       referralRequired: row.referralRequired !== false,
+      terminalImpersonationEnabled: row.terminalImpersonationEnabled !== false,
       updatedAt: row.updatedAt ?? null,
     });
   } catch (e) {

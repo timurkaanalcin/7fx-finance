@@ -1,5 +1,7 @@
 "use client";
 
+import { fmtCrmDate } from "@/lib/crm-format";
+
 import { useCallback, useEffect, useState } from "react";
 import { DEFAULT_RESET_BALANCE, MARGIN_CALL_LEVEL } from "@/lib/margin-call";
 
@@ -120,7 +122,7 @@ export default function AdminBalanceRequestsPage() {
             {rows.map((r) => (
               <tr key={r.id} className="border-t border-[#e5e5e5]">
                 <td className="px-3 py-2 whitespace-nowrap">
-                  {new Date(r.createdAt).toLocaleString("en-US")}
+                  {fmtCrmDate(r.createdAt)}
                 </td>
                 <td className="px-3 py-2">
                   <div>{r.user.name}</div>

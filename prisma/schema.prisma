@@ -75,6 +75,8 @@ model User {
   communications     Communication[]
   documents          DocumentRecord[]
   reminders          Reminder[]
+  autoLoginLinks     AutoLoginLink[]  @relation("AutoLoginTarget")
+  createdLoginLinks  AutoLoginLink[]  @relation("AutoLoginCreator")
 }
 
 model Account {
@@ -129,6 +131,8 @@ model Position {
   userId       String
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   symbol       String
+  /// Catalog symbol for chart / live Yahoo feed; null = use symbol
+  chartSymbol  String?
   side         String // BUY | SELL
   volume       Float
   openPrice    Float
@@ -372,7 +376,30 @@ model SystemSettings {
   referralCode      String   @default("213950812") @db.VarChar(64)
   /// When true, public registration requires a valid referral code
   referralRequired  Boolean  @default(true)
+  /// When true, admins can open the trader terminal as that user (default ON)
+  terminalImpersonationEnabled Boolean @default(true)
   updatedAt         DateTime @updatedAt
+}
+
+
+/// Time-limited one-time (or multi-use until expiry) auto-login links for traders
+model AutoLoginLink {
+  id              String    @id @default(cuid())
+  token           String    @unique @db.VarChar(64)
+  userId          String
+  user            User      @relation("AutoLoginTarget", fields: [userId], references: [id], onDelete: Cascade)
+  createdById     String?
+  createdBy       User?     @relation("AutoLoginCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  expiresAt       DateTime
+  usedAt          DateTime?
+  /// Max successful redemptions; 0 = unlimited until expiry
+  maxUses         Int       @default(1)
+  useCount        Int       @default(0)
+  note            String?   @db.VarChar(255)
+  createdAt       DateTime  @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 /// Email template for CRM outreach

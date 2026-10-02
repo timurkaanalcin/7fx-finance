@@ -39,6 +39,8 @@ export type SessionPayload = {
   email: string;
   name: string;
   role: string;
+  /** Set when an admin is viewing the terminal as this trader */
+  impersonatedBy?: string;
 };
 
 export async function hashPassword(password: string) {
@@ -92,11 +94,16 @@ export async function getSession(): Promise<SessionPayload | null> {
   if (!token) return null;
   try {
     const { payload } = await jwtVerify(token, getAuthSecret());
+    const impersonatedBy =
+      typeof payload.impersonatedBy === "string" && payload.impersonatedBy
+        ? payload.impersonatedBy
+        : undefined;
     return {
       userId: payload.userId as string,
       email: payload.email as string,
       name: payload.name as string,
       role: (payload.role as string) || "TRADER",
+      ...(impersonatedBy ? { impersonatedBy } : {}),
     };
   } catch {
     return null;
@@ -161,6 +168,29 @@ export function permissionsOf(user: {
     canManageMethods: isAdmin && user.canManageMethods !== false,
     canAdjustBalance: isAdmin && user.canAdjustBalance !== false,
   };
+}
+
+
+const ADMIN_BACKUP_COOKIE = "7fx_admin_backup";
+
+/** Stash current admin session so impersonation can be reversed. */
+export function attachAdminBackupCookie(
+  res: { cookies: { set: (name: string, value: string, opts: Record<string, unknown>) => void } },
+  token: string
+) {
+  const opts = sessionCookieOptions(60 * 60 * 8); // 8h backup
+  res.cookies.set(ADMIN_BACKUP_COOKIE, token, opts);
+}
+
+export function clearAdminBackupCookie(
+  res: { cookies: { set: (name: string, value: string, opts: Record<string, unknown>) => void } }
+) {
+  const opts = sessionCookieOptions(0);
+  res.cookies.set(ADMIN_BACKUP_COOKIE, "", opts);
+}
+
+export function readAdminBackupToken(): string | undefined {
+  return cookies().get(ADMIN_BACKUP_COOKIE)?.value;
 }
 
 export async function writeAudit(opts: {

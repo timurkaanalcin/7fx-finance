@@ -58,6 +58,130 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "notlar", label: "Notes" },
 ];
 
+
+function TraderAccessTools({ userId, traderName }: { userId: string; traderName: string }) {
+  const [busy, setBusy] = useState(false);
+  const [linkUrl, setLinkUrl] = useState("");
+  const [expiresIn, setExpiresIn] = useState(60);
+  const [msg, setMsg] = useState("");
+  const [err, setErr] = useState("");
+  const [enabled, setEnabled] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/admin/settings")
+      .then((r) => r.json())
+      .then((d) => setEnabled(d.terminalImpersonationEnabled !== false))
+      .catch(() => setEnabled(true));
+  }, []);
+
+  async function openTerminal() {
+    setBusy(true);
+    setErr("");
+    setMsg("");
+    try {
+      const res = await fetch("/api/admin/impersonate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setErr(data.error || "Impersonation failed");
+        return;
+      }
+      window.location.href = data.redirect || "/trade";
+    } catch {
+      setErr("Connection error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function createLink() {
+    setBusy(true);
+    setErr("");
+    setMsg("");
+    setLinkUrl("");
+    try {
+      const res = await fetch(`/api/admin/users/${userId}/login-link`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ expiresInMinutes: expiresIn, maxUses: 1 }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setErr(data.error || "Could not create link");
+        return;
+      }
+      setLinkUrl(data.url || "");
+      setMsg(`Link expires ${new Date(data.expiresAt).toLocaleString("en-GB", { hour12: false })}`);
+    } catch {
+      setErr("Connection error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (!enabled) {
+    return (
+      <span className="text-[10px] text-neutral-400" title="Disabled in System Settings">
+        Terminal impersonation: off
+      </span>
+    );
+  }
+
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <button
+        type="button"
+        disabled={busy}
+        onClick={openTerminal}
+        className="rounded bg-sky-600 px-2.5 py-1 text-[10px] font-semibold text-white hover:bg-sky-500 disabled:opacity-50"
+        title={`Open terminal as ${traderName}`}
+      >
+        Open terminal
+      </button>
+      <select
+        className="rounded border border-neutral-300 bg-white px-1.5 py-1 text-[10px]"
+        value={expiresIn}
+        onChange={(e) => setExpiresIn(Number(e.target.value))}
+        disabled={busy}
+        title="Auto-login link expiry"
+      >
+        <option value={15}>15m</option>
+        <option value={60}>1h</option>
+        <option value={360}>6h</option>
+        <option value={1440}>24h</option>
+        <option value={10080}>7d</option>
+      </select>
+      <button
+        type="button"
+        disabled={busy}
+        onClick={createLink}
+        className="rounded border border-[#111111] bg-white px-2.5 py-1 text-[10px] font-semibold text-[#111111] hover:bg-neutral-50 disabled:opacity-50"
+      >
+        Auto-login link
+      </button>
+      {linkUrl && (
+        <button
+          type="button"
+          className="max-w-[14rem] truncate rounded bg-emerald-50 px-2 py-1 font-mono text-[9px] text-emerald-800"
+          title={linkUrl}
+          onClick={() => {
+            navigator.clipboard?.writeText(linkUrl);
+            setMsg("Copied");
+          }}
+        >
+          Copy link
+        </button>
+      )}
+      {msg && <span className="text-[10px] text-emerald-600">{msg}</span>}
+      {err && <span className="text-[10px] text-red-500">{err}</span>}
+    </div>
+  );
+}
+
+
 function Field({
   label,
   value,
@@ -334,9 +458,7 @@ export default function AdminUserDetailPage() {
             Trading Account: {tradingAccountId}
           </span>
         )}
-        <span className="text-[10px] text-neutral-400" title="Session impersonation disabled for safety">
-          Terminal impersonation: off
-        </span>
+        <TraderAccessTools userId={user.id} traderName={user.name} />
       </div>
 
       <div className="mb-4 flex flex-wrap gap-1 border-b border-[#e5e5e5] pb-2">
@@ -651,7 +773,7 @@ export default function AdminUserDetailPage() {
             {notes.map((n) => (
               <li key={n.id} className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] p-3 text-xs">
                 <div className="mb-1 text-neutral-500">
-                  {n.authorName || "—"} · {new Date(n.createdAt).toLocaleString("en-US")}
+                  {n.authorName || "—"} · {fmtCrmDate(n.createdAt)}
                 </div>
                 <div className="whitespace-pre-wrap text-slate-200">{n.body}</div>
               </li>

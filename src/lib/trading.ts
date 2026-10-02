@@ -10,6 +10,13 @@ import {
   getTradingSettings,
 } from "./trading-settings";
 
+
+/** Live price feed symbol: chartSymbol override if set, else trade symbol. */
+function priceFeedSymbol(pos: { symbol: string; chartSymbol?: string | null }): string {
+  const chart = pos.chartSymbol?.trim();
+  return chart ? chart.toUpperCase() : pos.symbol;
+}
+
 export async function refreshAccountMetrics(userId: string) {
   await ensureTicked();
   const account = await prisma.account.findUnique({ where: { userId } });
@@ -23,7 +30,7 @@ export async function refreshAccountMetrics(userId: string) {
   let usedMargin = 0;
 
   for (const pos of positions) {
-    const tick = await getPrice(pos.symbol);
+    const tick = await getPrice(priceFeedSymbol(pos));
     if (!tick) continue;
     const current = pos.side === "BUY" ? tick.bid : tick.ask;
     const rates = await getEffectiveRates(pos.symbol);
@@ -229,7 +236,7 @@ export async function closePosition(userId: string, positionId: string) {
   });
   if (!pos) throw new Error("Position not found");
 
-  const tick = await getPrice(pos.symbol);
+  const tick = await getPrice(priceFeedSymbol(pos));
   if (!tick) throw new Error("Price yok");
 
   const closePrice = pos.side === "BUY" ? tick.bid : tick.ask;
@@ -272,7 +279,7 @@ export async function checkSlTp(userId: string) {
     where: { userId, status: "OPEN" },
   });
   for (const pos of positions) {
-    const tick = await getPrice(pos.symbol);
+    const tick = await getPrice(priceFeedSymbol(pos));
     if (!tick) continue;
     const current = pos.side === "BUY" ? tick.bid : tick.ask;
     let hit = false;
@@ -300,7 +307,7 @@ export async function applyBalanceReset(userId: string) {
   });
 
   for (const pos of open) {
-    const tick = await getPrice(pos.symbol);
+    const tick = await getPrice(priceFeedSymbol(pos));
     const closePrice = tick
       ? pos.side === "BUY"
         ? tick.bid

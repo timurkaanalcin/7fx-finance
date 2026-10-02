@@ -1,48 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { StatusBadge } from "@/components/crm/StubPage";
-import { fmtMoney, fmtNum } from "@/lib/format";
-import {
-  fmtCrmDate,
-  fromDatetimeLocalValue,
-  toDatetimeLocalValue,
-} from "@/lib/crm-format";
+import { fmtCrmDate } from "@/lib/crm-format";
 import EditableOrdersTable from "@/components/crm/EditableOrdersTable";
-import {
-  syncDraftFromPrices,
-  syncDraftFromProfit,
-  type PositionEditDraft,
-  type RecalcFrom,
-} from "@/lib/crm-position-pnl";
+import EditablePositionsTable from "@/components/crm/EditablePositionsTable";
 
 const POLL_MS = 4000;
 
 type PosRow = Record<string, unknown>;
-type EditDraft = PositionEditDraft;
-
-function toDraft(p: PosRow): EditDraft {
-  return {
-    id: String(p.id),
-    symbol: String(p.symbol ?? ""),
-    side: String(p.side ?? "BUY").toUpperCase() === "SELL" ? "SELL" : "BUY",
-    volume: String(p.volume ?? ""),
-    openPrice: String(p.openPrice ?? ""),
-    currentPrice: String(p.currentPrice ?? ""),
-    closePrice: p.closePrice != null ? String(p.closePrice) : "",
-    profit: Number.isFinite(Number(p.profit)) ? String(Number(p.profit)) : "0",
-    closeProfit:
-      p.closeProfit != null
-        ? String(p.closeProfit)
-        : p.status === "CLOSED"
-          ? String(p.profit ?? "0")
-          : "",
-    status: String(p.status) === "CLOSED" ? "CLOSED" : "OPEN",
-    openedAt: toDatetimeLocalValue(p.openedAt),
-    closedAt: toDatetimeLocalValue(p.closedAt),
-  };
-}
 
 export default function PositionsPage() {
   const [tab, setTab] = useState<"OPEN" | "CLOSED" | "ALL" | "ORDERS">("OPEN");
@@ -51,11 +16,7 @@ export default function PositionsPage() {
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
   const [live, setLive] = useState(true);
   const [err, setErr] = useState("");
-  const [msg, setMsg] = useState("");
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [draft, setDraft] = useState<EditDraft | null>(null);
-  const [recalcFrom, setRecalcFrom] = useState<RecalcFrom>("prices");
-  const [saving, setSaving] = useState(false);
+  const [editing, setEditing] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -90,99 +51,12 @@ export default function PositionsPage() {
   }, [load]);
 
   useEffect(() => {
-    if (!live || editingId) return;
+    if (!live || editing) return;
     const id = window.setInterval(() => {
       load();
     }, POLL_MS);
     return () => window.clearInterval(id);
-  }, [live, load, editingId]);
-
-  function startEdit(p: PosRow) {
-    setLive(false);
-    setEditingId(String(p.id));
-    setDraft(toDraft(p));
-    setRecalcFrom("prices");
-    setMsg("");
-    setErr("");
-  }
-
-  function patchPrices(partial: Partial<EditDraft>) {
-    if (!draft) return;
-    setRecalcFrom("prices");
-    setDraft(syncDraftFromPrices({ ...draft, ...partial }));
-  }
-
-  function patchProfit(partial: Partial<EditDraft>, source: "profit" | "closeProfit") {
-    if (!draft) return;
-    setRecalcFrom("profit");
-    setDraft(syncDraftFromProfit({ ...draft, ...partial }, source));
-  }
-
-  function cancelEdit() {
-    setEditingId(null);
-    setDraft(null);
-  }
-
-  async function saveEdit() {
-    if (!draft) return;
-    setSaving(true);
-    setMsg("");
-    setErr("");
-    try {
-      const openedAt = fromDatetimeLocalValue(draft.openedAt);
-      const closedAt = fromDatetimeLocalValue(draft.closedAt);
-      const payload: Record<string, unknown> = {
-        id: draft.id,
-        symbol: draft.symbol.trim().toUpperCase(),
-        side: draft.side,
-        volume: Number(draft.volume),
-        openPrice: Number(draft.openPrice),
-        currentPrice: Number(draft.currentPrice),
-        profit: Number(draft.profit),
-        status: draft.status,
-        recalcFrom,
-      };
-      if (openedAt) payload.openedAt = openedAt;
-      if (draft.closePrice !== "") payload.closePrice = Number(draft.closePrice);
-      if (draft.closeProfit !== "") payload.closeProfit = Number(draft.closeProfit);
-      // When closing, ensure custom PnL is applied (e.g. Nejat +102)
-      if (draft.status === "CLOSED") {
-        const realized =
-          draft.closeProfit !== "" ? Number(draft.closeProfit) : Number(draft.profit);
-        payload.closeProfit = realized;
-        payload.profit = realized;
-        if (draft.closePrice === "") {
-          payload.closePrice = Number(draft.currentPrice);
-        }
-        if (closedAt) payload.closedAt = closedAt;
-      } else {
-        payload.clearCloseFields = true;
-      }
-
-      const res = await fetch("/api/admin/positions", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setErr(data.error || "Save failed");
-        return;
-      }
-      setMsg(
-        draft.status === "CLOSED"
-          ? `Saved — CLOSED with PnL ${fmtNum(Number(payload.closeProfit), 2)}`
-          : "Position updated"
-      );
-      setEditingId(null);
-      setDraft(null);
-      await load();
-    } catch {
-      setErr("Connection error");
-    } finally {
-      setSaving(false);
-    }
-  }
+  }, [live, load, editing]);
 
   return (
     <div>
@@ -191,10 +65,9 @@ export default function PositionsPage() {
           <h1 className="text-lg font-semibold">Positions / Orders</h1>
           <p className="mt-0.5 text-[11px] text-neutral-500">
             Trade engine data — edit inline. Profit ↔ open/close syncs live
-            (volume×contractSize×price delta, BUY/SELL). Closing with custom PnL adjusts close.
-            {updatedAt
-              ? ` · last update ${new Date(updatedAt).toLocaleTimeString("en-US")}`
-              : ""}
+            (volume×contractSize×price delta). Amount = lot×contract×open updates with price.
+            Chart overrides terminal chart / live feed symbol. Times are 24h (HH:mm:ss).
+            {updatedAt ? ` · last update ${fmtCrmDate(updatedAt)}` : ""}
           </p>
         </div>
         <label className="flex items-center gap-2 text-[11px] text-neutral-600">
@@ -203,19 +76,18 @@ export default function PositionsPage() {
             checked={live}
             onChange={(e) => setLive(e.target.checked)}
             className="rounded border-neutral-300"
-            disabled={!!editingId}
+            disabled={editing}
           />
           Live ({POLL_MS / 1000}s)
         </label>
       </div>
       {err && <p className="mb-2 text-xs text-red-500">{err}</p>}
-      {msg && <p className="mb-2 text-xs text-emerald-600">{msg}</p>}
       <div className="mb-3 flex gap-1">
         {(["OPEN", "CLOSED", "ALL", "ORDERS"] as const).map((t) => (
           <button
             key={t}
             onClick={() => {
-              cancelEdit();
+              setEditing(false);
               setTab(t);
             }}
             className={`rounded px-3 py-1 text-xs ${tab === t ? "bg-black text-white" : "bg-neutral-100 text-neutral-500"}`}
@@ -234,262 +106,20 @@ export default function PositionsPage() {
       {tab === "ORDERS" ? (
         <EditableOrdersTable rows={orders} onSaved={() => load()} />
       ) : (
-      <div className="overflow-x-auto rounded-lg border border-neutral-200">
-        <table className="w-full text-left text-[11px]">
-          <thead className="bg-[#ffffff] text-neutral-500">
-            <tr>
-                <th className="px-2 py-2">Symbol</th>
-                <th className="px-2 py-2">Side</th>
-                <th className="px-2 py-2">Volume</th>
-                <th className="px-2 py-2">Open</th>
-                <th className="px-2 py-2">Current</th>
-                <th className="px-2 py-2">Close</th>
-                <th className="px-2 py-2">Profit</th>
-                <th className="px-2 py-2">Realized</th>
-                <th className="px-2 py-2">Opened</th>
-                <th className="px-2 py-2">Closed</th>
-                <th className="px-2 py-2">Trader</th>
-                <th className="px-2 py-2">Status</th>
-                <th className="px-2 py-2">Edit</th>
-              </tr>
-          </thead>
-          <tbody>
-            {rows.map((p) => {
-                  const id = String(p.id);
-                  const isEdit = editingId === id && draft;
-                  const profitRaw = Number(isEdit ? draft!.profit : p.profit);
-                  const profit = Number.isFinite(profitRaw) ? profitRaw : 0;
-                  const realized =
-                    isEdit && draft!.closeProfit !== ""
-                      ? Number(draft!.closeProfit)
-                      : p.closeProfit != null
-                        ? Number(p.closeProfit)
-                        : null;
-                  return (
-                    <tr
-                      key={id}
-                      className={`border-t border-neutral-200 ${isEdit ? "bg-amber-50/60" : ""}`}
-                    >
-                      <td className="px-2 py-1.5 font-medium">
-                        {isEdit ? (
-                          <input
-                            className="w-20 rounded border border-neutral-300 px-1 py-0.5"
-                            value={draft!.symbol}
-                            onChange={(e) => patchPrices({ symbol: e.target.value })}
-                          />
-                        ) : (
-                          String(p.symbol)
-                        )}
-                      </td>
-                      <td className="px-2 py-1.5">
-                        {isEdit ? (
-                          <select
-                            className="rounded border border-neutral-300 px-1 py-0.5"
-                            value={draft!.side}
-                            onChange={(e) => patchPrices({ side: e.target.value })}
-                          >
-                            <option value="BUY">BUY</option>
-                            <option value="SELL">SELL</option>
-                          </select>
-                        ) : (
-                          String(p.side)
-                        )}
-                      </td>
-                      <td className="px-2 py-1.5 tabular-nums">
-                        {isEdit ? (
-                          <input
-                            className="w-16 rounded border border-neutral-300 px-1 py-0.5 tabular-nums"
-                            value={draft!.volume}
-                            onChange={(e) => patchPrices({ volume: e.target.value })}
-                          />
-                        ) : (
-                          fmtNum(Number(p.volume), 2)
-                        )}
-                      </td>
-                      <td className="px-2 py-1.5 tabular-nums">
-                        {isEdit ? (
-                          <input
-                            className="w-20 rounded border border-neutral-300 px-1 py-0.5 tabular-nums"
-                            value={draft!.openPrice}
-                            onChange={(e) => patchPrices({ openPrice: e.target.value })}
-                          />
-                        ) : (
-                          fmtNum(Number(p.openPrice), 5)
-                        )}
-                      </td>
-                      <td className="px-2 py-1.5 tabular-nums">
-                        {isEdit ? (
-                          <input
-                            className="w-20 rounded border border-neutral-300 px-1 py-0.5 tabular-nums"
-                            value={draft!.currentPrice}
-                            onChange={(e) => patchPrices({ currentPrice: e.target.value })}
-                          />
-                        ) : (
-                          fmtNum(Number(p.currentPrice), 5)
-                        )}
-                      </td>
-                      <td className="px-2 py-1.5 tabular-nums">
-                        {isEdit ? (
-                          <input
-                            className="w-20 rounded border border-neutral-300 px-1 py-0.5 tabular-nums"
-                            placeholder="close"
-                            value={draft!.closePrice}
-                            onChange={(e) => patchPrices({ closePrice: e.target.value })}
-                          />
-                        ) : p.closePrice != null ? (
-                          fmtNum(Number(p.closePrice), 5)
-                        ) : (
-                          "—"
-                        )}
-                      </td>
-                      <td
-                        className={`px-2 py-1.5 tabular-nums ${
-                          profit >= 0 ? "text-emerald-600" : "text-red-500"
-                        }`}
-                      >
-                        {isEdit ? (
-                          <input
-                            className="w-20 rounded border border-neutral-300 px-1 py-0.5 tabular-nums"
-                            value={draft!.profit}
-                            onChange={(e) => patchProfit({ profit: e.target.value }, "profit")}
-                          />
-                        ) : (
-                          fmtMoney(profit, 2, "USD")
-                        )}
-                      </td>
-                      <td
-                        className={`px-2 py-1.5 tabular-nums ${
-                          realized != null && realized >= 0
-                            ? "text-emerald-600"
-                            : realized != null
-                              ? "text-red-500"
-                              : "text-neutral-400"
-                        }`}
-                      >
-                        {isEdit ? (
-                          <input
-                            className="w-20 rounded border border-neutral-300 px-1 py-0.5 tabular-nums"
-                            placeholder="e.g. 102"
-                            value={draft!.closeProfit}
-                            onChange={(e) =>
-                              patchProfit({ closeProfit: e.target.value }, "closeProfit")
-                            }
-                          />
-                        ) : realized != null ? (
-                          fmtMoney(realized, 2, "USD")
-                        ) : (
-                          "—"
-                        )}
-                      </td>
-                      <td className="px-2 py-1.5 whitespace-nowrap text-neutral-600">
-                        {isEdit ? (
-                          <input
-                            type="datetime-local"
-                            className="rounded border border-neutral-300 px-1 py-0.5"
-                            value={draft!.openedAt}
-                            onChange={(e) => setDraft({ ...draft!, openedAt: e.target.value })}
-                          />
-                        ) : (
-                          fmtCrmDate(p.openedAt)
-                        )}
-                      </td>
-                      <td className="px-2 py-1.5 whitespace-nowrap text-neutral-600">
-                        {isEdit ? (
-                          <input
-                            type="datetime-local"
-                            className="rounded border border-neutral-300 px-1 py-0.5"
-                            value={draft!.closedAt}
-                            disabled={draft!.status !== "CLOSED"}
-                            onChange={(e) => setDraft({ ...draft!, closedAt: e.target.value })}
-                          />
-                        ) : (
-                          fmtCrmDate(p.closedAt)
-                        )}
-                      </td>
-                      <td className="px-2 py-1.5">
-                        <Link
-                          href={`/admin/traders/${(p.user as { id: string }).id}`}
-                          className="text-sky-400 hover:underline"
-                        >
-                          {String(p.traderName)}
-                        </Link>
-                      </td>
-                      <td className="px-2 py-1.5">
-                        {isEdit ? (
-                          <select
-                            className="rounded border border-neutral-300 px-1 py-0.5"
-                            value={draft!.status}
-                            onChange={(e) => {
-                              const status = e.target.value as "OPEN" | "CLOSED";
-                              setRecalcFrom("prices");
-                              setDraft(
-                                syncDraftFromPrices({
-                                  ...draft!,
-                                  status,
-                                  closePrice:
-                                    status === "CLOSED" && draft!.closePrice === ""
-                                      ? draft!.currentPrice
-                                      : draft!.closePrice,
-                                })
-                              );
-                            }}
-                          >
-                            <option value="OPEN">OPEN</option>
-                            <option value="CLOSED">CLOSED</option>
-                          </select>
-                        ) : (
-                          <StatusBadge status={String(p.status)} />
-                        )}
-                      </td>
-                      <td className="px-2 py-1.5 whitespace-nowrap">
-                        {isEdit ? (
-                          <div className="flex gap-1">
-                            <button
-                              type="button"
-                              disabled={saving}
-                              onClick={() => saveEdit()}
-                              className="rounded bg-black px-2 py-0.5 text-[10px] font-medium text-white disabled:opacity-50"
-                            >
-                              {saving ? "…" : "Save"}
-                            </button>
-                            <button
-                              type="button"
-                              disabled={saving}
-                              onClick={() => cancelEdit()}
-                              className="rounded bg-neutral-100 px-2 py-0.5 text-[10px] text-neutral-600"
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => startEdit(p)}
-                            className="rounded bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-700 hover:bg-neutral-200"
-                          >
-                            Edit
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-            {rows.length === 0 && (
-              <tr>
-                <td colSpan={13} className="px-2 py-6 text-center text-neutral-400">
-                  No positions
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-      )}
-      {editingId && draft?.status === "CLOSED" && (
-        <p className="mt-2 text-[11px] text-neutral-500">
-          Tip: set <strong>Profit</strong> or <strong>Realized</strong> (e.g. <code>102</code>) —
-          close price adjusts so engine PnL matches. Edit open/close to recalculate profit.
-        </p>
+        <div
+          onFocusCapture={() => setEditing(true)}
+          onBlurCapture={(e) => {
+            if (!e.currentTarget.contains(e.relatedTarget as Node)) setEditing(false);
+          }}
+        >
+          <EditablePositionsTable
+            rows={rows}
+            onSaved={() => {
+              setEditing(false);
+              load();
+            }}
+          />
+        </div>
       )}
     </div>
   );

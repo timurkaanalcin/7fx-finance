@@ -7,6 +7,8 @@ export default function AdminSettingsPage() {
   const [draft, setDraft] = useState("");
   const [referralRequired, setReferralRequired] = useState(true);
   const [draftRequired, setDraftRequired] = useState(true);
+  const [impersonation, setImpersonation] = useState(true);
+  const [draftImpersonation, setDraftImpersonation] = useState(true);
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
@@ -25,6 +27,9 @@ export default function AdminSettingsPage() {
     setDraft(code);
     setReferralRequired(required);
     setDraftRequired(required);
+    const imp = data.terminalImpersonationEnabled !== false;
+    setImpersonation(imp);
+    setDraftImpersonation(imp);
     setLoaded(true);
   }, []);
 
@@ -33,7 +38,7 @@ export default function AdminSettingsPage() {
   }, [load]);
 
   const dirty =
-    draft.trim() !== referralCode || draftRequired !== referralRequired;
+    draft.trim() !== referralCode || draftRequired !== referralRequired || draftImpersonation !== impersonation;
 
   async function save() {
     setBusy(true);
@@ -46,6 +51,7 @@ export default function AdminSettingsPage() {
         body: JSON.stringify({
           referralCode: draft.trim(),
           referralRequired: draftRequired,
+          terminalImpersonationEnabled: draftImpersonation,
         }),
       });
       const data = await res.json();
@@ -57,6 +63,8 @@ export default function AdminSettingsPage() {
       setDraft(data.referralCode);
       setReferralRequired(data.referralRequired !== false);
       setDraftRequired(data.referralRequired !== false);
+      setImpersonation(data.terminalImpersonationEnabled !== false);
+      setDraftImpersonation(data.terminalImpersonationEnabled !== false);
       setMsg("System settings saved");
     } finally {
       setBusy(false);
@@ -83,6 +91,36 @@ export default function AdminSettingsPage() {
           to show live trade activity. The Positions tab on the trader detail
           is also live.
         </p>
+      </section>
+
+
+      <section className="rounded-xl border border-sky-200 bg-sky-50/50 p-4 md:p-5">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-sky-800">
+          Terminal impersonation
+        </h2>
+        <p className="mt-2 text-sm text-sky-900/80">
+          When enabled, admins can open the trader terminal as that user and create
+          time-limited auto-login links. Default is <strong>ON</strong> for everyone.
+        </p>
+        {!loaded ? null : (
+          <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-lg border border-sky-200 bg-white px-3 py-3">
+            <input
+              type="checkbox"
+              className="mt-1 h-4 w-4 rounded border-slate-600 text-sky-500"
+              checked={draftImpersonation}
+              onChange={(e) => setDraftImpersonation(e.target.checked)}
+              disabled={busy}
+            />
+            <span>
+              <span className="block text-sm font-medium text-neutral-800">
+                Enable terminal impersonation
+              </span>
+              <span className="mt-0.5 block text-xs text-neutral-500">
+                Shows &quot;Open terminal&quot; and auto-login link tools on trader pages.
+              </span>
+            </span>
+          </label>
+        )}
       </section>
 
       <section className="rounded-xl border border-neutral-200 bg-[#ffffff] p-4 md:p-5">
@@ -150,6 +188,7 @@ export default function AdminSettingsPage() {
                 onClick={() => {
                   setDraft(referralCode);
                   setDraftRequired(referralRequired);
+                  setDraftImpersonation(impersonation);
                   setMsg("");
                   setErr("");
                 }}

@@ -1,5 +1,7 @@
 "use client";
 
+import { fmtCrmDate } from "@/lib/crm-format";
+
 import Link from "next/link";
 import { ACCOUNT_CURRENCIES } from "@/lib/membership";
 import { useCallback, useEffect, useState } from "react";
@@ -384,7 +386,7 @@ export default function AdminUsersPage() {
                 </td>
                 <td className="px-3 py-2.5 text-neutral-500">{u.brokerName || "—"}</td>
                 <td className="px-3 py-2.5 text-[10px] text-neutral-500">
-                  {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString("en-US") : "—"}
+                  {u.lastLoginAt ? fmtCrmDate(u.lastLoginAt) : "—"}
                 </td>
                 <td className="px-3 py-2.5">
                   <Link

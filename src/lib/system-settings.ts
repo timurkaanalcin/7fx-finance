@@ -1,5 +1,5 @@
 /**
- * Singleton system settings (referral / invite code, etc.).
+ * Singleton system settings (referral / invite code, terminal impersonation, etc.).
  */
 import { prisma } from "./prisma";
 
@@ -13,6 +13,8 @@ export type SystemSettingsRow = {
   id: string;
   referralCode: string;
   referralRequired: boolean;
+  /** Admins may open trader terminal as that user — default ON for everyone */
+  terminalImpersonationEnabled: boolean;
   updatedAt?: Date;
 };
 
@@ -20,6 +22,7 @@ const DEFAULTS: SystemSettingsRow = {
   id: "default",
   referralCode: DEFAULT_REFERRAL_CODE,
   referralRequired: true,
+  terminalImpersonationEnabled: true,
 };
 
 let cache: { at: number; row: SystemSettingsRow } | null = null;
@@ -33,12 +36,15 @@ function normalizeRow(row: {
   id: string;
   referralCode: string;
   referralRequired?: boolean | null;
+  terminalImpersonationEnabled?: boolean | null;
   updatedAt?: Date;
 }): SystemSettingsRow {
   return {
     id: row.id,
     referralCode: String(row.referralCode || DEFAULT_REFERRAL_CODE).trim(),
     referralRequired: row.referralRequired !== false,
+    // Default ON: only false when explicitly set false
+    terminalImpersonationEnabled: row.terminalImpersonationEnabled !== false,
     updatedAt: row.updatedAt,
   };
 }
@@ -52,18 +58,29 @@ export async function ensureSystemSettings(): Promise<SystemSettingsRow> {
         id: "default",
         referralCode: DEFAULT_REFERRAL_CODE,
         referralRequired: true,
+        terminalImpersonationEnabled: true,
       },
     });
 
-    // One-time migrate known legacy defaults → current DEFAULT_REFERRAL_CODE
     const current = String(row.referralCode || "").trim();
-    const patch: { referralCode?: string; referralRequired?: boolean } = {};
+    const patch: {
+      referralCode?: string;
+      referralRequired?: boolean;
+      terminalImpersonationEnabled?: boolean;
+    } = {};
     if (LEGACY_REFERRAL_CODES.has(current) || !current) {
       patch.referralCode = DEFAULT_REFERRAL_CODE;
     }
-    // Product default: referral required with exact configured code
     if (row.referralRequired === false && process.env.FORCE_REFERRAL_REQUIRED !== "0") {
       patch.referralRequired = true;
+    }
+    // Ensure impersonation stays ON unless explicitly disabled in DB
+    if (
+      (row as { terminalImpersonationEnabled?: boolean | null }).terminalImpersonationEnabled ==
+        null &&
+      process.env.FORCE_IMPERSONATION_OFF !== "1"
+    ) {
+      patch.terminalImpersonationEnabled = true;
     }
     if (Object.keys(patch).length) {
       row = await prisma.systemSettings.update({
@@ -98,6 +115,11 @@ export async function isReferralRequired(): Promise<boolean> {
   return row.referralRequired !== false;
 }
 
+export async function isTerminalImpersonationEnabled(): Promise<boolean> {
+  const row = await getSystemSettings();
+  return row.terminalImpersonationEnabled !== false;
+}
+
 export async function setReferralCode(code: string): Promise<SystemSettingsRow> {
   const referralCode = String(code || "").trim();
   if (!referralCode) {
@@ -106,7 +128,12 @@ export async function setReferralCode(code: string): Promise<SystemSettingsRow> 
   const row = await prisma.systemSettings.upsert({
     where: { id: "default" },
     update: { referralCode },
-    create: { id: "default", referralCode, referralRequired: true },
+    create: {
+      id: "default",
+      referralCode,
+      referralRequired: true,
+      terminalImpersonationEnabled: true,
+    },
   });
   invalidateSystemSettingsCache();
   return normalizeRow(row);
@@ -115,8 +142,13 @@ export async function setReferralCode(code: string): Promise<SystemSettingsRow> 
 export async function setSystemSettings(opts: {
   referralCode?: string;
   referralRequired?: boolean;
+  terminalImpersonationEnabled?: boolean;
 }): Promise<SystemSettingsRow> {
-  const data: { referralCode?: string; referralRequired?: boolean } = {};
+  const data: {
+    referralCode?: string;
+    referralRequired?: boolean;
+    terminalImpersonationEnabled?: boolean;
+  } = {};
   if (opts.referralCode != null) {
     const referralCode = String(opts.referralCode).trim();
     if (!referralCode) throw new Error("EMPTY_REFERRAL_CODE");
@@ -124,6 +156,9 @@ export async function setSystemSettings(opts: {
   }
   if (opts.referralRequired != null) {
     data.referralRequired = Boolean(opts.referralRequired);
+  }
+  if (opts.terminalImpersonationEnabled != null) {
+    data.terminalImpersonationEnabled = Boolean(opts.terminalImpersonationEnabled);
   }
   if (Object.keys(data).length === 0) {
     return getSystemSettings();
@@ -135,6 +170,7 @@ export async function setSystemSettings(opts: {
       id: "default",
       referralCode: data.referralCode ?? DEFAULT_REFERRAL_CODE,
       referralRequired: data.referralRequired ?? true,
+      terminalImpersonationEnabled: data.terminalImpersonationEnabled ?? true,
     },
   });
   invalidateSystemSettingsCache();

@@ -1,5 +1,7 @@
 "use client";
 
+import { fmtCrmDate } from "@/lib/crm-format";
+
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
@@ -74,7 +76,7 @@ export default function TransactionsPage() {
                   {String(r.comment || "—")}
                 </td>
                 <td className="px-2 py-1.5 text-neutral-500">
-                  {new Date(String(r.createdAt)).toLocaleString("en-US")}
+                  {fmtCrmDate(r.createdAt)}
                 </td>
               </tr>
             ))}

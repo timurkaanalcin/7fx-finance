@@ -168,6 +168,7 @@ export default function EditableOrdersTable({
                     {isEdit ? (
                       <input
                         type="datetime-local"
+                        step={1}
                         className={inp + " min-w-[11rem]"}
                         value={draft!.createdAt}
                         onChange={(e) => setDraft({ ...draft!, createdAt: e.target.value })}

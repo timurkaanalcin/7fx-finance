@@ -14,6 +14,8 @@ type Props = {
   pendingOrders: OrderRow[];
   onClosePosition: (id: string) => void;
   onCancelOrder: (id: string) => void;
+  /** Switch chart to position chartSymbol || symbol */
+  onSelectSymbol?: (symbol: string) => void;
   className?: string;
 };
 
@@ -26,8 +28,10 @@ function moneyCls(n: number) {
 function OpenCard({
   p,
   onClose,
+  onSelectSymbol,
 }: {
   p: PositionRow;
+  onSelectSymbol?: (symbol: string) => void;
   onClose: (id: string) => void;
 }) {
   const pip =
@@ -38,9 +42,21 @@ function OpenCard({
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-[13px] font-bold tracking-tight text-desk-text">
+            <button
+              type="button"
+              className="text-[13px] font-bold tracking-tight text-desk-text hover:underline"
+              onClick={() =>
+                onSelectSymbol?.((p.chartSymbol || p.symbol).trim().toUpperCase())
+              }
+              title="Show chart"
+            >
               {p.symbol}
-            </span>
+              {p.chartSymbol && p.chartSymbol !== p.symbol ? (
+                <span className="ml-1 text-[10px] font-normal text-desk-muted">
+                  ({p.chartSymbol})
+                </span>
+              ) : null}
+            </button>
             <span
               className={`rounded-[6px] px-1.5 py-0.5 text-[10px] font-bold ${
                 p.side === "BUY"
@@ -204,6 +220,7 @@ export default function BottomPanels({
   pendingOrders,
   onClosePosition,
   onCancelOrder,
+  onSelectSymbol,
   className = "",
 }: Props) {
   const tabs: { id: Tab; label: string; shortLabel: string; count?: number }[] = [
@@ -260,7 +277,7 @@ export default function BottomPanels({
               <div className="px-3 py-10 text-center text-xs text-desk-muted">No open trades</div>
             )}
             {openPositions.map((p) => (
-              <OpenCard key={p.id} p={p} onClose={onClosePosition} />
+              <OpenCard key={p.id} p={p} onClose={onClosePosition} onSelectSymbol={onSelectSymbol} />
             ))}
           </>
         )}

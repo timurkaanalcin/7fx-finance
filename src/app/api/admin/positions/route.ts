@@ -6,10 +6,12 @@ import { refreshAccountMetrics } from "@/lib/trading";
 import {
   calcExitPriceWithRates,
   calcOpenPriceWithRates,
+  calcMarginWithRates,
   calcProfitWithRates,
   getEffectiveRates,
 } from "@/lib/trading-settings";
 import { normalizeSide } from "@/lib/pnl";
+import { getSymbol } from "@/lib/symbols";
 
 export const dynamic = "force-dynamic";
 
@@ -115,6 +117,21 @@ export async function PATCH(req: Request) {
 
   if (body.symbol != null && String(body.symbol).trim()) {
     data.symbol = String(body.symbol).trim().toUpperCase();
+  }
+  if (body.chartSymbol !== undefined) {
+    const raw = body.chartSymbol;
+    if (raw === null || raw === "") {
+      data.chartSymbol = null;
+    } else {
+      const cs = String(raw).trim().toUpperCase();
+      if (!getSymbol(cs)) {
+        return NextResponse.json(
+          { error: `Unknown chart symbol: ${cs}` },
+          { status: 400 }
+        );
+      }
+      data.chartSymbol = cs;
+    }
   }
   if (body.side != null) {
     const side = String(body.side).toUpperCase();
@@ -315,6 +332,31 @@ export async function PATCH(req: Request) {
         if (nextStatus === "CLOSED") {
           data.closeProfit = profit;
         }
+      }
+    }
+  }
+
+  // Opening notional/amount: lot × contract × openPrice — refresh margin when price/volume/symbol change
+  // (unless admin sent an explicit margin). Margin = notional / leverage.
+  const priceOrSizeChanged =
+    data.openPrice != null || data.volume != null || data.symbol != null;
+  if (priceOrSizeChanged && body.margin == null) {
+    const mergedOpen = Number(data.openPrice ?? existing.openPrice);
+    const mergedVol = Number(data.volume ?? existing.volume);
+    const mergedSym = String(data.symbol ?? existing.symbol);
+    const ratesForMargin = rates ?? (await getEffectiveRates(mergedSym));
+    const account = await prisma.account.findUnique({
+      where: { userId: existing.userId },
+      select: { leverage: true },
+    });
+    const lev = Math.max(1, account?.leverage ?? 100);
+    if (ratesForMargin && Number.isFinite(mergedOpen) && Number.isFinite(mergedVol) && mergedVol > 0) {
+      data.margin = calcMarginWithRates(ratesForMargin, mergedVol, mergedOpen, lev);
+    } else {
+      const cs = getSymbol(mergedSym)?.contractSize ?? 1;
+      const notional = mergedVol * cs * mergedOpen;
+      if (Number.isFinite(notional) && notional >= 0) {
+        data.margin = notional / lev;
       }
     }
   }
