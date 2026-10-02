@@ -106,7 +106,7 @@ export default function AdminSettingsPage() {
           <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-lg border border-sky-200 bg-white px-3 py-3">
             <input
               type="checkbox"
-              className="mt-1 h-4 w-4 rounded border-slate-600 text-sky-500"
+              className="mt-1 h-4 w-4 rounded border-neutral-400 bg-white text-black"
               checked={draftImpersonation}
               onChange={(e) => setDraftImpersonation(e.target.checked)}
               disabled={busy}
@@ -138,13 +138,13 @@ export default function AdminSettingsPage() {
             <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-neutral-200 bg-[#f7f7f7] px-3 py-3">
               <input
                 type="checkbox"
-                className="mt-1 h-4 w-4 rounded border-slate-600 bg-slate-900 text-sky-500"
+                className="mt-1 h-4 w-4 rounded border-neutral-400 bg-white text-black"
                 checked={draftRequired}
                 onChange={(e) => setDraftRequired(e.target.checked)}
                 disabled={busy}
               />
               <span>
-                <span className="block text-sm font-medium text-slate-200">
+                <span className="block text-sm font-medium text-neutral-800">
                   Referral code zorunlu
                 </span>
                 <span className="mt-0.5 block text-xs text-neutral-500">
@@ -154,7 +154,7 @@ export default function AdminSettingsPage() {
             </label>
 
             <div>
-              <label htmlFor="admin-referral-code" className="mb-1.5 block text-sm text-slate-300">
+              <label htmlFor="admin-referral-code" className="mb-1.5 block text-sm text-neutral-600">
                 Active kod
               </label>
               <input
@@ -192,7 +192,7 @@ export default function AdminSettingsPage() {
                   setMsg("");
                   setErr("");
                 }}
-                className="rounded-lg border border-neutral-300 px-4 py-2 text-sm text-slate-300 hover:bg-neutral-100 disabled:opacity-50"
+                className="rounded-lg border border-neutral-300 px-4 py-2 text-sm text-neutral-600 hover:bg-neutral-100 disabled:opacity-50"
               >
                 Cancel
               </button>

@@ -91,7 +91,7 @@ export default function MailPage() {
                 <StatusBadge status={t.active ? "ACTIVE" : "CLOSED"} />
               </div>
               <p className="text-[11px] text-neutral-500">Subject: {t.subject}</p>
-              <p className="mt-2 line-clamp-4 whitespace-pre-wrap text-[11px] text-slate-300">{t.body}</p>
+              <p className="mt-2 line-clamp-4 whitespace-pre-wrap text-[11px] text-neutral-600">{t.body}</p>
               <p className="mt-2 text-[10px] text-neutral-400">Desk: {t.deskName || "—"}</p>
               <div className="mt-2 flex gap-2 text-[10px]">
                 <button type="button" onClick={() => startEdit(t)} className="text-sky-400 hover:underline">
@@ -115,7 +115,7 @@ export default function MailPage() {
           )}
         </div>
         <div className="rounded-lg border border-neutral-200 bg-[#ffffff] p-3">
-          <h2 className="mb-2 text-xs font-semibold text-slate-300">
+          <h2 className="mb-2 text-xs font-semibold text-neutral-600">
             {editId ? "Edit template" : "New template"}
           </h2>
           <div className="space-y-2 text-xs">

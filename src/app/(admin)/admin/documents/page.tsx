@@ -182,7 +182,7 @@ export default function DocumentsPage() {
           </table>
         </div>
         <div className="rounded-lg border border-neutral-200 bg-[#ffffff] p-3">
-          <h2 className="mb-2 text-xs font-semibold text-slate-300">Add document record</h2>
+          <h2 className="mb-2 text-xs font-semibold text-neutral-600">Add document record</h2>
           <div className="space-y-2 text-xs">
             <select
               value={form.userId}

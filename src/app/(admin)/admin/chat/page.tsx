@@ -129,7 +129,7 @@ function ProfileeRow({
   onClear?: () => void;
 }) {
   return (
-    <div className="group flex items-start justify-between gap-2 border-b border-white/[0.04] py-2.5">
+    <div className="group flex items-start justify-between gap-2 border-b border-black/5 py-2.5">
       <div className="min-w-0">
         <p className="text-[10px] font-medium uppercase tracking-wide text-neutral-500">
           {label}
@@ -147,7 +147,7 @@ function ProfileeRow({
           <button
             type="button"
             onClick={onEdit}
-            className="rounded-md p-1 hover:bg-white/5"
+            className="rounded-md p-1 hover:bg-neutral-100"
             aria-label={`Edit ${label}`}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -407,7 +407,7 @@ export default function ChatPage() {
                   className={`relative flex-1 rounded-lg px-2 py-1.5 text-[11px] font-semibold transition ${
                     tab === id
                       ? "bg-[var(--accent-tint)] text-[var(--accent)] shadow-sm ring-1 ring-[var(--accent)]/25"
-                      : "text-neutral-500 hover:text-slate-200"
+                      : "text-neutral-500 hover:text-neutral-800"
                   }`}
                 >
                   {label}
@@ -439,7 +439,7 @@ export default function ChatPage() {
                     className={`flex w-full items-start gap-2.5 rounded-xl px-2.5 py-2.5 text-left transition ${
                       isActive
                         ? "bg-[var(--accent-tint)] ring-1 ring-[var(--accent)]/30"
-                        : "hover:bg-white/[0.03]"
+                        : "hover:bg-neutral-100"
                     }`}
                   >
                     <span
@@ -460,7 +460,7 @@ export default function ChatPage() {
                       <span className="mt-0.5 flex items-center gap-1.5">
                         <span
                           className={`truncate text-[11px] ${
-                            unread ? "font-semibold text-slate-200" : "text-neutral-500"
+                            unread ? "font-semibold text-neutral-800" : "text-neutral-500"
                           }`}
                         >
                           {last?.body || t.traderEmail}
@@ -481,7 +481,7 @@ export default function ChatPage() {
         </aside>
 
         {/* CENTER */}
-        <section className="flex min-h-0 flex-col bg-[#070707]">
+        <section className="flex min-h-0 flex-col bg-[#f7f7f7]">
           {!active ? (
             <div className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-sm text-neutral-500">
               <p>Select a conversation on the left or Create chat</p>
@@ -523,7 +523,7 @@ export default function ChatPage() {
                 {messageBlocks.map((block) => (
                   <div key={block.key} className="space-y-2.5">
                     <div className="flex justify-center">
-                      <span className="rounded-full bg-[#141414] px-3 py-1 text-[10px] font-medium text-neutral-500 ring-1 ring-white/5">
+                      <span className="rounded-full bg-[#ffffff] px-3 py-1 text-[10px] font-medium text-neutral-500 ring-1 ring-black/10">
                         {block.label}
                       </span>
                     </div>
@@ -537,8 +537,8 @@ export default function ChatPage() {
                           <div
                             className={`max-w-[78%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed shadow-sm ${
                               agent
-                                ? "rounded-br-md bg-[#1a2a16] text-neutral-900 ring-1 ring-[var(--accent)]/20"
-                                : "rounded-bl-md bg-[#141414] text-slate-200 ring-1 ring-white/5"
+                                ? "rounded-br-md bg-[var(--accent-tint)] text-neutral-900 ring-1 ring-[var(--accent)]/20"
+                                : "rounded-bl-md bg-[#ffffff] text-neutral-800 ring-1 ring-black/10"
                             }`}
                           >
                             {agent && (
@@ -569,12 +569,12 @@ export default function ChatPage() {
                 className="relative border-t border-neutral-200 bg-white p-3"
               >
                 {emojiOpen && (
-                  <div className="absolute bottom-full left-3 mb-2 flex gap-1 rounded-xl border border-neutral-200 bg-[#141414] p-2 shadow-lg">
+                  <div className="absolute bottom-full left-3 mb-2 flex gap-1 rounded-xl border border-neutral-200 bg-[#ffffff] p-2 shadow-lg">
                     {EMOJIS.map((e) => (
                       <button
                         key={e}
                         type="button"
-                        className="rounded-lg px-2 py-1 text-lg hover:bg-white/5"
+                        className="rounded-lg px-2 py-1 text-lg hover:bg-neutral-100"
                         onClick={() => {
                           setMessage((r) => r + e);
                           setEmojiOpen(false);
@@ -597,7 +597,7 @@ export default function ChatPage() {
                 <div className="flex items-end gap-2">
                   <button
                     type="button"
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-neutral-200 text-neutral-500 hover:bg-white/5"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-neutral-200 text-neutral-500 hover:bg-neutral-100"
                     title="Sesli not"
                     aria-label="Ses"
                   >
@@ -618,7 +618,7 @@ export default function ChatPage() {
                   <button
                     type="button"
                     onClick={() => setEmojiOpen((v) => !v)}
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-neutral-200 text-neutral-500 hover:bg-white/5"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-neutral-200 text-neutral-500 hover:bg-neutral-100"
                     aria-label="Emoji"
                   >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -631,7 +631,7 @@ export default function ChatPage() {
                   <button
                     type="button"
                     onClick={() => fileRef.current?.click()}
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-neutral-200 text-neutral-500 hover:bg-white/5"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-neutral-200 text-neutral-500 hover:bg-neutral-100"
                     aria-label="Dosya ekle"
                   >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -690,7 +690,7 @@ export default function ChatPage() {
                       );
                       flash("Copied");
                     }}
-                    className="text-neutral-500 hover:text-slate-200"
+                    className="text-neutral-500 hover:text-neutral-800"
                     aria-label="Copy"
                   >
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
@@ -850,7 +850,7 @@ export default function ChatPage() {
               <button
                 type="button"
                 onClick={() => setCreateOpen(false)}
-                className="rounded-lg px-3 py-1.5 text-xs text-neutral-500 hover:bg-white/5"
+                className="rounded-lg px-3 py-1.5 text-xs text-neutral-500 hover:bg-neutral-100"
               >
                 Cancel
               </button>

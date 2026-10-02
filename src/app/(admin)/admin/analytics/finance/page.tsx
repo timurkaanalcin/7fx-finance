@@ -78,7 +78,7 @@ export default function FinanceAnalyticsPage() {
           </div>
           <div className="grid gap-4 lg:grid-cols-2">
             <div className="rounded-xl border border-neutral-200 bg-[#ffffff] p-4">
-              <h2 className="mb-3 text-xs font-semibold text-slate-300">Revenue / Expense</h2>
+              <h2 className="mb-3 text-xs font-semibold text-neutral-600">Revenue / Expense</h2>
               <div className="flex h-40 items-end gap-4 px-4">
                 <div className="flex flex-1 flex-col items-center gap-1">
                   <div
@@ -99,7 +99,7 @@ export default function FinanceAnalyticsPage() {
               </div>
             </div>
             <div className="rounded-xl border border-neutral-200 bg-[#ffffff] p-4">
-              <h2 className="mb-3 text-xs font-semibold text-slate-300">Ledger tipleri</h2>
+              <h2 className="mb-3 text-xs font-semibold text-neutral-600">Ledger tipleri</h2>
               <div className="space-y-2 text-xs">
                 {byType.map((t) => (
                   <div key={t.type} className="flex justify-between border-b border-neutral-200 py-1">

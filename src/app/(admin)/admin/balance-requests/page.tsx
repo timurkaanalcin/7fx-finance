@@ -88,18 +88,18 @@ export default function AdminBalanceRequestsPage() {
       </div>
 
       <div className="mb-4 space-y-1 rounded-lg border border-[#e5e5e5] bg-[#ffffff]/50 p-3 text-[11px] text-neutral-500">
-        <p className="font-medium text-slate-300">Kurallar (admin)</p>
+        <p className="font-medium text-neutral-600">Kurallar (admin)</p>
         <p>
           {ruleTr ||
             `Margin call: equity ≤ 0 or margin level < %${MARGIN_CALL_LEVEL}. Balance reset approval → ${DEFAULT_RESET_BALANCE.toLocaleString("en-US")} USD + open positions are closed.`}
         </p>
         <p>
-          <strong className="text-slate-300">Balance Reset (RESET):</strong> on approval open positions
+          <strong className="text-neutral-600">Balance Reset (RESET):</strong> on approval open positions
           are closed (PnL is not applied to balance), pending orders cancelled, balance set to{" "}
           {DEFAULT_RESET_BALANCE.toLocaleString("en-US")} USD.
         </p>
         <p>
-          <strong className="text-slate-300">Add Balance (ADD):</strong> on approval the requested amount is added to the balance
+          <strong className="text-neutral-600">Add Balance (ADD):</strong> on approval the requested amount is added to the balance
           is added. Reject: account stays as-is.
         </p>
       </div>

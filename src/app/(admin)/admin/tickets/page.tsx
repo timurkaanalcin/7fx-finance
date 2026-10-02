@@ -135,7 +135,7 @@ export default function TicketsPage() {
                         ? "bg-sky-500/20 text-sky-300"
                         : t.kind === "WITHDRAW"
                           ? "bg-violet-500/20 text-violet-300"
-                          : "bg-amber-500/20 text-amber-300"
+                          : "bg-amber-500/20 text-amber-700"
                     }`}
                   >
                     {t.kind}

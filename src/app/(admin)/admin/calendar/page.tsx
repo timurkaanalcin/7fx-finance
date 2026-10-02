@@ -134,7 +134,7 @@ export default function CalendarPage() {
           )}
         </div>
         <div className="rounded-lg border border-neutral-200 bg-[#ffffff] p-3">
-          <h2 className="mb-2 text-xs font-semibold text-slate-300">New reminder</h2>
+          <h2 className="mb-2 text-xs font-semibold text-neutral-600">New reminder</h2>
           <div className="space-y-2 text-xs">
             <textarea
               value={form.body}

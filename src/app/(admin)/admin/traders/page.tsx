@@ -335,7 +335,7 @@ export default function AdminUsersPage() {
                   <div className="mt-0.5 flex flex-wrap gap-1">
                     <span
                       className={`rounded px-1 py-0.5 text-[9px] font-semibold ${
-                        u.role === "ADMIN" ? "bg-amber-500/20 text-amber-300" : "bg-neutral-200 text-slate-300"
+                        u.role === "ADMIN" ? "bg-amber-500/20 text-amber-700" : "bg-neutral-200 text-neutral-600"
                       }`}
                     >
                       {u.role}
@@ -351,7 +351,7 @@ export default function AdminUsersPage() {
                   </div>
                 </td>
                 <td className="px-3 py-2.5 text-neutral-500">{u.phone || "—"}</td>
-                <td className="px-3 py-2.5 text-slate-300">{u.desk || "—"}</td>
+                <td className="px-3 py-2.5 text-neutral-600">{u.desk || "—"}</td>
                 <td className="px-3 py-2.5">{u.country || "—"}</td>
                 <td className="px-3 py-2.5">
                   <div>{u.saleStatus || "—"}</div>

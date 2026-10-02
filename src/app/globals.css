@@ -771,3 +771,18 @@ body:has(.fx-auth-page) {
   border-color: #111111 !important;
   box-shadow: 0 0 0 1px rgba(17, 17, 17, 0.2) !important;
 }
+
+/* CRM light bg lock */
+.fx-crm {
+  background: #f7f7f7 !important;
+  color-scheme: light;
+}
+.fx-crm aside,
+.fx-crm header,
+.fx-crm .crm-card,
+.fx-crm [data-crm-card] {
+  background-color: #ffffff;
+}
+.fx-crm ::-webkit-scrollbar-thumb {
+  background: #c4c4c4;
+}

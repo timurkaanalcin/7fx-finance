@@ -479,7 +479,7 @@ export default function AdminUserDetailPage() {
 
       {tab === "profil" && (
         <div>
-          <h2 className="mb-2 text-sm font-medium text-slate-300">ID</h2>
+          <h2 className="mb-2 text-sm font-medium text-neutral-600">ID</h2>
           <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
             <Field label="First name" value={form.firstName as string} onChange={(v) => setF("firstName", v)} />
             <Field label="Last name" value={form.lastName as string} onChange={(v) => setF("lastName", v)} />
@@ -502,7 +502,7 @@ export default function AdminUserDetailPage() {
             <Field label="Address" value={form.address as string} onChange={(v) => setF("address", v)} />
           </div>
 
-          <h2 className="mb-2 text-sm font-medium text-slate-300">Account</h2>
+          <h2 className="mb-2 text-sm font-medium text-neutral-600">Account</h2>
           <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
             <Field
               label="Account tipi"
@@ -547,7 +547,7 @@ export default function AdminUserDetailPage() {
             />
           </div>
 
-          <h2 className="mb-2 text-sm font-medium text-slate-300">Trading / CRM</h2>
+          <h2 className="mb-2 text-sm font-medium text-neutral-600">Trading / CRM</h2>
           <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
             <Field
               label="Trading server"
@@ -612,7 +612,7 @@ export default function AdminUserDetailPage() {
         <div className="max-w-md space-y-3 text-xs">
           <p className="text-neutral-500">
             Equity (equity):{" "}
-            <span className="font-semibold text-slate-200">
+            <span className="font-semibold text-neutral-800">
               {user.equity.toLocaleString("en-US", { style: "currency", currency: user.currency || "USD" })}
             </span>
           </p>
@@ -775,7 +775,7 @@ export default function AdminUserDetailPage() {
                 <div className="mb-1 text-neutral-500">
                   {n.authorName || "—"} · {fmtCrmDate(n.createdAt)}
                 </div>
-                <div className="whitespace-pre-wrap text-slate-200">{n.body}</div>
+                <div className="whitespace-pre-wrap text-neutral-800">{n.body}</div>
               </li>
             ))}
             {notes.length === 0 && <li className="text-neutral-500">No notes yet</li>}
