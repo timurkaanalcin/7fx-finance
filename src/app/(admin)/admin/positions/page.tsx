@@ -10,25 +10,17 @@ import {
   toDatetimeLocalValue,
 } from "@/lib/crm-format";
 import EditableOrdersTable from "@/components/crm/EditableOrdersTable";
+import {
+  syncDraftFromPrices,
+  syncDraftFromProfit,
+  type PositionEditDraft,
+  type RecalcFrom,
+} from "@/lib/crm-position-pnl";
 
 const POLL_MS = 4000;
 
 type PosRow = Record<string, unknown>;
-
-type EditDraft = {
-  id: string;
-  symbol: string;
-  side: string;
-  volume: string;
-  openPrice: string;
-  currentPrice: string;
-  closePrice: string;
-  profit: string;
-  closeProfit: string;
-  status: "OPEN" | "CLOSED";
-  openedAt: string;
-  closedAt: string;
-};
+type EditDraft = PositionEditDraft;
 
 function toDraft(p: PosRow): EditDraft {
   return {
@@ -62,6 +54,7 @@ export default function PositionsPage() {
   const [msg, setMsg] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<EditDraft | null>(null);
+  const [recalcFrom, setRecalcFrom] = useState<RecalcFrom>("prices");
   const [saving, setSaving] = useState(false);
 
   const load = useCallback(async () => {
@@ -108,8 +101,21 @@ export default function PositionsPage() {
     setLive(false);
     setEditingId(String(p.id));
     setDraft(toDraft(p));
+    setRecalcFrom("prices");
     setMsg("");
     setErr("");
+  }
+
+  function patchPrices(partial: Partial<EditDraft>) {
+    if (!draft) return;
+    setRecalcFrom("prices");
+    setDraft(syncDraftFromPrices({ ...draft, ...partial }));
+  }
+
+  function patchProfit(partial: Partial<EditDraft>, source: "profit" | "closeProfit") {
+    if (!draft) return;
+    setRecalcFrom("profit");
+    setDraft(syncDraftFromProfit({ ...draft, ...partial }, source));
   }
 
   function cancelEdit() {
@@ -134,6 +140,7 @@ export default function PositionsPage() {
         currentPrice: Number(draft.currentPrice),
         profit: Number(draft.profit),
         status: draft.status,
+        recalcFrom,
       };
       if (openedAt) payload.openedAt = openedAt;
       if (draft.closePrice !== "") payload.closePrice = Number(draft.closePrice);
@@ -183,8 +190,8 @@ export default function PositionsPage() {
         <div>
           <h1 className="text-lg font-semibold">Positions / Orders</h1>
           <p className="mt-0.5 text-[11px] text-neutral-500">
-            Trade engine data — edit open/closed fields inline (volume, prices, PnL, status).
-            Closing with a custom PnL sets realized profit (e.g. +102.00).
+            Trade engine data — edit inline. Profit ↔ open/close syncs live
+            (volume×contractSize×price delta, BUY/SELL). Closing with custom PnL adjusts close.
             {updatedAt
               ? ` · last update ${new Date(updatedAt).toLocaleTimeString("en-US")}`
               : ""}
@@ -268,7 +275,7 @@ export default function PositionsPage() {
                           <input
                             className="w-20 rounded border border-neutral-300 px-1 py-0.5"
                             value={draft!.symbol}
-                            onChange={(e) => setDraft({ ...draft!, symbol: e.target.value })}
+                            onChange={(e) => patchPrices({ symbol: e.target.value })}
                           />
                         ) : (
                           String(p.symbol)
@@ -279,7 +286,7 @@ export default function PositionsPage() {
                           <select
                             className="rounded border border-neutral-300 px-1 py-0.5"
                             value={draft!.side}
-                            onChange={(e) => setDraft({ ...draft!, side: e.target.value })}
+                            onChange={(e) => patchPrices({ side: e.target.value })}
                           >
                             <option value="BUY">BUY</option>
                             <option value="SELL">SELL</option>
@@ -293,7 +300,7 @@ export default function PositionsPage() {
                           <input
                             className="w-16 rounded border border-neutral-300 px-1 py-0.5 tabular-nums"
                             value={draft!.volume}
-                            onChange={(e) => setDraft({ ...draft!, volume: e.target.value })}
+                            onChange={(e) => patchPrices({ volume: e.target.value })}
                           />
                         ) : (
                           fmtNum(Number(p.volume), 2)
@@ -304,7 +311,7 @@ export default function PositionsPage() {
                           <input
                             className="w-20 rounded border border-neutral-300 px-1 py-0.5 tabular-nums"
                             value={draft!.openPrice}
-                            onChange={(e) => setDraft({ ...draft!, openPrice: e.target.value })}
+                            onChange={(e) => patchPrices({ openPrice: e.target.value })}
                           />
                         ) : (
                           fmtNum(Number(p.openPrice), 5)
@@ -315,9 +322,7 @@ export default function PositionsPage() {
                           <input
                             className="w-20 rounded border border-neutral-300 px-1 py-0.5 tabular-nums"
                             value={draft!.currentPrice}
-                            onChange={(e) =>
-                              setDraft({ ...draft!, currentPrice: e.target.value })
-                            }
+                            onChange={(e) => patchPrices({ currentPrice: e.target.value })}
                           />
                         ) : (
                           fmtNum(Number(p.currentPrice), 5)
@@ -329,7 +334,7 @@ export default function PositionsPage() {
                             className="w-20 rounded border border-neutral-300 px-1 py-0.5 tabular-nums"
                             placeholder="close"
                             value={draft!.closePrice}
-                            onChange={(e) => setDraft({ ...draft!, closePrice: e.target.value })}
+                            onChange={(e) => patchPrices({ closePrice: e.target.value })}
                           />
                         ) : p.closePrice != null ? (
                           fmtNum(Number(p.closePrice), 5)
@@ -346,7 +351,7 @@ export default function PositionsPage() {
                           <input
                             className="w-20 rounded border border-neutral-300 px-1 py-0.5 tabular-nums"
                             value={draft!.profit}
-                            onChange={(e) => setDraft({ ...draft!, profit: e.target.value })}
+                            onChange={(e) => patchProfit({ profit: e.target.value }, "profit")}
                           />
                         ) : (
                           fmtMoney(profit, 2, "USD")
@@ -367,7 +372,7 @@ export default function PositionsPage() {
                             placeholder="e.g. 102"
                             value={draft!.closeProfit}
                             onChange={(e) =>
-                              setDraft({ ...draft!, closeProfit: e.target.value })
+                              patchProfit({ closeProfit: e.target.value }, "closeProfit")
                             }
                           />
                         ) : realized != null ? (
@@ -414,12 +419,20 @@ export default function PositionsPage() {
                           <select
                             className="rounded border border-neutral-300 px-1 py-0.5"
                             value={draft!.status}
-                            onChange={(e) =>
-                              setDraft({
-                                ...draft!,
-                                status: e.target.value as "OPEN" | "CLOSED",
-                              })
-                            }
+                            onChange={(e) => {
+                              const status = e.target.value as "OPEN" | "CLOSED";
+                              setRecalcFrom("prices");
+                              setDraft(
+                                syncDraftFromPrices({
+                                  ...draft!,
+                                  status,
+                                  closePrice:
+                                    status === "CLOSED" && draft!.closePrice === ""
+                                      ? draft!.currentPrice
+                                      : draft!.closePrice,
+                                })
+                              );
+                            }}
                           >
                             <option value="OPEN">OPEN</option>
                             <option value="CLOSED">CLOSED</option>
@@ -474,8 +487,8 @@ export default function PositionsPage() {
       )}
       {editingId && draft?.status === "CLOSED" && (
         <p className="mt-2 text-[11px] text-neutral-500">
-          Tip: set <strong>Realized</strong> to the closed PnL (e.g. <code>102</code> for +102.00 USD)
-          then Save. Status CLOSED writes closeProfit and closedAt.
+          Tip: set <strong>Profit</strong> or <strong>Realized</strong> (e.g. <code>102</code>) —
+          close price adjusts so engine PnL matches. Edit open/close to recalculate profit.
         </p>
       )}
     </div>

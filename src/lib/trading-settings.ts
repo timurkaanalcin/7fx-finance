@@ -4,6 +4,12 @@
  */
 import { prisma } from "./prisma";
 import { SYMBOLS, getSymbol, type SymbolDef } from "./symbols";
+import {
+  calcExitPriceForProfit,
+  calcOpenPriceForProfit,
+  calcTradeProfit,
+  type TradeSide,
+} from "./pnl";
 
 export type TradingSettingsRow = {
   id: string;
@@ -142,9 +148,27 @@ export function calcProfitWithRates(
   openPrice: number,
   currentPrice: number
 ): number {
-  const dir = side === "BUY" ? 1 : -1;
-  const diff = (currentPrice - openPrice) * dir;
-  return diff * rates.contractSize * volume;
+  return calcTradeProfit(side, volume, openPrice, currentPrice, rates.contractSize);
+}
+
+export function calcOpenPriceWithRates(
+  rates: EffectiveSymbolRates,
+  side: TradeSide,
+  volume: number,
+  exitPrice: number,
+  profit: number
+): number | null {
+  return calcOpenPriceForProfit(side, volume, exitPrice, profit, rates.contractSize);
+}
+
+export function calcExitPriceWithRates(
+  rates: EffectiveSymbolRates,
+  side: TradeSide,
+  volume: number,
+  openPrice: number,
+  profit: number
+): number | null {
+  return calcExitPriceForProfit(side, volume, openPrice, profit, rates.contractSize);
 }
 
 export function calcMarginWithRates(

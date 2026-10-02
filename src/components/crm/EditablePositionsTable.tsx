@@ -8,23 +8,15 @@ import {
   fromDatetimeLocalValue,
   toDatetimeLocalValue,
 } from "@/lib/crm-format";
+import {
+  syncDraftFromPrices,
+  syncDraftFromProfit,
+  type PositionEditDraft,
+  type RecalcFrom,
+} from "@/lib/crm-position-pnl";
 
 type Row = Record<string, unknown>;
-
-type Draft = {
-  id: string;
-  symbol: string;
-  side: string;
-  volume: string;
-  openPrice: string;
-  currentPrice: string;
-  closePrice: string;
-  profit: string;
-  closeProfit: string;
-  status: "OPEN" | "CLOSED";
-  openedAt: string;
-  closedAt: string;
-};
+type Draft = PositionEditDraft;
 
 function toDraft(p: Row): Draft {
   return {
@@ -59,6 +51,7 @@ type Props = {
 export default function EditablePositionsTable({ rows, onSaved }: Props) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<Draft | null>(null);
+  const [recalcFrom, setRecalcFrom] = useState<RecalcFrom>("prices");
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
   const [msg, setMsg] = useState("");
@@ -66,6 +59,7 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
   function startEdit(p: Row) {
     setEditingId(String(p.id));
     setDraft(toDraft(p));
+    setRecalcFrom("prices");
     setErr("");
     setMsg("");
   }
@@ -73,6 +67,18 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
   function cancel() {
     setEditingId(null);
     setDraft(null);
+  }
+
+  function patchPrices(partial: Partial<Draft>) {
+    if (!draft) return;
+    setRecalcFrom("prices");
+    setDraft(syncDraftFromPrices({ ...draft, ...partial }));
+  }
+
+  function patchProfit(partial: Partial<Draft>, source: "profit" | "closeProfit") {
+    if (!draft) return;
+    setRecalcFrom("profit");
+    setDraft(syncDraftFromProfit({ ...draft, ...partial }, source));
   }
 
   async function save() {
@@ -93,6 +99,7 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
         currentPrice: Number(draft.currentPrice),
         profit: Number(draft.profit),
         status: draft.status,
+        recalcFrom,
       };
       if (draft.closePrice !== "") payload.closePrice = Number(draft.closePrice);
       if (draft.closeProfit !== "") payload.closeProfit = Number(draft.closeProfit);
@@ -129,6 +136,12 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
       {(err || msg) && (
         <p className={`mb-2 text-[11px] ${err ? "text-red-600" : "text-emerald-600"}`}>
           {err || msg}
+        </p>
+      )}
+      {editingId && (
+        <p className="mb-2 text-[11px] text-neutral-500">
+          Live sync: edit <strong>Profit</strong> → adjusts open (or close if CLOSED); edit
+          prices/volume/side → recalculates profit (volume×contractSize×delta).
         </p>
       )}
       <div className="overflow-x-auto rounded-xl border border-[#e5e5e5]">
@@ -178,7 +191,7 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
                       <input
                         className={inp}
                         value={draft!.symbol}
-                        onChange={(e) => setDraft({ ...draft!, symbol: e.target.value })}
+                        onChange={(e) => patchPrices({ symbol: e.target.value })}
                       />
                     ) : (
                       String(p.symbol)
@@ -189,7 +202,7 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
                       <select
                         className={inp}
                         value={draft!.side}
-                        onChange={(e) => setDraft({ ...draft!, side: e.target.value })}
+                        onChange={(e) => patchPrices({ side: e.target.value })}
                       >
                         <option value="BUY">BUY</option>
                         <option value="SELL">SELL</option>
@@ -203,7 +216,7 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
                       <input
                         className={inp}
                         value={draft!.volume}
-                        onChange={(e) => setDraft({ ...draft!, volume: e.target.value })}
+                        onChange={(e) => patchPrices({ volume: e.target.value })}
                       />
                     ) : (
                       fmtCrmMoney(p.volume, 2)
@@ -214,7 +227,7 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
                       <input
                         className={inp}
                         value={draft!.openPrice}
-                        onChange={(e) => setDraft({ ...draft!, openPrice: e.target.value })}
+                        onChange={(e) => patchPrices({ openPrice: e.target.value })}
                       />
                     ) : (
                       fmtCrmPrice(p.openPrice)
@@ -225,7 +238,7 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
                       <input
                         className={inp}
                         value={draft!.currentPrice}
-                        onChange={(e) => setDraft({ ...draft!, currentPrice: e.target.value })}
+                        onChange={(e) => patchPrices({ currentPrice: e.target.value })}
                       />
                     ) : (
                       fmtCrmPrice(p.currentPrice)
@@ -237,7 +250,7 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
                         className={inp}
                         placeholder="—"
                         value={draft!.closePrice}
-                        onChange={(e) => setDraft({ ...draft!, closePrice: e.target.value })}
+                        onChange={(e) => patchPrices({ closePrice: e.target.value })}
                       />
                     ) : p.closePrice != null ? (
                       fmtCrmPrice(p.closePrice)
@@ -254,7 +267,7 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
                       <input
                         className={inp}
                         value={draft!.profit}
-                        onChange={(e) => setDraft({ ...draft!, profit: e.target.value })}
+                        onChange={(e) => patchProfit({ profit: e.target.value }, "profit")}
                       />
                     ) : (
                       fmtCrmMoney(profitN, 2)
@@ -274,7 +287,9 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
                         className={inp}
                         placeholder="e.g. 102"
                         value={draft!.closeProfit}
-                        onChange={(e) => setDraft({ ...draft!, closeProfit: e.target.value })}
+                        onChange={(e) =>
+                          patchProfit({ closeProfit: e.target.value }, "closeProfit")
+                        }
                       />
                     ) : Number.isFinite(realizedN) ? (
                       fmtCrmMoney(realizedN, 2)
@@ -287,12 +302,20 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
                       <select
                         className={inp}
                         value={draft!.status}
-                        onChange={(e) =>
-                          setDraft({
-                            ...draft!,
-                            status: e.target.value as "OPEN" | "CLOSED",
-                          })
-                        }
+                        onChange={(e) => {
+                          const status = e.target.value as "OPEN" | "CLOSED";
+                          setRecalcFrom("prices");
+                          setDraft(
+                            syncDraftFromPrices({
+                              ...draft!,
+                              status,
+                              closePrice:
+                                status === "CLOSED" && draft!.closePrice === ""
+                                  ? draft!.currentPrice
+                                  : draft!.closePrice,
+                            })
+                          );
+                        }}
                       >
                         <option value="OPEN">OPEN</option>
                         <option value="CLOSED">CLOSED</option>

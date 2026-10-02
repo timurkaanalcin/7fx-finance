@@ -3,6 +3,13 @@ import { requireAdmin, writeAudit } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { refreshAccountMetrics } from "@/lib/trading";
+import {
+  calcExitPriceWithRates,
+  calcOpenPriceWithRates,
+  calcProfitWithRates,
+  getEffectiveRates,
+} from "@/lib/trading-settings";
+import { normalizeSide } from "@/lib/pnl";
 
 export const dynamic = "force-dynamic";
 
@@ -78,6 +85,8 @@ export async function GET(req: Request) {
 /**
  * Admin edit of a position row: volume, prices, PnL, status (OPEN/CLOSED).
  * Closing with custom PnL sets closeProfit/profit and closedAt.
+ * Body.recalcFrom = "profit" → solve open (OPEN) or close (CLOSED) from PnL;
+ * "prices" (or price/volume/side edits) → recompute profit from engine formula.
  */
 export async function PATCH(req: Request) {
   await ensureDemoSeed();
@@ -232,6 +241,81 @@ export async function PATCH(req: Request) {
     if (body.clearCloseFields) {
       data.closePrice = null;
       data.closeProfit = null;
+    }
+  }
+
+  // Keep profit ↔ prices consistent with trade engine (volume×contractSize×delta).
+  const recalcFrom = String(body.recalcFrom || "").toLowerCase();
+  const mergedSymbol = String(data.symbol ?? existing.symbol);
+  const mergedSide = normalizeSide(data.side ?? existing.side);
+  const mergedVolume = Number(data.volume ?? existing.volume);
+  const rates = await getEffectiveRates(mergedSymbol);
+  if (rates && Number.isFinite(mergedVolume) && mergedVolume > 0) {
+    if (recalcFrom === "profit") {
+      const targetProfit =
+        nextStatus === "CLOSED"
+          ? Number(
+              data.closeProfit ??
+                data.profit ??
+                existing.closeProfit ??
+                existing.profit
+            )
+          : Number(data.profit ?? existing.profit);
+      if (Number.isFinite(targetProfit)) {
+        if (nextStatus === "CLOSED") {
+          const open = Number(data.openPrice ?? existing.openPrice);
+          const exit = calcExitPriceWithRates(
+            rates,
+            mergedSide,
+            mergedVolume,
+            open,
+            targetProfit
+          );
+          if (exit != null && exit >= 0) {
+            data.closePrice = exit;
+            data.currentPrice = exit;
+            data.profit = targetProfit;
+            data.closeProfit = targetProfit;
+          }
+        } else {
+          const exit = Number(data.currentPrice ?? existing.currentPrice);
+          const open = calcOpenPriceWithRates(
+            rates,
+            mergedSide,
+            mergedVolume,
+            exit,
+            targetProfit
+          );
+          if (open != null && open > 0) {
+            data.openPrice = open;
+            data.profit = targetProfit;
+          }
+        }
+      }
+    } else if (recalcFrom === "prices") {
+      const open = Number(data.openPrice ?? existing.openPrice);
+      const exit =
+        nextStatus === "CLOSED"
+          ? Number(
+              data.closePrice ??
+                data.currentPrice ??
+                existing.closePrice ??
+                existing.currentPrice
+            )
+          : Number(data.currentPrice ?? existing.currentPrice);
+      if (Number.isFinite(open) && Number.isFinite(exit)) {
+        const profit = calcProfitWithRates(
+          rates,
+          mergedSide,
+          mergedVolume,
+          open,
+          exit
+        );
+        data.profit = profit;
+        if (nextStatus === "CLOSED") {
+          data.closeProfit = profit;
+        }
+      }
     }
   }
 
