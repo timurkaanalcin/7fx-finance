@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { LOCALES, LOCALE_META, type Locale } from "@/lib/i18n/locales";
-import { useI18n } from "@/lib/i18n/context";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 
 type Profilee = {

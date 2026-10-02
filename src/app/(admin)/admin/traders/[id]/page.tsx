@@ -1,5 +1,6 @@
-import { LOCALES } from "@/lib/i18n/locales";
 "use client";
+
+import { LOCALES } from "@/lib/i18n/locales";
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
