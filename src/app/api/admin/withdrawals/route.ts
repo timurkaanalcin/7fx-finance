@@ -3,6 +3,7 @@ import { requireAdminPerm } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { refreshAccountMetrics } from "@/lib/trading";
 import { recordLedger } from "@/lib/ledger";
+import { readApprovalPayload } from "@/lib/ticket-scenario";
 
 export const dynamic = "force-dynamic";
 
@@ -30,7 +31,8 @@ export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}));
   const id = String(body.id || "");
   const action = String(body.action || "").toLowerCase();
-  const adminNote = body.adminNote != null ? String(body.adminNote).slice(0, 500) : null;
+  const approval = readApprovalPayload(body && typeof body === "object" ? body : {});
+  const adminNote = action === "approve" ? approval.adminNote : body.adminNote != null ? String(body.adminNote).slice(0, 500) : null;
 
   if (!id || (action !== "approve" && action !== "reject")) {
     return NextResponse.json({ error: "id ve action (approve|reject) gerekli" }, { status: 400 });
@@ -67,7 +69,7 @@ export async function POST(req: Request) {
     }),
     prisma.withdrawalRequest.update({
       where: { id },
-      data: { status: "APPROVED", adminNote, reviewedAt: new Date() },
+      data: { status: "APPROVED", adminNote, approvalReason: approval.approvalReason, eventScenario: approval.eventScenario, reviewedAt: new Date() },
     }),
   ]);
 

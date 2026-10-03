@@ -179,6 +179,10 @@ model DepositRequest {
   note       String?  @db.Text
   status     String        @default("PENDING") // PENDING | APPROVED | REJECTED
   adminNote  String?  @db.Text
+  /// Admin-written reason captured when the ticket is approved
+  approvalReason String?   @db.Text
+  /// Event narrative prepared at approval (AI or fact composer)
+  eventScenario  String?   @db.Text
   createdAt  DateTime      @default(now())
   reviewedAt DateTime?
 
@@ -196,6 +200,8 @@ model BalanceRequest {
   status     String    @default("PENDING") // PENDING | APPROVED | REJECTED
   reason     String    @default("MARGIN_CALL") @db.VarChar(64) // MARGIN_CALL
   adminNote  String?  @db.Text
+  approvalReason String?  @db.Text
+  eventScenario  String?  @db.Text
   equityAt   Float? // snapshot at request time
   marginLvl  Float?
   createdAt  DateTime  @default(now())
@@ -218,6 +224,8 @@ model WithdrawalRequest {
   note       String?   @db.Text
   status     String    @default("PENDING") // PENDING | APPROVED | REJECTED
   adminNote  String?   @db.Text
+  approvalReason String? @db.Text
+  eventScenario  String? @db.Text
   createdAt  DateTime  @default(now())
   reviewedAt DateTime?
 

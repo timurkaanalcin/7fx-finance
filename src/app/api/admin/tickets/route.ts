@@ -67,6 +67,8 @@ export async function GET(req: Request) {
       country: d.user.country,
       openedAt: d.createdAt,
       closedAt: d.reviewedAt,
+      approvalReason: d.approvalReason,
+      eventScenario: d.eventScenario,
     })),
     ...balanceReqs.map((b) => ({
       id: b.id,
@@ -83,6 +85,8 @@ export async function GET(req: Request) {
       openedAt: b.createdAt,
       closedAt: b.reviewedAt,
       reason: b.reason,
+      approvalReason: b.approvalReason,
+      eventScenario: b.eventScenario,
     })),
     ...withdrawals.map((w) => ({
       id: w.id,
@@ -99,6 +103,8 @@ export async function GET(req: Request) {
       openedAt: w.createdAt,
       closedAt: w.reviewedAt,
       details: w.details,
+      approvalReason: w.approvalReason,
+      eventScenario: w.eventScenario,
     })),
   ].sort((a, b) => +new Date(b.openedAt) - +new Date(a.openedAt));
 
