@@ -1,5 +1,7 @@
 "use client";
 
+import { useCrmLabels } from "@/lib/i18n/crm-labels";
+
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 
@@ -61,6 +63,7 @@ function Card({
 }
 
 export default function AdminDashboard() {
+  const { i18n, code, deskName } = useCrmLabels();
   const [kpis, setKpis] = useState<Kpis | null>(null);
   const [positions, setPositions] = useState<ActivityPos[]>([]);
   const [orders, setOrders] = useState<ActivityOrder[]>([]);
@@ -78,7 +81,7 @@ export default function AdminDashboard() {
       setUpdatedAt(d.generatedAt || new Date().toISOString());
       setErr("");
     } catch {
-      setErr("Could not load KPI data");
+      setErr(i18n("crm.dash.kpiError"));
     }
   }, []);
 
@@ -92,45 +95,43 @@ export default function AdminDashboard() {
     <div>
       <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
         <div>
-          <h1 className="text-lg font-semibold">Dashboard</h1>
+          <h1 className="text-lg font-semibold">{i18n("crm.nav.dashboard")}</h1>
           <p className="mt-0.5 text-xs text-neutral-500">
-            7FX Desk CRM · Live account link to the trade engine
-            {updatedAt
-              ? ` · ${new Date(updatedAt).toLocaleTimeString("en-US")}`
-              : ""}
+            {i18n("crm.dash.subtitle")}
+            {updatedAt ? ` · ${new Date(updatedAt).toLocaleTimeString("en-US")}` : ""}
           </p>
         </div>
         <Link
           href="/admin/positions"
           className="rounded bg-black px-3 py-1.5 text-[11px] font-medium text-white"
         >
-          Live pozisyonlar →
+          {i18n("crm.dash.livePositions")}
         </Link>
       </div>
       {err && <p className="mb-3 text-sm text-red-400">{err}</p>}
       {!kpis && !err && (
         <div className="flex items-center gap-2 text-sm text-neutral-500">
           <div className="h-4 w-4 animate-spin rounded-full border-2 border-sky-500 border-t-transparent" />
-          Loading…
+          {i18n("crm.ui.loading")}
         </div>
       )}
       {kpis && (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          <Card label="Traders" value={kpis.users} href="/admin/traders" />
-          <Card label="Open Positions" value={kpis.openPositions} href="/admin/positions" />
+          <Card label={i18n("crm.nav.traders")} value={kpis.users} href="/admin/traders" />
+          <Card label={i18n("crm.dash.openPositions")} value={kpis.openPositions} href="/admin/positions" />
           <Card
-            label="Pending Deposits"
+            label={i18n("crm.dash.pendingDeposits")}
             value={kpis.pendingDeposits}
             href="/admin/tickets?kind=deposit"
             accent={kpis.pendingDeposits > 0 ? "ring-1 ring-amber-500/40" : ""}
           />
           <Card
-            label="Margin Talepleri"
+            label={i18n("crm.dash.marginRequests")}
             value={kpis.pendingBalanceRequests}
             href="/admin/tickets?kind=margin"
             accent={kpis.pendingBalanceRequests > 0 ? "ring-1 ring-amber-500/40" : ""}
           />
-          <Card label="Total Volume (lot)" value={Number(kpis.totalVolume).toFixed(2)} />
+          <Card label={i18n("crm.dash.totalVolume")} value={Number(kpis.totalVolume).toFixed(2)} />
         </div>
       )}
 
@@ -138,29 +139,29 @@ export default function AdminDashboard() {
         <section className="rounded-lg border border-neutral-200 bg-[#ffffff]">
           <div className="flex items-center justify-between border-b border-neutral-200 px-3 py-2">
             <h2 className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
-              Son pozisyonlar
+              {i18n("crm.dash.recentPositions")}
             </h2>
             <Link href="/admin/positions" className="text-[10px] text-sky-600 hover:underline">
-              All
+              {i18n("crm.ui.all")}
             </Link>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-[11px]">
               <thead className="text-neutral-500">
                 <tr>
-                  <th className="px-2 py-1.5">Symbol</th>
-                  <th className="px-2 py-1.5">Side</th>
-                  <th className="px-2 py-1.5">Vol</th>
-                  <th className="px-2 py-1.5">Kâr</th>
-                  <th className="px-2 py-1.5">Trader</th>
-                  <th className="px-2 py-1.5">Status</th>
+                  <th className="px-2 py-1.5">{i18n("crm.ui.symbol")}</th>
+                  <th className="px-2 py-1.5">{i18n("crm.ui.side")}</th>
+                  <th className="px-2 py-1.5">{i18n("crm.ui.vol")}</th>
+                  <th className="px-2 py-1.5">{i18n("crm.ui.profit")}</th>
+                  <th className="px-2 py-1.5">{i18n("crm.ui.trader")}</th>
+                  <th className="px-2 py-1.5">{i18n("crm.ui.status")}</th>
                 </tr>
               </thead>
               <tbody>
                 {positions.map((p) => (
                   <tr key={p.id} className="border-t border-neutral-100">
                     <td className="px-2 py-1.5 font-medium">{p.symbol}</td>
-                    <td className="px-2 py-1.5">{p.side}</td>
+                    <td className="px-2 py-1.5">{code("crm.kind", p.side)}</td>
                     <td className="px-2 py-1.5 tabular-nums">{p.volume}</td>
                     <td
                       className={`px-2 py-1.5 tabular-nums ${
@@ -174,13 +175,13 @@ export default function AdminDashboard() {
                         {p.traderName}
                       </Link>
                     </td>
-                    <td className="px-2 py-1.5">{p.status}</td>
+                    <td className="px-2 py-1.5">{code("crm.status", p.status)}</td>
                   </tr>
                 ))}
                 {positions.length === 0 && (
                   <tr>
                     <td colSpan={6} className="px-2 py-4 text-center text-neutral-400">
-                      No positions yet
+                      {i18n("crm.ui.noPositions")}
                     </td>
                   </tr>
                 )}
@@ -192,7 +193,7 @@ export default function AdminDashboard() {
         <section className="rounded-lg border border-neutral-200 bg-[#ffffff]">
           <div className="flex items-center justify-between border-b border-neutral-200 px-3 py-2">
             <h2 className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
-              Son emirler
+              {i18n("crm.dash.recentOrders")}
             </h2>
             <Link
               href="/admin/positions?tab=orders"
@@ -205,33 +206,33 @@ export default function AdminDashboard() {
             <table className="w-full text-left text-[11px]">
               <thead className="text-neutral-500">
                 <tr>
-                  <th className="px-2 py-1.5">Symbol</th>
-                  <th className="px-2 py-1.5">Tip</th>
-                  <th className="px-2 py-1.5">Side</th>
-                  <th className="px-2 py-1.5">Vol</th>
-                  <th className="px-2 py-1.5">Trader</th>
-                  <th className="px-2 py-1.5">Status</th>
+                  <th className="px-2 py-1.5">{i18n("crm.ui.symbol")}</th>
+                  <th className="px-2 py-1.5">{i18n("crm.ui.type")}</th>
+                  <th className="px-2 py-1.5">{i18n("crm.ui.side")}</th>
+                  <th className="px-2 py-1.5">{i18n("crm.ui.vol")}</th>
+                  <th className="px-2 py-1.5">{i18n("crm.ui.trader")}</th>
+                  <th className="px-2 py-1.5">{i18n("crm.ui.status")}</th>
                 </tr>
               </thead>
               <tbody>
                 {orders.map((o) => (
                   <tr key={o.id} className="border-t border-neutral-100">
                     <td className="px-2 py-1.5 font-medium">{o.symbol}</td>
-                    <td className="px-2 py-1.5">{o.type}</td>
-                    <td className="px-2 py-1.5">{o.side}</td>
+                    <td className="px-2 py-1.5">{code("crm.kind", o.type)}</td>
+                    <td className="px-2 py-1.5">{code("crm.kind", o.side)}</td>
                     <td className="px-2 py-1.5 tabular-nums">{o.volume}</td>
                     <td className="px-2 py-1.5">
                       <Link href={`/admin/traders/${o.traderId}`} className="text-sky-600 hover:underline">
                         {o.traderName}
                       </Link>
                     </td>
-                    <td className="px-2 py-1.5">{o.status}</td>
+                    <td className="px-2 py-1.5">{code("crm.status", o.status)}</td>
                   </tr>
                 ))}
                 {orders.length === 0 && (
                   <tr>
                     <td colSpan={6} className="px-2 py-4 text-center text-neutral-400">
-                      No orders yet
+                      {i18n("crm.ui.noOrders")}
                     </td>
                   </tr>
                 )}
@@ -243,14 +244,14 @@ export default function AdminDashboard() {
 
       <div className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          { href: "/admin/traders", title: "Traders", desc: "Filters, membership, trading Account" },
-          { href: "/admin/tickets", title: "Biletler", desc: "Deposit + margin approval → balance" },
-          { href: "/admin/positions", title: "Positions", desc: "Live trade engine positions" },
-          { href: "/admin/desks", title: "Desks", desc: "Trader / worker / analytics stub" },
-          { href: "/admin/transactions", title: "Ledger", desc: "Balance history" },
-          { href: "/admin/rates", title: "Trading Rates", desc: "Spread, komisyon, hacim" },
-          { href: "/admin/workers", title: "Workers", desc: "Admin users and permissions" },
-          { href: "/admin/methods", title: "Deposit Methods", desc: "IBAN / crypto" },
+          { href: "/admin/traders", title: i18n("crm.nav.traders"), desc: i18n("crm.dash.cardTraders") },
+          { href: "/admin/tickets", title: i18n("crm.nav.tickets"), desc: i18n("crm.dash.cardTickets") },
+          { href: "/admin/positions", title: i18n("crm.nav.positions"), desc: i18n("crm.dash.cardPositions") },
+          { href: "/admin/desks", title: i18n("crm.nav.desks"), desc: i18n("crm.dash.cardDesks") },
+          { href: "/admin/transactions", title: i18n("crm.nav.transactions"), desc: i18n("crm.dash.cardLedger") },
+          { href: "/admin/rates", title: i18n("crm.nav.rates"), desc: i18n("crm.dash.cardRates") },
+          { href: "/admin/workers", title: i18n("crm.nav.workers"), desc: i18n("crm.dash.cardWorkers") },
+          { href: "/admin/methods", title: i18n("crm.nav.methods"), desc: i18n("crm.dash.cardMethods") },
         ].map((x) => (
           <Link
             key={x.href}

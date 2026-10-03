@@ -70,9 +70,35 @@ type CrmSeed = {
 };
 
 
+const REQUIRED_DESKS = [
+  { code: "RETENTION", name: "Retention", office: "Retention" },
+  { code: "SALE", name: "Sale", office: "Sale" },
+  { code: "TR", name: "TR", office: "TR" },
+] as const;
+
+async function ensureRequiredDesks() {
+  for (const d of REQUIRED_DESKS) {
+    const existing = await prisma.desk.findUnique({ where: { code: d.code } });
+    if (existing) continue;
+    await prisma.desk.create({
+      data: {
+        name: d.name,
+        code: d.code,
+        office: d.office,
+        active: true,
+        tradePlatformLink: "/trade",
+      },
+    });
+    console.log("[7fx] Ensured desk", d.code);
+  }
+}
+
 async function ensureDesks() {
   const count = await prisma.desk.count();
-  if (count > 0) return;
+  if (count > 0) {
+    await ensureRequiredDesks();
+    return;
+  }
   await prisma.desk.createMany({
     data: [
       {
@@ -108,6 +134,7 @@ async function ensureDesks() {
     ],
   });
   console.log("[7fx] Seeded desks");
+  await ensureRequiredDesks();
 }
 
 async function ensureDepositMethods() {

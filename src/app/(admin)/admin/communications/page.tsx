@@ -1,5 +1,7 @@
 "use client";
 
+import { useCrmLabels } from "@/lib/i18n/crm-labels";
+
 import { fmtCrmDate } from "@/lib/crm-format";
 
 import Link from "next/link";
@@ -22,6 +24,7 @@ type Row = {
 type TraderOpt = { id: string; name: string; email: string };
 
 export default function CommunicationsPage() {
+  const { i18n, code, deskName } = useCrmLabels();
   const [rows, setRows] = useState<Row[]>([]);
   const [type, setType] = useState("");
   const [traders, setTraders] = useState<TraderOpt[]>([]);
@@ -65,11 +68,11 @@ export default function CommunicationsPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "Registration failed");
+        setMsg(data.error || i18n("crm.ui.saveFailed"));
         return;
       }
       setForm((f) => ({ ...f, title: "", description: "" }));
-      setMsg("Communication record added");
+      setMsg(i18n("crm.comms.added"));
       await load();
     } finally {
       setBusy(false);
@@ -78,8 +81,8 @@ export default function CommunicationsPage() {
 
   return (
     <div>
-      <h1 className="mb-1 text-lg font-semibold">Communications</h1>
-      <p className="mb-3 text-[11px] text-neutral-500">Chat / Call / Note records</p>
+      <h1 className="mb-1 text-lg font-semibold">{i18n("crm.nav.communications")}</h1>
+      <p className="mb-3 text-[11px] text-neutral-500">{i18n("crm.comms.intro")}</p>
       <div className="mb-3 grid gap-3 lg:grid-cols-3">
         <div className="lg:col-span-2 overflow-x-auto rounded-lg border border-neutral-200">
           <div className="border-b border-neutral-200 bg-[#ffffff] px-3 py-2">
@@ -88,7 +91,7 @@ export default function CommunicationsPage() {
               onChange={(e) => setType(e.target.value)}
               className="rounded border border-neutral-300 bg-[#fafafa] px-2 py-1 text-xs"
             >
-              <option value="">All types</option>
+              <option value="">{i18n("crm.ui.allTypes")}</option>
               {["CHAT", "CALL", "NOTE"].map((t) => (
                 <option key={t} value={t}>
                   {t}
@@ -99,11 +102,11 @@ export default function CommunicationsPage() {
           <table className="w-full text-left text-[11px]">
             <thead className="bg-[#ffffff] text-neutral-500">
               <tr>
-                <th className="px-2 py-2">Tip</th>
-                <th className="px-2 py-2">Title</th>
-                <th className="px-2 py-2">Trader</th>
-                <th className="px-2 py-2">Worker</th>
-                <th className="px-2 py-2">Date</th>
+                <th className="px-2 py-2">{i18n("crm.ui.type")}</th>
+                <th className="px-2 py-2">{i18n("crm.ui.title")}</th>
+                <th className="px-2 py-2">{i18n("crm.ui.trader")}</th>
+                <th className="px-2 py-2">{i18n("crm.ui.worker")}</th>
+                <th className="px-2 py-2">{i18n("crm.ui.date")}</th>
               </tr>
             </thead>
             <tbody>
@@ -132,7 +135,7 @@ export default function CommunicationsPage() {
               {rows.length === 0 && (
                 <tr>
                   <td colSpan={5} className="px-3 py-8 text-center text-neutral-500">
-                    Registered yok
+                    {i18n("crm.comms.none")}
                   </td>
                 </tr>
               )}
@@ -140,14 +143,14 @@ export default function CommunicationsPage() {
           </table>
         </div>
         <div className="rounded-lg border border-neutral-200 bg-[#ffffff] p-3">
-          <h2 className="mb-2 text-xs font-semibold text-neutral-600">New record</h2>
+          <h2 className="mb-2 text-xs font-semibold text-neutral-600">{i18n("crm.comms.new")}</h2>
           <div className="space-y-2 text-xs">
             <select
               value={form.userId}
               onChange={(e) => setForm({ ...form, userId: e.target.value })}
               className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             >
-              <option value="">Select trader…</option>
+              <option value="">{i18n("crm.comms.selectTrader")}</option>
               {traders.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.name} ({t.email})
@@ -168,13 +171,13 @@ export default function CommunicationsPage() {
             <input
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
-              placeholder="Title"
+              placeholder={i18n("crm.ui.title")}
               className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             />
             <textarea
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
-              placeholder="Description"
+              placeholder={i18n("crm.ui.description")}
               rows={4}
               className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             />
@@ -184,7 +187,7 @@ export default function CommunicationsPage() {
               onClick={create}
               className="w-full rounded bg-black text-white px-3 py-1.5 text-xs font-medium hover:bg-neutral-800 disabled:opacity-50"
             >
-              Save
+              {i18n("crm.ui.save")}
             </button>
             {msg && <p className="text-[11px] text-neutral-500">{msg}</p>}
           </div>

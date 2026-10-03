@@ -1,8 +1,11 @@
 "use client";
 
+import { useCrmLabels } from "@/lib/i18n/crm-labels";
+
 import { useCallback, useEffect, useState } from "react";
 
 export default function AdminSettingsPage() {
+  const { i18n, code, deskName } = useCrmLabels();
   const [referralCode, setReferralCode] = useState("");
   const [draft, setDraft] = useState("");
   const [referralRequired, setReferralRequired] = useState(true);
@@ -17,7 +20,7 @@ export default function AdminSettingsPage() {
   const load = useCallback(async () => {
     const res = await fetch("/api/admin/settings");
     if (!res.ok) {
-      setErr("Could not load settings");
+      setErr(i18n("crm.set.loadFail"));
       return;
     }
     const data = await res.json();
@@ -56,7 +59,7 @@ export default function AdminSettingsPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setErr(data.error || "Registration failed");
+        setErr(data.error || i18n("crm.ui.saveFailed"));
         return;
       }
       setReferralCode(data.referralCode);
@@ -65,7 +68,7 @@ export default function AdminSettingsPage() {
       setDraftRequired(data.referralRequired !== false);
       setImpersonation(data.terminalImpersonationEnabled !== false);
       setDraftImpersonation(data.terminalImpersonationEnabled !== false);
-      setMsg("System settings saved");
+      setMsg(i18n("crm.set.saved"));
     } finally {
       setBusy(false);
     }
@@ -74,33 +77,28 @@ export default function AdminSettingsPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-6 p-4 md:p-6">
       <div>
-        <h1 className="text-xl font-semibold text-neutral-900">System Settings</h1>
+        <h1 className="text-xl font-semibold text-neutral-900">{i18n("crm.nav.settings")}</h1>
         <p className="mt-1 text-sm text-neutral-500">
-          Manage the required referral code for registration here. This code is for the 7FX
-          platform (7fx.customer.org.tr) only. Registration cannot complete with an invalid code.
+          {i18n("crm.set.intro")}
         </p>
       </div>
 
       <section className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-4 md:p-5">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-emerald-800">
-          Live CRM aktivitesi
+          {i18n("crm.set.liveTitle")}
         </h2>
         <p className="mt-2 text-sm text-emerald-900/80">
-          Order and position open/close actions from the trader terminal write to the same database.
-          The admin <strong>Positions</strong> page and dashboard refresh every few seconds
-          to show live trade activity. The Positions tab on the trader detail
-          is also live.
+          {i18n("crm.set.liveBody")}
         </p>
       </section>
 
 
       <section className="rounded-xl border border-sky-200 bg-sky-50/50 p-4 md:p-5">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-sky-800">
-          Terminal impersonation
+          {i18n("crm.set.impTitle")}
         </h2>
         <p className="mt-2 text-sm text-sky-900/80">
-          When enabled, admins can open the trader terminal as that user and create
-          time-limited auto-login links. Default is <strong>ON</strong> for everyone.
+          {i18n("crm.set.impBody")}
         </p>
         {!loaded ? null : (
           <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-lg border border-sky-200 bg-white px-3 py-3">
@@ -113,10 +111,10 @@ export default function AdminSettingsPage() {
             />
             <span>
               <span className="block text-sm font-medium text-neutral-800">
-                Enable terminal impersonation
+                {i18n("crm.set.impEnable")}
               </span>
               <span className="mt-0.5 block text-xs text-neutral-500">
-                Shows &quot;Open terminal&quot; and auto-login link tools on trader pages.
+                {i18n("crm.set.impHint")}
               </span>
             </span>
           </label>
@@ -125,14 +123,14 @@ export default function AdminSettingsPage() {
 
       <section className="rounded-xl border border-neutral-200 bg-[#ffffff] p-4 md:p-5">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-500">
-          Referans Kodu
+          {i18n("crm.set.refTitle")}
         </h2>
         <p className="mt-2 text-sm text-neutral-500">
-          New users must enter this code on the registration form (when required).
+          {i18n("crm.set.refBody")}
         </p>
 
         {!loaded ? (
-          <p className="mt-4 text-sm text-neutral-500">Loading…</p>
+          <p className="mt-4 text-sm text-neutral-500">{i18n("crm.ui.loading")}</p>
         ) : (
           <div className="mt-4 space-y-4">
             <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-neutral-200 bg-[#f7f7f7] px-3 py-3">
@@ -145,32 +143,32 @@ export default function AdminSettingsPage() {
               />
               <span>
                 <span className="block text-sm font-medium text-neutral-800">
-                  Referral code zorunlu
+                  {i18n("crm.set.refRequired")}
                 </span>
                 <span className="mt-0.5 block text-xs text-neutral-500">
-                  When closed, the registration form does not ask for a code; when open, a valid code is required.
+                  {i18n("crm.set.refHint")}
                 </span>
               </span>
             </label>
 
             <div>
               <label htmlFor="admin-referral-code" className="mb-1.5 block text-sm text-neutral-600">
-                Active kod
+                {i18n("crm.set.activeCode")}
               </label>
               <input
                 id="admin-referral-code"
                 className="w-full rounded-lg border border-neutral-300 bg-[#f7f7f7] px-3 py-2.5 font-mono text-neutral-900 outline-none focus:border-sky-500"
                 value={draft}
                 onChange={(e) => setDraft(e.target.value.replace(/[^\d]/g, ""))}
-                placeholder="e.g. 213950812"
+                placeholder={i18n("crm.set.example")}
                 disabled={busy}
                 maxLength={64}
                 inputMode="numeric"
                 autoComplete="off"
               />
-              <p className="mt-1.5 text-xs text-neutral-500">Digits only.</p>
+              <p className="mt-1.5 text-xs text-neutral-500">{i18n("crm.set.digits")}</p>
               {dirty && (
-                <p className="mt-1.5 text-xs text-amber-400/90">You have unsaved changes</p>
+                <p className="mt-1.5 text-xs text-amber-400/90">{i18n("crm.set.unsaved")}</p>
               )}
             </div>
             <div className="flex flex-wrap gap-2">
@@ -180,7 +178,7 @@ export default function AdminSettingsPage() {
                 onClick={save}
                 className="rounded-lg bg-black text-white px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {busy ? "Saving…" : "Save"}
+                {busy ? i18n("crm.ui.saving") : i18n("crm.ui.save")}
               </button>
               <button
                 type="button"
@@ -194,7 +192,7 @@ export default function AdminSettingsPage() {
                 }}
                 className="rounded-lg border border-neutral-300 px-4 py-2 text-sm text-neutral-600 hover:bg-neutral-100 disabled:opacity-50"
               >
-                Cancel
+                {i18n("crm.ui.cancel")}
               </button>
             </div>
           </div>

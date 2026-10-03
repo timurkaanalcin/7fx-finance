@@ -1,5 +1,7 @@
 "use client";
 
+import { useCrmLabels } from "@/lib/i18n/crm-labels";
+
 import { useCallback, useEffect, useState } from "react";
 
 type Global = {
@@ -23,6 +25,7 @@ type Effective = {
 };
 
 export default function AdminRatesPage() {
+  const { i18n, code, deskName } = useCrmLabels();
   const [global, setGlobal] = useState<Global | null>(null);
   const [effective, setEffective] = useState<Effective[]>([]);
   const [msg, setMsg] = useState("");
@@ -62,10 +65,10 @@ export default function AdminRatesPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "Registration failed");
+        setMsg(data.error || i18n("crm.ui.saveFailed"));
         return;
       }
-      setMsg("Global rates saved — applied live");
+      setMsg(i18n("crm.rates.saved"));
       await load();
     } finally {
       setBusy(false);
@@ -89,10 +92,10 @@ export default function AdminRatesPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "Registration failed");
+        setMsg(data.error || i18n("crm.ui.saveFailed"));
         return;
       }
-      setMsg(`${editSym} updated`);
+      setMsg(`${editSym} — ${i18n("crm.methods.updated")}`);
       setEditSym(null);
       await load();
     } finally {
@@ -117,7 +120,7 @@ export default function AdminRatesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold">Trading Rates / Symbol Settings</h1>
+        <h1 className="text-xl font-semibold">{i18n("crm.rates.title")}</h1>
         <p className="mt-1 text-sm text-neutral-500">
           Spread, commission, contract multiplier and volume limits — applied instantly to the order ticket, margin and P/L.
         </p>
@@ -126,17 +129,17 @@ export default function AdminRatesPage() {
 
       {global && (
         <section className="rounded-xl border border-[#e5e5e5] bg-[#ffffff] p-4">
-          <h2 className="mb-3 text-sm font-semibold">Global Defaultlar</h2>
+          <h2 className="mb-3 text-sm font-semibold">{i18n("crm.rates.globals")}</h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {(
               [
-                ["spreadMultiplier", "Spread multiplier"],
-                ["commissionPerLot", "Commission / lot (USD)"],
-                ["defaultLeverage", "Default leverage (internal)"],
-                ["marginCallThresholdPct", "Margin call threshold %"],
-                ["defaultMinVolume", "Min hacim"],
-                ["defaultMaxVolume", "Max hacim"],
-                ["defaultContractMult", "Contract multiplier"],
+                ["spreadMultiplier", i18n("crm.rates.spreadMult")],
+                ["commissionPerLot", i18n("crm.rates.commLot")],
+                ["defaultLeverage", i18n("crm.rates.leverage")],
+                ["marginCallThresholdPct", i18n("crm.rates.marginCall")],
+                ["defaultMinVolume", i18n("crm.rates.minVol")],
+                ["defaultMaxVolume", i18n("crm.rates.maxVol")],
+                ["defaultContractMult", i18n("crm.rates.contractMult")],
               ] as const
             ).map(([key, label]) => (
               <label key={key} className="block text-[11px] text-neutral-500">
@@ -156,23 +159,23 @@ export default function AdminRatesPage() {
             onClick={saveGlobal}
             className="mt-4 rounded-lg bg-black text-white px-4 py-2 text-sm font-medium hover:bg-neutral-800 disabled:opacity-50"
           >
-            Global Save
+            {i18n("crm.rates.globalSave")}
           </button>
         </section>
       )}
 
       <section className="rounded-xl border border-[#e5e5e5] bg-[#ffffff] p-4">
-        <h2 className="mb-3 text-sm font-semibold">Symbol Rates (effective)</h2>
+        <h2 className="mb-3 text-sm font-semibold">{i18n("crm.rates.symbols")}</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="text-neutral-500">
               <tr>
-                <th className="px-2 py-2">Symbol</th>
-                <th className="px-2 py-2">Status</th>
-                <th className="px-2 py-2">Spread</th>
-                <th className="px-2 py-2">Kontrat</th>
-                <th className="px-2 py-2">Min/Max</th>
-                <th className="px-2 py-2">Commission</th>
+                <th className="px-2 py-2">{i18n("crm.ui.symbol")}</th>
+                <th className="px-2 py-2">{i18n("crm.ui.status")}</th>
+                <th className="px-2 py-2">{i18n("crm.ui.spread")}</th>
+                <th className="px-2 py-2">{i18n("crm.ui.contract")}</th>
+                <th className="px-2 py-2">{i18n("crm.ui.minMax")}</th>
+                <th className="px-2 py-2">{i18n("crm.ui.commission")}</th>
                 <th className="px-2 py-2"></th>
               </tr>
             </thead>
@@ -186,7 +189,7 @@ export default function AdminRatesPage() {
                         e.enabled ? "bg-emerald-500/20 text-emerald-300" : "bg-red-500/20 text-red-300"
                       }`}
                     >
-                      {e.enabled ? "Open" : "Closed"}
+                      {e.enabled ? i18n("crm.ui.open") : i18n("crm.ui.closed")}
                     </span>
                   </td>
                   <td className="px-2 py-2 tabular-nums">{e.spread}</td>
@@ -200,7 +203,7 @@ export default function AdminRatesPage() {
                       onClick={() => startEdit(e.symbol)}
                       className="rounded bg-[#e5e5e5] px-2 py-1 hover:bg-[#f0f0f0]"
                     >
-                      Edit
+                      {i18n("crm.ui.edit")}
                     </button>
                   </td>
                 </tr>
@@ -213,16 +216,16 @@ export default function AdminRatesPage() {
       {editSym && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <div className="w-full max-w-md rounded-xl border border-[#e5e5e5] bg-[#ffffff] p-4">
-            <h3 className="mb-3 text-sm font-semibold">{editSym} — sembol override</h3>
+            <h3 className="mb-3 text-sm font-semibold">{editSym} — {i18n("crm.rates.override")}</h3>
             <div className="grid grid-cols-2 gap-2">
               {(
                 [
-                  ["spreadAbs", "Spread (mutlak)"],
-                  ["spreadMultiplier", "Spread multiplier"],
-                  ["contractMultiplier", "Contract multiplier"],
-                  ["minVolume", "Min hacim"],
-                  ["maxVolume", "Max hacim"],
-                  ["commissionPerLot", "Commission/lot"],
+                  ["spreadAbs", i18n("crm.rates.spreadAbs")],
+                  ["spreadMultiplier", i18n("crm.rates.spreadMult")],
+                  ["contractMultiplier", i18n("crm.rates.contractMult")],
+                  ["minVolume", i18n("crm.rates.minVol")],
+                  ["maxVolume", i18n("crm.rates.maxVol")],
+                  ["commissionPerLot", i18n("crm.rates.commLot")],
                 ] as const
               ).map(([k, label]) => (
                 <label key={k} className="text-[11px] text-neutral-500">
@@ -230,7 +233,7 @@ export default function AdminRatesPage() {
                   <input
                     value={symForm[k]}
                     onChange={(e) => setSymForm({ ...symForm, [k]: e.target.value })}
-                    placeholder="empty = global"
+                    placeholder={i18n("crm.ui.emptyGlobal")}
                     className="mt-1 w-full rounded border border-[#111111] bg-white px-2 py-1.5 text-sm text-[#111111] text-sm"
                   />
                 </label>
@@ -242,14 +245,14 @@ export default function AdminRatesPage() {
                 checked={symForm.enabled}
                 onChange={(e) => setSymForm({ ...symForm, enabled: e.target.checked })}
               />
-              Tradable
+              {i18n("crm.rates.tradable")}
             </label>
             <div className="mt-4 flex gap-2">
               <button onClick={saveSymbol} disabled={busy} className="rounded bg-black text-white px-3 py-1.5 text-sm">
-                Save
+                {i18n("crm.ui.save")}
               </button>
               <button onClick={() => setEditSym(null)} className="rounded bg-[#e5e5e5] px-3 py-1.5 text-sm">
-                Cancel
+                {i18n("crm.ui.cancel")}
               </button>
             </div>
           </div>

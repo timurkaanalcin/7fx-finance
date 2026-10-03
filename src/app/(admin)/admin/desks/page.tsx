@@ -1,5 +1,7 @@
 "use client";
 
+import { useCrmLabels } from "@/lib/i18n/crm-labels";
+
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
@@ -17,6 +19,7 @@ type Desk = {
 };
 
 export default function DesksPage() {
+  const { i18n, deskName } = useCrmLabels();
   const [desks, setDesks] = useState<Desk[]>([]);
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
@@ -43,34 +46,34 @@ export default function DesksPage() {
     });
     const data = await res.json();
     if (!res.ok) {
-      setMsg(data.error || "Error");
+      setMsg(data.error || i18n("common.error"));
       return;
     }
     setName("");
     setCode("");
-    setMsg("Desk created");
+    setMsg(i18n("crm.ui.deskCreated"));
     await load();
   }
 
   return (
     <div>
-      <h1 className="mb-3 text-lg font-semibold">Desks</h1>
+      <h1 className="mb-3 text-lg font-semibold">{i18n("crm.nav.desks")}</h1>
       <form onSubmit={createDesk} className="mb-4 flex flex-wrap gap-2 text-xs">
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Desk name"
+          placeholder={i18n("crm.ui.deskNamePh")}
           required
           className="rounded border border-neutral-300 bg-[#ffffff] px-2 py-1.5"
         />
         <input
           value={code}
           onChange={(e) => setCode(e.target.value)}
-          placeholder="Kod (opsiyonel)"
+          placeholder={i18n("crm.ui.deskCodePh")}
           className="rounded border border-neutral-300 bg-[#ffffff] px-2 py-1.5"
         />
         <button type="submit" className="rounded bg-black text-white px-3 py-1.5 hover:bg-neutral-800">
-          Ekle
+          {i18n("crm.ui.add")}
         </button>
         {msg && <span className="self-center text-emerald-400">{msg}</span>}
       </form>
@@ -78,23 +81,23 @@ export default function DesksPage() {
         <table className="w-full text-left text-xs">
           <thead className="bg-[#ffffff] text-neutral-500">
             <tr>
-              <th className="px-3 py-2">Name</th>
-              <th className="px-3 py-2">Kod</th>
-              <th className="px-3 py-2">Active</th>
-              <th className="px-3 py-2">Chat</th>
-              <th className="px-3 py-2">Min/Max</th>
-              <th className="px-3 py-2">Trader</th>
-              <th className="px-3 py-2">Worker</th>
+              <th className="px-3 py-2">{i18n("crm.ui.name")}</th>
+              <th className="px-3 py-2">{i18n("crm.ui.code")}</th>
+              <th className="px-3 py-2">{i18n("crm.ui.active")}</th>
+              <th className="px-3 py-2">{i18n("crm.ui.chat")}</th>
+              <th className="px-3 py-2">{i18n("crm.ui.minMax")}</th>
+              <th className="px-3 py-2">{i18n("crm.ui.trader")}</th>
+              <th className="px-3 py-2">{i18n("crm.ui.worker")}</th>
               <th className="px-3 py-2"></th>
             </tr>
           </thead>
           <tbody>
             {desks.map((d) => (
               <tr key={d.id} className="border-t border-neutral-200 hover:bg-[#ffffff]/50">
-                <td className="px-3 py-2 font-medium">{d.name}</td>
+                <td className="px-3 py-2 font-medium">{deskName(d)}</td>
                 <td className="px-3 py-2 font-mono text-[10px] text-neutral-500">{d.code || "—"}</td>
                 <td className="px-3 py-2">{d.active ? "✓" : "✗"}</td>
-                <td className="px-3 py-2">{d.chatStatus ? "Open" : "Closed"}</td>
+                <td className="px-3 py-2">{d.chatStatus ? i18n("crm.ui.open") : i18n("crm.ui.closed")}</td>
                 <td className="px-3 py-2 tabular-nums">
                   {d.minimalDeposit} / {d.maximumDeposit}
                 </td>
@@ -102,7 +105,7 @@ export default function DesksPage() {
                 <td className="px-3 py-2">{d.workersCount}</td>
                 <td className="px-3 py-2">
                   <Link href={`/admin/desks/${d.id}`} className="rounded bg-black text-white/80 px-2 py-1">
-                    Detail
+                    {i18n("crm.ui.detail")}
                   </Link>
                 </td>
               </tr>
@@ -110,7 +113,7 @@ export default function DesksPage() {
             {desks.length === 0 && (
               <tr>
                 <td colSpan={8} className="px-3 py-8 text-center text-neutral-500">
-                  No desks — seed or add above
+                  {i18n("crm.ui.noDesks")}
                 </td>
               </tr>
             )}

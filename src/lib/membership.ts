@@ -28,10 +28,16 @@ export const DOC_STATUSES = ["NONE", "PENDING", "APPROVED", "REJECTED"] as const
 
 export const SALE_STATUSES = [
   "NEW",
-  "CONTACTED",
-  "INTERESTED",
   "NO_ANSWER",
+  "CALLBACK",
+  "INTERESTED",
+  "NOT_INTERESTED",
+  "WRONG_NUMBER",
   "DEPOSITED",
+  "RETENTION",
+  "DO_NOT_CALL",
+  "CONVERTED",
+  "CONTACTED",
   "LOST",
 ] as const;
 

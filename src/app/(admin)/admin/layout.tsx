@@ -121,12 +121,27 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
           <div className="mb-1 font-medium text-neutral-500">{t("crm.permissions")}</div>
           {Object.entries(perms)
             .filter(([k]) => k.startsWith("can"))
-            .map(([k, v]) => (
+            .map(([k, v]) => {
+              const permKey =
+                k === "canManageUsers"
+                  ? "crm.perm.users"
+                  : k === "canApproveDeposits"
+                    ? "crm.perm.deposits"
+                    : k === "canEditRates"
+                      ? "crm.perm.rates"
+                      : k === "canManageMethods"
+                        ? "crm.perm.methods"
+                        : k === "canAdjustBalance"
+                          ? "crm.perm.balance"
+                          : "";
+              const label = permKey ? t(permKey) : k.replace("can", "");
+              return (
               <div key={k} className="flex justify-between gap-1 py-0.5">
-                <span className="truncate">{k.replace("can", "")}</span>
+                <span className="truncate">{label}</span>
                 <span className={v ? "text-[#26a69a]" : "text-[#ef5350]"}>{v ? "✓" : "✗"}</span>
               </div>
-            ))}
+              );
+            })}
         </div>
       </aside>
 

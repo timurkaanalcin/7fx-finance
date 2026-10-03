@@ -17,6 +17,7 @@ import {
   SALE_STATUSES,
   VALIDATION_STATUSES,
 } from "@/lib/membership";
+import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 type Tab =
   | "profil"
@@ -45,21 +46,22 @@ type Membership = Record<string, unknown> & {
   tradingAccountId?: string | null;
 };
 
-const TABS: { id: Tab; label: string }[] = [
-  { id: "profil", label: "Profile" },
-  { id: "iletisim", label: "Communications" },
-  { id: "biletler", label: "Tickets / Deposits" },
-  { id: "pozisyonlar", label: "Positions" },
-  { id: "ledger", label: "Balance history" },
-  { id: "bonus", label: "Bonuslar" },
-  { id: "belgeler", label: "Documents" },
-  { id: "takvim", label: "Calendar" },
-  { id: "finans", label: "Finance" },
-  { id: "notlar", label: "Notes" },
+const TABS: { id: Tab; labelKey: string }[] = [
+  { id: "profil", labelKey: "crm.ui.profile" },
+  { id: "iletisim", labelKey: "crm.nav.communications" },
+  { id: "biletler", labelKey: "crm.nav.tickets" },
+  { id: "pozisyonlar", labelKey: "crm.nav.positions" },
+  { id: "ledger", labelKey: "crm.ui.balanceHistory" },
+  { id: "bonus", labelKey: "crm.ui.bonuses" },
+  { id: "belgeler", labelKey: "crm.nav.documents" },
+  { id: "takvim", labelKey: "crm.nav.calendar" },
+  { id: "finans", labelKey: "crm.nav.finance" },
+  { id: "notlar", labelKey: "crm.ui.notes" },
 ];
 
 
 function TraderAccessTools({ userId, traderName }: { userId: string; traderName: string }) {
+  const { i18n } = useCrmLabels();
   const [busy, setBusy] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
   const [expiresIn, setExpiresIn] = useState(60);
@@ -86,12 +88,12 @@ function TraderAccessTools({ userId, traderName }: { userId: string; traderName:
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setErr(data.error || "Impersonation failed");
+        setErr(data.error || i18n("crm.ui.impersonationFailed"));
         return;
       }
       window.location.href = data.redirect || "/trade";
     } catch {
-      setErr("Connection error");
+      setErr(i18n("crm.ui.connectionError"));
     } finally {
       setBusy(false);
     }
@@ -110,13 +112,13 @@ function TraderAccessTools({ userId, traderName }: { userId: string; traderName:
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setErr(data.error || "Could not create link");
+        setErr(data.error || i18n("crm.ui.linkFailed"));
         return;
       }
       setLinkUrl(data.url || "");
-      setMsg(`Link expires ${new Date(data.expiresAt).toLocaleString("en-GB", { hour12: false })}`);
+      setMsg(`${i18n("crm.ui.linkExpires")} ${new Date(data.expiresAt).toLocaleString("en-GB", { hour12: false })}`);
     } catch {
-      setErr("Connection error");
+      setErr(i18n("crm.ui.connectionError"));
     } finally {
       setBusy(false);
     }
@@ -124,8 +126,8 @@ function TraderAccessTools({ userId, traderName }: { userId: string; traderName:
 
   if (!enabled) {
     return (
-      <span className="text-[10px] text-neutral-400" title="Disabled in System Settings">
-        Terminal impersonation: off
+      <span className="text-[10px] text-neutral-400" title={i18n("crm.ui.impersonationOff")}>
+        {i18n("crm.ui.impersonationOff")}
       </span>
     );
   }
@@ -139,14 +141,14 @@ function TraderAccessTools({ userId, traderName }: { userId: string; traderName:
         className="rounded bg-sky-600 px-2.5 py-1 text-[10px] font-semibold text-white hover:bg-sky-500 disabled:opacity-50"
         title={`Open terminal as ${traderName}`}
       >
-        Open terminal
+        {i18n("crm.ui.openTerminal")}
       </button>
       <select
         className="rounded border border-neutral-300 bg-white px-1.5 py-1 text-[10px]"
         value={expiresIn}
         onChange={(e) => setExpiresIn(Number(e.target.value))}
         disabled={busy}
-        title="Auto-login link expiry"
+        title={i18n("crm.ui.linkExpiry")}
       >
         <option value={15}>15m</option>
         <option value={60}>1h</option>
@@ -160,7 +162,7 @@ function TraderAccessTools({ userId, traderName }: { userId: string; traderName:
         onClick={createLink}
         className="rounded border border-[#111111] bg-white px-2.5 py-1 text-[10px] font-semibold text-[#111111] hover:bg-neutral-50 disabled:opacity-50"
       >
-        Auto-login link
+        {i18n("crm.ui.autoLogin")}
       </button>
       {linkUrl && (
         <button
@@ -169,10 +171,10 @@ function TraderAccessTools({ userId, traderName }: { userId: string; traderName:
           title={linkUrl}
           onClick={() => {
             navigator.clipboard?.writeText(linkUrl);
-            setMsg("Copied");
+            setMsg(i18n("crm.ui.copied"));
           }}
         >
-          Copy link
+          {i18n("crm.ui.copy")}
         </button>
       )}
       {msg && <span className="text-[10px] text-emerald-600">{msg}</span>}
@@ -189,6 +191,7 @@ function Field({
   type = "text",
   options,
   allowEmpty = true,
+  optionLabel,
 }: {
   label: string;
   value: string | number | boolean | null | undefined;
@@ -196,6 +199,7 @@ function Field({
   type?: string;
   options?: readonly string[];
   allowEmpty?: boolean;
+  optionLabel?: (value: string) => string;
 }) {
   if (options) {
     return (
@@ -209,7 +213,7 @@ function Field({
           {allowEmpty && <option value="">—</option>}
           {options.map((o) => (
             <option key={o} value={o}>
-              {o}
+              {optionLabel ? optionLabel(o) : o}
             </option>
           ))}
         </select>
@@ -242,8 +246,10 @@ function Field({
 }
 
 export default function AdminUserDetailPage() {
+  const { i18n, code, deskName } = useCrmLabels();
   const params = useParams();
   const id = String(params?.id || "");
+  const [desks, setDesks] = useState<{ id: string; name: string; code: string | null }[]>([]);
   const [tab, setTab] = useState<Tab>("profil");
   const [user, setUser] = useState<Membership | null>(null);
   const [form, setForm] = useState<Record<string, string | boolean>>({});
@@ -263,6 +269,13 @@ export default function AdminUserDetailPage() {
   const [busy, setBusy] = useState(false);
   const [noteText, setNoteText] = useState("");
   const [finance, setFinance] = useState({ balance: "", credit: "", bonus: "", currency: "USD", note: "" });
+
+  useEffect(() => {
+    fetch("/api/admin/desks")
+      .then((r) => r.json())
+      .then((d) => setDesks(d.desks || []))
+      .catch(() => {});
+  }, []);
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -367,10 +380,10 @@ export default function AdminUserDetailPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "Registration failed");
+        setMsg(data.error || i18n("crm.ui.saveFailed"));
         return;
       }
-      setMsg("Profile kaydedildi");
+      setMsg(i18n("crm.ui.profileSaved"));
       await load();
     } finally {
       setBusy(false);
@@ -396,10 +409,10 @@ export default function AdminUserDetailPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "Finance record failed");
+        setMsg(data.error || i18n("crm.ui.saveFailed"));
         return;
       }
-      setMsg("Finance kaydedildi");
+      setMsg(i18n("crm.ui.financeSaved"));
       await load();
     } finally {
       setBusy(false);
@@ -418,11 +431,11 @@ export default function AdminUserDetailPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "Note eklenemedi");
+        setMsg(data.error || i18n("crm.ui.noteFailed"));
         return;
       }
       setNoteText("");
-      setMsg("Note eklendi");
+      setMsg(i18n("crm.ui.noteAdded"));
       await load();
     } finally {
       setBusy(false);
@@ -430,14 +443,14 @@ export default function AdminUserDetailPage() {
   }
 
   if (!user) {
-    return <div className="text-sm text-neutral-500">Loading…</div>;
+    return <div className="text-sm text-neutral-500">{i18n("crm.ui.loading")}</div>;
   }
 
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <Link href="/admin/traders" className="text-xs text-neutral-500 hover:text-white">
-          ← Traders
+          {i18n("crm.ui.backToTraders")}
         </Link>
         <h1 className="text-xl font-semibold">{user.name}</h1>
         <span className="text-xs text-neutral-500">{user.email}</span>
@@ -451,11 +464,11 @@ export default function AdminUserDetailPage() {
             user.active ? "bg-emerald-500/20 text-emerald-300" : "bg-red-500/20 text-red-300"
           }`}
         >
-          {user.active ? "Active" : "Freezeuldu"}
+          {user.active ? i18n("crm.ui.active") : i18n("crm.ui.frozen")}
         </span>
         {tradingAccountId && (
           <span className="rounded bg-neutral-100 px-2 py-0.5 font-mono text-[10px] text-sky-300">
-            Trading Account: {tradingAccountId}
+            {i18n("crm.ui.account")}: {tradingAccountId}
           </span>
         )}
         <TraderAccessTools userId={user.id} traderName={user.name} />
@@ -470,7 +483,7 @@ export default function AdminUserDetailPage() {
               tab === t.id ? "bg-black text-white text-white" : "text-neutral-500 hover:bg-[#e5e5e5]"
             }`}
           >
-            {t.label}
+            {i18n(t.labelKey)}
           </button>
         ))}
       </div>
@@ -479,120 +492,151 @@ export default function AdminUserDetailPage() {
 
       {tab === "profil" && (
         <div>
-          <h2 className="mb-2 text-sm font-medium text-neutral-600">ID</h2>
+          <h2 className="mb-2 text-sm font-medium text-neutral-600">{i18n("crm.ui.idSection")}</h2>
           <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            <Field label="First name" value={form.firstName as string} onChange={(v) => setF("firstName", v)} />
-            <Field label="Last name" value={form.lastName as string} onChange={(v) => setF("lastName", v)} />
-            <Field label="Email" value={user.email} onChange={() => {}} />
+            <Field label={i18n("crm.ui.firstName")} value={form.firstName as string} onChange={(v) => setF("firstName", v)} />
+            <Field label={i18n("crm.ui.lastName")} value={form.lastName as string} onChange={(v) => setF("lastName", v)} />
+            <Field label={i18n("crm.ui.email")} value={user.email} onChange={() => {}} />
             <Field
-              label="Account ID"
+              label={i18n("crm.ui.accountId")}
               value={(user.accountLoginId as string) || "—"}
               onChange={() => {}}
             />
-            <Field label="Phone" value={form.phone as string} onChange={(v) => setF("phone", v)} />
+            <Field label={i18n("crm.ui.phone")} value={form.phone as string} onChange={(v) => setF("phone", v)} />
             <Field
-              label="Date of birth"
+              label={i18n("crm.ui.dob")}
               value={form.birthDate as string}
               onChange={(v) => setF("birthDate", v)}
               type="date"
             />
-            <Field label="Language" value={form.language as string} onChange={(v) => setF("language", v)} options={LOCALES} allowEmpty={false} />
-            <Field label="Timezone" value={form.timezone as string} onChange={(v) => setF("timezone", v)} />
-            <Field label="Country" value={form.country as string} onChange={(v) => setF("country", v)} />
-            <Field label="Address" value={form.address as string} onChange={(v) => setF("address", v)} />
+            <Field label={i18n("crm.ui.language")} value={form.language as string} onChange={(v) => setF("language", v)} options={LOCALES} allowEmpty={false} />
+            <Field label={i18n("crm.ui.timezone")} value={form.timezone as string} onChange={(v) => setF("timezone", v)} />
+            <Field label={i18n("crm.ui.country")} value={form.country as string} onChange={(v) => setF("country", v)} />
+            <Field label={i18n("crm.ui.address")} value={form.address as string} onChange={(v) => setF("address", v)} />
           </div>
 
-          <h2 className="mb-2 text-sm font-medium text-neutral-600">Account</h2>
+          <h2 className="mb-2 text-sm font-medium text-neutral-600">{i18n("crm.ui.account")}</h2>
           <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
             <Field
-              label="Account tipi"
+              label={i18n("crm.ui.accountType")}
               value={form.accountType as string}
               onChange={(v) => setF("accountType", v)}
               options={ACCOUNT_TYPES}
+              optionLabel={(o) => code("crm.accountType", o)}
             />
             <Field
-              label="Registration date"
+              label={i18n("crm.ui.regDate")}
               value={form.registrationDate as string}
               onChange={(v) => setF("registrationDate", v)}
               type="date"
             />
             <Field
-              label="Registration country"
+              label={i18n("crm.ui.regCountry")}
               value={form.registrationCountry as string}
               onChange={(v) => setF("registrationCountry", v)}
             />
             <Field
-              label="Resident"
+              label={i18n("crm.ui.resident")}
               value={form.isResident as boolean}
               onChange={(v) => setF("isResident", v)}
               type="checkbox"
             />
             <Field
-              label="Active"
+              label={i18n("crm.ui.active")}
               value={form.active as boolean}
               onChange={(v) => setF("active", v)}
               type="checkbox"
             />
             <Field
-              label="Role"
+              label={i18n("crm.ui.role")}
               value={form.role as string}
               onChange={(v) => setF("role", v)}
               options={["TRADER", "ADMIN"]}
+              optionLabel={(o) => code("crm.role", o)}
             />
             <Field
-              label="Documents"
+              label={i18n("crm.ui.documents")}
               value={form.documentsStatus as string}
               onChange={(v) => setF("documentsStatus", v)}
               options={DOC_STATUSES}
+              optionLabel={(o) => code("crm.status", o)}
             />
           </div>
 
-          <h2 className="mb-2 text-sm font-medium text-neutral-600">Trading / CRM</h2>
+          <h2 className="mb-2 text-sm font-medium text-neutral-600">{i18n("crm.ui.tradingCrm")}</h2>
           <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
             <Field
-              label="Trading server"
+              label={i18n("crm.ui.tradingServer")}
               value={form.tradingServer as string}
               onChange={(v) => setF("tradingServer", v)}
             />
             <Field
-              label="Trading group"
+              label={i18n("crm.ui.tradingGroup")}
               value={form.tradingGroup as string}
               onChange={(v) => setF("tradingGroup", v)}
             />
-            <Field label="Desk" value={form.desk as string} onChange={(v) => setF("desk", v)} />
-            <Field label="Desk ID" value={form.deskId as string} onChange={(v) => setF("deskId", v)} />
-            <Field label="Campaign" value={form.campaign as string} onChange={(v) => setF("campaign", v)} />
+            <label className="flex flex-col gap-1 text-xs">
+              <span className="text-neutral-500">{i18n("crm.ui.desk")}</span>
+              <select
+                value={
+                  desks.find(
+                    (d) => d.id === form.deskId || d.code === form.deskId || d.name === form.desk
+                  )?.id || String(form.deskId || "")
+                }
+                onChange={(e) => {
+                  const picked = desks.find((d) => d.id === e.target.value);
+                  setForm((prev) => ({
+                    ...prev,
+                    desk: picked ? picked.name : "",
+                    deskId: picked ? picked.id : "",
+                  }));
+                }}
+                className="rounded border border-[#111111] bg-white px-2 py-1.5 text-sm text-[#111111]"
+              >
+                <option value="">—</option>
+                {desks.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {deskName(d)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <Field label={i18n("crm.ui.campaign")} value={form.campaign as string} onChange={(v) => setF("campaign", v)} />
             <Field label="A_AID" value={form.affiliateA as string} onChange={(v) => setF("affiliateA", v)} />
             <Field label="B_BID" value={form.affiliateB as string} onChange={(v) => setF("affiliateB", v)} />
             <Field label="C_CID" value={form.affiliateC as string} onChange={(v) => setF("affiliateC", v)} />
             <Field
-              label="Retansiyon"
+              label={i18n("crm.ui.retention")}
               value={form.retentionStatus as string}
               onChange={(v) => setF("retentionStatus", v)}
               options={RETENTION_STATUSES}
+              optionLabel={(o) => code("crm.retention", o)}
             />
             <Field
-              label="Sale status"
+              label={i18n("crm.ui.saleStatus")}
               value={form.saleStatus as string}
               onChange={(v) => setF("saleStatus", v)}
               options={SALE_STATUSES}
+              optionLabel={(o) => code("crm.sale", o)}
             />
             <Field
-              label="Potansiyel"
+              label={i18n("crm.ui.potential")}
               value={form.potentialStatus as string}
               onChange={(v) => setF("potentialStatus", v)}
               options={POTENTIAL_STATUSES}
+              optionLabel={(o) => code("crm.potential", o)}
             />
             <Field
-              label="Verification"
+              label={i18n("crm.ui.verification")}
               value={form.validationStatus as string}
               onChange={(v) => setF("validationStatus", v)}
               options={VALIDATION_STATUSES}
+              optionLabel={(o) => code("crm.validation", o)}
             />
             <Field label="FTD" value={form.ftd as boolean} onChange={(v) => setF("ftd", v)} type="checkbox" />
-            <Field label="Broker" value={form.brokerName as string} onChange={(v) => setF("brokerName", v)} />
+            <Field label={i18n("crm.ui.broker")} value={form.brokerName as string} onChange={(v) => setF("brokerName", v)} />
             <Field
-              label="Atanan"
+              label={i18n("crm.ui.assignee")}
               value={form.assigneeName as string}
               onChange={(v) => setF("assigneeName", v)}
             />
@@ -603,7 +647,7 @@ export default function AdminUserDetailPage() {
             onClick={saveProfilee}
             className="rounded-lg bg-black text-white px-4 py-2 text-sm font-medium hover:bg-neutral-800"
           >
-            Save
+            {i18n("crm.ui.save")}
           </button>
         </div>
       )}
@@ -611,41 +655,41 @@ export default function AdminUserDetailPage() {
       {tab === "finans" && (
         <div className="max-w-md space-y-3 text-xs">
           <p className="text-neutral-500">
-            Equity (equity):{" "}
+            {i18n("crm.ui.equityLabel")}:{" "}
             <span className="font-semibold text-neutral-800">
               {user.equity.toLocaleString("en-US", { style: "currency", currency: user.currency || "USD" })}
             </span>
           </p>
           <Field
-            label="Balance"
+            label={i18n("crm.ui.balance")}
             value={finance.balance}
             onChange={(v) => setFinance({ ...finance, balance: v })}
             type="number"
           />
           <Field
-            label="Credit"
+            label={i18n("crm.ui.credit")}
             value={finance.credit}
             onChange={(v) => setFinance({ ...finance, credit: v })}
             type="number"
           />
           <Field
-            label="Bonus"
+            label={i18n("crm.ui.bonus")}
             value={finance.bonus}
             onChange={(v) => setFinance({ ...finance, bonus: v })}
             type="number"
           />
           <Field
-            label="Para birimi"
+            label={i18n("crm.ui.currency")}
             value={finance.currency}
             onChange={(v) => setFinance({ ...finance, currency: v })}
             options={ACCOUNT_CURRENCIES}
             allowEmpty={false}
           />
           <p className="text-[11px] text-neutral-500">
-            Changes the account currency; terminal balances are shown in this code. Amounts are not converted.
+            {i18n("crm.ui.currencyHint")}
           </p>
           <Field
-            label="Denetim notu (opsiyonel)"
+            label={i18n("crm.ui.auditNote")}
             value={finance.note}
             onChange={(v) => setFinance({ ...finance, note: v })}
           />
@@ -654,17 +698,17 @@ export default function AdminUserDetailPage() {
             onClick={saveFinance}
             className="rounded-lg bg-black text-white px-4 py-2 text-sm font-medium hover:bg-neutral-800"
           >
-            Save finance
+            {i18n("crm.ui.saveFinance")}
           </button>
         </div>
       )}
 
       {tab === "iletisim" && (
         <div>
-          <p className="mb-2 text-[11px] text-neutral-500">CRM communication records (chat/call/note).</p>
+          <p className="mb-2 text-[11px] text-neutral-500">{i18n("crm.ui.commsHint")}</p>
           <MiniTable cols={["type", "title", "description", "workerName", "createdAt"]} rows={communications} />
           {communications.length === 0 && (
-            <p className="mt-2 text-xs text-neutral-400">No records yet — you can add a communication note from the Notes tab.</p>
+            <p className="mt-2 text-xs text-neutral-400">{i18n("crm.ui.noComms")}</p>
           )}
         </div>
       )}
@@ -672,14 +716,14 @@ export default function AdminUserDetailPage() {
       {tab === "biletler" && (
         <div className="space-y-4">
           <div>
-            <h2 className="mb-2 text-sm font-medium">Deposit requests</h2>
+            <h2 className="mb-2 text-sm font-medium">{i18n("crm.ui.depositRequests")}</h2>
             <p className="mb-2 text-[11px] text-neutral-500">
-              Approved deposits post to the same trading account balance.
+              {i18n("crm.ui.depositsHint")}
             </p>
             <MiniTable cols={["amount", "currency", "status", "createdAt"]} rows={deposits} />
           </div>
           <div>
-            <h2 className="mb-2 text-sm font-medium">Margin / bakiye talepleri</h2>
+            <h2 className="mb-2 text-sm font-medium">{i18n("crm.ui.marginRequests")}</h2>
             <MiniTable cols={["type", "amount", "status", "reason", "createdAt"]} rows={balanceRequests} />
           </div>
         </div>
@@ -688,14 +732,14 @@ export default function AdminUserDetailPage() {
       {tab === "pozisyonlar" && (
         <div className="space-y-4">
           <div>
-            <h2 className="mb-2 text-sm font-medium">Positions (full edit)</h2>
+            <h2 className="mb-2 text-sm font-medium">{i18n("crm.ui.positionsFull")}</h2>
             <p className="mb-2 text-[11px] text-neutral-500">
-              Edit symbol, side, volume, prices, profit / realized PnL, status, opened/closed dates. Save writes to the trade engine DB.
+              {i18n("crm.ui.positionsHint")}
             </p>
             <EditablePositionsTable rows={positions} onSaved={() => load()} />
           </div>
           <div>
-            <h2 className="mb-2 text-sm font-medium">Orders (full edit)</h2>
+            <h2 className="mb-2 text-sm font-medium">{i18n("crm.ui.ordersFull")}</h2>
             <EditableOrdersTable rows={orders} onSaved={() => load()} />
           </div>
         </div>
@@ -704,7 +748,7 @@ export default function AdminUserDetailPage() {
       {tab === "ledger" && (
         <div>
           <p className="mb-2 text-[11px] text-neutral-500">
-            Balance history — ledger records linked by tradingAccountId.
+            {i18n("crm.ui.ledgerHint")}
           </p>
           <MiniTable
             cols={["type", "amount", "balanceBefore", "balanceAfter", "comment", "createdByName", "createdAt"]}
@@ -716,7 +760,7 @@ export default function AdminUserDetailPage() {
       {tab === "bonus" && (
         <div className="max-w-md space-y-2 text-xs">
           <div className="rounded-lg border border-neutral-200 bg-[#ffffff] p-3">
-            <div className="text-neutral-500">Bonus</div>
+            <div className="text-neutral-500">{i18n("crm.ui.bonus")}</div>
             <div className="text-lg font-semibold tabular-nums">
               {Number(user.bonus || 0).toLocaleString("en-US", {
                 style: "currency",
@@ -725,7 +769,7 @@ export default function AdminUserDetailPage() {
             </div>
           </div>
           <div className="rounded-lg border border-neutral-200 bg-[#ffffff] p-3">
-            <div className="text-neutral-500">Credit</div>
+            <div className="text-neutral-500">{i18n("crm.ui.credit")}</div>
             <div className="text-lg font-semibold tabular-nums">
               {Number(user.credit || 0).toLocaleString("en-US", {
                 style: "currency",
@@ -733,14 +777,14 @@ export default function AdminUserDetailPage() {
               })}
             </div>
           </div>
-          <p className="text-neutral-500">Use the Finance tab to edit.</p>
+          <p className="text-neutral-500">{i18n("crm.ui.useFinanceTab")}</p>
         </div>
       )}
 
       {tab === "belgeler" && (
         <div>
           <p className="mb-2 text-[11px] text-neutral-500">
-            Document status (membership): {String(form.documentsStatus || "NONE")}
+            {i18n("crm.ui.docStatus")}: {code("crm.status", String(form.documentsStatus || "NONE"))}
           </p>
           <MiniTable cols={["name", "docType", "status", "createdAt"]} rows={documents} />
         </div>
@@ -758,7 +802,7 @@ export default function AdminUserDetailPage() {
             <input
               value={noteText}
               onChange={(e) => setNoteText(e.target.value)}
-              placeholder="Yeni not…"
+              placeholder={i18n("crm.ui.newNote")}
               className="flex-1 rounded border border-[#111111] bg-white px-3 py-2 text-sm text-[#111111]"
             />
             <button
@@ -766,7 +810,7 @@ export default function AdminUserDetailPage() {
               onClick={addNote}
               className="rounded bg-black text-white px-3 py-2 text-sm hover:bg-neutral-800"
             >
-              Ekle
+              {i18n("crm.ui.add")}
             </button>
           </div>
           <ul className="space-y-2">
@@ -778,7 +822,7 @@ export default function AdminUserDetailPage() {
                 <div className="whitespace-pre-wrap text-neutral-800">{n.body}</div>
               </li>
             ))}
-            {notes.length === 0 && <li className="text-neutral-500">No notes yet</li>}
+            {notes.length === 0 && <li className="text-neutral-500">{i18n("crm.ui.noNotes")}</li>}
           </ul>
         </div>
       )}
@@ -806,6 +850,44 @@ function cellValue(col: string, value: unknown): string {
 }
 
 function MiniTable({ cols, rows }: { cols: string[]; rows: Record<string, unknown>[] }) {
+  const { i18n, code } = useCrmLabels();
+  const colKey: Record<string, string> = {
+    type: "crm.ui.type",
+    title: "crm.ui.title",
+    description: "crm.ui.description",
+    workerName: "crm.ui.worker",
+    createdAt: "crm.ui.date",
+    amount: "crm.ui.amount",
+    currency: "crm.ui.currency",
+    status: "crm.ui.status",
+    reason: "crm.ui.note",
+    balanceBefore: "crm.ui.beforeAfter",
+    balanceAfter: "crm.ui.balance",
+    comment: "crm.ui.comment",
+    createdByName: "crm.ui.createdBy",
+    name: "crm.ui.name",
+    docType: "crm.ui.type",
+    body: "crm.ui.body",
+    remindAt: "crm.ui.date",
+    color: "crm.ui.color",
+  };
+
+  function labelEnum(col: string, raw: unknown) {
+    const value = String(raw ?? "");
+    if (!value) return "—";
+    const prefixes =
+      col === "docType"
+        ? ["crm.doc"]
+        : col === "status"
+          ? ["crm.status", "crm.sale", "crm.retention"]
+          : ["crm.kind", "crm.comm", "crm.ledger"];
+    for (const prefix of prefixes) {
+      const labeled = i18n(`${prefix}.${value}`, "");
+      if (labeled) return labeled;
+    }
+    return value;
+  }
+
   return (
     <div className="overflow-x-auto rounded-xl border border-[#e5e5e5]">
       <table className="w-full text-left text-xs">
@@ -813,7 +895,7 @@ function MiniTable({ cols, rows }: { cols: string[]; rows: Record<string, unknow
           <tr>
             {cols.map((c) => (
               <th key={c} className="px-3 py-2">
-                {c}
+                {colKey[c] ? i18n(colKey[c]) : c}
               </th>
             ))}
           </tr>
@@ -823,7 +905,9 @@ function MiniTable({ cols, rows }: { cols: string[]; rows: Record<string, unknow
             <tr key={String(r.id || i)} className="border-t border-[#e5e5e5]">
               {cols.map((c) => (
                 <td key={c} className="px-3 py-2 tabular-nums">
-                  {cellValue(c, r[c])}
+                  {c === "status" || c === "type" || c === "docType"
+                    ? labelEnum(c, r[c])
+                    : cellValue(c, r[c])}
                 </td>
               ))}
             </tr>
@@ -831,7 +915,7 @@ function MiniTable({ cols, rows }: { cols: string[]; rows: Record<string, unknow
           {rows.length === 0 && (
             <tr>
               <td colSpan={cols.length} className="px-3 py-8 text-center text-neutral-500">
-                No records
+                {i18n("crm.ui.noRecords")}
               </td>
             </tr>
           )}

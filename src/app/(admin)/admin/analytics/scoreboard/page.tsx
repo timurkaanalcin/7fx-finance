@@ -1,5 +1,7 @@
 "use client";
 
+import { useCrmLabels } from "@/lib/i18n/crm-labels";
+
 import { useEffect, useState } from "react";
 
 type Row = {
@@ -19,6 +21,7 @@ const fmt = (n: number) =>
   n.toLocaleString("en-US", { style: "currency", currency: "USD" });
 
 export default function ScoreboardPage() {
+  const { i18n, code, deskName } = useCrmLabels();
   const [rows, setRows] = useState<Row[]>([]);
 
   useEffect(() => {
@@ -30,28 +33,28 @@ export default function ScoreboardPage() {
 
   return (
     <div>
-      <h1 className="mb-1 text-lg font-semibold">Analytics · Scoreboard</h1>
-      <p className="mb-3 text-[11px] text-neutral-500">Desk-based trader / FTD / deposit summary</p>
+      <h1 className="mb-1 text-lg font-semibold">{i18n("crm.board.title")}</h1>
+      <p className="mb-3 text-[11px] text-neutral-500">{i18n("crm.board.intro")}</p>
       <div className="overflow-x-auto rounded-lg border border-neutral-200">
         <table className="w-full text-left text-[11px]">
           <thead className="bg-[#ffffff] text-neutral-500">
             <tr>
-              <th className="px-2 py-2">Desk</th>
-              <th className="px-2 py-2">Trader</th>
-              <th className="px-2 py-2">Active</th>
-              <th className="px-2 py-2">FTD</th>
-              <th className="px-2 py-2">Deposits #</th>
-              <th className="px-2 py-2">Deposits $</th>
-              <th className="px-2 py-2">Ort.</th>
-              <th className="px-2 py-2">Withdrawals #</th>
-              <th className="px-2 py-2">Withdrawals $</th>
-              <th className="px-2 py-2">Net</th>
+              <th className="px-2 py-2">{i18n("crm.ui.desk")}</th>
+              <th className="px-2 py-2">{i18n("crm.ui.trader")}</th>
+              <th className="px-2 py-2">{i18n("crm.ui.active")}</th>
+              <th className="px-2 py-2">{i18n("crm.ui.ftd")}</th>
+              <th className="px-2 py-2">{i18n("crm.board.depositsN")}</th>
+              <th className="px-2 py-2">{i18n("crm.board.depositsUsd")}</th>
+              <th className="px-2 py-2">{i18n("crm.ui.avg")}</th>
+              <th className="px-2 py-2">{i18n("crm.board.wdN")}</th>
+              <th className="px-2 py-2">{i18n("crm.board.wdUsd")}</th>
+              <th className="px-2 py-2">{i18n("crm.ui.net")}</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((r) => (
               <tr key={r.object} className="border-t border-neutral-200">
-                <td className="px-2 py-1.5 font-medium">{r.object}</td>
+                <td className="px-2 py-1.5 font-medium">{String(r.object).includes("Unassigned") ? i18n("crm.board.unassigned") : deskName(r.object)}</td>
                 <td className="px-2 py-1.5 tabular-nums">{r.traders}</td>
                 <td className="px-2 py-1.5 tabular-nums">{r.active}</td>
                 <td className="px-2 py-1.5 tabular-nums">{r.ftdCount}</td>
@@ -72,7 +75,7 @@ export default function ScoreboardPage() {
             {rows.length === 0 && (
               <tr>
                 <td colSpan={10} className="px-3 py-8 text-center text-neutral-500">
-                  Veri yok
+                  {i18n("crm.ui.noRecords")}
                 </td>
               </tr>
             )}

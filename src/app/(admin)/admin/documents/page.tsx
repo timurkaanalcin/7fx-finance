@@ -1,5 +1,7 @@
 "use client";
 
+import { useCrmLabels } from "@/lib/i18n/crm-labels";
+
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { StatusBadge } from "@/components/crm/StubPage";
@@ -21,6 +23,7 @@ type Doc = {
 type TraderOpt = { id: string; name: string; email: string };
 
 export default function DocumentsPage() {
+  const { i18n, code, deskName } = useCrmLabels();
   const [docs, setDocs] = useState<Doc[]>([]);
   const [status, setStatus] = useState("");
   const [traders, setTraders] = useState<TraderOpt[]>([]);
@@ -64,10 +67,10 @@ export default function DocumentsPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "Action failed");
+        setMsg(data.error || i18n("crm.ui.actionFailed"));
         return;
       }
-      setMsg(next === "APPROVED" ? "Document approved" : "Document rejected");
+      setMsg(next === "APPROVED" ? i18n("crm.status.APPROVED") : i18n("crm.status.REJECTED"));
       await load();
     } finally {
       setBusy(false);
@@ -85,11 +88,11 @@ export default function DocumentsPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "Registration failed");
+        setMsg(data.error || i18n("crm.ui.saveFailed"));
         return;
       }
       setForm((f) => ({ ...f, name: "", note: "" }));
-      setMsg("Document record added");
+      setMsg(i18n("crm.docs.added"));
       await load();
     } finally {
       setBusy(false);
@@ -98,8 +101,8 @@ export default function DocumentsPage() {
 
   return (
     <div>
-      <h1 className="mb-1 text-lg font-semibold">Documents</h1>
-      <p className="mb-3 text-[11px] text-neutral-500">KYC belge meta verileri — onay / red</p>
+      <h1 className="mb-1 text-lg font-semibold">{i18n("crm.nav.documents")}</h1>
+      <p className="mb-3 text-[11px] text-neutral-500">{i18n("crm.docs.intro")}</p>
       {msg && <p className="mb-2 text-[11px] text-neutral-500">{msg}</p>}
       <div className="mb-3 grid gap-3 lg:grid-cols-3">
         <div className="lg:col-span-2 overflow-x-auto rounded-lg border border-neutral-200">
@@ -109,7 +112,7 @@ export default function DocumentsPage() {
               onChange={(e) => setStatus(e.target.value)}
               className="rounded border border-neutral-300 bg-[#fafafa] px-2 py-1 text-xs"
             >
-              <option value="">All statuses</option>
+              <option value="">{i18n("crm.ui.allStatuses")}</option>
               {["PENDING", "APPROVED", "REJECTED"].map((s) => (
                 <option key={s} value={s}>
                   {s}
@@ -120,11 +123,11 @@ export default function DocumentsPage() {
           <table className="w-full text-left text-[11px]">
             <thead className="bg-[#ffffff] text-neutral-500">
               <tr>
-                <th className="px-2 py-2">Belge</th>
-                <th className="px-2 py-2">Tip</th>
-                <th className="px-2 py-2">Trader</th>
-                <th className="px-2 py-2">Status</th>
-                <th className="px-2 py-2">Date</th>
+                <th className="px-2 py-2">{i18n("crm.ui.document")}</th>
+                <th className="px-2 py-2">{i18n("crm.ui.type")}</th>
+                <th className="px-2 py-2">{i18n("crm.ui.trader")}</th>
+                <th className="px-2 py-2">{i18n("crm.ui.status")}</th>
+                <th className="px-2 py-2">{i18n("crm.ui.date")}</th>
                 <th className="px-2 py-2"></th>
               </tr>
             </thead>
@@ -174,7 +177,7 @@ export default function DocumentsPage() {
               {docs.length === 0 && (
                 <tr>
                   <td colSpan={6} className="px-3 py-8 text-center text-neutral-500">
-                    Belge yok
+                    {i18n("crm.docs.none")}
                   </td>
                 </tr>
               )}
@@ -182,14 +185,14 @@ export default function DocumentsPage() {
           </table>
         </div>
         <div className="rounded-lg border border-neutral-200 bg-[#ffffff] p-3">
-          <h2 className="mb-2 text-xs font-semibold text-neutral-600">Add document record</h2>
+          <h2 className="mb-2 text-xs font-semibold text-neutral-600">{i18n("crm.docs.add")}</h2>
           <div className="space-y-2 text-xs">
             <select
               value={form.userId}
               onChange={(e) => setForm({ ...form, userId: e.target.value })}
               className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             >
-              <option value="">Select trader…</option>
+              <option value="">{i18n("crm.comms.selectTrader")}</option>
               {traders.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.name}
@@ -199,7 +202,7 @@ export default function DocumentsPage() {
             <input
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              placeholder="Document name"
+              placeholder={i18n("crm.docs.namePh")}
               className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             />
             <select
@@ -216,7 +219,7 @@ export default function DocumentsPage() {
             <input
               value={form.note}
               onChange={(e) => setForm({ ...form, note: e.target.value })}
-              placeholder="Note (opsiyonel)"
+              placeholder={i18n("crm.docs.notePh")}
               className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             />
             <button

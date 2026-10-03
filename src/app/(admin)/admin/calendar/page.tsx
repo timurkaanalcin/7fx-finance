@@ -1,5 +1,7 @@
 "use client";
 
+import { useCrmLabels } from "@/lib/i18n/crm-labels";
+
 import { fmtCrmDate } from "@/lib/crm-format";
 
 import Link from "next/link";
@@ -19,6 +21,7 @@ type Reminder = {
 type Opt = { id: string; name: string; email?: string };
 
 export default function CalendarPage() {
+  const { i18n, code, deskName } = useCrmLabels();
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [traders, setTraders] = useState<Opt[]>([]);
   const [form, setForm] = useState({
@@ -58,11 +61,11 @@ export default function CalendarPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "Registration failed");
+        setMsg(data.error || i18n("crm.ui.saveFailed"));
         return;
       }
       setForm((f) => ({ ...f, body: "", remindAt: "" }));
-      setMsg("Reminder added");
+      setMsg(i18n("crm.cal.added"));
       await load();
     } finally {
       setBusy(false);
@@ -87,8 +90,8 @@ export default function CalendarPage() {
 
   return (
     <div>
-      <h1 className="mb-1 text-lg font-semibold">Calendar</h1>
-      <p className="mb-3 text-[11px] text-neutral-500">Reminderlar / takip listesi</p>
+      <h1 className="mb-1 text-lg font-semibold">{i18n("crm.nav.calendar")}</h1>
+      <p className="mb-3 text-[11px] text-neutral-500">{i18n("crm.cal.intro")}</p>
       <div className="grid gap-3 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-2">
           {reminders.map((r) => {
@@ -104,7 +107,7 @@ export default function CalendarPage() {
                   <p className="text-sm font-medium">{r.body}</p>
                   <p className={`text-[11px] ${overdue ? "text-amber-400" : "text-neutral-500"}`}>
                     {fmtCrmDate(r.remindAt)}
-                    {overdue ? " · overdue" : ""}
+                    {overdue ? ` · ${i18n("crm.cal.overdue")}` : ""}
                     {r.workerName ? ` · ${r.workerName}` : ""}
                     {r.trader ? (
                       <>
@@ -122,25 +125,25 @@ export default function CalendarPage() {
                   onClick={() => remove(r.id)}
                   className="text-[10px] text-neutral-500 hover:text-red-400"
                 >
-                  Delete
+                  {i18n("crm.ui.delete")}
                 </button>
               </div>
             );
           })}
           {reminders.length === 0 && (
             <p className="rounded-lg border border-dashed border-neutral-200 px-3 py-8 text-center text-xs text-neutral-500">
-              Reminder yok
+              {i18n("crm.cal.none")}
             </p>
           )}
         </div>
         <div className="rounded-lg border border-neutral-200 bg-[#ffffff] p-3">
-          <h2 className="mb-2 text-xs font-semibold text-neutral-600">New reminder</h2>
+          <h2 className="mb-2 text-xs font-semibold text-neutral-600">{i18n("crm.cal.new")}</h2>
           <div className="space-y-2 text-xs">
             <textarea
               value={form.body}
               onChange={(e) => setForm({ ...form, body: e.target.value })}
               rows={3}
-              placeholder="What should be reminded?"
+              placeholder={i18n("crm.cal.ph")}
               className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             />
             <input
@@ -154,7 +157,7 @@ export default function CalendarPage() {
               onChange={(e) => setForm({ ...form, userId: e.target.value })}
               className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
             >
-              <option value="">Trader (opsiyonel)</option>
+              <option value="">{i18n("crm.cal.traderOpt")}</option>
               {traders.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.name}
@@ -162,7 +165,7 @@ export default function CalendarPage() {
               ))}
             </select>
             <div className="flex items-center gap-2">
-              <label className="text-neutral-500">Renk</label>
+              <label className="text-neutral-500">{i18n("crm.ui.color")}</label>
               <input
                 type="color"
                 value={form.color}

@@ -3,8 +3,11 @@
 import { fmtCrmDate } from "@/lib/crm-format";
 
 import Link from "next/link";
-import { ACCOUNT_CURRENCIES } from "@/lib/membership";
+import { ACCOUNT_CURRENCIES, RETENTION_STATUSES, SALE_STATUSES } from "@/lib/membership";
+import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { useCallback, useEffect, useState } from "react";
+
+type DeskOpt = { id: string; name: string; code: string | null };
 
 type UserRow = {
   id: string;
@@ -45,8 +48,9 @@ const emptyCreate = {
 };
 
 export default function AdminUsersPage() {
+  const { i18n, code, deskName } = useCrmLabels();
   const [rows, setRows] = useState<UserRow[]>([]);
-  const [desks, setDesks] = useState<string[]>([]);
+  const [deskOptions, setDeskOptions] = useState<DeskOpt[]>([]);
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("all");
   const [desk, setDesk] = useState("");
@@ -76,7 +80,7 @@ export default function AdminUsersPage() {
     let list = data.users || [];
     if (ftdOnly) list = list.filter((u: UserRow) => u.ftd);
     setRows(list);
-    setDesks(data.desks || []);
+    setDeskOptions(data.deskOptions || []);
   }, [q, status, desk, country, saleStatus, retentionStatus, ftdOnly]);
 
   useEffect(() => {
@@ -99,7 +103,7 @@ export default function AdminUsersPage() {
 
   async function bulk(bulkAction: string, extra: Record<string, unknown> = {}) {
     if (!selected.size) {
-      setMsg("Select a user first");
+      setMsg(i18n("crm.ui.selectFirst"));
       return;
     }
     setBusy(true);
@@ -117,10 +121,10 @@ export default function AdminUsersPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "Action failed");
+        setMsg(data.error || i18n("crm.ui.actionFailed"));
         return;
       }
-      setMsg(`Bulk action: ${data.count} users`);
+      setMsg(`${i18n("crm.ui.bulkDone")}: ${data.count}`);
       setSelected(new Set());
       await load();
     } finally {
@@ -153,10 +157,10 @@ export default function AdminUsersPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "Create failed");
+        setMsg(data.error || i18n("crm.ui.createFailed"));
         return;
       }
-      setMsg("Member created");
+      setMsg(i18n("crm.ui.memberCreated"));
       setShowCreate(false);
       setCreateForm(emptyCreate);
       await load();
@@ -168,17 +172,17 @@ export default function AdminUsersPage() {
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center gap-3">
-        <h1 className="text-xl font-semibold">Traders</h1>
+        <h1 className="text-xl font-semibold">{i18n("crm.nav.traders")}</h1>
         <button
           onClick={() => setShowCreate(true)}
           className="rounded-lg bg-black text-white px-3 py-1.5 text-xs font-medium hover:bg-neutral-800"
         >
-          + New member
+          {i18n("crm.ui.newMember")}
         </button>
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Email, account ID, name, phone, broker…"
+          placeholder={i18n("crm.ui.searchTraders")}
           className="ml-auto w-full max-w-xs rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-3 py-1.5 text-sm"
         />
       </div>
@@ -189,26 +193,26 @@ export default function AdminUsersPage() {
           onChange={(e) => setStatus(e.target.value)}
           className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
         >
-          <option value="all">All statuses</option>
-          <option value="active">Active</option>
-          <option value="frozen">Freezeuldu</option>
+          <option value="all">{i18n("crm.ui.allStatuses")}</option>
+          <option value="active">{i18n("crm.ui.active")}</option>
+          <option value="frozen">{i18n("crm.ui.frozen")}</option>
         </select>
         <select
           value={desk}
           onChange={(e) => setDesk(e.target.value)}
           className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
         >
-          <option value="">All desks</option>
-          {desks.map((d) => (
-            <option key={d} value={d}>
-              {d}
+          <option value="">{i18n("crm.ui.allDesks")}</option>
+          {deskOptions.map((d) => (
+            <option key={d.id} value={d.code || d.id}>
+              {deskName(d)}
             </option>
           ))}
         </select>
         <input
           value={country}
           onChange={(e) => setCountry(e.target.value)}
-          placeholder="Country"
+          placeholder={i18n("crm.ui.country")}
           className="w-20 rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
         />
         <select
@@ -216,10 +220,10 @@ export default function AdminUsersPage() {
           onChange={(e) => setSaleStatus(e.target.value)}
           className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
         >
-          <option value="">Sale status</option>
-          {["NEW", "CONTACTED", "INTERESTED", "NO_ANSWER", "DEPOSITED", "LOST"].map((s) => (
+          <option value="">{i18n("crm.ui.saleStatus")}</option>
+          {SALE_STATUSES.map((s) => (
             <option key={s} value={s}>
-              {s}
+              {code("crm.sale", s)}
             </option>
           ))}
         </select>
@@ -228,10 +232,10 @@ export default function AdminUsersPage() {
           onChange={(e) => setRetentionStatus(e.target.value)}
           className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
         >
-          <option value="">Retansiyon</option>
-          {["ACTIVE", "INACTIVE", "AT_RISK", "CHURNED", "VIP"].map((s) => (
+          <option value="">{i18n("crm.ui.retention")}</option>
+          {RETENTION_STATUSES.map((s) => (
             <option key={s} value={s}>
-              {s}
+              {code("crm.retention", s)}
             </option>
           ))}
         </select>
@@ -247,38 +251,50 @@ export default function AdminUsersPage() {
 
       {selected.size > 0 && (
         <div className="mb-3 flex flex-wrap items-center gap-2 rounded-lg border border-[#e5e5e5] bg-[#ffffff] p-2 text-xs">
-          <span className="text-neutral-500">{selected.size} selected</span>
+          <span className="text-neutral-500">{selected.size} {i18n("crm.ui.selected")}</span>
           <button
             disabled={busy}
             onClick={() => bulk("freeze")}
             className="rounded bg-red-600/80 px-2 py-1 hover:bg-red-500"
           >
-            Freeze
+            {i18n("crm.ui.freeze")}
           </button>
           <button
             disabled={busy}
             onClick={() => bulk("activate")}
             className="rounded bg-emerald-600/80 px-2 py-1 hover:bg-emerald-500"
           >
-            Activate
+            {i18n("crm.ui.activate")}
           </button>
-          <input
+          <select
             value={bulkDesk}
             onChange={(e) => setBulkDesk(e.target.value)}
-            placeholder="Desk ata"
-            className="w-28 rounded border border-[#111111] bg-white px-2 py-1 text-sm text-[#111111]"
-          />
+            className="rounded border border-[#111111] bg-white px-2 py-1 text-sm text-[#111111]"
+          >
+            <option value="">{i18n("crm.ui.assignDesk")}</option>
+            {deskOptions.map((d) => (
+              <option key={d.id} value={d.id}>
+                {deskName(d)}
+              </option>
+            ))}
+          </select>
           <button
-            disabled={busy}
-            onClick={() => bulk("assignDesk", { desk: bulkDesk })}
+            disabled={busy || !bulkDesk}
+            onClick={() => {
+              const picked = deskOptions.find((d) => d.id === bulkDesk);
+              bulk("assignDesk", {
+                desk: picked?.name || bulkDesk,
+                deskId: picked?.id || bulkDesk,
+              });
+            }}
             className="rounded bg-[#e5e5e5] px-2 py-1 hover:bg-[#f0f0f0]"
           >
-            Desk ata
+            {i18n("crm.ui.assignDesk")}
           </button>
           <input
             value={bulkBroker}
             onChange={(e) => setBulkBroker(e.target.value)}
-            placeholder="Broker ata"
+            placeholder={i18n("crm.ui.assignBroker")}
             className="w-28 rounded border border-[#111111] bg-white px-2 py-1 text-sm text-[#111111]"
           />
           <button
@@ -286,7 +302,7 @@ export default function AdminUsersPage() {
             onClick={() => bulk("assignBroker", { brokerName: bulkBroker })}
             className="rounded bg-[#e5e5e5] px-2 py-1 hover:bg-[#f0f0f0]"
           >
-            Broker ata
+            {i18n("crm.ui.assignBroker")}
           </button>
         </div>
       )}
@@ -304,16 +320,16 @@ export default function AdminUsersPage() {
                   onChange={toggleAll}
                 />
               </th>
-              <th className="px-3 py-2.5">ID / Member</th>
-              <th className="px-3 py-2.5">Phone</th>
-              <th className="px-3 py-2.5">Desk</th>
-              <th className="px-3 py-2.5">Country</th>
-              <th className="px-3 py-2.5">Sell / Ret.</th>
-              <th className="px-3 py-2.5">Balance</th>
-              <th className="px-3 py-2.5">Account</th>
-              <th className="px-3 py-2.5">Status</th>
-              <th className="px-3 py-2.5">Broker</th>
-              <th className="px-3 py-2.5">Last login</th>
+              <th className="px-3 py-2.5">{i18n("crm.ui.memberId")}</th>
+              <th className="px-3 py-2.5">{i18n("crm.ui.phone")}</th>
+              <th className="px-3 py-2.5">{i18n("crm.ui.desk")}</th>
+              <th className="px-3 py-2.5">{i18n("crm.ui.country")}</th>
+              <th className="px-3 py-2.5">{i18n("crm.ui.saleRet")}</th>
+              <th className="px-3 py-2.5">{i18n("crm.ui.balance")}</th>
+              <th className="px-3 py-2.5">{i18n("crm.ui.account")}</th>
+              <th className="px-3 py-2.5">{i18n("crm.ui.status")}</th>
+              <th className="px-3 py-2.5">{i18n("crm.ui.broker")}</th>
+              <th className="px-3 py-2.5">{i18n("crm.ui.lastLogin")}</th>
               <th className="px-3 py-2.5"></th>
             </tr>
           </thead>
@@ -329,7 +345,7 @@ export default function AdminUsersPage() {
                   <div className="text-neutral-500">{u.email}</div>
                   {u.accountLoginId && (
                     <div className="font-mono text-[10px] tracking-wide text-sky-600">
-                      Account ID: {u.accountLoginId}
+                      {i18n("crm.ui.accountId")}: {u.accountLoginId}
                     </div>
                   )}
                   <div className="mt-0.5 flex flex-wrap gap-1">
@@ -338,10 +354,10 @@ export default function AdminUsersPage() {
                         u.role === "ADMIN" ? "bg-amber-500/20 text-amber-700" : "bg-neutral-200 text-neutral-600"
                       }`}
                     >
-                      {u.role}
+                      {code("crm.role", u.role)}
                     </span>
                     <span className="rounded bg-neutral-100 px-1 py-0.5 text-[9px] text-neutral-500">
-                      {u.accountType}
+                      {code("crm.accountType", u.accountType)}
                     </span>
                     {u.ftd && (
                       <span className="rounded bg-emerald-500/20 px-1 py-0.5 text-[9px] text-emerald-300">
@@ -351,11 +367,11 @@ export default function AdminUsersPage() {
                   </div>
                 </td>
                 <td className="px-3 py-2.5 text-neutral-500">{u.phone || "—"}</td>
-                <td className="px-3 py-2.5 text-neutral-600">{u.desk || "—"}</td>
+                <td className="px-3 py-2.5 text-neutral-600">{u.desk ? deskName(u.desk) : "—"}</td>
                 <td className="px-3 py-2.5">{u.country || "—"}</td>
                 <td className="px-3 py-2.5">
-                  <div>{u.saleStatus || "—"}</div>
-                  <div className="text-neutral-500">{u.retentionStatus || "—"}</div>
+                  <div>{code("crm.sale", u.saleStatus)}</div>
+                  <div className="text-neutral-500">{code("crm.retention", u.retentionStatus)}</div>
                 </td>
                 <td className="px-3 py-2.5 tabular-nums">
                   <div>
@@ -365,7 +381,7 @@ export default function AdminUsersPage() {
                     })}
                   </div>
                   <div className="text-[9px] text-neutral-500">
-                    eq{" "}
+                    {i18n("crm.ui.equity")}{" "}
                     {u.equity.toLocaleString("en-US", {
                       style: "currency",
                       currency: u.currency || "USD",
@@ -381,7 +397,7 @@ export default function AdminUsersPage() {
                       u.active ? "bg-emerald-500/20 text-emerald-300" : "bg-red-500/20 text-red-300"
                     }`}
                   >
-                    {u.active ? "Active" : "Freezeuldu"}
+                    {u.active ? i18n("crm.ui.active") : i18n("crm.ui.frozen")}
                   </span>
                 </td>
                 <td className="px-3 py-2.5 text-neutral-500">{u.brokerName || "—"}</td>
@@ -393,7 +409,7 @@ export default function AdminUsersPage() {
                     href={`/admin/traders/${u.id}`}
                     className="rounded bg-black text-white/80 px-2 py-1 hover:bg-neutral-800"
                   >
-                    Detail
+                    {i18n("crm.ui.detail")}
                   </Link>
                 </td>
               </tr>
@@ -401,7 +417,7 @@ export default function AdminUsersPage() {
             {rows.length === 0 && (
               <tr>
                 <td colSpan={11} className="px-3 py-10 text-center text-neutral-500">
-                  Trader not found
+                  {i18n("crm.ui.noRecords")}
                 </td>
               </tr>
             )}
@@ -415,20 +431,20 @@ export default function AdminUsersPage() {
             onSubmit={createMember}
             className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl border border-[#e5e5e5] bg-[#ffffff] p-4"
           >
-            <h2 className="mb-3 text-sm font-semibold">Create new member</h2>
+            <h2 className="mb-3 text-sm font-semibold">{i18n("crm.ui.createMember")}</h2>
             <div className="grid grid-cols-2 gap-2 text-xs">
               {(
                 [
-                  ["email", "Email *", "email"],
-                  ["password", "Password *", "password"],
-                  ["firstName", "First name", "text"],
-                  ["lastName", "Last name", "text"],
-                  ["phone", "Phone", "text"],
-                  ["country", "Country", "text"],
-                  ["desk", "Desk", "text"],
-                  ["brokerName", "Broker", "text"],
-                  ["accountType", "Account tipi", "text"],
-                  ["balance", "Starting balance", "number"],
+                  ["email", i18n("crm.ui.emailStar"), "email"],
+                  ["password", i18n("crm.ui.passwordStar"), "password"],
+                  ["firstName", i18n("crm.ui.firstName"), "text"],
+                  ["lastName", i18n("crm.ui.lastName"), "text"],
+                  ["phone", i18n("crm.ui.phone"), "text"],
+                  ["country", i18n("crm.ui.country"), "text"],
+                  ["desk", i18n("crm.ui.desk"), "text"],
+                  ["brokerName", i18n("crm.ui.broker"), "text"],
+                  ["accountType", i18n("crm.ui.accountType"), "text"],
+                  ["balance", i18n("crm.ui.startingBalance"), "number"],
                 ] as const
               ).map(([key, label, type]) => (
                 <label key={key} className="flex flex-col gap-1">
@@ -443,7 +459,7 @@ export default function AdminUsersPage() {
                 </label>
               ))}
               <label className="flex flex-col gap-1">
-                <span className="text-neutral-500">Para birimi</span>
+                <span className="text-neutral-500">{i18n("crm.ui.currency")}</span>
                 <select
                   value={createForm.currency}
                   onChange={(e) => setCreateForm({ ...createForm, currency: e.target.value })}
@@ -459,14 +475,14 @@ export default function AdminUsersPage() {
             </div>
             <div className="mt-4 flex gap-2">
               <button type="submit" disabled={busy} className="rounded bg-black text-white px-3 py-1.5 text-sm">
-                Create
+                {i18n("crm.ui.create")}
               </button>
               <button
                 type="button"
                 onClick={() => setShowCreate(false)}
                 className="rounded bg-[#e5e5e5] px-3 py-1.5 text-sm"
               >
-                Cancel
+                {i18n("crm.ui.cancel")}
               </button>
             </div>
           </form>

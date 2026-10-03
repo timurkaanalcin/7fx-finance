@@ -1,5 +1,7 @@
 "use client";
 
+import { useCrmLabels } from "@/lib/i18n/crm-labels";
+
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { StatusBadge } from "@/components/crm/StubPage";
@@ -21,6 +23,7 @@ type Asset = {
 };
 
 export default function AssetsPage() {
+  const { i18n, code, deskName } = useCrmLabels();
   const [assets, setAssets] = useState<Asset[]>([]);
   const [counts, setCounts] = useState<{ total: number; enabled: number; byClass: Record<string, number> } | null>(null);
   const [cls, setCls] = useState("");
@@ -44,18 +47,18 @@ export default function AssetsPage() {
     <div>
       <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
         <div>
-          <h1 className="text-lg font-semibold">Assets</h1>
+          <h1 className="text-lg font-semibold">{i18n("crm.nav.assets")}</h1>
           <p className="text-[11px] text-neutral-500">
-            Symbol catalog — for effective spread/commission see{" "}
+            {i18n("crm.assets.title")} —{" "}
             <Link href="/admin/rates" className="text-sky-400 hover:underline">
-              Trading Rates
+              {i18n("crm.nav.rates")}
             </Link>
           </p>
         </div>
         {counts && (
           <div className="flex gap-3 text-[11px] text-neutral-500">
-            <span>{counts.total} sembol</span>
-            <span className="text-emerald-400">{counts.enabled} aktif</span>
+            <span>{counts.total} {i18n("crm.ui.symbol")}</span>
+            <span className="text-emerald-400">{counts.enabled} {i18n("crm.ui.active")}</span>
           </div>
         )}
       </div>
@@ -65,10 +68,10 @@ export default function AssetsPage() {
           onChange={(e) => setCls(e.target.value)}
           className="rounded border border-neutral-300 bg-[#ffffff] px-2 py-1.5 text-xs"
         >
-          <option value="">All classes</option>
-          {["STOCK", "FX", "CRYPTO", "INDEX", "COMMODITY"].map((c) => (
+          <option value="">{i18n("crm.ui.allClasses")}</option>
+          {(["STOCK", "FX", "CRYPTO", "INDEX", "COMMODITY"] as const).map((c) => (
             <option key={c} value={c}>
-              {c}
+              {i18n(c === "STOCK" ? "term.stocks" : c === "FX" ? "term.fx" : c === "CRYPTO" ? "term.crypto" : c === "INDEX" ? "term.indices" : "term.commodities")}
               {counts?.byClass?.[c] != null ? ` (${counts.byClass[c]})` : ""}
             </option>
           ))}
@@ -78,14 +81,14 @@ export default function AssetsPage() {
         <table className="w-full text-left text-[11px]">
           <thead className="bg-[#ffffff] text-neutral-500">
             <tr>
-              <th className="px-2 py-2">Symbol</th>
-              <th className="px-2 py-2">Name</th>
-              <th className="px-2 py-2">Class</th>
-              <th className="px-2 py-2">Spread</th>
-              <th className="px-2 py-2">Kontrat</th>
-              <th className="px-2 py-2">Volume</th>
-              <th className="px-2 py-2">Commission</th>
-              <th className="px-2 py-2">Status</th>
+              <th className="px-2 py-2">{i18n("crm.ui.symbol")}</th>
+              <th className="px-2 py-2">{i18n("crm.ui.name")}</th>
+              <th className="px-2 py-2">{i18n("crm.ui.class")}</th>
+              <th className="px-2 py-2">{i18n("crm.ui.spread")}</th>
+              <th className="px-2 py-2">{i18n("crm.ui.contract")}</th>
+              <th className="px-2 py-2">{i18n("crm.ui.volume")}</th>
+              <th className="px-2 py-2">{i18n("crm.ui.commission")}</th>
+              <th className="px-2 py-2">{i18n("crm.ui.status")}</th>
             </tr>
           </thead>
           <tbody>
@@ -111,7 +114,7 @@ export default function AssetsPage() {
             {filtered.length === 0 && (
               <tr>
                 <td colSpan={8} className="px-3 py-8 text-center text-neutral-500">
-                  Asset yok
+                  {i18n("crm.ui.noRecords")}
                 </td>
               </tr>
             )}

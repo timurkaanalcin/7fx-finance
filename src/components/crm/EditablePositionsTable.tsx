@@ -1,5 +1,7 @@
 "use client";
 
+import { useCrmLabels } from "@/lib/i18n/crm-labels";
+
 import { useState } from "react";
 import {
   fmtCrmDate,
@@ -62,6 +64,7 @@ type Props = {
 };
 
 export default function EditablePositionsTable({ rows, onSaved }: Props) {
+  const { i18n, code } = useCrmLabels();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [recalcFrom, setRecalcFrom] = useState<RecalcFrom>("prices");
@@ -140,15 +143,15 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setErr(data.error || "Save failed");
+        setErr(data.error || i18n("crm.ui.saveFailed"));
         return;
       }
-      setMsg("Saved");
+      setMsg(i18n("crm.ui.saved"));
       setEditingId(null);
       setDraft(null);
       onSaved?.();
     } catch {
-      setErr("Connection error");
+      setErr(i18n("crm.ui.connectionError"));
     } finally {
       setSaving(false);
     }
@@ -182,37 +185,31 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
         </p>
       )}
       {editingId && (
-        <p className="mb-2 text-[11px] text-neutral-500">
-          Live sync: edit <strong>Profit</strong> → adjusts open (or close if CLOSED); edit
-          prices/volume/side → recalculates profit and{" "}
-          <strong>Amount</strong> (lot×contract×open).{" "}
-          <strong>Chart</strong> overrides which catalog symbol drives the terminal chart /
-          live feed (leave blank = same as Symbol). Times are 24h (HH:mm:ss).
-        </p>
+        <p className="mb-2 text-[11px] text-neutral-500">{i18n("crm.pos.syncHint")}</p>
       )}
       <div className="overflow-x-auto rounded-xl border border-[#e5e5e5]">
         <table className="w-full min-w-[1180px] text-left text-[11px]">
           <thead className="bg-[#ffffff] text-neutral-500">
             <tr>
               {[
-                "Symbol",
-                "Chart",
-                "Side",
-                "Volume",
-                "Open",
-                "Amount",
-                "Current",
-                "Close",
-                "Profit",
-                "Realized",
-                "Status",
-                "Opened",
-                "Closed",
-                "Trader",
-                "Edit",
-              ].map((h) => (
-                <th key={h} className="whitespace-nowrap px-2 py-2 font-semibold">
-                  {h}
+                ["symbol", "crm.ui.symbol"],
+                ["chart", "crm.ui.chart"],
+                ["side", "crm.ui.side"],
+                ["volume", "crm.ui.volume"],
+                ["open", "crm.ui.open"],
+                ["amount", "crm.ui.amount"],
+                ["current", "crm.ui.current"],
+                ["close", "crm.ui.closePrice"],
+                ["profit", "crm.ui.profit"],
+                ["realized", "crm.ui.realized"],
+                ["status", "crm.ui.status"],
+                ["opened", "crm.ui.opened"],
+                ["closed", "crm.ui.closedAt"],
+                ["trader", "crm.ui.trader"],
+                ["edit", "crm.ui.edit"],
+              ].map(([key, label]) => (
+                <th key={key} className="whitespace-nowrap px-2 py-2 font-semibold">
+                  {i18n(label)}
                 </th>
               ))}
             </tr>
@@ -241,7 +238,7 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
                         className={inp}
                         value={draft!.symbol}
                         onChange={(e) => patchPrices({ symbol: e.target.value })}
-                        title="Trade symbol (PnL / rates)"
+                        title={i18n("crm.ui.tradeSymbol")}
                       />
                     ) : (
                       String(p.symbol)
@@ -255,9 +252,9 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
                         onChange={(e) =>
                           setDraft({ ...draft!, chartSymbol: e.target.value })
                         }
-                        title="Chart / live price catalog symbol"
+                        title={i18n("crm.ui.chartHint")}
                       >
-                        <option value="">(= Symbol)</option>
+                        <option value="">{i18n("crm.ui.sameAsSymbol")}</option>
                         {CHART_OPTIONS.map((s) => (
                           <option key={s} value={s}>
                             {s}
@@ -265,7 +262,7 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
                         ))}
                       </select>
                     ) : (
-                      <span className="text-neutral-600" title="Chart / feed symbol">
+                      <span className="text-neutral-600" title={i18n("crm.ui.chartCol")}>
                         {displayChart(p)}
                       </span>
                     )}
@@ -277,11 +274,11 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
                         value={draft!.side}
                         onChange={(e) => patchPrices({ side: e.target.value })}
                       >
-                        <option value="BUY">BUY</option>
-                        <option value="SELL">SELL</option>
+                        <option value="BUY">{code("crm.kind", "BUY")}</option>
+                        <option value="SELL">{code("crm.kind", "SELL")}</option>
                       </select>
                     ) : (
-                      String(p.side)
+                      code("crm.kind", String(p.side))
                     )}
                   </td>
                   <td className="px-2 py-1.5 tabular-nums">
@@ -308,7 +305,7 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
                   </td>
                   <td
                     className="px-2 py-1.5 tabular-nums text-neutral-700"
-                    title="Opening notional = lot × contract × open price"
+                    title={i18n("crm.ui.amountHint")}
                   >
                     {displayAmount(p, !!isEdit)}
                   </td>
@@ -364,7 +361,7 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
                     {isEdit ? (
                       <input
                         className={inp}
-                        placeholder="e.g. 102"
+                        placeholder={i18n("crm.ui.exampleProfit")}
                         value={draft!.closeProfit}
                         onChange={(e) =>
                           patchProfit({ closeProfit: e.target.value }, "closeProfit")
@@ -396,8 +393,8 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
                           );
                         }}
                       >
-                        <option value="OPEN">OPEN</option>
-                        <option value="CLOSED">CLOSED</option>
+                        <option value="OPEN">{code("crm.status", "OPEN")}</option>
+                        <option value="CLOSED">{code("crm.status", "CLOSED")}</option>
                       </select>
                     ) : (
                       <span
@@ -407,7 +404,7 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
                             : "bg-neutral-100 text-neutral-600"
                         }`}
                       >
-                        {String(p.status)}
+                        {code("crm.status", String(p.status))}
                       </span>
                     )}
                   </td>
@@ -454,7 +451,7 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
                           onClick={save}
                           className="rounded bg-black px-2 py-1 text-[10px] font-semibold text-white disabled:opacity-50"
                         >
-                          Save
+                          {i18n("crm.ui.save")}
                         </button>
                         <button
                           type="button"
@@ -462,7 +459,7 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
                           onClick={cancel}
                           className="rounded border border-neutral-300 px-2 py-1 text-[10px]"
                         >
-                          Cancel
+                          {i18n("crm.ui.cancel")}
                         </button>
                       </div>
                     ) : (
@@ -471,7 +468,7 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
                         onClick={() => startEdit(p)}
                         className="rounded border border-[#111111] bg-white px-2 py-1 text-[10px] font-semibold text-[#111111] hover:bg-neutral-50"
                       >
-                        Edit
+                        {i18n("crm.ui.edit")}
                       </button>
                     )}
                   </td>
@@ -481,7 +478,7 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
             {rows.length === 0 && (
               <tr>
                 <td colSpan={15} className="px-3 py-8 text-center text-neutral-500">
-                  No positions
+                  {i18n("crm.ui.noPositions")}
                 </td>
               </tr>
             )}

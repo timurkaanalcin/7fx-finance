@@ -45,7 +45,20 @@ export async function GET(req: Request) {
   }
   if (status === "active") and.push({ active: true });
   if (status === "frozen") and.push({ active: false });
-  if (desk) and.push({ desk: { equals: desk } });
+  if (desk) {
+    const match = await prisma.desk.findFirst({
+      where: { OR: [{ id: desk }, { code: desk }, { name: desk }] },
+    });
+    const ors: Record<string, string>[] = [{ desk }, { deskId: desk }];
+    if (match) {
+      ors.push({ desk: match.name }, { deskId: match.id });
+      if (match.code) {
+        ors.push({ deskId: match.code });
+        ors.push({ desk: match.code });
+      }
+    }
+    and.push({ OR: ors });
+  }
   if (country) and.push({ country: { equals: country } });
   if (saleStatus) and.push({ saleStatus: { equals: saleStatus } });
   if (retentionStatus) and.push({ retentionStatus: { equals: retentionStatus } });
@@ -64,10 +77,26 @@ export async function GET(req: Request) {
     distinct: ["desk"],
     take: 100,
   });
+  const catalog = await prisma.desk.findMany({
+    where: { active: true },
+    orderBy: { name: "asc" },
+    select: { id: true, name: true, code: true },
+    take: 200,
+  });
+  const deskOptions = catalog.map((d) => ({ id: d.id, name: d.name, code: d.code }));
+  const knownNames = new Set(catalog.map((d) => d.name));
+  for (const row of desks) {
+    const name = row.desk;
+    if (name && !knownNames.has(name)) {
+      deskOptions.push({ id: name, name, code: null });
+      knownNames.add(name);
+    }
+  }
 
   return NextResponse.json({
     users: users.map((u) => serializeUserMembership(u as unknown as Record<string, unknown>)),
-    desks: desks.map((d) => d.desk).filter(Boolean),
+    desks: deskOptions.map((d) => d.name),
+    deskOptions,
     permissionDefs: ADMIN_PERMISSIONS,
   });
 }

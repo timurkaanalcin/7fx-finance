@@ -1,5 +1,7 @@
 "use client";
 
+import { useCrmLabels } from "@/lib/i18n/crm-labels";
+
 import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -57,19 +59,19 @@ const GREETING_7FX =
 
 const EMOJIS = ["👍", "🙏", "✅", "😊", "👋", "💼", "⚡", "📌"];
 
-function relativeTimeTr(iso: string): string {
+function relativeTimeTr(iso: string, locale: string): string {
   const diff = Date.now() - new Date(iso).getTime();
-  if (!Number.isFinite(diff) || diff < 0) return "just now";
-  const sec = Math.floor(diff / 1000);
-  if (sec < 45) return "a few seconds ago";
-  const min = Math.floor(sec / 60);
-  if (min < 60) return `${min} minutes ago`;
-  const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr} hours ago`;
-  const day = Math.floor(hr / 24);
-  if (day === 1) return "one day ago";
-  if (day < 30) return `${day} days ago`;
-  return new Date(iso).toLocaleDateString("en-US");
+  if (!Number.isFinite(diff)) return "—";
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+  const sec = Math.round(diff / 1000);
+  if (Math.abs(sec) < 45) return rtf.format(-sec, "second");
+  const min = Math.round(sec / 60);
+  if (Math.abs(min) < 60) return rtf.format(-min, "minute");
+  const hr = Math.round(min / 60);
+  if (Math.abs(hr) < 24) return rtf.format(-hr, "hour");
+  const day = Math.round(hr / 24);
+  if (Math.abs(day) < 30) return rtf.format(-day, "day");
+  return new Date(iso).toLocaleDateString(locale);
 }
 
 function initials(name: string): string {
@@ -85,15 +87,15 @@ function avatarHue(seed: string): string {
   return `hsl(${h} 32% 38%)`;
 }
 
-function formatClock(iso: string) {
-  return new Date(iso).toLocaleTimeString("en-US", {
+function formatClock(iso: string, locale: string) {
+  return new Date(iso).toLocaleTimeString(locale, {
     hour: "2-digit",
     minute: "2-digit",
   });
 }
 
-function formatDateSep(iso: string) {
-  return new Date(iso).toLocaleDateString("en-US", {
+function formatDateSep(iso: string, locale: string) {
+  return new Date(iso).toLocaleDateString(locale, {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -128,6 +130,7 @@ function ProfileeRow({
   onEdit?: () => void;
   onClear?: () => void;
 }) {
+  const { i18n } = useCrmLabels();
   return (
     <div className="group flex items-start justify-between gap-2 border-b border-black/5 py-2.5">
       <div className="min-w-0">
@@ -148,7 +151,7 @@ function ProfileeRow({
             type="button"
             onClick={onEdit}
             className="rounded-md p-1 hover:bg-neutral-100"
-            aria-label={`Edit ${label}`}
+            aria-label={`${i18n("crm.ui.edit")} ${label}`}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
               <path d="M4 20h4l10-10-4-4L4 16v4Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
@@ -161,7 +164,7 @@ function ProfileeRow({
             type="button"
             onClick={onClear}
             className="rounded-md p-1 text-red-400 hover:bg-red-500/10"
-            aria-label={`${label} temizle`}
+            aria-label={`${label} ${i18n("crm.ui.clearField")}`}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
               <path d="M5 7h14M10 11v6M14 11v6M9 7V5h6v2M7 7l1 12h8l1-12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
@@ -174,6 +177,7 @@ function ProfileeRow({
 }
 
 export default function ChatPage() {
+  const { i18n, locale } = useCrmLabels();
   const [threads, setThreads] = useState<Thread[]>([]);
   const [traders, setTraders] = useState<TraderOpt[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
@@ -272,7 +276,7 @@ export default function ChatPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        flash(data.error || "Sendilemedi");
+        flash(data.error || i18n("crm.chat.sendFail"));
         return;
       }
       setMessage("");
@@ -280,7 +284,7 @@ export default function ChatPage() {
       setSelected(userId);
       setCreateOpen(false);
       await load();
-      flash("Reply sent");
+      flash(i18n("crm.chat.sent"));
     } finally {
       setBusy(false);
     }
@@ -302,12 +306,12 @@ export default function ChatPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        flash(data.error || "Registration failed");
+        flash(data.error || i18n("crm.ui.saveFailed"));
         return;
       }
       setProfileeDraft((p) => (p ? { ...p, [key]: value } : p));
       await load();
-      flash("Profilee updated");
+      flash(i18n("crm.chat.profileUpdated"));
     } finally {
       setBusy(false);
     }
@@ -333,11 +337,11 @@ export default function ChatPage() {
       const key = dayKey(m.createdAt);
       const last = blocks[blocks.length - 1];
       if (!last || last.key !== key) {
-        blocks.push({ key, label: formatDateSep(m.createdAt), items: [m] });
+        blocks.push({ key, label: formatDateSep(m.createdAt, locale), items: [m] });
       } else last.items.push(m);
     }
     return blocks;
-  }, [active]);
+  }, [active, locale]);
 
   function onSend(e?: FormEvent) {
     e?.preventDefault();
@@ -354,9 +358,9 @@ export default function ChatPage() {
             CRM
           </span>
           <div>
-            <p className="text-sm font-semibold text-neutral-900">Live Support Desk</p>
+            <p className="text-sm font-semibold text-neutral-900">{i18n("crm.chat.title")}</p>
             <p className="text-[11px] text-neutral-500">
-              7FX · {threads.length} conversations · {unanswered} awaiting reply
+              7FX · {threads.length} {i18n("crm.chat.conversations")} · {unanswered} {i18n("crm.chat.awaiting")}
             </p>
           </div>
         </div>
@@ -365,7 +369,7 @@ export default function ChatPage() {
           onClick={() => setCreateOpen(true)}
           className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-[11px] font-semibold text-white hover:brightness-110"
         >
-          Create chat
+          {i18n("crm.chat.create")}
         </button>
       </div>
 
@@ -387,17 +391,17 @@ export default function ChatPage() {
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search"
+                placeholder={i18n("crm.ui.search")}
                 className="w-full rounded-xl border border-neutral-200 bg-[#f5f5f5] py-2 pl-9 pr-3 text-sm text-neutral-900 outline-none focus:border-[var(--accent)]/40"
-                aria-label="Search"
+                aria-label={i18n("crm.ui.search")}
               />
             </div>
             <div className="flex gap-1 rounded-xl bg-[#f5f5f5] p-1">
               {(
                 [
-                  ["all", "All"],
-                  ["new", "New"],
-                  ["unanswered", "Note Answered"],
+                  ["all", i18n("crm.ui.all")],
+                  ["new", i18n("crm.ui.new")],
+                  ["unanswered", i18n("crm.chat.unanswered")],
                 ] as const
               ).map(([id, label]) => (
                 <button
@@ -424,7 +428,7 @@ export default function ChatPage() {
           <ul className="min-h-0 flex-1 space-y-0.5 overflow-y-auto p-2">
             {list.length === 0 && (
               <li className="rounded-xl px-3 py-8 text-center text-sm text-neutral-500">
-                No chats — start with Create chat.
+                {i18n("crm.chat.emptyList")}
               </li>
             )}
             {list.map((t) => {
@@ -454,7 +458,7 @@ export default function ChatPage() {
                           {t.trader}
                         </span>
                         <span className="shrink-0 text-[10px] text-neutral-500">
-                          {relativeTimeTr(t.lastAt)}
+                          {relativeTimeTr(t.lastAt, locale)}
                         </span>
                       </span>
                       <span className="mt-0.5 flex items-center gap-1.5">
@@ -476,7 +480,7 @@ export default function ChatPage() {
             })}
           </ul>
           <p className="border-t border-neutral-200 px-3 py-2 text-center text-[10px] text-neutral-400">
-            All Chats Loaded
+            {i18n("crm.chat.allLoaded")}
           </p>
         </aside>
 
@@ -484,7 +488,7 @@ export default function ChatPage() {
         <section className="flex min-h-0 flex-col bg-[#f7f7f7]">
           {!active ? (
             <div className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-sm text-neutral-500">
-              <p>Select a conversation on the left or Create chat</p>
+              <p>{i18n("crm.chat.emptyThread")}</p>
             </div>
           ) : (
             <>
@@ -515,7 +519,7 @@ export default function ChatPage() {
                       : "bg-red-500/15 text-red-400"
                   }`}
                 >
-                  {active.active ? "Active" : "Donuk"}
+                  {active.active ? i18n("crm.ui.active") : i18n("crm.ui.frozen")}
                 </span>
               </div>
 
@@ -553,7 +557,7 @@ export default function ChatPage() {
                             )}
                             <p className="whitespace-pre-wrap break-words">{m.body}</p>
                             <p className="mt-1 text-right text-[10px] text-neutral-500">
-                              {formatClock(m.createdAt)}
+                              {formatClock(m.createdAt, locale)}
                             </p>
                           </div>
                         </div>
@@ -591,15 +595,15 @@ export default function ChatPage() {
                     onClick={() => setMessage(GREETING_7FX)}
                     className="rounded-full bg-[var(--accent-tint)] px-2.5 py-1 text-[10px] font-semibold text-[var(--accent)] ring-1 ring-[var(--accent)]/20"
                   >
-                    7FX welcome
+                    {i18n("crm.chat.welcome")}
                   </button>
                 </div>
                 <div className="flex items-end gap-2">
                   <button
                     type="button"
                     className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-neutral-200 text-neutral-500 hover:bg-neutral-100"
-                    title="Sesli not"
-                    aria-label="Ses"
+                    title={i18n("crm.chat.voice")}
+                    aria-label={i18n("crm.chat.voice")}
                   >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                       <rect x="9" y="3" width="6" height="11" rx="3" stroke="currentColor" strokeWidth="1.7" />
@@ -610,16 +614,16 @@ export default function ChatPage() {
                   <input
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Enter message"
+                    placeholder={i18n("crm.chat.enter")}
                     className="min-w-0 flex-1 rounded-xl border border-neutral-200 bg-[#f5f5f5] px-3 py-2.5 text-sm text-neutral-900 outline-none focus:border-[var(--accent)]/40"
-                    aria-label="Reply"
+                    aria-label={i18n("crm.ui.reply")}
                     disabled={busy}
                   />
                   <button
                     type="button"
                     onClick={() => setEmojiOpen((v) => !v)}
                     className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-neutral-200 text-neutral-500 hover:bg-neutral-100"
-                    aria-label="Emoji"
+                    aria-label={i18n("crm.chat.emoji")}
                   >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                       <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.7" />
@@ -632,7 +636,7 @@ export default function ChatPage() {
                     type="button"
                     onClick={() => fileRef.current?.click()}
                     className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-neutral-200 text-neutral-500 hover:bg-neutral-100"
-                    aria-label="Dosya ekle"
+                    aria-label={i18n("crm.chat.attach")}
                   >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                       <path d="M14.5 7.5 8 14a3 3 0 0 0 4.2 4.2l7.1-7.1a4.5 4.5 0 0 0-6.4-6.4L6 11.6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
@@ -657,7 +661,7 @@ export default function ChatPage() {
                     type="submit"
                     disabled={busy || !message.trim()}
                     className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent)] text-white disabled:opacity-40"
-                    aria-label="Send"
+                    aria-label={i18n("crm.ui.send")}
                   >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                       <path d="M4 12 20 4l-5.5 16-2.5-6.5L4 12Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
@@ -688,10 +692,10 @@ export default function ChatPage() {
                       void navigator.clipboard?.writeText(
                         `${profileDraft.name} · ${profileDraft.id}`,
                       );
-                      flash("Copied");
+                      flash(i18n("crm.ui.copied"));
                     }}
                     className="text-neutral-500 hover:text-neutral-800"
-                    aria-label="Copy"
+                    aria-label={i18n("crm.ui.copy")}
                   >
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
                       <rect x="8" y="8" width="11" height="11" rx="2" stroke="currentColor" strokeWidth="1.6" />
@@ -705,104 +709,104 @@ export default function ChatPage() {
               </div>
 
               <ProfileeRow
-                label="Name"
+                label={i18n("crm.ui.name")}
                 value={profileDraft.name}
-                onEdit={() => editField("name", "Name")}
+                onEdit={() => editField("name", i18n("crm.ui.name"))}
               />
               <ProfileeRow
-                label="Account Type"
+                label={i18n("crm.ui.accountType")}
                 value={profileDraft.accountType || "STANDARD"}
-                onEdit={() => editField("accountType", "Account Type")}
+                onEdit={() => editField("accountType", i18n("crm.ui.accountType"))}
               />
               <ProfileeRow
-                label="Currency"
+                label={i18n("crm.ui.currency")}
                 value={profileDraft.currency || "USD"}
               />
               <ProfileeRow
-                label="Timezone"
+                label={i18n("crm.ui.timezone")}
                 value={profileDraft.timezone || "Europe/Istanbul"}
-                onEdit={() => editField("timezone", "Timezone")}
+                onEdit={() => editField("timezone", i18n("crm.ui.timezone"))}
               />
               <ProfileeRow
-                label="Language"
+                label={i18n("crm.ui.language")}
                 value={profileDraft.language || "tr"}
-                onEdit={() => editField("language", "Language")}
+                onEdit={() => editField("language", i18n("crm.ui.language"))}
               />
               <ProfileeRow
-                label="Is Active"
-                value={profileDraft.active ? "Yes" : "No"}
+                label={i18n("crm.chat.isActive")}
+                value={profileDraft.active ? i18n("crm.ui.yes") : i18n("crm.ui.no")}
                 danger={!profileDraft.active}
                 onEdit={() => toggleBool("active")}
               />
               <ProfileeRow
-                label="Is Active Trading"
-                value={profileDraft.isActiveTrading ? "Yes" : "No"}
+                label={i18n("crm.chat.activeTrading")}
+                value={profileDraft.isActiveTrading ? i18n("crm.ui.yes") : i18n("crm.ui.no")}
                 danger={!profileDraft.isActiveTrading}
               />
               <ProfileeRow
-                label="Is Active Deposit"
-                value={profileDraft.isActiveDeposit !== false ? "Yes" : "No"}
+                label={i18n("crm.chat.activeDeposit")}
+                value={profileDraft.isActiveDeposit !== false ? i18n("crm.ui.yes") : i18n("crm.ui.no")}
               />
               <ProfileeRow
-                label="Is Active Withdrawal"
-                value={profileDraft.isActiveWithdrawal !== false ? "Yes" : "No"}
+                label={i18n("crm.chat.activeWithdraw")}
+                value={profileDraft.isActiveWithdrawal !== false ? i18n("crm.ui.yes") : i18n("crm.ui.no")}
               />
               <ProfileeRow
-                label="Trading Server"
+                label={i18n("crm.ui.tradingServer")}
                 value={profileDraft.tradingServer || "Web Trading Server"}
-                onEdit={() => editField("tradingServer", "Trading Server")}
+                onEdit={() => editField("tradingServer", i18n("crm.ui.tradingServer"))}
               />
               <ProfileeRow
-                label="Registered At"
+                label={i18n("crm.chat.registeredAt")}
                 value={
                   profileDraft.registrationDate
-                    ? new Date(profileDraft.registrationDate).toLocaleString("en-US")
+                    ? new Date(profileDraft.registrationDate).toLocaleString(locale)
                     : "—"
                 }
               />
               <ProfileeRow
-                label="Registration Country"
+                label={i18n("crm.ui.regCountry")}
                 value={
                   profileDraft.registrationCountry ||
                   profileDraft.country ||
                   "—"
                 }
-                onEdit={() => editField("registrationCountry", "Registration Country")}
+                onEdit={() => editField("registrationCountry", i18n("crm.ui.regCountry"))}
               />
-              <ProfileeRow label="Registration IP" value="—" />
+              <ProfileeRow label={i18n("crm.chat.regIp")} value="—" />
               <ProfileeRow
-                label="Last Login At"
+                label={i18n("crm.ui.lastLogin")}
                 value={
                   profileDraft.lastLoginAt
-                    ? new Date(profileDraft.lastLoginAt).toLocaleString("en-US")
+                    ? new Date(profileDraft.lastLoginAt).toLocaleString(locale)
                     : "—"
                 }
               />
               <ProfileeRow
-                label="Mark FTD"
-                value={profileDraft.ftd ? "Yes" : "No"}
+                label={i18n("crm.chat.markFtd")}
+                value={profileDraft.ftd ? i18n("crm.ui.yes") : i18n("crm.ui.no")}
                 danger={!profileDraft.ftd}
                 onEdit={() => toggleBool("ftd")}
               />
               <ProfileeRow
-                label="Mark Ftd Broker"
-                value={profileDraft.brokerName || "Note Assigned"}
+                label={i18n("crm.chat.ftdBroker")}
+                value={profileDraft.brokerName || i18n("crm.ui.notAssigned")}
                 danger={!profileDraft.brokerName}
-                onEdit={() => editField("brokerName", "Mark Ftd Broker")}
+                onEdit={() => editField("brokerName", i18n("crm.chat.ftdBroker"))}
                 onClear={() => void saveProfileeField("brokerName", "")}
               />
-              <ProfileeRow label="Withdrawal Details" value="Empty" danger />
+              <ProfileeRow label={i18n("crm.chat.withdrawDetails")} value={i18n("crm.ui.emptyValue")} danger />
               <ProfileeRow
-                label="Assignment Affiliate"
+                label={i18n("crm.chat.affiliate")}
                 value={profileDraft.affiliateA || "-"}
-                onEdit={() => editField("affiliateA", "Assignment Affiliate")}
+                onEdit={() => editField("affiliateA", i18n("crm.chat.affiliate"))}
               />
             </div>
           )}
         </aside>
       </div>
 
-      {/* Create chat modal */}
+      {/* create chat modal */}
       {createOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
@@ -813,18 +817,18 @@ export default function ChatPage() {
             className="w-full max-w-md rounded-2xl border border-neutral-200 bg-white p-4 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
-            aria-label="Create chat"
+            aria-label={i18n("crm.chat.create")}
           >
-            <h3 className="text-sm font-semibold text-neutral-900">Create chat</h3>
+            <h3 className="text-sm font-semibold text-neutral-900">{i18n("crm.chat.create")}</h3>
             <p className="mt-1 text-[11px] text-neutral-500">
-              Select a trader — the first message can be sent as a 7FX welcome.
+              {i18n("crm.chat.pick")}
             </p>
             <select
               value={newUserId}
               onChange={(e) => setNewUserId(e.target.value)}
               className="mt-3 w-full rounded-xl border border-neutral-200 bg-[#f5f5f5] px-3 py-2 text-sm"
             >
-              <option value="">Select trader…</option>
+              <option value="">{i18n("crm.comms.selectTrader")}</option>
               {traders.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.name} · {t.email}
@@ -835,7 +839,7 @@ export default function ChatPage() {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={4}
-              placeholder="First message"
+              placeholder={i18n("crm.chat.first")}
               className="mt-2 w-full rounded-xl border border-neutral-200 bg-[#f5f5f5] px-3 py-2 text-sm"
             />
             <div className="mt-2 flex flex-wrap gap-2">
@@ -844,7 +848,7 @@ export default function ChatPage() {
                 onClick={() => setMessage(GREETING_7FX)}
                 className="rounded-full bg-[var(--accent-tint)] px-2.5 py-1 text-[10px] font-semibold text-[var(--accent)]"
               >
-                7FX welcome
+                {i18n("crm.chat.welcome")}
               </button>
               <div className="flex-1" />
               <button
@@ -852,7 +856,7 @@ export default function ChatPage() {
                 onClick={() => setCreateOpen(false)}
                 className="rounded-lg px-3 py-1.5 text-xs text-neutral-500 hover:bg-neutral-100"
               >
-                Cancel
+                {i18n("crm.ui.cancel")}
               </button>
               <button
                 type="button"
@@ -860,7 +864,7 @@ export default function ChatPage() {
                 onClick={() => void send(newUserId)}
                 className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-40"
               >
-                Start
+                {i18n("crm.ui.start")}
               </button>
             </div>
           </div>

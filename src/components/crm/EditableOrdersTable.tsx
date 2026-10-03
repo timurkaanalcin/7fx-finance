@@ -1,5 +1,7 @@
 "use client";
 
+import { useCrmLabels } from "@/lib/i18n/crm-labels";
+
 import { useState } from "react";
 import {
   fmtCrmDate,
@@ -31,6 +33,7 @@ export default function EditableOrdersTable({
   rows: Row[];
   onSaved?: () => void;
 }) {
+  const { i18n, code } = useCrmLabels();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [saving, setSaving] = useState(false);
@@ -74,14 +77,14 @@ export default function EditableOrdersTable({
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setErr(data.error || "Save failed");
+        setErr(data.error || i18n("crm.ui.saveFailed"));
         return;
       }
       setEditingId(null);
       setDraft(null);
       onSaved?.();
     } catch {
-      setErr("Connection error");
+      setErr(i18n("crm.ui.connectionError"));
     } finally {
       setSaving(false);
     }
@@ -94,7 +97,7 @@ export default function EditableOrdersTable({
         <table className="w-full min-w-[720px] text-left text-[11px]">
           <thead className="bg-white text-neutral-500">
             <tr>
-              {["Symbol", "Side", "Type", "Volume", "Price", "Status", "Date", "Edit"].map((h) => (
+              {[i18n("crm.ui.symbol"), i18n("crm.ui.side"), i18n("crm.ui.type"), i18n("crm.ui.volume"), i18n("crm.ui.price"), i18n("crm.ui.status"), i18n("crm.ui.date"), i18n("crm.ui.edit")].map((h) => (
                 <th key={h} className="px-2 py-2">
                   {h}
                 </th>
@@ -117,22 +120,22 @@ export default function EditableOrdersTable({
                   <td className="px-2 py-1.5">
                     {isEdit ? (
                       <select className={inp} value={draft!.side} onChange={(e) => setDraft({ ...draft!, side: e.target.value })}>
-                        <option value="BUY">BUY</option>
-                        <option value="SELL">SELL</option>
+                        <option value="BUY">{code("crm.kind", "BUY")}</option>
+                        <option value="SELL">{code("crm.kind", "SELL")}</option>
                       </select>
                     ) : (
-                      String(o.side)
+                      code("crm.kind", String(o.side))
                     )}
                   </td>
                   <td className="px-2 py-1.5">
                     {isEdit ? (
                       <select className={inp} value={draft!.type} onChange={(e) => setDraft({ ...draft!, type: e.target.value })}>
-                        <option value="MARKET">MARKET</option>
-                        <option value="LIMIT">LIMIT</option>
-                        <option value="STOP">STOP</option>
+                        <option value="MARKET">{code("crm.kind", "MARKET")}</option>
+                        <option value="LIMIT">{code("crm.kind", "LIMIT")}</option>
+                        <option value="STOP">{code("crm.kind", "STOP")}</option>
                       </select>
                     ) : (
-                      String(o.type)
+                      code("crm.kind", String(o.type))
                     )}
                   </td>
                   <td className="px-2 py-1.5 tabular-nums">
@@ -156,12 +159,12 @@ export default function EditableOrdersTable({
                       <select className={inp} value={draft!.status} onChange={(e) => setDraft({ ...draft!, status: e.target.value })}>
                         {["PENDING", "FILLED", "CANCELLED", "REJECTED"].map((s) => (
                           <option key={s} value={s}>
-                            {s}
+                            {code("crm.status", s)}
                           </option>
                         ))}
                       </select>
                     ) : (
-                      String(o.status)
+                      code("crm.status", String(o.status))
                     )}
                   </td>
                   <td className="px-2 py-1.5 whitespace-nowrap text-neutral-600">
@@ -181,15 +184,15 @@ export default function EditableOrdersTable({
                     {isEdit ? (
                       <div className="flex gap-1">
                         <button type="button" disabled={saving} onClick={save} className="rounded bg-black px-2 py-1 text-[10px] font-semibold text-white">
-                          Save
+                          {i18n("crm.ui.save")}
                         </button>
                         <button type="button" onClick={() => { setEditingId(null); setDraft(null); }} className="rounded border border-neutral-300 px-2 py-1 text-[10px]">
-                          Cancel
+                          {i18n("crm.ui.cancel")}
                         </button>
                       </div>
                     ) : (
                       <button type="button" onClick={() => start(o)} className="rounded border border-[#111111] px-2 py-1 text-[10px] font-semibold">
-                        Edit
+                        {i18n("crm.ui.edit")}
                       </button>
                     )}
                   </td>
@@ -199,7 +202,7 @@ export default function EditableOrdersTable({
             {rows.length === 0 && (
               <tr>
                 <td colSpan={8} className="px-3 py-8 text-center text-neutral-500">
-                  No orders
+                  {i18n("crm.ui.noOrders")}
                 </td>
               </tr>
             )}

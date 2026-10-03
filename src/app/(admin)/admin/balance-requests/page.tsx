@@ -1,9 +1,11 @@
 "use client";
 
+import { useCrmLabels } from "@/lib/i18n/crm-labels";
+
 import { fmtCrmDate } from "@/lib/crm-format";
 
 import { useCallback, useEffect, useState } from "react";
-import { DEFAULT_RESET_BALANCE, MARGIN_CALL_LEVEL } from "@/lib/margin-call";
+import { DEFAULT_RESET_BALANCE } from "@/lib/margin-call";
 
 type Row = {
   id: string;
@@ -19,13 +21,8 @@ type Row = {
   user: { id: string; email: string; name: string };
 };
 
-const STATUS_LABEL: Record<string, string> = {
-  PENDING: "Bekliyor",
-  APPROVED: "Approved",
-  REJECTED: "Rejected",
-};
-
 export default function AdminBalanceRequestsPage() {
+  const { i18n, code, deskName } = useCrmLabels();
   const [rows, setRows] = useState<Row[]>([]);
   const [filter, setFilter] = useState("PENDING");
   const [busy, setBusy] = useState<string | null>(null);
@@ -56,14 +53,10 @@ export default function AdminBalanceRequestsPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "Action failed");
+        setMsg(data.error || i18n("crm.ui.actionFailed"));
         return;
       }
-      setMsg(
-        action === "approve"
-          ? "Approved — balance / positions updated"
-          : "Rejected — account unchanged"
-      );
+      setMsg(action === "approve" ? i18n("crm.bal.approved") : i18n("crm.bal.rejected"));
       await load();
     } finally {
       setBusy(null);
@@ -73,7 +66,7 @@ export default function AdminBalanceRequestsPage() {
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center gap-2">
-        <h1 className="text-lg font-semibold">Margin / Balance Talepleri</h1>
+        <h1 className="text-lg font-semibold">{i18n("crm.bal.title")}</h1>
         <div className="ml-auto flex gap-1">
           {["PENDING", "APPROVED", "REJECTED", ""].map((f) => (
             <button
@@ -81,27 +74,17 @@ export default function AdminBalanceRequestsPage() {
               onClick={() => setFilter(f)}
               className={`rounded px-2 py-1 text-xs ${filter === f ? "bg-black text-white" : "bg-[#e5e5e5]"}`}
             >
-              {f ? STATUS_LABEL[f] || f : "All"}
+              {f ? code("crm.status", f) : i18n("crm.ui.all")}
             </button>
           ))}
         </div>
       </div>
 
       <div className="mb-4 space-y-1 rounded-lg border border-[#e5e5e5] bg-[#ffffff]/50 p-3 text-[11px] text-neutral-500">
-        <p className="font-medium text-neutral-600">Kurallar (admin)</p>
-        <p>
-          {ruleTr ||
-            `Margin call: equity ≤ 0 or margin level < %${MARGIN_CALL_LEVEL}. Balance reset approval → ${DEFAULT_RESET_BALANCE.toLocaleString("en-US")} USD + open positions are closed.`}
-        </p>
-        <p>
-          <strong className="text-neutral-600">Balance Reset (RESET):</strong> on approval open positions
-          are closed (PnL is not applied to balance), pending orders cancelled, balance set to{" "}
-          {DEFAULT_RESET_BALANCE.toLocaleString("en-US")} USD.
-        </p>
-        <p>
-          <strong className="text-neutral-600">Add Balance (ADD):</strong> on approval the requested amount is added to the balance
-          is added. Reject: account stays as-is.
-        </p>
+        <p className="font-medium text-neutral-600">{i18n("crm.bal.rules")}</p>
+        <p>{ruleTr || i18n("crm.bal.resetLine")}</p>
+        <p>{i18n("crm.bal.addLine")}</p>
+        <p>{i18n("crm.bal.rejected")}</p>
       </div>
 
       {msg && <p className="mb-3 text-xs text-emerald-400">{msg}</p>}
@@ -109,13 +92,13 @@ export default function AdminBalanceRequestsPage() {
         <table className="w-full text-left text-xs">
           <thead className="bg-[#e5e5e5] text-neutral-500">
             <tr>
-              <th className="px-3 py-2">Date</th>
-              <th className="px-3 py-2">User</th>
-              <th className="px-3 py-2">Tip</th>
-              <th className="px-3 py-2">Amount</th>
-              <th className="px-3 py-2">Equity / Marj%</th>
-              <th className="px-3 py-2">Status</th>
-              <th className="px-3 py-2">Trade</th>
+              <th className="px-3 py-2">{i18n("crm.ui.date")}</th>
+              <th className="px-3 py-2">{i18n("crm.ui.user")}</th>
+              <th className="px-3 py-2">{i18n("crm.ui.type")}</th>
+              <th className="px-3 py-2">{i18n("crm.ui.amount")}</th>
+              <th className="px-3 py-2">{i18n("crm.bal.marginPct")}</th>
+              <th className="px-3 py-2">{i18n("crm.ui.status")}</th>
+              <th className="px-3 py-2">{i18n("crm.ui.action")}</th>
             </tr>
           </thead>
           <tbody>
@@ -129,7 +112,7 @@ export default function AdminBalanceRequestsPage() {
                   <div className="text-neutral-500">{r.user.email}</div>
                 </td>
                 <td className="px-3 py-2">
-                  {r.type === "RESET" ? "Balance Reset" : "Add Balance"}
+                  {r.type === "RESET" ? i18n("crm.bal.reset") : i18n("crm.bal.add")}
                 </td>
                 <td className="px-3 py-2 tabular-nums font-medium">
                   {r.type === "ADD" && r.amount != null
@@ -140,7 +123,7 @@ export default function AdminBalanceRequestsPage() {
                   {r.equityAt != null ? r.equityAt.toFixed(2) : "—"} /{" "}
                   {r.marginLvl != null ? `%${r.marginLvl.toFixed(1)}` : "—"}
                 </td>
-                <td className="px-3 py-2">{STATUS_LABEL[r.status] || r.status}</td>
+                <td className="px-3 py-2">{code("crm.status", r.status)}</td>
                 <td className="px-3 py-2">
                   {r.status === "PENDING" ? (
                     <div className="flex gap-1">
@@ -149,14 +132,14 @@ export default function AdminBalanceRequestsPage() {
                         onClick={() => act(r.id, "approve")}
                         className="rounded bg-emerald-600 px-2 py-1 hover:bg-emerald-500 disabled:opacity-50"
                       >
-                        Approve
+                        {i18n("crm.ui.approve")}
                       </button>
                       <button
                         disabled={busy === r.id}
                         onClick={() => act(r.id, "reject")}
                         className="rounded bg-red-600/80 px-2 py-1 hover:bg-red-500 disabled:opacity-50"
                       >
-                        Reject
+                        {i18n("crm.ui.reject")}
                       </button>
                     </div>
                   ) : (
@@ -168,7 +151,7 @@ export default function AdminBalanceRequestsPage() {
             {rows.length === 0 && (
               <tr>
                 <td colSpan={7} className="px-3 py-8 text-center text-neutral-500">
-                  Registered yok
+                  {i18n("crm.ui.noRecords")}
                 </td>
               </tr>
             )}
