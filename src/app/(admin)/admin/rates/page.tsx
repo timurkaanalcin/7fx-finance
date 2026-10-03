@@ -25,7 +25,7 @@ type Effective = {
 };
 
 export default function AdminRatesPage() {
-  const { i18n, code, deskName } = useCrmLabels();
+  const { i18n } = useCrmLabels();
   const [global, setGlobal] = useState<Global | null>(null);
   const [effective, setEffective] = useState<Effective[]>([]);
   const [msg, setMsg] = useState("");

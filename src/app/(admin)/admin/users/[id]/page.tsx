@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 export default function UserDetailRedirect() {
-  const { i18n, code, deskName } = useCrmLabels();
+  const { i18n } = useCrmLabels();
   const params = useParams();
   const router = useRouter();
   useEffect(() => {

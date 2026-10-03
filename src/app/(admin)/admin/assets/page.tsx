@@ -23,7 +23,7 @@ type Asset = {
 };
 
 export default function AssetsPage() {
-  const { i18n, code, deskName } = useCrmLabels();
+  const { i18n } = useCrmLabels();
   const [assets, setAssets] = useState<Asset[]>([]);
   const [counts, setCounts] = useState<{ total: number; enabled: number; byClass: Record<string, number> } | null>(null);
   const [cls, setCls] = useState("");

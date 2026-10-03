@@ -63,7 +63,7 @@ function Card({
 }
 
 export default function AdminDashboard() {
-  const { i18n, code, deskName } = useCrmLabels();
+  const { i18n, code } = useCrmLabels();
   const [kpis, setKpis] = useState<Kpis | null>(null);
   const [positions, setPositions] = useState<ActivityPos[]>([]);
   const [orders, setOrders] = useState<ActivityOrder[]>([]);

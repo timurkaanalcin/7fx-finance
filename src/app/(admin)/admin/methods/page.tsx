@@ -34,7 +34,7 @@ const emptyForm = {
 };
 
 export default function AdminMethodsPage() {
-  const { i18n, code, deskName } = useCrmLabels();
+  const { i18n } = useCrmLabels();
   const [methods, setMethods] = useState<Method[]>([]);
   const [form, setForm] = useState({ ...emptyForm });
   const [editId, setEditId] = useState<string | null>(null);

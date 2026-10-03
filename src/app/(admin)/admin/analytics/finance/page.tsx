@@ -27,7 +27,7 @@ const fmt = (n: number) =>
   n.toLocaleString("en-US", { style: "currency", currency: "USD" });
 
 export default function FinanceAnalyticsPage() {
-  const { i18n, code, deskName } = useCrmLabels();
+  const { i18n, code } = useCrmLabels();
   const [kpis, setKpis] = useState<Kpis | null>(null);
   const [byType, setByType] = useState<ByType[]>([]);
 

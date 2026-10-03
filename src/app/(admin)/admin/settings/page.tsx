@@ -5,7 +5,7 @@ import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { useCallback, useEffect, useState } from "react";
 
 export default function AdminSettingsPage() {
-  const { i18n, code, deskName } = useCrmLabels();
+  const { i18n, code } = useCrmLabels();
   const [referralCode, setReferralCode] = useState("");
   const [draft, setDraft] = useState("");
   const [referralRequired, setReferralRequired] = useState(true);

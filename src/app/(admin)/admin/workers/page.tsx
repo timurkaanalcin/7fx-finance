@@ -20,7 +20,7 @@ type Row = {
 };
 
 export default function WorkersPage() {
-  const { i18n, code, deskName } = useCrmLabels();
+  const { i18n, deskName } = useCrmLabels();
   const [rows, setRows] = useState<Row[]>([]);
 
   useEffect(() => {

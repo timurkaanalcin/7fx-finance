@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 export default function TransactionsPage() {
-  const { i18n, code, deskName } = useCrmLabels();
+  const { i18n, code } = useCrmLabels();
   const [rows, setRows] = useState<Record<string, unknown>[]>([]);
   const [type, setType] = useState("");
 

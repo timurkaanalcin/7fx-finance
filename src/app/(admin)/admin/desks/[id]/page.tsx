@@ -7,7 +7,7 @@ import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 export default function DeskDetailPage() {
-  const { i18n, code, deskName } = useCrmLabels();
+  const { i18n } = useCrmLabels();
   const params = useParams();
   const id = String(params?.id || "");
   const [desk, setDesk] = useState<Record<string, unknown> | null>(null);

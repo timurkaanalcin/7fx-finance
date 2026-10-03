@@ -22,7 +22,7 @@ type Row = {
 type Totals = { balance: number; equity: number; margin: number };
 
 export default function AdminSummaryPage() {
-  const { i18n, code, deskName } = useCrmLabels();
+  const { i18n } = useCrmLabels();
   const [rows, setRows] = useState<Row[]>([]);
   const [totals, setTotals] = useState<Totals | null>(null);
 

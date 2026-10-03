@@ -16,7 +16,7 @@ type Tpl = {
 };
 
 export default function MailPage() {
-  const { i18n, code, deskName } = useCrmLabels();
+  const { i18n, deskName } = useCrmLabels();
   const [templates, setTemplates] = useState<Tpl[]>([]);
   const [form, setForm] = useState({ name: "", subject: "", body: "", deskName: "" });
   const [editId, setEditId] = useState<string | null>(null);

@@ -22,7 +22,7 @@ type Row = {
 };
 
 export default function AdminBalanceRequestsPage() {
-  const { i18n, code, deskName } = useCrmLabels();
+  const { i18n, code } = useCrmLabels();
   const [rows, setRows] = useState<Row[]>([]);
   const [filter, setFilter] = useState("PENDING");
   const [busy, setBusy] = useState<string | null>(null);

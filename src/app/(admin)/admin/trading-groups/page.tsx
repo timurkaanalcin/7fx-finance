@@ -5,7 +5,7 @@ import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { useCallback, useEffect, useState } from "react";
 
 export default function TradingGroupsPage() {
-  const { i18n, code, deskName } = useCrmLabels();
+  const { i18n } = useCrmLabels();
   const [groups, setGroups] = useState<
     { id: string; name: string; customersCount: number; description: string | null }[]
   >([]);

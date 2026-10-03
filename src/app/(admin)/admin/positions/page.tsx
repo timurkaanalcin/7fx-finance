@@ -12,7 +12,7 @@ const POLL_MS = 4000;
 type PosRow = Record<string, unknown>;
 
 export default function PositionsPage() {
-  const { i18n, code, deskName } = useCrmLabels();
+  const { i18n } = useCrmLabels();
   const [tab, setTab] = useState<"OPEN" | "CLOSED" | "ALL" | "ORDERS">("OPEN");
   const [rows, setRows] = useState<PosRow[]>([]);
   const [orders, setOrders] = useState<PosRow[]>([]);

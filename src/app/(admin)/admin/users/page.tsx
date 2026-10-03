@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function UsersRedirect() {
-  const { i18n, code, deskName } = useCrmLabels();
+  const { i18n } = useCrmLabels();
   const router = useRouter();
   useEffect(() => {
     router.replace("/admin/traders");

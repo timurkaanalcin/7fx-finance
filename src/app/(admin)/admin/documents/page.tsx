@@ -23,7 +23,7 @@ type Doc = {
 type TraderOpt = { id: string; name: string; email: string };
 
 export default function DocumentsPage() {
-  const { i18n, code, deskName } = useCrmLabels();
+  const { i18n } = useCrmLabels();
   const [docs, setDocs] = useState<Doc[]>([]);
   const [status, setStatus] = useState("");
   const [traders, setTraders] = useState<TraderOpt[]>([]);

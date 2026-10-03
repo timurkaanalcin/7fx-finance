@@ -21,7 +21,7 @@ type Reminder = {
 type Opt = { id: string; name: string; email?: string };
 
 export default function CalendarPage() {
-  const { i18n, code, deskName } = useCrmLabels();
+  const { i18n } = useCrmLabels();
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [traders, setTraders] = useState<Opt[]>([]);
   const [form, setForm] = useState({

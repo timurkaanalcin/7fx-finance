@@ -850,7 +850,7 @@ function cellValue(col: string, value: unknown): string {
 }
 
 function MiniTable({ cols, rows }: { cols: string[]; rows: Record<string, unknown>[] }) {
-  const { i18n, code } = useCrmLabels();
+  const { i18n } = useCrmLabels();
   const colKey: Record<string, string> = {
     type: "crm.ui.type",
     title: "crm.ui.title",

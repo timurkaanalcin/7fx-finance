@@ -25,7 +25,7 @@ const fmt = (n: number) =>
   n.toLocaleString("en-US", { style: "currency", currency: "USD" });
 
 export default function ReportPage() {
-  const { i18n, code, deskName } = useCrmLabels();
+  const { i18n } = useCrmLabels();
   const [report, setReport] = useState<Report | null>(null);
   const [busy, setBusy] = useState(false);
 

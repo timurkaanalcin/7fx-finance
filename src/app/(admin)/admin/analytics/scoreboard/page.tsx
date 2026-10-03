@@ -21,7 +21,7 @@ const fmt = (n: number) =>
   n.toLocaleString("en-US", { style: "currency", currency: "USD" });
 
 export default function ScoreboardPage() {
-  const { i18n, code, deskName } = useCrmLabels();
+  const { i18n, deskName } = useCrmLabels();
   const [rows, setRows] = useState<Row[]>([]);
 
   useEffect(() => {

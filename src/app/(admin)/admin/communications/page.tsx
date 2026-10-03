@@ -24,7 +24,7 @@ type Row = {
 type TraderOpt = { id: string; name: string; email: string };
 
 export default function CommunicationsPage() {
-  const { i18n, code, deskName } = useCrmLabels();
+  const { i18n } = useCrmLabels();
   const [rows, setRows] = useState<Row[]>([]);
   const [type, setType] = useState("");
   const [traders, setTraders] = useState<TraderOpt[]>([]);
