@@ -13,6 +13,8 @@ model User {
   /// 16-digit numeric login ID (Account ID) — digits only, unique
   accountLoginId     String?          @unique @db.VarChar(16)
   passwordHash       String
+  /// Set when an admin sets a new password; sessions issued before this are rejected
+  passwordChangedAt  DateTime?
   name               String
   role               String           @default("TRADER") // TRADER | ADMIN
   active             Boolean          @default(true)
@@ -83,10 +85,10 @@ model Account {
   id         String   @id @default(cuid())
   userId     String   @unique
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  balance    Float    @default(10000)
-  equity     Float    @default(10000)
+  balance    Float    @default(0)
+  equity     Float    @default(0)
   margin     Float    @default(0)
-  freeMargin Float    @default(10000)
+  freeMargin Float    @default(0)
   leverage   Int      @default(100)
   currency   String   @default("USD")
   credit     Float    @default(0)

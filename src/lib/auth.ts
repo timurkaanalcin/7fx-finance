@@ -41,6 +41,8 @@ export type SessionPayload = {
   role: string;
   /** Set when an admin is viewing the terminal as this trader */
   impersonatedBy?: string;
+  /** JWT issued-at (seconds) — used to reject sessions older than a password change */
+  iat?: number;
 };
 
 export async function hashPassword(password: string) {
@@ -104,6 +106,7 @@ export async function getSession(): Promise<SessionPayload | null> {
       name: payload.name as string,
       role: (payload.role as string) || "TRADER",
       ...(impersonatedBy ? { impersonatedBy } : {}),
+      ...(typeof payload.iat === "number" ? { iat: payload.iat } : {}),
     };
   } catch {
     return null;
@@ -120,6 +123,9 @@ export async function requireUser() {
   });
   if (!user) return null;
   if ((user as { active?: boolean }).active === false) return null;
+  // Sessions issued before an admin password change are invalid (stateless JWT revocation).
+  const changedAt = (user as { passwordChangedAt?: Date | null }).passwordChangedAt;
+  if (changedAt && session.iat && session.iat * 1000 + 1000 <= changedAt.getTime()) return null;
   return user;
 }
 

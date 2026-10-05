@@ -18,6 +18,7 @@ import {
   type RecalcFrom,
 } from "@/lib/crm-position-pnl";
 import { SYMBOLS } from "@/lib/symbols";
+import { ConfirmDialog } from "@/components/crm/CrmRecordTable";
 
 type Row = Record<string, unknown>;
 type Draft = PositionEditDraft;
@@ -61,9 +62,11 @@ const inp =
 type Props = {
   rows: Row[];
   onSaved?: () => void;
+  /** Trader-detail mode: delete rows + explicit "Bakiyeye yansıt" option on save/delete */
+  manage?: boolean;
 };
 
-export default function EditablePositionsTable({ rows, onSaved }: Props) {
+export default function EditablePositionsTable({ rows, onSaved, manage }: Props) {
   const { i18n, code } = useCrmLabels();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<Draft | null>(null);
@@ -71,9 +74,42 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
   const [msg, setMsg] = useState("");
+  const [sltp, setSltp] = useState({ stopLoss: "", takeProfit: "" });
+  const [apply, setApply] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  async function doDelete(applyToBalance: boolean) {
+    if (!deleteId) return;
+    setSaving(true);
+    setErr("");
+    try {
+      const res = await fetch("/api/admin/positions", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ entity: "position", id: deleteId, applyToBalance }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setErr(data.error || i18n("crm.ui.saveFailed"));
+        return;
+      }
+      setMsg(i18n("crm.edit.deleted"));
+      onSaved?.();
+    } catch {
+      setErr(i18n("crm.ui.connectionError"));
+    } finally {
+      setSaving(false);
+      setDeleteId(null);
+    }
+  }
 
   function startEdit(p: Row) {
     setEditingId(String(p.id));
+    setApply(false);
+    setSltp({
+      stopLoss: p.stopLoss != null ? String(p.stopLoss) : "",
+      takeProfit: p.takeProfit != null ? String(p.takeProfit) : "",
+    });
     setDraft(toDraft(p));
     setRecalcFrom("prices");
     setErr("");
@@ -120,7 +156,10 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
         profit: Number(draft.profit),
         status: draft.status,
         recalcFrom,
+        stopLoss: sltp.stopLoss.trim() === "" ? null : Number(sltp.stopLoss),
+        takeProfit: sltp.takeProfit.trim() === "" ? null : Number(sltp.takeProfit),
       };
+      if (manage && apply) payload.applyToBalance = true;
       if (Number.isFinite(notional)) {
         // Server recomputes margin = notional/leverage; send amount hint via omitting margin
       }
@@ -203,6 +242,8 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
                 ["profit", "crm.ui.profit"],
                 ["realized", "crm.ui.realized"],
                 ["status", "crm.ui.status"],
+                ["sl", "crm.edit.stopLoss"],
+                ["tp", "crm.edit.takeProfit"],
                 ["opened", "crm.ui.opened"],
                 ["closed", "crm.ui.closedAt"],
                 ["trader", "crm.ui.trader"],
@@ -408,6 +449,22 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
                       </span>
                     )}
                   </td>
+                  {(["stopLoss", "takeProfit"] as const).map((k) => (
+                    <td key={k} className="px-2 py-1.5 tabular-nums">
+                      {isEdit ? (
+                        <input
+                          className={inp}
+                          placeholder="—"
+                          value={sltp[k]}
+                          onChange={(e) => setSltp({ ...sltp, [k]: e.target.value })}
+                        />
+                      ) : p[k] != null ? (
+                        fmtCrmPrice(p[k])
+                      ) : (
+                        "—"
+                      )}
+                    </td>
+                  ))}
                   <td className="px-2 py-1.5 whitespace-nowrap text-neutral-600">
                     {isEdit ? (
                       <input
@@ -444,6 +501,7 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
                   </td>
                   <td className="px-2 py-1.5 whitespace-nowrap">
                     {isEdit ? (
+                      <div className="flex flex-col gap-1">
                       <div className="flex gap-1">
                         <button
                           type="button"
@@ -462,7 +520,18 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
                           {i18n("crm.ui.cancel")}
                         </button>
                       </div>
+                      {manage && (
+                        <label
+                          className="flex items-center gap-1 text-[10px] text-amber-800"
+                          title={i18n("crm.edit.reflectPosHint")}
+                        >
+                          <input type="checkbox" checked={apply} onChange={(e) => setApply(e.target.checked)} />
+                          {i18n("crm.edit.reflect")}
+                        </label>
+                      )}
+                      </div>
                     ) : (
+                      <div className="flex gap-1">
                       <button
                         type="button"
                         onClick={() => startEdit(p)}
@@ -470,6 +539,16 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
                       >
                         {i18n("crm.ui.edit")}
                       </button>
+                      {manage && (
+                        <button
+                          type="button"
+                          onClick={() => setDeleteId(id)}
+                          className="rounded border border-red-300 bg-white px-2 py-1 text-[10px] font-semibold text-red-600 hover:bg-red-50"
+                        >
+                          {i18n("crm.ui.delete")}
+                        </button>
+                      )}
+                      </div>
                     )}
                   </td>
                 </tr>
@@ -477,7 +556,7 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
             })}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={15} className="px-3 py-8 text-center text-neutral-500">
+                <td colSpan={17} className="px-3 py-8 text-center text-neutral-500">
                   {i18n("crm.ui.noPositions")}
                 </td>
               </tr>
@@ -485,6 +564,17 @@ export default function EditablePositionsTable({ rows, onSaved }: Props) {
           </tbody>
         </table>
       </div>
+      <ConfirmDialog
+        open={deleteId != null}
+        title={i18n("crm.edit.confirmTitle")}
+        message={i18n("crm.edit.confirmDeletePosition")}
+        confirmLabel={i18n("crm.edit.yesDelete")}
+        danger
+        balanceAware={manage}
+        busy={saving}
+        onConfirm={doDelete}
+        onCancel={() => setDeleteId(null)}
+      />
     </div>
   );
 }

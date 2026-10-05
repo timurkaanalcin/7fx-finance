@@ -167,6 +167,7 @@ export function parseMembershipUpdate(
   setStr("assigneeName", 120);
   setStr("documentsStatus", 40);
   setStr("name", 120);
+  setStr("referralCodeUsed", 64);
 
   if (!trader && "birthDate" in body) {
     data.birthDate = dateOrNull(body.birthDate);
@@ -248,6 +249,7 @@ export function serializeUserMembership(u: Record<string, unknown>) {
     brokerName: u.brokerName ?? null,
     assigneeName: u.assigneeName ?? null,
     documentsStatus: u.documentsStatus ?? "NONE",
+    referralCodeUsed: (u.referralCodeUsed as string | null) ?? null,
     canManageUsers: u.canManageUsers,
     canApproveDeposits: u.canApproveDeposits,
     canEditRates: u.canEditRates,

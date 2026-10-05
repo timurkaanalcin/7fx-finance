@@ -136,7 +136,11 @@ export async function POST(req: Request) {
 
     const passwordHash = await hashPassword(password);
     const accountLoginId = await allocateUniqueAccountLoginId();
-    const balance = Number.isFinite(Number(body.balance)) ? Number(body.balance) : 10000;
+    // Real accounts start at 0 unless the admin explicitly enters a starting balance.
+    const balance =
+      body.balance !== undefined && body.balance !== null && body.balance !== "" && Number.isFinite(Number(body.balance))
+        ? Number(body.balance)
+        : 0;
     if (body.currency != null && body.currency !== "" && !isSupportedAccountCurrency(body.currency)) {
       return NextResponse.json(
         { error: "Invalid currency. Supported: USD, EUR, TRY, GBP, CHF, JPY, AUD, CAD" },
@@ -321,47 +325,85 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true });
   }
 
-  if (action === "adjustBalance") {
+  if (action === "adjustBalance" || action === "setBalance") {
+    // Two explicit modes (CRM Finans tab):
+    //   setBalance    → set main balance to an exact amount (ledger ADJUSTMENT with the delta)
+    //   adjustBalance → add (+) / subtract (−) an amount on top of the current balance
+    //                   (ledger type ADJUSTMENT | DEPOSIT | WITHDRAWAL as chosen)
     const balAdmin = await requireAdminPerm("canAdjustBalance");
     if (!balAdmin) return NextResponse.json({ error: "No permission to adjust balance" }, { status: 403 });
-    const amount = Number(body.amount);
-    const note = String(body.note || "").trim();
-    if (!Number.isFinite(amount) || amount === 0) {
-      return NextResponse.json({ error: "Valid amount required" }, { status: 400 });
-    }
-    if (!note) {
-      return NextResponse.json({ error: "Denetim notu zorunlu" }, { status: 400 });
-    }
     if (!target.account) {
       return NextResponse.json({ error: "Account yok" }, { status: 404 });
     }
+    const raw = typeof body.amount === "string" ? body.amount.replace(",", ".").trim() : body.amount;
+    const value = raw === "" || raw == null ? NaN : Number(raw);
+    if (!Number.isFinite(value)) {
+      return NextResponse.json({ error: "Valid amount required" }, { status: 400 });
+    }
     const balanceBefore = target.account.balance;
-    const balanceAfter = balanceBefore + amount;
-    await prisma.account.update({
-      where: { userId },
-      data: { balance: balanceAfter },
-    });
-    await recordLedger({
-      userId,
-      type: "ADJUSTMENT",
-      amount,
-      balanceBefore,
-      balanceAfter,
-      currency: target.account.currency,
-      comment: note,
-      createdById: balAdmin.id,
-      createdByName: balAdmin.name,
-      refType: "AuditLog",
-    });
-    await refreshAccountMetrics(userId);
+    const balanceAfter = action === "setBalance" ? value : balanceBefore + value;
+    const amount = balanceAfter - balanceBefore;
+    if (action === "adjustBalance" && amount === 0) {
+      return NextResponse.json({ error: "Amount cannot be 0" }, { status: 400 });
+    }
+    let ledgerType: "ADJUSTMENT" | "DEPOSIT" | "WITHDRAWAL" = "ADJUSTMENT";
+    if (action === "adjustBalance") {
+      const t = String(body.ledgerType || "ADJUSTMENT").toUpperCase();
+      if (t === "DEPOSIT" || t === "WITHDRAWAL" || t === "ADJUSTMENT") ledgerType = t;
+      else return NextResponse.json({ error: "Invalid ledgerType" }, { status: 400 });
+      if (ledgerType === "DEPOSIT" && amount < 0) {
+        return NextResponse.json({ error: "Deposit must be a positive amount" }, { status: 400 });
+      }
+      if (ledgerType === "WITHDRAWAL" && amount > 0) {
+        return NextResponse.json({ error: "Withdrawal must be a negative amount" }, { status: 400 });
+      }
+    }
+    const note =
+      String(body.note || "").trim().slice(0, 500) ||
+      (action === "setBalance"
+        ? `CRM: main balance set ${balanceBefore} → ${balanceAfter}`
+        : `CRM: manual ${ledgerType.toLowerCase()} ${amount >= 0 ? "+" : ""}${amount}`);
+    if (amount !== 0) {
+      await prisma.account.update({
+        where: { userId },
+        data: { balance: balanceAfter },
+      });
+      await recordLedger({
+        userId,
+        type: ledgerType,
+        amount,
+        balanceBefore,
+        balanceAfter,
+        currency: target.account.currency,
+        comment: note,
+        createdById: balAdmin.id,
+        createdByName: balAdmin.name,
+        refType: "AuditLog",
+      });
+    }
+    const updated = await refreshAccountMetrics(userId);
     await writeAudit({
       adminId: balAdmin.id,
-      action: "ADJUST_BALANCE",
+      action: action === "setBalance" ? "SET_BALANCE" : "ADJUST_BALANCE",
       targetId: userId,
       note,
-      meta: { amount, previousBalance: balanceBefore },
+      meta: { amount, ledgerType, previousBalance: balanceBefore, newBalance: balanceAfter },
     });
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({
+      ok: true,
+      account: updated
+        ? {
+            balance: updated.balance,
+            equity: updated.equity,
+            credit: updated.credit,
+            bonus: updated.bonus,
+            currency: updated.currency,
+            margin: updated.margin,
+            freeMargin: updated.freeMargin,
+            leverage: updated.leverage,
+          }
+        : { balance: balanceAfter },
+    });
   }
 
   if (action === "updateFinance") {
@@ -371,14 +413,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Account yok" }, { status: 404 });
     }
     const data: Record<string, number | string> = {};
-    if (body.balance !== undefined && Number.isFinite(Number(body.balance))) {
+    if (body.balance !== undefined && body.balance !== null && body.balance !== "" && Number.isFinite(Number(body.balance))) {
       data.balance = Number(body.balance);
     }
-    if (body.credit !== undefined && Number.isFinite(Number(body.credit))) {
+    if (body.credit !== undefined && body.credit !== null && body.credit !== "" && Number.isFinite(Number(body.credit))) {
       data.credit = Number(body.credit);
     }
-    if (body.bonus !== undefined && Number.isFinite(Number(body.bonus))) {
+    if (body.bonus !== undefined && body.bonus !== null && body.bonus !== "" && Number.isFinite(Number(body.bonus))) {
       data.bonus = Number(body.bonus);
+    }
+    if (body.leverage !== undefined && body.leverage !== "") {
+      const lev = Math.round(Number(body.leverage));
+      if (!Number.isFinite(lev) || lev < 1 || lev > 5000) {
+        return NextResponse.json({ error: "Leverage must be 1–5000" }, { status: 400 });
+      }
+      data.leverage = lev;
     }
     if (body.currency !== undefined) {
       if (!isSupportedAccountCurrency(body.currency)) {
@@ -456,19 +505,43 @@ export async function POST(req: Request) {
   }
 
   if (action === "resetPassword") {
-    const password = String(body.password || "");
+    // Admin sets a new password for a client. Never echoes/logs the password or hash.
+    const password = typeof body.password === "string" ? body.password : "";
     if (password.length < 8) {
-      return NextResponse.json({ error: "Password en az 8 karakter" }, { status: 400 });
+      return NextResponse.json({ error: "Password must be at least 8 characters" }, { status: 400 });
+    }
+    if (password.length > 128) {
+      return NextResponse.json({ error: "Password too long (max 128)" }, { status: 400 });
+    }
+    const envAdmin = String(process.env.ADMIN_EMAIL || "").trim().toLowerCase();
+    if (envAdmin && target.email === envAdmin && admin.id !== target.id) {
+      return NextResponse.json(
+        { error: "Only the main ADMIN_EMAIL admin can change that account's password" },
+        { status: 403 }
+      );
     }
     const passwordHash = await hashPassword(password);
-    await prisma.user.update({ where: { id: userId }, data: { passwordHash } });
+    const self = target.id === admin.id;
+    const now = new Date();
+    await prisma.user.update({
+      where: { id: userId },
+      // Revoke the target's existing sessions (JWT iat < passwordChangedAt). Skipped for
+      // self-change so the acting admin is not logged out mid-session.
+      data: self ? { passwordHash } : { passwordHash, passwordChangedAt: now },
+    });
+    // Expire any still-valid auto-login links for this user.
+    const expiredLinks = await prisma.autoLoginLink
+      .updateMany({ where: { userId, expiresAt: { gt: now } }, data: { expiresAt: now } })
+      .then((r) => r.count)
+      .catch(() => 0);
     await writeAudit({
       adminId: admin.id,
       action: "RESET_PASSWORD",
       targetId: userId,
       note: body.note ? String(body.note).slice(0, 500) : "Admin password reset",
+      meta: { sessionsRevoked: !self, expiredLoginLinks: expiredLinks },
     });
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, sessionsRevoked: !self, expiredLoginLinks: expiredLinks });
   }
 
   return NextResponse.json({ error: "Bilinmeyen action" }, { status: 400 });

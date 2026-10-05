@@ -75,10 +75,10 @@ export async function POST(req: Request) {
         referralCodeUsed: referralCode || null,
         account: {
           create: {
-            balance: 10000,
-            equity: 10000,
+            balance: 0,
+            equity: 0,
             margin: 0,
-            freeMargin: 10000,
+            freeMargin: 0,
             leverage: 100,
             currency: "USD",
           },

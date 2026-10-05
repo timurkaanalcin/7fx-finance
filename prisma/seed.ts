@@ -89,7 +89,7 @@ const DEMO_MEMBERS: DemoMember[] = [
     isResident: true,
     registrationCountry: "TR",
     documentsStatus: "APPROVED",
-    balance: 10000,
+    balance: 0,
     note: "Main demo trader account",
   },
   {
@@ -237,7 +237,7 @@ const DEMO_MEMBERS: DemoMember[] = [
 async function upsertMember(m: DemoMember) {
   const passwordHash = await bcrypt.hash(m.password, 10);
   const role = m.role || "TRADER";
-  const bal = m.balance ?? 10000;
+  const bal = m.balance ?? 0;
   const credit = m.credit ?? 0;
   const bonus = m.bonus ?? 0;
   const currency = m.currency || "USD";

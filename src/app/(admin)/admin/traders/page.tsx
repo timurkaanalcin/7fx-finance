@@ -43,7 +43,7 @@ const emptyCreate = {
   desk: "",
   brokerName: "",
   accountType: "STANDARD",
-  balance: "10000",
+  balance: "0",
   currency: "USD",
 };
 

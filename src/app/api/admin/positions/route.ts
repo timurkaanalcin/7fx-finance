@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { requireAdmin, writeAudit } from "@/lib/auth";
+import { requireAdmin, requireAdminPerm, writeAudit } from "@/lib/auth";
+import { applyBalanceDelta, positionEffect } from "@/lib/crm-balance";
 import { prisma } from "@/lib/prisma";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { refreshAccountMetrics } from "@/lib/trading";
@@ -112,6 +113,12 @@ export async function PATCH(req: Request) {
 
   const existing = await prisma.position.findUnique({ where: { id } });
   if (!existing) return NextResponse.json({ error: "Position not found" }, { status: 404 });
+
+  // "Bakiyeye yansıt": only when explicitly requested, move balance by realized-P/L delta.
+  const applyToBalance = body.applyToBalance === true;
+  if (applyToBalance && !(await requireAdminPerm("canAdjustBalance"))) {
+    return NextResponse.json({ error: "No permission to adjust balance" }, { status: 403 });
+  }
 
   const data: Record<string, unknown> = {};
 
@@ -370,6 +377,19 @@ export async function PATCH(req: Request) {
     data,
   });
 
+  let balance: unknown = null;
+  if (applyToBalance) {
+    balance = await applyBalanceDelta({
+      userId: existing.userId,
+      delta: positionEffect(updated) - positionEffect(existing),
+      type: "TRADE_PNL",
+      comment: `CRM edit: Position ${id} ${updated.symbol}`,
+      admin: { id: admin.id, name: admin.name },
+      refType: "Position",
+      refId: id,
+    });
+  }
+
   await refreshAccountMetrics(existing.userId).catch(() => null);
 
   await writeAudit({
@@ -394,10 +414,12 @@ export async function PATCH(req: Request) {
         closeProfit: updated.closeProfit,
         status: updated.status,
       },
+      applyToBalance,
+      balance,
     },
   });
 
-  return NextResponse.json({ ok: true, position: updated });
+  return NextResponse.json({ ok: true, position: updated, balance });
 }
 
 
@@ -449,6 +471,16 @@ async function patchOrder(adminId: string, body: Record<string, unknown>) {
       data.openPrice = v;
     }
   }
+  for (const k of ["stopLoss", "takeProfit"] as const) {
+    if (body[k] !== undefined) {
+      if (body[k] === null || body[k] === "") data[k] = null;
+      else {
+        const v = Number(body[k]);
+        if (!Number.isFinite(v)) return NextResponse.json({ error: `Invalid ${k}` }, { status: 400 });
+        data[k] = v;
+      }
+    }
+  }
   if (body.status != null) {
     const st = String(body.status).toUpperCase();
     if (!["PENDING", "FILLED", "CANCELLED", "REJECTED"].includes(st)) {
@@ -482,4 +514,205 @@ async function patchOrder(adminId: string, body: Record<string, unknown>) {
     meta: { before: existing, after: updated },
   });
   return NextResponse.json({ ok: true, order: updated });
+}
+
+
+function optNum(v: unknown, label: string, opts?: { positive?: boolean; min?: number }): number | null {
+  if (v === undefined || v === null || v === "") return null;
+  const n = Number(v);
+  if (!Number.isFinite(n)) throw new Error(`Invalid ${label}`);
+  if (opts?.positive && n <= 0) throw new Error(`${label} must be > 0`);
+  if (opts?.min != null && n < opts.min) throw new Error(`Invalid ${label}`);
+  return n;
+}
+
+function optDate(v: unknown, label: string): Date | null {
+  if (v === undefined || v === null || v === "") return null;
+  const d = new Date(String(v));
+  if (Number.isNaN(d.getTime())) throw new Error(`Invalid ${label}`);
+  return d;
+}
+
+/**
+ * Admin: manually add a position (OPEN or CLOSED) or an order for a trader.
+ * Body: { entity: "position"|"order", userId, symbol, side, volume, openPrice, ... , applyToBalance? }
+ * A CLOSED position with applyToBalance=true credits its realized P/L (TRADE_PNL ledger row).
+ */
+export async function POST(req: Request) {
+  await ensureDemoSeed();
+  const admin = await requireAdmin();
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  let body: Record<string, unknown>;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+  const entity = String(body.entity || "position").toLowerCase();
+  const userId = String(body.userId || "").trim();
+  if (!userId) return NextResponse.json({ error: "userId required" }, { status: 400 });
+  const user = await prisma.user.findUnique({ where: { id: userId }, include: { account: true } });
+  if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
+  const applyToBalance = body.applyToBalance === true;
+  if (applyToBalance && !(await requireAdminPerm("canAdjustBalance"))) {
+    return NextResponse.json({ error: "No permission to adjust balance" }, { status: 403 });
+  }
+
+  try {
+    const symbol = String(body.symbol || "").trim().toUpperCase();
+    if (!symbol) throw new Error("symbol required");
+    const side = String(body.side || "BUY").toUpperCase();
+    if (side !== "BUY" && side !== "SELL") throw new Error("side must be BUY or SELL");
+    const volume = optNum(body.volume, "volume", { positive: true });
+    if (volume == null) throw new Error("volume required");
+
+    if (entity === "order") {
+      const type = String(body.type || "MARKET").toUpperCase();
+      if (!["MARKET", "LIMIT", "STOP"].includes(type)) throw new Error("Invalid order type");
+      const status = String(body.status || "PENDING").toUpperCase();
+      if (!["PENDING", "FILLED", "CANCELLED", "REJECTED"].includes(status)) throw new Error("Invalid order status");
+      const order = await prisma.order.create({
+        data: {
+          userId,
+          symbol,
+          side,
+          type,
+          volume,
+          price: optNum(body.price, "price"),
+          openPrice: optNum(body.openPrice, "openPrice"),
+          stopLoss: optNum(body.stopLoss, "stopLoss"),
+          takeProfit: optNum(body.takeProfit, "takeProfit"),
+          status,
+          createdAt: optDate(body.createdAt, "createdAt") ?? new Date(),
+          filledAt: optDate(body.filledAt, "filledAt"),
+        },
+      });
+      await writeAudit({ adminId: admin.id, action: "CREATE_ORDER", targetId: order.id, meta: { userId, order } });
+      return NextResponse.json({ ok: true, order });
+    }
+
+    const openPrice = optNum(body.openPrice, "openPrice", { positive: true });
+    if (openPrice == null) throw new Error("openPrice required");
+    const status = String(body.status || "OPEN").toUpperCase();
+    if (status !== "OPEN" && status !== "CLOSED") throw new Error("status must be OPEN or CLOSED");
+    let chartSymbol: string | null = null;
+    if (body.chartSymbol) {
+      chartSymbol = String(body.chartSymbol).trim().toUpperCase();
+      if (!getSymbol(chartSymbol)) throw new Error(`Unknown chart symbol: ${chartSymbol}`);
+    }
+    const closePrice = optNum(body.closePrice, "closePrice", { min: 0 });
+    const currentPrice = optNum(body.currentPrice, "currentPrice", { min: 0 }) ?? closePrice ?? openPrice;
+    const rates = await getEffectiveRates(symbol);
+    const exit = status === "CLOSED" ? closePrice ?? currentPrice : currentPrice;
+    let profit = optNum(status === "CLOSED" ? body.closeProfit ?? body.profit : body.profit, "profit");
+    if (profit == null) {
+      profit = rates ? calcProfitWithRates(rates, normalizeSide(side), volume, openPrice, exit) : 0;
+    }
+    const lev = Math.max(1, user.account?.leverage ?? 100);
+    let margin = optNum(body.margin, "margin", { min: 0 });
+    if (margin == null) {
+      margin = rates
+        ? calcMarginWithRates(rates, volume, openPrice, lev)
+        : (volume * (getSymbol(symbol)?.contractSize ?? 1) * openPrice) / lev;
+    }
+    const openedAt = optDate(body.openedAt, "openedAt") ?? new Date();
+    const position = await prisma.position.create({
+      data: {
+        userId,
+        symbol,
+        chartSymbol,
+        side,
+        volume,
+        openPrice,
+        currentPrice: exit,
+        stopLoss: optNum(body.stopLoss, "stopLoss"),
+        takeProfit: optNum(body.takeProfit, "takeProfit"),
+        profit,
+        margin,
+        status,
+        openedAt,
+        closedAt: status === "CLOSED" ? optDate(body.closedAt, "closedAt") ?? new Date() : null,
+        closePrice: status === "CLOSED" ? exit : null,
+        closeProfit: status === "CLOSED" ? profit : null,
+      },
+    });
+    let balance: unknown = null;
+    if (applyToBalance) {
+      balance = await applyBalanceDelta({
+        userId,
+        delta: positionEffect(position),
+        type: "TRADE_PNL",
+        comment: `CRM add: Position ${position.id} ${symbol}`,
+        admin: { id: admin.id, name: admin.name },
+        refType: "Position",
+        refId: position.id,
+      });
+    }
+    await refreshAccountMetrics(userId).catch(() => null);
+    await writeAudit({
+      adminId: admin.id,
+      action: "CREATE_POSITION",
+      targetId: position.id,
+      meta: { userId, position, applyToBalance, balance },
+    });
+    return NextResponse.json({ ok: true, position, balance });
+  } catch (e) {
+    return NextResponse.json({ error: e instanceof Error ? e.message : "Invalid input" }, { status: 400 });
+  }
+}
+
+/**
+ * Admin: delete a position or order. Deleting a CLOSED position with
+ * applyToBalance=true reverses its realized P/L on the balance.
+ */
+export async function DELETE(req: Request) {
+  await ensureDemoSeed();
+  const admin = await requireAdmin();
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  const url = new URL(req.url);
+  let body: Record<string, unknown> = {};
+  try {
+    body = (await req.json()) as Record<string, unknown>;
+  } catch {
+    body = {};
+  }
+  const entity = String(body.entity || url.searchParams.get("entity") || "position").toLowerCase();
+  const id = String(body.id || url.searchParams.get("id") || "").trim();
+  if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
+  const applyToBalance = body.applyToBalance === true || url.searchParams.get("applyToBalance") === "true";
+  if (applyToBalance && !(await requireAdminPerm("canAdjustBalance"))) {
+    return NextResponse.json({ error: "No permission to adjust balance" }, { status: 403 });
+  }
+
+  if (entity === "order") {
+    const existing = await prisma.order.findUnique({ where: { id } });
+    if (!existing) return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    await prisma.order.delete({ where: { id } });
+    await writeAudit({ adminId: admin.id, action: "DELETE_ORDER", targetId: id, meta: { before: existing } });
+    return NextResponse.json({ ok: true });
+  }
+
+  const existing = await prisma.position.findUnique({ where: { id } });
+  if (!existing) return NextResponse.json({ error: "Position not found" }, { status: 404 });
+  await prisma.position.delete({ where: { id } });
+  let balance: unknown = null;
+  if (applyToBalance) {
+    balance = await applyBalanceDelta({
+      userId: existing.userId,
+      delta: -positionEffect(existing),
+      type: "TRADE_PNL",
+      comment: `CRM delete: Position ${id} ${existing.symbol}`,
+      admin: { id: admin.id, name: admin.name },
+      refType: "Position",
+      refId: id,
+    });
+  }
+  await refreshAccountMetrics(existing.userId).catch(() => null);
+  await writeAudit({
+    adminId: admin.id,
+    action: "DELETE_POSITION",
+    targetId: id,
+    meta: { before: existing, applyToBalance, balance },
+  });
+  return NextResponse.json({ ok: true, balance });
 }
