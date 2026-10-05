@@ -19,17 +19,23 @@
     "bcryptjs": "^3.0.3",
     "jose": "^6.2.12",
     "lightweight-charts": "^5.2.1",
+    "mammoth": "^1.13.0",
     "next": "14.2.35",
+    "papaparse": "^5.7.0",
+    "pdf-parse": "^2.4.5",
     "prisma": "5.22.0",
     "react": "^18",
     "react-dom": "^18",
     "uuid": "^14.0.2",
+    "xlsx": "^0.18.5",
     "zod": "^4.6.5"
   },
   "devDependencies": {
     "@netlify/plugin-nextjs": "^5.16.0",
     "@types/bcryptjs": "^3.0.0",
     "@types/node": "^20",
+    "@types/papaparse": "^5.5.2",
+    "@types/pdf-parse": "^1.1.5",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/uuid": "^11.0.0",
@@ -46,5 +52,5 @@
   "engines": {
     "node": ">=22.12.0"
   },
-  "description": "7FX \u2014 demo trading terminal with real Yahoo Finance market data"
+  "description": "7FX — demo trading terminal with real Yahoo Finance market data"
 }

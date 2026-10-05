@@ -1,0 +1,4 @@
+Ad,Soyad,E-posta,Telefon,Ülke,Masa,Satış durumu,Kaynak,Başlangıç bakiyesi
+Ali,Yılmaz,ali.yilmaz.import@example.com,+905551112233,TR,Sale,NEW,affiliate-x,0
+Ayşe,Demir,ayse.demir.import@example.com,+905559998877,TR,Retention,INTERESTED,affiliate-x,100
+John,Smith,john.smith.import@example.com,+12025550123,US,Sale,CONTACTED,web,0

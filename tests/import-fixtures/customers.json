@@ -1,0 +1,17 @@
+[
+  {
+    "firstName": "JSON",
+    "lastName": "User",
+    "email": "json.user.import@example.com",
+    "phone": "+491511234567",
+    "country": "DE",
+    "desk": "Sale"
+  },
+  {
+    "firstName": "JSON2",
+    "lastName": "User",
+    "email": "json2.user.import@example.com",
+    "phone": "+491511234568",
+    "country": "DE"
+  }
+]

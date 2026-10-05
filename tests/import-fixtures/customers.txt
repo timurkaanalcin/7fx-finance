@@ -1,0 +1,4 @@
+Mehmet Kaya mehmet.kaya.import@example.com +90 532 111 22 33 Istanbul
+NoEmail Person +905321234567 only phone line
+junk line without contacts
+Elena Petrova elena.petrova.import@example.com +79991234567

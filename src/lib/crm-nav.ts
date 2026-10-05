@@ -21,6 +21,7 @@ export const CRM_NAV_GROUPS: CrmNavGroup[] = [
     items: [
       { href: "/admin", labelKey: "crm.nav.dashboard", exact: true },
       { href: "/admin/traders", labelKey: "crm.nav.traders" },
+      { href: "/admin/import", labelKey: "crm.nav.import" },
       { href: "/admin/tickets", labelKey: "crm.nav.tickets" },
       { href: "/admin/positions", labelKey: "crm.nav.positions" },
       { href: "/admin/transactions", labelKey: "crm.nav.transactions" },
