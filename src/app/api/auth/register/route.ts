@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { attachSessionCookie, hashPassword, signSessionToken } from "@/lib/auth";
+import { markClientSignIn, recordLoginEvent } from "@/lib/presence";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import {
   ensureSystemSettings,
@@ -85,6 +86,9 @@ export async function POST(req: Request) {
         },
       },
     });
+
+    await recordLoginEvent({ userId: user.id, success: true, method: "register" });
+    await markClientSignIn(user);
 
     const role = user.role || "TRADER";
     const token = await signSessionToken({

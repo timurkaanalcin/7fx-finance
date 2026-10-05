@@ -10,6 +10,7 @@ import { SYMBOLS } from "@/lib/symbols";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { LoginHistory, TraderPresenceHeader } from "@/components/crm/Presence";
 import {
   ACCOUNT_CURRENCIES,
   ACCOUNT_TYPES,
@@ -1131,6 +1132,7 @@ export default function AdminUserDetailPage() {
         >
           {user.active ? i18n("crm.ui.active") : i18n("crm.ui.frozen")}
         </span>
+        <TraderPresenceHeader userId={user.id} />
         {tradingAccountId && (
           <span className="rounded bg-neutral-100 px-2 py-0.5 font-mono text-[10px] text-neutral-600">
             {i18n("crm.ui.account")}: {tradingAccountId}
@@ -1343,6 +1345,8 @@ export default function AdminUserDetailPage() {
             <Field label={i18n("crm.ui.broker")} value={fv("brokerName") as string} onChange={(v) => setF("brokerName", v)} disabled={!ed} />
             <Field label={i18n("crm.ui.assignee")} value={fv("assigneeName") as string} onChange={(v) => setF("assigneeName", v)} disabled={!ed} />
           </div>
+
+          <LoginHistory userId={user.id} />
 
           <PasswordPanel userId={user.id} />
         </div>

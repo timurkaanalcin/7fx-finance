@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { attachSessionCookie, signSessionToken, verifyPassword } from "@/lib/auth";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { isAccountLoginId } from "@/lib/account-login-id";
+import { currentRequestMeta, markClientSignIn, recordLoginEvent } from "@/lib/presence";
 
 export async function POST(req: Request) {
   try {
@@ -23,16 +24,25 @@ export async function POST(req: Request) {
       ? await prisma.user.findUnique({ where: { accountLoginId: raw } })
       : await prisma.user.findUnique({ where: { email: raw.toLowerCase() } });
 
-    if (!user || !(await verifyPassword(password, user.passwordHash))) {
+    const meta = currentRequestMeta();
+    if (!user) {
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    }
+    if (!(await verifyPassword(password, user.passwordHash))) {
+      // Failed attempt for a known account → audit trail (no location blocking).
+      await recordLoginEvent({ userId: user.id, success: false, method: "password", reason: "bad_password", meta });
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
     if ((user as { active?: boolean }).active === false) {
+      await recordLoginEvent({ userId: user.id, success: false, method: "password", reason: "frozen", meta });
       return NextResponse.json({ error: "Account frozen" }, { status: 403 });
     }
     await prisma.user.update({
       where: { id: user.id },
       data: { lastLoginAt: new Date() },
     });
+    await recordLoginEvent({ userId: user.id, success: true, method: "password", meta });
+    await markClientSignIn(user, meta);
     const role = user.role || "TRADER";
     const token = await signSessionToken({
       userId: user.id,

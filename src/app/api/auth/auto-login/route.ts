@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { attachSessionCookie, signSessionToken } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { currentRequestMeta, markClientSignIn, recordLoginEvent } from "@/lib/presence";
 
 export const dynamic = "force-dynamic";
 
@@ -18,9 +19,14 @@ export async function GET(req: Request) {
     include: { user: true },
   });
   if (!link) return fail("Invalid login link");
-  if (link.expiresAt.getTime() < Date.now()) return fail("Login link expired");
-  if (link.maxUses > 0 && link.useCount >= link.maxUses) return fail("Login link already used");
-  if (!link.user || link.user.active === false) return fail("Account unavailable");
+  const meta = currentRequestMeta();
+  const failFor = async (msg: string, reason: string) => {
+    await recordLoginEvent({ userId: link.userId, success: false, method: "auto-login", reason, meta });
+    return fail(msg);
+  };
+  if (link.expiresAt.getTime() < Date.now()) return failFor("Login link expired", "link_expired");
+  if (link.maxUses > 0 && link.useCount >= link.maxUses) return failFor("Login link already used", "link_used");
+  if (!link.user || link.user.active === false) return failFor("Account unavailable", "frozen");
 
   await prisma.autoLoginLink.update({
     where: { id: link.id },
@@ -34,6 +40,8 @@ export async function GET(req: Request) {
     where: { id: link.userId },
     data: { lastLoginAt: new Date() },
   });
+  await recordLoginEvent({ userId: link.userId, success: true, method: "auto-login", meta });
+  await markClientSignIn(link.user, meta);
 
   const sessionToken = await signSessionToken({
     userId: link.user.id,

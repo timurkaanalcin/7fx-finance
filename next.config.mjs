@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    serverComponentsExternalPackages: ["pdf-parse", "mammoth", "xlsx"],
+    serverComponentsExternalPackages: ["pdf-parse", "mammoth", "xlsx", "geoip-country"],
   },
   poweredByHeader: false,
   async redirects() {

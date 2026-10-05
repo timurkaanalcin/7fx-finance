@@ -11,6 +11,7 @@ import {
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { allocateUniqueAccountLoginId } from "@/lib/account-login-id";
 import { recordLedger } from "@/lib/ledger";
+import { ONLINE_MS, RECENT_MS, serializePresence } from "@/lib/presence-shared";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +27,7 @@ export async function GET(req: Request) {
   const country = (searchParams.get("country") || "").trim();
   const saleStatus = (searchParams.get("saleStatus") || "").trim();
   const retentionStatus = (searchParams.get("retentionStatus") || "").trim();
+  const presence = (searchParams.get("presence") || "").trim(); // online | recent | offline
 
   const where: Record<string, unknown> = {};
   const and: Record<string, unknown>[] = [];
@@ -62,6 +64,14 @@ export async function GET(req: Request) {
   if (country) and.push({ country: { equals: country } });
   if (saleStatus) and.push({ saleStatus: { equals: saleStatus } });
   if (retentionStatus) and.push({ retentionStatus: { equals: retentionStatus } });
+  if (presence) {
+    const onlineSince = new Date(Date.now() - ONLINE_MS);
+    const recentSince = new Date(Date.now() - RECENT_MS);
+    if (presence === "online") and.push({ lastSeenAt: { gte: onlineSince } });
+    else if (presence === "recent") and.push({ lastSeenAt: { gte: recentSince } });
+    else if (presence === "offline")
+      and.push({ OR: [{ lastSeenAt: null }, { lastSeenAt: { lt: recentSince } }] });
+  }
   if (and.length) where.AND = and;
 
   const users = await prisma.user.findMany({
@@ -94,7 +104,11 @@ export async function GET(req: Request) {
   }
 
   return NextResponse.json({
-    users: users.map((u) => serializeUserMembership(u as unknown as Record<string, unknown>)),
+    users: users.map((u) => ({
+      ...serializeUserMembership(u as unknown as Record<string, unknown>),
+      ...serializePresence(u as unknown as Record<string, unknown>),
+    })),
+    serverTime: new Date().toISOString(),
     desks: deskOptions.map((d) => d.name),
     deskOptions,
     permissionDefs: ADMIN_PERMISSIONS,

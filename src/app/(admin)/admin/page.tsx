@@ -11,6 +11,8 @@ type Kpis = {
   pendingDeposits: number;
   pendingBalanceRequests: number;
   totalVolume: number;
+  onlineClients?: number;
+  recentClients?: number;
 };
 
 type ActivityPos = {
@@ -45,18 +47,26 @@ function Card({
   value,
   href,
   accent,
+  sub,
+  dot,
 }: {
   label: string;
   value: string | number;
   href?: string;
   accent?: string;
+  sub?: string;
+  dot?: string;
 }) {
   const inner = (
     <div
       className={`rounded-lg border border-neutral-200 bg-[#ffffff] p-3 shadow-sm ${accent || ""}`}
     >
       <div className="text-[10px] uppercase tracking-wider text-neutral-500">{label}</div>
-      <div className="mt-1.5 text-xl font-semibold tabular-nums text-neutral-900">{value}</div>
+      <div className="mt-1.5 flex items-center gap-2 text-xl font-semibold tabular-nums text-neutral-900">
+        {dot && <span className={`inline-block h-2.5 w-2.5 rounded-full ${dot}`} />}
+        {value}
+      </div>
+      {sub && <div className="mt-0.5 text-[10px] text-neutral-500">{sub}</div>}
     </div>
   );
   return href ? <Link href={href}>{inner}</Link> : inner;
@@ -98,7 +108,7 @@ export default function AdminDashboard() {
           <h1 className="text-lg font-semibold">{i18n("crm.nav.dashboard")}</h1>
           <p className="mt-0.5 text-xs text-neutral-500">
             {i18n("crm.dash.subtitle")}
-            {updatedAt ? ` · ${new Date(updatedAt).toLocaleTimeString("en-US")}` : ""}
+            {updatedAt ? ` · ${new Date(updatedAt).toLocaleTimeString("en-GB", { hour12: false })}` : ""}
           </p>
         </div>
         <Link
@@ -116,7 +126,15 @@ export default function AdminDashboard() {
         </div>
       )}
       {kpis && (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <Card
+            label={i18n("crm.presence.dashOnline")}
+            value={kpis.onlineClients ?? 0}
+            href="/admin/traders"
+            dot={(kpis.onlineClients ?? 0) > 0 ? "bg-emerald-500" : "bg-neutral-300"}
+            sub={`${kpis.recentClients ?? 0} ${i18n("crm.presence.dashRecent")}`}
+            accent={(kpis.onlineClients ?? 0) > 0 ? "ring-1 ring-emerald-500/30" : ""}
+          />
           <Card label={i18n("crm.nav.traders")} value={kpis.users} href="/admin/traders" />
           <Card label={i18n("crm.dash.openPositions")} value={kpis.openPositions} href="/admin/positions" />
           <Card

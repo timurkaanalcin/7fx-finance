@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
 import { ensureDemoSeed } from "./ensure-seed";
+import { touchPresenceInBackground } from "./presence";
 
 const COOKIE_NAME = "7fx_session";
 const LEGACY_COOKIE_NAME = "deskflow_session";
@@ -126,6 +127,9 @@ export async function requireUser() {
   // Sessions issued before an admin password change are invalid (stateless JWT revocation).
   const changedAt = (user as { passwordChangedAt?: Date | null }).passwordChangedAt;
   if (changedAt && session.iat && session.iat * 1000 + 1000 <= changedAt.getTime()) return null;
+  // Presence: any authenticated request by the client themselves counts as activity.
+  // Admin impersonation must never make the client look online.
+  if (!session.impersonatedBy) touchPresenceInBackground(user);
   return user;
 }
 

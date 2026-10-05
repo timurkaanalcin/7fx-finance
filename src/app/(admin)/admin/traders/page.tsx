@@ -5,7 +5,8 @@ import { fmtCrmDate } from "@/lib/crm-format";
 import Link from "next/link";
 import { ACCOUNT_CURRENCIES, RETENTION_STATUSES, SALE_STATUSES } from "@/lib/membership";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { LocationLabel, PresenceCell } from "@/components/crm/Presence";
 
 type DeskOpt = { id: string; name: string; code: string | null };
 
@@ -31,7 +32,18 @@ type UserRow = {
   phone: string | null;
   accountType: string;
   tradingAccountId?: string | null;
+  lastSeenAt?: string | null;
+  lastIp?: string | null;
+  lastCountry?: string | null;
+  lastCountryName?: string | null;
+  lastRegion?: string | null;
+  lastCity?: string | null;
+  lastDevice?: string | null;
+  lastBrowser?: string | null;
+  lastOs?: string | null;
 };
+
+const REFRESH_MS = 20000;
 
 const emptyCreate = {
   email: "",
@@ -65,6 +77,9 @@ export default function AdminUsersPage() {
   const [bulkDesk, setBulkDesk] = useState("");
   const [bulkBroker, setBulkBroker] = useState("");
   const [ftdOnly, setFtdOnly] = useState(false);
+  const [presence, setPresence] = useState("");
+  const [now, setNow] = useState(() => Date.now());
+  const skew = useRef(0);
 
   const load = useCallback(async () => {
     const params = new URLSearchParams();
@@ -74,17 +89,30 @@ export default function AdminUsersPage() {
     if (country) params.set("country", country);
     if (saleStatus) params.set("saleStatus", saleStatus);
     if (retentionStatus) params.set("retentionStatus", retentionStatus);
-    const res = await fetch(`/api/admin/users?${params}`);
+    if (presence) params.set("presence", presence);
+    const res = await fetch(`/api/admin/users?${params}`, { cache: "no-store" });
     if (!res.ok) return;
     const data = await res.json();
+    const st = new Date(data.serverTime).getTime();
+    if (Number.isFinite(st)) skew.current = st - Date.now();
+    setNow(Date.now() + skew.current);
     let list = data.users || [];
     if (ftdOnly) list = list.filter((u: UserRow) => u.ftd);
     setRows(list);
     setDeskOptions(data.deskOptions || []);
-  }, [q, status, desk, country, saleStatus, retentionStatus, ftdOnly]);
+  }, [q, status, desk, country, saleStatus, retentionStatus, ftdOnly, presence]);
 
   useEffect(() => {
     load();
+  }, [load]);
+
+  // Auto-refresh presence/balances. Only row data is replaced — filters, selection and the
+  // create form live in separate state, so typed input is never overwritten.
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === "visible") load();
+    }, REFRESH_MS);
+    return () => window.clearInterval(timer);
   }, [load]);
 
   function toggle(id: string) {
@@ -196,6 +224,16 @@ export default function AdminUsersPage() {
           <option value="all">{i18n("crm.ui.allStatuses")}</option>
           <option value="active">{i18n("crm.ui.active")}</option>
           <option value="frozen">{i18n("crm.ui.frozen")}</option>
+        </select>
+        <select
+          value={presence}
+          onChange={(e) => setPresence(e.target.value)}
+          className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
+        >
+          <option value="">{i18n("crm.presence.allPresence")}</option>
+          <option value="online">{i18n("crm.presence.filterOnline")}</option>
+          <option value="recent">{i18n("crm.presence.filterRecent")}</option>
+          <option value="offline">{i18n("crm.presence.filterOffline")}</option>
         </select>
         <select
           value={desk}
@@ -321,13 +359,14 @@ export default function AdminUsersPage() {
                 />
               </th>
               <th className="px-3 py-2.5">{i18n("crm.ui.memberId")}</th>
+              <th className="px-3 py-2.5">{i18n("crm.presence.status")}</th>
               <th className="px-3 py-2.5">{i18n("crm.ui.phone")}</th>
               <th className="px-3 py-2.5">{i18n("crm.ui.desk")}</th>
               <th className="px-3 py-2.5">{i18n("crm.ui.country")}</th>
               <th className="px-3 py-2.5">{i18n("crm.ui.saleRet")}</th>
               <th className="px-3 py-2.5">{i18n("crm.ui.balance")}</th>
               <th className="px-3 py-2.5">{i18n("crm.ui.account")}</th>
-              <th className="px-3 py-2.5">{i18n("crm.ui.status")}</th>
+              <th className="px-3 py-2.5">{i18n("crm.presence.accountStatus")}</th>
               <th className="px-3 py-2.5">{i18n("crm.ui.broker")}</th>
               <th className="px-3 py-2.5">{i18n("crm.ui.lastLogin")}</th>
               <th className="px-3 py-2.5"></th>
@@ -365,6 +404,19 @@ export default function AdminUsersPage() {
                       </span>
                     )}
                   </div>
+                </td>
+                <td className="px-3 py-2.5">
+                  <PresenceCell lastSeenAt={u.lastSeenAt ?? null} now={now} />
+                  {(u.lastCountry || u.lastCity) && (
+                    <div className="mt-0.5 max-w-[160px] truncate text-[10px] text-neutral-500">
+                      <LocationLabel
+                        country={u.lastCountry}
+                        countryName={u.lastCountryName}
+                        city={u.lastCity}
+                      />
+                    </div>
+                  )}
+                  {u.lastIp && <div className="font-mono text-[9px] text-neutral-400">{u.lastIp}</div>}
                 </td>
                 <td className="px-3 py-2.5 text-neutral-500">{u.phone || "—"}</td>
                 <td className="px-3 py-2.5 text-neutral-600">{u.desk ? deskName(u.desk) : "—"}</td>
@@ -416,7 +468,7 @@ export default function AdminUsersPage() {
             ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={11} className="px-3 py-10 text-center text-neutral-500">
+                <td colSpan={13} className="px-3 py-10 text-center text-neutral-500">
                   {i18n("crm.ui.noRecords")}
                 </td>
               </tr>

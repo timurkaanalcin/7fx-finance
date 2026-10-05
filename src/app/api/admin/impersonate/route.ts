@@ -13,6 +13,7 @@ import {
 import { prisma } from "@/lib/prisma";
 import { isTerminalImpersonationEnabled } from "@/lib/system-settings";
 import { jwtVerify } from "jose";
+import { recordLoginEvent } from "@/lib/presence";
 
 export const dynamic = "force-dynamic";
 
@@ -78,6 +79,9 @@ export async function POST(req: Request) {
     attachAdminBackupCookie(res, adminToken);
   }
   attachSessionCookie(res, traderToken);
+
+  // Audit row on the client's login history; deliberately does NOT touch client presence (lastSeenAt).
+  await recordLoginEvent({ userId: target.id, success: true, method: "impersonation", actorId: admin.id });
 
   await writeAudit({
     adminId: admin.id,

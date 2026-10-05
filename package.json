@@ -17,6 +17,7 @@
     "@netlify/database": "^2.0.1",
     "@prisma/client": "^5.22.0",
     "bcryptjs": "^3.0.3",
+    "geoip-country": "^5.0.202610030217",
     "jose": "^6.2.12",
     "lightweight-charts": "^5.2.1",
     "mammoth": "^1.13.0",

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { ONLINE_MS, RECENT_MS } from "@/lib/presence-shared";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,8 @@ export async function GET() {
     volumeAgg,
     recentPositions,
     recentOrders,
+    onlineClients,
+    recentClients,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.position.count({ where: { status: "OPEN" } }),
@@ -39,6 +42,12 @@ export async function GET() {
         user: { select: { id: true, name: true, email: true } },
       },
     }),
+    prisma.user.count({
+      where: { role: "TRADER", lastSeenAt: { gte: new Date(Date.now() - ONLINE_MS) } },
+    }),
+    prisma.user.count({
+      where: { role: "TRADER", lastSeenAt: { gte: new Date(Date.now() - RECENT_MS) } },
+    }),
   ]);
 
   return NextResponse.json({
@@ -48,6 +57,8 @@ export async function GET() {
       pendingDeposits,
       pendingBalanceRequests: pendingBalance,
       totalVolume: volumeAgg._sum.volume ?? 0,
+      onlineClients,
+      recentClients,
     },
     recentActivity: {
       positions: recentPositions.map((p) => ({

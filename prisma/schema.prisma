@@ -19,6 +19,18 @@ model User {
   role               String           @default("TRADER") // TRADER | ADMIN
   active             Boolean          @default(true)
   lastLoginAt        DateTime?
+  /// Presence: last authenticated activity by the client (not admin impersonation)
+  lastSeenAt         DateTime?
+  lastIp             String?          @db.VarChar(64)
+  lastUserAgent      String?          @db.VarChar(512)
+  lastDevice         String?          @db.VarChar(32)
+  lastBrowser        String?          @db.VarChar(64)
+  lastOs             String?          @db.VarChar(64)
+  /// ISO-3166 alpha-2 of the last seen IP
+  lastCountry        String?          @db.VarChar(8)
+  lastCountryName    String?          @db.VarChar(96)
+  lastRegion         String?          @db.VarChar(128)
+  lastCity           String?          @db.VarChar(128)
   /// Fine-grained ADMIN flags (ignored for TRADER)
   canManageUsers     Boolean          @default(true)
   canApproveDeposits Boolean          @default(true)
@@ -79,6 +91,9 @@ model User {
   reminders          Reminder[]
   autoLoginLinks     AutoLoginLink[]  @relation("AutoLoginTarget")
   createdLoginLinks  AutoLoginLink[]  @relation("AutoLoginCreator")
+  loginEvents        LoginEvent[]
+
+  @@index([lastSeenAt])
 }
 
 model Account {
@@ -425,4 +440,31 @@ model MailTemplate {
   updatedAt DateTime @updatedAt
 
   @@index([active])
+}
+
+/// Sign-in audit trail per user (password, auto-login link, admin impersonation; failures too)
+model LoginEvent {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  at          DateTime @default(now())
+  success     Boolean  @default(true)
+  /// password | auto-login | impersonation | register
+  method      String   @default("password") @db.VarChar(24)
+  /// Failure reason (bad_password, frozen, expired_link, …)
+  reason      String?  @db.VarChar(64)
+  /// Admin user id for impersonation
+  actorId     String?  @db.VarChar(64)
+  ip          String?  @db.VarChar(64)
+  country     String?  @db.VarChar(8)
+  countryName String?  @db.VarChar(96)
+  region      String?  @db.VarChar(128)
+  city        String?  @db.VarChar(128)
+  userAgent   String?  @db.VarChar(512)
+  device      String?  @db.VarChar(32)
+  browser     String?  @db.VarChar(64)
+  os          String?  @db.VarChar(64)
+
+  @@index([userId, at])
+  @@index([at])
 }
