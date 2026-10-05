@@ -18,7 +18,19 @@ export type CrmColumn = {
   key: string;
   /** i18n key (or literal label when not found) */
   label: string;
-  type?: "text" | "textarea" | "number" | "money" | "select" | "datetime" | "color" | "readonly";
+  type?:
+    | "text"
+    | "textarea"
+    | "number"
+    | "money"
+    | "select"
+    | "datetime"
+    | "color"
+    | "readonly"
+    | "checkbox"
+    | "password";
+  /** input placeholder */
+  placeholder?: string;
   options?: { value: string; label: string }[];
   required?: boolean;
   /** false = shown but never editable (computed/system) */
@@ -29,6 +41,13 @@ export type CrmColumn = {
   hideInTable?: boolean;
   /** custom cell renderer for view mode */
   render?: (row: Record<string, unknown>) => ReactNode;
+  /** custom input for edit/add mode (e.g. a client picker); `row` is undefined in the add form */
+  editor?: (
+    value: string,
+    onChange: (v: string) => void,
+    draft: Record<string, string>,
+    row?: Record<string, unknown>
+  ) => ReactNode;
 };
 
 type Result = { ok: boolean; error?: string };
@@ -127,7 +146,7 @@ export function ConfirmDialog({
   );
 }
 
-function ReflectBox({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+export function ReflectBox({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
   const { i18n } = useCrmLabels();
   return (
     <label className="flex items-center gap-1 whitespace-nowrap text-[10px] text-amber-800" title={i18n("crm.edit.reflectHint")}>
@@ -137,15 +156,30 @@ function ReflectBox({ checked, onChange }: { checked: boolean; onChange: (v: boo
   );
 }
 
-function CellInput({
+export function CellInput({
   col,
   value,
   onChange,
+  draft,
+  row,
 }: {
   col: CrmColumn;
   value: string;
   onChange: (v: string) => void;
+  draft?: Record<string, string>;
+  row?: Record<string, unknown>;
 }) {
+  if (col.editor) return <>{col.editor(value, onChange, draft || {}, row)}</>;
+  if (col.type === "checkbox") {
+    return (
+      <input
+        type="checkbox"
+        className="h-4 w-4"
+        checked={value === "true"}
+        onChange={(e) => onChange(e.target.checked ? "true" : "false")}
+      />
+    );
+  }
   if (col.type === "select") {
     return (
       <select className={inp} value={value} onChange={(e) => onChange(e.target.value)}>
@@ -192,10 +226,66 @@ function CellInput({
   return (
     <input
       className={inp}
+      type={col.type === "password" ? "password" : "text"}
+      autoComplete={col.type === "password" ? "new-password" : undefined}
+      placeholder={col.placeholder}
       inputMode={col.type === "number" || col.type === "money" ? "decimal" : undefined}
       value={value}
       onChange={(e) => onChange(e.target.value)}
     />
+  );
+}
+
+/** Grid of labelled inputs (used by add forms and expanded inline-edit rows). */
+export function CrmFormGrid({
+  columns,
+  draft,
+  setDraft,
+  row,
+  cols = 4,
+}: {
+  columns: CrmColumn[];
+  draft: Record<string, string>;
+  setDraft: (fn: (d: Record<string, string>) => Record<string, string>) => void;
+  row?: Record<string, unknown>;
+  cols?: 2 | 3 | 4;
+}) {
+  const { i18n } = useCrmLabels();
+  const grid = cols === 2 ? "sm:grid-cols-2" : cols === 3 ? "sm:grid-cols-2 lg:grid-cols-3" : "sm:grid-cols-2 lg:grid-cols-4";
+  return (
+    <div className={`grid grid-cols-1 gap-2 ${grid}`}>
+      {columns.map((c) => (
+        <label
+          key={c.key}
+          className={`flex gap-1 text-[11px] ${c.type === "checkbox" ? "flex-row items-center pt-4" : "flex-col"} ${
+            c.type === "textarea" ? "sm:col-span-2" : ""
+          }`}
+        >
+          {c.type === "checkbox" ? null : (
+            <span className="text-neutral-500">
+              {i18n(c.label)}
+              {c.required ? " *" : ""}
+            </span>
+          )}
+          {c.type === "checkbox" && c.editable === false ? (
+            <input type="checkbox" className="h-4 w-4 opacity-50" checked={draft[c.key] === "true"} disabled readOnly />
+          ) : c.type === "readonly" || c.editable === false ? (
+            <span className="py-1 text-neutral-700">
+              {c.render && row ? c.render(row) : c.type === "password" ? "—" : draft[c.key] || "—"}
+            </span>
+          ) : (
+            <CellInput
+              col={c}
+              value={draft[c.key] ?? ""}
+              draft={draft}
+              row={row}
+              onChange={(v) => setDraft((d) => ({ ...d, [c.key]: v }))}
+            />
+          )}
+          {c.type === "checkbox" ? <span className="text-neutral-700">{i18n(c.label)}</span> : null}
+        </label>
+      ))}
+    </div>
   );
 }
 
@@ -272,7 +362,12 @@ export function CrmAddForm({
               {i18n(c.label)}
               {c.required ? " *" : ""}
             </span>
-            <CellInput col={c} value={draft[c.key] ?? ""} onChange={(v) => setDraft({ ...draft, [c.key]: v })} />
+            <CellInput
+              col={c}
+              value={draft[c.key] ?? ""}
+              draft={draft}
+              onChange={(v) => setDraft((d) => ({ ...d, [c.key]: v }))}
+            />
           </label>
         ))}
       </div>
@@ -389,6 +484,8 @@ export default function CrmRecordTable({
     if (c.type === "datetime") return fmtCrmDate(v);
     if (c.type === "money") return fmtCrmMoney(v, 2);
     if (c.type === "select") return c.options?.find((o) => o.value === String(v))?.label ?? String(v);
+    if (c.type === "checkbox") return v === true || v === "true" ? i18n("crm.ui.yes") : i18n("crm.ui.no");
+    if (c.type === "password") return "••••";
     if (c.type === "color")
       return <span className="inline-block h-3 w-6 rounded" style={{ background: String(v) }} title={String(v)} />;
     return <span className="whitespace-pre-wrap break-words">{String(v)}</span>;
@@ -437,7 +534,13 @@ export default function CrmRecordTable({
                   {tableCols.map((c) => (
                     <td key={c.key} className="max-w-[22rem] px-2 py-1.5 tabular-nums">
                       {isEdit && c.editable !== false && c.type !== "readonly" ? (
-                        <CellInput col={c} value={draft[c.key] ?? ""} onChange={(v) => setDraft({ ...draft, [c.key]: v })} />
+                        <CellInput
+                          col={c}
+                          value={draft[c.key] ?? ""}
+                          draft={draft}
+                          row={r}
+                          onChange={(v) => setDraft((d) => ({ ...d, [c.key]: v }))}
+                        />
                       ) : (
                         view(c, r)
                       )}

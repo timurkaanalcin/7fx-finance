@@ -1,3 +1,4 @@
+import { ensureSymbolCatalog } from "@/lib/trading-settings";
 import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -18,6 +19,7 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  await ensureSymbolCatalog();
   const user = await requireUser();
   if (!user) return NextResponse.json({ error: "No session" }, { status: 401 });
   try {

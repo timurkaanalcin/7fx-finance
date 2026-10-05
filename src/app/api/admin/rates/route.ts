@@ -6,12 +6,14 @@ import {
   getAllEffectiveRates,
   invalidateTradingSettingsCache,
   ensureTradingSettings,
+  ensureSymbolCatalog,
 } from "@/lib/trading-settings";
 import { SYMBOLS } from "@/lib/symbols";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  await ensureSymbolCatalog();
   const admin = await requireAdminPerm("canEditRates");
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
@@ -39,6 +41,7 @@ export async function GET() {
 }
 
 export async function PUT(req: Request) {
+  await ensureSymbolCatalog();
   const admin = await requireAdminPerm("canEditRates");
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 

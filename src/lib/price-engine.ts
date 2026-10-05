@@ -4,7 +4,7 @@
  */
 import { SYMBOLS, getSymbol } from "./symbols";
 import { fetchOhlc, fetchQuoteFromChart, fetchQuotesBatch } from "./yahoo";
-import { applySpread, getEffectiveRates } from "./trading-settings";
+import { applySpread, ensureSymbolCatalog, getEffectiveRates } from "./trading-settings";
 
 export type Tick = {
   symbol: string;
@@ -49,17 +49,20 @@ async function tickFromQuote(
 
 async function fallbackTick(symbol: string): Promise<Tick | undefined> {
   const def = getSymbol(symbol);
-  if (!def) return undefined;
+  // No live quote and no usable fallback price (e.g. new custom symbol) → no tick.
+  if (!def || !(def.basePrice > 0)) return undefined;
   return tickFromQuote(symbol, def.basePrice, 0, 0, Date.now());
 }
 
 /** Refresh all symbol quotes from Yahoo (cached briefly server-side). */
 export async function tickAll(): Promise<Tick[]> {
-  const pairs = SYMBOLS.map((s) => ({ symbol: s.symbol, yahoo: s.yahoo }));
+  await ensureSymbolCatalog(); // refresh the live (admin-editable) symbol catalog, cached ≤ 5 s
+  const catalog = [...SYMBOLS];
+  const pairs = catalog.map((s) => ({ symbol: s.symbol, yahoo: s.yahoo }));
   const { quotes } = await fetchQuotesBatch(pairs);
   const bySym = new Map(quotes.map((q) => [q.symbol, q]));
   const ticks: Tick[] = [];
-  for (const def of SYMBOLS) {
+  for (const def of catalog) {
     const rates = await getEffectiveRates(def.symbol);
     if (rates && !rates.enabled) continue;
     const q = bySym.get(def.symbol);
@@ -78,6 +81,7 @@ export async function getTicks(): Promise<Tick[]> {
 }
 
 export async function getPrice(symbol: string): Promise<Tick | undefined> {
+  await ensureSymbolCatalog();
   const def = getSymbol(symbol);
   if (!def) return undefined;
   const rates = await getEffectiveRates(symbol);
@@ -94,6 +98,7 @@ export async function getCandles(symbol: string, timeframe: string): Promise<{
   error?: string;
   stale?: boolean;
 }> {
+  await ensureSymbolCatalog();
   const def = getSymbol(symbol);
   if (!def) return { candles: [], error: "Unknown symbol" };
   const result = await fetchOhlc(def.yahoo, timeframe);

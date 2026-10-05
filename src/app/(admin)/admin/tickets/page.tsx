@@ -1,9 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { StatusBadge } from "@/components/crm/StubPage";
+import { ConfirmDialog, CrmFormGrid, ReflectBox, type CrmColumn } from "@/components/crm/CrmRecordTable";
+import ClientPicker, { type ClientOption } from "@/components/crm/ClientPicker";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
+import { fmtCrmDate, fmtCrmMoney, fromDatetimeLocalValue, toDatetimeLocalValue } from "@/lib/crm-format";
+import { ACCOUNT_CURRENCIES } from "@/lib/membership";
+import { crmJson, dayEndIso, dayStartIso } from "@/lib/crm-api";
 
 type Ticket = {
   id: string;
@@ -21,7 +26,81 @@ type Ticket = {
   closedAt: string | null;
   approvalReason?: string | null;
   eventScenario?: string | null;
+  accountLoginId?: string | null;
+  methodId?: string;
+  type?: string;
+  note?: string | null;
+  adminNote?: string | null;
+  details?: string | null;
 };
+
+type Method = { id: string; label: string; type: string; active: boolean };
+type KindKey = "DEPOSIT" | "WITHDRAW" | "MARGIN_ADD" | "MARGIN_RESET";
+type Entity = "deposit" | "withdrawal" | "balanceRequest";
+type Draft = Record<string, string>;
+
+const KIND_KEYS: KindKey[] = ["DEPOSIT", "WITHDRAW", "MARGIN_ADD", "MARGIN_RESET"];
+const STATUSES = ["PENDING", "APPROVED", "REJECTED"];
+
+function kindKeyOf(t: Ticket): KindKey {
+  if (t.kind === "DEPOSIT") return "DEPOSIT";
+  if (t.kind === "WITHDRAW") return "WITHDRAW";
+  return t.type === "RESET" ? "MARGIN_RESET" : "MARGIN_ADD";
+}
+function entityOf(k: KindKey | Ticket["kind"]): Entity {
+  if (k === "DEPOSIT") return "deposit";
+  if (k === "WITHDRAW") return "withdrawal";
+  return "balanceRequest";
+}
+
+function ticketDraft(t: Ticket): Draft {
+  return {
+    kindKey: kindKeyOf(t),
+    clientId: t.customerId,
+    amount: t.amount != null ? String(t.amount) : "",
+    currency: t.currency || "USD",
+    methodId: t.methodId || "",
+    wmethod: t.kind === "WITHDRAW" ? t.method : "BANK",
+    details: t.details || "",
+    status: t.status,
+    createdAt: toDatetimeLocalValue(t.openedAt),
+    reviewedAt: toDatetimeLocalValue(t.closedAt),
+    note: t.note || "",
+    adminNote: t.adminNote || "",
+    approvalReason: t.approvalReason || "",
+    eventScenario: t.eventScenario || "",
+  };
+}
+
+/** Build the records-API body for the draft's (target) kind. */
+function draftBody(d: Draft, orig: Draft | null): Record<string, unknown> {
+  const k = d.kindKey as KindKey;
+  const b: Record<string, unknown> = {
+    status: d.status,
+    adminNote: d.adminNote,
+    approvalReason: d.approvalReason,
+    eventScenario: d.eventScenario,
+  };
+  if (k === "MARGIN_RESET" || k === "MARGIN_ADD") {
+    b.type = k === "MARGIN_RESET" ? "RESET" : "ADD";
+    b.amount = d.amount.trim() === "" ? "" : d.amount.replace(",", ".");
+  } else {
+    b.amount = d.amount.replace(",", ".");
+    b.currency = d.currency;
+    b.note = d.note;
+    if (k === "DEPOSIT") {
+      if (d.methodId) b.methodId = d.methodId;
+    } else {
+      b.method = d.wmethod || "BANK";
+      b.details = d.details;
+    }
+  }
+  // Dates: only send when changed (keeps reviewedAt auto-stamping on status change).
+  for (const key of ["createdAt", "reviewedAt"]) {
+    if (!orig || d[key] !== orig[key]) b[key] = d[key] ? fromDatetimeLocalValue(d[key]) : "";
+  }
+  return b;
+}
 
 export default function TicketsPage() {
   const { i18n, code } = useCrmLabels();
@@ -36,16 +115,46 @@ export default function TicketsPage() {
   const [scenarioBusy, setScenarioBusy] = useState(false);
   const [dialogErr, setDialogErr] = useState("");
   const [openRecord, setOpenRecord] = useState<string | null>(null);
+  const [methods, setMethods] = useState<Method[]>([]);
+  const [q, setQ] = useState("");
+  const [qDebounced, setQDebounced] = useState("");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [err, setErr] = useState("");
+  // inline edit
+  const [editKey, setEditKey] = useState<string | null>(null);
+  const [draft, setDraft] = useState<Draft>({});
+  const [origDraft, setOrigDraft] = useState<Draft | null>(null);
+  const [editApply, setEditApply] = useState(false);
+  const [editErr, setEditErr] = useState("");
+  // add
+  const [adding, setAdding] = useState(false);
+  const [newDraft, setNewDraft] = useState<Draft>({});
+  const [newApply, setNewApply] = useState(false);
+  const [newErr, setNewErr] = useState("");
+  // delete
+  const [deleteTarget, setDeleteTarget] = useState<Ticket | null>(null);
+
+  useEffect(() => {
+    const t = setTimeout(() => setQDebounced(q.trim()), 300);
+    return () => clearTimeout(t);
+  }, [q]);
 
   const load = useCallback(async () => {
     const params = new URLSearchParams();
     if (status) params.set("status", status);
     if (kind !== "all") params.set("kind", kind);
+    if (qDebounced) params.set("q", qDebounced);
+    const f = dayStartIso(from);
+    const tt = dayEndIso(to);
+    if (f) params.set("from", f);
+    if (tt) params.set("to", tt);
     const res = await fetch(`/api/admin/tickets?${params}`);
     if (!res.ok) return;
     const data = await res.json();
     setTickets(data.tickets || []);
-  }, [status, kind]);
+    setMethods(data.methods || []);
+  }, [status, kind, qDebounced, from, to]);
 
   useEffect(() => {
     load();
@@ -134,6 +243,221 @@ export default function TicketsPage() {
     }
   }
 
+
+  const ticketKey = (t: Ticket) => `${t.kind}-${t.id}`;
+
+  function startEdit(t: Ticket) {
+    const d = ticketDraft(t);
+    setEditKey(ticketKey(t));
+    setDraft(d);
+    setOrigDraft(d);
+    setEditApply(false);
+    setEditErr("");
+    setMsg("");
+    setErr("");
+  }
+
+  function validate(d: Draft): string | null {
+    if (!d.clientId) return `${i18n("crm.ui.client")}: ${i18n("crm.edit.required")}`;
+    const k = d.kindKey as KindKey;
+    if (k !== "MARGIN_RESET") {
+      const n = Number(String(d.amount).replace(",", "."));
+      if (!Number.isFinite(n) || n <= 0) return `${i18n("crm.ui.amount")}: > 0`;
+    }
+    if (k === "DEPOSIT" && !d.methodId) return `${i18n("crm.ui.method")}: ${i18n("crm.edit.required")}`;
+    return null;
+  }
+
+  async function saveEdit(t: Ticket) {
+    const v = validate(draft);
+    if (v) {
+      setEditErr(v);
+      return;
+    }
+    setBusy(true);
+    setEditErr("");
+    try {
+      const entity = entityOf(t.kind);
+      const target = entityOf(draft.kindKey as KindKey);
+      const body: Record<string, unknown> = {
+        entity,
+        id: t.id,
+        applyToBalance: editApply,
+        ...draftBody(draft, origDraft),
+      };
+      if (target !== entity) body.convertTo = target;
+      if (draft.clientId !== t.customerId) body.moveToUserId = draft.clientId;
+      const r = await crmJson(`/api/admin/users/${t.customerId}/records`, "PATCH", body);
+      if (!r.ok) {
+        setEditErr(r.error || i18n("crm.ui.saveFailed"));
+        return;
+      }
+      setEditKey(null);
+      setMsg(i18n("crm.ui.saved"));
+      await load();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function openAdd() {
+    setAdding(true);
+    setNewApply(false);
+    setNewErr("");
+    setNewDraft({
+      kindKey: "DEPOSIT",
+      clientId: "",
+      amount: "",
+      currency: "USD",
+      methodId: methods.find((m) => m.active)?.id || methods[0]?.id || "",
+      wmethod: "BANK",
+      details: "",
+      status: "PENDING",
+      createdAt: "",
+      reviewedAt: "",
+      note: "",
+      adminNote: "",
+      approvalReason: "",
+      eventScenario: "",
+    });
+  }
+
+  async function saveNew() {
+    const v = validate(newDraft);
+    if (v) {
+      setNewErr(v);
+      return;
+    }
+    setBusy(true);
+    setNewErr("");
+    try {
+      const body = { entity: entityOf(newDraft.kindKey as KindKey), applyToBalance: newApply, ...draftBody(newDraft, null) };
+      if (!newDraft.createdAt) delete (body as Record<string, unknown>).createdAt;
+      if (!newDraft.reviewedAt) delete (body as Record<string, unknown>).reviewedAt;
+      const r = await crmJson(`/api/admin/users/${newDraft.clientId}/records`, "POST", body);
+      if (!r.ok) {
+        setNewErr(r.error || i18n("crm.ui.saveFailed"));
+        return;
+      }
+      setAdding(false);
+      setMsg(i18n("crm.edit.created"));
+      await load();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function confirmDelete(applyToBalance: boolean) {
+    const t = deleteTarget;
+    if (!t) return;
+    setBusy(true);
+    setErr("");
+    try {
+      const r = await crmJson(`/api/admin/users/${t.customerId}/records`, "DELETE", {
+        entity: entityOf(t.kind),
+        id: t.id,
+        applyToBalance,
+      });
+      if (!r.ok) {
+        setErr(r.error || i18n("crm.ui.saveFailed"));
+        return;
+      }
+      setMsg(i18n("crm.edit.deleted"));
+      await load();
+    } finally {
+      setBusy(false);
+      setDeleteTarget(null);
+    }
+  }
+
+  const methodOpts = useMemo(
+    () => methods.map((m) => ({ value: m.id, label: `${m.label} (${m.type})${m.active ? "" : " ✕"}` })),
+    [methods]
+  );
+
+  /** Fields shown for the draft's kind (same component for edit row + add form). */
+  function formColumns(d: Draft, withClient: boolean, row?: Ticket): CrmColumn[] {
+    const k = d.kindKey as KindKey;
+    const cols: CrmColumn[] = [
+      {
+        key: "kindKey",
+        label: "crm.ui.type",
+        type: "select",
+        required: true,
+        options: KIND_KEYS.map((x) => ({ value: x, label: i18n(`crm.tickets.kind.${x}`) })),
+      },
+    ];
+    if (withClient) {
+      cols.push({
+        key: "clientId",
+        label: "crm.ui.client",
+        required: true,
+        editor: (value, onChange) => (
+          <ClientPicker
+            value={value}
+            initialLabel={row && value === row.customerId ? `${row.customer} · ${row.customerEmail}` : undefined}
+            onChange={(id, c: ClientOption | null) => {
+              onChange(id);
+              if (!row && c?.currency) setNewDraft((nd) => ({ ...nd, currency: c.currency || nd.currency }));
+            }}
+          />
+        ),
+      });
+    }
+    cols.push({
+      key: "amount",
+      label: k === "MARGIN_RESET" ? "crm.tickets.amountOptional" : "crm.ui.amount",
+      type: "money",
+      required: k !== "MARGIN_RESET",
+    });
+    if (k === "DEPOSIT" || k === "WITHDRAW") {
+      cols.push({
+        key: "currency",
+        label: "crm.ui.currency",
+        type: "select",
+        required: true,
+        options: ACCOUNT_CURRENCIES.map((c) => ({ value: c, label: c })),
+      });
+    }
+    if (k === "DEPOSIT") {
+      cols.push({ key: "methodId", label: "crm.ui.method", type: "select", required: true, options: methodOpts });
+    }
+    if (k === "WITHDRAW") {
+      cols.push({
+        key: "wmethod",
+        label: "crm.ui.method",
+        type: "select",
+        required: true,
+        options: ["BANK", "CRYPTO"].map((m) => ({ value: m, label: code("crm.edit.wmethod", m) })),
+      });
+      cols.push({ key: "details", label: "crm.edit.details" });
+    }
+    cols.push(
+      {
+        key: "status",
+        label: "crm.ui.status",
+        type: "select",
+        required: true,
+        options: STATUSES.map((x) => ({ value: x, label: code("crm.status", x) })),
+      },
+      { key: "createdAt", label: "crm.ui.opened", type: "datetime" },
+      { key: "reviewedAt", label: "crm.edit.reviewedAt", type: "datetime" }
+    );
+    if (k === "DEPOSIT" || k === "WITHDRAW") cols.push({ key: "note", label: "crm.edit.clientNote", type: "textarea" });
+    cols.push(
+      { key: "adminNote", label: "crm.edit.adminNote", type: "textarea" },
+      { key: "approvalReason", label: "crm.edit.approvalReason", type: "textarea" },
+      { key: "eventScenario", label: "crm.edit.eventScenario", type: "textarea" }
+    );
+    return cols;
+  }
+
+  function methodLabel(t: Ticket) {
+    if (t.kind === "WITHDRAW") return code("crm.edit.wmethod", t.method);
+    if (t.kind === "MARGIN") return code("crm.kind", t.type || t.method);
+    return t.method;
+  }
+
   return (
     <div>
       <h1 className="mb-3 text-lg font-semibold">{i18n("crm.tickets.title")}</h1>
@@ -159,6 +483,27 @@ export default function TicketsPage() {
           <option value="margin">{code("crm.kind", "MARGIN")}</option>
           <option value="withdraw">{code("crm.kind", "WITHDRAW")}</option>
         </select>
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder={i18n("crm.edit.searchClient")}
+          className="w-52 rounded border border-neutral-300 bg-white px-2 py-1.5"
+        />
+        <label className="flex items-center gap-1 text-neutral-500">
+          {i18n("crm.ui.from")}
+          <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="rounded border border-neutral-300 bg-white px-2 py-1" />
+        </label>
+        <label className="flex items-center gap-1 text-neutral-500">
+          {i18n("crm.ui.to")}
+          <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="rounded border border-neutral-300 bg-white px-2 py-1" />
+        </label>
+        <button
+          type="button"
+          onClick={openAdd}
+          className="rounded border border-[#111111] bg-white px-2.5 py-1.5 font-semibold text-[#111111] hover:bg-neutral-50"
+        >
+          + {i18n("crm.edit.newRecord")}
+        </button>
         <Link href="/admin/deposits" className="rounded bg-neutral-100 px-2 py-1.5 hover:bg-neutral-200">
           {i18n("crm.tickets.legacyDeposits")}
         </Link>
@@ -169,7 +514,38 @@ export default function TicketsPage() {
           {i18n("crm.tickets.legacyMargin")}
         </Link>
       </div>
+      <p className="mb-3 rounded border border-amber-200 bg-amber-50 p-2 text-[11px] text-amber-900">
+        {i18n("crm.edit.balanceRule")} {i18n("crm.tickets.kindChangeHint")}
+      </p>
+      {adding && (
+        <div className="mb-3 rounded-xl border border-[#e5e5e5] bg-white p-3">
+          <div className="mb-2 text-xs font-semibold">{i18n("crm.tickets.newTitle")}</div>
+          <CrmFormGrid columns={formColumns(newDraft, true)} draft={newDraft} setDraft={setNewDraft} />
+          {newErr && <p className="mt-2 text-[11px] text-red-600">{newErr}</p>}
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              disabled={busy}
+              onClick={saveNew}
+              className="rounded bg-black px-3 py-1.5 text-[11px] font-semibold text-white hover:bg-neutral-800 disabled:opacity-50"
+            >
+              {i18n("crm.ui.save")}
+            </button>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => setAdding(false)}
+              className="rounded border border-neutral-300 px-3 py-1.5 text-[11px]"
+            >
+              {i18n("crm.ui.cancel")}
+            </button>
+            <ReflectBox checked={newApply} onChange={setNewApply} />
+          </div>
+          <p className="mt-1 text-[10px] text-neutral-500">{i18n("crm.edit.reflectHint")}</p>
+        </div>
+      )}
       {msg && <p className="mb-2 text-xs text-emerald-700">{msg}</p>}
+      {err && <p className="mb-2 text-xs text-red-600">{err}</p>}
       <div className="overflow-x-auto rounded-lg border border-neutral-200">
         <table className="w-full text-left text-[11px]">
           <thead className="bg-[#ffffff] text-neutral-500">
@@ -186,37 +562,40 @@ export default function TicketsPage() {
           </thead>
           <tbody>
             {tickets.map((ticket) => {
-              const rowKey = `${code("crm.kind", ticket.kind)}-${ticket.id}`;
+              const rowKey = ticketKey(ticket);
+              const isEdit = editKey === rowKey;
               const hasRecord = Boolean(ticket.approvalReason || ticket.eventScenario);
               return (
                 <Fragment key={rowKey}>
-                  <tr className="border-t border-neutral-200">
+                  <tr className={`border-t border-neutral-200 ${isEdit ? "bg-amber-50/70" : ""}`}>
                     <td className="px-2 py-1.5">
                       <span
-                        className={`rounded px-1 py-0.5 text-[9px] ${
+                        className={`whitespace-nowrap rounded px-1.5 py-0.5 text-[10px] font-semibold ${
                           ticket.kind === "DEPOSIT"
-                            ? "bg-sky-500/20 text-sky-300"
+                            ? "bg-sky-50 text-sky-700"
                             : ticket.kind === "WITHDRAW"
-                              ? "bg-violet-500/20 text-violet-300"
-                              : "bg-amber-500/20 text-amber-700"
+                              ? "bg-violet-50 text-violet-700"
+                              : "bg-amber-50 text-amber-700"
                         }`}
                       >
-                        {ticket.kind}
+                        {code("crm.kind", ticket.kind)}
                       </span>
                     </td>
-                    <td className="px-2 py-1.5 tabular-nums">
-                      {ticket.amount != null ? `${ticket.amount} ${ticket.currency}` : ticket.method}
+                    <td className="whitespace-nowrap px-2 py-1.5 tabular-nums">
+                      {ticket.amount != null
+                        ? `${fmtCrmMoney(ticket.amount, 2)} ${ticket.currency}`
+                        : methodLabel(ticket)}
                     </td>
                     <td className="px-2 py-1.5">
-                      <Link href={`/admin/traders/${ticket.customerId}`} className="text-sky-400 hover:underline">
+                      <Link href={`/admin/traders/${ticket.customerId}`} className="text-sky-700 hover:underline">
                         {ticket.customer}
                       </Link>
                       <div className="text-[9px] text-neutral-500">{ticket.customerEmail}</div>
                     </td>
                     <td className="px-2 py-1.5 font-mono text-[9px] text-neutral-500">
-                      {(ticket.tradingAccountId || "—").slice(0, 12)}
+                      {ticket.accountLoginId || (ticket.tradingAccountId || "—").slice(0, 12)}
                     </td>
-                    <td className="px-2 py-1.5">{ticket.method}</td>
+                    <td className="px-2 py-1.5">{methodLabel(ticket)}</td>
                     <td className="px-2 py-1.5">
                       <StatusBadge status={ticket.status} />
                       {hasRecord && (
@@ -229,12 +608,56 @@ export default function TicketsPage() {
                         </button>
                       )}
                     </td>
-                    <td className="px-2 py-1.5 text-neutral-500">
-                      {new Date(ticket.openedAt).toLocaleString("en-US")}
+                    <td className="whitespace-nowrap px-2 py-1.5 text-neutral-500">
+                      {fmtCrmDate(ticket.openedAt)}
+                      {ticket.closedAt && (
+                        <div className="text-[9px] text-neutral-400">
+                          {i18n("crm.edit.reviewedAt")}: {fmtCrmDate(ticket.closedAt)}
+                        </div>
+                      )}
                     </td>
-                    <td className="px-2 py-1.5">
-                      {ticket.status === "PENDING" && (
-                        <div className="flex gap-1">
+                    <td className="whitespace-nowrap px-2 py-1.5">
+                      <div className="flex flex-wrap gap-1">
+                        {isEdit ? (
+                          <>
+                            <button
+                              type="button"
+                              disabled={busy}
+                              onClick={() => saveEdit(ticket)}
+                              className="rounded bg-black px-2 py-0.5 text-[10px] font-semibold text-white disabled:opacity-50"
+                            >
+                              {i18n("crm.ui.save")}
+                            </button>
+                            <button
+                              type="button"
+                              disabled={busy}
+                              onClick={() => setEditKey(null)}
+                              className="rounded border border-neutral-300 px-2 py-0.5 text-[10px]"
+                            >
+                              {i18n("crm.ui.cancel")}
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => startEdit(ticket)}
+                              className="rounded border border-[#111111] bg-white px-2 py-0.5 text-[10px] font-semibold text-[#111111] hover:bg-neutral-50"
+                            >
+                              {i18n("crm.ui.edit")}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setDeleteTarget(ticket)}
+                              className="rounded border border-red-300 bg-white px-2 py-0.5 text-[10px] font-semibold text-red-600 hover:bg-red-50"
+                            >
+                              {i18n("crm.ui.delete")}
+                            </button>
+                          </>
+                        )}
+                      </div>
+                      {ticket.status === "PENDING" && !isEdit && (
+                        <div className="mt-1 flex gap-1">
                           <button
                             disabled={busy}
                             onClick={() => openApprove(ticket)}
@@ -253,6 +676,34 @@ export default function TicketsPage() {
                       )}
                     </td>
                   </tr>
+                  {isEdit && (
+                    <tr className="border-t border-amber-100 bg-amber-50/70">
+                      <td colSpan={8} className="px-3 py-3">
+                        <CrmFormGrid columns={formColumns(draft, true, ticket)} draft={draft} setDraft={setDraft} row={ticket as unknown as Record<string, unknown>} />
+                        {editErr && <p className="mt-2 text-[11px] text-red-600">{editErr}</p>}
+                        <div className="mt-2 flex flex-wrap items-center gap-3">
+                          <button
+                            type="button"
+                            disabled={busy}
+                            onClick={() => saveEdit(ticket)}
+                            className="rounded bg-black px-3 py-1.5 text-[11px] font-semibold text-white disabled:opacity-50"
+                          >
+                            {i18n("crm.ui.save")}
+                          </button>
+                          <button
+                            type="button"
+                            disabled={busy}
+                            onClick={() => setEditKey(null)}
+                            className="rounded border border-neutral-300 px-3 py-1.5 text-[11px]"
+                          >
+                            {i18n("crm.ui.cancel")}
+                          </button>
+                          <ReflectBox checked={editApply} onChange={setEditApply} />
+                          <span className="text-[10px] text-neutral-500">{i18n("crm.edit.reassignHint")}</span>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
                   {openRecord === rowKey && hasRecord && (
                     <tr className="border-t border-neutral-100 bg-[#f7f7f7]">
                       <td colSpan={8} className="px-3 py-2 text-[11px] text-neutral-800">
@@ -277,6 +728,18 @@ export default function TicketsPage() {
         </table>
       </div>
 
+      <ConfirmDialog
+        open={deleteTarget != null}
+        title={i18n("crm.edit.confirmTitle")}
+        message={i18n("crm.edit.confirmDelete")}
+        confirmLabel={i18n("crm.edit.yesDelete")}
+        danger
+        balanceAware
+        busy={busy}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
+
       {approveTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
           <div className="w-full max-w-lg rounded-lg border border-neutral-200 bg-white p-4 text-neutral-900 shadow-lg">
@@ -284,8 +747,8 @@ export default function TicketsPage() {
             <p className="mb-3 text-[11px] text-neutral-500">
               {approveTarget.customer} · {approveTarget.customerEmail} ·{" "}
               {approveTarget.amount != null
-                ? `${approveTarget.amount} ${approveTarget.currency}`
-                : approveTarget.method}
+                ? `${fmtCrmMoney(approveTarget.amount, 2)} ${approveTarget.currency}`
+                : methodLabel(approveTarget)}
             </p>
             <label className="mb-1 block text-[11px] font-medium">
               {i18n("crm.tickets.approveReason")}

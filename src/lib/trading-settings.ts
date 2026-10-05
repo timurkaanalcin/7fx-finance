@@ -3,7 +3,14 @@
  * Applied to order ticket pricing (bid/ask), margin, and P/L.
  */
 import { prisma } from "./prisma";
-import { SYMBOLS, getSymbol, type SymbolDef } from "./symbols";
+import {
+  BUILTIN_SYMBOLS,
+  SYMBOLS,
+  getSymbol,
+  replaceSymbolCatalog,
+  type AssetClass,
+  type SymbolDef,
+} from "./symbols";
 import {
   calcExitPriceForProfit,
   calcOpenPriceForProfit,
@@ -32,6 +39,17 @@ export type SymbolSettingsRow = {
   maxVolume: number | null;
   commissionPerLot: number | null;
   enabled: boolean;
+  name?: string | null;
+  assetClass?: string | null;
+  digits?: number | null;
+  pipSize?: number | null;
+  contractSize?: number | null;
+  basePrice?: number | null;
+  volumeStep?: number | null;
+  yahoo?: string | null;
+  flag?: string | null;
+  isCustom?: boolean;
+  deleted?: boolean;
 };
 
 export type EffectiveSymbolRates = {
@@ -42,6 +60,8 @@ export type EffectiveSymbolRates = {
   contractSize: number;
   minVolume: number;
   maxVolume: number;
+  /** Lot step; null = no step enforcement */
+  volumeStep: number | null;
   commissionPerLot: number;
   digits: number;
   pipSize: number;
@@ -59,16 +79,106 @@ const DEFAULTS: TradingSettingsRow = {
   defaultContractMult: 1,
 };
 
-let cache: {
+type Bundle = {
   at: number;
   global: TradingSettingsRow;
   bySymbol: Map<string, SymbolSettingsRow>;
-} | null = null;
+};
+
+// Lives on globalThis so every server bundle shares one cache and one invalidation.
+const store = globalThis as unknown as { __7fxRatesCache?: Bundle | null; __7fxRatesLoading?: Promise<Bundle> | null };
 
 const TTL_MS = 5_000;
 
+export const ASSET_CLASSES: AssetClass[] = ["STOCK", "FX", "CRYPTO", "INDEX", "COMMODITY"];
+
+/** Drop the rates + symbol-catalog cache (call after any SymbolSettings / TradingSettings write). */
 export function invalidateTradingSettingsCache() {
-  cache = null;
+  store.__7fxRatesCache = null;
+}
+
+function finiteOr<T>(v: number | null | undefined, fallback: T): number | T {
+  return v != null && Number.isFinite(v) ? v : fallback;
+}
+
+/** Merge built-ins with DB catalog overrides + admin-created symbols. */
+export function buildSymbolCatalog(rows: SymbolSettingsRow[]): SymbolDef[] {
+  const byS = new Map(rows.map((r) => [r.symbol, r]));
+  const out: SymbolDef[] = [];
+  for (const b of BUILTIN_SYMBOLS) {
+    const r = byS.get(b.symbol);
+    if (r?.deleted) continue;
+    out.push(r ? mergeDef(b, r) : { ...b });
+  }
+  const builtinSet = new Set(BUILTIN_SYMBOLS.map((b) => b.symbol));
+  for (const r of rows) {
+    if (builtinSet.has(r.symbol) || r.deleted || !r.isCustom) continue;
+    const base: SymbolDef = {
+      symbol: r.symbol,
+      name: r.name || r.symbol,
+      class: "FX",
+      digits: 5,
+      pipSize: 0.0001,
+      contractSize: 1,
+      basePrice: 0,
+      spread: 0,
+      yahoo: r.symbol,
+      custom: true,
+    };
+    out.push({ ...mergeDef(base, r), custom: true });
+  }
+  return out;
+}
+
+function mergeDef(b: SymbolDef, r: SymbolSettingsRow): SymbolDef {
+  const cls = r.assetClass && (ASSET_CLASSES as string[]).includes(r.assetClass) ? (r.assetClass as AssetClass) : b.class;
+  const def: SymbolDef = {
+    ...b,
+    name: r.name?.trim() || b.name,
+    class: cls,
+    digits: r.digits != null && Number.isFinite(r.digits) ? Math.max(0, Math.min(10, Math.round(r.digits))) : b.digits,
+    pipSize: finiteOr(r.pipSize, b.pipSize) as number,
+    contractSize: finiteOr(r.contractSize, b.contractSize) as number,
+    basePrice: finiteOr(r.basePrice, b.basePrice) as number,
+    spread: b.custom || r.isCustom ? (finiteOr(r.spreadAbs, b.spread) as number) : b.spread,
+    yahoo: r.yahoo?.trim() || b.yahoo,
+    flag: r.flag != null && r.flag !== "" ? r.flag : b.flag,
+  };
+  if (r.volumeStep != null && Number.isFinite(r.volumeStep) && r.volumeStep > 0) def.volumeStep = r.volumeStep;
+  else delete def.volumeStep;
+  return def;
+}
+
+async function loadBundle(): Promise<Bundle> {
+  const now = Date.now();
+  const cached = store.__7fxRatesCache;
+  if (cached && now - cached.at < TTL_MS) return cached;
+  if (store.__7fxRatesLoading) return store.__7fxRatesLoading;
+  const p = (async () => {
+    const [global, symbols] = await Promise.all([
+      ensureTradingSettings(),
+      prisma.symbolSettings.findMany().catch(() => null as SymbolSettingsRow[] | null),
+    ]);
+    const rows = symbols ?? [];
+    // Only rebuild the live catalog when the DB read succeeded (keep last good catalog otherwise).
+    if (symbols) replaceSymbolCatalog(buildSymbolCatalog(rows));
+    const bySymbol = new Map(rows.map((s) => [s.symbol, s]));
+    const bundle: Bundle = { at: Date.now(), global, bySymbol };
+    store.__7fxRatesCache = bundle;
+    return bundle;
+  })();
+  store.__7fxRatesLoading = p;
+  try {
+    return await p;
+  } finally {
+    store.__7fxRatesLoading = null;
+  }
+}
+
+/** Make sure the live symbol catalog (SYMBOLS / getSymbol) reflects the DB (≤ 5 s stale). */
+export async function ensureSymbolCatalog(force = false) {
+  if (force) invalidateTradingSettingsCache();
+  await loadBundle();
 }
 
 export async function ensureTradingSettings(): Promise<TradingSettingsRow> {
@@ -84,18 +194,6 @@ export async function ensureTradingSettings(): Promise<TradingSettingsRow> {
   }
 }
 
-async function loadBundle() {
-  const now = Date.now();
-  if (cache && now - cache.at < TTL_MS) return cache;
-  const [global, symbols] = await Promise.all([
-    ensureTradingSettings(),
-    prisma.symbolSettings.findMany().catch(() => [] as SymbolSettingsRow[]),
-  ]);
-  const bySymbol = new Map(symbols.map((s) => [s.symbol, s]));
-  cache = { at: now, global, bySymbol };
-  return cache;
-}
-
 export async function getTradingSettings(): Promise<TradingSettingsRow> {
   const b = await loadBundle();
   return b.global;
@@ -107,9 +205,9 @@ export async function getSymbolSettingsMap(): Promise<Map<string, SymbolSettings
 }
 
 export async function getEffectiveRates(symbol: string): Promise<EffectiveSymbolRates | null> {
+  const { global, bySymbol } = await loadBundle();
   const base = getSymbol(symbol);
   if (!base) return null;
-  const { global, bySymbol } = await loadBundle();
   const ov = bySymbol.get(symbol);
   const enabled = ov?.enabled ?? true;
   const spreadMult = ov?.spreadMultiplier ?? global.spreadMultiplier;
@@ -125,6 +223,7 @@ export async function getEffectiveRates(symbol: string): Promise<EffectiveSymbol
     contractSize: base.contractSize * Math.max(0.0001, contractMult),
     minVolume: ov?.minVolume ?? global.defaultMinVolume,
     maxVolume: ov?.maxVolume ?? global.defaultMaxVolume,
+    volumeStep: base.volumeStep && base.volumeStep > 0 ? base.volumeStep : null,
     commissionPerLot: ov?.commissionPerLot ?? global.commissionPerLot,
     digits: base.digits,
     pipSize: base.pipSize,
@@ -133,8 +232,9 @@ export async function getEffectiveRates(symbol: string): Promise<EffectiveSymbol
 }
 
 export async function getAllEffectiveRates(): Promise<EffectiveSymbolRates[]> {
+  await loadBundle();
   const out: EffectiveSymbolRates[] = [];
-  for (const s of SYMBOLS) {
+  for (const s of [...SYMBOLS]) {
     const r = await getEffectiveRates(s.symbol);
     if (r) out.push(r);
   }

@@ -171,14 +171,21 @@ export async function placeOrder(input: {
   takeProfit?: number;
 }) {
   await ensureTicked();
-  const def = getSymbol(input.symbol);
-  if (!def) throw new Error("Invalid symbol");
-  if (input.volume <= 0) throw new Error("Invalid volume");
-
+  // Load rates first: this also refreshes the live (admin-editable) symbol catalog.
   const rates = await getEffectiveRates(input.symbol);
-  if (!rates || !rates.enabled) throw new Error("Symbol is closed for trading");
+  const def = getSymbol(input.symbol);
+  if (!def || !rates) throw new Error("Invalid symbol");
+  if (!(input.volume > 0)) throw new Error("Invalid volume");
+  if (!rates.enabled) throw new Error("Symbol is closed for trading");
   if (input.volume < rates.minVolume || input.volume > rates.maxVolume) {
     throw new Error(`Volume must be between ${rates.minVolume}–${rates.maxVolume}`);
+  }
+  if (rates.volumeStep && rates.volumeStep > 0) {
+    const base = rates.minVolume > 0 ? rates.minVolume : 0;
+    const steps = (input.volume - base) / rates.volumeStep;
+    if (Math.abs(steps - Math.round(steps)) > 1e-6) {
+      throw new Error(`Volume step is ${rates.volumeStep}`);
+    }
   }
 
   const tick = await getPrice(input.symbol);

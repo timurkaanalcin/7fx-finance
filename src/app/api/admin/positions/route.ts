@@ -10,6 +10,7 @@ import {
   calcMarginWithRates,
   calcProfitWithRates,
   getEffectiveRates,
+  ensureSymbolCatalog,
 } from "@/lib/trading-settings";
 import { normalizeSide } from "@/lib/pnl";
 import { getSymbol } from "@/lib/symbols";
@@ -17,6 +18,7 @@ import { getSymbol } from "@/lib/symbols";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
+  await ensureSymbolCatalog();
   await ensureDemoSeed();
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
@@ -92,6 +94,7 @@ export async function GET(req: Request) {
  * "prices" (or price/volume/side edits) → recompute profit from engine formula.
  */
 export async function PATCH(req: Request) {
+  await ensureSymbolCatalog();
   await ensureDemoSeed();
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
@@ -539,6 +542,7 @@ function optDate(v: unknown, label: string): Date | null {
  * A CLOSED position with applyToBalance=true credits its realized P/L (TRADE_PNL ledger row).
  */
 export async function POST(req: Request) {
+  await ensureSymbolCatalog();
   await ensureDemoSeed();
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
@@ -666,6 +670,7 @@ export async function POST(req: Request) {
  * applyToBalance=true reverses its realized P/L on the balance.
  */
 export async function DELETE(req: Request) {
+  await ensureSymbolCatalog();
   await ensureDemoSeed();
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });

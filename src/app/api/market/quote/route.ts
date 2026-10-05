@@ -1,3 +1,4 @@
+import { ensureSymbolCatalog } from "@/lib/trading-settings";
 import { NextResponse } from "next/server";
 import { SYMBOLS, getSymbol } from "@/lib/symbols";
 import { getPrice, tickAll } from "@/lib/price-engine";
@@ -6,6 +7,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export async function GET(req: Request) {
+  await ensureSymbolCatalog();
   const { searchParams } = new URL(req.url);
   const symbolsParam = searchParams.get("symbols");
 

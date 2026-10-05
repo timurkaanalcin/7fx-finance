@@ -280,6 +280,24 @@ model SymbolSettings {
   maxVolume          Float?
   commissionPerLot   Float?
   enabled            Boolean  @default(true)
+  /// Catalog overrides / custom-symbol definition (null = built-in default from src/lib/symbols.ts)
+  name               String?  @db.VarChar(191)
+  assetClass         String?  @db.VarChar(16)
+  digits             Int?
+  pipSize            Float?
+  /// Base contract size (effective = contractSize × contractMultiplier)
+  contractSize       Float?
+  /// Fallback price used only when no live quote is available
+  basePrice          Float?
+  /// Lot step (null = no step enforcement)
+  volumeStep         Float?
+  /// Chart / quote source ticker (Yahoo Finance)
+  yahoo              String?  @db.VarChar(64)
+  flag               String?  @db.VarChar(16)
+  /// Admin-created symbol (not part of the built-in list)
+  isCustom           Boolean  @default(false)
+  /// Built-in symbol removed from the catalog (soft delete; custom symbols are hard-deleted)
+  deleted            Boolean  @default(false)
   updatedAt          DateTime @updatedAt
 }
 

@@ -1,3 +1,4 @@
+import { ensureSymbolCatalog } from "@/lib/trading-settings";
 import { NextResponse } from "next/server";
 import { getMarketStatus } from "@/lib/market-hours";
 import { SYMBOLS } from "@/lib/symbols";
@@ -5,6 +6,7 @@ import { SYMBOLS } from "@/lib/symbols";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
+  await ensureSymbolCatalog();
   const { searchParams } = new URL(req.url);
   const symbol = searchParams.get("symbol");
   if (symbol) {

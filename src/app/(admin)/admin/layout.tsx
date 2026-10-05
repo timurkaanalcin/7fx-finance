@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { CRM_NAV_GROUPS } from "@/lib/crm-nav";
 import CrmI18n from "@/components/i18n/CrmI18n";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
+import SymbolCatalogSync from "@/components/trading/SymbolCatalogSync";
 import { useI18n } from "@/lib/i18n/context";
 
 function AdminChrome({ children }: { children: React.ReactNode }) {
@@ -189,6 +190,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <CrmI18n>
+      <SymbolCatalogSync />
       <AdminChrome>{children}</AdminChrome>
     </CrmI18n>
   );

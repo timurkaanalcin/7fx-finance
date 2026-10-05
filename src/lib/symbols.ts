@@ -13,9 +13,13 @@ export type SymbolDef = {
   /** Yahoo Finance ticker */
   yahoo: string;
   flag?: string;
+  /** Lot step (admin override; undefined = no step enforcement) */
+  volumeStep?: number;
+  /** Admin-created symbol (not in the built-in list) */
+  custom?: boolean;
 };
 
-export const SYMBOLS: SymbolDef[] = [
+const BUILTIN_DEFS: SymbolDef[] = [
   // —— US equities ——
   { symbol: "AAPL", name: "Apple Inc.", class: "STOCK", digits: 2, pipSize: 0.01, contractSize: 1, basePrice: 220, spread: 0.02, yahoo: "AAPL", flag: "🇺🇸" },
   { symbol: "MSFT", name: "Microsoft Corp.", class: "STOCK", digits: 2, pipSize: 0.01, contractSize: 1, basePrice: 420, spread: 0.02, yahoo: "MSFT", flag: "🇺🇸" },
@@ -243,8 +247,34 @@ export const SYMBOLS: SymbolDef[] = [
   { symbol: "GER40", name: "DAX 40", class: "INDEX", digits: 1, pipSize: 0.1, contractSize: 1, basePrice: 18245.8, spread: 1.2, yahoo: "^GDAXI", flag: "🇩🇪" },
 ];
 
+/** Immutable built-in catalog (code defaults). */
+export const BUILTIN_SYMBOLS: readonly SymbolDef[] = BUILTIN_DEFS.map((s) => Object.freeze({ ...s }));
+
+/**
+ * Live catalog = built-ins merged with admin overrides / custom symbols from the DB
+ * (SymbolSettings). The array is mutated in place by replaceSymbolCatalog() so every
+ * importer sees the same list; it lives on globalThis so all server bundles share it.
+ * Server code refreshes it via ensureSymbolCatalog() (src/lib/trading-settings.ts).
+ */
+const g = globalThis as unknown as {
+  __7fxSymbolCatalog?: SymbolDef[];
+  __7fxSymbolIndex?: Map<string, SymbolDef> | null;
+};
+export const SYMBOLS: SymbolDef[] = g.__7fxSymbolCatalog ?? (g.__7fxSymbolCatalog = BUILTIN_DEFS.map((s) => ({ ...s })));
+
+export function replaceSymbolCatalog(next: SymbolDef[]) {
+  SYMBOLS.splice(0, SYMBOLS.length, ...next);
+  g.__7fxSymbolIndex = null;
+}
+
+export function getBuiltinSymbol(symbol: string): SymbolDef | undefined {
+  return BUILTIN_SYMBOLS.find((s) => s.symbol === symbol);
+}
+
 export function getSymbol(symbol: string): SymbolDef | undefined {
-  return SYMBOLS.find((s) => s.symbol === symbol);
+  let index = g.__7fxSymbolIndex;
+  if (!index) index = g.__7fxSymbolIndex = new Map(SYMBOLS.map((s) => [s.symbol, s]));
+  return index.get(symbol);
 }
 
 export function toYahoo(symbol: string): string | undefined {
