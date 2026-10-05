@@ -120,19 +120,20 @@ input, select, button { font: inherit; }
   }
 }
 
-/* ——— 7FX Landing: restored pre-green (1a8f766) blue accent ——— */
+/* ——— 7FX Landing: Light corporate + neon accent ——— */
 .fx-landing {
   --fx-bg: #ffffff;
   --fx-bg-soft: #ffffff;
   --fx-surface: #ffffff;
   --fx-elevated: #ffffff;
   --fx-hover: #f0f0f0;
-  --fx-ink: #0b1220;
+  --fx-ink: #111111;
   --fx-muted: #5c657a;
   --fx-dim: #8b93a7;
-  --fx-accent: #4f7cff;
-  --fx-buy: #16c784;
-  --fx-sell: #ea3943;
+  --fx-accent: #111111;
+  --fx-accent-ink: #ffffff;
+  --fx-buy: #26a69a;
+  --fx-sell: #ef5350;
   --fx-line: rgba(16, 20, 37, 0.08);
   --fx-shadow: 0 12px 32px rgba(16, 20, 37, 0.06);
   --fx-shell: min(1240px, calc(100% - 48px));
@@ -158,7 +159,7 @@ input, select, button { font: inherit; }
 html:has(.fx-landing),
 body:has(.fx-landing) {
   background: #ffffff !important;
-  color: #0b1220 !important;
+  color: #111111 !important;
   color-scheme: light;
 }
 html:has(.fx-landing) {
@@ -171,7 +172,7 @@ html:has(.fx-landing) {
 .fx-landing h3 {
   font-family: "Sora", "Montserrat", system-ui, sans-serif;
   font-weight: 600;
-  color: #0b1220 !important;
+  color: #111111 !important;
 }
 
 .fx-landing .fx-shell {
@@ -198,7 +199,7 @@ html:has(.fx-landing) {
   font-weight: 600;
   letter-spacing: -0.055em;
   line-height: 1.02;
-  color: #0b1220 !important;
+  color: #111111 !important;
 }
 
 .fx-landing .fx-h2 {
@@ -207,7 +208,7 @@ html:has(.fx-landing) {
   font-weight: 600;
   letter-spacing: -0.045em;
   line-height: 1.08;
-  color: #0b1220 !important;
+  color: #111111 !important;
 }
 
 @media (max-width: 640px) {
@@ -335,7 +336,7 @@ html:has(.fx-landing) {
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #4f7cff;
+  color: #111111;
 }
 
 .fx-landing .fx-eyebrow-dot {
@@ -343,8 +344,8 @@ html:has(.fx-landing) {
   width: 6px;
   height: 6px;
   border-radius: 999px;
-  background: #4f7cff;
-  box-shadow: 0 0 10px rgba(79, 124, 255, 0.45);
+  background: #111111;
+  box-shadow: 0 0 10px rgba(17, 17, 17, 0.45);
   flex-shrink: 0;
 }
 
@@ -376,21 +377,21 @@ html:has(.fx-landing) {
   position: relative;
   isolation: isolate;
   background: #ffffff;
-  color: #0b1220;
+  color: #111111;
 }
 
 .fx-landing .fx-hero-veil {
   background:
-    radial-gradient(ellipse 55% 50% at 18% 12%, rgba(79, 124, 255, 0.14), transparent 58%),
-    radial-gradient(ellipse 40% 40% at 88% 22%, rgba(79, 124, 255, 0.08), transparent 55%),
+    radial-gradient(ellipse 55% 50% at 18% 12%, rgba(17, 17, 17, 0.14), transparent 58%),
+    radial-gradient(ellipse 40% 40% at 88% 22%, rgba(17, 17, 17, 0.08), transparent 55%),
     radial-gradient(ellipse 35% 30% at 55% 95%, rgba(22, 199, 132, 0.05), transparent 50%),
     linear-gradient(180deg, #ffffff 0%, #ffffff 55%, #ffffff 100%);
 }
 
 .fx-landing .fx-hero-mesh {
   background-image:
-    linear-gradient(rgba(79, 124, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(79, 124, 255, 0.05) 1px, transparent 1px);
+    linear-gradient(rgba(17, 17, 17, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 17, 17, 0.05) 1px, transparent 1px);
   background-size: 56px 56px;
   mask-image: radial-gradient(ellipse 70% 55% at 60% 40%, #000 15%, transparent 72%);
   opacity: 0.55;
@@ -402,7 +403,7 @@ html:has(.fx-landing) {
 }
 
 .fx-landing .fx-phone-glow {
-  background: radial-gradient(ellipse at center, rgba(79, 124, 255, 0.22), transparent 68%);
+  background: radial-gradient(ellipse at center, rgba(17, 17, 17, 0.22), transparent 68%);
 }
 
 .fx-landing .fx-float-card {
@@ -427,8 +428,8 @@ html:has(.fx-landing) {
 
 .fx-landing .fx-feature-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(79, 124, 255, 0.28);
-  box-shadow: 0 20px 48px rgba(16, 20, 37, 0.1), 0 0 0 1px rgba(79, 124, 255, 0.1);
+  border-color: rgba(17, 17, 17, 0.28);
+  box-shadow: 0 20px 48px rgba(16, 20, 37, 0.1), 0 0 0 1px rgba(17, 17, 17, 0.1);
 }
 
 .fx-landing .fx-viz-market-row {
@@ -480,7 +481,7 @@ html:has(.fx-landing) {
   right: -20%;
   width: 60%;
   height: 60%;
-  background: radial-gradient(circle, rgba(79, 124, 255, 0.14), transparent 70%);
+  background: radial-gradient(circle, rgba(17, 17, 17, 0.14), transparent 70%);
   pointer-events: none;
 }
 
@@ -527,43 +528,45 @@ html:has(.fx-landing) {
 .fx-landing button:focus-visible,
 .fx-landing input:focus-visible,
 .fx-landing summary:focus-visible {
-  outline: 2px solid rgba(79, 124, 255, 0.75);
+  outline: 2px solid rgba(17, 17, 17, 0.75);
   outline-offset: 2px;
 }
 
 .fx-landing .fx-accent-line {
-  background: linear-gradient(105deg, #4f7cff 0%, #7aa2ff 45%, #3b5bdb 100%);
+  background: linear-gradient(105deg, #111111 0%, #111111 55%, #2a2a2a 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
 .fx-landing .fx-accent-text {
-  background: linear-gradient(120deg, #4f7cff, #7aa2ff 55%, #3b5bdb 100%);
+  background: linear-gradient(120deg, #111111, #111111 50%, #2a2a2a 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
 .fx-landing .fx-btn-primary {
-  background: #4f7cff;
-  color: #fff;
-  box-shadow: 0 10px 32px rgba(79, 124, 255, 0.32);
-  transition: filter 0.2s ease, box-shadow 0.2s ease;
+  background: #111111;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  transition: filter 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 .fx-landing .fx-btn-primary:hover {
-  filter: brightness(1.08);
-  box-shadow: 0 12px 36px rgba(79, 124, 255, 0.4);
+  filter: none;
+  background: #2a2a2a;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
 }
 
 .fx-landing .fx-btn-secondary {
   background: #ffffff;
   border: 1px solid rgba(16, 20, 37, 0.12);
-  color: #0b1220;
+  color: #111111;
   transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 .fx-landing .fx-btn-secondary:hover {
-  border-color: rgba(79, 124, 255, 0.4);
+  border-color: rgba(17, 17, 17, 0.4);
   background: #ffffff;
   box-shadow: 0 4px 14px rgba(16, 20, 37, 0.06);
 }
