@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { randomBytes } from "crypto";
 import { requireAdmin, writeAudit } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { publicRequestOrigin } from "@/lib/request-origin";
 
 export const dynamic = "force-dynamic";
 
@@ -9,7 +10,7 @@ const ALLOWED_MINUTES = [15, 30, 60, 120, 360, 720, 1440, 4320, 10080]; // up to
 
 type Ctx = { params: { id: string } };
 
-/** POST — create time-limited auto-login link for trader. */
+/** POST — create time-limited auto-login link for trader (admin only). */
 export async function POST(req: Request, { params }: Ctx) {
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
@@ -47,11 +48,32 @@ export async function POST(req: Request, { params }: Ctx) {
     },
   });
 
-  const origin =
-    req.headers.get("x-forwarded-host")
-      ? `${req.headers.get("x-forwarded-proto") || "https"}://${req.headers.get("x-forwarded-host")}`
-      : new URL(req.url).origin;
-  const url = `${origin}/api/auth/auto-login?token=${encodeURIComponent(token)}`;
+  const path = `/api/auth/auto-login?token=${encodeURIComponent(token)}`;
+  // Prefer browser Origin / Referer so copied links always match the public site,
+  // even when Railway internals omit x-forwarded-host.
+  const browserOrigin = (() => {
+    const o = req.headers.get("origin");
+    if (o) {
+      try {
+        const u = new URL(o);
+        if (!u.hostname.startsWith("0.0.0.0") && u.hostname !== "localhost") return u.origin;
+      } catch {
+        /* ignore */
+      }
+    }
+    const ref = req.headers.get("referer");
+    if (ref) {
+      try {
+        const u = new URL(ref);
+        if (!u.hostname.startsWith("0.0.0.0") && u.hostname !== "localhost") return u.origin;
+      } catch {
+        /* ignore */
+      }
+    }
+    return null;
+  })();
+  const origin = browserOrigin || publicRequestOrigin(req);
+  const url = `${origin}${path}`;
 
   await writeAudit({
     adminId: admin.id,
@@ -64,6 +86,7 @@ export async function POST(req: Request, { params }: Ctx) {
     ok: true,
     id: link.id,
     url,
+    path,
     token,
     expiresAt: expiresAt.toISOString(),
     expiresInMinutes,

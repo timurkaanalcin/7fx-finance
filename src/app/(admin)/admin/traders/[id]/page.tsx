@@ -202,7 +202,18 @@ function TraderAccessTools({ userId, traderName }: { userId: string; traderName:
         setErr(data.error || i18n("crm.ui.linkFailed"));
         return;
       }
-      setLinkUrl(data.url || "");
+      // Prefer path + browser origin so the copied link is never an internal Railway bind (0.0.0.0).
+      const path =
+        typeof data.path === "string" && data.path.startsWith("/")
+          ? data.path
+          : typeof data.token === "string" && data.token
+            ? `/api/auth/auto-login?token=${encodeURIComponent(data.token)}`
+            : "";
+      const absolute =
+        path && typeof window !== "undefined"
+          ? `${window.location.origin}${path}`
+          : String(data.url || "");
+      setLinkUrl(absolute);
       setMsg(`${i18n("crm.ui.linkExpires")} ${new Date(data.expiresAt).toLocaleString("en-GB", { hour12: false })}`);
     } catch {
       setErr(i18n("crm.ui.connectionError"));
