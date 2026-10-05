@@ -29,28 +29,34 @@ self.addEventListener("install", (event) => {
   );
 });
 
+async function reloadStaleWindows() {
+  const wins = await self.clients.matchAll({ type: "window" });
+  await Promise.all(
+    wins.map((w) => {
+      try {
+        return w.navigate(w.url).catch(() => undefined);
+      } catch (e) {
+        return undefined;
+      }
+    })
+  );
+}
+
 self.addEventListener("activate", (event) => {
+  let upgraded = false;
   event.waitUntil(
     (async () => {
       const keys = await caches.keys();
       const stale = keys.filter((k) => k !== CACHE);
+      upgraded = stale.length > 0;
       await Promise.all(stale.map((k) => caches.delete(k)));
       await self.clients.claim();
+    })().then(() => {
       // Upgrading from an older SW: open tabs may be rendering stale cached HTML
       // whose CSS/JS chunks are gone. Reload them once from the network.
-      if (stale.length > 0) {
-        const wins = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
-        await Promise.all(
-          wins.map((w) => {
-            try {
-              return w.navigate(w.url).catch(() => undefined);
-            } catch (e) {
-              return undefined;
-            }
-          })
-        );
-      }
-    })()
+      // Must run AFTER activation finishes (navigations wait for an activating SW).
+      if (upgraded) setTimeout(() => { reloadStaleWindows().catch(() => undefined); }, 50);
+    })
   );
 });
 
