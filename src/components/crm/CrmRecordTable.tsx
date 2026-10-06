@@ -406,6 +406,7 @@ export default function CrmRecordTable({
   createInitial,
   addTitle,
   emptyText,
+  readOnly = false,
 }: {
   rows: Row[];
   columns: CrmColumn[];
@@ -416,8 +417,13 @@ export default function CrmRecordTable({
   createInitial?: Record<string, string>;
   addTitle?: string;
   emptyText?: string;
+  /** Hide add/edit/delete (CRM view-only admins). */
+  readOnly?: boolean;
 }) {
   const { i18n } = useCrmLabels();
+  const canCreate = Boolean(onCreate) && !readOnly;
+  const canUpdate = Boolean(onUpdate) && !readOnly;
+  const canDelete = Boolean(onDelete) && !readOnly;
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<Record<string, string>>({});
   const [apply, setApply] = useState(false);
@@ -461,7 +467,7 @@ export default function CrmRecordTable({
   }
 
   async function confirmDelete(applyToBalance: boolean) {
-    if (!deleteId || !onDelete) return;
+    if (!deleteId || !canDelete || !onDelete) return;
     setBusy(true);
     setErr("");
     try {
@@ -493,13 +499,14 @@ export default function CrmRecordTable({
 
   return (
     <div>
-      {onCreate && (
+      {canCreate && (
         <div className="mb-2">
           <CrmAddForm
             columns={columns}
             initial={createInitial}
             balanceAware={balanceAware}
             onCreate={async (v, a) => {
+              if (!onCreate) return { ok: false, error: "read-only" };
               const r = await onCreate(v, a);
               if (r.ok) setMsg(i18n("crm.edit.created"));
               return r;
@@ -520,7 +527,7 @@ export default function CrmRecordTable({
                   {i18n(c.label)}
                 </th>
               ))}
-              {(onUpdate || onDelete) && (
+              {(canUpdate || canDelete) && (
                 <th className="whitespace-nowrap px-2 py-2 font-semibold">{i18n("crm.edit.actions")}</th>
               )}
             </tr>
@@ -546,7 +553,7 @@ export default function CrmRecordTable({
                       )}
                     </td>
                   ))}
-                  {(onUpdate || onDelete) && (
+                  {(canUpdate || canDelete) && (
                     <td className="whitespace-nowrap px-2 py-1.5">
                       {isEdit ? (
                         <div className="flex flex-col gap-1">
@@ -572,7 +579,7 @@ export default function CrmRecordTable({
                         </div>
                       ) : (
                         <div className="flex gap-1">
-                          {onUpdate && (
+                          {canUpdate && (
                             <button
                               type="button"
                               onClick={() => startEdit(r)}
@@ -581,7 +588,7 @@ export default function CrmRecordTable({
                               {i18n("crm.ui.edit")}
                             </button>
                           )}
-                          {onDelete && (
+                          {canDelete && (
                             <button
                               type="button"
                               onClick={() => setDeleteId(id)}

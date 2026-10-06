@@ -611,9 +611,11 @@ function PasswordPanel({ userId }: { userId: string }) {
 function FinancePanel({
   user,
   onChanged,
+  readOnly = false,
 }: {
   user: Membership;
   onChanged: (account?: Row) => Promise<void> | void;
+  readOnly?: boolean;
 }) {
   const { i18n, code } = useCrmLabels();
   const cur = user.currency || "USD";
@@ -708,6 +710,11 @@ function FinancePanel({
 
   return (
     <div className="space-y-4 text-xs">
+      {readOnly ? (
+        <p className="rounded border border-amber-100 bg-amber-50 px-2 py-1.5 text-[11px] text-amber-800">
+          {i18n("crm.ui.readOnly")}
+        </p>
+      ) : null}
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         <Stat label={i18n("crm.ui.balance")} value={money(user.balance)} hint={i18n("crm.fin.storedHint")} />
         <Stat
@@ -761,7 +768,7 @@ function FinancePanel({
             </label>
             <button
               type="button"
-              disabled={busy}
+              disabled={busy || readOnly}
               onClick={doSet}
               className="rounded bg-black px-3 py-2 text-[11px] font-semibold text-white hover:bg-neutral-800 disabled:opacity-50"
             >
@@ -816,7 +823,7 @@ function FinancePanel({
             </label>
             <button
               type="button"
-              disabled={busy}
+              disabled={busy || readOnly}
               onClick={doDelta}
               className="rounded bg-black px-3 py-2 text-[11px] font-semibold text-white hover:bg-neutral-800 disabled:opacity-50"
             >
@@ -899,7 +906,7 @@ function FinancePanel({
           <div className="mt-3 flex gap-2">
             <button
               type="button"
-              disabled={busy}
+              disabled={busy || readOnly}
               onClick={saveOther}
               className="rounded bg-black px-3 py-1.5 text-[11px] font-semibold text-white hover:bg-neutral-800 disabled:opacity-50"
             >
@@ -907,7 +914,7 @@ function FinancePanel({
             </button>
             <button
               type="button"
-              disabled={busy}
+              disabled={busy || readOnly}
               onClick={() => setEditing(false)}
               className="rounded border border-neutral-300 px-3 py-1.5 text-[11px]"
             >
@@ -935,8 +942,9 @@ export default function AdminUserDetailPage() {
   const [isMainAdminTarget, setIsMainAdminTarget] = useState(false);
 
   useEffect(() => {
-    if (tab === "izinler" && !canManageUsers) setTab("profil");
-  }, [tab, canManageUsers]);
+    // Read-only admins may view Hesap İzinleri; only kick if no view access at all.
+    if (tab === "izinler" && !canManageUsers && !crmReadOnly) setTab("profil");
+  }, [tab, canManageUsers, crmReadOnly]);
   const [notes, setNotes] = useState<Row[]>([]);
   const [positions, setPositions] = useState<Row[]>([]);
   const [orders, setOrders] = useState<Row[]>([]);
@@ -1030,7 +1038,7 @@ export default function AdminUserDetailPage() {
       else f[k] = String(v);
     }
     setForm(f);
-    setEditingProfile(true);
+    if (canWrite) setEditingProfile(true);
     setMsg("");
     setErr("");
   }
@@ -1303,7 +1311,8 @@ export default function AdminUserDetailPage() {
     return <div className="text-sm text-neutral-500">{i18n("crm.ui.loading")}</div>;
   }
 
-  const ed = editingProfile;
+  const canWrite = !crmReadOnly;
+  const ed = editingProfile && canWrite;
   const fv = (k: string) => (ed ? form[k] : user[k]) as string | boolean | null | undefined;
   const dateView = (k: string) => (ed ? (form[k] as string) : fmtCrmDate(user[k]));
 
@@ -1558,13 +1567,14 @@ export default function AdminUserDetailPage() {
 
           <LoginHistory userId={user.id} />
 
-          <PasswordPanel userId={user.id} />
+          {canWrite ? (<PasswordPanel userId={user.id} />) : null}
         </div>
       )}
 
       {tab === "finans" && (
         <FinancePanel
           user={user}
+          readOnly={crmReadOnly}
           onChanged={async (account) => {
             if (account) setUser((u) => (u ? ({ ...u, ...account } as Membership) : u));
             await load();
@@ -1576,6 +1586,7 @@ export default function AdminUserDetailPage() {
         <div>
           <p className="mb-2 text-[11px] text-neutral-500">{i18n("crm.ui.commsHint")}</p>
           <CrmRecordTable
+            readOnly={crmReadOnly}
             rows={communications}
             columns={commCols}
             createInitial={{ type: "CALL" }}
@@ -1595,6 +1606,7 @@ export default function AdminUserDetailPage() {
           <div>
             <h2 className="mb-2 text-sm font-medium">{i18n("crm.ui.depositRequests")}</h2>
             <CrmRecordTable
+            readOnly={crmReadOnly}
               rows={deposits}
               columns={depositCols}
               balanceAware
@@ -1611,6 +1623,7 @@ export default function AdminUserDetailPage() {
           <div>
             <h2 className="mb-2 text-sm font-medium">{i18n("crm.edit.withdrawals")}</h2>
             <CrmRecordTable
+            readOnly={crmReadOnly}
               rows={withdrawals}
               columns={withdrawalCols}
               balanceAware
@@ -1623,6 +1636,7 @@ export default function AdminUserDetailPage() {
           <div>
             <h2 className="mb-2 text-sm font-medium">{i18n("crm.ui.marginRequests")}</h2>
             <CrmRecordTable
+            readOnly={crmReadOnly}
               rows={balanceRequests}
               columns={balanceReqCols}
               balanceAware
@@ -1644,6 +1658,7 @@ export default function AdminUserDetailPage() {
           <div>
             <h2 className="mb-2 text-sm font-medium">{i18n("crm.ui.positionsFull")}</h2>
             <p className="mb-2 text-[11px] text-neutral-500">{i18n("crm.ui.positionsHint")}</p>
+            {canWrite ? (
             <div className="mb-2">
               <CrmAddForm
                 columns={newPositionCols}
@@ -1653,11 +1668,12 @@ export default function AdminUserDetailPage() {
                 title={i18n("crm.edit.addPosition")}
               />
             </div>
-            <EditablePositionsTable rows={positions} onSaved={() => load()} manage />
+            ) : null}
+            <EditablePositionsTable rows={positions} onSaved={() => load()} manage={canWrite} />
           </div>
           <div>
             <h2 className="mb-2 text-sm font-medium">{i18n("crm.ui.ordersFull")}</h2>
-            <EditableOrdersTable rows={orders} onSaved={() => load()} userId={user.id} />
+            <EditableOrdersTable rows={orders} onSaved={() => load()} userId={user.id} readOnly={crmReadOnly} />
           </div>
         </div>
       )}
@@ -1680,6 +1696,7 @@ export default function AdminUserDetailPage() {
             </button>
           </p>
           <CrmRecordTable
+            readOnly={crmReadOnly}
             rows={ledger}
             columns={ledgerCols}
             balanceAware
@@ -1701,6 +1718,7 @@ export default function AdminUserDetailPage() {
             {i18n("crm.edit.bonusRule")}
           </p>
           <CrmRecordTable
+            readOnly={crmReadOnly}
             rows={bonusRows}
             columns={bonusCols}
             balanceAware
@@ -1718,6 +1736,7 @@ export default function AdminUserDetailPage() {
             {i18n("crm.ui.docStatus")}: {code("crm.status", String(user.documentsStatus || "NONE"))}
           </p>
           <CrmRecordTable
+            readOnly={crmReadOnly}
             rows={documents}
             columns={docCols}
             createInitial={{ docType: "ID", status: "PENDING" }}
@@ -1731,6 +1750,7 @@ export default function AdminUserDetailPage() {
 
       {tab === "takvim" && (
         <CrmRecordTable
+            readOnly={crmReadOnly}
           rows={reminders}
           columns={reminderCols}
           createInitial={{ color: "#3b82f6" }}
@@ -1743,6 +1763,7 @@ export default function AdminUserDetailPage() {
 
       {tab === "notlar" && (
         <CrmRecordTable
+            readOnly={crmReadOnly}
           rows={notes}
           columns={noteCols}
           onCreate={rec("note").create}

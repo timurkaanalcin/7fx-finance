@@ -268,6 +268,55 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true, count: userIds.length });
     }
 
+    if (bulkAction === "delete") {
+      // Full admins only (requireAdminPerm already rejects crmReadOnly).
+      const envAdmin = String(process.env.ADMIN_EMAIL || "").trim().toLowerCase();
+      const targets = await prisma.user.findMany({
+        where: { id: { in: userIds } },
+        select: { id: true, email: true, role: true, name: true },
+      });
+      const skipped: { id: string; reason: string }[] = [];
+      const deletable: string[] = [];
+      for (const u of targets) {
+        if (u.id === admin.id) {
+          skipped.push({ id: u.id, reason: "self" });
+          continue;
+        }
+        if (u.role === "ADMIN") {
+          skipped.push({ id: u.id, reason: "admin" });
+          continue;
+        }
+        if (envAdmin && u.email.toLowerCase() === envAdmin) {
+          skipped.push({ id: u.id, reason: "main_admin" });
+          continue;
+        }
+        deletable.push(u.id);
+      }
+      let count = 0;
+      if (deletable.length) {
+        // Related rows cascade via Prisma onDelete: Cascade on userId FKs.
+        const result = await prisma.user.deleteMany({ where: { id: { in: deletable } } });
+        count = result.count;
+      }
+      await writeAudit({
+        adminId: admin.id,
+        action: "BULK_DELETE_USERS",
+        meta: {
+          requested: userIds,
+          deleted: deletable,
+          skipped,
+          count,
+        },
+        note: `Bulk delete ${count} trader(s)`,
+      });
+      return NextResponse.json({
+        ok: true,
+        count,
+        skipped: skipped.length,
+        skippedDetails: skipped,
+      });
+    }
+
     return NextResponse.json({ error: "Bilinmeyen bulkAction" }, { status: 400 });
   }
 

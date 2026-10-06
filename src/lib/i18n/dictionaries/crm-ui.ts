@@ -133,7 +133,9 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.ui.saleRet", "Sale / Ret.", "Satış / Ret.", "Продажа / Рет.", "Verkauf / Ret.", "البيع / الاحتفاظ"],
   ["crm.ui.selectFirst", "Select a user first", "Önce bir kullanıcı seçin", "Сначала выберите пользователя", "Zuerst einen Benutzer wählen", "اختر مستخدماً أولاً"],
   ["crm.ui.bulkDone", "Bulk action applied", "Toplu işlem uygulandı", "Массовое действие выполнено", "Sammelaktion ausgeführt", "تم تنفيذ الإجراء الجماعي"],
-  ["crm.ui.actionFailed", "Action failed", "İşlem başarısız", "Действие не выполнено", "Aktion fehlgeschlagen", "فشل الإجراء"],
+
+  ["crm.ui.bulkDelete", "Delete", "Sil", "Удалить", "Löschen", "حذف"],
+  ["crm.ui.bulkDeleteConfirm", "Delete {count} selected trader(s)? This cannot be undone. Admin accounts are never deleted.", "{count} seçili yatırımcı silinsin mi? Bu işlem geri alınamaz. Admin hesapları silinmez.", "Удалить {count} выбранных трейдеров? Это необратимо. Аккаунты админов не удаляются.", "{count} ausgewählte Trader löschen? Das kann nicht rückgängig gemacht werden. Admin-Konten werden nie gelöscht.", "حذف {count} متداول محدد؟ لا يمكن التراجع. لن تُحذف حسابات المسؤولين."],  ["crm.ui.actionFailed", "Action failed", "İşlem başarısız", "Действие не выполнено", "Aktion fehlgeschlagen", "فشل الإجراء"],
   ["crm.ui.memberCreated", "Member created", "Üye oluşturuldu", "Клиент создан", "Mitglied erstellt", "تم إنشاء العميل"],
   ["crm.ui.createFailed", "Create failed", "Oluşturma başarısız", "Не удалось создать", "Erstellen fehlgeschlagen", "فشل الإنشاء"],
   ["crm.ui.profileSaved", "Profile saved", "Profil kaydedildi", "Профиль сохранён", "Profil gespeichert", "تم حفظ الملف"],

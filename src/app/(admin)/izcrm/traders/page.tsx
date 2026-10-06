@@ -74,6 +74,8 @@ export default function AdminUsersPage() {
   const [retentionStatus, setRetentionStatus] = useState("");
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
+  const [canManageUsers, setCanManageUsers] = useState(false);
+  const [crmReadOnly, setCrmReadOnly] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [showCreate, setShowCreate] = useState(false);
   const [createForm, setCreateForm] = useState(emptyCreate);
@@ -108,6 +110,16 @@ export default function AdminUsersPage() {
   useEffect(() => {
     load();
   }, [load]);
+
+  useEffect(() => {
+    fetch("/api/auth/me", { credentials: "include" })
+      .then((r) => r.json())
+      .then((d) => {
+        setCanManageUsers(Boolean(d.permissions?.canManageUsers));
+        setCrmReadOnly(Boolean(d.permissions?.crmReadOnly));
+      })
+      .catch(() => {});
+  }, []);
 
   // Auto-refresh presence/balances. Only row data is replaced — filters, selection and the
   // create form live in separate state, so typed input is never overwritten.
@@ -205,7 +217,7 @@ export default function AdminUsersPage() {
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <h1 className="text-xl font-semibold">{i18n("crm.nav.traders")}</h1>
         <button
-          onClick={() => setShowCreate(true)}
+          onClick={() => { if (!crmReadOnly && canManageUsers) setShowCreate(true); }}
           className="rounded-lg bg-black text-white px-3 py-1.5 text-xs font-medium hover:bg-neutral-800"
         >
           {i18n("crm.ui.newMember")}
@@ -296,6 +308,8 @@ export default function AdminUsersPage() {
       {selected.size > 0 && (
         <div className="mb-3 flex flex-wrap items-center gap-2 rounded-lg border border-[#e5e5e5] bg-[#ffffff] p-2 text-xs">
           <span className="text-neutral-500">{selected.size} {i18n("crm.ui.selected")}</span>
+          {!crmReadOnly && (
+            <>
           <button
             disabled={busy}
             onClick={() => bulk("freeze")}
@@ -348,6 +362,26 @@ export default function AdminUsersPage() {
           >
             {i18n("crm.ui.assignBroker")}
           </button>
+          {canManageUsers && (
+            <button
+              disabled={busy}
+              onClick={() => {
+                const n = selected.size;
+                const ok = window.confirm(
+                  i18n("crm.ui.bulkDeleteConfirm").replace("{count}", String(n))
+                );
+                if (ok) void bulk("delete");
+              }}
+              className="rounded bg-red-700 px-2 py-1 font-semibold text-white hover:bg-red-600"
+            >
+              {i18n("crm.ui.bulkDelete")}
+            </button>
+          )}
+            </>
+          )}
+          {crmReadOnly && (
+            <span className="text-[10px] text-amber-700">{i18n("crm.ui.readOnly")}</span>
+          )}
         </div>
       )}
 

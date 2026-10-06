@@ -29,10 +29,12 @@ export default function EditableOrdersTable({
   rows,
   onSaved,
   userId,
+  readOnly = false,
 }: {
   rows: Row[];
   onSaved?: () => void;
   userId?: string;
+  readOnly?: boolean;
 }) {
   const { i18n, code } = useCrmLabels();
   const sideOpts = ["BUY", "SELL"].map((v) => ({ value: v, label: code("crm.kind", v) }));
@@ -74,7 +76,7 @@ export default function EditableOrdersTable({
   };
 
   return (
-    <CrmRecordTable
+    <CrmRecordTable readOnly={readOnly}
       rows={rows}
       columns={columns}
       emptyText={i18n("crm.ui.noOrders")}
