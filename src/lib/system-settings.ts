@@ -2,6 +2,11 @@
  * Singleton system settings (referral / invite code, terminal impersonation, etc.).
  */
 import { prisma } from "./prisma";
+import {
+  DEFAULT_LEAD_STATUS_MAPPING,
+  parseLeadStatusMapping,
+  type LeadStatusMapping,
+} from "./lead-status";
 
 /** Active default referral code for public registration (digits). */
 export const DEFAULT_REFERRAL_CODE = "213950812";
@@ -15,6 +20,9 @@ export type SystemSettingsRow = {
   referralRequired: boolean;
   /** Admins may open trader terminal as that user — default ON for everyone */
   terminalImpersonationEnabled: boolean;
+  /** JSON blob for Valid/Invalid/Potential saleStatus mapping */
+  leadStatusMappingJson: string | null;
+  leadStatusMapping: LeadStatusMapping;
   updatedAt?: Date;
 };
 
@@ -23,6 +31,8 @@ const DEFAULTS: SystemSettingsRow = {
   referralCode: DEFAULT_REFERRAL_CODE,
   referralRequired: true,
   terminalImpersonationEnabled: true,
+  leadStatusMappingJson: null,
+  leadStatusMapping: { ...DEFAULT_LEAD_STATUS_MAPPING, valid: [...DEFAULT_LEAD_STATUS_MAPPING.valid], invalid: [...DEFAULT_LEAD_STATUS_MAPPING.invalid], potential: [...DEFAULT_LEAD_STATUS_MAPPING.potential] },
 };
 
 let cache: { at: number; row: SystemSettingsRow } | null = null;
@@ -37,14 +47,18 @@ function normalizeRow(row: {
   referralCode: string;
   referralRequired?: boolean | null;
   terminalImpersonationEnabled?: boolean | null;
+  leadStatusMappingJson?: string | null;
   updatedAt?: Date;
 }): SystemSettingsRow {
+  const leadStatusMappingJson = row.leadStatusMappingJson ?? null;
   return {
     id: row.id,
     referralCode: String(row.referralCode || DEFAULT_REFERRAL_CODE).trim(),
     referralRequired: row.referralRequired !== false,
     // Default ON: only false when explicitly set false
     terminalImpersonationEnabled: row.terminalImpersonationEnabled !== false,
+    leadStatusMappingJson,
+    leadStatusMapping: parseLeadStatusMapping(leadStatusMappingJson),
     updatedAt: row.updatedAt,
   };
 }
@@ -143,11 +157,14 @@ export async function setSystemSettings(opts: {
   referralCode?: string;
   referralRequired?: boolean;
   terminalImpersonationEnabled?: boolean;
+  leadStatusMapping?: LeadStatusMapping;
+  leadStatusMappingJson?: string | null;
 }): Promise<SystemSettingsRow> {
   const data: {
     referralCode?: string;
     referralRequired?: boolean;
     terminalImpersonationEnabled?: boolean;
+    leadStatusMappingJson?: string | null;
   } = {};
   if (opts.referralCode != null) {
     const referralCode = String(opts.referralCode).trim();
@@ -160,6 +177,14 @@ export async function setSystemSettings(opts: {
   if (opts.terminalImpersonationEnabled != null) {
     data.terminalImpersonationEnabled = Boolean(opts.terminalImpersonationEnabled);
   }
+  if (opts.leadStatusMapping != null) {
+    const m = parseLeadStatusMapping(JSON.stringify(opts.leadStatusMapping));
+    data.leadStatusMappingJson = JSON.stringify(m);
+  } else if (opts.leadStatusMappingJson !== undefined) {
+    data.leadStatusMappingJson = opts.leadStatusMappingJson
+      ? JSON.stringify(parseLeadStatusMapping(opts.leadStatusMappingJson))
+      : null;
+  }
   if (Object.keys(data).length === 0) {
     return getSystemSettings();
   }
@@ -171,6 +196,7 @@ export async function setSystemSettings(opts: {
       referralCode: data.referralCode ?? DEFAULT_REFERRAL_CODE,
       referralRequired: data.referralRequired ?? true,
       terminalImpersonationEnabled: data.terminalImpersonationEnabled ?? true,
+      leadStatusMappingJson: data.leadStatusMappingJson ?? null,
     },
   });
   invalidateSystemSettingsCache();

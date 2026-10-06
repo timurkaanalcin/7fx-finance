@@ -28,6 +28,9 @@ export async function GET(req: Request) {
   const desk = (searchParams.get("desk") || "").trim();
   const country = (searchParams.get("country") || "").trim();
   const saleStatus = (searchParams.get("saleStatus") || "").trim();
+  const accountType = (searchParams.get("accountType") || "").trim();
+  const from = (searchParams.get("from") || "").trim();
+  const to = (searchParams.get("to") || "").trim();
   const retentionStatus = (searchParams.get("retentionStatus") || "").trim();
   const presence = (searchParams.get("presence") || "").trim(); // online | recent | offline
 
@@ -68,6 +71,11 @@ export async function GET(req: Request) {
   }
   if (country) and.push({ country: { equals: country } });
   if (saleStatus) and.push({ saleStatus: { equals: saleStatus } });
+  if (accountType) and.push({ accountType: { equals: accountType } });
+  const createdAt: { gte?: Date; lte?: Date } = {};
+  if (from && !Number.isNaN(new Date(from).getTime())) createdAt.gte = new Date(from);
+  if (to && !Number.isNaN(new Date(to).getTime())) createdAt.lte = new Date(to);
+  if (createdAt.gte || createdAt.lte) and.push({ createdAt });
   if (retentionStatus) and.push({ retentionStatus: { equals: retentionStatus } });
   if (presence) {
     const onlineSince = new Date(Date.now() - ONLINE_MS);

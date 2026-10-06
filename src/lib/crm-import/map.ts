@@ -268,6 +268,7 @@ export function applyMapping(
     const currency = normalizeAccountCurrency(currencyRaw, defCurrency);
     const desk =
       pickMapped(row, table.columns, mapping, "desk") || defaults.desk || null;
+    const assigneeName = (defaults.assigneeName || "").trim() || null;
     const saleStatus =
       normalizeSaleStatus(
         pickMapped(row, table.columns, mapping, "saleStatus") || defaults.saleStatus || ""
@@ -292,6 +293,7 @@ export function applyMapping(
       desk: desk ? String(desk).slice(0, 80) : null,
       saleStatus,
       source: source ? String(source).slice(0, 120) : null,
+      assigneeName: assigneeName ? String(assigneeName).slice(0, 120) : null,
       note: note ? String(note).slice(0, 2000) : null,
       balance: Math.max(0, balance),
       password: password && password.length >= 6 ? password.slice(0, 128) : password ? password : null,

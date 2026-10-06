@@ -3,6 +3,8 @@
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 import { useCallback, useEffect, useState } from "react";
+import { SALE_STATUSES, POTENTIAL_STATUSES } from "@/lib/membership";
+import { DEFAULT_LEAD_STATUS_MAPPING, type LeadStatusMapping } from "@/lib/lead-status";
 
 export default function AdminSettingsPage() {
   const { i18n } = useCrmLabels();
@@ -22,6 +24,12 @@ export default function AdminSettingsPage() {
   const [totpCode, setTotpCode] = useState("");
   const [totpMsg, setTotpMsg] = useState("");
   const [totpErr, setTotpErr] = useState("");
+  const [leadMap, setLeadMap] = useState<LeadStatusMapping>({
+    valid: [...DEFAULT_LEAD_STATUS_MAPPING.valid],
+    invalid: [...DEFAULT_LEAD_STATUS_MAPPING.invalid],
+    potential: [...DEFAULT_LEAD_STATUS_MAPPING.potential],
+  });
+  const [leadMapMsg, setLeadMapMsg] = useState("");
 
   const load = useCallback(async () => {
     const res = await fetch("/api/admin/settings");
@@ -39,6 +47,13 @@ export default function AdminSettingsPage() {
     const imp = data.terminalImpersonationEnabled !== false;
     setImpersonation(imp);
     setDraftImpersonation(imp);
+    if (data.leadStatusMapping) {
+      setLeadMap({
+        valid: data.leadStatusMapping.valid || [],
+        invalid: data.leadStatusMapping.invalid || [],
+        potential: data.leadStatusMapping.potential || [],
+      });
+    }
     setLoaded(true);
   }, []);
 
@@ -320,6 +335,78 @@ export default function AdminSettingsPage() {
         {totpMsg && <p className="mt-2 text-xs text-emerald-700">{totpMsg}</p>}
         {totpErr && <p className="mt-2 text-xs text-red-600">{totpErr}</p>}
       </div>
+
+      <section id="lead-mapping" className="rounded-xl border border-neutral-200 bg-white p-4 md:p-5">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-800">
+          {i18n("crm.leads.mapTitle")}
+        </h2>
+        <p className="mt-2 text-sm text-neutral-500">{i18n("crm.leads.mapIntro")}</p>
+        {(
+          [
+            ["valid", i18n("crm.leads.mapValid"), SALE_STATUSES],
+            ["invalid", i18n("crm.leads.mapInvalid"), SALE_STATUSES],
+            ["potential", i18n("crm.leads.mapPotential"), POTENTIAL_STATUSES],
+          ] as const
+        ).map(([key, label, opts]) => (
+          <div key={key} className="mt-4">
+            <div className="mb-1.5 text-xs font-semibold text-neutral-700">{label}</div>
+            <div className="flex flex-wrap gap-1.5">
+              {opts.map((s) => {
+                const on = (leadMap[key] as string[]).includes(s);
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => {
+                      setLeadMap((m) => {
+                        const cur = new Set(m[key]);
+                        if (cur.has(s)) cur.delete(s);
+                        else cur.add(s);
+                        return { ...m, [key]: Array.from(cur) };
+                      });
+                    }}
+                    className={`rounded-full border px-2.5 py-1 text-[11px] ${
+                      on
+                        ? "border-black bg-black text-white"
+                        : "border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50"
+                    }`}
+                  >
+                    {s}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+        <button
+          type="button"
+          disabled={busy}
+          className="mt-4 rounded bg-black px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+          onClick={async () => {
+            setBusy(true);
+            setLeadMapMsg("");
+            try {
+              const res = await fetch("/api/admin/settings", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ leadStatusMapping: leadMap }),
+              });
+              const data = await res.json();
+              if (!res.ok) {
+                setErr(data.error || i18n("crm.ui.saveFailed"));
+                return;
+              }
+              if (data.leadStatusMapping) setLeadMap(data.leadStatusMapping);
+              setLeadMapMsg(i18n("crm.leads.mapSaved"));
+            } finally {
+              setBusy(false);
+            }
+          }}
+        >
+          {i18n("crm.ui.save")}
+        </button>
+        {leadMapMsg && <p className="mt-2 text-xs text-emerald-700">{leadMapMsg}</p>}
+      </section>
 
     </div>
   );
