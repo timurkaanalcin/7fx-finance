@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdminWrite } from "@/lib/auth";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import {
   IMPORT_MAX_BYTES,
@@ -13,7 +13,7 @@ export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   await ensureDemoSeed();
-  const admin = await requireAdmin();
+  const admin = await requireAdminWrite();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const contentType = req.headers.get("content-type") || "";
