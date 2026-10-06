@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { formatPrice } from "@/lib/symbols";
 import type { PriceTick, SymbolDef } from "./types";
+import SymbolIcon from "@/components/ui/SymbolIcon";
 
 type Props = {
   symbols: SymbolDef[];
@@ -98,8 +99,8 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
                   aria-hidden
                 />
               )}
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-desk-bg text-[14px] leading-none ring-1 ring-desk-border/50 md:h-auto md:w-4 md:rounded-none md:bg-transparent md:text-[13px] md:ring-0">
-                {s.flag || "•"}
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-desk-bg md:h-5 md:w-5 md:rounded-full md:bg-transparent">
+                <SymbolIcon symbol={s.symbol} fallback={s.flag || "•"} size={20} className="md:!h-4 md:!w-4" />
               </span>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { formatPrice } from "@/lib/symbols";
+import SymbolIcon from "@/components/ui/SymbolIcon";
 import type { PriceTick, SymbolDef } from "./types";
 
 type Props = {
@@ -181,8 +182,9 @@ export default function OrderTicket({
           Order Ticket
         </span>
         <div className="flex items-center gap-2">
-          <span className="rounded-full border border-desk-border/60 bg-desk-elev/80 px-2.5 py-0.5 text-[10px] font-semibold text-desk-text">
-            {def?.flag} {symbol}
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-desk-border/60 bg-desk-elev/80 px-2.5 py-0.5 text-[10px] font-semibold text-desk-text">
+            <SymbolIcon symbol={symbol} fallback={def?.flag || "•"} size={16} />
+            {symbol}
           </span>
           {onClose && (
             <button
