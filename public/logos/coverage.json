@@ -1,0 +1,14 @@
+{
+  "total": 214,
+  "withLogo": 214,
+  "missing": [],
+  "byClass": {
+    "stocks": 0,
+    "fx": 47,
+    "stock": 25,
+    "index": 3,
+    "commodity": 19,
+    "crypto": 120
+  },
+  "generatedAt": "2026-10-06T14:41:08.769713+00:00"
+}

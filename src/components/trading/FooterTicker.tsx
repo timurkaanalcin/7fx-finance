@@ -2,6 +2,7 @@
 
 import { formatPrice } from "@/lib/symbols";
 import type { PriceTick, SymbolDef } from "./types";
+import SymbolIcon from "@/components/ui/SymbolIcon";
 
 type Props = {
   symbols: SymbolDef[];
@@ -26,7 +27,7 @@ export default function FooterTicker({ symbols, prices, onSelect, className = ""
               onClick={() => onSelect(s.symbol)}
               className="mx-2.5 inline-flex items-center gap-1.5 text-[10px] text-desk-muted/80 transition-colors hover:text-desk-text"
             >
-              <span className="opacity-80">{s.flag}</span>
+              <SymbolIcon symbol={s.symbol} fallback={s.flag || "•"} size={14} />
               <span className="font-medium text-desk-text/75">{s.symbol}</span>
               <span className={`tabular-nums ${up ? "text-desk-buy" : "text-desk-sell"}`}>
                 {p ? formatPrice(s.symbol, p.mid) : "—"}

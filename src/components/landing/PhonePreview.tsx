@@ -1,5 +1,7 @@
 "use client";
 
+import SymbolIcon from "@/components/ui/SymbolIcon";
+
 const watch = [
   { s: "EURUSD", name: "Euro / Dolar", p: "1.0842", d: "+0.14%", up: true },
   { s: "XAUUSD", name: "Gold", p: "2.341,20", d: "+0.32%", up: true },
@@ -97,13 +99,7 @@ export default function PhonePreview() {
                 className={`flex items-center justify-between gap-1.5 rounded-lg border border-[#2a2a2a] bg-[#0a0a0a] px-2 py-1.5 sm:gap-2 sm:rounded-xl sm:px-3 sm:py-2.5 ${i > 1 ? "hidden sm:flex" : ""}`}
               >
                 <div className="flex min-w-0 items-center gap-1.5 sm:gap-2.5">
-                  <span
-                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[8px] font-bold text-white sm:h-7 sm:w-7 sm:rounded-lg sm:text-[9px] ${
-                      row.up ? "bg-[#111111]" : "bg-[#8b97b0]"
-                    }`}
-                  >
-                    {row.s.slice(0, 2)}
-                  </span>
+                  <SymbolIcon symbol={row.s} size={28} className="!rounded-md sm:!h-7 sm:!w-7 sm:!rounded-lg" />
                   <div className="min-w-0">
                     <p className="truncate text-[11px] font-semibold text-[#e8eef8] sm:text-[12px]">{row.s}</p>
                     <p className="truncate text-[9px] text-[#8b97b0] sm:text-[10px]">{row.name}</p>

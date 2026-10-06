@@ -5,6 +5,7 @@ import Link from "next/link";
 import PhonePreview from "./PhonePreview";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 import { useI18n } from "@/lib/i18n/context";
+import SymbolIcon from "@/components/ui/SymbolIcon";
 
 function scrollToId(id: string) {
   const el = document.getElementById(id);
@@ -32,7 +33,7 @@ function MarketMiniRows() {
     <div className="fx-viz-market mt-auto space-y-2">
       {rows.map((r) => (
         <div key={r.s} className="fx-viz-market-row flex items-center justify-between gap-2">
-          <span className="text-[12px] font-semibold tracking-wide text-[#111111]">{r.s}</span>
+          <span className="flex items-center gap-1.5 text-[12px] font-semibold tracking-wide text-[#111111]"><SymbolIcon symbol={r.s} size={16} />{r.s}</span>
           <span className="text-[12px] tabular-nums text-[#5c657a]">{r.p}</span>
           <span
             className={`min-w-[52px] rounded-md px-1.5 py-0.5 text-right text-[11px] font-semibold tabular-nums ${
@@ -491,7 +492,7 @@ export default function LandingPage() {
                   key={`${m.s}-${i}`}
                   className="fx-ticker-item flex items-center gap-2.5 whitespace-nowrap rounded-full border border-[rgba(16,20,37,0.08)] bg-white px-3 py-1.5 text-sm shadow-[0_4px_12px_rgba(16,20,37,0.04)] sm:gap-3"
                 >
-                  <span className="font-semibold text-[#111111]">{m.s}</span>
+                  <span className="inline-flex items-center gap-1.5 font-semibold text-[#111111]"><SymbolIcon symbol={m.s} size={18} />{m.s}</span>
                   <span className="fx-ticker-name text-[12px] text-[#5c657a]">{m.name}</span>
                   <span className="tabular-nums text-[#5c657a]">{m.p}</span>
                   <span
