@@ -180,7 +180,7 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
               </Link>
               {user.role === "ADMIN" && (
                 <Link
-                  href="/admin"
+                  href="/izcrm"
                   onClick={() => setMenuOpen(false)}
                   className="block px-3 py-2.5 text-xs text-desk-warn hover:bg-desk-hover"
                 >

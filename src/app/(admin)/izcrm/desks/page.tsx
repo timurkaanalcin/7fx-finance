@@ -104,7 +104,7 @@ export default function DesksPage() {
                 <td className="px-3 py-2">{d.tradersCount}</td>
                 <td className="px-3 py-2">{d.workersCount}</td>
                 <td className="px-3 py-2">
-                  <Link href={`/admin/desks/${d.id}`} className="rounded bg-black text-white/80 px-2 py-1">
+                  <Link href={`/izcrm/desks/${d.id}`} className="rounded bg-black text-white/80 px-2 py-1">
                     {i18n("crm.ui.detail")}
                   </Link>
                 </td>

@@ -112,7 +112,7 @@ export default function AdminDashboard() {
           </p>
         </div>
         <Link
-          href="/admin/positions"
+          href="/izcrm/positions"
           className="rounded bg-black px-3 py-1.5 text-[11px] font-medium text-white"
         >
           {i18n("crm.dash.livePositions")}
@@ -130,23 +130,23 @@ export default function AdminDashboard() {
           <Card
             label={i18n("crm.presence.dashOnline")}
             value={kpis.onlineClients ?? 0}
-            href="/admin/traders"
+            href="/izcrm/traders"
             dot={(kpis.onlineClients ?? 0) > 0 ? "bg-emerald-500" : "bg-neutral-300"}
             sub={`${kpis.recentClients ?? 0} ${i18n("crm.presence.dashRecent")}`}
             accent={(kpis.onlineClients ?? 0) > 0 ? "ring-1 ring-emerald-500/30" : ""}
           />
-          <Card label={i18n("crm.nav.traders")} value={kpis.users} href="/admin/traders" />
-          <Card label={i18n("crm.dash.openPositions")} value={kpis.openPositions} href="/admin/positions" />
+          <Card label={i18n("crm.nav.traders")} value={kpis.users} href="/izcrm/traders" />
+          <Card label={i18n("crm.dash.openPositions")} value={kpis.openPositions} href="/izcrm/positions" />
           <Card
             label={i18n("crm.dash.pendingDeposits")}
             value={kpis.pendingDeposits}
-            href="/admin/tickets?kind=deposit"
+            href="/izcrm/tickets?kind=deposit"
             accent={kpis.pendingDeposits > 0 ? "ring-1 ring-amber-500/40" : ""}
           />
           <Card
             label={i18n("crm.dash.marginRequests")}
             value={kpis.pendingBalanceRequests}
-            href="/admin/tickets?kind=margin"
+            href="/izcrm/tickets?kind=margin"
             accent={kpis.pendingBalanceRequests > 0 ? "ring-1 ring-amber-500/40" : ""}
           />
           <Card label={i18n("crm.dash.totalVolume")} value={Number(kpis.totalVolume).toFixed(2)} />
@@ -159,7 +159,7 @@ export default function AdminDashboard() {
             <h2 className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
               {i18n("crm.dash.recentPositions")}
             </h2>
-            <Link href="/admin/positions" className="text-[10px] text-sky-600 hover:underline">
+            <Link href="/izcrm/positions" className="text-[10px] text-sky-600 hover:underline">
               {i18n("crm.ui.all")}
             </Link>
           </div>
@@ -189,7 +189,7 @@ export default function AdminDashboard() {
                       {Number(p.profit).toFixed(2)}
                     </td>
                     <td className="px-2 py-1.5">
-                      <Link href={`/admin/traders/${p.traderId}`} className="text-sky-600 hover:underline">
+                      <Link href={`/izcrm/traders/${p.traderId}`} className="text-sky-600 hover:underline">
                         {p.traderName}
                       </Link>
                     </td>
@@ -214,7 +214,7 @@ export default function AdminDashboard() {
               {i18n("crm.dash.recentOrders")}
             </h2>
             <Link
-              href="/admin/positions?tab=orders"
+              href="/izcrm/positions?tab=orders"
               className="text-[10px] text-sky-600 hover:underline"
             >
               All
@@ -240,7 +240,7 @@ export default function AdminDashboard() {
                     <td className="px-2 py-1.5">{code("crm.kind", o.side)}</td>
                     <td className="px-2 py-1.5 tabular-nums">{o.volume}</td>
                     <td className="px-2 py-1.5">
-                      <Link href={`/admin/traders/${o.traderId}`} className="text-sky-600 hover:underline">
+                      <Link href={`/izcrm/traders/${o.traderId}`} className="text-sky-600 hover:underline">
                         {o.traderName}
                       </Link>
                     </td>
@@ -262,14 +262,14 @@ export default function AdminDashboard() {
 
       <div className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          { href: "/admin/traders", title: i18n("crm.nav.traders"), desc: i18n("crm.dash.cardTraders") },
-          { href: "/admin/tickets", title: i18n("crm.nav.tickets"), desc: i18n("crm.dash.cardTickets") },
-          { href: "/admin/positions", title: i18n("crm.nav.positions"), desc: i18n("crm.dash.cardPositions") },
-          { href: "/admin/desks", title: i18n("crm.nav.desks"), desc: i18n("crm.dash.cardDesks") },
-          { href: "/admin/transactions", title: i18n("crm.nav.transactions"), desc: i18n("crm.dash.cardLedger") },
-          { href: "/admin/rates", title: i18n("crm.nav.rates"), desc: i18n("crm.dash.cardRates") },
-          { href: "/admin/workers", title: i18n("crm.nav.workers"), desc: i18n("crm.dash.cardWorkers") },
-          { href: "/admin/methods", title: i18n("crm.nav.methods"), desc: i18n("crm.dash.cardMethods") },
+          { href: "/izcrm/traders", title: i18n("crm.nav.traders"), desc: i18n("crm.dash.cardTraders") },
+          { href: "/izcrm/tickets", title: i18n("crm.nav.tickets"), desc: i18n("crm.dash.cardTickets") },
+          { href: "/izcrm/positions", title: i18n("crm.nav.positions"), desc: i18n("crm.dash.cardPositions") },
+          { href: "/izcrm/desks", title: i18n("crm.nav.desks"), desc: i18n("crm.dash.cardDesks") },
+          { href: "/izcrm/transactions", title: i18n("crm.nav.transactions"), desc: i18n("crm.dash.cardLedger") },
+          { href: "/izcrm/rates", title: i18n("crm.nav.rates"), desc: i18n("crm.dash.cardRates") },
+          { href: "/izcrm/workers", title: i18n("crm.nav.workers"), desc: i18n("crm.dash.cardWorkers") },
+          { href: "/izcrm/methods", title: i18n("crm.nav.methods"), desc: i18n("crm.dash.cardMethods") },
         ].map((x) => (
           <Link
             key={x.href}

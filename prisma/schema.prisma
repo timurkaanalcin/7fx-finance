@@ -10,6 +10,8 @@ datasource db {
 model User {
   id                 String           @id @default(cuid())
   email              String           @unique @db.VarChar(191)
+  /// Optional login username (unique, case-insensitive via lower-case storage)
+  username           String?          @unique @db.VarChar(64)
   /// 16-digit numeric login ID (Account ID) — digits only, unique
   accountLoginId     String?          @unique @db.VarChar(16)
   passwordHash       String

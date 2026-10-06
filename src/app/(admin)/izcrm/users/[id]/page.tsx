@@ -10,7 +10,7 @@ export default function UserDetailRedirect() {
   const params = useParams();
   const router = useRouter();
   useEffect(() => {
-    router.replace(`/admin/traders/${params?.id}`);
+    router.replace(`/izcrm/traders/${params?.id}`);
   }, [router, params]);
   return <div className="text-xs text-neutral-500">{i18n("crm.redirect.trader")}</div>;
 }

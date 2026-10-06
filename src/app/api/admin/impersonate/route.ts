@@ -105,7 +105,7 @@ export async function DELETE() {
     if ((payload.role as string) !== "ADMIN") {
       return NextResponse.json({ error: "Invalid backup" }, { status: 400 });
     }
-    const res = NextResponse.json({ ok: true, redirect: "/admin" });
+    const res = NextResponse.json({ ok: true, redirect: "/izcrm" });
     attachSessionCookie(res, backup);
     clearAdminBackupCookie(res);
     await writeAudit({

@@ -481,7 +481,7 @@ export default function AdminUsersPage() {
                 </td>
                 <td className="px-3 py-2.5">
                   <Link
-                    href={`/admin/traders/${u.id}`}
+                    href={`/izcrm/traders/${u.id}`}
                     className="rounded bg-black text-white/80 px-2 py-1 hover:bg-neutral-800"
                   >
                     {i18n("crm.ui.detail")}

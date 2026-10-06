@@ -32,6 +32,16 @@ export function middleware(req: NextRequest) {
     return res;
   };
 
+  // Legacy CRM path — do not redirect (would reveal /izcrm). Plain 404 for everyone.
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) {
+    return applyHeaders(
+      new NextResponse("Not Found", {
+        status: 404,
+        headers: { "Content-Type": "text/plain; charset=utf-8" },
+      })
+    );
+  }
+
   if (pathname === "/login" || pathname === "/register") {
     if (token) {
       return applyHeaders(NextResponse.redirect(new URL("/trade", req.url)));
@@ -41,7 +51,8 @@ export function middleware(req: NextRequest) {
 
   if (
     (pathname.startsWith("/trade") ||
-      pathname.startsWith("/admin") ||
+      pathname === "/izcrm" ||
+      pathname.startsWith("/izcrm/") ||
       pathname.startsWith("/profile")) &&
     !token
   ) {
@@ -56,6 +67,9 @@ export const config = {
     "/trade/:path*",
     "/login",
     "/register",
+    "/izcrm",
+    "/izcrm/:path*",
+    "/admin",
     "/admin/:path*",
     "/profile",
     "/profile/:path*",

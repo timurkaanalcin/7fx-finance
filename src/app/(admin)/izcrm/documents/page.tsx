@@ -140,7 +140,7 @@ export default function DocumentsPage() {
                   </td>
                   <td className="px-2 py-1.5">{d.docType}</td>
                   <td className="px-2 py-1.5">
-                    <Link href={`/admin/traders/${d.traderId}`} className="text-sky-400 hover:underline">
+                    <Link href={`/izcrm/traders/${d.traderId}`} className="text-sky-400 hover:underline">
                       {d.trader}
                     </Link>
                   </td>

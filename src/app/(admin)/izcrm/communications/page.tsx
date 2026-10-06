@@ -121,7 +121,7 @@ export default function CommunicationsPage() {
                     <div className="max-w-[280px] truncate text-neutral-500">{r.description}</div>
                   </td>
                   <td className="px-2 py-1.5">
-                    <Link href={`/admin/traders/${r.traderId}`} className="text-sky-400 hover:underline">
+                    <Link href={`/izcrm/traders/${r.traderId}`} className="text-sky-400 hover:underline">
                       {r.trader}
                     </Link>
                     <div className="text-neutral-400">{r.desk || "—"}</div>

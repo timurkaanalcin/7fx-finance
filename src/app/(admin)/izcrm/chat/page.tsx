@@ -502,7 +502,7 @@ export default function ChatPage() {
                   </span>
                   <div className="min-w-0">
                     <Link
-                      href={`/admin/traders/${active.traderId}`}
+                      href={`/izcrm/traders/${active.traderId}`}
                       className="truncate text-sm font-semibold text-[var(--accent)] hover:underline"
                     >
                       {active.trader}

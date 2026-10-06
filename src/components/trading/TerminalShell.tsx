@@ -269,7 +269,7 @@ export default function TerminalShell() {
             onClick={async () => {
               const res = await fetch("/api/admin/impersonate", { method: "DELETE" });
               const data = await res.json().catch(() => ({}));
-              if (res.ok) window.location.href = data.redirect || "/admin";
+              if (res.ok) window.location.href = data.redirect || "/izcrm";
               else alert(data.error || "Could not exit impersonation");
             }}
           >

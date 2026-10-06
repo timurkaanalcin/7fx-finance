@@ -145,7 +145,7 @@ export default function TransactionsPage() {
       ),
       render: (r) => (
         <div className="min-w-[9rem]">
-          <Link href={`/admin/traders/${r.traderId}`} className="font-medium text-sky-700 hover:underline">
+          <Link href={`/izcrm/traders/${r.traderId}`} className="font-medium text-sky-700 hover:underline">
             {String(r.trader)}
           </Link>
           <div className="text-[9px] text-neutral-500">

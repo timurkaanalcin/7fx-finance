@@ -391,7 +391,7 @@ export default function WorkersPage() {
                             {i18n("crm.ui.delete")}
                           </button>
                           <Link
-                            href={`/admin/traders/${w.id}`}
+                            href={`/izcrm/traders/${w.id}`}
                             className="rounded px-1 py-1 text-[10px] text-sky-700 hover:underline"
                           >
                             {i18n("crm.ui.profile")}

@@ -506,11 +506,11 @@ export default function TicketsPage() {
         >
           + {i18n("crm.edit.newRecord")}
         </button>
-        <Link href="/admin/deposits" className="rounded bg-neutral-100 px-2 py-1.5 hover:bg-neutral-200">
+        <Link href="/izcrm/deposits" className="rounded bg-neutral-100 px-2 py-1.5 hover:bg-neutral-200">
           {i18n("crm.tickets.legacyDeposits")}
         </Link>
         <Link
-          href="/admin/balance-requests"
+          href="/izcrm/balance-requests"
           className="rounded bg-neutral-100 px-2 py-1.5 hover:bg-neutral-200"
         >
           {i18n("crm.tickets.legacyMargin")}
@@ -589,7 +589,7 @@ export default function TicketsPage() {
                         : methodLabel(ticket)}
                     </td>
                     <td className="px-2 py-1.5">
-                      <Link href={`/admin/traders/${ticket.customerId}`} className="text-sky-700 hover:underline">
+                      <Link href={`/izcrm/traders/${ticket.customerId}`} className="text-sky-700 hover:underline">
                         {ticket.customer}
                       </Link>
                       <div className="text-[9px] text-neutral-500">{ticket.customerEmail}</div>

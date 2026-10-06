@@ -9,7 +9,7 @@ export default function UsersRedirect() {
   const { i18n } = useCrmLabels();
   const router = useRouter();
   useEffect(() => {
-    router.replace("/admin/traders");
+    router.replace("/izcrm/traders");
   }, [router]);
   return <div className="text-xs text-neutral-500">{i18n("crm.redirect.traders")}</div>;
 }

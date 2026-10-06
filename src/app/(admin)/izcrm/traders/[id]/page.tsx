@@ -1292,7 +1292,7 @@ export default function AdminUserDetailPage() {
   return (
     <div className="text-[#111111]">
       <div className="mb-4 flex flex-wrap items-center gap-3">
-        <Link href="/admin/traders" className="text-xs text-neutral-500 hover:text-[#111111]">
+        <Link href="/izcrm/traders" className="text-xs text-neutral-500 hover:text-[#111111]">
           {i18n("crm.ui.backToTraders")}
         </Link>
         <h1 className="text-xl font-semibold">{user.name}</h1>

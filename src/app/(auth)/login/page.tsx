@@ -16,7 +16,7 @@ export default async function LoginPage() {
   if (session) {
     const user = await requireUser();
     if (user) {
-      redirect(session.role === "ADMIN" ? "/admin" : "/trade");
+      redirect(session.role === "ADMIN" ? "/izcrm" : "/trade");
     }
     // Stale cookie (e.g. loginEnabled=false) — clear so middleware allows /login
     await destroySession();

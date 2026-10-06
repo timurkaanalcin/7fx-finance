@@ -1,7 +1,7 @@
 import type { Locale } from "../locales";
 import type { Dict } from "../types";
 
-/** CRM/admin UI strings merged into each locale dictionary. */
+/** CRM/izcrm UI strings merged into each locale dictionary. */
 const SPEC: readonly (readonly [string, string, string, string, string, string])[] = [
   ["crm.ui.all", "All", "Tümü", "Все", "Alle", "الكل"],
   ["crm.ui.allStatuses", "All statuses", "Tüm durumlar", "Все статусы", "Alle Status", "كل الحالات"],

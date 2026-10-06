@@ -112,7 +112,7 @@ export default function CalendarPage() {
                     {r.trader ? (
                       <>
                         {" · "}
-                        <Link href={`/admin/traders/${r.traderId}`} className="text-sky-400 hover:underline">
+                        <Link href={`/izcrm/traders/${r.traderId}`} className="text-sky-400 hover:underline">
                           {r.trader}
                         </Link>
                       </>

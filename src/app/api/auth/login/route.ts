@@ -14,19 +14,32 @@ export async function POST(req: Request) {
     await ensureDemoSeed();
     const body = await req.json();
     const raw = String(
-      body.email || body.identifier || body.accountLoginId || ""
+      body.email || body.identifier || body.accountLoginId || body.username || ""
     ).trim();
     const password = String(body.password || "");
     if (!raw || !password) {
       return NextResponse.json(
-        { error: "Email or account ID and password are required" },
+        { error: "Email, username or account ID and password are required" },
         { status: 400 }
       );
     }
 
-    const user = isAccountLoginId(raw)
-      ? await prisma.user.findUnique({ where: { accountLoginId: raw } })
-      : await prisma.user.findUnique({ where: { email: raw.toLowerCase() } });
+    let user =
+      isAccountLoginId(raw)
+        ? await prisma.user.findUnique({ where: { accountLoginId: raw } })
+        : null;
+    if (!user && raw.includes("@")) {
+      user = await prisma.user.findUnique({ where: { email: raw.toLowerCase() } });
+    }
+    if (!user) {
+      // Username login (stored lower-case). Also try email for legacy identifiers without @.
+      const key = raw.toLowerCase();
+      user = await prisma.user.findFirst({
+        where: {
+          OR: [{ username: key }, { email: key }],
+        },
+      });
+    }
 
     const meta = currentRequestMeta();
     if (!user) {

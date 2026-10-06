@@ -271,7 +271,7 @@ export default function AssetsPage() {
           <h1 className="text-lg font-semibold">{i18n("crm.nav.assets")}</h1>
           <p className="text-[11px] text-neutral-500">
             {i18n("crm.assets.title")} —{" "}
-            <Link href="/admin/rates" className="text-sky-700 hover:underline">
+            <Link href="/izcrm/rates" className="text-sky-700 hover:underline">
               {i18n("crm.nav.rates")}
             </Link>
           </p>

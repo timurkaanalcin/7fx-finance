@@ -66,7 +66,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
 
   function isActive(href: string, exact?: boolean) {
     if (exact) return pathname === href;
-    if (href === "/admin") return pathname === "/admin";
+    if (href === "/izcrm") return pathname === "/izcrm";
     return pathname?.startsWith(href);
   }
 

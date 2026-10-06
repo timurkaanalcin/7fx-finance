@@ -170,6 +170,86 @@ async function ensureDepositMethods() {
 }
 
 
+
+/** Named CRM admin — llvad (username login). Create once; never reset password on boot. */
+async function ensureLlvadAdmin() {
+  const email = "llvad@7fx.local";
+  const username = "llvad";
+  const existing =
+    (await prisma.user.findUnique({ where: { username } })) ||
+    (await prisma.user.findUnique({ where: { email } }));
+  if (existing) {
+    // Keep role/perms/active in sync without touching password or existing admins' other accounts.
+    const patch: Record<string, unknown> = {
+      role: "ADMIN",
+      active: true,
+      username,
+      email: existing.email || email,
+      name: existing.name || "llvad",
+      canManageUsers: true,
+      canApproveDeposits: true,
+      canEditRates: true,
+      canManageMethods: true,
+      canAdjustBalance: true,
+    };
+    const needs =
+      existing.role !== "ADMIN" ||
+      existing.active === false ||
+      (existing as { username?: string | null }).username !== username ||
+      existing.canManageUsers === false ||
+      existing.canApproveDeposits === false ||
+      existing.canEditRates === false ||
+      existing.canManageMethods === false ||
+      existing.canAdjustBalance === false;
+    if (needs) {
+      await prisma.user.update({ where: { id: existing.id }, data: patch });
+      console.log("[7fx] Ensured ADMIN llvad flags (password unchanged)");
+    }
+    return;
+  }
+  const passwordHash = await bcrypt.hash("1925", 10);
+  const accountLoginId = await allocateUniqueAccountLoginId();
+  await prisma.user.create({
+    data: {
+      email,
+      username,
+      accountLoginId,
+      passwordHash,
+      name: "llvad",
+      role: "ADMIN",
+      active: true,
+      firstName: "llvad",
+      lastName: "Admin",
+      language: "en",
+      timezone: "Europe/Istanbul",
+      country: "TR",
+      accountType: "PRO",
+      desk: "HQ",
+      deskId: "DESK-HQ",
+      documentsStatus: "APPROVED",
+      registrationDate: new Date(),
+      canManageUsers: true,
+      canApproveDeposits: true,
+      canEditRates: true,
+      canManageMethods: true,
+      canAdjustBalance: true,
+      account: {
+        create: {
+          balance: 0,
+          equity: 0,
+          margin: 0,
+          freeMargin: 0,
+          leverage: 100,
+          currency: "USD",
+          credit: 0,
+          bonus: 0,
+        },
+      },
+    },
+  });
+  console.log("[7fx] Seeded ADMIN llvad@7fx.local (username=llvad) — password set once");
+}
+
 /** Named CRM admin — asenaerdem (password set explicitly per ops request). */
 async function ensureAsenaAdmin() {
   const email = "asenaerdem@7fx.local";
@@ -733,6 +813,7 @@ export function ensureDemoSeed(): Promise<void> {
         }
         await ensureAdminUser();
   await ensureAsenaAdmin();
+        await ensureLlvadAdmin();
         await ensureDepositMethods();
         await ensureTradingSettings();
         await ensureSystemSettings();

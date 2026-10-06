@@ -5,7 +5,7 @@ import LandingPage from "@/components/landing/LandingPage";
 export default async function Home() {
   const session = await getSession();
   if (session) {
-    redirect(session.role === "ADMIN" ? "/admin" : "/trade");
+    redirect(session.role === "ADMIN" ? "/izcrm" : "/trade");
   }
 
   return <LandingPage />;

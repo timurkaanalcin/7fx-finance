@@ -60,7 +60,7 @@ export default function AuthShell({ mode, children }: AuthShellProps) {
               </h1>
               <p className="mx-auto mt-2.5 max-w-sm text-sm leading-relaxed text-[#5c657a]">
                 {isLogin
-                  ? "After authentication the trading terminal opens. Admin accounts are redirected to /admin."
+                  ? "After authentication the trading terminal opens. Admin accounts are redirected to the CRM."
                   : "Enter your details; terminal access opens automatically after registration. Referral code is required."}
               </p>
             </div>

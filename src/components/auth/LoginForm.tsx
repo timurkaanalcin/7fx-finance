@@ -119,7 +119,7 @@ export default function LoginForm() {
         setError(data.error || t("auth.loginFailed"));
         return;
       }
-      window.location.assign(data.user?.role === "ADMIN" ? "/admin" : "/trade");
+      window.location.assign(data.user?.role === "ADMIN" ? "/izcrm" : "/trade");
     } catch {
       setError(t("auth.connectionError"));
     } finally {

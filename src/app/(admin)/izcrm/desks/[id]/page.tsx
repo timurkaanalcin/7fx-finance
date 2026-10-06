@@ -36,7 +36,7 @@ export default function DeskDetailPage() {
   return (
     <div>
       <div className="mb-3 flex items-center gap-3">
-        <Link href="/admin/desks" className="text-xs text-neutral-500 hover:text-white">
+        <Link href="/izcrm/desks" className="text-xs text-neutral-500 hover:text-white">
           {i18n("crm.ui.backDesks")}
         </Link>
         <h1 className="text-lg font-semibold">{String(desk.name)}</h1>
@@ -82,7 +82,7 @@ export default function DeskDetailPage() {
         <ul className="space-y-1 text-xs">
           {traders.map((t) => (
             <li key={String(t.id)} className="flex justify-between rounded border border-neutral-200 px-3 py-2">
-              <Link href={`/admin/traders/${t.id}`} className="text-sky-300 hover:underline">
+              <Link href={`/izcrm/traders/${t.id}`} className="text-sky-300 hover:underline">
                 {String(t.name)}
               </Link>
               <span className="tabular-nums text-neutral-500">
