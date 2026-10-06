@@ -53,6 +53,13 @@ model User {
   canAdjustBalance   Boolean          @default(true)
   /// When true, ADMIN may view all CRM pages/APIs but cannot mutate
   crmReadOnly        Boolean          @default(false)
+  /// TOTP 2FA (ADMIN). Secret stored encrypted-at-rest via app secret XOR is overkill; keep server-only.
+  totpSecret         String?          @db.VarChar(128)
+  totpEnabled        Boolean          @default(false)
+  /// Failed password attempts (reset on success)
+  failedLoginCount   Int              @default(0)
+  /// Account lockout until this time (null = not locked)
+  lockedUntil        DateTime?
 
   /// Identity / membership
   firstName            String?

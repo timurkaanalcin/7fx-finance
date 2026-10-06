@@ -1,5 +1,5 @@
 import { SignJWT, jwtVerify } from "jose";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
 import { ensureDemoSeed } from "./ensure-seed";
@@ -75,7 +75,29 @@ export type SessionPayload = {
   autoLoginLinkId?: string;
   /** JWT issued-at (seconds) — used to reject sessions older than a password change */
   iat?: number;
+  /** CRM session bind (ADMIN): hashed IP / UA at issue time */
+  ipHash?: string;
+  uaHash?: string;
 };
+
+/** For ADMIN sessions issued with bind hashes: reject (null) when IP/UA changed → force re-login. */
+export async function adminSessionBindOk(session: SessionPayload | null): Promise<boolean> {
+  if (!session || session.role !== "ADMIN") return true;
+  if (!session.ipHash && !session.uaHash) return true; // legacy sessions
+  try {
+    const h = headers();
+    const { clientIpFromHeaders, deviceFingerprint } = await import("@/lib/security/fingerprint");
+    const ip = clientIpFromHeaders({ get: (n) => h.get(n) });
+    const ua = h.get("user-agent") || "";
+    const fp = deviceFingerprint(ip, ua);
+    if (session.ipHash && session.ipHash !== fp.ipHash) return false;
+    if (session.uaHash && session.uaHash !== fp.uaHash) return false;
+    return true;
+  } catch {
+    return true;
+  }
+}
+
 
 export async function hashPassword(password: string) {
   return bcrypt.hash(password, 10);
@@ -143,6 +165,10 @@ export async function getSession(): Promise<SessionPayload | null> {
       typeof payload.autoLoginLinkId === "string" && payload.autoLoginLinkId
         ? payload.autoLoginLinkId
         : undefined;
+    const ipHash =
+      typeof payload.ipHash === "string" && payload.ipHash ? payload.ipHash : undefined;
+    const uaHash =
+      typeof payload.uaHash === "string" && payload.uaHash ? payload.uaHash : undefined;
     return {
       userId: payload.userId as string,
       email: payload.email as string,
@@ -151,6 +177,8 @@ export async function getSession(): Promise<SessionPayload | null> {
       ...(impersonatedBy ? { impersonatedBy } : {}),
       ...(autoLoginLinkId ? { autoLoginLinkId } : {}),
       ...(typeof payload.iat === "number" ? { iat: payload.iat } : {}),
+      ...(ipHash ? { ipHash } : {}),
+      ...(uaHash ? { uaHash } : {}),
     };
   } catch {
     return null;
@@ -185,6 +213,12 @@ export async function requireUser() {
 }
 
 export async function requireAdmin() {
+  const session = await getSession();
+  if (!session || session.role !== "ADMIN") return null;
+  if (!(await adminSessionBindOk(session))) {
+    // Suspicious bind change — drop usability until re-auth
+    return null;
+  }
   const user = await requireUser();
   if (!user || user.role !== "ADMIN") return null;
   return user;

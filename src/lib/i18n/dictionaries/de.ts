@@ -236,5 +236,9 @@ export const de: Dict = {
   "profile.support.placeholder": 'Nachricht eingeben…',
   "profile.support.send": 'Senden',
   "profile.support.sendFailed": 'Senden fehlgeschlagen',
-  "profile.support.connectionError": 'Verbindungsfehler'
+  "profile.support.connectionError": 'Verbindungsfehler',
+  "auth.totpPrompt": 'Geben Sie den 6-stelligen Code aus Ihrer Authenticator-App ein.',
+  "auth.totpCode": 'Authentifizierungscode',
+  "auth.verifyTotp": 'Bestätigen',
+  "auth.backToLogin": 'Zurück zur Anmeldung'
 };

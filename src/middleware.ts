@@ -4,7 +4,21 @@ import {
   hostnameFromRequest,
   isCrmHostname,
 } from "@/lib/crm-host";
+import { isAllowedApiOrigin } from "@/lib/security/origins";
 
+const STRICT_CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https:",
+  "font-src 'self' data:",
+  "connect-src 'self' https://query1.finance.yahoo.com https://query2.finance.yahoo.com",
+  "frame-ancestors 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "object-src 'none'",
+  "upgrade-insecure-requests",
+].join("; ");
 
 export function middleware(req: NextRequest) {
   const token =
@@ -15,34 +29,49 @@ export function middleware(req: NextRequest) {
   const crmHost = isCrmHostname(host);
 
   const applyHeaders = (res: NextResponse) => {
-    res.headers.set("X-Frame-Options", "SAMEORIGIN");
+    res.headers.set("X-Frame-Options", "DENY");
     res.headers.set("X-Content-Type-Options", "nosniff");
     res.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
     res.headers.set(
       "Permissions-Policy",
       "camera=(), microphone=(), geolocation=()"
     );
-    res.headers.set(
-      "Content-Security-Policy",
-      [
-        "default-src 'self'",
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-        "style-src 'self' 'unsafe-inline'",
-        "img-src 'self' data: blob: https:",
-        "font-src 'self' data:",
-        "connect-src 'self' https://query1.finance.yahoo.com https://query2.finance.yahoo.com",
-        "frame-ancestors 'self'",
-        "base-uri 'self'",
-        "form-action 'self'",
-      ].join("; ")
-    );
+    res.headers.set("Content-Security-Policy", STRICT_CSP);
+    if (
+      pathname === "/izcrm" ||
+      pathname.startsWith("/izcrm/") ||
+      pathname.startsWith("/api/admin") ||
+      crmHost
+    ) {
+      res.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+    }
     return res;
   };
 
+  // API origin allowlist (credentialed browser calls). Missing Origin allowed (native / same-origin).
+  if (pathname.startsWith("/api/")) {
+    const origin = req.headers.get("origin");
+    if (origin && !isAllowedApiOrigin(origin)) {
+      return applyHeaders(
+        NextResponse.json({ error: "Origin not allowed" }, { status: 403 })
+      );
+    }
+    if (req.method === "OPTIONS") {
+      // No open CORS — browsers on allowed origins are same-site or listed; deny preflight from strangers.
+      if (origin && isAllowedApiOrigin(origin)) {
+        const res = new NextResponse(null, { status: 204 });
+        res.headers.set("Access-Control-Allow-Origin", origin);
+        res.headers.set("Access-Control-Allow-Credentials", "true");
+        res.headers.set("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
+        res.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        return applyHeaders(res);
+      }
+      return applyHeaders(new NextResponse(null, { status: 403 }));
+    }
+  }
 
   // ——— CRM host (crm7fx.customer.org.tr) ———
   if (crmHost) {
-    // APIs and Next internals pass through (session cookie is host-scoped).
     if (
       pathname.startsWith("/api/") ||
       pathname.startsWith("/_next/") ||
@@ -67,7 +96,6 @@ export function middleware(req: NextRequest) {
       return applyHeaders(NextResponse.next());
     }
 
-    // /admin never reveals CRM on this host either
     if (pathname === "/admin" || pathname.startsWith("/admin/")) {
       return applyHeaders(
         new NextResponse("Not Found", {
@@ -77,12 +105,19 @@ export function middleware(req: NextRequest) {
       );
     }
 
-    // `/` and any other path → blank empty page (no branding, no redirect).
-    return applyHeaders(new NextResponse(awaitBlank(), { status: 200, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store", "X-Robots-Tag": "noindex" } }));
+    return applyHeaders(
+      new NextResponse(awaitBlank(), {
+        status: 200,
+        headers: {
+          "Content-Type": "text/html; charset=utf-8",
+          "Cache-Control": "no-store",
+          "X-Robots-Tag": "noindex",
+        },
+      })
+    );
   }
 
   // ——— Main trading host ———
-  // Legacy CRM path — plain 404 (do not redirect / reveal).
   if (pathname === "/admin" || pathname.startsWith("/admin/")) {
     return applyHeaders(
       new NextResponse("Not Found", {
@@ -91,9 +126,6 @@ export function middleware(req: NextRequest) {
       })
     );
   }
-
-  // NOTE: /izcrm on main host stays available until crm7fx is verified with TLS.
-  // After cutover, mirror the /admin 404 here.
 
   if (pathname === "/login" || pathname === "/register") {
     if (token) {
@@ -116,15 +148,11 @@ export function middleware(req: NextRequest) {
 }
 
 function awaitBlank(): string {
-  return "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"/><meta name=\"robots\" content=\"noindex\"/><title></title></head><body></body></html>";
+  return '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="robots" content="noindex"/><title></title></head><body></body></html>';
 }
 
 export const config = {
   matcher: [
-    /*
-     * All app paths except static file-like URLs.
-     * Needed so the CRM host can blank `/` and unknown routes.
-     */
     "/((?!_next/static|_next/image|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|map|txt|xml|webmanifest|apk)$).*)",
   ],
 };

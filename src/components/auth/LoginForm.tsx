@@ -56,6 +56,8 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [challengeToken, setChallengeToken] = useState<string | null>(null);
+  const [totpCode, setTotpCode] = useState("");
   const [blockOpen, setBlockOpen] = useState(false);
   const [blockMessage, setBlockMessage] = useState("");
 
@@ -116,7 +118,15 @@ export default function LoginForm() {
           showLoginBlocked(String(data.message || ""));
           return;
         }
+        if (data.code === "LOCKED") {
+          setError(data.error || "Account locked");
+          return;
+        }
         setError(data.error || t("auth.loginFailed"));
+        return;
+      }
+      if (data.requires2fa && data.challengeToken) {
+        setChallengeToken(data.challengeToken);
         return;
       }
       {
@@ -154,7 +164,81 @@ export default function LoginForm() {
         <p className="mt-1 text-sm text-[#5c657a]">{t("auth.loginSubtitle")}</p>
       </div>
 
-      <form onSubmit={onSubmit} className="space-y-4" noValidate>
+      
+      {challengeToken ? (
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            setLoading(true);
+            setError("");
+            try {
+              const res = await fetch("/api/auth/2fa/verify", {
+                method: "POST",
+                credentials: "include",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ challengeToken, code: totpCode }),
+              });
+              const data = await res.json();
+              if (!res.ok) {
+                setError(data.error || t("auth.loginFailed"));
+                return;
+              }
+              const role = data.user?.role;
+              const crmReadOnly = Boolean(data.user?.crmReadOnly ?? data.permissions?.crmReadOnly);
+              const onCrmHost =
+                window.location.hostname === "crm7fx.customer.org.tr" ||
+                window.location.hostname === "crm7fx.localhost";
+              if (onCrmHost) {
+                window.location.assign(role === "ADMIN" ? "/izcrm" : "https://7fx.customer.org.tr/trade");
+              } else if (role === "ADMIN" && !crmReadOnly) {
+                window.location.assign("/izcrm");
+              } else {
+                window.location.assign("/trade");
+              }
+            } catch {
+              setError(t("auth.connectionError"));
+            } finally {
+              setLoading(false);
+            }
+          }}
+          className="space-y-4"
+        >
+          <p className="text-sm text-[#5c657a]">{t("auth.totpPrompt")}</p>
+          <div>
+            <label className={labelClass} htmlFor="fx-totp">{t("auth.totpCode")}</label>
+            <input
+              id="fx-totp"
+              className={inputClass}
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              value={totpCode}
+              onChange={(e) => setTotpCode(e.target.value)}
+              placeholder="123456"
+              required
+            />
+          </div>
+          {error && <p className="text-sm text-red-600">{error}</p>}
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex w-full items-center justify-center rounded-xl bg-[#111111] px-4 py-3 text-[15px] font-semibold text-white disabled:opacity-60"
+          >
+            {loading ? t("auth.signingIn") : t("auth.verifyTotp")}
+          </button>
+          <button
+            type="button"
+            className="w-full text-center text-sm text-[#5c657a] underline"
+            onClick={() => {
+              setChallengeToken(null);
+              setTotpCode("");
+              setError("");
+            }}
+          >
+            {t("auth.backToLogin")}
+          </button>
+        </form>
+      ) : (
+<form onSubmit={onSubmit} className="space-y-4" noValidate>
         <div>
           <label htmlFor="fx-login-identifier" className={labelClass}>
             {t("auth.identifier")}
@@ -206,6 +290,7 @@ export default function LoginForm() {
           {loading ? t("auth.signingIn") : t("common.signIn")}
         </button>
       </form>
+      )}
 
       <div className="mt-7 border-t border-[rgba(16,20,37,0.08)] pt-5 text-center text-sm text-[#5c657a]">
         Don&apos;t have an account?{" "}
