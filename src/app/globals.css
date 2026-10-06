@@ -841,3 +841,12 @@ body:has(.fx-crm) {
     mask-image: linear-gradient(90deg, #000 0%, #000 100%, transparent 100%);
   }
 }
+
+/* iOS install sheet progress bar */
+@keyframes fx-ios-bar {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+.fx-ios-install-bar {
+  animation: fx-ios-bar 1.1s ease-in-out infinite;
+}
