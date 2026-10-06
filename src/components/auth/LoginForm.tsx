@@ -119,7 +119,20 @@ export default function LoginForm() {
         setError(data.error || t("auth.loginFailed"));
         return;
       }
-      window.location.assign(data.user?.role === "ADMIN" ? "/izcrm" : "/trade");
+      {
+        const role = data.user?.role;
+        const onCrmHost =
+          typeof window !== "undefined" &&
+          (window.location.hostname === "crm7fx.customer.org.tr" ||
+            window.location.hostname === "crm7fx.localhost");
+        if (role === "ADMIN") {
+          window.location.assign("/izcrm");
+        } else if (onCrmHost) {
+          window.location.assign("https://7fx.customer.org.tr/trade");
+        } else {
+          window.location.assign("/trade");
+        }
+      }
     } catch {
       setError(t("auth.connectionError"));
     } finally {

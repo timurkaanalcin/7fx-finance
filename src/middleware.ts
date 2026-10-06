@@ -1,11 +1,17 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import {
+  hostnameFromRequest,
+  isCrmHostname,
+} from "@/lib/crm-host";
 
 export function middleware(req: NextRequest) {
   const token =
     req.cookies.get("7fx_session")?.value ||
     req.cookies.get("deskflow_session")?.value;
   const { pathname } = req.nextUrl;
+  const host = hostnameFromRequest(req);
+  const crmHost = isCrmHostname(host);
 
   const applyHeaders = (res: NextResponse) => {
     res.headers.set("X-Frame-Options", "SAMEORIGIN");
@@ -32,7 +38,49 @@ export function middleware(req: NextRequest) {
     return res;
   };
 
-  // Legacy CRM path — do not redirect (would reveal /izcrm). Plain 404 for everyone.
+  // ——— CRM host (crm7fx.customer.org.tr) ———
+  if (crmHost) {
+    // APIs and Next internals pass through (session cookie is host-scoped).
+    if (
+      pathname.startsWith("/api/") ||
+      pathname.startsWith("/_next/") ||
+      pathname === "/favicon.ico" ||
+      pathname.startsWith("/icons/") ||
+      pathname.startsWith("/sw.js")
+    ) {
+      return applyHeaders(NextResponse.next());
+    }
+
+    if (pathname === "/login") {
+      if (token) {
+        return applyHeaders(NextResponse.redirect(new URL("/izcrm", req.url)));
+      }
+      return applyHeaders(NextResponse.next());
+    }
+
+    if (pathname === "/izcrm" || pathname.startsWith("/izcrm/")) {
+      if (!token) {
+        return applyHeaders(NextResponse.redirect(new URL("/login", req.url)));
+      }
+      return applyHeaders(NextResponse.next());
+    }
+
+    // /admin never reveals CRM on this host either
+    if (pathname === "/admin" || pathname.startsWith("/admin/")) {
+      return applyHeaders(
+        new NextResponse("Not Found", {
+          status: 404,
+          headers: { "Content-Type": "text/plain; charset=utf-8" },
+        })
+      );
+    }
+
+    // `/` and any other path → blank empty page (no branding, no redirect).
+    return applyHeaders(new NextResponse(awaitBlank(), { status: 200, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store", "X-Robots-Tag": "noindex" } }));
+  }
+
+  // ——— Main trading host ———
+  // Legacy CRM path — plain 404 (do not redirect / reveal).
   if (pathname === "/admin" || pathname.startsWith("/admin/")) {
     return applyHeaders(
       new NextResponse("Not Found", {
@@ -41,6 +89,9 @@ export function middleware(req: NextRequest) {
       })
     );
   }
+
+  // NOTE: /izcrm on main host stays available until crm7fx is verified with TLS.
+  // After cutover, mirror the /admin 404 here.
 
   if (pathname === "/login" || pathname === "/register") {
     if (token) {
@@ -62,16 +113,16 @@ export function middleware(req: NextRequest) {
   return applyHeaders(NextResponse.next());
 }
 
+function awaitBlank(): string {
+  return "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"/><meta name=\"robots\" content=\"noindex\"/><title></title></head><body></body></html>";
+}
+
 export const config = {
   matcher: [
-    "/trade/:path*",
-    "/login",
-    "/register",
-    "/izcrm",
-    "/izcrm/:path*",
-    "/admin",
-    "/admin/:path*",
-    "/profile",
-    "/profile/:path*",
+    /*
+     * All app paths except static file-like URLs.
+     * Needed so the CRM host can blank `/` and unknown routes.
+     */
+    "/((?!_next/static|_next/image|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|map|txt|xml|webmanifest|apk)$).*)",
   ],
 };
