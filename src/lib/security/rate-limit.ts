@@ -29,7 +29,7 @@ export function rateLimit(
 /** Periodic cleanup to avoid unbounded growth */
 setInterval(() => {
   const now = Date.now();
-  for (const [k, b] of buckets) {
+  for (const [k, b] of Array.from(buckets.entries())) {
     if (now >= b.resetAt) buckets.delete(k);
   }
 }, 60_000).unref?.();

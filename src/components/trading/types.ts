@@ -22,6 +22,8 @@ export type UserInfo = {
   withdrawalsEnabled?: boolean;
   loginEnabled?: boolean;
   mustChangePassword?: boolean;
+  /** Profile language — synced to fx_lang for terminal UI */
+  language?: string | null;
 };
 
 export type PriceTick = {

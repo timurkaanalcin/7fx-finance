@@ -13,6 +13,8 @@ import DepositModal from "./DepositModal";
 import MarginCallModal, { type BalanceRequestRow } from "./MarginCallModal";
 import ForcePasswordModal from "./ForcePasswordModal";
 import { useI18n } from "@/lib/i18n/context";
+import BrandLoader from "@/components/ui/BrandLoader";
+import { normalizeLocale } from "@/lib/i18n/locales";
 import type {
   AccountMetrics,
   OrderRow,
@@ -24,16 +26,12 @@ import type {
 
 const TradingChart = dynamic(() => import("./TradingChart"), {
   ssr: false,
-  loading: () => (
-    <div className="flex min-h-0 flex-1 items-center justify-center bg-desk-bg text-[12px] text-desk-muted">
-      Loading chart…
-    </div>
-  ),
+  loading: () => <BrandLoader variant="inline" className="flex min-h-0 flex-1" />,
 });
 
 export default function TerminalShell() {
   const router = useRouter();
-  const { t } = useI18n();
+  const { t, setLocale, locale } = useI18n();
   const [user, setUser] = useState<UserInfo | null>(null);
   const [account, setAccount] = useState<AccountMetrics | null>(null);
   const [symbols, setSymbols] = useState<SymbolDef[]>([]);
@@ -56,6 +54,14 @@ export default function TerminalShell() {
   /** Once per margin-call episode: suppress re-open until call clears */
   const episodeShownRef = useRef(false);
   const wasInCallRef = useRef(false);
+
+  // Keep margin-call / terminal UI in profile language (fx_lang EN|TR|RU|DE|AR)
+  useEffect(() => {
+    const lang = user?.language;
+    if (!lang) return;
+    const next = normalizeLocale(lang, "public");
+    if (next !== locale) setLocale(next);
+  }, [user?.language, locale, setLocale]);
 
   const refreshBalanceRequests = useCallback(async () => {
     try {
@@ -242,12 +248,7 @@ export default function TerminalShell() {
   }
 
   if (!ready || !user) {
-    return (
-      <div className="fx-desk flex h-screen flex-col items-center justify-center gap-3 bg-desk-bg text-desk-muted">
-        <div className="h-8 w-8 animate-pulse rounded-[8px] bg-desk-accent shadow-accent-glow-sm" />
-        <span className="text-sm">Loading terminal…</span>
-      </div>
-    );
+    return <BrandLoader variant="desk" label={t("common.loading") || "Loading…"} />;
   }
 
   return (

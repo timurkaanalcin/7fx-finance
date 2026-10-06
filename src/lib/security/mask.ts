@@ -17,9 +17,9 @@ export function maskMoney(_n: number | null | undefined): string {
   return "••••";
 }
 
-/** Apply RO masking to a membership / user JSON object (mutates copy). */
+/** Apply RO masking to a membership / user JSON object (returns shallow copy). */
 export function maskTraderForRoViewer<T extends Record<string, unknown>>(row: T): T {
-  const o = { ...row };
+  const o: Record<string, unknown> = { ...row };
   if ("email" in o) o.email = maskEmail(o.email as string);
   if ("phone" in o) o.phone = maskPhone(o.phone as string);
   if ("balance" in o) o.balance = null;
@@ -29,5 +29,5 @@ export function maskTraderForRoViewer<T extends Record<string, unknown>>(row: T)
   if ("freeMargin" in o) o.freeMargin = null;
   if ("margin" in o) o.margin = null;
   if ("address" in o && o.address) o.address = "••••";
-  return o;
+  return o as T;
 }

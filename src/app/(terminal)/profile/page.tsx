@@ -9,6 +9,8 @@ import { FormEvent, useCallback, useEffect, useState } from "react";
 import { LOCALES, LOCALE_META, type Locale } from "@/lib/i18n/locales";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 import LiveSupportPanel from "@/components/profile/LiveSupportPanel";
+import BrandLoader from "@/components/ui/BrandLoader";
+import { normalizeLocale, PUBLIC_DEFAULT_LOCALE } from "@/lib/i18n/locales";
 
 type Profilee = {
   id: string;
@@ -77,7 +79,7 @@ const STATUS_LABEL: Record<string, string> = {
 
 export default function ProfileePage() {
   const router = useRouter();
-  const { t } = useI18n();
+  const { t, setLocale } = useI18n();
   const [profile, setProfilee] = useState<Profilee | null>(null);
   const [phone, setPhone] = useState("");
   const [language, setLanguage] = useState("en");
@@ -126,7 +128,9 @@ export default function ProfileePage() {
         if (!d?.profile) return;
         setProfilee(d.profile);
         setPhone(d.profile.phone || "");
-        setLanguage(d.profile.language || "tr");
+        setLanguage(d.profile.language || PUBLIC_DEFAULT_LOCALE);
+        // Sync site UI (margin-call etc.) to profile language
+        if (d.profile.language) setLocale(normalizeLocale(d.profile.language, "public"));
         setTimezone(d.profile.timezone || "Europe/Istanbul");
         setAddress(d.profile.address || "");
       })
@@ -151,6 +155,7 @@ export default function ProfileePage() {
       }
       setMsg("Kaydedildi");
       setProfilee((p) => (p ? { ...p, phone, language, timezone, address } : p));
+      setLocale(normalizeLocale(language, "public"));
     } finally {
       setBusy(false);
     }
@@ -243,11 +248,7 @@ export default function ProfileePage() {
   }
 
   if (!profile) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-[#000000] text-slate-400">
-        Loading profile…
-      </div>
-    );
+    return <BrandLoader variant="desk" label={t("common.loading") || "Loading…"} />;
   }
 
   const money = (n: number) =>
@@ -372,7 +373,11 @@ export default function ProfileePage() {
               <span className="text-slate-500">Language</span>
               <select
                 value={language}
-                onChange={(e) => setLanguage(e.target.value)}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setLanguage(v);
+                  setLocale(normalizeLocale(v, "public"));
+                }}
                 className="rounded border border-[#2a2a2a] bg-[#000000] px-2 py-1.5"
               >
                 {LOCALES.map((code) => (
