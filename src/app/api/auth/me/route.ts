@@ -65,6 +65,7 @@ export async function GET(req: Request) {
       withdrawalsEnabled: flags.withdrawalsEnabled,
       loginEnabled: flags.loginEnabled,
       mustChangePassword: (user as { mustChangePassword?: boolean }).mustChangePassword === true,
+      language: (user as { language?: string | null }).language || "en",
     },
     account: metrics,
     permissions: permissionsOf(user),

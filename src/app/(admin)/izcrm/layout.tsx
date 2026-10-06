@@ -9,6 +9,7 @@ import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 import SymbolCatalogSync from "@/components/trading/SymbolCatalogSync";
 import { useI18n } from "@/lib/i18n/context";
 import CrmSecurityShell from "@/components/crm/CrmSecurityShell";
+import BrandLoader from "@/components/ui/BrandLoader";
 
 function AdminChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -58,14 +59,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
   }, [pathname]);
 
   if (!ready) {
-    return (
-      <div className="fx-crm flex min-h-screen items-center justify-center bg-white text-neutral-500">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--accent)] border-t-transparent" />
-          <span className="text-sm">{t("crm.loading")}</span>
-        </div>
-      </div>
-    );
+    return <BrandLoader variant="crm" label={t("crm.loading")} />;
   }
 
   function isActive(href: string, exact?: boolean) {

@@ -86,7 +86,8 @@ export async function POST(req: Request) {
 }
 
 /** DELETE — exit impersonation and restore admin session from backup cookie. */
-export async function DELETE() {
+export async function DELETE(req: Request) {
+  const host = hostnameFromRequest({ headers: { get: (n: string) => req.headers.get(n) } });
   const backup = readAdminBackupToken();
   if (!backup) {
     const res = NextResponse.json({ error: "No admin backup session" }, { status: 400 });
