@@ -1,6 +1,6 @@
 "use client";
 
-import { LOCALE_META, LOCALES, type Locale } from "@/lib/i18n/locales";
+import { LOCALES, type Locale } from "@/lib/i18n/locales";
 import { useI18n } from "@/lib/i18n/context";
 
 type Props = {
@@ -35,7 +35,7 @@ export default function LanguageSwitcher({ compact, className = "", tone = "ligh
       >
         {LOCALES.map((code) => (
           <option key={code} value={code}>
-            {LOCALE_META[code].native}
+            {code.toUpperCase()}
           </option>
         ))}
       </select>
