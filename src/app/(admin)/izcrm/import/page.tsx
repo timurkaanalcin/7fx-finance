@@ -87,7 +87,7 @@ const FIELD_LABEL_KEYS: Record<TargetField, string> = {
 const TARGET_FIELDS = Object.keys(FIELD_LABEL_KEYS) as TargetField[];
 
 export default function AdminImportPage() {
-  const { i18n } = useCrmLabels();
+  const { i18n, code } = useCrmLabels();
   const t = i18n;
 
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
@@ -98,6 +98,7 @@ export default function AdminImportPage() {
   const [mapping, setMapping] = useState<Record<string, TargetField>>({});
   const [defaults, setDefaults] = useState({
     desk: "",
+    assigneeName: "",
     saleStatus: "NEW",
     currency: "USD",
     source: "",
@@ -272,6 +273,11 @@ export default function AdminImportPage() {
         <div>
           <h1 className="text-lg font-semibold text-black">{t("crm.import.title")}</h1>
           <p className="mt-0.5 text-xs text-neutral-500">{t("crm.import.subtitle")}</p>
+      <div className="mb-3 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-[11px] text-sky-950">
+        <p className="font-semibold">{t("crm.import.assignModelTitle")}</p>
+        <p className="mt-0.5">{t("crm.import.assignModel")}</p>
+      </div>
+
         </div>
         <div className="flex gap-1 text-[10px]">
           {[1, 2, 3, 4].map((s) => (
@@ -367,6 +373,15 @@ export default function AdminImportPage() {
                 </select>
               </label>
               <label className="text-[11px]">
+                <span className="text-neutral-500">{t("crm.import.assignee")}</span>
+                <input
+                  className="mt-0.5 w-full rounded border border-neutral-200 bg-white px-2 py-1.5 text-xs"
+                  value={defaults.assigneeName || ""}
+                  onChange={(e) => setDefaults((d) => ({ ...d, assigneeName: e.target.value }))}
+                  placeholder={t("crm.import.assigneePh")}
+                />
+              </label>
+              <label className="text-[11px]">
                 <span className="text-neutral-500">{t("crm.ui.saleStatus")}</span>
                 <select
                   className="mt-0.5 w-full rounded border border-neutral-200 bg-white px-2 py-1.5 text-xs"
@@ -375,7 +390,7 @@ export default function AdminImportPage() {
                 >
                   {SALE_STATUSES.map((s) => (
                     <option key={s} value={s}>
-                      {s}
+                      {code("crm.sale", s)}
                     </option>
                   ))}
                 </select>

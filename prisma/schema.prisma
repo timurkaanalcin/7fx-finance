@@ -464,6 +464,8 @@ model SystemSettings {
   referralRequired  Boolean  @default(true)
   /// When true, admins can open the trader terminal as that user (default ON)
   terminalImpersonationEnabled Boolean @default(true)
+  /// JSON: { valid: string[], invalid: string[], potential: string[] } saleStatus / potentialStatus lists
+  leadStatusMappingJson String? @db.Text
   updatedAt         DateTime @updatedAt
 }
 

@@ -6,6 +6,7 @@ import {
   setSystemSettings,
   invalidateSystemSettingsCache,
 } from "@/lib/system-settings";
+import type { LeadStatusMapping } from "@/lib/lead-status";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +20,7 @@ export async function GET() {
     referralCode: settings.referralCode,
     referralRequired: settings.referralRequired !== false,
     terminalImpersonationEnabled: settings.terminalImpersonationEnabled !== false,
+    leadStatusMapping: settings.leadStatusMapping,
     updatedAt: settings.updatedAt ?? null,
   });
 }
@@ -32,6 +34,7 @@ export async function PUT(req: Request) {
     referralCode?: string;
     referralRequired?: boolean;
     terminalImpersonationEnabled?: boolean;
+    leadStatusMapping?: LeadStatusMapping;
   } = {};
 
   if (body.referralCode != null) {
@@ -51,11 +54,15 @@ export async function PUT(req: Request) {
   if (body.terminalImpersonationEnabled != null) {
     opts.terminalImpersonationEnabled = Boolean(body.terminalImpersonationEnabled);
   }
+  if (body.leadStatusMapping != null && typeof body.leadStatusMapping === "object") {
+    opts.leadStatusMapping = body.leadStatusMapping as LeadStatusMapping;
+  }
 
   if (
     opts.referralCode == null &&
     opts.referralRequired == null &&
-    opts.terminalImpersonationEnabled == null
+    opts.terminalImpersonationEnabled == null &&
+    opts.leadStatusMapping == null
   ) {
     return NextResponse.json({ error: "No fields to update" }, { status: 400 });
   }
@@ -69,6 +76,7 @@ export async function PUT(req: Request) {
         referralCode: row.referralCode,
         referralRequired: row.referralRequired,
         terminalImpersonationEnabled: row.terminalImpersonationEnabled,
+        leadStatusMapping: row.leadStatusMapping,
       },
     });
     invalidateSystemSettingsCache();
@@ -77,6 +85,7 @@ export async function PUT(req: Request) {
       referralCode: row.referralCode,
       referralRequired: row.referralRequired !== false,
       terminalImpersonationEnabled: row.terminalImpersonationEnabled !== false,
+      leadStatusMapping: row.leadStatusMapping,
       updatedAt: row.updatedAt ?? null,
     });
   } catch (e) {

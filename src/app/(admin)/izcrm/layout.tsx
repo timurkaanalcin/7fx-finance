@@ -18,6 +18,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [adminId, setAdminId] = useState("");
   const [perms, setPerms] = useState<Record<string, boolean>>({});
   const readOnly = Boolean(perms.crmReadOnly);
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
@@ -44,6 +45,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
         }
         setName(d.user.name || "Admin");
         setEmail(d.user.email || "");
+        setAdminId(d.user.id || "");
         setPerms(d.permissions || {});
         setReady(true);
       })
@@ -71,7 +73,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
   const flatMobile = CRM_NAV_GROUPS.flatMap((g) => g.items);
 
   return (
-    <CrmSecurityShell adminName={name} adminEmail={email} readOnly={readOnly}>
+    <CrmSecurityShell adminName={name} adminEmail={email} adminId={adminId} readOnly={readOnly}>
     <div className="fx-crm fx-crm-root flex min-h-screen bg-white text-black" dir={dir}>
       <aside className="hidden w-[200px] shrink-0 flex-col border-r border-black/10 bg-white text-black md:flex">
         <div className="flex h-11 items-center gap-2 border-b border-black/10 px-3">

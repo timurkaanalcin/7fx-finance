@@ -4,6 +4,7 @@ import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import LeadDashboard from "@/components/crm/LeadDashboard";
 
 type Kpis = {
   users: number;
@@ -73,7 +74,7 @@ function Card({
 }
 
 export default function AdminDashboard() {
-  const { i18n, code } = useCrmLabels();
+  const { i18n, code, locale } = useCrmLabels();
   const [kpis, setKpis] = useState<Kpis | null>(null);
   const [positions, setPositions] = useState<ActivityPos[]>([]);
   const [orders, setOrders] = useState<ActivityOrder[]>([]);
@@ -108,7 +109,7 @@ export default function AdminDashboard() {
           <h1 className="text-lg font-semibold">{i18n("crm.nav.dashboard")}</h1>
           <p className="mt-0.5 text-xs text-neutral-500">
             {i18n("crm.dash.subtitle")}
-            {updatedAt ? ` · ${new Date(updatedAt).toLocaleTimeString("en-GB", { hour12: false })}` : ""}
+            {updatedAt ? ` · ${new Date(updatedAt).toLocaleTimeString(locale === "tr" ? "tr-TR" : locale === "ru" ? "ru-RU" : "en-GB", { hour12: false })}` : ""}
           </p>
         </div>
         <Link
@@ -118,6 +119,8 @@ export default function AdminDashboard() {
           {i18n("crm.dash.livePositions")}
         </Link>
       </div>
+
+      <LeadDashboard />
       {err && <p className="mb-3 text-sm text-red-400">{err}</p>}
       {!kpis && !err && (
         <div className="flex items-center gap-2 text-sm text-neutral-500">

@@ -43,6 +43,8 @@ export type ImportDefaults = {
   source?: string;
   language?: string;
   country?: string;
+  /** Rule-based: CRM worker / assignee name applied to all rows without override */
+  assigneeName?: string;
 };
 
 export type DuplicateMode = "skip" | "update";
@@ -60,6 +62,7 @@ export type MappedCustomer = {
   desk: string | null;
   saleStatus: string | null;
   source: string | null;
+  assigneeName: string | null;
   note: string | null;
   balance: number;
   password: string | null;

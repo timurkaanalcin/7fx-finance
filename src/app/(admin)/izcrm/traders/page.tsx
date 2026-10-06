@@ -4,6 +4,7 @@ import { fmtCrmDate } from "@/lib/crm-format";
 
 import Link from "next/link";
 import { ACCOUNT_CURRENCIES, RETENTION_STATUSES, SALE_STATUSES } from "@/lib/membership";
+import { dayEndIso, dayStartIso } from "@/lib/crm-api";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LocationLabel, PresenceCell } from "@/components/crm/Presence";
@@ -71,6 +72,9 @@ export default function AdminUsersPage() {
   const [desk, setDesk] = useState("");
   const [country, setCountry] = useState("");
   const [saleStatus, setSaleStatus] = useState("");
+  const [accountTypeFilter, setAccountTypeFilter] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [retentionStatus, setRetentionStatus] = useState("");
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
@@ -82,6 +86,13 @@ export default function AdminUsersPage() {
   const [bulkDesk, setBulkDesk] = useState("");
   const [bulkBroker, setBulkBroker] = useState("");
   const [ftdOnly, setFtdOnly] = useState(false);
+
+  useEffect(() => {
+    try {
+      const ss = new URLSearchParams(window.location.search).get("saleStatus");
+      if (ss) setSaleStatus(ss);
+    } catch { /* ignore */ }
+  }, []);
   const [presence, setPresence] = useState("");
   const [now, setNow] = useState(() => Date.now());
   const skew = useRef(0);
@@ -93,6 +104,11 @@ export default function AdminUsersPage() {
     if (desk) params.set("desk", desk);
     if (country) params.set("country", country);
     if (saleStatus) params.set("saleStatus", saleStatus);
+    if (accountTypeFilter) params.set("accountType", accountTypeFilter);
+    const f = dayStartIso(dateFrom);
+    const tt = dayEndIso(dateTo);
+    if (f) params.set("from", f);
+    if (tt) params.set("to", tt);
     if (retentionStatus) params.set("retentionStatus", retentionStatus);
     if (presence) params.set("presence", presence);
     const res = await fetch(`/api/admin/users?${params}`, { cache: "no-store" });
@@ -105,7 +121,7 @@ export default function AdminUsersPage() {
     if (ftdOnly) list = list.filter((u: UserRow) => u.ftd);
     setRows(list);
     setDeskOptions(data.deskOptions || []);
-  }, [q, status, desk, country, saleStatus, retentionStatus, ftdOnly, presence]);
+  }, [q, status, desk, country, saleStatus, retentionStatus, ftdOnly, presence, accountTypeFilter, dateFrom, dateTo]);
 
   useEffect(() => {
     load();
@@ -283,6 +299,36 @@ export default function AdminUsersPage() {
             </option>
           ))}
         </select>
+        <select
+          value={accountTypeFilter}
+          onChange={(e) => setAccountTypeFilter(e.target.value)}
+          className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
+        >
+          <option value="">{i18n("crm.ui.type")}</option>
+          {["STANDARD", "PRO", "VIP", "DEMO"].map((s) => (
+            <option key={s} value={s}>
+              {code("crm.accountType", s)}
+            </option>
+          ))}
+        </select>
+        <label className="flex items-center gap-1 text-neutral-500">
+          <span>{i18n("crm.ui.from")}</span>
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
+          />
+        </label>
+        <label className="flex items-center gap-1 text-neutral-500">
+          <span>{i18n("crm.ui.to")}</span>
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+            className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
+          />
+        </label>
         <select
           value={retentionStatus}
           onChange={(e) => setRetentionStatus(e.target.value)}
