@@ -61,3 +61,7 @@ Kısa özet: CRM veri sızıntısı ve platformun kopyalanması riskine karşı 
 3) Statik CRM-on-Natro tamamen iptal mi, yoksa VPN arkasına mı?  
 4) Export audit + rate limit bu sprintte mi?
 
+
+
+## Implementation status (2026-10-06)
+High-value items (1)–(11) implemented on Railway CRM; Natro static CRM remains paused.

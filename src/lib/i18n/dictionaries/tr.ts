@@ -236,5 +236,9 @@ export const tr: Dict = {
   "profile.support.placeholder": 'Mesajınızı yazın…',
   "profile.support.send": 'Gönder',
   "profile.support.sendFailed": 'Gönderilemedi',
-  "profile.support.connectionError": 'Bağlantı hatası'
+  "profile.support.connectionError": 'Bağlantı hatası',
+  "auth.totpPrompt": 'Authenticator uygulamanızdaki 6 haneli kodu girin.',
+  "auth.totpCode": 'Doğrulama kodu',
+  "auth.verifyTotp": 'Doğrula',
+  "auth.backToLogin": 'Girişe dön'
 };

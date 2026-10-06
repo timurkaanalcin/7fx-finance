@@ -8,6 +8,7 @@ import CrmI18n from "@/components/i18n/CrmI18n";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 import SymbolCatalogSync from "@/components/trading/SymbolCatalogSync";
 import { useI18n } from "@/lib/i18n/context";
+import CrmSecurityShell from "@/components/crm/CrmSecurityShell";
 
 function AdminChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -15,6 +16,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
   const { t, dir } = useI18n();
   const [ready, setReady] = useState(false);
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [perms, setPerms] = useState<Record<string, boolean>>({});
   const readOnly = Boolean(perms.crmReadOnly);
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
@@ -40,6 +42,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
           return;
         }
         setName(d.user.name || "Admin");
+        setEmail(d.user.email || "");
         setPerms(d.permissions || {});
         setReady(true);
       })
@@ -74,6 +77,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
   const flatMobile = CRM_NAV_GROUPS.flatMap((g) => g.items);
 
   return (
+    <CrmSecurityShell adminName={name} adminEmail={email} readOnly={readOnly}>
     <div className="fx-crm fx-crm-root flex min-h-screen bg-white text-black" dir={dir}>
       <aside className="hidden w-[200px] shrink-0 flex-col border-r border-black/10 bg-white text-black md:flex">
         <div className="flex h-11 items-center gap-2 border-b border-black/10 px-3">
@@ -187,6 +191,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
         <main className="flex-1 overflow-auto bg-white p-3 md:p-4">{children}</main>
       </div>
     </div>
+    </CrmSecurityShell>
   );
 }
 

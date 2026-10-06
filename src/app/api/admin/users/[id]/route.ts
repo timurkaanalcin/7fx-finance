@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { writeAudit, requireAdmin, requireAdminPerm } from "@/lib/auth";
+import { writeAudit, requireAdmin, requireAdminPerm, isCrmReadOnlyAdmin } from "@/lib/auth";
+import { maskTraderForRoViewer } from "@/lib/security/mask";
 import { prisma } from "@/lib/prisma";
 import {
   isSupportedAccountCurrency,
@@ -102,9 +103,14 @@ export async function GET(_req: Request, ctx: Ctx) {
     ]);
 
   const membership = serializeUserMembership(user as unknown as Record<string, unknown>);
+  const roViewer = isCrmReadOnlyAdmin(admin);
+  const userOut = roViewer
+    ? maskTraderForRoViewer(membership as unknown as Record<string, unknown>)
+    : membership;
 
   return NextResponse.json({
-    user: membership,
+    user: userOut,
+    dataMasked: roViewer,
     tradingAccountId: membership.tradingAccountId,
     notes: user.notes,
     positions,

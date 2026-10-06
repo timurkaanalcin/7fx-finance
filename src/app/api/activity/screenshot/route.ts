@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { rateLimit } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +12,8 @@ export const dynamic = "force-dynamic";
 export async function POST(req: Request) {
   const user = await requireUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const rl = rateLimit(`screenshot:${user.id}`, 20, 60_000);
+  if (!rl.ok) return NextResponse.json({ ok: true, throttled: true });
 
   let body: { path?: string; reason?: string; meta?: Record<string, unknown> } = {};
   try {

@@ -236,5 +236,9 @@ export const ru: Dict = {
   "profile.support.placeholder": 'Введите сообщение…',
   "profile.support.send": 'Отправить',
   "profile.support.sendFailed": 'Не удалось отправить',
-  "profile.support.connectionError": 'Ошибка соединения'
+  "profile.support.connectionError": 'Ошибка соединения',
+  "auth.totpPrompt": 'Введите 6-значный код из приложения-аутентификатора.',
+  "auth.totpCode": 'Код подтверждения',
+  "auth.verifyTotp": 'Подтвердить',
+  "auth.backToLogin": 'Назад ко входу'
 };

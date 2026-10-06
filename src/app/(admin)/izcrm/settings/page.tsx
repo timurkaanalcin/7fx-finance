@@ -16,6 +16,12 @@ export default function AdminSettingsPage() {
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [totpEnabled, setTotpEnabled] = useState(false);
+  const [qr, setQr] = useState<string | null>(null);
+  const [totpSecret, setTotpSecret] = useState<string | null>(null);
+  const [totpCode, setTotpCode] = useState("");
+  const [totpMsg, setTotpMsg] = useState("");
+  const [totpErr, setTotpErr] = useState("");
 
   const load = useCallback(async () => {
     const res = await fetch("/api/admin/settings");
@@ -38,6 +44,10 @@ export default function AdminSettingsPage() {
 
   useEffect(() => {
     load();
+    fetch("/api/admin/2fa/setup")
+      .then((r) => r.json())
+      .then((d) => setTotpEnabled(Boolean(d.totpEnabled)))
+      .catch(() => {});
   }, [load]);
 
   const dirty =
@@ -209,6 +219,108 @@ export default function AdminSettingsPage() {
           </div>
         )}
       </section>
+
+      <div className="rounded-xl border border-neutral-200 bg-white p-4 shadow-sm">
+        <h2 className="text-sm font-semibold text-neutral-900">Two-factor authentication (TOTP)</h2>
+        <p className="mt-1 text-xs text-neutral-500">
+          Protect CRM admin login with Google Authenticator / Authy / 1Password.
+        </p>
+        <p className="mt-2 text-xs">
+          Status:{" "}
+          <span className={totpEnabled ? "font-semibold text-emerald-700" : "font-semibold text-amber-700"}>
+            {totpEnabled ? "Enabled" : "Disabled"}
+          </span>
+        </p>
+        {!totpEnabled && (
+          <div className="mt-3 space-y-2">
+            <button
+              type="button"
+              className="rounded bg-black px-3 py-1.5 text-xs font-semibold text-white"
+              onClick={async () => {
+                setTotpErr("");
+                setTotpMsg("");
+                const r = await fetch("/api/admin/2fa/setup", { method: "POST" });
+                const d = await r.json();
+                if (!r.ok) {
+                  setTotpErr(d.error || "Setup failed");
+                  return;
+                }
+                setQr(d.qrDataUrl);
+                setTotpSecret(d.secret);
+              }}
+            >
+              Start setup
+            </button>
+            {qr && (
+              <div className="space-y-2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={qr} alt="TOTP QR" className="h-40 w-40 rounded border" />
+                <p className="font-mono text-[10px] text-neutral-600">Secret: {totpSecret}</p>
+                <input
+                  className="w-full rounded border px-2 py-1.5 text-sm"
+                  placeholder="6-digit code"
+                  value={totpCode}
+                  onChange={(e) => setTotpCode(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="rounded bg-emerald-700 px-3 py-1.5 text-xs font-semibold text-white"
+                  onClick={async () => {
+                    const r = await fetch("/api/admin/2fa/confirm", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ code: totpCode }),
+                    });
+                    const d = await r.json();
+                    if (!r.ok) {
+                      setTotpErr(d.error || "Invalid code");
+                      return;
+                    }
+                    setTotpEnabled(true);
+                    setQr(null);
+                    setTotpMsg("2FA enabled");
+                  }}
+                >
+                  Confirm & enable
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+        {totpEnabled && (
+          <div className="mt-3 space-y-2">
+            <input
+              className="w-full rounded border px-2 py-1.5 text-sm"
+              placeholder="Code to disable"
+              value={totpCode}
+              onChange={(e) => setTotpCode(e.target.value)}
+            />
+            <button
+              type="button"
+              className="rounded border border-red-300 px-3 py-1.5 text-xs font-semibold text-red-700"
+              onClick={async () => {
+                const r = await fetch("/api/admin/2fa/disable", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ code: totpCode }),
+                });
+                const d = await r.json();
+                if (!r.ok) {
+                  setTotpErr(d.error || "Failed");
+                  return;
+                }
+                setTotpEnabled(false);
+                setTotpMsg("2FA disabled");
+              }}
+            >
+              Disable 2FA
+            </button>
+          </div>
+        )}
+        {totpMsg && <p className="mt-2 text-xs text-emerald-700">{totpMsg}</p>}
+        {totpErr && <p className="mt-2 text-xs text-red-600">{totpErr}</p>}
+      </div>
+
     </div>
   );
 }

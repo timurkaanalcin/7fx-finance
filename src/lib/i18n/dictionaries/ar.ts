@@ -236,5 +236,9 @@ export const ar: Dict = {
   "profile.support.placeholder": 'اكتب رسالتك…',
   "profile.support.send": 'إرسال',
   "profile.support.sendFailed": 'تعذر الإرسال',
-  "profile.support.connectionError": 'خطأ في الاتصال'
+  "profile.support.connectionError": 'خطأ في الاتصال',
+  "auth.totpPrompt": 'أدخل الرمز المكون من 6 أرقام من تطبيق المصادقة.',
+  "auth.totpCode": 'رمز المصادقة',
+  "auth.verifyTotp": 'تحقق',
+  "auth.backToLogin": 'العودة لتسجيل الدخول'
 };

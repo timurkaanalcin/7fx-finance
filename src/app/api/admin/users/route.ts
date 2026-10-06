@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { writeAudit, ADMIN_PERMISSIONS, hashPassword, requireAdmin, requireAdminPerm } from "@/lib/auth";
+import { writeAudit, ADMIN_PERMISSIONS, hashPassword, requireAdmin, requireAdminPerm, isCrmReadOnlyAdmin } from "@/lib/auth";
+import { maskTraderForRoViewer } from "@/lib/security/mask";
 import { prisma } from "@/lib/prisma";
 import { refreshAccountMetrics } from "@/lib/trading";
 import {
@@ -19,6 +20,7 @@ export async function GET(req: Request) {
   await ensureDemoSeed();
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  const roViewer = isCrmReadOnlyAdmin(admin);
 
   const { searchParams } = new URL(req.url);
   const q = (searchParams.get("q") || "").trim();
@@ -107,14 +109,18 @@ export async function GET(req: Request) {
   }
 
   return NextResponse.json({
-    users: users.map((u) => ({
-      ...serializeUserMembership(u as unknown as Record<string, unknown>),
-      ...serializePresence(u as unknown as Record<string, unknown>),
-    })),
+    users: users.map((u) => {
+      const row = {
+        ...serializeUserMembership(u as unknown as Record<string, unknown>),
+        ...serializePresence(u as unknown as Record<string, unknown>),
+      };
+      return roViewer ? maskTraderForRoViewer(row as Record<string, unknown>) : row;
+    }),
     serverTime: new Date().toISOString(),
     desks: deskOptions.map((d) => d.name),
     deskOptions,
     permissionDefs: ADMIN_PERMISSIONS,
+    dataMasked: roViewer,
   });
 }
 
