@@ -21,8 +21,26 @@ function readBlockMessageFromCookie(): string | null {
     .find((c) => c.startsWith(`${BLOCK_COOKIE}=`));
   if (!match) return null;
   const raw = match.slice(BLOCK_COOKIE.length + 1);
+  // Current format: base64url(UTF-8)
   try {
-    return decodeURIComponent(raw);
+    const b64 = raw.replace(/-/g, "+").replace(/_/g, "/");
+    const pad = b64.length % 4 === 0 ? "" : "=".repeat(4 - (b64.length % 4));
+    const bin = atob(b64 + pad);
+    const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+    const text = new TextDecoder("utf-8", { fatal: false }).decode(bytes);
+    if (text.trim()) return text;
+  } catch {
+    /* legacy */
+  }
+  // Legacy: URI-encoded (possibly double-encoded)
+  try {
+    let s = raw;
+    for (let i = 0; i < 3; i++) {
+      const next = decodeURIComponent(s);
+      if (next === s) break;
+      s = next;
+    }
+    return s;
   } catch {
     return raw;
   }

@@ -57,8 +57,10 @@ export async function GET(req: Request) {
         )
       )
     );
-    // Short-lived cookie so the login page can show the admin message in a popup.
-    res.cookies.set(BLOCK_COOKIE, encodeURIComponent(message), {
+    // Short-lived cookie (base64url) so the login page can show the admin message verbatim.
+    // Avoid encodeURIComponent here — the cookie serializer would double-encode and break newlines.
+    const encodedMsg = Buffer.from(message, "utf8").toString("base64url");
+    res.cookies.set(BLOCK_COOKIE, encodedMsg, {
       httpOnly: false,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
