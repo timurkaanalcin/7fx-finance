@@ -155,6 +155,37 @@ function TraderAccessTools({ userId, traderName }: { userId: string; traderName:
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
   const [enabled, setEnabled] = useState(true);
+  const [links, setLinks] = useState<LoginLinkRow[]>([]);
+
+  const loadLinks = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/admin/users/${userId}/login-link`);
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && Array.isArray(data.links)) setLinks(data.links as LoginLinkRow[]);
+    } catch {
+      /* ignore */
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    loadLinks();
+  }, [loadLinks]);
+
+  async function revokeLink(id: string) {
+    if (!window.confirm(i18n("crm.ui.linkRevokeConfirm"))) return;
+    setBusy(true);
+    setErr("");
+    try {
+      const res = await fetch(`/api/admin/users/${userId}/login-link?linkId=${encodeURIComponent(id)}`, { method: "DELETE" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) setErr(data.error || i18n("crm.ui.linkFailed"));
+      await loadLinks();
+    } catch {
+      setErr(i18n("crm.ui.connectionError"));
+    } finally {
+      setBusy(false);
+    }
+  }
 
   useEffect(() => {
     fetch("/api/admin/settings")
@@ -195,7 +226,7 @@ function TraderAccessTools({ userId, traderName }: { userId: string; traderName:
       const res = await fetch(`/api/admin/users/${userId}/login-link`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ expiresInMinutes: expiresIn, maxUses: 1 }),
+        body: JSON.stringify({ expiresInMinutes: expiresIn }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -214,7 +245,8 @@ function TraderAccessTools({ userId, traderName }: { userId: string; traderName:
           ? `${window.location.origin}${path}`
           : String(data.url || "");
       setLinkUrl(absolute);
-      setMsg(`${i18n("crm.ui.linkExpires")} ${new Date(data.expiresAt).toLocaleString("en-GB", { hour12: false })}`);
+      setMsg(`${i18n("crm.ui.linkExpires")} ${new Date(data.expiresAt).toLocaleString("en-GB", { hour12: false })} · ${i18n("crm.ui.linkReusable")}`);
+      loadLinks();
     } catch {
       setErr(i18n("crm.ui.connectionError"));
     } finally {
@@ -277,9 +309,70 @@ function TraderAccessTools({ userId, traderName }: { userId: string; traderName:
       )}
       {msg && <span className="text-[10px] text-emerald-600">{msg}</span>}
       {err && <span className="text-[10px] text-red-500">{err}</span>}
+      {!msg && <span className="text-[10px] text-neutral-400">{i18n("crm.ui.linkReusable")}</span>}
+      {links.length > 0 && (
+        <div className="basis-full overflow-x-auto">
+          <table className="mt-1 w-full text-[10px]">
+            <thead>
+              <tr className="text-left text-neutral-500">
+                <th className="pr-2 font-medium">{i18n("crm.ui.linkCreated")}</th>
+                <th className="pr-2 font-medium">{i18n("crm.ui.linkExpires")}</th>
+                <th className="pr-2 font-medium">{i18n("crm.ui.linkUses")}</th>
+                <th className="pr-2 font-medium">{i18n("crm.ui.linkLastUsed")}</th>
+                <th className="pr-2 font-medium" />
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {links.slice(0, 10).map((l) => {
+                const fmt = (v?: string | null) =>
+                  v ? new Date(v).toLocaleString("en-GB", { hour12: false }) : "—";
+                const revoked = Boolean(l.revokedAt);
+                const expired = !revoked && new Date(l.expiresAt).getTime() < Date.now();
+                const status = revoked
+                  ? i18n("crm.ui.linkStatusRevoked")
+                  : expired
+                    ? i18n("crm.ui.linkStatusExpired")
+                    : i18n("crm.ui.linkStatusActive");
+                return (
+                  <tr key={l.id} className="border-t border-neutral-100">
+                    <td className="pr-2">{fmt(l.createdAt)}</td>
+                    <td className="pr-2">{fmt(l.expiresAt)}</td>
+                    <td className="pr-2 tabular-nums">{l.useCount ?? 0}</td>
+                    <td className="pr-2">{fmt(l.lastUsedAt || l.usedAt)}</td>
+                    <td className={`pr-2 ${revoked || expired ? "text-neutral-400" : "text-emerald-600"}`}>{status}</td>
+                    <td>
+                      {!revoked && !expired && (
+                        <button
+                          type="button"
+                          disabled={busy}
+                          onClick={() => revokeLink(l.id)}
+                          className="text-red-600 hover:underline disabled:opacity-50"
+                        >
+                          {i18n("crm.ui.linkRevoke")}
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
+
+type LoginLinkRow = {
+  id: string;
+  createdAt: string;
+  expiresAt: string;
+  usedAt?: string | null;
+  lastUsedAt?: string | null;
+  revokedAt?: string | null;
+  useCount?: number;
+};
 
 
 function Field({

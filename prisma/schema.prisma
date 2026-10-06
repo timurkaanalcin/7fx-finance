@@ -434,9 +434,14 @@ model AutoLoginLink {
   createdById     String?
   createdBy       User?     @relation("AutoLoginCreator", fields: [createdById], references: [id], onDelete: SetNull)
   expiresAt       DateTime
+  /// First successful use
   usedAt          DateTime?
-  /// Max successful redemptions; 0 = unlimited until expiry
-  maxUses         Int       @default(1)
+  /// Most recent successful use (links are reusable until expiry)
+  lastUsedAt      DateTime?
+  /// Set when an admin revokes the link early
+  revokedAt       DateTime?
+  /// Legacy field — redemption is expiry-only (unlimited uses); kept for compatibility
+  maxUses         Int       @default(0)
   useCount        Int       @default(0)
   note            String?   @db.VarChar(255)
   createdAt       DateTime  @default(now())

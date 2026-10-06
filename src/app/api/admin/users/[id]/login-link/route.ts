@@ -31,7 +31,8 @@ export async function POST(req: Request, { params }: Ctx) {
     expiresInMinutes =
       ALLOWED_MINUTES.find((m) => m >= expiresInMinutes) ?? ALLOWED_MINUTES[ALLOWED_MINUTES.length - 1];
   }
-  const maxUses = body.maxUses == null ? 1 : Math.max(0, Math.min(100, Number(body.maxUses) || 1));
+  // Links are reusable until expiry (no use limit).
+  const maxUses = 0;
   const note = body.note != null ? String(body.note).slice(0, 255) : null;
 
   const token = randomBytes(24).toString("hex");
@@ -106,9 +107,10 @@ export async function GET(_req: Request, { params }: Ctx) {
     take: 20,
     select: {
       id: true,
-      token: true,
       expiresAt: true,
       usedAt: true,
+      lastUsedAt: true,
+      revokedAt: true,
       useCount: true,
       maxUses: true,
       note: true,
@@ -116,4 +118,30 @@ export async function GET(_req: Request, { params }: Ctx) {
     },
   });
   return NextResponse.json({ links });
+}
+
+/** DELETE ?linkId= — revoke (expire now) a link for this trader. */
+export async function DELETE(req: Request, { params }: Ctx) {
+  const admin = await requireAdmin();
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+
+  const userId = String(params.id || "").trim();
+  const linkId = String(new URL(req.url).searchParams.get("linkId") || "").trim();
+  if (!linkId) return NextResponse.json({ error: "linkId required" }, { status: 400 });
+
+  const link = await prisma.autoLoginLink.findFirst({ where: { id: linkId, userId } });
+  if (!link) return NextResponse.json({ error: "Link not found" }, { status: 404 });
+
+  const now = new Date();
+  await prisma.autoLoginLink.update({
+    where: { id: link.id },
+    data: { revokedAt: link.revokedAt ?? now, expiresAt: link.expiresAt < now ? link.expiresAt : now },
+  });
+  await writeAudit({
+    adminId: admin.id,
+    action: "REVOKE_AUTO_LOGIN_LINK",
+    targetId: userId,
+    meta: { linkId: link.id, useCount: link.useCount },
+  });
+  return NextResponse.json({ ok: true });
 }
