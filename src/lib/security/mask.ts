@@ -13,7 +13,8 @@ export function maskPhone(phone: string | null | undefined): string {
   return `${"*".repeat(Math.max(0, s.length - 4))}${s.slice(-4)}`;
 }
 
-export function maskMoney(_n: number | null | undefined): string {
+export function maskMoney(_n?: number | null): string {
+  void _n;
   return "••••";
 }
 
