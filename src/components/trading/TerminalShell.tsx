@@ -10,7 +10,8 @@ import BottomPanels from "./BottomPanels";
 import FooterTicker from "./FooterTicker";
 import ToolRail from "./ToolRail";
 import DepositModal from "./DepositModal";
-import MarginCallModal, { type BalanceRequestRow, STATUS_LABEL } from "./MarginCallModal";
+import MarginCallModal, { type BalanceRequestRow } from "./MarginCallModal";
+import { useI18n } from "@/lib/i18n/context";
 import type {
   AccountMetrics,
   OrderRow,
@@ -30,6 +31,7 @@ const TradingChart = dynamic(() => import("./TradingChart"), {
 });
 
 export default function TerminalShell() {
+  const { t } = useI18n();
   const router = useRouter();
   const [user, setUser] = useState<UserInfo | null>(null);
   const [account, setAccount] = useState<AccountMetrics | null>(null);
@@ -270,29 +272,25 @@ export default function TerminalShell() {
       )}
       {account?.marginCall && (
         <div className="flex items-center justify-center gap-3 border-b border-desk-sell/40 bg-desk-sell/90 px-3 py-1.5 text-center text-[11px] font-medium text-white">
-          <span>Margin call — equity / margin level critical</span>
+          <span>{t("terminal.mc.banner")}</span>
           <button
             type="button"
             onClick={() => setMarginModalOpen(true)}
             className="rounded bg-white/20 px-2 py-0.5 hover:bg-white/30"
           >
-            Options
+            {t("terminal.mc.bannerAction")}
           </button>
         </div>
       )}
       {balanceReqBanner && balanceReqBanner.status === "PENDING" && (
         <div className="bg-desk-warn/80 px-3 py-1 text-center text-[11px] font-medium text-black">
-          Balance request {STATUS_LABEL[balanceReqBanner.status] || balanceReqBanner.status}:{" "}
-          {balanceReqBanner.type === "RESET" ? "Balance Reset" : "Add Balance"}
-          {balanceReqBanner.type === "ADD" && balanceReqBanner.amount != null
-            ? ` (${balanceReqBanner.amount} USD)`
-            : ""}{" "}
-          — waiting for admin approval
+          {t("terminal.mc.pendingBanner")}
+          {balanceReqBanner.amount != null ? ` (${balanceReqBanner.amount} ${account?.currency || "USD"})` : ""}
         </div>
       )}
       {balanceReqBanner && balanceReqBanner.status === "REJECTED" && account?.marginCall && (
         <div className="bg-desk-elev/90 px-3 py-1 text-center text-[11px] font-medium text-desk-text">
-          Last balance request was rejected — account unchanged. You can choose an option again.
+          {t("terminal.mc.rejectedBanner")}
           <button
             type="button"
             className="ml-2 underline"
@@ -301,7 +299,7 @@ export default function TerminalShell() {
               setMarginModalOpen(true);
             }}
           >
-            Open
+            {t("terminal.mc.bannerOpen")}
           </button>
         </div>
       )}

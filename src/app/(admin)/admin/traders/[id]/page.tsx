@@ -1077,6 +1077,21 @@ export default function AdminUserDetailPage() {
     { key: "reason", label: "crm.edit.reason" },
     { key: "equityAt", label: "crm.edit.equityAt", type: "money" },
     { key: "marginLvl", label: "crm.edit.marginLvl", type: "number" },
+    {
+      key: "riskAcknowledgedAt",
+      label: "crm.bal.riskAck",
+      type: "readonly",
+      editable: false,
+      hideOnCreate: true,
+      render: (r) =>
+        r.riskAcknowledged ? (
+          <span className="text-emerald-700" title={i18n("crm.bal.riskAckText")}>
+            ✓ {r.riskAcknowledgedAt ? fmtCrmDate(String(r.riskAcknowledgedAt)) : ""}
+          </span>
+        ) : (
+          <span className="text-neutral-400">—</span>
+        ),
+    },
     ...ticketCommon,
   ];
   const ledgerTypeOpts = LEDGER_TYPES.map((t) => ({ value: t, label: code("crm.ledger", t) }));

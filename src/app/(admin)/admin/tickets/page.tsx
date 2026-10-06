@@ -32,6 +32,8 @@ type Ticket = {
   note?: string | null;
   adminNote?: string | null;
   details?: string | null;
+  riskAcknowledged?: boolean;
+  riskAcknowledgedAt?: string | null;
 };
 
 type Method = { id: string; label: string; type: string; active: boolean };
@@ -564,7 +566,7 @@ export default function TicketsPage() {
             {tickets.map((ticket) => {
               const rowKey = ticketKey(ticket);
               const isEdit = editKey === rowKey;
-              const hasRecord = Boolean(ticket.approvalReason || ticket.eventScenario);
+              const hasRecord = Boolean(ticket.approvalReason || ticket.eventScenario || ticket.riskAcknowledged);
               return (
                 <Fragment key={rowKey}>
                   <tr className={`border-t border-neutral-200 ${isEdit ? "bg-amber-50/70" : ""}`}>
@@ -595,7 +597,19 @@ export default function TicketsPage() {
                     <td className="px-2 py-1.5 font-mono text-[9px] text-neutral-500">
                       {ticket.accountLoginId || (ticket.tradingAccountId || "—").slice(0, 12)}
                     </td>
-                    <td className="px-2 py-1.5">{methodLabel(ticket)}</td>
+                    <td className="px-2 py-1.5">
+                      {methodLabel(ticket)}
+                      {ticket.kind === "MARGIN" && ticket.type === "ADD" && (
+                        <div
+                          title={ticket.riskAcknowledgedAt ? fmtCrmDate(ticket.riskAcknowledgedAt) : undefined}
+                          className={`mt-0.5 inline-block whitespace-nowrap rounded px-1 py-0.5 text-[9px] font-semibold ${
+                            ticket.riskAcknowledged ? "bg-emerald-50 text-emerald-700" : "bg-neutral-100 text-neutral-500"
+                          }`}
+                        >
+                          {ticket.riskAcknowledged ? `✓ ${i18n("crm.bal.riskAck")}` : i18n("crm.bal.riskAckNo")}
+                        </div>
+                      )}
+                    </td>
                     <td className="px-2 py-1.5">
                       <StatusBadge status={ticket.status} />
                       {hasRecord && (
@@ -707,6 +721,15 @@ export default function TicketsPage() {
                   {openRecord === rowKey && hasRecord && (
                     <tr className="border-t border-neutral-100 bg-white">
                       <td colSpan={8} className="px-3 py-2 text-[11px] text-neutral-800">
+                        {ticket.kind === "MARGIN" && ticket.riskAcknowledged && (
+                          <div className="mb-2 rounded border border-emerald-200 bg-emerald-50 px-2 py-1 text-emerald-800">
+                            <div className="font-medium">
+                              ✓ {i18n("crm.bal.riskAck")}
+                              {ticket.riskAcknowledgedAt ? ` — ${fmtCrmDate(ticket.riskAcknowledgedAt)}` : ""}
+                            </div>
+                            <div className="text-[10px]">{i18n("crm.bal.riskAckText")}</div>
+                          </div>
+                        )}
                         <div className="mb-1 font-medium">{i18n("crm.tickets.approveReason")}</div>
                         <p className="mb-2 whitespace-pre-wrap">{ticket.approvalReason || "—"}</p>
                         <div className="mb-1 font-medium">{i18n("crm.tickets.eventScenario")}</div>

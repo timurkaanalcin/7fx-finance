@@ -212,7 +212,7 @@ model BalanceRequest {
   id         String    @id @default(cuid())
   userId     String
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type       String // RESET | ADD
+  type       String // RESET | ADD (RESET: admin/CRM only; traders may only request ADD)
   amount     Float? // required for ADD; ignored for RESET (uses DEFAULT_RESET_BALANCE)
   status     String    @default("PENDING") // PENDING | APPROVED | REJECTED
   reason     String    @default("MARGIN_CALL") @db.VarChar(64) // MARGIN_CALL
@@ -221,6 +221,9 @@ model BalanceRequest {
   eventScenario  String?  @db.Text
   equityAt   Float? // snapshot at request time
   marginLvl  Float?
+  /// Trader ticked the leveraged-trading risk acknowledgment in the margin-call modal
+  riskAcknowledged   Boolean   @default(false)
+  riskAcknowledgedAt DateTime?
   createdAt  DateTime  @default(now())
   reviewedAt DateTime?
 

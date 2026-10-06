@@ -19,30 +19,41 @@ export async function GET() {
 }
 
 /**
- * Create a pending balance request (RESET | ADD) after margin call.
- * Does NOT change balance until admin approves.
+ * Create a pending ADD balance request after margin call (trader side).
+ * Balance reset (RESET) is admin/CRM-only and is rejected here.
+ * Requires the trader's risk acknowledgment. Does NOT change balance until admin approves.
  */
 export async function POST(req: Request) {
   const user = await requireUser();
   if (!user) return NextResponse.json({ error: "No session" }, { status: 401 });
 
+  const body = await req.json().catch(() => ({}));
+  const type = String(body?.type || "ADD").toUpperCase();
+  const amount = body?.amount != null ? Number(body.amount) : null;
+
+  if (type === "RESET") {
+    return NextResponse.json(
+      { error: "Balance reset is not available. Please request to add balance.", code: "RESET_DISABLED" },
+      { status: 400 }
+    );
+  }
+  if (type !== "ADD") {
+    return NextResponse.json({ error: "type must be ADD" }, { status: 400 });
+  }
+  if (!Number.isFinite(amount) || amount == null || amount <= 0 || amount > 1_000_000) {
+    return NextResponse.json({ error: "Invalid amount", code: "INVALID_AMOUNT" }, { status: 400 });
+  }
+  if (body?.riskAcknowledged !== true) {
+    return NextResponse.json(
+      { error: "Risk acknowledgment is required", code: "RISK_ACK_REQUIRED" },
+      { status: 400 }
+    );
+  }
+
   await processPendingOrders(user.id);
   await checkSlTp(user.id);
   const metrics = await refreshAccountMetrics(user.id);
   if (!metrics) return NextResponse.json({ error: "Account yok" }, { status: 404 });
-
-  const body = await req.json().catch(() => ({}));
-  const type = String(body.type || "").toUpperCase();
-  const amount = body.amount != null ? Number(body.amount) : null;
-
-  if (type !== "RESET" && type !== "ADD") {
-    return NextResponse.json({ error: "type must be RESET or ADD" }, { status: 400 });
-  }
-  if (type === "ADD") {
-    if (!Number.isFinite(amount) || amount == null || amount <= 0 || amount > 1_000_000) {
-      return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
-    }
-  }
 
   const inCall = isMarginCall({
     equity: metrics.equity,
@@ -70,9 +81,11 @@ export async function POST(req: Request) {
   const request = await prisma.balanceRequest.create({
     data: {
       userId: user.id,
-      type,
-      amount: type === "ADD" ? amount : null,
+      type: "ADD",
+      amount,
       status: "PENDING",
+      riskAcknowledged: true,
+      riskAcknowledgedAt: new Date(),
       reason: "MARGIN_CALL",
       equityAt: metrics.equity,
       marginLvl: metrics.marginLevel,

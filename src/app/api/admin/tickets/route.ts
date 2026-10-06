@@ -114,6 +114,8 @@ export async function GET(req: Request) {
       openedAt: b.createdAt,
       closedAt: b.reviewedAt,
       reason: b.reason,
+      riskAcknowledged: b.riskAcknowledged,
+      riskAcknowledgedAt: b.riskAcknowledgedAt,
       approvalReason: b.approvalReason,
       eventScenario: b.eventScenario,
     })),

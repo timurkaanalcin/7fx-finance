@@ -15,6 +15,8 @@ type Row = {
   reason: string;
   equityAt: number | null;
   marginLvl: number | null;
+  riskAcknowledged?: boolean;
+  riskAcknowledgedAt?: string | null;
   adminNote: string | null;
   createdAt: string;
   reviewedAt: string | null;
@@ -113,6 +115,16 @@ export default function AdminBalanceRequestsPage() {
                 </td>
                 <td className="px-3 py-2">
                   {r.type === "RESET" ? i18n("crm.bal.reset") : i18n("crm.bal.add")}
+                  {r.type === "ADD" && (
+                    <div
+                      className={`mt-0.5 text-[10px] ${r.riskAcknowledged ? "text-emerald-700" : "text-neutral-500"}`}
+                      title={r.riskAcknowledged ? i18n("crm.bal.riskAckText") : undefined}
+                    >
+                      {r.riskAcknowledged
+                        ? `✓ ${i18n("crm.bal.riskAck")}${r.riskAcknowledgedAt ? ` · ${fmtCrmDate(r.riskAcknowledgedAt)}` : ""}`
+                        : i18n("crm.bal.riskAckNo")}
+                    </div>
+                  )}
                 </td>
                 <td className="px-3 py-2 tabular-nums font-medium">
                   {r.type === "ADD" && r.amount != null
