@@ -226,5 +226,15 @@ export const de: Dict = {
   "auth.hidePassword": "Verbergen",
   "auth.saveNewPassword": "Passwort speichern",
   "auth.passwordMin": "Passwort muss mindestens 8 Zeichen haben",
-  "auth.passwordMismatch": "Passwörter stimmen nicht überein"
+  "auth.passwordMismatch": "Passwörter stimmen nicht überein",
+  "profile.support.title": 'Live-Support',
+  "profile.support.subtitle": 'Chat mit dem Support-Team',
+  "profile.support.open": 'Öffnen',
+  "profile.support.close": 'Schließen',
+  "profile.support.hint": 'Nachrichten sind für Ihre Betreuer im CRM sichtbar.',
+  "profile.support.empty": 'Noch keine Nachrichten. Schreiben Sie unten Ihre Frage.',
+  "profile.support.placeholder": 'Nachricht eingeben…',
+  "profile.support.send": 'Senden',
+  "profile.support.sendFailed": 'Senden fehlgeschlagen',
+  "profile.support.connectionError": 'Verbindungsfehler'
 };

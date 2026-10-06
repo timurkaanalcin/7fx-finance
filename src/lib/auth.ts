@@ -8,14 +8,43 @@ import { touchPresenceInBackground } from "./presence";
 const COOKIE_NAME = "7fx_session";
 const LEGACY_COOKIE_NAME = "deskflow_session";
 
-function sessionCookieOptions(maxAge: number) {
-  return {
+function sessionCookieOptions(maxAge: number, _host?: string | null) {
+  const opts: {
+    httpOnly: boolean;
+    secure: boolean;
+    sameSite: "lax";
+    path: string;
+    maxAge: number;
+    domain?: string;
+  } = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax" as const,
     path: "/",
     maxAge,
   };
+  // Optional explicit domain only (e.g. COOKIE_DOMAIN=.customer.org.tr). Not set by default —
+  // auto cross-subdomain cookies widen session theft surface for static CRM-on-Natro.
+  const envDomain = (process.env.COOKIE_DOMAIN || "").trim();
+  if (envDomain) opts.domain = envDomain;
+  return opts;
+}
+
+/** ADMIN with crmReadOnly may use the customer trading terminal + profile APIs. */
+export function isCrmReadOnlyAdmin(user: {
+  role?: string | null;
+  crmReadOnly?: boolean | null;
+}): boolean {
+  return user.role === "ADMIN" && user.crmReadOnly === true;
+}
+
+/** Post-login home: RO admins → /trade; full admins → /izcrm; traders → /trade. */
+export function postLoginPath(user: {
+  role?: string | null;
+  crmReadOnly?: boolean | null;
+}): "/trade" | "/izcrm" {
+  if (user.role === "ADMIN" && !isCrmReadOnlyAdmin(user)) return "/izcrm";
+  return "/trade";
 }
 
 function getAuthSecret(): Uint8Array {
@@ -65,14 +94,21 @@ export async function signSessionToken(payload: SessionPayload): Promise<string>
 }
 
 /** Attach session cookies onto a NextResponse (preferred in Route Handlers). */
-export function attachSessionCookie(res: { cookies: { set: (name: string, value: string, opts: Record<string, unknown>) => void } }, token: string) {
-  const opts = sessionCookieOptions(60 * 60 * 24 * 7);
+export function attachSessionCookie(
+  res: { cookies: { set: (name: string, value: string, opts: Record<string, unknown>) => void } },
+  token: string,
+  host?: string | null
+) {
+  const opts = sessionCookieOptions(60 * 60 * 24 * 7, host);
   res.cookies.set(COOKIE_NAME, token, opts);
   res.cookies.set(LEGACY_COOKIE_NAME, "", { ...opts, maxAge: 0 });
 }
 
-export function clearSessionCookie(res: { cookies: { set: (name: string, value: string, opts: Record<string, unknown>) => void } }) {
-  const opts = sessionCookieOptions(0);
+export function clearSessionCookie(
+  res: { cookies: { set: (name: string, value: string, opts: Record<string, unknown>) => void } },
+  host?: string | null
+) {
+  const opts = sessionCookieOptions(0, host);
   res.cookies.set(COOKIE_NAME, "", opts);
   res.cookies.set(LEGACY_COOKIE_NAME, "", opts);
 }
@@ -233,16 +269,18 @@ const ADMIN_BACKUP_COOKIE = "7fx_admin_backup";
 /** Stash current admin session so impersonation can be reversed. */
 export function attachAdminBackupCookie(
   res: { cookies: { set: (name: string, value: string, opts: Record<string, unknown>) => void } },
-  token: string
+  token: string,
+  host?: string | null
 ) {
-  const opts = sessionCookieOptions(60 * 60 * 8); // 8h backup
+  const opts = sessionCookieOptions(60 * 60 * 8, host); // 8h backup
   res.cookies.set(ADMIN_BACKUP_COOKIE, token, opts);
 }
 
 export function clearAdminBackupCookie(
-  res: { cookies: { set: (name: string, value: string, opts: Record<string, unknown>) => void } }
+  res: { cookies: { set: (name: string, value: string, opts: Record<string, unknown>) => void } },
+  host?: string | null
 ) {
-  const opts = sessionCookieOptions(0);
+  const opts = sessionCookieOptions(0, host);
   res.cookies.set(ADMIN_BACKUP_COOKIE, "", opts);
 }
 

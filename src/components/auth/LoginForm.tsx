@@ -121,14 +121,18 @@ export default function LoginForm() {
       }
       {
         const role = data.user?.role;
+        const crmReadOnly = Boolean(
+          data.user?.crmReadOnly ?? data.permissions?.crmReadOnly
+        );
         const onCrmHost =
           typeof window !== "undefined" &&
           (window.location.hostname === "crm7fx.customer.org.tr" ||
             window.location.hostname === "crm7fx.localhost");
-        if (role === "ADMIN") {
+        // CRM host → always CRM UI. Main host: RO admins get trading like customers.
+        if (onCrmHost) {
+          window.location.assign(role === "ADMIN" ? "/izcrm" : "https://7fx.customer.org.tr/trade");
+        } else if (role === "ADMIN" && !crmReadOnly) {
           window.location.assign("/izcrm");
-        } else if (onCrmHost) {
-          window.location.assign("https://7fx.customer.org.tr/trade");
         } else {
           window.location.assign("/trade");
         }

@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { LOCALES, LOCALE_META, type Locale } from "@/lib/i18n/locales";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
+import LiveSupportPanel from "@/components/profile/LiveSupportPanel";
 
 type Profilee = {
   id: string;
@@ -274,6 +275,9 @@ export default function ProfileePage() {
       </header>
 
       <main className="mx-auto max-w-2xl p-4 pb-10 md:p-6">
+        <div className="mb-4">
+          <LiveSupportPanel />
+        </div>
         <div className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
           <div className="mb-1 text-lg font-semibold">{profile.name}</div>
           <div className="text-xs text-slate-500">{profile.email}</div>

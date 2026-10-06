@@ -953,6 +953,9 @@ export default function AdminUserDetailPage() {
   const [balanceRequests, setBalanceRequests] = useState<Row[]>([]);
   const [ledger, setLedger] = useState<Row[]>([]);
   const [communications, setCommunications] = useState<Row[]>([]);
+  const [activityEvents, setActivityEvents] = useState<
+    { id: string; kind: string; path?: string | null; userAgent?: string | null; meta?: string | null; createdAt: string }[]
+  >([]);
   const [documents, setDocuments] = useState<Row[]>([]);
   const [reminders, setReminders] = useState<Row[]>([]);
   const [depositMethods, setDepositMethods] = useState<{ id: string; label: string; type: string; active: boolean }[]>(
@@ -1005,6 +1008,7 @@ export default function AdminUserDetailPage() {
     setBalanceRequests(data.balanceRequests || []);
     setLedger(data.ledger || []);
     setCommunications(data.communications || []);
+    setActivityEvents(data.activityEvents || []);
     setDocuments(data.documents || []);
     setReminders(data.reminders || []);
     setDepositMethods(data.depositMethods || []);
@@ -1376,6 +1380,33 @@ export default function AdminUserDetailPage() {
           </button>
         ))}
       </div>
+
+      {activityEvents.filter((e) => e.kind === "SCREENSHOT_SUSPECTED").length > 0 && (
+        <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+          <div className="font-semibold">Olası ekran görüntüsü / yakalama uyarıları (en iyi çaba)</div>
+          <p className="mt-0.5 text-[11px] text-amber-800/80">
+            Tarayıcılar işletim sistemi ekran görüntüsünü güvenilir şekilde tespit edemez; bunlar istemci tarafı sinyalleridir.
+          </p>
+          <ul className="mt-2 max-h-32 space-y-1 overflow-y-auto">
+            {activityEvents
+              .filter((e) => e.kind === "SCREENSHOT_SUSPECTED")
+              .slice(0, 15)
+              .map((e) => {
+                let reason = "";
+                try {
+                  reason = e.meta ? (JSON.parse(e.meta).reason as string) || "" : "";
+                } catch {
+                  /* ignore */
+                }
+                return (
+                  <li key={e.id} className="font-mono text-[10px] text-amber-950">
+                    {new Date(e.createdAt).toLocaleString()} · {e.path || "—"} · {reason || e.kind}
+                  </li>
+                );
+              })}
+          </ul>
+        </div>
+      )}
 
       {(msg || err) && <p className={`mb-3 text-xs ${err ? "text-red-600" : "text-emerald-600"}`}>{err || msg}</p>}
 

@@ -226,5 +226,15 @@ export const tr: Dict = {
   "auth.hidePassword": "Gizle",
   "auth.saveNewPassword": "Şifreyi kaydet",
   "auth.passwordMin": "Şifre en az 8 karakter olmalı",
-  "auth.passwordMismatch": "Şifreler eşleşmiyor"
+  "auth.passwordMismatch": "Şifreler eşleşmiyor",
+  "profile.support.title": 'Canlı destek',
+  "profile.support.subtitle": 'Destek ekibiyle sohbet edin',
+  "profile.support.open": 'Aç',
+  "profile.support.close": 'Kapat',
+  "profile.support.hint": 'Mesajlarınız CRM’de hesap yöneticilerinize görünür.',
+  "profile.support.empty": 'Henüz mesaj yok. Sorunuzu aşağıya yazın.',
+  "profile.support.placeholder": 'Mesajınızı yazın…',
+  "profile.support.send": 'Gönder',
+  "profile.support.sendFailed": 'Gönderilemedi',
+  "profile.support.connectionError": 'Bağlantı hatası'
 };

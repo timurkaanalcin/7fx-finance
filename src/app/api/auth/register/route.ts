@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { attachSessionCookie, hashPassword, signSessionToken } from "@/lib/auth";
+import { hostnameFromRequest } from "@/lib/crm-host";
 import { markClientSignIn, recordLoginEvent } from "@/lib/presence";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import {
@@ -107,7 +108,7 @@ export async function POST(req: Request) {
         accountLoginId: user.accountLoginId,
       },
     });
-    attachSessionCookie(res, token);
+    attachSessionCookie(res, token, hostnameFromRequest({ headers: { get: (n: string) => req.headers.get(n) } }));
     return res;
   } catch (e) {
     console.error(e);

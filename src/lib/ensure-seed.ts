@@ -305,6 +305,129 @@ async function ensureAsenaAdmin() {
   console.log("[7fx] Seeded read-only ADMIN asenaerdem@7fx.local (password set once)");
 }
 
+
+/**
+ * Named CRM admin — magdalena@7fx.local (read-only + trading like a customer).
+ * Existing: ensure crmReadOnly + can* false + trading Account; never reset password.
+ */
+async function ensureMagdalenaAdmin() {
+  const email = "magdalena@7fx.local";
+  const existing = await prisma.user.findUnique({
+    where: { email },
+    include: { account: true },
+  });
+  if (existing) {
+    const patch: Record<string, unknown> = {};
+    if (existing.role !== "ADMIN") patch.role = "ADMIN";
+    if (existing.crmReadOnly !== true) patch.crmReadOnly = true;
+    if (existing.canManageUsers !== false) patch.canManageUsers = false;
+    if (existing.canApproveDeposits !== false) patch.canApproveDeposits = false;
+    if (existing.canEditRates !== false) patch.canEditRates = false;
+    if (existing.canManageMethods !== false) patch.canManageMethods = false;
+    if (existing.canAdjustBalance !== false) patch.canAdjustBalance = false;
+    if (existing.active === false) patch.active = true;
+    if (Object.keys(patch).length) {
+      await prisma.user.update({ where: { id: existing.id }, data: patch });
+    }
+    if (!existing.account) {
+      await prisma.account.create({
+        data: {
+          userId: existing.id,
+          balance: 0,
+          equity: 0,
+          margin: 0,
+          freeMargin: 0,
+          leverage: 100,
+          currency: "USD",
+          credit: 0,
+          bonus: 0,
+        },
+      });
+    }
+    return;
+  }
+  const passwordHash = await bcrypt.hash("ASAGurJsI2dttR", 10);
+  const accountLoginId = await allocateUniqueAccountLoginId();
+  await prisma.user.create({
+    data: {
+      email,
+      accountLoginId,
+      passwordHash,
+      name: "magdalena",
+      role: "ADMIN",
+      active: true,
+      firstName: "Magdalena",
+      lastName: "",
+      language: "en",
+      timezone: "Europe/Istanbul",
+      country: "TR",
+      accountType: "PRO",
+      desk: "HQ",
+      deskId: "DESK-HQ",
+      documentsStatus: "APPROVED",
+      registrationDate: new Date(),
+      crmReadOnly: true,
+      canManageUsers: false,
+      canApproveDeposits: false,
+      canEditRates: false,
+      canManageMethods: false,
+      canAdjustBalance: false,
+      account: {
+        create: {
+          balance: 0,
+          equity: 0,
+          margin: 0,
+          freeMargin: 0,
+          leverage: 100,
+          currency: "USD",
+          credit: 0,
+          bonus: 0,
+        },
+      },
+    },
+  });
+  console.log("[7fx] Seeded read-only ADMIN magdalena@7fx.local (password set once)");
+}
+
+/** Ensure RO CRM admins keep trading Account + flags (no password changes). */
+async function ensureRoAdminTradingReady() {
+  const emails = ["asenaerdem@7fx.local", "magdalena@7fx.local"];
+  for (const email of emails) {
+    const u = await prisma.user.findUnique({ where: { email }, include: { account: true } });
+    if (!u) continue;
+    const patch: Record<string, unknown> = {};
+    if (u.role !== "ADMIN") patch.role = "ADMIN";
+    if (u.crmReadOnly !== true) patch.crmReadOnly = true;
+    if (u.canManageUsers !== false) patch.canManageUsers = false;
+    if (u.canApproveDeposits !== false) patch.canApproveDeposits = false;
+    if (u.canEditRates !== false) patch.canEditRates = false;
+    if (u.canManageMethods !== false) patch.canManageMethods = false;
+    if (u.canAdjustBalance !== false) patch.canAdjustBalance = false;
+    if (u.tradingEnabled === false) patch.tradingEnabled = true;
+    if (u.withdrawalsEnabled === false) patch.withdrawalsEnabled = true;
+    if (u.loginEnabled === false) patch.loginEnabled = true;
+    if (Object.keys(patch).length) {
+      await prisma.user.update({ where: { id: u.id }, data: patch });
+    }
+    if (!u.account) {
+      await prisma.account.create({
+        data: {
+          userId: u.id,
+          balance: 0,
+          equity: 0,
+          margin: 0,
+          freeMargin: 0,
+          leverage: 100,
+          currency: "USD",
+          credit: 0,
+          bonus: 0,
+        },
+      });
+      console.log("[7fx] Created trading Account for", email);
+    }
+  }
+}
+
 async function ensureAdminUser() {
   const creds = resolveAdminSeedCreds();
   if (!creds) {
@@ -810,6 +933,8 @@ export function ensureDemoSeed(): Promise<void> {
         }
         await ensureAdminUser();
   await ensureAsenaAdmin();
+        await ensureMagdalenaAdmin();
+        await ensureRoAdminTradingReady();
         await ensureLlvadAdmin();
         await ensureDepositMethods();
         await ensureTradingSettings();
