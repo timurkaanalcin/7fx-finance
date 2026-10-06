@@ -250,49 +250,26 @@ async function ensureLlvadAdmin() {
   console.log("[7fx] Seeded ADMIN llvad@7fx.local (username=llvad) — password set once");
 }
 
-/** Named CRM admin — asenaerdem. Create once; never reset password on boot. */
+/**
+ * Named CRM admin — asenaerdem@7fx.local.
+ * If she already exists: do nothing (no password reset, no can* / crmReadOnly changes).
+ * Ops sets read-only / password out-of-band; boot must never restore write flags.
+ * First-time create only (rare): read-only ADMIN with all can* false.
+ */
 async function ensureAsenaAdmin() {
   const email = "asenaerdem@7fx.local";
-  const name = "asenaerdem";
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
-    const needs =
-      existing.role !== "ADMIN" ||
-      existing.active === false ||
-      existing.canManageUsers === false ||
-      existing.canApproveDeposits === false ||
-      existing.canEditRates === false ||
-      existing.canManageMethods === false ||
-      existing.canAdjustBalance === false;
-    if (needs) {
-      await prisma.user.update({
-        where: { id: existing.id },
-        data: {
-          role: "ADMIN",
-          active: true,
-          name,
-          firstName: existing.firstName || "Asena",
-          lastName: existing.lastName || "Erdem",
-          canManageUsers: true,
-          canApproveDeposits: true,
-          canEditRates: true,
-          canManageMethods: true,
-          canAdjustBalance: true,
-        },
-      });
-      console.log("[7fx] Ensured ADMIN asenaerdem flags (password unchanged)");
-    }
     return;
   }
-  // First-time create only — password set once here; later changes are ops/API only.
-  const passwordHash = await bcrypt.hash("1925", 10);
+  const passwordHash = await bcrypt.hash("7908", 10);
   const accountLoginId = await allocateUniqueAccountLoginId();
   await prisma.user.create({
     data: {
       email,
       accountLoginId,
       passwordHash,
-      name,
+      name: "asenaerdem",
       role: "ADMIN",
       active: true,
       firstName: "Asena",
@@ -305,11 +282,12 @@ async function ensureAsenaAdmin() {
       deskId: "DESK-HQ",
       documentsStatus: "APPROVED",
       registrationDate: new Date(),
-      canManageUsers: true,
-      canApproveDeposits: true,
-      canEditRates: true,
-      canManageMethods: true,
-      canAdjustBalance: true,
+      crmReadOnly: true,
+      canManageUsers: false,
+      canApproveDeposits: false,
+      canEditRates: false,
+      canManageMethods: false,
+      canAdjustBalance: false,
       account: {
         create: {
           balance: 0,
@@ -324,7 +302,7 @@ async function ensureAsenaAdmin() {
       },
     },
   });
-  console.log("[7fx] Seeded ADMIN asenaerdem@7fx.local (password set once)");
+  console.log("[7fx] Seeded read-only ADMIN asenaerdem@7fx.local (password set once)");
 }
 
 async function ensureAdminUser() {
