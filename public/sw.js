@@ -1,5 +1,5 @@
 /*
- * 7FX service worker — v2
+ * 7FX service worker — v3 (icon cache bust: black corners)
  *
  * v1 served "/", "/login" and "/trade" cache-first forever. After every deploy the
  * cached HTML pointed at /_next/static/* chunk hashes that no longer exist (404
@@ -10,13 +10,14 @@
  * static icons are cached for installability. On upgrade it deletes old caches
  * and reloads open tabs that were showing stale v1 HTML.
  */
-const VERSION = "2026-10-05-v2";
+const VERSION = "2026-10-06-v3-icons";
 const CACHE = `7fx-static-${VERSION}`;
 const PRECACHE = [
   "/site.webmanifest",
-  "/icons/icon-192.png",
-  "/icons/icon-512.png",
-  "/icons/apple-touch-icon.png",
+  "/icons/v3/icon-192.png",
+  "/icons/v3/icon-512.png",
+  "/icons/v3/apple-touch-icon.png",
+  "/icons/v3/favicon.ico",
 ];
 
 self.addEventListener("install", (event) => {

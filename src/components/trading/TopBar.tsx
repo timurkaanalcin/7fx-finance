@@ -80,7 +80,7 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
       <div className="mr-1 flex shrink-0 items-center gap-1.5 border-r border-desk-border/80 pr-2 md:mr-1.5 md:gap-2 md:pr-3">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/icons/icon-192.png"
+          src="/icons/v3/icon-192.png"
           alt=""
           className="h-6 w-6 rounded-[8px] object-cover ring-1 ring-desk-border/80 md:h-7 md:w-7"
         />

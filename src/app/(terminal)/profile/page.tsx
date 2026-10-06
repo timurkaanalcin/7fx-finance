@@ -245,7 +245,7 @@ export default function ProfileePage() {
     <div className="min-h-screen bg-[#000000] text-slate-100">
       <header className="sticky top-0 z-30 flex h-12 items-center gap-3 border-b border-[#2a2a2a] bg-[#0a0a0a] px-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/icons/icon-192.png" alt="" className="h-7 w-7 rounded-md object-cover ring-1 ring-[#2a2a2a]" />
+        <img src="/icons/v3/icon-192.png" alt="" className="h-7 w-7 rounded-md object-cover ring-1 ring-[#2a2a2a]" />
         <span className="text-sm font-semibold">Membership Details</span>
         <Link
           href="/trade"
