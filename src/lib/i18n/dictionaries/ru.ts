@@ -226,5 +226,15 @@ export const ru: Dict = {
   "auth.hidePassword": "Скрыть",
   "auth.saveNewPassword": "Сохранить пароль",
   "auth.passwordMin": "Пароль — минимум 8 символов",
-  "auth.passwordMismatch": "Пароли не совпадают"
+  "auth.passwordMismatch": "Пароли не совпадают",
+  "profile.support.title": 'Онлайн-поддержка',
+  "profile.support.subtitle": 'Чат со службой поддержки',
+  "profile.support.open": 'Открыть',
+  "profile.support.close": 'Закрыть',
+  "profile.support.hint": 'Сообщения видны менеджерам в CRM.',
+  "profile.support.empty": 'Пока нет сообщений. Напишите вопрос ниже.',
+  "profile.support.placeholder": 'Введите сообщение…',
+  "profile.support.send": 'Отправить',
+  "profile.support.sendFailed": 'Не удалось отправить',
+  "profile.support.connectionError": 'Ошибка соединения'
 };

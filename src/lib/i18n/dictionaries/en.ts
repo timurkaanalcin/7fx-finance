@@ -226,5 +226,15 @@ export const en: Dict = {
   "auth.hidePassword": "Hide",
   "auth.saveNewPassword": "Save password",
   "auth.passwordMin": "Password must be at least 8 characters",
-  "auth.passwordMismatch": "Passwords do not match"
+  "auth.passwordMismatch": "Passwords do not match",
+  "profile.support.title": 'Live support',
+  "profile.support.subtitle": 'Chat with our support team',
+  "profile.support.open": 'Open',
+  "profile.support.close": 'Close',
+  "profile.support.hint": 'Messages are visible to your account managers in CRM.',
+  "profile.support.empty": 'No messages yet. Write your question below.',
+  "profile.support.placeholder": 'Type your message…',
+  "profile.support.send": 'Send',
+  "profile.support.sendFailed": 'Could not send',
+  "profile.support.connectionError": 'Connection error'
 };

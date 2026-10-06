@@ -5,6 +5,7 @@ import {
   getSession,
   clearSessionCookie,
 } from "@/lib/auth";
+import { hostnameFromRequest } from "@/lib/crm-host";
 import { prisma } from "@/lib/prisma";
 import { refreshAccountMetrics, processPendingOrders, checkSlTp } from "@/lib/trading";
 import {
@@ -13,7 +14,7 @@ import {
   loginDisabledFallbackMessage,
 } from "@/lib/account-perms";
 
-export async function GET() {
+export async function GET(req: Request) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "No session" }, { status: 401 });
 
@@ -40,7 +41,7 @@ export async function GET() {
         },
         { status: 403 }
       );
-      clearSessionCookie(res);
+      clearSessionCookie(res, hostnameFromRequest({ headers: { get: (n: string) => req.headers.get(n) } }));
       return res;
     }
   }

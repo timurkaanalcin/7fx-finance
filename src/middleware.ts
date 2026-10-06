@@ -5,6 +5,7 @@ import {
   isCrmHostname,
 } from "@/lib/crm-host";
 
+
 export function middleware(req: NextRequest) {
   const token =
     req.cookies.get("7fx_session")?.value ||
@@ -37,6 +38,7 @@ export function middleware(req: NextRequest) {
     );
     return res;
   };
+
 
   // ——— CRM host (crm7fx.customer.org.tr) ———
   if (crmHost) {

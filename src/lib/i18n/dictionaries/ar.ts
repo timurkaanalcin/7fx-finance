@@ -226,5 +226,15 @@ export const ar: Dict = {
   "auth.hidePassword": "إخفاء",
   "auth.saveNewPassword": "حفظ كلمة المرور",
   "auth.passwordMin": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
-  "auth.passwordMismatch": "كلمتا المرور غير متطابقتين"
+  "auth.passwordMismatch": "كلمتا المرور غير متطابقتين",
+  "profile.support.title": 'الدعم المباشر',
+  "profile.support.subtitle": 'تحدث مع فريق الدعم',
+  "profile.support.open": 'فتح',
+  "profile.support.close": 'إغلاق',
+  "profile.support.hint": 'الرسائل ظاهرة لمديري حسابك في نظام CRM.',
+  "profile.support.empty": 'لا رسائل بعد. اكتب سؤالك أدناه.',
+  "profile.support.placeholder": 'اكتب رسالتك…',
+  "profile.support.send": 'إرسال',
+  "profile.support.sendFailed": 'تعذر الإرسال',
+  "profile.support.connectionError": 'خطأ في الاتصال'
 };

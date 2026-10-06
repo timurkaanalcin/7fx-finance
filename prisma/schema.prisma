@@ -103,6 +103,7 @@ model User {
   notes              UserNote[]
   ledgerEntries      BalanceLedger[]
   communications     Communication[]
+  clientActivityEvents ClientActivityEvent[]
   documents          DocumentRecord[]
   reminders          Reminder[]
   autoLoginLinks     AutoLoginLink[]  @relation("AutoLoginTarget")
@@ -398,6 +399,22 @@ model Communication {
   createdAt   DateTime @default(now())
 
   @@index([userId, createdAt])
+}
+
+
+/// Best-effort client activity (e.g. suspected screenshot). Browsers cannot reliably detect OS screenshots.
+model ClientActivityEvent {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind      String   @db.VarChar(64) // SCREENSHOT_SUSPECTED
+  path      String?  @db.VarChar(512)
+  userAgent String?  @db.Text
+  meta      String?  @db.Text
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([kind, createdAt])
 }
 
 /// KYC / document stub metadata (no binary storage required)

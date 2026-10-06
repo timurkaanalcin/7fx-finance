@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { attachAdminBackupCookie, attachSessionCookie, clearAdminBackupCookie, clearSessionCookie, readAdminBackupToken, signSessionToken, writeAudit, getSession, requireAdminWrite } from "@/lib/auth";
+import { hostnameFromRequest } from "@/lib/crm-host";
 import { prisma } from "@/lib/prisma";
 import { isTerminalImpersonationEnabled } from "@/lib/system-settings";
 import { jwtVerify } from "jose";
@@ -20,6 +21,7 @@ function getAuthSecret(): Uint8Array {
 
 /** POST { userId } — switch session to trader (admin impersonation). */
 export async function POST(req: Request) {
+  const host = hostnameFromRequest({ headers: { get: (n: string) => req.headers.get(n) } });
   const admin = await requireAdminWrite();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
@@ -66,9 +68,9 @@ export async function POST(req: Request) {
   });
   // Keep admin backup from current cookie if already impersonating, else stash admin
   if (!session?.impersonatedBy) {
-    attachAdminBackupCookie(res, adminToken);
+    attachAdminBackupCookie(res, adminToken, host);
   }
-  attachSessionCookie(res, traderToken);
+  attachSessionCookie(res, traderToken, host);
 
   // Audit row on the client's login history; deliberately does NOT touch client presence (lastSeenAt).
   await recordLoginEvent({ userId: target.id, success: true, method: "impersonation", actorId: admin.id });
@@ -96,7 +98,7 @@ export async function DELETE() {
       return NextResponse.json({ error: "Invalid backup" }, { status: 400 });
     }
     const res = NextResponse.json({ ok: true, redirect: "/izcrm" });
-    attachSessionCookie(res, backup);
+    attachSessionCookie(res, backup, host);
     clearAdminBackupCookie(res);
     await writeAudit({
       adminId: String(payload.userId),
@@ -107,7 +109,7 @@ export async function DELETE() {
   } catch {
     const res = NextResponse.json({ error: "Backup expired" }, { status: 400 });
     clearAdminBackupCookie(res);
-    clearSessionCookie(res);
+    clearSessionCookie(res, host);
     return res;
   }
 }

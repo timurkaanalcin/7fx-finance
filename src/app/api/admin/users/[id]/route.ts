@@ -41,6 +41,7 @@ export async function GET(_req: Request, ctx: Ctx) {
     reminders,
     withdrawals,
     depositMethods,
+    activityEvents,
   ] =
     await Promise.all([
       prisma.position.findMany({
@@ -93,6 +94,11 @@ export async function GET(_req: Request, ctx: Ctx) {
         select: { id: true, label: true, type: true, active: true },
         orderBy: [{ active: "desc" }, { sortOrder: "asc" }],
       }),
+      prisma.clientActivityEvent.findMany({
+        where: { userId: id },
+        orderBy: { createdAt: "desc" },
+        take: 50,
+      }),
     ]);
 
   const membership = serializeUserMembership(user as unknown as Record<string, unknown>);
@@ -111,6 +117,14 @@ export async function GET(_req: Request, ctx: Ctx) {
     reminders,
     withdrawals,
     depositMethods,
+    activityEvents: activityEvents.map((e) => ({
+      id: e.id,
+      kind: e.kind,
+      path: e.path,
+      userAgent: e.userAgent,
+      meta: e.meta,
+      createdAt: e.createdAt.toISOString(),
+    })),
   });
 }
 

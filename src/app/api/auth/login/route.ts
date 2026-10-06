@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { attachSessionCookie, signSessionToken, verifyPassword } from "@/lib/auth";
+import { attachSessionCookie, permissionsOf, signSessionToken, verifyPassword } from "@/lib/auth";
+import { hostnameFromRequest } from "@/lib/crm-host";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { isAccountLoginId } from "@/lib/account-login-id";
 import { currentRequestMeta, markClientSignIn, recordLoginEvent } from "@/lib/presence";
@@ -88,6 +89,8 @@ export async function POST(req: Request) {
       name: user.name,
       role,
     });
+    const permissions = permissionsOf(user);
+    const host = hostnameFromRequest({ headers: { get: (n: string) => req.headers.get(n) } });
     const res = NextResponse.json({
       ok: true,
       user: {
@@ -96,9 +99,11 @@ export async function POST(req: Request) {
         name: user.name,
         role,
         accountLoginId: user.accountLoginId ?? null,
+        crmReadOnly: permissions.crmReadOnly === true,
       },
+      permissions,
     });
-    attachSessionCookie(res, token);
+    attachSessionCookie(res, token, host);
     return res;
   } catch (e) {
     console.error(e);

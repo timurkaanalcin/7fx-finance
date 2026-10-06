@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { getSession, requireUser, destroySession } from "@/lib/auth";
+import { getSession, requireUser, destroySession, postLoginPath } from "@/lib/auth";
 import { hostnameFromRequest, isCrmHostname, MAIN_SITE_ORIGIN } from "@/lib/crm-host";
 import AuthShell from "@/components/auth/AuthShell";
 import LoginForm from "@/components/auth/LoginForm";
@@ -19,13 +19,10 @@ export default async function LoginPage() {
     const user = await requireUser();
     if (user) {
       const host = hostnameFromRequest({ headers: headers() });
-      if (session.role === "ADMIN") {
-        redirect("/izcrm");
-      }
       if (isCrmHostname(host)) {
-        redirect(`${MAIN_SITE_ORIGIN}/trade`);
+        redirect(user.role === "ADMIN" ? "/izcrm" : `${MAIN_SITE_ORIGIN}/trade`);
       }
-      redirect("/trade");
+      redirect(postLoginPath(user));
     }
     // Stale cookie (e.g. loginEnabled=false) — clear so middleware allows /login
     await destroySession();

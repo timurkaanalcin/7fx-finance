@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { attachSessionCookie, signSessionToken } from "@/lib/auth";
+import { hostnameFromRequest } from "@/lib/crm-host";
 import { prisma } from "@/lib/prisma";
 import { currentRequestMeta, markClientSignIn, recordLoginEvent } from "@/lib/presence";
 import { publicAbsoluteUrl } from "@/lib/request-origin";
@@ -109,6 +110,6 @@ export async function GET(req: Request) {
   });
 
   const res = NextResponse.redirect(new URL(publicAbsoluteUrl(req, "/trade")));
-  attachSessionCookie(res, sessionToken);
+  attachSessionCookie(res, sessionToken, hostnameFromRequest({ headers: { get: (n: string) => req.headers.get(n) } }));
   return res;
 }

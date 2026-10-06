@@ -7,6 +7,7 @@ import {
   signSessionToken,
   writeAudit,
 } from "@/lib/auth";
+import { hostnameFromRequest } from "@/lib/crm-host";
 import { prisma } from "@/lib/prisma";
 import { currentRequestMeta, recordLoginEvent } from "@/lib/presence";
 
@@ -24,7 +25,7 @@ export async function POST(req: Request) {
   const user = await prisma.user.findUnique({ where: { id: session.userId } });
   if (!user) {
     const res = NextResponse.json({ error: "No session" }, { status: 401 });
-    clearSessionCookie(res);
+    clearSessionCookie(res, hostnameFromRequest({ headers: { get: (n: string) => req.headers.get(n) } }));
     return res;
   }
   if (!user.mustChangePassword) {
@@ -131,6 +132,6 @@ export async function POST(req: Request) {
     redirect: "/",
     linkRevoked: Boolean(link),
   });
-  attachSessionCookie(res, token);
+  attachSessionCookie(res, token, hostnameFromRequest({ headers: { get: (n: string) => req.headers.get(n) } }));
   return res;
 }
