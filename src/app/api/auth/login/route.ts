@@ -4,6 +4,10 @@ import { attachSessionCookie, signSessionToken, verifyPassword } from "@/lib/aut
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { isAccountLoginId } from "@/lib/account-login-id";
 import { currentRequestMeta, markClientSignIn, recordLoginEvent } from "@/lib/presence";
+import {
+  LOGIN_DISABLED_CODE,
+  loginDisabledFallbackMessage,
+} from "@/lib/account-perms";
 
 export async function POST(req: Request) {
   try {
@@ -28,14 +32,35 @@ export async function POST(req: Request) {
     if (!user) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
+    // Wrong password first — never leak login-blocked message.
     if (!(await verifyPassword(password, user.passwordHash))) {
-      // Failed attempt for a known account → audit trail (no location blocking).
       await recordLoginEvent({ userId: user.id, success: false, method: "password", reason: "bad_password", meta });
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
     if ((user as { active?: boolean }).active === false) {
       await recordLoginEvent({ userId: user.id, success: false, method: "password", reason: "frozen", meta });
       return NextResponse.json({ error: "Account frozen" }, { status: 403 });
+    }
+    if ((user as { loginEnabled?: boolean }).loginEnabled === false) {
+      await recordLoginEvent({
+        userId: user.id,
+        success: false,
+        method: "password",
+        reason: "login_disabled",
+        meta,
+      });
+      const message =
+        ((user as { loginBlockedMessage?: string | null }).loginBlockedMessage &&
+          String((user as { loginBlockedMessage?: string | null }).loginBlockedMessage).trim()) ||
+        loginDisabledFallbackMessage((user as { language?: string }).language);
+      return NextResponse.json(
+        {
+          error: loginDisabledFallbackMessage((user as { language?: string }).language),
+          code: LOGIN_DISABLED_CODE,
+          message,
+        },
+        { status: 403 }
+      );
     }
     await prisma.user.update({
       where: { id: user.id },

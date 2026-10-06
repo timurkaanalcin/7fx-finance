@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/context";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
@@ -10,12 +10,76 @@ const inputClass =
 
 const labelClass = "mb-1.5 block text-[13px] font-medium text-[#5c657a]";
 
+const BLOCK_COOKIE = "7fx_login_block_msg";
+const BLOCK_STORAGE = "7fx_login_block_msg";
+
+function readBlockMessageFromCookie(): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie
+    .split(";")
+    .map((c) => c.trim())
+    .find((c) => c.startsWith(`${BLOCK_COOKIE}=`));
+  if (!match) return null;
+  const raw = match.slice(BLOCK_COOKIE.length + 1);
+  try {
+    return decodeURIComponent(raw);
+  } catch {
+    return raw;
+  }
+}
+
+function clearBlockCookie() {
+  document.cookie = `${BLOCK_COOKIE}=; path=/; max-age=0`;
+}
+
 export default function LoginForm() {
   const { t } = useI18n();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [blockOpen, setBlockOpen] = useState(false);
+  const [blockMessage, setBlockMessage] = useState("");
+
+  function showLoginBlocked(message: string) {
+    const msg = (message || "").trim() || t("auth.accessClosed");
+    setBlockMessage(msg);
+    setBlockOpen(true);
+    try {
+      sessionStorage.setItem(BLOCK_STORAGE, msg);
+    } catch {
+      /* ignore */
+    }
+  }
+
+  useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem(BLOCK_STORAGE);
+      if (stored) {
+        setBlockMessage(stored);
+        setBlockOpen(true);
+        sessionStorage.removeItem(BLOCK_STORAGE);
+      }
+    } catch {
+      /* ignore */
+    }
+    const fromCookie = readBlockMessageFromCookie();
+    if (fromCookie) {
+      showLoginBlocked(fromCookie);
+      clearBlockCookie();
+    }
+    try {
+      const sp = new URLSearchParams(window.location.search);
+      if (sp.get("loginBlocked") === "1" && !fromCookie) {
+        showLoginBlocked(t("auth.accessClosed"));
+      }
+      const err = sp.get("error");
+      if (err && !sp.get("loginBlocked")) setError(err);
+    } catch {
+      /* ignore */
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -30,6 +94,10 @@ export default function LoginForm() {
       });
       const data = await res.json();
       if (!res.ok) {
+        if (data.code === "LOGIN_DISABLED") {
+          showLoginBlocked(String(data.message || ""));
+          return;
+        }
         setError(data.error || t("auth.loginFailed"));
         return;
       }
@@ -48,9 +116,7 @@ export default function LoginForm() {
           <h2 className="text-xl font-semibold tracking-tight text-[#111111]">{t("auth.loginTitle")}</h2>
           <LanguageSwitcher compact tone="light" />
         </div>
-        <p className="mt-1 text-sm text-[#5c657a]">
-          {t("auth.loginSubtitle")}
-        </p>
+        <p className="mt-1 text-sm text-[#5c657a]">{t("auth.loginSubtitle")}</p>
       </div>
 
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
@@ -112,6 +178,31 @@ export default function LoginForm() {
           Register
         </Link>
       </div>
+
+      {blockOpen && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="fx-login-blocked-title"
+        >
+          <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-2xl">
+            <h3 id="fx-login-blocked-title" className="text-lg font-semibold tracking-tight text-[#111111]">
+              {t("auth.loginBlockedTitle")}
+            </h3>
+            <div className="mt-3 max-h-[50vh] overflow-y-auto whitespace-pre-wrap break-words text-sm leading-relaxed text-[#333]">
+              {blockMessage}
+            </div>
+            <button
+              type="button"
+              className="mt-5 w-full rounded-xl bg-[#111111] py-3 text-sm font-semibold text-white"
+              onClick={() => setBlockOpen(false)}
+            >
+              {t("auth.loginBlockedClose")}
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }

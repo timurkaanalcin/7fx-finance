@@ -11,6 +11,7 @@ import FooterTicker from "./FooterTicker";
 import ToolRail from "./ToolRail";
 import DepositModal from "./DepositModal";
 import MarginCallModal, { type BalanceRequestRow } from "./MarginCallModal";
+import ForcePasswordModal from "./ForcePasswordModal";
 import { useI18n } from "@/lib/i18n/context";
 import type {
   AccountMetrics,
@@ -31,8 +32,8 @@ const TradingChart = dynamic(() => import("./TradingChart"), {
 });
 
 export default function TerminalShell() {
-  const { t } = useI18n();
   const router = useRouter();
+  const { t } = useI18n();
   const [user, setUser] = useState<UserInfo | null>(null);
   const [account, setAccount] = useState<AccountMetrics | null>(null);
   const [symbols, setSymbols] = useState<SymbolDef[]>([]);
@@ -76,11 +77,20 @@ export default function TerminalShell() {
 
   const refreshAccount = useCallback(async () => {
     const res = await fetch("/api/auth/me", { credentials: "include" });
+    const data = await res.json().catch(() => ({}));
+    if (res.status === 403 && data.code === "LOGIN_DISABLED") {
+      try {
+        sessionStorage.setItem("7fx_login_block_msg", String(data.message || ""));
+      } catch {
+        /* ignore */
+      }
+      router.push("/login?loginBlocked=1");
+      return;
+    }
     if (res.status === 401) {
       router.push("/login");
       return;
     }
-    const data = await res.json();
     setUser(data.user);
     setAccount(data.account);
   }, [router]);
@@ -205,6 +215,8 @@ export default function TerminalShell() {
   }
 
   function openOrder(side: "BUY" | "SELL" = "BUY") {
+    if (user && user.tradingEnabled === false) return;
+    if (user && user.mustChangePassword) return;
     setOrderSide(side);
     setOrderOpen(true);
   }
@@ -263,6 +275,11 @@ export default function TerminalShell() {
           >
             Back to admin
           </button>
+        </div>
+      )}
+      {user.tradingEnabled === false && (
+        <div className="border-b border-desk-sell/40 bg-desk-sell/90 px-3 py-1.5 text-center text-[11px] font-medium text-white">
+          {t("term.tradingDisabledBanner")}
         </div>
       )}
       {priceError && (
@@ -331,8 +348,9 @@ export default function TerminalShell() {
                   <button
                     type="button"
                     onClick={() => openOrder("BUY")}
+                    disabled={user.tradingEnabled === false || !!user.mustChangePassword}
                     aria-label="Open trade order"
-                    className="pointer-events-auto min-h-[22px] min-w-[52px] rounded-full bg-desk-accent px-3.5 py-[5px] text-[10px] font-bold tracking-[0.12em] text-desk-accent-ink shadow-accent-glow-sm transition hover:brightness-110 active:scale-[0.98] md:min-h-[26px] md:min-w-[60px] md:px-[18px] md:py-1.5 md:text-[11px]"
+                    className="pointer-events-auto min-h-[22px] min-w-[52px] rounded-full bg-desk-accent px-3.5 py-[5px] text-[10px] font-bold tracking-[0.12em] text-desk-accent-ink shadow-accent-glow-sm transition hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 md:min-h-[26px] md:min-w-[60px] md:px-[18px] md:py-1.5 md:text-[11px]"
                   >
                     TRADE
                   </button>
@@ -376,7 +394,8 @@ export default function TerminalShell() {
                 <button
                   type="button"
                   onClick={() => openOrder("BUY")}
-                  className="min-h-[26px] min-w-[60px] rounded-full bg-desk-accent px-4 py-1.5 text-[11px] font-bold tracking-[0.12em] text-desk-accent-ink shadow-accent-glow-sm"
+                  disabled={user.tradingEnabled === false || !!user.mustChangePassword}
+                  className="min-h-[26px] min-w-[60px] rounded-full bg-desk-accent px-4 py-1.5 text-[11px] font-bold tracking-[0.12em] text-desk-accent-ink shadow-accent-glow-sm disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   TRADE
                 </button>
@@ -430,6 +449,9 @@ export default function TerminalShell() {
       </nav>
 
       <FooterTicker symbols={symbols} prices={prices} onSelect={setSymbol} />
+      {user.mustChangePassword && !user.impersonatedBy && (
+        <ForcePasswordModal onDone={() => void refreshAll()} />
+      )}
       {orderOpen && (
         <OrderTicket
           modal

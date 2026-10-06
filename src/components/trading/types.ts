@@ -18,6 +18,10 @@ export type UserInfo = {
   name: string;
   role?: string;
   impersonatedBy?: string | null;
+  tradingEnabled?: boolean;
+  withdrawalsEnabled?: boolean;
+  loginEnabled?: boolean;
+  mustChangePassword?: boolean;
 };
 
 export type PriceTick = {

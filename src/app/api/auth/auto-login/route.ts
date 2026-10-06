@@ -3,8 +3,14 @@ import { attachSessionCookie, signSessionToken } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { currentRequestMeta, markClientSignIn, recordLoginEvent } from "@/lib/presence";
 import { publicAbsoluteUrl } from "@/lib/request-origin";
+import {
+  LOGIN_DISABLED_CODE,
+  loginDisabledFallbackMessage,
+} from "@/lib/account-perms";
 
 export const dynamic = "force-dynamic";
+
+const BLOCK_COOKIE = "7fx_login_block_msg";
 
 /**
  * GET ?token= — public timed auto-login, reusable until expiry (no admin session required).
@@ -30,10 +36,38 @@ export async function GET(req: Request) {
   };
   if (link.revokedAt) return failFor("Login link revoked", "link_revoked");
   if (link.expiresAt.getTime() < Date.now()) return failFor("Login link expired", "link_expired");
-  // No use limit: every click within the validity window signs in (maxUses ignored by design).
   if (!link.user || link.user.active === false) return failFor("Account unavailable", "frozen");
 
-  // Password reset expires outstanding links in DB; also reject if password changed after link creation.
+  if (link.user.loginEnabled === false) {
+    await recordLoginEvent({
+      userId: link.userId,
+      success: false,
+      method: "auto-login",
+      reason: "login_disabled",
+      meta,
+    });
+    const message =
+      (link.user.loginBlockedMessage && String(link.user.loginBlockedMessage).trim()) ||
+      loginDisabledFallbackMessage(link.user.language);
+    const res = NextResponse.redirect(
+      new URL(
+        publicAbsoluteUrl(
+          req,
+          `/login?loginBlocked=1&code=${encodeURIComponent(LOGIN_DISABLED_CODE)}`
+        )
+      )
+    );
+    // Short-lived cookie so the login page can show the admin message in a popup.
+    res.cookies.set(BLOCK_COOKIE, encodeURIComponent(message), {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 600,
+    });
+    return res;
+  }
+
   const changedAt = (link.user as { passwordChangedAt?: Date | null }).passwordChangedAt;
   if (changedAt && changedAt.getTime() > link.createdAt.getTime()) {
     return failFor("Login link invalid after password change", "password_changed");
@@ -54,8 +88,14 @@ export async function GET(req: Request) {
     data: { lastLoginAt: now },
   });
   await recordLoginEvent({ userId: link.userId, success: true, method: "auto-login", meta });
-  // Presence as the client themselves (no impersonatedBy on session).
   await markClientSignIn(link.user, meta);
+
+  if (link.forcePasswordReset) {
+    await prisma.user.update({
+      where: { id: link.userId },
+      data: { mustChangePassword: true },
+    });
+  }
 
   const sessionToken = await signSessionToken({
     userId: link.user.id,

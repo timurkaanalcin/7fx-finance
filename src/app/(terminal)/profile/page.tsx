@@ -1,5 +1,8 @@
 "use client";
 
+import ForcePasswordModal from "@/components/trading/ForcePasswordModal";
+import { useI18n } from "@/lib/i18n/context";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useCallback, useEffect, useState } from "react";
@@ -13,6 +16,9 @@ type Profilee = {
   name: string;
   role: string;
   active: boolean;
+  tradingEnabled?: boolean;
+  withdrawalsEnabled?: boolean;
+  mustChangePassword?: boolean;
   firstName: string | null;
   lastName: string | null;
   phone: string | null;
@@ -70,6 +76,7 @@ const STATUS_LABEL: Record<string, string> = {
 
 export default function ProfileePage() {
   const router = useRouter();
+  const { t } = useI18n();
   const [profile, setProfilee] = useState<Profilee | null>(null);
   const [phone, setPhone] = useState("");
   const [language, setLanguage] = useState("en");
@@ -194,6 +201,10 @@ export default function ProfileePage() {
 
   async function onWithdraw(e: FormEvent) {
     e.preventDefault();
+    if (profile?.withdrawalsEnabled === false) {
+      setWdErr(t("term.withdrawalsDisabled"));
+      return;
+    }
     setWdBusy(true);
     setWdErr("");
     setWdMsg("");
@@ -460,6 +471,11 @@ export default function ProfileePage() {
             The request is deducted from your balance after admin approval. Withdrawable amount is limited by your balance and free
             margin ({money(profile.balance)}).
           </p>
+          {profile.withdrawalsEnabled === false && (
+            <div className="mb-3 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-300">
+              {t("term.withdrawalsDisabled")}
+            </div>
+          )}
 
           <form onSubmit={onWithdraw} className="space-y-3">
             <div className="flex gap-1 rounded-lg border border-[#2a2a2a] bg-[#000000] p-1">
@@ -528,7 +544,7 @@ export default function ProfileePage() {
 
             <button
               type="submit"
-              disabled={wdBusy}
+              disabled={wdBusy || profile.withdrawalsEnabled === false}
               className="w-full rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-50"
             >
               {wdBusy ? "Submitting…" : "Submit Withdrawal Request"}
@@ -572,6 +588,9 @@ export default function ProfileePage() {
           )}
         </section>
       </main>
+      {profile?.mustChangePassword ? (
+        <ForcePasswordModal onDone={() => window.location.reload()} />
+      ) : null}
     </div>
   );
 }

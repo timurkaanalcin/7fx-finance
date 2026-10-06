@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { withdrawalsDisabledMessage, mustChangePasswordMessage } from "@/lib/account-perms";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,18 @@ export async function GET() {
 export async function POST(req: Request) {
   const user = await requireUser();
   if (!user) return NextResponse.json({ error: "No session" }, { status: 401 });
+  if ((user as { mustChangePassword?: boolean }).mustChangePassword === true) {
+    return NextResponse.json(
+      { error: mustChangePasswordMessage((user as { language?: string }).language) },
+      { status: 403 }
+    );
+  }
+  if ((user as { withdrawalsEnabled?: boolean }).withdrawalsEnabled === false) {
+    return NextResponse.json(
+      { error: withdrawalsDisabledMessage((user as { language?: string }).language) },
+      { status: 403 }
+    );
+  }
 
   const body = await req.json().catch(() => ({}));
   const amount = Number(body.amount);

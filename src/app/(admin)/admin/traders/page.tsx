@@ -17,6 +17,9 @@ type UserRow = {
   name: string;
   role: string;
   active: boolean;
+  tradingEnabled?: boolean;
+  withdrawalsEnabled?: boolean;
+  loginEnabled?: boolean;
   lastLoginAt: string | null;
   balance: number;
   equity: number;
@@ -224,6 +227,9 @@ export default function AdminUsersPage() {
           <option value="all">{i18n("crm.ui.allStatuses")}</option>
           <option value="active">{i18n("crm.ui.active")}</option>
           <option value="frozen">{i18n("crm.ui.frozen")}</option>
+          <option value="trade_off">{i18n("crm.perms.filterTradeOff")}</option>
+          <option value="withdraw_off">{i18n("crm.perms.filterWithdrawOff")}</option>
+          <option value="login_off">{i18n("crm.perms.filterLoginOff")}</option>
         </select>
         <select
           value={presence}
@@ -444,13 +450,30 @@ export default function AdminUsersPage() {
                   {(u as { tradingAccountId?: string }).tradingAccountId?.slice(0, 10) || "—"}
                 </td>
                 <td className="px-3 py-2.5">
-                  <span
-                    className={`rounded px-1.5 py-0.5 text-[10px] ${
-                      u.active ? "bg-emerald-500/20 text-emerald-300" : "bg-red-500/20 text-red-300"
-                    }`}
-                  >
-                    {u.active ? i18n("crm.ui.active") : i18n("crm.ui.frozen")}
-                  </span>
+                  <div className="flex flex-col gap-0.5">
+                    <span
+                      className={`w-fit rounded px-1.5 py-0.5 text-[10px] ${
+                        u.active ? "bg-emerald-500/20 text-emerald-300" : "bg-red-500/20 text-red-300"
+                      }`}
+                    >
+                      {u.active ? i18n("crm.ui.active") : i18n("crm.ui.frozen")}
+                    </span>
+                    {u.tradingEnabled === false && (
+                      <span className="w-fit rounded bg-amber-500/15 px-1.5 py-0.5 text-[9px] text-amber-700">
+                        {i18n("crm.perms.badgeTradeOff")}
+                      </span>
+                    )}
+                    {u.withdrawalsEnabled === false && (
+                      <span className="w-fit rounded bg-amber-500/15 px-1.5 py-0.5 text-[9px] text-amber-700">
+                        {i18n("crm.perms.badgeWithdrawOff")}
+                      </span>
+                    )}
+                    {u.loginEnabled === false && (
+                      <span className="w-fit rounded bg-amber-500/15 px-1.5 py-0.5 text-[9px] text-amber-700">
+                        {i18n("crm.perms.badgeLoginOff")}
+                      </span>
+                    )}
+                  </div>
                 </td>
                 <td className="px-3 py-2.5 text-neutral-500">{u.brokerName || "—"}</td>
                 <td className="px-3 py-2.5 text-[10px] text-neutral-500">

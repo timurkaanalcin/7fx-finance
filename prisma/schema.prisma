@@ -15,9 +15,21 @@ model User {
   passwordHash       String
   /// Set when an admin sets a new password; sessions issued before this are rejected
   passwordChangedAt  DateTime?
+  /// Client must set a new password before using the terminal (e.g. after forcePasswordReset auto-login)
+  mustChangePassword Boolean          @default(false)
   name               String
   role               String           @default("TRADER") // TRADER | ADMIN
   active             Boolean          @default(true)
+  /// Separate from freeze (active): trader may open/close positions & orders
+  tradingEnabled     Boolean          @default(true)
+  /// Separate from freeze: trader may submit withdrawal requests
+  withdrawalsEnabled Boolean          @default(true)
+  /// Separate from freeze: password/auto-login & non-impersonation sessions
+  loginEnabled       Boolean          @default(true)
+  /// Admin-authored message shown in login popup when loginEnabled=false
+  loginBlockedMessage String?         @db.Text
+  /// When login was last disabled (CRM); sessions after this are rejected
+  loginBlockedAt     DateTime?
   lastLoginAt        DateTime?
   /// Presence: last authenticated activity by the client (not admin impersonation)
   lastSeenAt         DateTime?
@@ -447,6 +459,8 @@ model AutoLoginLink {
   maxUses         Int       @default(0)
   useCount        Int       @default(0)
   note            String?   @db.VarChar(255)
+  /// When true, redeeming this link sets User.mustChangePassword
+  forcePasswordReset Boolean  @default(false)
   createdAt       DateTime  @default(now())
 
   @@index([userId])

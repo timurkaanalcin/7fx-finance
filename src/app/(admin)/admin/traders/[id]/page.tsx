@@ -11,6 +11,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { LoginHistory, TraderPresenceHeader } from "@/components/crm/Presence";
+import AccountPermissionsPanel from "@/components/crm/AccountPermissionsPanel";
 import {
   ACCOUNT_CURRENCIES,
   ACCOUNT_TYPES,
@@ -41,6 +42,11 @@ type Membership = Record<string, unknown> & {
   name: string;
   role: string;
   active: boolean;
+  tradingEnabled?: boolean;
+  withdrawalsEnabled?: boolean;
+  loginEnabled?: boolean;
+  loginBlockedMessage?: string | null;
+  loginBlockedAt?: string | null;
   balance: number;
   equity: number;
   credit: number;
@@ -152,6 +158,7 @@ function TraderAccessTools({ userId, traderName }: { userId: string; traderName:
   const [busy, setBusy] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
   const [expiresIn, setExpiresIn] = useState(60);
+  const [forcePwReset, setForcePwReset] = useState(false);
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
   const [enabled, setEnabled] = useState(true);
@@ -226,7 +233,7 @@ function TraderAccessTools({ userId, traderName }: { userId: string; traderName:
       const res = await fetch(`/api/admin/users/${userId}/login-link`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ expiresInMinutes: expiresIn }),
+        body: JSON.stringify({ expiresInMinutes: expiresIn, forcePasswordReset: forcePwReset }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -276,16 +283,31 @@ function TraderAccessTools({ userId, traderName }: { userId: string; traderName:
       <select
         className="rounded border border-neutral-300 bg-white px-1.5 py-1 text-[10px]"
         value={expiresIn}
-        onChange={(e) => setExpiresIn(Number(e.target.value))}
+        onChange={(e) => {
+          const v = Number(e.target.value);
+          setExpiresIn(v);
+          // 23h preset defaults the force-password checkbox on
+          setForcePwReset(v === 1380);
+        }}
         disabled={busy}
         title={i18n("crm.ui.linkExpiry")}
       >
         <option value={15}>15m</option>
         <option value={60}>1h</option>
         <option value={360}>6h</option>
+        <option value={1380}>23h</option>
         <option value={1440}>24h</option>
         <option value={10080}>7d</option>
       </select>
+      <label className="flex items-center gap-1 text-[10px] text-neutral-600" title={i18n("crm.ui.forcePasswordResetHint")}>
+        <input
+          type="checkbox"
+          checked={forcePwReset}
+          onChange={(e) => setForcePwReset(e.target.checked)}
+          disabled={busy}
+        />
+        {i18n("crm.ui.forcePasswordReset")}
+      </label>
       <button
         type="button"
         disabled={busy}
@@ -340,7 +362,14 @@ function TraderAccessTools({ userId, traderName }: { userId: string; traderName:
                     <td className="pr-2">{fmt(l.expiresAt)}</td>
                     <td className="pr-2 tabular-nums">{l.useCount ?? 0}</td>
                     <td className="pr-2">{fmt(l.lastUsedAt || l.usedAt)}</td>
-                    <td className={`pr-2 ${revoked || expired ? "text-neutral-400" : "text-emerald-600"}`}>{status}</td>
+                    <td className={`pr-2 ${revoked || expired ? "text-neutral-400" : "text-emerald-600"}`}>
+                      {status}
+                      {l.forcePasswordReset ? (
+                        <span className="ml-1 rounded bg-amber-50 px-1 text-[9px] text-amber-700">
+                          {i18n("crm.ui.forcePasswordResetShort")}
+                        </span>
+                      ) : null}
+                    </td>
                     <td>
                       {!revoked && !expired && (
                         <button
@@ -372,6 +401,7 @@ type LoginLinkRow = {
   lastUsedAt?: string | null;
   revokedAt?: string | null;
   useCount?: number;
+  forcePasswordReset?: boolean;
 };
 
 
@@ -882,6 +912,8 @@ export default function AdminUserDetailPage() {
   const [user, setUser] = useState<Membership | null>(null);
   const [form, setForm] = useState<Record<string, string | boolean>>({});
   const [editingProfile, setEditingProfile] = useState(false);
+  const [canManageUsers, setCanManageUsers] = useState(false);
+  const [isMainAdminTarget, setIsMainAdminTarget] = useState(false);
   const [notes, setNotes] = useState<Row[]>([]);
   const [positions, setPositions] = useState<Row[]>([]);
   const [orders, setOrders] = useState<Row[]>([]);
@@ -909,10 +941,30 @@ export default function AdminUserDetailPage() {
 
   const load = useCallback(async () => {
     if (!id) return;
-    const res = await fetch(`/api/admin/users/${id}`);
+    const [res, meRes] = await Promise.all([
+      fetch(`/api/admin/users/${id}`),
+      fetch("/api/auth/me", { credentials: "include" }),
+    ]);
+    if (meRes.ok) {
+      const me = await meRes.json().catch(() => ({}));
+      setCanManageUsers(Boolean(me.permissions?.canManageUsers));
+    } else {
+      setCanManageUsers(false);
+    }
     if (!res.ok) return;
     const data = await res.json();
     setUser(data.user as Membership);
+    setIsMainAdminTarget(false);
+    // Detect main admin via permissions endpoint (does not expose ADMIN_EMAIL to client)
+    try {
+      const pr = await fetch(`/api/admin/users/${id}/permissions`);
+      if (pr.ok) {
+        const pd = await pr.json();
+        setIsMainAdminTarget(Boolean(pd.isMainAdmin));
+      }
+    } catch {
+      /* ignore */
+    }
     setNotes(data.notes || []);
     setPositions(data.positions || []);
     setOrders(data.orders || []);
@@ -1281,6 +1333,32 @@ export default function AdminUserDetailPage() {
 
       {tab === "profil" && (
         <div>
+          <AccountPermissionsPanel
+            userId={user.id}
+            canManage={canManageUsers}
+            isMainAdmin={isMainAdminTarget}
+            initial={{
+              tradingEnabled: user.tradingEnabled !== false,
+              withdrawalsEnabled: user.withdrawalsEnabled !== false,
+              loginEnabled: user.loginEnabled !== false,
+              loginBlockedMessage: user.loginBlockedMessage ?? null,
+              loginBlockedAt: user.loginBlockedAt ?? null,
+            }}
+            onUpdated={(p) =>
+              setUser((u) =>
+                u
+                  ? {
+                      ...u,
+                      tradingEnabled: p.tradingEnabled,
+                      withdrawalsEnabled: p.withdrawalsEnabled,
+                      loginEnabled: p.loginEnabled,
+                      loginBlockedMessage: p.loginBlockedMessage,
+                      loginBlockedAt: p.loginBlockedAt as string | null,
+                    }
+                  : u
+              )
+            }
+          />
           <div className="mb-3 flex items-center gap-2">
             {!ed ? (
               <button

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { getSession } from "@/lib/auth";
+import { getSession, requireUser, destroySession } from "@/lib/auth";
 import AuthShell from "@/components/auth/AuthShell";
 import LoginForm from "@/components/auth/LoginForm";
 
@@ -14,7 +14,12 @@ export const metadata: Metadata = {
 export default async function LoginPage() {
   const session = await getSession();
   if (session) {
-    redirect(session.role === "ADMIN" ? "/admin" : "/trade");
+    const user = await requireUser();
+    if (user) {
+      redirect(session.role === "ADMIN" ? "/admin" : "/trade");
+    }
+    // Stale cookie (e.g. loginEnabled=false) — clear so middleware allows /login
+    await destroySession();
   }
 
   return (

@@ -124,6 +124,14 @@ export async function requireUser() {
   });
   if (!user) return null;
   if ((user as { active?: boolean }).active === false) return null;
+  // loginEnabled=false kills non-impersonation sessions (separate from freeze).
+  // Admin impersonation from CRM still works so support can inspect the account.
+  if (
+    (user as { loginEnabled?: boolean }).loginEnabled === false &&
+    !session.impersonatedBy
+  ) {
+    return null;
+  }
   // Sessions issued before an admin password change are invalid (stateless JWT revocation).
   const changedAt = (user as { passwordChangedAt?: Date | null }).passwordChangedAt;
   if (changedAt && session.iat && session.iat * 1000 + 1000 <= changedAt.getTime()) return null;

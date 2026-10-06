@@ -47,6 +47,9 @@ export async function GET(req: Request) {
   }
   if (status === "active") and.push({ active: true });
   if (status === "frozen") and.push({ active: false });
+  if (status === "trade_off") and.push({ tradingEnabled: false });
+  if (status === "withdraw_off") and.push({ withdrawalsEnabled: false });
+  if (status === "login_off") and.push({ loginEnabled: false });
   if (desk) {
     const match = await prisma.desk.findFirst({
       where: { OR: [{ id: desk }, { code: desk }, { name: desk }] },

@@ -6,7 +6,7 @@ import { publicRequestOrigin } from "@/lib/request-origin";
 
 export const dynamic = "force-dynamic";
 
-const ALLOWED_MINUTES = [15, 30, 60, 120, 360, 720, 1440, 4320, 10080]; // up to 7d
+const ALLOWED_MINUTES = [15, 30, 60, 120, 360, 720, 1380, 1440, 4320, 10080]; // 23h=1380, up to 7d
 
 type Ctx = { params: { id: string } };
 
@@ -34,6 +34,11 @@ export async function POST(req: Request, { params }: Ctx) {
   // Links are reusable until expiry (no use limit).
   const maxUses = 0;
   const note = body.note != null ? String(body.note).slice(0, 255) : null;
+  // Default: 23h links force password reset; other durations opt-in via checkbox.
+  const forcePasswordReset =
+    typeof body.forcePasswordReset === "boolean"
+      ? body.forcePasswordReset
+      : expiresInMinutes === 1380;
 
   const token = randomBytes(24).toString("hex");
   const expiresAt = new Date(Date.now() + expiresInMinutes * 60_000);
@@ -46,6 +51,7 @@ export async function POST(req: Request, { params }: Ctx) {
       expiresAt,
       maxUses,
       note,
+      forcePasswordReset,
     },
   });
 
@@ -80,7 +86,7 @@ export async function POST(req: Request, { params }: Ctx) {
     adminId: admin.id,
     action: "CREATE_AUTO_LOGIN_LINK",
     targetId: userId,
-    meta: { linkId: link.id, expiresAt: expiresAt.toISOString(), maxUses },
+    meta: { linkId: link.id, expiresAt: expiresAt.toISOString(), maxUses, forcePasswordReset },
   });
 
   return NextResponse.json({
@@ -92,6 +98,7 @@ export async function POST(req: Request, { params }: Ctx) {
     expiresAt: expiresAt.toISOString(),
     expiresInMinutes,
     maxUses,
+    forcePasswordReset,
   });
 }
 
@@ -114,6 +121,7 @@ export async function GET(_req: Request, { params }: Ctx) {
       useCount: true,
       maxUses: true,
       note: true,
+      forcePasswordReset: true,
       createdAt: true,
     },
   });
