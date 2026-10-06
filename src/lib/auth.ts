@@ -9,6 +9,7 @@ const COOKIE_NAME = "7fx_session";
 const LEGACY_COOKIE_NAME = "deskflow_session";
 
 function sessionCookieOptions(maxAge: number, _host?: string | null) {
+  void _host;
   const opts: {
     httpOnly: boolean;
     secure: boolean;
