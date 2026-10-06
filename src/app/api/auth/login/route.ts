@@ -25,7 +25,7 @@ function authSecret(): Uint8Array {
   return new TextEncoder().encode(secret);
 }
 
-export async function sign2faChallenge(userId: string): Promise<string> {
+async function sign2faChallenge(userId: string): Promise<string> {
   return new SignJWT({ purpose: "2fa", userId })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
