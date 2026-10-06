@@ -33,7 +33,8 @@ type Tab =
   | "belgeler"
   | "takvim"
   | "finans"
-  | "notlar";
+  | "notlar"
+  | "izinler";
 
 type Membership = Record<string, unknown> & {
   id: string;
@@ -61,7 +62,7 @@ type Membership = Record<string, unknown> & {
 type Row = Record<string, unknown>;
 type Result = { ok: boolean; error?: string };
 
-const TABS: { id: Tab; labelKey: string }[] = [
+const TABS: { id: Tab; labelKey: string; requiresManageUsers?: boolean }[] = [
   { id: "profil", labelKey: "crm.ui.profile" },
   { id: "iletisim", labelKey: "crm.nav.communications" },
   { id: "biletler", labelKey: "crm.nav.tickets" },
@@ -72,6 +73,7 @@ const TABS: { id: Tab; labelKey: string }[] = [
   { id: "takvim", labelKey: "crm.nav.calendar" },
   { id: "finans", labelKey: "crm.nav.finance" },
   { id: "notlar", labelKey: "crm.ui.notes" },
+  { id: "izinler", labelKey: "crm.perms.tab", requiresManageUsers: true },
 ];
 
 const LEDGER_TYPES = [
@@ -914,6 +916,10 @@ export default function AdminUserDetailPage() {
   const [editingProfile, setEditingProfile] = useState(false);
   const [canManageUsers, setCanManageUsers] = useState(false);
   const [isMainAdminTarget, setIsMainAdminTarget] = useState(false);
+
+  useEffect(() => {
+    if (tab === "izinler" && !canManageUsers) setTab("profil");
+  }, [tab, canManageUsers]);
   const [notes, setNotes] = useState<Row[]>([]);
   const [positions, setPositions] = useState<Row[]>([]);
   const [orders, setOrders] = useState<Row[]>([]);
@@ -1303,6 +1309,21 @@ export default function AdminUserDetailPage() {
         >
           {user.active ? i18n("crm.ui.active") : i18n("crm.ui.frozen")}
         </span>
+        {user.tradingEnabled === false && (
+          <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700">
+            {i18n("crm.perms.badgeTradeOff")}
+          </span>
+        )}
+        {user.withdrawalsEnabled === false && (
+          <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700">
+            {i18n("crm.perms.badgeWithdrawOff")}
+          </span>
+        )}
+        {user.loginEnabled === false && (
+          <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700">
+            {i18n("crm.perms.badgeLoginOff")}
+          </span>
+        )}
         <TraderPresenceHeader userId={user.id} />
         {tradingAccountId && (
           <span className="rounded bg-neutral-100 px-2 py-0.5 font-mono text-[10px] text-neutral-600">
@@ -1316,7 +1337,7 @@ export default function AdminUserDetailPage() {
       </div>
 
       <div className="mb-4 flex flex-wrap gap-1 border-b border-[#e5e5e5] pb-2">
-        {TABS.map((t) => (
+        {TABS.filter((t) => !t.requiresManageUsers || canManageUsers).map((t) => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
@@ -1333,32 +1354,6 @@ export default function AdminUserDetailPage() {
 
       {tab === "profil" && (
         <div>
-          <AccountPermissionsPanel
-            userId={user.id}
-            canManage={canManageUsers}
-            isMainAdmin={isMainAdminTarget}
-            initial={{
-              tradingEnabled: user.tradingEnabled !== false,
-              withdrawalsEnabled: user.withdrawalsEnabled !== false,
-              loginEnabled: user.loginEnabled !== false,
-              loginBlockedMessage: user.loginBlockedMessage ?? null,
-              loginBlockedAt: user.loginBlockedAt ?? null,
-            }}
-            onUpdated={(p) =>
-              setUser((u) =>
-                u
-                  ? {
-                      ...u,
-                      tradingEnabled: p.tradingEnabled,
-                      withdrawalsEnabled: p.withdrawalsEnabled,
-                      loginEnabled: p.loginEnabled,
-                      loginBlockedMessage: p.loginBlockedMessage,
-                      loginBlockedAt: p.loginBlockedAt as string | null,
-                    }
-                  : u
-              )
-            }
-          />
           <div className="mb-3 flex items-center gap-2">
             {!ed ? (
               <button
@@ -1736,6 +1731,35 @@ export default function AdminUserDetailPage() {
           onUpdate={rec("note").update}
           onDelete={rec("note").remove}
           emptyText={i18n("crm.ui.noNotes")}
+        />
+      )}
+
+      {tab === "izinler" && canManageUsers && (
+        <AccountPermissionsPanel
+          userId={user.id}
+          canManage={canManageUsers}
+          isMainAdmin={isMainAdminTarget}
+          initial={{
+            tradingEnabled: user.tradingEnabled !== false,
+            withdrawalsEnabled: user.withdrawalsEnabled !== false,
+            loginEnabled: user.loginEnabled !== false,
+            loginBlockedMessage: user.loginBlockedMessage ?? null,
+            loginBlockedAt: user.loginBlockedAt ?? null,
+          }}
+          onUpdated={(p) =>
+            setUser((u) =>
+              u
+                ? {
+                    ...u,
+                    tradingEnabled: p.tradingEnabled,
+                    withdrawalsEnabled: p.withdrawalsEnabled,
+                    loginEnabled: p.loginEnabled,
+                    loginBlockedMessage: p.loginBlockedMessage,
+                    loginBlockedAt: p.loginBlockedAt as string | null,
+                  }
+                : u
+            )
+          }
         />
       )}
     </div>

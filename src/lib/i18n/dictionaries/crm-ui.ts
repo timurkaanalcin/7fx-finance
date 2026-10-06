@@ -741,6 +741,7 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.workers.auditConfirm", "audit log entries. Deleting archives them into the deletion log entry. Continue?", "denetim kaydı var. Silme işlemi bunları silme kaydına arşivler. Devam edilsin mi?", "записей аудита. При удалении они будут архивированы в записи об удалении. Продолжить?", "Audit-Einträge. Beim Löschen werden sie im Lösch-Eintrag archiviert. Fortfahren?", "سجلات تدقيق. سيؤرشفها الحذف في سجل الحذف. متابعة؟"],
   ["crm.workers.archiveDelete", "Archive & delete", "Arşivle ve sil", "Архивировать и удалить", "Archivieren & löschen", "أرشفة وحذف"],
   ["crm.workers.noPermission", "No permission (user management required)", "Yetki yok (kullanıcı yönetimi gerekli)", "Нет прав (нужно управление пользователями)", "Keine Berechtigung (Benutzerverwaltung nötig)", "لا توجد صلاحية (يلزم إدارة المستخدمين)"],
+  ["crm.perms.tab", "Account Permissions", "Hesap İzinleri", "Права аккаунта", "Kontoberechtigungen", "أذونات الحساب"],
   ["crm.perms.title", "Account permissions", "Hesap izinleri", "Права счёта", "Kontorechte", "صلاحيات الحساب"],
   ["crm.perms.trading", "Trade", "İşlem", "Торговля", "Handel", "التداول"],
   ["crm.perms.tradingHint", "Opening and closing positions / orders", "Pozisyon ve emir açıp kapatma", "Открытие и закрытие позиций / ордеров", "Positionen/Orders öffnen und schließen", "فتح وإغلاق الصفقات / الأوامر"],
