@@ -392,11 +392,11 @@ export default function ChatPage() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={i18n("crm.ui.search")}
-                className="w-full rounded-xl border border-neutral-200 bg-[#f5f5f5] py-2 pl-9 pr-3 text-sm text-neutral-900 outline-none focus:border-[var(--accent)]/40"
+                className="w-full rounded-xl border border-neutral-200 bg-white py-2 pl-9 pr-3 text-sm text-neutral-900 outline-none focus:border-[var(--accent)]/40"
                 aria-label={i18n("crm.ui.search")}
               />
             </div>
-            <div className="flex gap-1 rounded-xl bg-[#f5f5f5] p-1">
+            <div className="flex gap-1 rounded-xl border border-neutral-200 bg-white p-1">
               {(
                 [
                   ["all", i18n("crm.ui.all")],
@@ -485,7 +485,7 @@ export default function ChatPage() {
         </aside>
 
         {/* CENTER */}
-        <section className="flex min-h-0 flex-col bg-[#f7f7f7]">
+        <section className="flex min-h-0 flex-col bg-white">
           {!active ? (
             <div className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-sm text-neutral-500">
               <p>{i18n("crm.chat.emptyThread")}</p>
@@ -615,7 +615,7 @@ export default function ChatPage() {
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder={i18n("crm.chat.enter")}
-                    className="min-w-0 flex-1 rounded-xl border border-neutral-200 bg-[#f5f5f5] px-3 py-2.5 text-sm text-neutral-900 outline-none focus:border-[var(--accent)]/40"
+                    className="min-w-0 flex-1 rounded-xl border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-900 outline-none focus:border-[var(--accent)]/40"
                     aria-label={i18n("crm.ui.reply")}
                     disabled={busy}
                   />
@@ -826,7 +826,7 @@ export default function ChatPage() {
             <select
               value={newUserId}
               onChange={(e) => setNewUserId(e.target.value)}
-              className="mt-3 w-full rounded-xl border border-neutral-200 bg-[#f5f5f5] px-3 py-2 text-sm"
+              className="mt-3 w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm"
             >
               <option value="">{i18n("crm.comms.selectTrader")}</option>
               {traders.map((t) => (
@@ -840,7 +840,7 @@ export default function ChatPage() {
               onChange={(e) => setMessage(e.target.value)}
               rows={4}
               placeholder={i18n("crm.chat.first")}
-              className="mt-2 w-full rounded-xl border border-neutral-200 bg-[#f5f5f5] px-3 py-2 text-sm"
+              className="mt-2 w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm"
             />
             <div className="mt-2 flex flex-wrap gap-2">
               <button

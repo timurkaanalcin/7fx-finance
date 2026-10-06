@@ -398,7 +398,7 @@ function Field({
 }) {
   const cls =
     "rounded border bg-white px-2 py-1.5 text-sm text-[#111111] outline-none focus:ring-1 focus:ring-[#111111]/30 " +
-    (disabled ? "border-[#e5e5e5] bg-neutral-50 text-neutral-700" : "border-[#111111]");
+    (disabled ? "border-[#e5e5e5] bg-white text-neutral-700" : "border-[#111111]");
   if (options) {
     return (
       <label className="flex flex-col gap-1 text-xs">
@@ -1398,7 +1398,7 @@ export default function AdminUserDetailPage() {
                     deskId: picked ? picked.id : "",
                   }));
                 }}
-                className={`rounded border bg-white px-2 py-1.5 text-sm text-[#111111] ${ed ? "border-[#111111]" : "border-[#e5e5e5] bg-neutral-50"}`}
+                className={`rounded border bg-white px-2 py-1.5 text-sm text-[#111111] ${ed ? "border-[#111111]" : "border-[#e5e5e5]"}`}
               >
                 <option value="">{(!ed && (user.desk as string)) || "—"}</option>
                 {desks.map((d) => (

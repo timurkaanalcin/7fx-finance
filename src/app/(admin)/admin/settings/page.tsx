@@ -133,7 +133,7 @@ export default function AdminSettingsPage() {
           <p className="mt-4 text-sm text-neutral-500">{i18n("crm.ui.loading")}</p>
         ) : (
           <div className="mt-4 space-y-4">
-            <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-neutral-200 bg-[#f7f7f7] px-3 py-3">
+            <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-neutral-200 bg-white px-3 py-3">
               <input
                 type="checkbox"
                 className="mt-1 h-4 w-4 rounded border-neutral-400 bg-white text-black"
@@ -157,7 +157,7 @@ export default function AdminSettingsPage() {
               </label>
               <input
                 id="admin-referral-code"
-                className="w-full rounded-lg border border-neutral-300 bg-[#f7f7f7] px-3 py-2.5 font-mono text-neutral-900 outline-none focus:border-sky-500"
+                className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2.5 font-mono text-neutral-900 outline-none focus:border-sky-500"
                 value={draft}
                 onChange={(e) => setDraft(e.target.value.replace(/[^\d]/g, ""))}
                 placeholder={i18n("crm.set.example")}

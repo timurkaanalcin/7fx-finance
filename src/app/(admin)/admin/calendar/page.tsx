@@ -144,18 +144,18 @@ export default function CalendarPage() {
               onChange={(e) => setForm({ ...form, body: e.target.value })}
               rows={3}
               placeholder={i18n("crm.cal.ph")}
-              className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
+              className="w-full rounded border border-neutral-300 bg-white px-2 py-1.5"
             />
             <input
               type="datetime-local" step={1}
               value={form.remindAt}
               onChange={(e) => setForm({ ...form, remindAt: e.target.value })}
-              className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
+              className="w-full rounded border border-neutral-300 bg-white px-2 py-1.5"
             />
             <select
               value={form.userId}
               onChange={(e) => setForm({ ...form, userId: e.target.value })}
-              className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
+              className="w-full rounded border border-neutral-300 bg-white px-2 py-1.5"
             >
               <option value="">{i18n("crm.cal.traderOpt")}</option>
               {traders.map((t) => (

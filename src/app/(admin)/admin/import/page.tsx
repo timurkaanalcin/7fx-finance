@@ -304,7 +304,7 @@ export default function AdminImportPage() {
         <div className="rounded-lg border border-neutral-200 bg-white p-6">
           <p className="mb-3 text-sm text-neutral-600">{t("crm.import.uploadHint")}</p>
           <p className="mb-4 text-[11px] text-neutral-400">{t("crm.import.formats")}</p>
-          <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-neutral-300 bg-[#fafafa] px-6 py-10 hover:border-neutral-400">
+          <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-neutral-300 bg-white px-6 py-10 hover:border-neutral-400">
             <span className="text-sm font-medium text-black">{t("crm.import.chooseFile")}</span>
             <span className="mt-1 text-[11px] text-neutral-400">max 10 MB</span>
             <input
@@ -316,7 +316,7 @@ export default function AdminImportPage() {
             />
           </label>
           {busy && <p className="mt-3 text-xs text-neutral-500">{t("crm.ui.loading")}</p>}
-          <div className="mt-4 rounded border border-neutral-100 bg-neutral-50 p-3 text-[11px] text-neutral-600 space-y-1">
+          <div className="mt-4 rounded border border-neutral-200 bg-white p-3 text-[11px] text-neutral-600 space-y-1">
             <p>• {t("crm.import.note.email")}</p>
             <p>• {t("crm.import.note.balance")}</p>
             <p>• {t("crm.import.note.pdf")}</p>

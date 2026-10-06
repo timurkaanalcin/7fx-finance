@@ -78,7 +78,7 @@ export default function AdminDepositsPage() {
       {msg && <p className="mb-3 text-xs text-emerald-400">{msg}</p>}
       <div className="overflow-x-auto rounded-lg border border-[#e5e5e5]">
         <table className="w-full text-left text-xs">
-          <thead className="bg-[#e5e5e5] text-neutral-500">
+          <thead className="border-b border-black/10 bg-white text-neutral-500">
             <tr>
               <th className="px-3 py-2">{i18n("crm.ui.date")}</th>
               <th className="px-3 py-2">{i18n("crm.ui.user")}</th>

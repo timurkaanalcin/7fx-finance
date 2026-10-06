@@ -109,7 +109,7 @@ export default function AdminMethodsPage() {
         <h1 className="mb-3 text-lg font-semibold">{i18n("crm.nav.methods")}</h1>
         <div className="space-y-2">
           {methods.map((m) => (
-            <div key={m.id} className="rounded-lg border border-[#e5e5e5] bg-[#e5e5e5] p-3 text-xs">
+            <div key={m.id} className="rounded-lg border border-[#e5e5e5] bg-white p-3 text-xs">
               <div className="flex items-center gap-2">
                 <span className={`rounded px-1.5 py-0.5 text-[10px] ${m.active ? "bg-emerald-600" : "bg-slate-600"}`}>
                   {m.active ? i18n("crm.ui.active") : i18n("crm.ui.inactive")}
@@ -142,7 +142,7 @@ export default function AdminMethodsPage() {
       <div>
         <h2 className="mb-3 text-sm font-semibold">{editId ? i18n("crm.methods.edit") : i18n("crm.methods.new")}</h2>
         {msg && <p className="mb-2 text-xs text-emerald-400">{msg}</p>}
-        <form onSubmit={onSubmit} className="space-y-2 rounded-lg border border-[#e5e5e5] bg-[#e5e5e5] p-4 text-xs">
+        <form onSubmit={onSubmit} className="space-y-2 rounded-lg border border-[#e5e5e5] bg-white p-4 text-xs">
           <label className="block">
             <span className="text-neutral-500">{i18n("crm.ui.type")}</span>
             <select

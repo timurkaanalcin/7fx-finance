@@ -695,7 +695,7 @@ body:has(.fx-auth-page) {
 
 /* ── 7FX CRM/admin = HRAM CRM light chrome 1:1 ── */
 .fx-crm {
-  --background: #f7f7f7;
+  --background: #ffffff;
   --foreground: #111111;
   --card: #ffffff;
   --muted: #333333;
@@ -703,7 +703,7 @@ body:has(.fx-auth-page) {
   --accent-ink: #ffffff;
   --border: rgba(0, 0, 0, 0.12);
   color: #111111;
-  background: #f7f7f7;
+  background: #ffffff;
 }
 .fx-crm .btn-primary {
   background: #111111;
@@ -746,7 +746,7 @@ body:has(.fx-auth-page) {
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: #525252;
-  background: #f5f5f5;
+  background: #ffffff;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 .fx-crm .crm-dense-table td {
@@ -772,10 +772,38 @@ body:has(.fx-auth-page) {
   box-shadow: 0 0 0 1px rgba(17, 17, 17, 0.2) !important;
 }
 
-/* CRM light bg lock */
-.fx-crm {
-  background: #f7f7f7 !important;
+/* CRM light bg lock — pure white canvas (admin scope only) */
+html:has(.fx-crm),
+body:has(.fx-crm) {
+  background: #ffffff !important;
   color-scheme: light;
+}
+.fx-crm {
+  --bg: #ffffff;
+  --bg-panel: #ffffff;
+  --bg-elevated: #ffffff;
+  --muted-bg: #ffffff;
+  background: #ffffff !important;
+  color-scheme: light;
+}
+/* low-specificity defaults: explicit Tailwind bg-* utilities (badges, buttons) still win */
+:where(.fx-crm) :where(main, aside, header, section, table, thead, thead tr, th, [role="dialog"]) {
+  background-color: #ffffff;
+}
+/* legacy off-white surface utilities → pure white inside CRM */
+.fx-crm .bg-\[\#f7f7f7\],
+.fx-crm .bg-\[\#f5f5f5\],
+.fx-crm .bg-\[\#fafafa\],
+.fx-crm .bg-\[\#f7f8fa\],
+.fx-crm .bg-\[\#f0f1f4\],
+.fx-crm .bg-gray-50,
+.fx-crm .bg-zinc-50,
+.fx-crm .bg-slate-50,
+.fx-crm .bg-neutral-50,
+.fx-crm .bg-background,
+.fx-crm .bg-card,
+.fx-crm .bg-muted {
+  background-color: #ffffff !important;
 }
 .fx-crm aside,
 .fx-crm header,

@@ -126,26 +126,26 @@ export default function MailPage() {
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               placeholder={i18n("crm.ui.name")}
-              className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
+              className="w-full rounded border border-neutral-300 bg-white px-2 py-1.5"
             />
             <input
               value={form.subject}
               onChange={(e) => setForm({ ...form, subject: e.target.value })}
               placeholder={i18n("crm.ui.subject")}
-              className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
+              className="w-full rounded border border-neutral-300 bg-white px-2 py-1.5"
             />
             <textarea
               value={form.body}
               onChange={(e) => setForm({ ...form, body: e.target.value })}
               rows={8}
               placeholder={i18n("crm.ui.body")}
-              className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5 font-mono text-[11px]"
+              className="w-full rounded border border-neutral-300 bg-white px-2 py-1.5 font-mono text-[11px]"
             />
             <input
               value={form.deskName}
               onChange={(e) => setForm({ ...form, deskName: e.target.value })}
               placeholder={i18n("crm.mail.deskPh")}
-              className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
+              className="w-full rounded border border-neutral-300 bg-white px-2 py-1.5"
             />
             <button
               type="button"

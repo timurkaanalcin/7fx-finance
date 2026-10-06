@@ -55,7 +55,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
 
   if (!ready) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#f7f7f7] text-neutral-500">
+      <div className="fx-crm flex min-h-screen items-center justify-center bg-white text-neutral-500">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--accent)] border-t-transparent" />
           <span className="text-sm">{t("crm.loading")}</span>
@@ -73,7 +73,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
   const flatMobile = CRM_NAV_GROUPS.flatMap((g) => g.items);
 
   return (
-    <div className="fx-crm flex min-h-screen bg-[#f7f7f7] text-black" dir={dir}>
+    <div className="fx-crm fx-crm-root flex min-h-screen bg-white text-black" dir={dir}>
       <aside className="hidden w-[200px] shrink-0 flex-col border-r border-black/10 bg-white text-black md:flex">
         <div className="flex h-11 items-center gap-2 border-b border-black/10 px-3">
           <div className="flex h-7 w-7 items-center justify-center rounded bg-black text-[10px] font-bold tracking-tight text-white">
@@ -146,7 +146,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col bg-white">
         <header className="flex h-11 items-center gap-2 border-b border-black/10 bg-white px-3">
           <div className="flex max-w-[50%] gap-1 overflow-x-auto md:hidden">
             {flatMobile.slice(0, 8).map((n) => (
@@ -181,7 +181,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
             </button>
           </div>
         </header>
-        <main className="flex-1 overflow-auto p-3 md:p-4">{children}</main>
+        <main className="flex-1 overflow-auto bg-white p-3 md:p-4">{children}</main>
       </div>
     </div>
   );

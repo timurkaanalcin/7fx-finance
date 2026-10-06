@@ -110,7 +110,7 @@ export default function DocumentsPage() {
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="rounded border border-neutral-300 bg-[#fafafa] px-2 py-1 text-xs"
+              className="rounded border border-neutral-300 bg-white px-2 py-1 text-xs"
             >
               <option value="">{i18n("crm.ui.allStatuses")}</option>
               {["PENDING", "APPROVED", "REJECTED"].map((s) => (
@@ -190,7 +190,7 @@ export default function DocumentsPage() {
             <select
               value={form.userId}
               onChange={(e) => setForm({ ...form, userId: e.target.value })}
-              className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
+              className="w-full rounded border border-neutral-300 bg-white px-2 py-1.5"
             >
               <option value="">{i18n("crm.comms.selectTrader")}</option>
               {traders.map((t) => (
@@ -203,12 +203,12 @@ export default function DocumentsPage() {
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               placeholder={i18n("crm.docs.namePh")}
-              className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
+              className="w-full rounded border border-neutral-300 bg-white px-2 py-1.5"
             />
             <select
               value={form.docType}
               onChange={(e) => setForm({ ...form, docType: e.target.value })}
-              className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
+              className="w-full rounded border border-neutral-300 bg-white px-2 py-1.5"
             >
               {["ID", "ADDRESS", "SELFIE", "OTHER"].map((t) => (
                 <option key={t} value={t}>
@@ -220,7 +220,7 @@ export default function DocumentsPage() {
               value={form.note}
               onChange={(e) => setForm({ ...form, note: e.target.value })}
               placeholder={i18n("crm.docs.notePh")}
-              className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
+              className="w-full rounded border border-neutral-300 bg-white px-2 py-1.5"
             />
             <button
               type="button"

@@ -89,7 +89,7 @@ export default function CommunicationsPage() {
             <select
               value={type}
               onChange={(e) => setType(e.target.value)}
-              className="rounded border border-neutral-300 bg-[#fafafa] px-2 py-1 text-xs"
+              className="rounded border border-neutral-300 bg-white px-2 py-1 text-xs"
             >
               <option value="">{i18n("crm.ui.allTypes")}</option>
               {["CHAT", "CALL", "NOTE"].map((t) => (
@@ -148,7 +148,7 @@ export default function CommunicationsPage() {
             <select
               value={form.userId}
               onChange={(e) => setForm({ ...form, userId: e.target.value })}
-              className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
+              className="w-full rounded border border-neutral-300 bg-white px-2 py-1.5"
             >
               <option value="">{i18n("crm.comms.selectTrader")}</option>
               {traders.map((t) => (
@@ -160,7 +160,7 @@ export default function CommunicationsPage() {
             <select
               value={form.type}
               onChange={(e) => setForm({ ...form, type: e.target.value })}
-              className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
+              className="w-full rounded border border-neutral-300 bg-white px-2 py-1.5"
             >
               {["NOTE", "CALL", "CHAT"].map((t) => (
                 <option key={t} value={t}>
@@ -172,14 +172,14 @@ export default function CommunicationsPage() {
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
               placeholder={i18n("crm.ui.title")}
-              className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
+              className="w-full rounded border border-neutral-300 bg-white px-2 py-1.5"
             />
             <textarea
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               placeholder={i18n("crm.ui.description")}
               rows={4}
-              className="w-full rounded border border-neutral-300 bg-[#fafafa] px-2 py-1.5"
+              className="w-full rounded border border-neutral-300 bg-white px-2 py-1.5"
             />
             <button
               type="button"

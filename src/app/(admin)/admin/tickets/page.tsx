@@ -705,7 +705,7 @@ export default function TicketsPage() {
                     </tr>
                   )}
                   {openRecord === rowKey && hasRecord && (
-                    <tr className="border-t border-neutral-100 bg-[#f7f7f7]">
+                    <tr className="border-t border-neutral-100 bg-white">
                       <td colSpan={8} className="px-3 py-2 text-[11px] text-neutral-800">
                         <div className="mb-1 font-medium">{i18n("crm.tickets.approveReason")}</div>
                         <p className="mb-2 whitespace-pre-wrap">{ticket.approvalReason || "—"}</p>
