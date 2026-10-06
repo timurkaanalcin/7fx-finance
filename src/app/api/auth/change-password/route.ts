@@ -15,6 +15,7 @@ export const dynamic = "force-dynamic";
 /**
  * POST { password, passwordConfirm } — set a new password while mustChangePassword=true.
  * Re-issues the session cookie after passwordChangedAt so the current session stays valid.
+ * Revokes the auto-login link that forced the reset (passwordSetAt + revokedAt).
  */
 export async function POST(req: Request) {
   const session = await getSession();
@@ -49,6 +50,29 @@ export async function POST(req: Request) {
 
   const passwordHash = await hashPassword(password);
   const now = new Date();
+
+  // Resolve the auto-login link that forced this reset (session claim, else most recent pending).
+  let link =
+    session.autoLoginLinkId
+      ? await prisma.autoLoginLink.findFirst({
+          where: {
+            id: session.autoLoginLinkId,
+            userId: user.id,
+            forcePasswordReset: true,
+          },
+        })
+      : null;
+  if (!link) {
+    link = await prisma.autoLoginLink.findFirst({
+      where: {
+        userId: user.id,
+        forcePasswordReset: true,
+        passwordSetAt: null,
+      },
+      orderBy: [{ lastUsedAt: "desc" }, { usedAt: "desc" }, { createdAt: "desc" }],
+    });
+  }
+
   await prisma.user.update({
     where: { id: user.id },
     data: {
@@ -58,6 +82,18 @@ export async function POST(req: Request) {
     },
   });
 
+  if (link) {
+    await prisma.autoLoginLink.update({
+      where: { id: link.id },
+      data: {
+        passwordSetAt: now,
+        revokedAt: link.revokedAt ?? now,
+        // Expire immediately so status/UI and redeem checks agree.
+        expiresAt: link.expiresAt < now ? link.expiresAt : now,
+      },
+    });
+  }
+
   const meta = currentRequestMeta();
   await recordLoginEvent({
     userId: user.id,
@@ -66,26 +102,35 @@ export async function POST(req: Request) {
     reason: "password_set",
     meta,
   });
-  // Self-service forced reset — audit as system note on the user (no admin actor).
   try {
     await writeAudit({
       adminId: user.id,
       action: "FORCE_PASSWORD_SET",
       targetId: user.id,
       note: "Client set new password after forced-reset auto-login",
-      meta: { via: "change-password" },
+      meta: {
+        via: "change-password",
+        autoLoginLinkId: link?.id ?? null,
+        linkRevoked: Boolean(link),
+      },
     });
   } catch {
     /* ignore */
   }
 
+  // Re-issue a clean session (no autoLoginLinkId) with fresh iat so passwordChangedAt
+  // does not invalidate this same browser session.
   const token = await signSessionToken({
     userId: user.id,
     email: user.email,
     name: user.name,
     role: user.role || "TRADER",
   });
-  const res = NextResponse.json({ ok: true });
+  const res = NextResponse.json({
+    ok: true,
+    redirect: "/",
+    linkRevoked: Boolean(link),
+  });
   attachSessionCookie(res, token);
   return res;
 }

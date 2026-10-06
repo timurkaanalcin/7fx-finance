@@ -463,6 +463,8 @@ model AutoLoginLink {
   note            String?   @db.VarChar(255)
   /// When true, redeeming this link sets User.mustChangePassword
   forcePasswordReset Boolean  @default(false)
+  /// When the client completed forced password set after redeeming this link
+  passwordSetAt  DateTime?
   createdAt       DateTime  @default(now())
 
   @@index([userId])

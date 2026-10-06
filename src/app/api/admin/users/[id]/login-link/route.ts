@@ -122,6 +122,7 @@ export async function GET(_req: Request, { params }: Ctx) {
       maxUses: true,
       note: true,
       forcePasswordReset: true,
+      passwordSetAt: true,
       createdAt: true,
     },
   });

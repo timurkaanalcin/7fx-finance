@@ -351,6 +351,11 @@ function TraderAccessTools({ userId, traderName }: { userId: string; traderName:
               {links.slice(0, 10).map((l) => {
                 const fmt = (v?: string | null) =>
                   v ? new Date(v).toLocaleString("en-GB", { hour12: false }) : "—";
+                const fmtPw = (v: string) => {
+                  const d = new Date(v);
+                  const pad = (n: number) => String(n).padStart(2, "0");
+                  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+                };
                 const revoked = Boolean(l.revokedAt);
                 const expired = !revoked && new Date(l.expiresAt).getTime() < Date.now();
                 const status = revoked
@@ -366,7 +371,17 @@ function TraderAccessTools({ userId, traderName }: { userId: string; traderName:
                     <td className="pr-2">{fmt(l.lastUsedAt || l.usedAt)}</td>
                     <td className={`pr-2 ${revoked || expired ? "text-neutral-400" : "text-emerald-600"}`}>
                       {status}
-                      {l.forcePasswordReset ? (
+                      {l.passwordSetAt ? (
+                        <span
+                          className="ml-1 inline-flex flex-wrap items-center gap-0.5 rounded bg-emerald-50 px-1 text-[9px] font-medium text-emerald-700"
+                          title={fmtPw(l.passwordSetAt)}
+                        >
+                          {i18n("crm.ui.passwordSetBadge")}
+                          <span className="font-normal tabular-nums text-emerald-800/80">
+                            {fmtPw(l.passwordSetAt)}
+                          </span>
+                        </span>
+                      ) : l.forcePasswordReset ? (
                         <span className="ml-1 rounded bg-amber-50 px-1 text-[9px] text-amber-700">
                           {i18n("crm.ui.forcePasswordResetShort")}
                         </span>
@@ -404,6 +419,7 @@ type LoginLinkRow = {
   revokedAt?: string | null;
   useCount?: number;
   forcePasswordReset?: boolean;
+  passwordSetAt?: string | null;
 };
 
 

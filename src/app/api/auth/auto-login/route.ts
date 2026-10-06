@@ -35,6 +35,7 @@ export async function GET(req: Request) {
     return fail(msg);
   };
   if (link.revokedAt) return failFor("Login link revoked", "link_revoked");
+  if (link.passwordSetAt) return failFor("Login link revoked", "link_password_set");
   if (link.expiresAt.getTime() < Date.now()) return failFor("Login link expired", "link_expired");
   if (!link.user || link.user.active === false) return failFor("Account unavailable", "frozen");
 
@@ -104,6 +105,7 @@ export async function GET(req: Request) {
     email: link.user.email,
     name: link.user.name,
     role: link.user.role || "TRADER",
+    autoLoginLinkId: link.id,
   });
 
   const res = NextResponse.redirect(new URL(publicAbsoluteUrl(req, "/trade")));

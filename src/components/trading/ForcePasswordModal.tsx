@@ -40,7 +40,12 @@ export default function ForcePasswordModal({ onDone }: Props) {
         setErr(String(data.error || t("auth.loginFailed")));
         return;
       }
+      // Stay logged in (cookie re-issued by API); go to app main (/ → /trade for traders).
+      const dest = typeof data.redirect === "string" && data.redirect.startsWith("/")
+        ? data.redirect
+        : "/";
       onDone();
+      window.location.assign(dest);
     } catch {
       setErr(t("auth.connectionError"));
     } finally {

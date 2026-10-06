@@ -775,6 +775,8 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.ui.forcePasswordReset", "Require new password on login", "Girişte yeni şifre iste", "Требовать новый пароль при входе", "Neues Passwort bei Login verlangen", "طلب كلمة مرور جديدة عند الدخول"],
   ["crm.ui.forcePasswordResetHint", "Client must set a new password before using the terminal", "Müşteri terminali kullanmadan önce yeni şifre belirlemeli", "Клиент должен задать новый пароль до терминала", "Kunde muss vor dem Terminal ein neues Passwort setzen", "يجب على العميل تعيين كلمة مرور جديدة قبل المنصة"],
   ["crm.ui.forcePasswordResetShort", "New PW", "Yeni şifre", "Новый пароль", "Neues PW", "كلمة جديدة"],
+  ["crm.ui.passwordSetBadge", "Password set", "Şifre belirlendi", "Пароль задан", "Passwort gesetzt", "تم تعيين كلمة المرور"],
+  ["crm.ui.passwordSetAt", "Password set at", "Şifre belirlenme", "Пароль задан", "Passwort gesetzt am", "وقت تعيين كلمة المرور"],
   ["crm.login.reason.password_set", "Password set (forced reset)", "Şifre belirlendi (zorunlu sıfırlama)", "Пароль задан (принудительный сброс)", "Passwort gesetzt (Zwangsreset)", "تم تعيين كلمة المرور (إعادة تعيين إلزامية)"],
 ];
 

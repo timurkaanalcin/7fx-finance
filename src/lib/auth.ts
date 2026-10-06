@@ -42,6 +42,8 @@ export type SessionPayload = {
   role: string;
   /** Set when an admin is viewing the terminal as this trader */
   impersonatedBy?: string;
+  /** Auto-login link that created this session (for force-password tracking) */
+  autoLoginLinkId?: string;
   /** JWT issued-at (seconds) — used to reject sessions older than a password change */
   iat?: number;
 };
@@ -101,12 +103,17 @@ export async function getSession(): Promise<SessionPayload | null> {
       typeof payload.impersonatedBy === "string" && payload.impersonatedBy
         ? payload.impersonatedBy
         : undefined;
+    const autoLoginLinkId =
+      typeof payload.autoLoginLinkId === "string" && payload.autoLoginLinkId
+        ? payload.autoLoginLinkId
+        : undefined;
     return {
       userId: payload.userId as string,
       email: payload.email as string,
       name: payload.name as string,
       role: (payload.role as string) || "TRADER",
       ...(impersonatedBy ? { impersonatedBy } : {}),
+      ...(autoLoginLinkId ? { autoLoginLinkId } : {}),
       ...(typeof payload.iat === "number" ? { iat: payload.iat } : {}),
     };
   } catch {
