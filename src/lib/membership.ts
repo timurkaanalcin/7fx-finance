@@ -215,6 +215,7 @@ export function serializeUserMembership(u: Record<string, unknown>) {
   return {
     id: u.id,
     email: u.email,
+    username: (u.username as string | null | undefined) ?? null,
     accountLoginId: (u.accountLoginId as string | null) ?? null,
     name: u.name,
     role: u.role,
