@@ -155,7 +155,7 @@ async function jsonCall(url: string, method: string, body: unknown): Promise<Res
   }
 }
 
-function TraderAccessTools({ userId, traderName }: { userId: string; traderName: string }) {
+function TraderAccessTools({ userId, traderName, readOnly = false }: { userId: string; traderName: string; readOnly?: boolean }) {
   const { i18n } = useCrmLabels();
   const [busy, setBusy] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
@@ -275,7 +275,7 @@ function TraderAccessTools({ userId, traderName }: { userId: string; traderName:
     <div className="flex flex-wrap items-center gap-2">
       <button
         type="button"
-        disabled={busy}
+        disabled={busy || readOnly}
         onClick={openTerminal}
         className="rounded bg-sky-600 px-2.5 py-1 text-[10px] font-semibold text-white hover:bg-sky-500 disabled:opacity-50"
         title={`Open terminal as ${traderName}`}
@@ -312,7 +312,7 @@ function TraderAccessTools({ userId, traderName }: { userId: string; traderName:
       </label>
       <button
         type="button"
-        disabled={busy}
+        disabled={busy || readOnly}
         onClick={createLink}
         className="rounded border border-[#111111] bg-white px-2.5 py-1 text-[10px] font-semibold text-[#111111] hover:bg-neutral-50 disabled:opacity-50"
       >
@@ -391,7 +391,7 @@ function TraderAccessTools({ userId, traderName }: { userId: string; traderName:
                       {!revoked && !expired && (
                         <button
                           type="button"
-                          disabled={busy}
+                          disabled={busy || readOnly}
                           onClick={() => revokeLink(l.id)}
                           className="text-red-600 hover:underline disabled:opacity-50"
                         >
@@ -931,6 +931,7 @@ export default function AdminUserDetailPage() {
   const [form, setForm] = useState<Record<string, string | boolean>>({});
   const [editingProfile, setEditingProfile] = useState(false);
   const [canManageUsers, setCanManageUsers] = useState(false);
+  const [crmReadOnly, setCrmReadOnly] = useState(false);
   const [isMainAdminTarget, setIsMainAdminTarget] = useState(false);
 
   useEffect(() => {
@@ -970,6 +971,7 @@ export default function AdminUserDetailPage() {
     if (meRes.ok) {
       const me = await meRes.json().catch(() => ({}));
       setCanManageUsers(Boolean(me.permissions?.canManageUsers));
+      setCrmReadOnly(Boolean(me.permissions?.crmReadOnly));
     } else {
       setCanManageUsers(false);
     }
@@ -1349,11 +1351,11 @@ export default function AdminUserDetailPage() {
         <span className="rounded bg-neutral-100 px-2 py-0.5 text-[10px] tabular-nums text-neutral-700">
           {i18n("crm.ui.balance")}: {fmtCrmMoney(user.balance, 2)} {user.currency}
         </span>
-        <TraderAccessTools userId={user.id} traderName={user.name} />
+        <TraderAccessTools readOnly={crmReadOnly} userId={user.id} traderName={user.name} />
       </div>
 
       <div className="mb-4 flex flex-wrap gap-1 border-b border-[#e5e5e5] pb-2">
-        {TABS.filter((t) => !t.requiresManageUsers || canManageUsers).map((t) => (
+        {TABS.filter((t) => !t.requiresManageUsers || canManageUsers || crmReadOnly).map((t) => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
@@ -1750,10 +1752,10 @@ export default function AdminUserDetailPage() {
         />
       )}
 
-      {tab === "izinler" && canManageUsers && (
+      {tab === "izinler" && (canManageUsers || crmReadOnly) && (
         <AccountPermissionsPanel
           userId={user.id}
-          canManage={canManageUsers}
+          canManage={canManageUsers && !crmReadOnly}
           isMainAdmin={isMainAdminTarget}
           initial={{
             tradingEnabled: user.tradingEnabled !== false,

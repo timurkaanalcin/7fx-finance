@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAdminPerm } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import {
   applyMapping,
@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   await ensureDemoSeed();
-  const admin = await requireAdminPerm("canManageUsers");
+  const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const body = await req.json().catch(() => ({}));

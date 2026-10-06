@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAdmin, writeAudit } from "@/lib/auth";
+import { writeAudit, requireAdminWrite } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 const PATTERNS = [
@@ -21,7 +21,7 @@ const EXACT = new Set([
 ]);
 
 export async function POST() {
-  const admin = await requireAdmin();
+  const admin = await requireAdminWrite();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const users = await prisma.user.findMany({

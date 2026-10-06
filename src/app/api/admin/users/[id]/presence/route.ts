@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAdminPerm } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { serializePresence } from "@/lib/presence-shared";
 
@@ -9,7 +9,7 @@ type Ctx = { params: { id: string } };
 
 /** GET — admin-only: client's presence + last 50 sign-in events. */
 export async function GET(_req: Request, ctx: Ctx) {
-  const admin = await requireAdminPerm("canManageUsers");
+  const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const id = ctx.params.id;

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAdmin, writeAudit } from "@/lib/auth";
+import { writeAudit, requireAdmin, requireAdminWrite } from "@/lib/auth";
 import {
   ensureSystemSettings,
   getSystemSettings,
@@ -24,7 +24,7 @@ export async function GET() {
 }
 
 export async function PUT(req: Request) {
-  const admin = await requireAdmin();
+  const admin = await requireAdminWrite();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const body = await req.json().catch(() => ({}));

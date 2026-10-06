@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAdminPerm } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 
@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
   await ensureDemoSeed();
-  const admin = await requireAdminPerm("canApproveDeposits");
+  const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const { searchParams } = new URL(req.url);

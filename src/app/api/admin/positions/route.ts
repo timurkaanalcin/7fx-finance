@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAdmin, requireAdminPerm, writeAudit } from "@/lib/auth";
+import { writeAudit, requireAdmin, requireAdminWrite, requireAdminPerm } from "@/lib/auth";
 import { applyBalanceDelta, positionEffect } from "@/lib/crm-balance";
 import { prisma } from "@/lib/prisma";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
@@ -96,7 +96,7 @@ export async function GET(req: Request) {
 export async function PATCH(req: Request) {
   await ensureSymbolCatalog();
   await ensureDemoSeed();
-  const admin = await requireAdmin();
+  const admin = await requireAdminWrite();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   let body: Record<string, unknown>;
@@ -544,7 +544,7 @@ function optDate(v: unknown, label: string): Date | null {
 export async function POST(req: Request) {
   await ensureSymbolCatalog();
   await ensureDemoSeed();
-  const admin = await requireAdmin();
+  const admin = await requireAdminWrite();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   let body: Record<string, unknown>;
   try {
@@ -672,7 +672,7 @@ export async function POST(req: Request) {
 export async function DELETE(req: Request) {
   await ensureSymbolCatalog();
   await ensureDemoSeed();
-  const admin = await requireAdmin();
+  const admin = await requireAdminWrite();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   const url = new URL(req.url);
   let body: Record<string, unknown> = {};

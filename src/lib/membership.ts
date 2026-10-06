@@ -261,6 +261,7 @@ export function serializeUserMembership(u: Record<string, unknown>) {
     canEditRates: u.canEditRates,
     canManageMethods: u.canManageMethods,
     canAdjustBalance: u.canAdjustBalance,
+    crmReadOnly: u.crmReadOnly === true,
     tradingAccountId: (account?.id as string) ?? null,
     leverage: (account?.leverage as number) ?? 100,
     balance: (account?.balance as number) ?? 0,

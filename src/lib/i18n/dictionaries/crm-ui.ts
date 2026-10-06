@@ -41,6 +41,7 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.ui.workers", "Workers", "Çalışanlar", "Сотрудники", "Mitarbeiter", "الموظفون"],
   ["crm.ui.date", "Date", "Tarih", "Дата", "Datum", "التاريخ"],
   ["crm.ui.user", "User", "Kullanıcı", "Пользователь", "Benutzer", "المستخدم"],
+  ["crm.ui.readOnly", "Read-only", "Salt okunur", "Только чтение", "Nur Lesen", "للقراءة فقط"],
   ["crm.ui.client", "Client", "Müşteri", "Клиент", "Kunde", "العميل"],
   ["crm.ui.method", "Method", "Yöntem", "Метод", "Methode", "الطريقة"],
   ["crm.ui.note", "Note", "Not", "Заметка", "Notiz", "ملاحظة"],

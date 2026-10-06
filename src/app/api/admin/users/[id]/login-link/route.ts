@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { randomBytes } from "crypto";
-import { requireAdmin, writeAudit } from "@/lib/auth";
+import { writeAudit, requireAdmin, requireAdminWrite } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { publicRequestOrigin } from "@/lib/request-origin";
 
@@ -12,7 +12,7 @@ type Ctx = { params: { id: string } };
 
 /** POST — create time-limited auto-login link for trader (admin only). */
 export async function POST(req: Request, { params }: Ctx) {
-  const admin = await requireAdmin();
+  const admin = await requireAdminWrite();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const userId = String(params.id || "").trim();
@@ -131,7 +131,7 @@ export async function GET(_req: Request, { params }: Ctx) {
 
 /** DELETE ?linkId= — revoke (expire now) a link for this trader. */
 export async function DELETE(req: Request, { params }: Ctx) {
-  const admin = await requireAdmin();
+  const admin = await requireAdminWrite();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const userId = String(params.id || "").trim();

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAdminPerm } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { ACCOUNT_CURRENCIES, SALE_STATUSES } from "@/lib/membership";
@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   await ensureDemoSeed();
-  const admin = await requireAdminPerm("canManageUsers");
+  const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const desks = await prisma.desk.findMany({

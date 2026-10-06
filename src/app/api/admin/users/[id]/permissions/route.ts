@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAdminPerm, writeAudit } from "@/lib/auth";
+import { writeAudit, requireAdmin, requireAdminPerm } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { flagsFromUser, isMainAdminEmail } from "@/lib/account-perms";
@@ -122,7 +122,7 @@ export async function PATCH(req: Request, ctx: Ctx) {
 
 export async function GET(_req: Request, ctx: Ctx) {
   await ensureDemoSeed();
-  const admin = await requireAdminPerm("canManageUsers");
+  const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   const user = await prisma.user.findUnique({ where: { id: ctx.params.id } });
   if (!user) return NextResponse.json({ error: "User yok" }, { status: 404 });

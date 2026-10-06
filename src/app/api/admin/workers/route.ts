@@ -1,11 +1,5 @@
 import { NextResponse } from "next/server";
-import {
-  ADMIN_PERMISSIONS,
-  hashPassword,
-  requireAdminPerm,
-  writeAudit,
-  type AdminPermission,
-} from "@/lib/auth";
+import { ADMIN_PERMISSIONS, hashPassword, writeAudit, type AdminPermission, requireAdmin, requireAdminPerm } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { allocateUniqueAccountLoginId } from "@/lib/account-login-id";
@@ -129,7 +123,7 @@ const SELECT = {
 
 export async function GET() {
   await ensureDemoSeed();
-  const admin = await requireAdminPerm("canManageUsers");
+  const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const workers = await prisma.user.findMany({

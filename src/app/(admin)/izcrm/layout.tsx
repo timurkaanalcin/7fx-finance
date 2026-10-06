@@ -16,6 +16,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
   const [name, setName] = useState("");
   const [perms, setPerms] = useState<Record<string, boolean>>({});
+  const readOnly = Boolean(perms.crmReadOnly);
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
     main: true,
     ops: true,
@@ -163,7 +164,9 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
           </div>
           <div className="ml-auto flex items-center gap-2 text-[11px] text-neutral-500">
             <LanguageSwitcher compact tone="crm" />
-            <span className="hidden sm:inline">{name}</span>
+            <span className="hidden sm:inline">{name}{readOnly ? (
+            <span className="ml-1 rounded bg-amber-50 px-1.5 py-0.5 text-[9px] font-semibold uppercase text-amber-700">{t("crm.ui.readOnly")}</span>
+          ) : null}</span>
             <Link
               href="/trade"
               className="rounded bg-neutral-100 px-2 py-1 hover:bg-neutral-100 hover:text-black"

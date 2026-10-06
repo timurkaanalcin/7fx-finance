@@ -51,6 +51,8 @@ model User {
   canEditRates       Boolean          @default(true)
   canManageMethods   Boolean          @default(true)
   canAdjustBalance   Boolean          @default(true)
+  /// When true, ADMIN may view all CRM pages/APIs but cannot mutate
+  crmReadOnly        Boolean          @default(false)
 
   /// Identity / membership
   firstName            String?

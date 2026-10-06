@@ -1,15 +1,5 @@
 import { NextResponse } from "next/server";
-import {
-  attachAdminBackupCookie,
-  attachSessionCookie,
-  clearAdminBackupCookie,
-  clearSessionCookie,
-  readAdminBackupToken,
-  requireAdmin,
-  signSessionToken,
-  writeAudit,
-  getSession,
-} from "@/lib/auth";
+import { attachAdminBackupCookie, attachSessionCookie, clearAdminBackupCookie, clearSessionCookie, readAdminBackupToken, signSessionToken, writeAudit, getSession, requireAdminWrite } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { isTerminalImpersonationEnabled } from "@/lib/system-settings";
 import { jwtVerify } from "jose";
@@ -30,7 +20,7 @@ function getAuthSecret(): Uint8Array {
 
 /** POST { userId } — switch session to trader (admin impersonation). */
 export async function POST(req: Request) {
-  const admin = await requireAdmin();
+  const admin = await requireAdminWrite();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const enabled = await isTerminalImpersonationEnabled();

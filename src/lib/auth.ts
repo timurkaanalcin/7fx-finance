@@ -169,11 +169,28 @@ export const ADMIN_PERMISSIONS: { key: AdminPermission; label: string; desc: str
   { key: "canAdjustBalance", label: "Balance adjustment", desc: "Direct balance add/remove + log" },
 ];
 
-export async function requireAdminPerm(perm?: AdminPermission) {
+/** True when this admin is CRM view-only (no mutations). */
+export function isCrmReadOnly(user: { crmReadOnly?: boolean | null }): boolean {
+  return user.crmReadOnly === true;
+}
+
+/**
+ * Mutating admin actions. Rejects crmReadOnly admins.
+ * Optional `perm` still requires that can* flag (unchanged for full admins).
+ */
+export async function requireAdminWrite(perm?: AdminPermission) {
   const user = await requireAdmin();
   if (!user) return null;
+  if (isCrmReadOnly(user as { crmReadOnly?: boolean })) return null;
   if (perm && (user as Record<string, unknown>)[perm] === false) return null;
   return user;
+}
+
+/** @deprecated Prefer requireAdmin for GET / requireAdminWrite for mutations.
+ * Kept as an alias of requireAdminWrite so existing POST/PATCH/DELETE stay write-gated.
+ */
+export async function requireAdminPerm(perm?: AdminPermission) {
+  return requireAdminWrite(perm);
 }
 
 export function permissionsOf(user: {
@@ -183,10 +200,25 @@ export function permissionsOf(user: {
   canEditRates?: boolean;
   canManageMethods?: boolean;
   canAdjustBalance?: boolean;
+  crmReadOnly?: boolean;
 }) {
   const isAdmin = user.role === "ADMIN";
+  const readOnly = isAdmin && user.crmReadOnly === true;
+  // Read-only CRM admins: view-all, no can* write flags.
+  if (readOnly) {
+    return {
+      isAdmin: true,
+      crmReadOnly: true,
+      canManageUsers: false,
+      canApproveDeposits: false,
+      canEditRates: false,
+      canManageMethods: false,
+      canAdjustBalance: false,
+    };
+  }
   return {
     isAdmin,
+    crmReadOnly: false,
     canManageUsers: isAdmin && user.canManageUsers !== false,
     canApproveDeposits: isAdmin && user.canApproveDeposits !== false,
     canEditRates: isAdmin && user.canEditRates !== false,

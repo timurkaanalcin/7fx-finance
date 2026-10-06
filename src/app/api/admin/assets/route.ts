@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAdmin, requireAdminPerm, writeAudit } from "@/lib/auth";
+import { writeAudit, requireAdmin, requireAdminPerm } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { BUILTIN_SYMBOLS, SYMBOLS, getBuiltinSymbol, getSymbol, type AssetClass } from "@/lib/symbols";
 import {
