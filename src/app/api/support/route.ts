@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { rateLimit } from "@/lib/security/rate-limit";
+import { serializeChatPresence } from "@/lib/chat-presence";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,11 @@ export async function GET() {
     },
   });
 
+  const [state, u] = await Promise.all([
+    prisma.chatThreadState.findUnique({ where: { userId: user.id } }),
+    prisma.user.findUnique({ where: { id: user.id }, select: { lastSeenAt: true } }),
+  ]);
+
   return NextResponse.json({
     messages: messages.map((m) => ({
       id: m.id,
@@ -32,6 +38,7 @@ export async function GET() {
       workerName: m.workerName,
       createdAt: m.createdAt.toISOString(),
     })),
+    presence: serializeChatPresence(state, u?.lastSeenAt ?? null),
   });
 }
 
@@ -63,6 +70,13 @@ export async function POST(req: Request) {
       workerName: null,
       workerId: null,
     },
+  });
+
+  const { upsertChatPresence } = await import("@/lib/chat-presence");
+  await upsertChatPresence(user.id, {
+    customerTyping: false,
+    customerInChat: true,
+    markCustomerRead: true,
   });
 
   return NextResponse.json({

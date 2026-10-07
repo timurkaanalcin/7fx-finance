@@ -116,6 +116,7 @@ model User {
   autoLoginLinks     AutoLoginLink[]  @relation("AutoLoginTarget")
   createdLoginLinks  AutoLoginLink[]  @relation("AutoLoginCreator")
   loginEvents        LoginEvent[]
+  chatThreadState    ChatThreadState?
 
   @@index([lastSeenAt])
 }
@@ -540,3 +541,17 @@ model LoginEvent {
   @@index([userId, at])
   @@index([at])
 }
+
+/// Live-support typing / in-chat / read-receipt state (one row per trader).
+model ChatThreadState {
+  userId              String    @id
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  customerTypingUntil DateTime?
+  adminTypingUntil    DateTime?
+  customerInChatUntil DateTime?
+  adminInChatUntil    DateTime?
+  customerLastReadAt  DateTime?
+  adminLastReadAt     DateTime?
+  updatedAt           DateTime  @updatedAt
+}
+

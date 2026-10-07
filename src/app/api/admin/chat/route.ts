@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin, requireAdminWrite } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
+import { serializeChatPresence } from "@/lib/chat-presence";
 
 export const dynamic = "force-dynamic";
 
@@ -41,8 +42,10 @@ export async function GET(req: Request) {
           assigneeName: true,
           affiliateA: true,
           lastLoginAt: true,
+          lastSeenAt: true,
           createdAt: true,
           account: { select: { currency: true, balance: true } },
+          chatThreadState: true,
         },
       },
     },
@@ -58,6 +61,7 @@ export async function GET(req: Request) {
       desk: string | null;
       active: boolean;
       lastAt: string;
+      presence: ReturnType<typeof serializeChatPresence>;
       profile: Record<string, unknown>;
       messages: {
         id: string;
@@ -79,6 +83,12 @@ export async function GET(req: Request) {
         desk: c.user.desk,
         active: c.user.active,
         lastAt: c.createdAt.toISOString(),
+        presence: serializeChatPresence(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (c.user as any).chatThreadState ?? null,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (c.user as any).lastSeenAt ?? null
+        ),
         profile: {
           id: c.user.id,
           name: c.user.name,
@@ -159,6 +169,12 @@ export async function POST(req: Request) {
       workerName: admin.name,
       workerId: admin.id,
     },
+  });
+  const { upsertChatPresence } = await import("@/lib/chat-presence");
+  await upsertChatPresence(userId, {
+    adminTyping: false,
+    adminInChat: true,
+    markAdminRead: true,
   });
   return NextResponse.json({ ok: true, id: row.id });
 }

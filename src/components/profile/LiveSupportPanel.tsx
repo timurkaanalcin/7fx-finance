@@ -3,6 +3,11 @@
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
 import { ChatFormattedBody } from "@/components/chat/ChatFormattedBody";
+import { ChatStatusLine } from "@/components/chat/ChatStatusLine";
+import {
+  messageReadByPeer,
+  type ChatPresenceSnapshot,
+} from "@/lib/chat-presence-shared";
 
 type Msg = {
   id: string;
@@ -18,7 +23,26 @@ export default function LiveSupportPanel() {
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [presence, setPresence] = useState<ChatPresenceSnapshot | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const typingIdleRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastTypingSent = useRef(false);
+
+  const ping = useCallback(async (body: Record<string, unknown>) => {
+    try {
+      const res = await fetch("/api/support/presence", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.presence) setPresence(data.presence);
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   const load = useCallback(async () => {
     try {
@@ -26,18 +50,30 @@ export default function LiveSupportPanel() {
       if (!res.ok) return;
       const data = await res.json();
       setMessages(data.messages || []);
+      if (data.presence) setPresence(data.presence);
     } catch {
       /* ignore */
     }
   }, []);
 
   useEffect(() => {
-    if (open) void load();
-  }, [open, load]);
+    if (!open) return;
+    void load();
+    void ping({ inChat: true, markRead: true });
+    const iv = window.setInterval(() => {
+      void load();
+      void ping({ inChat: true, markRead: true });
+    }, 3000);
+    return () => {
+      window.clearInterval(iv);
+      void ping({ inChat: false, typing: false });
+      lastTypingSent.current = false;
+    };
+  }, [open, load, ping]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, open]);
+  }, [messages, open, presence?.adminTyping]);
 
   async function onSend(e: FormEvent) {
     e.preventDefault();
@@ -58,11 +94,33 @@ export default function LiveSupportPanel() {
         return;
       }
       setText("");
+      lastTypingSent.current = false;
+      if (typingIdleRef.current) clearTimeout(typingIdleRef.current);
       await load();
+      void ping({ typing: false, inChat: true, markRead: true });
     } catch {
       setErr(t("profile.support.connectionError"));
     } finally {
       setBusy(false);
+    }
+  }
+
+  function onTextChange(v: string) {
+    setText(v);
+    if (!open) return;
+    if (typingIdleRef.current) clearTimeout(typingIdleRef.current);
+    if (v.trim()) {
+      if (!lastTypingSent.current) {
+        lastTypingSent.current = true;
+        void ping({ typing: true });
+      }
+      typingIdleRef.current = setTimeout(() => {
+        lastTypingSent.current = false;
+        void ping({ typing: false });
+      }, 2500);
+    } else if (lastTypingSent.current) {
+      lastTypingSent.current = false;
+      void ping({ typing: false });
     }
   }
 
@@ -93,6 +151,20 @@ export default function LiveSupportPanel() {
               <div>
                 <div className="text-sm font-semibold">{t("profile.support.title")}</div>
                 <div className="text-[11px] text-slate-500">{t("profile.support.hint")}</div>
+                {(presence?.adminTyping || presence?.adminInChat) && (
+                  <ChatStatusLine
+                    className="mt-1 !text-[#26a69a]"
+                    inChat={presence?.adminInChat}
+                    typing={presence?.adminTyping}
+                    lastSeenAt={null}
+                    labels={{
+                      typing: t("profile.support.typing"),
+                      inChat: t("profile.support.inChat"),
+                      online: t("profile.support.online"),
+                      offline: t("profile.support.offline"),
+                    }}
+                  />
+                )}
               </div>
               <button
                 type="button"
@@ -109,6 +181,8 @@ export default function LiveSupportPanel() {
               )}
               {messages.map((m) => {
                 const mine = m.from === "customer";
+                const read =
+                  mine && messageReadByPeer(m.createdAt, presence?.adminLastReadAt);
                 return (
                   <div
                     key={m.id}
@@ -122,13 +196,19 @@ export default function LiveSupportPanel() {
                       }`}
                     >
                       <ChatFormattedBody text={m.body} className="break-words text-sm leading-relaxed" />
-                      <p className={`mt-1 text-[10px] ${mine ? "text-white/70" : "text-slate-500"}`}>
-                        {new Date(m.createdAt).toLocaleString()}
+                      <p className={`mt-1 flex items-center justify-end gap-2 text-[10px] ${mine ? "text-white/70" : "text-slate-500"}`}>
+                        {read && <span className="font-medium">{t("profile.support.read")}</span>}
+                        <span>{new Date(m.createdAt).toLocaleString()}</span>
                       </p>
                     </div>
                   </div>
                 );
               })}
+              {presence?.adminTyping && (
+                <p className="px-1 text-[11px] font-medium text-[#26a69a]">
+                  {t("profile.support.typing")}
+                </p>
+              )}
               <div ref={bottomRef} />
             </div>
 
@@ -137,7 +217,7 @@ export default function LiveSupportPanel() {
               <div className="flex gap-2">
                 <textarea
                   value={text}
-                  onChange={(e) => setText(e.target.value)}
+                  onChange={(e) => onTextChange(e.target.value)}
                   placeholder={t("profile.support.placeholder")}
                   rows={2}
                   className="min-h-[2.75rem] max-h-28 min-w-0 flex-1 resize-y rounded-xl border border-[#2a2a2a] bg-[#111] px-3 py-2.5 text-sm text-slate-100 outline-none placeholder:text-slate-600 focus:border-[#26a69a]"

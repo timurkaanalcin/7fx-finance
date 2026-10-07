@@ -7,6 +7,9 @@ import { FormEvent, KeyboardEvent, useCallback, useEffect, useMemo, useRef, useS
 import { ChatFormattedBody } from "@/components/chat/ChatFormattedBody";
 import { ChatFormatToolbar } from "@/components/chat/ChatFormatToolbar";
 import { applyFormatAction, type FormatAction } from "@/components/chat/chatFormat";
+import { ChatStatusLine } from "@/components/chat/ChatStatusLine";
+import { messageReadByPeer, type ChatPresenceSnapshot } from "@/lib/chat-presence-shared";
+import { presenceState } from "@/lib/presence-shared";
 
 type Msg = {
   id: string;
@@ -52,6 +55,7 @@ type Thread = {
   lastAt: string;
   messages: Msg[];
   profile?: Profilee;
+  presence?: ChatPresenceSnapshot;
 };
 type TraderOpt = { id: string; name: string; email: string };
 
@@ -198,6 +202,9 @@ export default function ChatPage() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const messageRef = useRef<HTMLTextAreaElement>(null);
+  const [livePresence, setLivePresence] = useState<ChatPresenceSnapshot | null>(null);
+  const typingIdleRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastTypingSent = useRef(false);
 
   const load = useCallback(async () => {
     const res = await fetch("/api/admin/chat");
@@ -212,6 +219,7 @@ export default function ChatPage() {
     const iv = window.setInterval(load, 8000);
     return () => window.clearInterval(iv);
   }, [load]);
+
 
   const unanswered = useMemo(
     () => threads.filter(isUnanswered).length,
@@ -274,6 +282,58 @@ export default function ChatPage() {
     applyFormatAction(messageRef.current, message, setMessage, action);
   }
 
+  const pingPresence = useCallback(
+    async (userId: string, body: Record<string, unknown>) => {
+      try {
+        const res = await fetch("/api/admin/chat/presence", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId, ...body }),
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.presence) setLivePresence(data.presence);
+      } catch {
+        /* ignore */
+      }
+    },
+    []
+  );
+
+  const pullPresence = useCallback(async (userId: string) => {
+    try {
+      const res = await fetch(`/api/admin/chat/presence?userId=${encodeURIComponent(userId)}`, {
+        cache: "no-store",
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.presence) setLivePresence(data.presence);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+  // Active thread: mark in-chat + read, poll customer typing/online
+  useEffect(() => {
+    if (!active?.traderId) {
+      setLivePresence(null);
+      return;
+    }
+    const uid = active.traderId;
+    setLivePresence(active.presence || null);
+    void pingPresence(uid, { inChat: true, markRead: true });
+    void pullPresence(uid);
+    const iv = window.setInterval(() => {
+      void pingPresence(uid, { inChat: true, markRead: true });
+      void pullPresence(uid);
+    }, 3000);
+    return () => {
+      window.clearInterval(iv);
+      void pingPresence(uid, { inChat: false, typing: false });
+      lastTypingSent.current = false;
+    };
+  }, [active?.traderId, active?.presence, pingPresence, pullPresence]);
+
+
   function onComposerKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
@@ -298,6 +358,9 @@ export default function ChatPage() {
       }
       setMessage("");
       setEmojiOpen(false);
+      lastTypingSent.current = false;
+      if (typingIdleRef.current) clearTimeout(typingIdleRef.current);
+      void pingPresence(userId, { typing: false, inChat: true, markRead: true });
       setSelected(userId);
       setCreateOpen(false);
       await load();
@@ -506,8 +569,23 @@ export default function ChatPage() {
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="flex items-center justify-between gap-2">
-                        <span className="truncate text-[13px] font-semibold text-neutral-900">
-                          {t.trader}
+                        <span className="flex min-w-0 items-center gap-1.5">
+                          <span
+                            className={`h-1.5 w-1.5 shrink-0 rounded-full ${
+                              (selected === t.traderId ? livePresence : t.presence)?.customerTyping
+                                ? "bg-[var(--accent)] animate-pulse"
+                                : (selected === t.traderId ? livePresence : t.presence)?.customerInChat
+                                  ? "bg-emerald-500"
+                                  : presenceState((selected === t.traderId ? livePresence : t.presence)?.lastSeenAt) === "online"
+                                    ? "bg-emerald-500"
+                                    : presenceState((selected === t.traderId ? livePresence : t.presence)?.lastSeenAt) === "recent"
+                                      ? "bg-amber-400"
+                                      : "bg-neutral-300"
+                            }`}
+                          />
+                          <span className="truncate text-[13px] font-semibold text-neutral-900">
+                            {t.trader}
+                          </span>
                         </span>
                         <span className="shrink-0 text-[10px] text-neutral-500">
                           {relativeTimeTr(t.lastAt, locale)}
@@ -562,6 +640,18 @@ export default function ChatPage() {
                     <p className="truncate text-[11px] text-neutral-500">
                       {active.traderEmail} · {active.desk || "—"}
                     </p>
+                    <ChatStatusLine
+                      className="mt-0.5"
+                      lastSeenAt={(livePresence || active.presence)?.lastSeenAt}
+                      inChat={(livePresence || active.presence)?.customerInChat}
+                      typing={(livePresence || active.presence)?.customerTyping}
+                      labels={{
+                        typing: i18n("crm.chat.typing"),
+                        inChat: i18n("crm.chat.inChat"),
+                        online: i18n("crm.chat.onlineNow"),
+                        offline: i18n("crm.chat.offline"),
+                      }}
+                    />
                   </div>
                 </div>
                 <span
@@ -655,8 +745,17 @@ export default function ChatPage() {
                             ) : (
                               <ChatFormattedBody text={m.body} className="break-words text-[13px] leading-relaxed" />
                             )}
-                            <p className="mt-1 text-right text-[10px] text-neutral-500">
-                              {formatClock(m.createdAt, locale)}
+                            <p className="mt-1 flex items-center justify-end gap-2 text-[10px] text-neutral-500">
+                              {agent &&
+                                messageReadByPeer(
+                                  m.createdAt,
+                                  (livePresence || active.presence)?.customerLastReadAt
+                                ) && (
+                                  <span className="font-medium text-emerald-600">
+                                    {i18n("crm.chat.read")}
+                                  </span>
+                                )}
+                              <span>{formatClock(m.createdAt, locale)}</span>
                             </p>
                           </div>
                         </div>
@@ -725,7 +824,25 @@ export default function ChatPage() {
                   <textarea
                     ref={messageRef}
                     value={message}
-                    onChange={(e) => setMessage(e.target.value)}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      setMessage(v);
+                      if (!active?.traderId) return;
+                      if (typingIdleRef.current) clearTimeout(typingIdleRef.current);
+                      if (v.trim()) {
+                        if (!lastTypingSent.current) {
+                          lastTypingSent.current = true;
+                          void pingPresence(active.traderId, { typing: true });
+                        }
+                        typingIdleRef.current = setTimeout(() => {
+                          lastTypingSent.current = false;
+                          void pingPresence(active.traderId, { typing: false });
+                        }, 2500);
+                      } else if (lastTypingSent.current) {
+                        lastTypingSent.current = false;
+                        void pingPresence(active.traderId, { typing: false });
+                      }
+                    }}
                     onKeyDown={onComposerKeyDown}
                     placeholder={i18n("crm.chat.enter")}
                     rows={3}
