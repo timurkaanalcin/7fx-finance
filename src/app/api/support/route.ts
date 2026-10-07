@@ -11,8 +11,10 @@ export async function GET() {
   const user = await requireUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  // Customers only see the last 24 hours of live-support messages.
+  const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
   const messages = await prisma.communication.findMany({
-    where: { userId: user.id, type: "CHAT" },
+    where: { userId: user.id, type: "CHAT", createdAt: { gte: since } },
     orderBy: { createdAt: "asc" },
     take: 200,
     select: {

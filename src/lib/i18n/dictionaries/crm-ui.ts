@@ -308,6 +308,7 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.chat.inChat", "In chat", "Sohbette", "В чате", "Im Chat", "في الدردشة"],
   ["crm.chat.onlineNow", "Online", "Çevrimiçi", "В сети", "Online", "متصل"],
   ["crm.chat.offline", "Offline", "Çevrimdışı", "Не в сети", "Offline", "غير متصل"],
+  ["crm.chat.dayEnd", "End of day", "Gün sonu", "Конец дня", "Tagesende", "نهاية اليوم"],
   ["crm.chat.profileUpdated", "Profile updated", "Profil güncellendi", "Профиль обновлён", "Profil aktualisiert", "تم تحديث الملف"],
   ["crm.chat.welcome", "7FX welcome", "7FX karşılama", "Приветствие 7FX", "7FX-Begrüßung", "ترحيب 7FX"],
   ["crm.chat.first", "First message", "İlk mesaj", "Первое сообщение", "Erste Nachricht", "الرسالة الأولى"],

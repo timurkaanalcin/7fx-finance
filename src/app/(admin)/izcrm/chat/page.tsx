@@ -666,10 +666,19 @@ export default function ChatPage() {
               </div>
 
               <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4">
-                {messageBlocks.map((block) => (
+                {messageBlocks.map((block, bi) => (
                   <div key={block.key} className="space-y-2.5">
+                    {bi > 0 && (
+                      <div className="flex items-center gap-3 py-1" role="separator" aria-label={i18n("crm.chat.dayEnd")}>
+                        <div className="h-px flex-1 bg-neutral-200" />
+                        <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide text-neutral-400">
+                          {i18n("crm.chat.dayEnd")}
+                        </span>
+                        <div className="h-px flex-1 bg-neutral-200" />
+                      </div>
+                    )}
                     <div className="flex justify-center">
-                      <span className="rounded-full bg-[#ffffff] px-3 py-1 text-[10px] font-medium text-neutral-500 ring-1 ring-black/10">
+                      <span className="rounded-full bg-neutral-50 px-3 py-1 text-[10px] font-medium text-neutral-600 ring-1 ring-neutral-200">
                         {block.label}
                       </span>
                     </div>
