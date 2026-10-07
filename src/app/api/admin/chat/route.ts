@@ -162,3 +162,64 @@ export async function POST(req: Request) {
   });
   return NextResponse.json({ ok: true, id: row.id });
 }
+
+export async function PATCH(req: Request) {
+  await ensureDemoSeed();
+  const admin = await requireAdminWrite();
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+
+  const body = await req.json().catch(() => ({}));
+  const id = String(body.id || body.messageId || "").trim();
+  const message = String(body.message || body.description || "").trim();
+  if (!id || !message) {
+    return NextResponse.json({ error: "id ve message zorunlu" }, { status: 400 });
+  }
+
+  const existing = await prisma.communication.findUnique({ where: { id } });
+  if (!existing || existing.type !== "CHAT") {
+    return NextResponse.json({ error: "Message not found" }, { status: 404 });
+  }
+
+  // Admins may edit any agent (worker) chat bubble; customer-origin notes stay read-only.
+  if (!existing.workerId && !existing.workerName) {
+    return NextResponse.json(
+      { error: "Only admin/agent messages can be edited" },
+      { status: 403 }
+    );
+  }
+
+  const row = await prisma.communication.update({
+    where: { id },
+    data: {
+      description: message,
+      workerName: admin.name,
+      workerId: admin.id,
+    },
+  });
+
+  try {
+    await prisma.auditLog.create({
+      data: {
+        adminId: admin.id,
+        action: "CHAT_MESSAGE_EDIT",
+        targetId: existing.userId,
+        note: `Edited chat message ${id}`,
+        meta: JSON.stringify({
+          messageId: id,
+          before: existing.description.slice(0, 2000),
+          after: message.slice(0, 2000),
+        }),
+      },
+    });
+  } catch (e) {
+    console.error("[chat edit audit]", e);
+  }
+
+  return NextResponse.json({
+    ok: true,
+    id: row.id,
+    body: row.description,
+    workerName: row.workerName,
+    createdAt: row.createdAt.toISOString(),
+  });
+}

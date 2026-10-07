@@ -187,6 +187,8 @@ export default function ChatPage() {
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState("");
   const [emojiOpen, setEmojiOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editDraft, setEditDraft] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
   const [newUserId, setNewUserId] = useState("");
   const [profileDraft, setProfileeDraft] = useState<Profilee | null>(null);
@@ -285,6 +287,41 @@ export default function ChatPage() {
       setCreateOpen(false);
       await load();
       flash(i18n("crm.chat.sent"));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function beginEdit(m: Msg) {
+    setEditingId(m.id);
+    setEditDraft(m.body);
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setEditDraft("");
+  }
+
+  async function saveEdit() {
+    if (!editingId) return;
+    const textBody = editDraft.trim();
+    if (!textBody) return;
+    setBusy(true);
+    try {
+      const res = await fetch("/api/admin/chat", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: editingId, message: textBody }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        flash(data.error || i18n("crm.chat.editFail"));
+        return;
+      }
+      setEditingId(null);
+      setEditDraft("");
+      await load();
+      flash(i18n("crm.chat.edited"));
     } finally {
       setBusy(false);
     }
@@ -533,29 +570,76 @@ export default function ChatPage() {
                     </div>
                     {block.items.map((m) => {
                       const agent = Boolean(m.workerName);
+                      const isEditing = editingId === m.id;
                       return (
                         <div
                           key={m.id}
-                          className={`flex ${agent ? "justify-end" : "justify-start"}`}
+                          className={`group flex ${agent ? "justify-end" : "justify-start"}`}
                         >
                           <div
-                            className={`max-w-[78%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed shadow-sm ${
+                            className={`relative max-w-[78%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed shadow-sm ${
                               agent
                                 ? "rounded-br-md bg-[var(--accent-tint)] text-neutral-900 ring-1 ring-[var(--accent)]/20"
                                 : "rounded-bl-md bg-[#ffffff] text-neutral-800 ring-1 ring-black/10"
                             }`}
                           >
                             {agent && (
-                              <p className="mb-1 text-[10px] font-semibold text-[var(--accent)]">
-                                {m.workerName || "7FX Support"}
-                              </p>
+                              <div className="mb-1 flex items-center justify-between gap-2">
+                                <p className="text-[10px] font-semibold text-[var(--accent)]">
+                                  {m.workerName || "7FX Support"}
+                                </p>
+                                {!isEditing && (
+                                  <button
+                                    type="button"
+                                    onClick={() => beginEdit(m)}
+                                    disabled={busy}
+                                    className="rounded-md px-1.5 py-0.5 text-[10px] font-semibold text-[var(--accent)] opacity-70 hover:bg-[var(--accent)]/10 hover:opacity-100 disabled:opacity-40"
+                                    aria-label={i18n("crm.chat.editPrompt")}
+                                    title={i18n("crm.ui.edit")}
+                                  >
+                                    {i18n("crm.ui.edit")}
+                                  </button>
+                                )}
+                              </div>
                             )}
                             {m.title && m.title !== "Chat" && (
                               <p className="mb-0.5 text-[11px] font-medium text-neutral-500">
                                 {m.title}
                               </p>
                             )}
-                            <p className="whitespace-pre-wrap break-words">{m.body}</p>
+                            {isEditing ? (
+                              <div className="space-y-2">
+                                <textarea
+                                  value={editDraft}
+                                  onChange={(e) => setEditDraft(e.target.value)}
+                                  rows={Math.min(12, Math.max(3, editDraft.split("\n").length + 1))}
+                                  className="w-full rounded-xl border border-[var(--accent)]/30 bg-white px-2.5 py-2 text-[13px] text-neutral-900 outline-none focus:border-[var(--accent)]/50"
+                                  aria-label={i18n("crm.chat.editPrompt")}
+                                  disabled={busy}
+                                  autoFocus
+                                />
+                                <div className="flex justify-end gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={cancelEdit}
+                                    disabled={busy}
+                                    className="rounded-lg px-2.5 py-1 text-[11px] font-semibold text-neutral-500 hover:bg-neutral-100 disabled:opacity-40"
+                                  >
+                                    {i18n("crm.ui.cancel")}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => void saveEdit()}
+                                    disabled={busy || !editDraft.trim()}
+                                    className="rounded-lg bg-[var(--accent)] px-2.5 py-1 text-[11px] font-semibold text-white disabled:opacity-40"
+                                  >
+                                    {i18n("crm.ui.save")}
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <p className="whitespace-pre-wrap break-words">{m.body}</p>
+                            )}
                             <p className="mt-1 text-right text-[10px] text-neutral-500">
                               {formatClock(m.createdAt, locale)}
                             </p>
