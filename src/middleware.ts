@@ -127,6 +127,16 @@ export function middleware(req: NextRequest) {
     );
   }
 
+  // CRM UI lives only on crm7fx (own DB). Cut over /izcrm on trading host.
+  if (pathname === "/izcrm" || pathname.startsWith("/izcrm/")) {
+    return applyHeaders(
+      new NextResponse("Not Found — CRM moved to https://crm7fx.customer.org.tr", {
+        status: 404,
+        headers: { "Content-Type": "text/plain; charset=utf-8" },
+      })
+    );
+  }
+
   if (pathname === "/login" || pathname === "/register") {
     if (token) {
       return applyHeaders(NextResponse.redirect(new URL("/trade", req.url)));
@@ -135,10 +145,7 @@ export function middleware(req: NextRequest) {
   }
 
   if (
-    (pathname.startsWith("/trade") ||
-      pathname === "/izcrm" ||
-      pathname.startsWith("/izcrm/") ||
-      pathname.startsWith("/profile")) &&
+    (pathname.startsWith("/trade") || pathname.startsWith("/profile")) &&
     !token
   ) {
     return applyHeaders(NextResponse.redirect(new URL("/login", req.url)));

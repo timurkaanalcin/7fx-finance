@@ -1,0 +1,21 @@
+crm7fx.customer.org.tr — DNS for Railway CRM (own DB 7fxcrm)
+
+Service: ub5-finance (CRM app) · Project: cooperative-education
+Railway edge target: zwni0p3w.up.railway.app
+
+In Natro → Domain customer.org.tr → Profesyonel DNS
+(cPanel Zone Editor is DISABLED — do not use it):
+
+1) DELETE existing A record (if present):
+   A  crm7fx.customer.org.tr.  →  94.73.150.188
+
+2) ADD:
+   CNAME  crm7fx  →  zwni0p3w.up.railway.app
+   TXT    _railway-verify.crm7fx  →  railway-verify=571986e75446a27d33ab40c3710a4cd5d74f4f132b1ef13f87b9722ca637816f
+
+Leave alone: 7fx.customer.org.tr, hram.tr, mail/MX, ub5/m1 A records.
+
+After DNS propagates, Railway issues Let's Encrypt for crm7fx.
+CRM UI: https://crm7fx.customer.org.tr/login  and  /izcrm
+Trading stays: https://7fx.customer.org.tr  (DB 7fxfin)
+CRM DB: 7fxcrm (full clone of 7fxfin at cutover; will DIVERGE without sync)

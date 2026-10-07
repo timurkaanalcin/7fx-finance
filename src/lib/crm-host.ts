@@ -4,6 +4,7 @@ export const CRM_HOSTNAMES = new Set([
 ]);
 
 export const MAIN_SITE_ORIGIN = "https://7fx.customer.org.tr";
+export const CRM_SITE_ORIGIN = "https://crm7fx.customer.org.tr";
 
 export function hostnameFromRequest(req: { headers: { get: (n: string) => string | null } }): string {
   const raw =

@@ -22,7 +22,12 @@ export default async function LoginPage() {
       if (isCrmHostname(host)) {
         redirect(user.role === "ADMIN" ? "/izcrm" : `${MAIN_SITE_ORIGIN}/trade`);
       }
-      redirect(postLoginPath(user));
+      // Full CRM admins: CRM is on crm7fx (separate DB) — send them there
+      const path = postLoginPath(user);
+      if (path === "/izcrm") {
+        redirect("https://crm7fx.customer.org.tr/login");
+      }
+      redirect(path);
     }
     // Stale cookie (e.g. loginEnabled=false) — clear so middleware allows /login
     await destroySession();
