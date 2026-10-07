@@ -2,6 +2,7 @@
 
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
+import { ChatFormattedBody } from "@/components/chat/ChatFormattedBody";
 
 type Msg = {
   id: string;
@@ -120,7 +121,7 @@ export default function LiveSupportPanel() {
                           : "bg-[#1a1a1a] text-slate-100 ring-1 ring-[#2a2a2a]"
                       }`}
                     >
-                      <p className="whitespace-pre-wrap break-words">{m.body}</p>
+                      <ChatFormattedBody text={m.body} className="break-words text-sm leading-relaxed" />
                       <p className={`mt-1 text-[10px] ${mine ? "text-white/70" : "text-slate-500"}`}>
                         {new Date(m.createdAt).toLocaleString()}
                       </p>
@@ -134,11 +135,12 @@ export default function LiveSupportPanel() {
             <form onSubmit={onSend} className="border-t border-[#2a2a2a] p-3">
               {err && <p className="mb-2 text-xs text-[#ef5350]">{err}</p>}
               <div className="flex gap-2">
-                <input
+                <textarea
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   placeholder={t("profile.support.placeholder")}
-                  className="min-w-0 flex-1 rounded-xl border border-[#2a2a2a] bg-[#111] px-3 py-2.5 text-sm text-slate-100 outline-none placeholder:text-slate-600 focus:border-[#26a69a]"
+                  rows={2}
+                  className="min-h-[2.75rem] max-h-28 min-w-0 flex-1 resize-y rounded-xl border border-[#2a2a2a] bg-[#111] px-3 py-2.5 text-sm text-slate-100 outline-none placeholder:text-slate-600 focus:border-[#26a69a]"
                   maxLength={4000}
                 />
                 <button

@@ -3,7 +3,10 @@
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 import Link from "next/link";
-import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ChatFormattedBody } from "@/components/chat/ChatFormattedBody";
+import { ChatFormatToolbar } from "@/components/chat/ChatFormatToolbar";
+import { applyFormatAction, type FormatAction } from "@/components/chat/chatFormat";
 
 type Msg = {
   id: string;
@@ -194,6 +197,7 @@ export default function ChatPage() {
   const [profileDraft, setProfileeDraft] = useState<Profilee | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const messageRef = useRef<HTMLTextAreaElement>(null);
 
   const load = useCallback(async () => {
     const res = await fetch("/api/admin/chat");
@@ -264,6 +268,17 @@ export default function ChatPage() {
   function flash(msg: string) {
     setToast(msg);
     setTimeout(() => setToast(""), 2200);
+  }
+
+  function onFormat(action: FormatAction) {
+    applyFormatAction(messageRef.current, message, setMessage, action);
+  }
+
+  function onComposerKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      if (!busy && message.trim() && active) void send(active.traderId);
+    }
   }
 
   async function send(userId: string, body?: string) {
@@ -638,7 +653,7 @@ export default function ChatPage() {
                                 </div>
                               </div>
                             ) : (
-                              <p className="whitespace-pre-wrap break-words">{m.body}</p>
+                              <ChatFormattedBody text={m.body} className="break-words text-[13px] leading-relaxed" />
                             )}
                             <p className="mt-1 text-right text-[10px] text-neutral-500">
                               {formatClock(m.createdAt, locale)}
@@ -673,7 +688,7 @@ export default function ChatPage() {
                     ))}
                   </div>
                 )}
-                <div className="mb-2 flex gap-2">
+                <div className="mb-2 flex flex-wrap items-center gap-2">
                   <button
                     type="button"
                     onClick={() => setMessage(GREETING_7FX)}
@@ -681,6 +696,18 @@ export default function ChatPage() {
                   >
                     {i18n("crm.chat.welcome")}
                   </button>
+                  <ChatFormatToolbar
+                    disabled={busy}
+                    onAction={onFormat}
+                    labels={{
+                      bold: i18n("crm.chat.fmtBold"),
+                      italic: i18n("crm.chat.fmtItalic"),
+                      underline: i18n("crm.chat.fmtUnderline"),
+                      bullet: i18n("crm.chat.fmtBullet"),
+                      newline: i18n("crm.chat.fmtNewline"),
+                    }}
+                  />
+                  <span className="text-[10px] text-neutral-400">{i18n("crm.chat.sendHint")}</span>
                 </div>
                 <div className="flex items-end gap-2">
                   <button
@@ -695,11 +722,14 @@ export default function ChatPage() {
                       <path d="M12 17.5V21" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
                     </svg>
                   </button>
-                  <input
+                  <textarea
+                    ref={messageRef}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
+                    onKeyDown={onComposerKeyDown}
                     placeholder={i18n("crm.chat.enter")}
-                    className="min-w-0 flex-1 rounded-xl border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-900 outline-none focus:border-[var(--accent)]/40"
+                    rows={3}
+                    className="min-h-[2.75rem] max-h-40 min-w-0 flex-1 resize-y rounded-xl border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-900 outline-none focus:border-[var(--accent)]/40"
                     aria-label={i18n("crm.ui.reply")}
                     disabled={busy}
                   />
