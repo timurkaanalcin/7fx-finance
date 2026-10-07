@@ -22,12 +22,8 @@ export default async function LoginPage() {
       if (isCrmHostname(host)) {
         redirect(user.role === "ADMIN" ? "/izcrm" : `${MAIN_SITE_ORIGIN}/trade`);
       }
-      // Full CRM admins: CRM is on crm7fx (separate DB) — send them there
-      const path = postLoginPath(user);
-      if (path === "/izcrm") {
-        redirect("https://crm7fx.customer.org.tr/login");
-      }
-      redirect(path);
+      // TEMP: postLoginPath /izcrm stays on main host until Natro crm7fx is live
+      redirect(postLoginPath(user));
     }
     // Stale cookie (e.g. loginEnabled=false) — clear so middleware allows /login
     await destroySession();

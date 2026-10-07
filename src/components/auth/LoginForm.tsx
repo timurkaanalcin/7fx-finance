@@ -142,8 +142,8 @@ export default function LoginForm() {
         if (onCrmHost) {
           window.location.assign(role === "ADMIN" ? "/izcrm" : "https://7fx.customer.org.tr/trade");
         } else if (role === "ADMIN" && !crmReadOnly) {
-          // Full CRM admins use dedicated CRM host (own DB) — re-login there
-          window.location.assign("https://crm7fx.customer.org.tr/login");
+          // TEMP: full ADMIN stays on /izcrm until Natro crm7fx is live
+          window.location.assign("/izcrm");
         } else {
           window.location.assign("/trade");
         }
@@ -192,7 +192,8 @@ export default function LoginForm() {
               if (onCrmHost) {
                 window.location.assign(role === "ADMIN" ? "/izcrm" : "https://7fx.customer.org.tr/trade");
               } else if (role === "ADMIN" && !crmReadOnly) {
-                window.location.assign("https://crm7fx.customer.org.tr/login");
+                // TEMP: full ADMIN stays on /izcrm until Natro crm7fx is live
+                window.location.assign("/izcrm");
               } else {
                 window.location.assign("/trade");
               }

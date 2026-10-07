@@ -127,15 +127,8 @@ export function middleware(req: NextRequest) {
     );
   }
 
-  // CRM UI lives only on crm7fx (own DB). Cut over /izcrm on trading host.
-  if (pathname === "/izcrm" || pathname.startsWith("/izcrm/")) {
-    return applyHeaders(
-      new NextResponse("Not Found — CRM moved to https://crm7fx.customer.org.tr", {
-        status: 404,
-        headers: { "Content-Type": "text/plain; charset=utf-8" },
-      })
-    );
-  }
+  // TEMP: /izcrm re-enabled on trading host until Natro crm7fx.customer.org.tr is live.
+  // Remove this auth-gate restore and re-cutover once crm7fx Natro CRM is serving.
 
   if (pathname === "/login" || pathname === "/register") {
     if (token) {
@@ -145,7 +138,10 @@ export function middleware(req: NextRequest) {
   }
 
   if (
-    (pathname.startsWith("/trade") || pathname.startsWith("/profile")) &&
+    (pathname.startsWith("/trade") ||
+      pathname === "/izcrm" ||
+      pathname.startsWith("/izcrm/") ||
+      pathname.startsWith("/profile")) &&
     !token
   ) {
     return applyHeaders(NextResponse.redirect(new URL("/login", req.url)));
