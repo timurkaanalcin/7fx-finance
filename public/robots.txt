@@ -13,3 +13,5 @@ Disallow: /
 
 User-agent: CCBot
 Disallow: /
+
+Sitemap: https://7fx.customer.org.tr/sitemap.xml

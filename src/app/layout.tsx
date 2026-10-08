@@ -1,9 +1,28 @@
 import type { Metadata, Viewport } from "next";
+import { Inter, Sora } from "next/font/google";
 import InstallBanner from "@/components/InstallBanner";
 import "./globals.css";
 import "./mobile-luxe.css";
 import PublicI18n from "@/components/i18n/PublicI18n";
+import { getPublicLocale } from "@/lib/i18n/server";
+import { LOCALE_META } from "@/lib/i18n/locales";
 
+/*
+ * Fonts are self-hosted at build time via next/font. The previous <link> to
+ * fonts.googleapis.com was blocked by our own CSP (style-src 'self'), so every page
+ * silently fell back to system fonts; self-hosting fixes that without loosening CSP.
+ */
+const inter = Inter({
+  subsets: ["latin", "latin-ext", "cyrillic"],
+  display: "swap",
+  variable: "--font-inter",
+});
+const sora = Sora({
+  subsets: ["latin", "latin-ext"],
+  weight: ["500", "600", "700"],
+  display: "swap",
+  variable: "--font-sora",
+});
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -20,15 +39,21 @@ const appUrl = process.env.NEXT_PUBLIC_APP_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
-  title: "7FX",
+  title: { default: "7FX", template: "%s · 7FX" },
   description:
     "7FX — international multi-asset trading platform. Secure web access to stocks, crypto, forex and commodities.",
   manifest: "/site.webmanifest",
   openGraph: {
+    type: "website",
+    siteName: "7FX",
     title: "7FX",
     description:
       "7FX international broker / trading platform: stocks, crypto, forex and commodities — secure session, 24/7 access.",
-    images: [{ url: "/7fx-logo.png", width: 1200, height: 630, alt: "7FX" }],
+    images: [{ url: "/brand/og-7fx.png", width: 1200, height: 630, alt: "7FX" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/brand/og-7fx.png"],
   },
   appleWebApp: {
     capable: true,
@@ -36,6 +61,7 @@ export const metadata: Metadata = {
     title: "7FX",
   },
   applicationName: "7FX",
+  formatDetection: { telephone: false },
   other: {
     "mobile-web-app-capable": "yes",
   },
@@ -54,23 +80,27 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // Resolve the public locale on the server (cookie → Accept-Language) so the first
+  // paint is already in the visitor's language and <html lang/dir> is correct for SEO/a11y.
+  const locale = getPublicLocale();
+  const meta = LOCALE_META[locale];
   return (
-    <html lang="en" data-fx-theme="light" suppressHydrationWarning>
+    <html
+      lang={meta.htmlLang}
+      dir={meta.dir}
+      className={`${inter.variable} ${sora.variable}`}
+      data-fx-theme="light"
+      suppressHydrationWarning
+    >
       <head>
         <script
           dangerouslySetInnerHTML={{
             __html: `try{var t=localStorage.getItem("fx-theme");document.documentElement.setAttribute("data-fx-theme",t==="dark"?"dark":"light")}catch(e){}`,
           }}
         />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
       </head>
       <body className="antialiased">
-        <PublicI18n>
+        <PublicI18n initialLocale={locale}>
           {children}
         </PublicI18n>
         <InstallBanner />
