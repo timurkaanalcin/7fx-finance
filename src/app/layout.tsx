@@ -10,14 +10,16 @@ import { LOCALE_META } from "@/lib/i18n/locales";
  * fonts.googleapis.com was blocked by our own CSP (style-src 'self'), so every page
  * silently fell back to system fonts; self-hosting fixes that without loosening CSP.
  */
+// Only Latin + Latin-Extended (Turkish ş/ğ/İ) are preloaded. Cyrillic glyphs are still
+// served from the same family via unicode-range and download only when Russian text renders.
 const inter = Inter({
-  subsets: ["latin", "latin-ext", "cyrillic"],
+  subsets: ["latin", "latin-ext"],
   display: "swap",
   variable: "--font-inter",
 });
 const sora = Sora({
   subsets: ["latin", "latin-ext"],
-  weight: ["500", "600", "700"],
+  weight: "600",
   display: "swap",
   variable: "--font-sora",
 });

@@ -47,9 +47,11 @@ type Props = {
   /** hero = larger padding; mobile = slightly tighter */
   size?: "hero" | "mobile";
   className?: string;
+  /** dark = placed on a black band (Android button switches to the brand green) */
+  tone?: "light" | "dark";
 };
 
-export default function InstallAppButtons({ size = "hero", className = "" }: Props) {
+export default function InstallAppButtons({ size = "hero", className = "", tone = "light" }: Props) {
   const { t } = useI18n();
   const deferredRef = useRef<BeforeInstallPromptEvent | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -117,7 +119,11 @@ export default function InstallAppButtons({ size = "hero", className = "" }: Pro
       <div className={`flex flex-wrap gap-3 ${className}`}>
         <a
           href="/apk"
-          className={`inline-flex items-center justify-center gap-2 rounded-full border border-[rgba(16,20,37,0.14)] bg-[#111111] font-semibold text-white shadow-[0_10px_24px_rgba(0,0,0,0.18)] transition hover:bg-[#2a2a2a] ${pad}`}
+          className={`inline-flex items-center justify-center gap-2 rounded-full border font-semibold transition ${
+            tone === "dark"
+              ? "border-transparent bg-[#6ff64e] text-[#0b0b0c] hover:bg-[#8cff70]"
+              : "border-[rgba(16,20,37,0.14)] bg-[#111111] text-white shadow-[0_10px_24px_rgba(0,0,0,0.18)] hover:bg-[#2a2a2a]"
+          } ${pad}`}
         >
           {androidIcon}
           {t("landing.androidInstall")}
