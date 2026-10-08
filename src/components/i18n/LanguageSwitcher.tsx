@@ -3,6 +3,9 @@
 import { LOCALES, LOCALE_META, type Locale } from "@/lib/i18n/locales";
 import { useI18n } from "@/lib/i18n/context";
 
+/** Display order for the segmented control (Turkish first; site default logic unchanged). */
+const ORDER: Locale[] = ["tr", "en", "de", "ru", "ar"];
+
 type Props = {
   compact?: boolean;
   className?: string;
@@ -57,7 +60,7 @@ export default function LanguageSwitcher({ compact, className = "", tone = "ligh
       aria-label={t("common.language")}
       className={`inline-flex shrink-0 items-center gap-0.5 rounded-full border p-0.5 ${shell} ${className}`}
     >
-      {LOCALES.map((code) => {
+      {ORDER.filter((c) => (LOCALES as readonly string[]).includes(c)).map((code) => {
         const on = code === locale;
         return (
           <button

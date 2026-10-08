@@ -331,7 +331,7 @@ export default function LandingPage() {
         <section className="lp-facts" aria-label={t("lp.hero.eyebrow")}>
           <dl className="fx-shell lp-facts-grid">
             {(["classes", "symbols", "langs", "platforms"] as const).map((k) => (
-              <div key={k} className="lp-fact">
+              <div key={k} className={`lp-fact ${k === "platforms" ? "lp-fact--text" : ""}`}>
                 <dt className="lp-fact-v">{t(`lp.fact.${k}.v`)}</dt>
                 <dd className="lp-fact-k">{t(`lp.fact.${k}.k`)}</dd>
               </div>
@@ -375,7 +375,7 @@ export default function LandingPage() {
                 </article>
               ))}
               <div className="lp-market-card lp-market-card--cta">
-                <p className="lp-market-cta-text">{t("lp.markets.body")}</p>
+                <p className="lp-market-cta-text">{t("lp.markets.ctaBody")}</p>
                 <Link href="/register" className="lp-btn lp-btn--light lp-btn--md">
                   {t("lp.markets.cta")}
                   <Arrow />
@@ -468,7 +468,7 @@ export default function LandingPage() {
                 ))}
               </ul>
               <div className="lp-app-actions">
-                <InstallAppButtons size="mobile" />
+                <InstallAppButtons size="mobile" tone="dark" />
               </div>
             </div>
             <figure className="lp-app-visual">
