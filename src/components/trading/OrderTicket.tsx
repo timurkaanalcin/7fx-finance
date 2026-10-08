@@ -243,15 +243,23 @@ export default function OrderTicket({
           <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-desk-muted">
             Order Type
           </div>
-          <select
-            value={type}
-            onChange={(e) => setType(e.target.value as "MARKET" | "LIMIT" | "STOP")}
-            className={inputCls}
-          >
-            <option value="MARKET">Market</option>
-            <option value="LIMIT">Limit</option>
-            <option value="STOP">Stop</option>
-          </select>
+          {/* Segmented control instead of a dropdown <select> */}
+          <div role="radiogroup" aria-label="Order Type" className="grid grid-cols-3 gap-1 rounded-[10px] border border-desk-border bg-desk-bg p-0.5">
+            {(["MARKET", "LIMIT", "STOP"] as const).map((v) => (
+              <button
+                key={v}
+                type="button"
+                role="radio"
+                aria-checked={type === v}
+                onClick={() => setType(v)}
+                className={`rounded-md py-1.5 text-xs font-medium transition-colors ${
+                  type === v ? "bg-desk-accent text-desk-accent-ink" : "text-desk-muted hover:bg-desk-hover"
+                }`}
+              >
+                {v === "MARKET" ? "Market" : v === "LIMIT" ? "Limit" : "Stop"}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div>
@@ -344,34 +352,43 @@ export default function OrderTicket({
           </button>
         </div>
 
-        {showSl && (
-          <div>
-            <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-desk-muted">
+        {/* SL / TP fields are always visible (no reveal-on-click). Empty = not set. */}
+        <div className="grid grid-cols-2 gap-2">
+          <label className="block">
+            <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-desk-muted">
               Stop Loss
-            </div>
+            </span>
             <input
               value={sl}
-              onChange={(e) => setSl(e.target.value)}
-              placeholder="Price"
-              autoFocus
-              className="w-full rounded-[12px] border border-desk-sell/40 bg-desk-bg px-3 py-2.5 text-sm tabular-nums text-desk-text outline-none focus:border-desk-sell md:rounded-control md:px-2.5 md:py-2"
+              onChange={(e) => {
+                setSl(e.target.value);
+                setShowSl(e.target.value.trim() !== "");
+              }}
+              placeholder="—"
+              inputMode="decimal"
+              className={`w-full rounded-[12px] border bg-desk-bg px-3 py-2.5 text-sm tabular-nums text-desk-text outline-none focus:border-desk-sell md:rounded-control md:px-2.5 md:py-2 ${
+                showSl ? "border-desk-sell/40" : "border-desk-border"
+              }`}
             />
-          </div>
-        )}
-
-        {showTp && (
-          <div>
-            <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-desk-muted">
+          </label>
+          <label className="block">
+            <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-desk-muted">
               Take Profit
-            </div>
+            </span>
             <input
               value={tp}
-              onChange={(e) => setTp(e.target.value)}
-              placeholder="Price"
-              className="w-full rounded-[12px] border border-desk-buy/40 bg-desk-bg px-3 py-2.5 text-sm tabular-nums text-desk-text outline-none focus:border-desk-buy md:rounded-control md:px-2.5 md:py-2"
+              onChange={(e) => {
+                setTp(e.target.value);
+                setShowTp(e.target.value.trim() !== "");
+              }}
+              placeholder="—"
+              inputMode="decimal"
+              className={`w-full rounded-[12px] border bg-desk-bg px-3 py-2.5 text-sm tabular-nums text-desk-text outline-none focus:border-desk-buy md:rounded-control md:px-2.5 md:py-2 ${
+                showTp ? "border-desk-buy/40" : "border-desk-border"
+              }`}
             />
-          </div>
-        )}
+          </label>
+        </div>
 
         <button
           type="button"

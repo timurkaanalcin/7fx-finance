@@ -295,9 +295,9 @@ export default function LoginForm() {
       )}
 
       <div className="mt-7 border-t border-[rgba(16,20,37,0.08)] pt-5 text-center text-sm text-[#5c657a]">
-        Don&apos;t have an account?{" "}
+        {t("auth.noAccount")}{" "}
         <Link href="/register" className="font-semibold text-[#111111] underline-offset-2 transition hover:underline">
-          Register
+          {t("lp.cta.open")}
         </Link>
       </div>
 

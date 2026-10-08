@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getPublicLocale, serverT } from "@/lib/i18n/server";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { getSession, requireUser, destroySession, postLoginPath } from "@/lib/auth";
@@ -8,10 +9,14 @@ import LoginForm from "@/components/auth/LoginForm";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Sign In · 7FX",
-  description: "Securely sign in to your 7FX account",
-};
+export function generateMetadata(): Metadata {
+  const t = serverT(getPublicLocale());
+  return {
+    title: t("authx.login.metaTitle"),
+    description: t("authx.login.metaDesc"),
+    alternates: { canonical: "/login" },
+  };
+}
 
 export default async function LoginPage() {
   const session = await getSession();

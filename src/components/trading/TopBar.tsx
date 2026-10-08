@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useRef, useEffect } from "react";
 import { fmtMoney, fmtPct } from "@/lib/format";
 import type { AccountMetrics, UserInfo } from "./types";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
@@ -53,21 +52,6 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
   const ml = a?.marginLevel ?? 0;
   const pnl = a?.profitLoss ?? 0;
   const shortId = `#${user.id.slice(-10)}`;
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function onDoc(e: MouseEvent | TouchEvent) {
-      if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false);
-    }
-    document.addEventListener("mousedown", onDoc);
-    document.addEventListener("touchstart", onDoc);
-    return () => {
-      document.removeEventListener("mousedown", onDoc);
-      document.removeEventListener("touchstart", onDoc);
-    };
-  }, []);
-
   const avatar = (
     <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-desk-elev to-desk-hover text-[11px] font-bold text-desk-text ring-1 ring-desk-border/80 md:text-xs">
       {user.name.slice(0, 1).toUpperCase()}
@@ -155,12 +139,12 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
           {avatar}
         </Link>
 
-        <LanguageSwitcher compact tone="dark" />
-        {/* Desktop: dropdown menu */}
-        <div className="relative hidden md:block" ref={menuRef}>
-          <button
-            type="button"
-            onClick={() => setMenuOpen((o) => !o)}
+        <LanguageSwitcher compact tone="dark" className="hidden md:inline-flex" />
+        {/* Desktop: account actions shown inline (no dropdown menu) */}
+        <div className="hidden items-center gap-1.5 md:flex">
+          <Link
+            href="/profile"
+            title="Membership details"
             className="flex items-center gap-1.5 rounded-full border border-desk-border/80 bg-desk-bg/50 p-0.5 hover:border-desk-accent/50 md:gap-2 md:py-1 md:pl-1 md:pr-2.5"
           >
             {avatar}
@@ -168,37 +152,22 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
               <div className="text-xs font-medium text-desk-text">{user.name}</div>
               <div className="text-[10px] text-desk-muted">{shortId}</div>
             </div>
-          </button>
-          {menuOpen && (
-            <div className="absolute right-0 z-50 mt-1.5 w-48 overflow-hidden rounded-modal border border-desk-border bg-desk-panel shadow-desk-panel">
-              <Link
-                href="/profile"
-                onClick={() => setMenuOpen(false)}
-                className="block px-3 py-2.5 text-xs text-desk-text hover:bg-desk-hover"
-              >
-                Membership details
-              </Link>
-              {user.role === "ADMIN" && (
-                <Link
-                  href="/izcrm"
-                  onClick={() => setMenuOpen(false)}
-                  className="block px-3 py-2.5 text-xs text-desk-warn hover:bg-desk-hover"
-                >
-                  Admin panel
-                </Link>
-              )}
-              <button
-                type="button"
-                onClick={() => {
-                  setMenuOpen(false);
-                  onLogout();
-                }}
-                className="block w-full border-t border-desk-border px-3 py-2.5 text-left text-xs text-desk-muted hover:bg-desk-hover hover:text-desk-text"
-              >
-                Sign out
-              </button>
-            </div>
+          </Link>
+          {user.role === "ADMIN" && (
+            <Link
+              href="/izcrm"
+              className="rounded-full border border-desk-border/80 px-2.5 py-1.5 text-xs text-desk-warn hover:bg-desk-hover"
+            >
+              Admin panel
+            </Link>
           )}
+          <button
+            type="button"
+            onClick={onLogout}
+            className="rounded-full border border-desk-border/80 px-2.5 py-1.5 text-xs text-desk-muted hover:bg-desk-hover hover:text-desk-text"
+          >
+            Sign out
+          </button>
         </div>
       </div>
     </header>

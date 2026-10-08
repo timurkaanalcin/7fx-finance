@@ -7,7 +7,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { LOCALES, LOCALE_META, type Locale } from "@/lib/i18n/locales";
-import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 import LiveSupportPanel from "@/components/profile/LiveSupportPanel";
 import BrandLoader from "@/components/ui/BrandLoader";
 import { normalizeLocale, PUBLIC_DEFAULT_LOCALE } from "@/lib/i18n/locales";
@@ -369,28 +368,32 @@ export default function ProfileePage() {
                 className="rounded border border-[#2a2a2a] bg-[#000000] px-2 py-1.5"
               />
             </label>
-            <label className="flex flex-col gap-1">
-              <span className="text-slate-500">Language</span>
-              <select
-                value={language}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  setLanguage(v);
-                  setLocale(normalizeLocale(v, "public"));
-                }}
-                className="rounded border border-[#2a2a2a] bg-[#000000] px-2 py-1.5"
-              >
-                {LOCALES.map((code) => (
-                  <option key={code} value={code}>
-                    {LOCALE_META[code as Locale].native}
-                  </option>
-                ))}
-              </select>
-              <span className="mt-1 text-[10px] text-slate-500">
-                Site language:{' '}
-                <LanguageSwitcher compact tone="dark" />
-              </span>
-            </label>
+            <div className="flex flex-col gap-1">
+              <span className="text-slate-500" id="fx-profile-lang">Language</span>
+              {/* Button group instead of a dropdown <select>; also switches the site language */}
+              <div role="radiogroup" aria-labelledby="fx-profile-lang" className="flex flex-wrap gap-1">
+                {LOCALES.map((code) => {
+                  const on = normalizeLocale(language, "public") === code;
+                  return (
+                    <button
+                      key={code}
+                      type="button"
+                      role="radio"
+                      aria-checked={on}
+                      onClick={() => {
+                        setLanguage(code);
+                        setLocale(normalizeLocale(code, "public"));
+                      }}
+                      className={`rounded border px-2 py-1.5 text-xs ${
+                        on ? "border-white bg-white text-black" : "border-[#2a2a2a] bg-[#000000] text-slate-300 hover:text-white"
+                      }`}
+                    >
+                      {LOCALE_META[code as Locale].native}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
             <label className="flex flex-col gap-1">
               <span className="text-slate-500">Timezone</span>
               <input

@@ -34,8 +34,10 @@ export function middleware(req: NextRequest) {
     res.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
     res.headers.set(
       "Permissions-Policy",
-      "camera=(), microphone=(), geolocation=()"
+      "camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()"
     );
+    res.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+    res.headers.set("Cross-Origin-Opener-Policy", "same-origin");
     res.headers.set("Content-Security-Policy", STRICT_CSP);
     if (
       pathname === "/izcrm" ||

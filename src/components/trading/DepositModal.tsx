@@ -157,17 +157,27 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
               </div>
 
               {filtered.length > 1 && (
-                <select
-                  className="mb-3 w-full rounded-[10px] border border-desk-border bg-desk-bg px-2 py-2 text-xs text-desk-text"
-                  value={selected?.id || ""}
-                  onChange={(e) => setMethodId(e.target.value)}
-                >
-                  {filtered.map((m) => (
-                    <option key={m.id} value={m.id}>
-                      {m.label}
-                    </option>
-                  ))}
-                </select>
+                <div role="radiogroup" aria-label="Method" className="mb-3 flex flex-wrap gap-1.5">
+                  {filtered.map((m) => {
+                    const on = selected?.id === m.id;
+                    return (
+                      <button
+                        key={m.id}
+                        type="button"
+                        role="radio"
+                        aria-checked={on}
+                        onClick={() => setMethodId(m.id)}
+                        className={`rounded-[10px] border px-2.5 py-1.5 text-xs transition-colors ${
+                          on
+                            ? "border-desk-accent bg-desk-accent text-desk-accent-ink"
+                            : "border-desk-border bg-desk-bg text-desk-text hover:bg-desk-hover"
+                        }`}
+                      >
+                        {m.label}
+                      </button>
+                    );
+                  })}
+                </div>
               )}
 
               {selected && (
