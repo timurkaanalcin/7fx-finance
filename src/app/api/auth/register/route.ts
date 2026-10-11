@@ -10,6 +10,7 @@ import {
   isReferralRequired,
 } from "@/lib/system-settings";
 import { allocateUniqueAccountLoginId } from "@/lib/account-login-id";
+import { jobTitleSchema } from "@/lib/job-titles";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -30,6 +31,11 @@ export async function POST(req: Request) {
     const phoneRaw = body.phone != null ? String(body.phone).trim() : "";
     const phone = phoneRaw || null;
     const referralCode = String(body.referralCode || "").trim();
+    const jt = jobTitleSchema.safeParse(body.jobTitle ?? null);
+    if (!jt.success) {
+      return NextResponse.json({ error: "Invalid role" }, { status: 400 });
+    }
+    const jobTitle = jt.data ?? null;
 
     if (!firstName || !lastName) {
       return NextResponse.json({ error: "First name and last name are required" }, { status: 400 });
@@ -71,6 +77,7 @@ export async function POST(req: Request) {
         firstName,
         lastName,
         phone,
+        jobTitle,
         role: "TRADER",
         active: true,
         registrationDate: now,

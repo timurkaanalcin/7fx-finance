@@ -3,6 +3,8 @@
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
+import { useI18n } from "@/lib/i18n/context";
+import { jobTitleOptions, jobTitleUi } from "@/lib/job-titles";
 
 const inputClass =
   "fx-auth-input w-full rounded-xl border border-[rgba(16,20,37,0.12)] bg-[#ffffff] px-3.5 py-3 text-[15px] text-[#111111] outline-none transition placeholder:text-[#8b93a7] hover:border-[#111111]/40 focus:border-[#111111] focus:shadow-[0_0_0_3px_rgba(17,17,17,0.15)]";
@@ -14,6 +16,9 @@ export default function RegisterForm() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [jobTitle, setJobTitle] = useState("");
+  const { locale } = useI18n();
+  const jt = jobTitleUi(locale);
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [referralCode, setReferralCode] = useState("");
@@ -83,6 +88,7 @@ export default function RegisterForm() {
           firstName,
           lastName,
           phone: phone || undefined,
+          jobTitle: jobTitle || null,
           referralCode: referralCode.trim(),
         }),
       });
@@ -223,6 +229,26 @@ export default function RegisterForm() {
             placeholder="+90 …"
             disabled={loading}
           />
+        </div>
+
+        <div>
+          <label htmlFor="fx-reg-jobtitle" className={labelClass}>
+            {jt.register} <span className="font-normal text-[#8b93a7]">(optional)</span>
+          </label>
+          <select
+            id="fx-reg-jobtitle"
+            className={inputClass}
+            value={jobTitle}
+            onChange={(e) => setJobTitle(e.target.value)}
+            disabled={loading}
+          >
+            <option value="">{jt.placeholder}</option>
+            {jobTitleOptions(locale).map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Prominent required referral — light charcoal, not red */}

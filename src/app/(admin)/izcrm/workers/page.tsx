@@ -7,6 +7,7 @@ import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { fmtCrmDate } from "@/lib/crm-format";
 import { countryFlag } from "@/lib/presence-shared";
 import { crmJson } from "@/lib/crm-api";
+import { jobTitleLabel, jobTitleOptions, jobTitleUi } from "@/lib/job-titles";
 
 type LoginInfo = {
   at: string;
@@ -28,6 +29,7 @@ type Worker = {
   active: boolean;
   desk: string | null;
   deskId: string | null;
+  jobTitle: string | null;
   lastLoginAt: string | null;
   lastIp: string | null;
   lastCity: string | null;
@@ -58,6 +60,7 @@ function workerDraft(w: Worker): Draft {
     name: w.name,
     email: w.email,
     deskId: w.deskId || "",
+    jobTitle: w.jobTitle || "",
     active: w.active ? "true" : "false",
     password: "",
   };
@@ -66,7 +69,9 @@ function workerDraft(w: Worker): Draft {
 }
 
 export default function WorkersPage() {
-  const { i18n, deskName } = useCrmLabels();
+  const { i18n, deskName, locale } = useCrmLabels();
+  const jt = jobTitleUi(locale);
+  const jobOpts = useMemo(() => jobTitleOptions(locale), [locale]);
   const [rows, setRows] = useState<Worker[]>([]);
   const [desks, setDesks] = useState<Desk[]>([]);
   const [myPerms, setMyPerms] = useState<Record<string, boolean>>({});
@@ -109,6 +114,7 @@ export default function WorkersPage() {
     const cols: CrmColumn[] = [
       { key: "name", label: "crm.ui.name", required: true },
       { key: "email", label: "crm.ui.email", required: true, editable: !(w?.isMain) },
+      { key: "jobTitle", label: jt.field, type: "select", options: jobOpts },
       { key: "deskId", label: "crm.ui.desk", type: "select", options: deskOpts },
       {
         key: "password",
@@ -176,7 +182,7 @@ export default function WorkersPage() {
   function openAdd() {
     setAdding(true);
     setNewErr("");
-    const d: Draft = { name: "", email: "", deskId: "", password: "", active: "true" };
+    const d: Draft = { name: "", email: "", jobTitle: "", deskId: "", password: "", active: "true" };
     for (const p of PERMS) d[p.key] = "false";
     setNewDraft(d);
   }
@@ -195,6 +201,7 @@ export default function WorkersPage() {
       email: newDraft.email.trim(),
       password: newDraft.password,
       deskId: newDraft.deskId,
+      jobTitle: newDraft.jobTitle || null,
       active: newDraft.active === "true",
     };
     for (const p of PERMS) body[p.key] = newDraft[p.key] === "true";
@@ -304,6 +311,7 @@ export default function WorkersPage() {
             <tr>
               <th className="px-3 py-2">{i18n("crm.ui.name")}</th>
               <th className="px-3 py-2">{i18n("crm.ui.email")}</th>
+              <th className="px-3 py-2">{jt.field}</th>
               <th className="px-3 py-2">{i18n("crm.ui.desk")}</th>
               <th className="px-3 py-2">{i18n("crm.ui.active")}</th>
               <th className="px-3 py-2">{i18n("crm.permissions")}</th>
@@ -333,6 +341,7 @@ export default function WorkersPage() {
                       )}
                     </td>
                     <td className="px-3 py-2 text-neutral-600">{w.email}</td>
+                    <td className="px-3 py-2">{jobTitleLabel(w.jobTitle, locale) || "—"}</td>
                     <td className="px-3 py-2">{w.desk ? deskName({ name: w.desk, code: null }) : "—"}</td>
                     <td className="px-3 py-2">
                       <span
@@ -402,7 +411,7 @@ export default function WorkersPage() {
                   </tr>
                   {isEdit && (
                     <tr className="border-t border-amber-100 bg-amber-50/70">
-                      <td colSpan={7} className="px-3 py-3">
+                      <td colSpan={8} className="px-3 py-3">
                         <CrmFormGrid columns={columns(w, false)} draft={draft} setDraft={setDraft} />
                         {editErr && <p className="mt-2 text-[11px] text-red-600">{editErr}</p>}
                         <div className="mt-2 flex gap-2">
@@ -431,7 +440,7 @@ export default function WorkersPage() {
             })}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-3 py-8 text-center text-neutral-500">
+                <td colSpan={8} className="px-3 py-8 text-center text-neutral-500">
                   {i18n("crm.ui.noRecords")}
                 </td>
               </tr>

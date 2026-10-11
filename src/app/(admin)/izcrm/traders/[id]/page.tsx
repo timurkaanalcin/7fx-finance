@@ -22,6 +22,7 @@ import {
   VALIDATION_STATUSES,
 } from "@/lib/membership";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
+import { JOB_TITLE_KEYS, jobTitleLabel, jobTitleUi } from "@/lib/job-titles";
 
 type Tab =
   | "profil"
@@ -97,6 +98,7 @@ const PROFILE_KEYS = [
   "email",
   "accountLoginId",
   "phone",
+  "jobTitle",
   "birthDate",
   "language",
   "timezone",
@@ -929,7 +931,7 @@ function FinancePanel({
 }
 
 export default function AdminUserDetailPage() {
-  const { i18n, code, deskName } = useCrmLabels();
+  const { i18n, code, deskName, locale } = useCrmLabels();
   const params = useParams();
   const id = String(params?.id || "");
   const [desks, setDesks] = useState<{ id: string; name: string; code: string | null }[]>([]);
@@ -1455,6 +1457,7 @@ export default function AdminUserDetailPage() {
               hint={ed ? i18n("crm.edit.accountIdHint") : undefined}
             />
             <Field label={i18n("crm.ui.phone")} value={fv("phone") as string} onChange={(v) => setF("phone", v)} disabled={!ed} />
+            <Field label={jobTitleUi(locale).field} value={(fv("jobTitle") as string) || ""} onChange={(v) => setF("jobTitle", v)} options={JOB_TITLE_KEYS} optionLabel={(v) => jobTitleLabel(v, locale)} disabled={!ed} />
             <Field
               label={i18n("crm.ui.dob")}
               value={ed ? (form.birthDate as string) : user.birthDate ? new Date(String(user.birthDate)).toLocaleDateString("en-GB") : ""}

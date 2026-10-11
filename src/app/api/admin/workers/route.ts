@@ -3,6 +3,13 @@ import { ADMIN_PERMISSIONS, hashPassword, writeAudit, type AdminPermission, requ
 import { prisma } from "@/lib/prisma";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { allocateUniqueAccountLoginId } from "@/lib/account-login-id";
+import { jobTitleSchema } from "@/lib/job-titles";
+
+function jobTitle(v: unknown) {
+  const r = jobTitleSchema.safeParse(v);
+  if (!r.success) throw new BadRequest("Invalid job title");
+  return r.data ?? null;
+}
 
 export const dynamic = "force-dynamic";
 
@@ -106,6 +113,7 @@ const SELECT = {
   active: true,
   desk: true,
   deskId: true,
+  jobTitle: true,
   lastLoginAt: true,
   lastSeenAt: true,
   lastIp: true,
@@ -207,6 +215,7 @@ export async function POST(req: Request) {
         accountLoginId: await allocateUniqueAccountLoginId(),
         registrationDate: new Date(),
         ...desk,
+        jobTitle: jobTitle(body.jobTitle),
         ...perms,
         account: { create: { balance: 0, equity: 0, freeMargin: 0, currency: "USD" } },
       },
@@ -252,6 +261,10 @@ export async function PATCH(req: Request) {
         data.email = e;
       }
     }
+    if (has(body, "jobTitle")) {
+      const jt = jobTitle(body.jobTitle);
+      if (jt !== (target.jobTitle ?? null)) data.jobTitle = jt;
+    }
     if (has(body, "deskId")) Object.assign(data, await deskFields(body.deskId));
     if (has(body, "active")) {
       const a = bool(body.active);
@@ -291,6 +304,7 @@ export async function PATCH(req: Request) {
           name: target.name,
           email: target.email,
           desk: target.desk,
+          jobTitle: target.jobTitle,
           active: target.active,
           ...Object.fromEntries(PERM_KEYS.map((k) => [k, target[k]])),
         },

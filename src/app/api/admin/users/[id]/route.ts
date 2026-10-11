@@ -10,6 +10,7 @@ import {
 } from "@/lib/membership";
 import { isAccountLoginId } from "@/lib/account-login-id";
 import { recordLedger } from "@/lib/ledger";
+import { jobTitleSchema } from "@/lib/job-titles";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 
 export const dynamic = "force-dynamic";
@@ -190,6 +191,12 @@ export async function PATCH(req: Request, ctx: Ctx) {
       }
       data.role = role;
     }
+  }
+
+  if (body.jobTitle !== undefined) {
+    const jt = jobTitleSchema.safeParse(body.jobTitle);
+    if (!jt.success) return NextResponse.json({ error: "Invalid job title" }, { status: 400 });
+    (data as Record<string, unknown>).jobTitle = jt.data ?? null;
   }
 
   // User.name is required — ignore an empty display name instead of failing.

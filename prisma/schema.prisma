@@ -21,6 +21,8 @@ model User {
   mustChangePassword Boolean          @default(false)
   name               String
   role               String           @default("TRADER") // TRADER | ADMIN
+  /// Job title / role in company (informational only, see src/lib/job-titles.ts). Not an access role.
+  jobTitle           String?          @db.VarChar(32)
   active             Boolean          @default(true)
   /// Separate from freeze (active): trader may open/close positions & orders
   tradingEnabled     Boolean          @default(true)
