@@ -1166,3 +1166,33 @@ html:has(.lp) { scroll-padding-top: 84px; scroll-behavior: auto; }
 @media (prefers-reduced-motion: reduce) {
   .lp *, .lp *::before, .lp *::after { transition: none !important; animation: none !important; }
 }
+
+/* ------------------------------------------------------------------
+   Mobile safe margins (Android APK WebView + iOS PWA)
+   Content uses ~88-90% of the screen width; side gutters are
+   max(5-6vw, safe-area inset) so nothing touches the screen edges
+   or sits under a notch / rounded corner.
+   ------------------------------------------------------------------ */
+:root {
+  --fx-gutter: max(6vw, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
+  --fx-gutter-dense: max(5vw, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
+}
+@media (max-width: 767px) {
+  html, body { overflow-x: clip; max-width: 100%; }
+  img, video, canvas, svg, iframe, table { max-width: 100%; }
+
+  /* Landing */
+  .fx-landing.lp,
+  .fx-landing { --fx-shell: calc(100% - 2 * var(--fx-gutter)); }
+  .lp-nav-mobile-track { padding-left: var(--fx-gutter); padding-right: var(--fx-gutter); scroll-padding-inline: var(--fx-gutter); }
+  .lp-sticky { padding-left: var(--fx-gutter); padding-right: var(--fx-gutter); }
+  .fx-landing .fx-sticky-cta { padding-left: var(--fx-gutter); padding-right: var(--fx-gutter); }
+
+  /* Login / register */
+  .fx-auth-page header,
+  .fx-auth-page main { padding-left: var(--fx-gutter) !important; padding-right: var(--fx-gutter) !important; }
+  .fx-auth-page main > div { max-width: min(440px, 100%) !important; }
+
+  /* Trading terminal / profile (dense UI: ~90% width) */
+  .fx-desk { padding-left: var(--fx-gutter-dense); padding-right: var(--fx-gutter-dense); }
+}
