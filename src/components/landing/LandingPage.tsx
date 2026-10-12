@@ -396,20 +396,21 @@ export default function LandingPage() {
 
           <div className="fx-shell relative z-10 grid gap-7 pb-10 pt-8 sm:gap-12 sm:pb-20 sm:pt-16 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:gap-12 lg:pb-28 lg:pt-20">
             <div className="fx-reveal max-w-[640px]">
-              <Eyebrow>Multi-asset investment platform</Eyebrow>
-
-              <p
-                className="mt-4 inline-flex items-center gap-2.5 rounded-full border border-[rgba(16,20,37,0.10)] bg-white/90 px-3.5 py-1.5 text-[12.5px] font-semibold tracking-tight text-[#111111] shadow-[0_6px_18px_rgba(16,20,37,0.06)]"
-                aria-label="In partnership with ING Bank"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/ing-logo.png"
-                  alt="ING"
-                  className="h-5 w-auto object-contain"
-                />
-                <span className="text-[#5c657a]">in partnership with</span>
-              </p>
+              <div className="flex flex-wrap items-center gap-[1.5cm]">
+                <Eyebrow>Multi-asset investment platform</Eyebrow>
+                <p
+                  className="inline-flex items-center gap-2.5 rounded-full border border-[rgba(16,20,37,0.10)] bg-white/90 px-3.5 py-1.5 text-[12.5px] font-semibold tracking-tight text-[#111111] shadow-[0_6px_18px_rgba(16,20,37,0.06)]"
+                  aria-label="In partnership with ING Bank"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/ing-logo.png"
+                    alt="ING"
+                    className="h-5 w-auto object-contain"
+                  />
+                  <span className="text-[#5c657a]">in partnership with</span>
+                </p>
+              </div>
 
               <h1 id="hero-title" className="fx-h1 mt-5">
                 {t("landing.heroTitle")}

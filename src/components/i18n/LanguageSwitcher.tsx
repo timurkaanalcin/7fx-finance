@@ -31,7 +31,7 @@ export default function LanguageSwitcher({ compact, className = "", tone = "ligh
         aria-label={t("common.language")}
         value={locale}
         onChange={(e) => setLocale(e.target.value as Locale)}
-        className={`rounded-full border px-2.5 py-1.5 text-[12px] font-semibold outline-none focus:ring-1 focus:ring-[#111111]/25 ${shell}`}
+        className={`rounded-full border px-2.5 py-1.5 font-semibold outline-none focus:ring-1 focus:ring-[#111111]/25 ${compact ? "text-[calc(12px*0.65)]" : "text-[12px]"} ${shell}`}
       >
         {LOCALES.map((code) => (
           <option key={code} value={code}>
