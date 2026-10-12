@@ -225,7 +225,7 @@ export default function ProfileePage() {
         setWdErr(data.error || "Could not submit request");
         return;
       }
-      setWdMsg("Withdrawal request submitted. Balance will be deducted after admin approval.");
+      setWdMsg("Withdrawal request submitted. Balance will be deducted after approval.");
       setWdDetails("");
       setWdNote("");
       await loadWithdrawals();

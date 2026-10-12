@@ -470,7 +470,7 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
         </div>
       </div>
 
-      <div className="absolute right-[calc(0.5rem+1.5cm)] top-2.5 z-10 flex max-w-[62%] items-center justify-end gap-1.5 sm:right-[calc(0.75rem+1.5cm)] sm:max-w-none md:right-[calc(0.75rem+1.5cm)] md:top-2">
+      <div className="absolute left-2 right-[calc(0.5rem+1.5cm)] top-[3.6rem] z-10 flex items-center justify-start gap-1.5 sm:left-auto sm:top-2.5 sm:justify-end sm:right-[calc(0.75rem+1.5cm)] sm:max-w-none md:right-[calc(0.75rem+1.5cm)] md:top-2">
         <span className="hidden rounded-control border border-desk-border/60 bg-desk-panel/70 px-2 py-1 text-[10px] tabular-nums text-desk-muted sm:inline">
           {utcClock}
         </span>
@@ -479,7 +479,7 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
             <button
               key={tf.id}
               onClick={() => onTimeframe(tf.id)}
-              className={`shrink-0 rounded-[9px] px-2.5 py-1.5 text-[11px] font-semibold transition-colors md:rounded-[8px] md:px-2 md:py-1 md:font-medium ${
+              className={`fx-tap-compact shrink-0 rounded-[9px] px-2.5 py-1.5 text-[11px] font-semibold transition-colors md:rounded-[8px] md:px-2 md:py-1 md:font-medium ${
                 timeframe === tf.id
                   ? "bg-desk-accent text-desk-accent-ink shadow-accent-glow-sm"
                   : "text-desk-muted hover:bg-desk-hover hover:text-desk-text"

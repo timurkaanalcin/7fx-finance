@@ -112,7 +112,7 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
         setError(data.error || "Could not submit request");
         return;
       }
-      setSuccess("Noteification sent. It will reflect in your balance after admin approval.");
+      setSuccess("Notification sent. It will reflect in your balance after approval.");
       onSubmitted?.();
     } catch {
       setError("Connection error");

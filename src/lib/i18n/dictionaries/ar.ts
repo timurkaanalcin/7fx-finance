@@ -246,7 +246,7 @@ export const ar: Dict = {
   "profile.support.subtitle": 'تحدث مع فريق الدعم',
   "profile.support.open": 'فتح',
   "profile.support.close": 'إغلاق',
-  "profile.support.hint": 'الرسائل ظاهرة لمديري حسابك في نظام CRM.',
+  "profile.support.hint": "تُرسل رسائلك إلى فريق الدعم لدينا.",
   "profile.support.empty": 'لا رسائل بعد. اكتب سؤالك أدناه.',
   "profile.support.placeholder": 'اكتب رسالتك…',
   "profile.support.send": 'إرسال',
