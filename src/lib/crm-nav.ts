@@ -37,6 +37,8 @@ export const CRM_NAV_GROUPS: CrmNavGroup[] = [
       { href: "/izcrm/assets", labelKey: "crm.nav.assets" },
       { href: "/izcrm/rates", labelKey: "crm.nav.rates" },
       { href: "/izcrm/methods", labelKey: "crm.nav.methods" },
+      { href: "/izcrm/sponsors", labelKey: "crm.nav.sponsors" },
+      { href: "/izcrm/licenses", labelKey: "crm.nav.licenses" },
       { href: "/izcrm/settings", labelKey: "crm.nav.settings" },
     ],
   },

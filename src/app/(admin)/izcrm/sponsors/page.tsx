@@ -1,0 +1,234 @@
+"use client";
+
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+
+type Sponsor = {
+  id: string;
+  name: string;
+  url: string | null;
+  logo: string;
+  logoW: number;
+  logoH: number;
+  priority: number;
+  active: boolean;
+  sortOrder: number;
+};
+
+function readImage(file: File): Promise<{ data: string; w: number; h: number }> {
+  return new Promise((resolve, reject) => {
+    if (!/^image\/(png|jpeg|webp|gif)$/.test(file.type)) return reject(new Error("PNG, JPG, WEBP veya GIF seçin"));
+    if (file.size > 500 * 1024) return reject(new Error("Logo en fazla 500 KB olmalı"));
+    const r = new FileReader();
+    r.onerror = () => reject(new Error("Dosya okunamadı"));
+    r.onload = () => {
+      const data = String(r.result);
+      const img = new Image();
+      img.onload = () => resolve({ data, w: img.naturalWidth, h: img.naturalHeight });
+      img.onerror = () => reject(new Error("Geçersiz görsel"));
+      img.src = data;
+    };
+    r.readAsDataURL(file);
+  });
+}
+
+export default function AdminSponsorsPage() {
+  const [list, setList] = useState<Sponsor[]>([]);
+  const [msg, setMsg] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [name, setName] = useState("");
+  const [url, setUrl] = useState("");
+  const [priority, setPriority] = useState(5);
+  const [logo, setLogo] = useState<{ data: string; w: number; h: number } | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const dragId = useRef<string | null>(null);
+
+  const load = useCallback(async () => {
+    const r = await fetch("/api/admin/sponsors", { cache: "no-store" });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) return setMsg(d.error || "Yüklenemedi");
+    setList(d.sponsors || []);
+  }, []);
+  useEffect(() => { load(); }, [load]);
+
+  async function call(method: string, body?: unknown, qs = "") {
+    setBusy(true);
+    try {
+      const r = await fetch(`/api/admin/sponsors${qs}`, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: body ? JSON.stringify(body) : undefined,
+      });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) { setMsg(d.error || "Hata"); return null; }
+      return d;
+    } finally { setBusy(false); }
+  }
+
+  async function onAdd(e: FormEvent) {
+    e.preventDefault();
+    setMsg("");
+    if (!name.trim() || !logo) return setMsg("İsim ve logo gerekli");
+    const d = await call("POST", { name, url, priority, logo: logo.data, logoW: logo.w, logoH: logo.h, active: true });
+    if (d) {
+      setName(""); setUrl(""); setPriority(5); setLogo(null);
+      if (fileRef.current) fileRef.current.value = "";
+      setMsg("Sponsor eklendi");
+      load();
+    }
+  }
+
+  async function saveOrder(next: Sponsor[]) {
+    setList(next);
+    const d = await call("PATCH", { order: next.map((s) => s.id) });
+    if (d) { setList(d.sponsors); setMsg("Sıralama kaydedildi"); }
+  }
+
+  function onDrop(targetId: string) {
+    const from = dragId.current;
+    dragId.current = null;
+    if (!from || from === targetId) return;
+    const next = [...list];
+    const fi = next.findIndex((s) => s.id === from);
+    const [moved] = next.splice(fi, 1);
+    next.splice(next.findIndex((s) => s.id === targetId), 0, moved);
+    saveOrder(next);
+  }
+
+  function move(id: string, dir: -1 | 1) {
+    const i = list.findIndex((s) => s.id === id);
+    const j = i + dir;
+    if (j < 0 || j >= list.length) return;
+    const next = [...list];
+    [next[i], next[j]] = [next[j], next[i]];
+    saveOrder(next);
+  }
+
+  async function aiSort() {
+    const d = await call("PATCH", { ai: true });
+    if (d) { setList(d.sponsors); setMsg("AI sıralaması uygulandı — sürükleyerek değiştirebilirsiniz"); }
+  }
+
+  async function patch(id: string, data: Partial<Sponsor>) {
+    const d = await call("PATCH", { id, ...data });
+    if (d) setList((l) => l.map((s) => (s.id === id ? { ...s, ...d.sponsor } : s)));
+  }
+
+  async function remove(s: Sponsor) {
+    if (!confirm(`"${s.name}" silinsin mi?`)) return;
+    if (await call("DELETE", undefined, `?id=${encodeURIComponent(s.id)}`)) {
+      setList((l) => l.filter((x) => x.id !== s.id));
+      setMsg("Silindi");
+    }
+  }
+
+  return (
+    <div className="p-4 text-[#111111]">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-lg font-semibold">Sponsorlar</h1>
+          <p className="text-xs text-neutral-500">Aktif sponsorlar ana sayfada bu sırayla görünür. Hiç aktif sponsor yoksa bölüm gizlenir.</p>
+        </div>
+        <button
+          type="button"
+          onClick={aiSort}
+          disabled={busy || list.length < 2}
+          className="rounded-full bg-[#111111] px-4 py-2 text-xs font-semibold text-white disabled:opacity-40"
+        >
+          AI sıralasın
+        </button>
+      </div>
+
+      <form onSubmit={onAdd} className="mb-6 grid gap-3 rounded-xl border border-neutral-200 bg-white p-4 sm:grid-cols-[1fr_1fr_110px_1fr_auto] sm:items-end">
+        <label className="text-xs">
+          <span className="text-neutral-500">İsim *</span>
+          <input value={name} onChange={(e) => setName(e.target.value)} className="mt-1 w-full rounded border border-neutral-200 px-2 py-1.5" />
+        </label>
+        <label className="text-xs">
+          <span className="text-neutral-500">URL (opsiyonel)</span>
+          <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://" className="mt-1 w-full rounded border border-neutral-200 px-2 py-1.5" />
+        </label>
+        <label className="text-xs">
+          <span className="text-neutral-500">Öncelik 0-10</span>
+          <input type="number" min={0} max={10} value={priority} onChange={(e) => setPriority(Number(e.target.value))} className="mt-1 w-full rounded border border-neutral-200 px-2 py-1.5" />
+        </label>
+        <label className="text-xs">
+          <span className="text-neutral-500">Logo * (PNG/JPG/WEBP, ≤500 KB)</span>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/gif"
+            onChange={async (e) => {
+              const f = e.target.files?.[0];
+              if (!f) return setLogo(null);
+              try { setLogo(await readImage(f)); setMsg(""); } catch (err) { setLogo(null); setMsg((err as Error).message); }
+            }}
+            className="mt-1 w-full text-xs"
+          />
+        </label>
+        <button disabled={busy} className="rounded-full border border-neutral-300 bg-white px-4 py-2 text-xs font-semibold hover:bg-neutral-50 disabled:opacity-40">
+          Ekle
+        </button>
+        {logo && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={logo.data} alt="Önizleme" className="h-10 w-auto object-contain sm:col-span-5" />
+        )}
+      </form>
+
+      {msg && <p className="mb-3 text-xs text-neutral-600">{msg}</p>}
+
+      {list.length === 0 ? (
+        <p className="rounded-xl border border-dashed border-neutral-300 bg-white p-6 text-center text-sm text-neutral-500">
+          Henüz sponsor yok. Ana sayfadaki Sponsorlar bölümü gizli.
+        </p>
+      ) : (
+        <ul className="space-y-2">
+          {list.map((s, i) => (
+            <li
+              key={s.id}
+              draggable
+              onDragStart={() => (dragId.current = s.id)}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={() => onDrop(s.id)}
+              className={`flex flex-wrap items-center gap-3 rounded-xl border bg-white p-3 ${s.active ? "border-neutral-200" : "border-neutral-200 opacity-50"}`}
+            >
+              <span className="cursor-grab select-none text-neutral-400" title="Sürükle">⋮⋮</span>
+              <span className="w-6 text-xs tabular-nums text-neutral-500">{i + 1}</span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={s.logo} alt={s.name} className="h-10 w-28 rounded bg-neutral-50 object-contain" />
+              <div className="min-w-[140px] flex-1">
+                <input
+                  defaultValue={s.name}
+                  onBlur={(e) => e.target.value.trim() !== s.name && patch(s.id, { name: e.target.value })}
+                  className="w-full rounded border border-transparent px-1 py-0.5 text-sm font-semibold hover:border-neutral-200"
+                />
+                <input
+                  defaultValue={s.url || ""}
+                  placeholder="URL yok"
+                  onBlur={(e) => (e.target.value || "") !== (s.url || "") && patch(s.id, { url: e.target.value })}
+                  className="w-full rounded border border-transparent px-1 py-0.5 text-xs text-neutral-500 hover:border-neutral-200"
+                />
+              </div>
+              <label className="text-xs text-neutral-500">
+                Öncelik
+                <input
+                  type="number" min={0} max={10} defaultValue={s.priority}
+                  onBlur={(e) => Number(e.target.value) !== s.priority && patch(s.id, { priority: Number(e.target.value) })}
+                  className="ml-1 w-12 rounded border border-neutral-200 px-1 py-0.5"
+                />
+              </label>
+              <label className="flex items-center gap-1.5 text-xs">
+                <input type="checkbox" checked={s.active} onChange={(e) => patch(s.id, { active: e.target.checked })} />
+                Aktif
+              </label>
+              <div className="flex gap-1">
+                <button type="button" onClick={() => move(s.id, -1)} disabled={busy || i === 0} className="rounded border border-neutral-200 px-2 py-1 text-xs disabled:opacity-30">↑</button>
+                <button type="button" onClick={() => move(s.id, 1)} disabled={busy || i === list.length - 1} className="rounded border border-neutral-200 px-2 py-1 text-xs disabled:opacity-30">↓</button>
+                <button type="button" onClick={() => remove(s)} disabled={busy} className="rounded border border-red-200 px-2 py-1 text-xs text-red-600 hover:bg-red-50">Sil</button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}

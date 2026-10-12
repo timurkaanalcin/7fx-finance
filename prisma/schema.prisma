@@ -573,3 +573,34 @@ model ChatAttachment {
 
   @@index([userId, createdAt])
 }
+
+model Sponsor {
+  id        String   @id @default(cuid())
+  name      String
+  url       String?  @db.VarChar(500)
+  logo      String   @db.LongText // data:image/...;base64
+  logoW     Int      @default(0)
+  logoH     Int      @default(0)
+  priority  Int      @default(0) // 0-10 admin hint for AI ordering
+  active    Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active, sortOrder])
+}
+
+model License {
+  id          String   @id @default(cuid())
+  regulator   String
+  number      String
+  entity      String
+  registerUrl String   @db.VarChar(500)
+  logo        String?  @db.LongText
+  active      Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([active, sortOrder])
+}

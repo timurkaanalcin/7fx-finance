@@ -7,6 +7,8 @@ import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 import { useI18n } from "@/lib/i18n/context";
 import SymbolIcon from "@/components/ui/SymbolIcon";
 import InstallAppButtons from "@/components/landing/InstallAppButtons";
+import SponsorsSection from "@/components/landing/SponsorsSection";
+import LicensesSection from "@/components/landing/LicensesSection";
 
 function scrollToId(id: string) {
   const el = document.getElementById(id);
@@ -190,6 +192,8 @@ export default function LandingPage() {
     { id: "hakkinda", label: t("landing.nav.about") },
     { id: "nasil", label: t("landing.nav.how") },
     { id: "mobil", label: t("landing.nav.mobile") },
+    { id: "guvenlik", label: "Güvenlik" },
+    { id: "altyapi", label: "Altyapı" },
   ];
   const [menuOpen, setMenuOpen] = useState(false);
   const [showStickyCta, setShowStickyCta] = useState(false);
@@ -400,9 +404,14 @@ export default function LandingPage() {
                 <Eyebrow>Multi-asset investment platform</Eyebrow>
                 <p
                   className="inline-flex items-center gap-2.5 rounded-full border border-[rgba(16,20,37,0.10)] bg-white/90 px-3.5 py-1.5 text-[12.5px] font-semibold tracking-tight text-[#111111] shadow-[0_6px_18px_rgba(16,20,37,0.06)]"
-                  aria-label="In partnership with Barclays"
+                  aria-label="In partnership with ING Bank"
                 >
-                  <span className="text-[13px] font-semibold tracking-tight text-[#00AEEF]">Barclays</span>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/ing-logo.png"
+                    alt="ING"
+                    className="h-5 w-auto object-contain"
+                  />
                   <span className="text-[#5c657a]">in partnership with</span>
                 </p>
               </div>
@@ -752,6 +761,87 @@ export default function LandingPage() {
           </div>
         </section>
 
+
+        {/* ——— Güvenlik ve Lisans ——— */}
+        <section id="guvenlik" className="fx-section fx-section--soft border-y border-[rgba(16,20,37,0.08)]" aria-labelledby="security-title">
+          <div className="fx-shell grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:gap-16">
+            <div>
+              <Eyebrow>Security</Eyebrow>
+              <h2 id="security-title" className="fx-h2 mt-4">Güvenlik ve Lisans</h2>
+              <p className="fx-section-body mt-5 max-w-[520px]">
+                7FX applies practical safeguards around account access, data in transit, and operational controls.
+                The points below describe platform practices — not a claim of a specific regulator licence.
+              </p>
+              <div className="mt-8 inline-flex items-center rounded-[14px] border border-[rgba(16,20,37,0.08)] bg-white px-5 py-4 shadow-[0_8px_24px_rgba(16,20,37,0.04)]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/7fx-logo.png" alt="7FX" className="h-9 w-auto object-contain" />
+              </div>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {[
+                {
+                  t: "SSL encryption",
+                  d: "Client connections use TLS so session and account traffic is encrypted in transit.",
+                },
+                {
+                  t: "Segregated account practices",
+                  d: "Client balances are tracked in dedicated ledger records, separate from day-to-day operating notes.",
+                },
+                {
+                  t: "KYC / AML process",
+                  d: "Identity and compliance checks can be required before higher limits or withdrawals are enabled.",
+                },
+                {
+                  t: "Access controls",
+                  d: "Session-cookie auth, protected admin areas, and role-based permissions for staff tools.",
+                },
+              ].map((c) => (
+                <div
+                  key={c.t}
+                  className="rounded-[14px] border border-[rgba(16,20,37,0.08)] bg-white p-5 shadow-[0_8px_24px_rgba(16,20,37,0.04)]"
+                >
+                  <p className="text-[13px] font-semibold tracking-tight text-[#111111]">{c.t}</p>
+                  <p className="mt-2 text-[13px] leading-relaxed text-[#5c657a]">{c.d}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ——— Altyapı ve Sağlayıcılar ——— */}
+        <section id="altyapi" className="fx-section" aria-labelledby="infra-title">
+          <div className="fx-shell">
+            <div className="mb-10 max-w-2xl sm:mb-12">
+              <Eyebrow>Infrastructure</Eyebrow>
+              <h2 id="infra-title" className="fx-h2 mt-4">Altyapı ve Sağlayıcılar</h2>
+              <p className="fx-section-body mt-4 max-w-[560px]">
+                Tools and services the live 7FX stack actually uses. Names only — no partnership endorsement.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {[
+                { name: "Railway", role: "Hosting" },
+                { name: "Yahoo Finance", role: "Market data" },
+                { name: "TradingView Lightweight Charts", role: "Charting" },
+                { name: "MySQL", role: "Database" },
+                { name: "Prisma", role: "ORM" },
+                { name: "Next.js", role: "Web app" },
+              ].map((p) => (
+                <div
+                  key={p.name}
+                  className="inline-flex min-w-[160px] flex-col rounded-full border border-[rgba(16,20,37,0.10)] bg-white px-5 py-3 shadow-[0_6px_18px_rgba(16,20,37,0.05)] sm:min-w-[200px] sm:rounded-[14px]"
+                >
+                  <span className="text-[13px] font-semibold tracking-tight text-[#111111]">{p.name}</span>
+                  <span className="mt-0.5 text-[11px] font-medium uppercase tracking-[0.08em] text-[#5c657a]">{p.role}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <LicensesSection />
+        <SponsorsSection />
+
         {/* ——— Final CTA ——— */}
         <section className="border-t border-[rgba(16,20,37,0.08)] bg-white">
           <div className="fx-shell flex flex-col items-start justify-between gap-8 py-16 md:flex-row md:items-center md:py-20">
@@ -788,7 +878,8 @@ export default function LandingPage() {
               commodity markets.
             </p>
             <p className="mt-3 inline-flex items-center gap-2 text-[12px] font-medium text-[#111111]">
-              <span className="text-[13px] font-semibold tracking-tight text-[#00AEEF]">Barclays</span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/ing-logo.png" alt="ING" className="h-4 w-auto object-contain" />
               <span>in partnership with</span>
             </p>
             <p className="mt-2 text-[12px]">© {new Date().getFullYear()} 7FX</p>
