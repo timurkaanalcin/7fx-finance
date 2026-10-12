@@ -283,7 +283,10 @@
     padding: 0 14px !important;
     display: inline-flex;
     align-items: center;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
+  .fx-profile > header > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
   .fx-profile main { padding: 16px 14px 32px !important; }
   .fx-profile section,
   .fx-profile form,
