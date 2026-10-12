@@ -143,7 +143,7 @@ export default function LiveSupportPanel() {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-0 sm:items-center sm:p-4">
+        <div className="fx-lx-overlay fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-0 sm:items-center sm:p-4">
           <div
             className="flex h-[min(90vh,560px)] w-full max-w-md flex-col overflow-hidden rounded-t-2xl border border-[#2a2a2a] bg-[#0a0a0a] shadow-2xl sm:rounded-2xl"
             role="dialog"

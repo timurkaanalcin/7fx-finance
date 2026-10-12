@@ -397,7 +397,7 @@ export default function OrderTicket({
   if (modal) {
     return (
       <div
-        className="fixed inset-0 z-[80] flex items-end justify-center bg-black/55 p-0 backdrop-blur-[2px] sm:items-center sm:p-4"
+        className="fx-lx-overlay fixed inset-0 z-[80] flex items-end justify-center bg-black/55 p-0 backdrop-blur-[2px] sm:items-center sm:p-4"
         role="dialog"
         aria-modal="true"
         aria-label="Order ticket"

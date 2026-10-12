@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./mobile-luxe.css";
 import PublicI18n from "@/components/i18n/PublicI18n";
 
 

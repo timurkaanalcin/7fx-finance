@@ -122,9 +122,9 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 p-4 backdrop-blur-[2px]" onClick={onClose}>
+    <div className="fx-lx-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/65 p-4 backdrop-blur-[2px]" onClick={onClose}>
       <div
-        className="w-full max-w-lg rounded-modal border border-desk-border bg-desk-panel shadow-desk-panel"
+        className="fx-lx-modal w-full max-w-lg rounded-modal border border-desk-border bg-desk-panel shadow-desk-panel"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-desk-border px-4 py-3">
