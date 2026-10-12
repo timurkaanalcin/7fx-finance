@@ -242,6 +242,12 @@ export default function ChatPage() {
     return rows;
   }, [threads, tab, query]);
 
+  // Deep link from notifications: /izcrm/chat?user=<traderId>
+  useEffect(() => {
+    const u = new URLSearchParams(window.location.search).get("user");
+    if (u) setSelected(u);
+  }, []);
+
   const active = threads.find((t) => t.traderId === selected) || list[0] || null;
 
   useEffect(() => {

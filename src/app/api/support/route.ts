@@ -80,6 +80,51 @@ export async function POST(req: Request) {
     markCustomerRead: true,
   });
 
+  // ——— AI auto-reply / human handoff ———
+  let reply: { id: string; body: string; from: "support"; createdAt: string } | null = null;
+  try {
+    const { aiReply, wantsHuman, HANDOFF_TEXT, AI_WORKER_ID, AI_WORKER_NAME } = await import("@/lib/support-ai");
+    const { notifyAgents } = await import("@/lib/notify");
+    const st = await prisma.chatThreadState.findUnique({ where: { userId: user.id }, select: { supportMode: true } });
+    const mode = st?.supportMode || "AI";
+    const href = `/izcrm/chat?user=${encodeURIComponent(user.id)}`;
+    const who = user.name || user.email || "Müşteri";
+    let replyText: string | null = null;
+
+    if (mode !== "HUMAN" && wantsHuman(message)) {
+      await prisma.chatThreadState.upsert({
+        where: { userId: user.id },
+        create: { userId: user.id, supportMode: "HUMAN", handoffAt: new Date() },
+        update: { supportMode: "HUMAN", handoffAt: new Date() },
+      });
+      replyText = HANDOFF_TEXT;
+      await notifyAgents({ kind: "handoff", title: `Canlı temsilci bekleniyor: ${who}`, body: message, href });
+    } else if (mode === "HUMAN") {
+      await notifyAgents({ kind: "chat", title: `Yeni mesaj: ${who}`, body: message, href });
+    } else {
+      const hist = await prisma.communication.findMany({
+        where: { userId: user.id, type: "CHAT", id: { not: row.id } },
+        orderBy: { createdAt: "desc" },
+        take: 8,
+        select: { description: true, workerName: true },
+      });
+      replyText = await aiReply(
+        message,
+        hist.reverse().map((h) => ({ from: h.workerName ? ("support" as const) : ("customer" as const), body: h.description }))
+      );
+      await notifyAgents({ kind: "chat", title: `Yeni mesaj (AI yanıtladı): ${who}`, body: message, href });
+    }
+
+    if (replyText) {
+      const r = await prisma.communication.create({
+        data: { userId: user.id, type: "CHAT", title: "Live support", description: replyText, workerName: AI_WORKER_NAME, workerId: AI_WORKER_ID },
+      });
+      reply = { id: r.id, body: r.description, from: "support", createdAt: r.createdAt.toISOString() };
+    }
+  } catch (e) {
+    console.error("[support] auto-reply", e);
+  }
+
   return NextResponse.json({
     ok: true,
     message: {
@@ -88,5 +133,6 @@ export async function POST(req: Request) {
       from: "customer",
       createdAt: row.createdAt.toISOString(),
     },
+    reply,
   });
 }

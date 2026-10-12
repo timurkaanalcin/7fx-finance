@@ -176,6 +176,10 @@ export async function POST(req: Request) {
     adminInChat: true,
     markAdminRead: true,
   });
+  // A human replied: AI stays off for this thread; notify the customer.
+  await prisma.chatThreadState.update({ where: { userId }, data: { supportMode: "HUMAN" } }).catch(() => {});
+  const { notifyUsers } = await import("@/lib/notify");
+  await notifyUsers([userId], { kind: "chat", title: "Destek ekibinden yeni mesaj", body: message, href: "/profile#destek" });
   return NextResponse.json({ ok: true, id: row.id });
 }
 

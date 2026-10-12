@@ -1,5 +1,6 @@
 "use client";
 
+import NotificationBell from "@/components/notifications/NotificationBell";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -163,6 +164,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
             ))}
           </div>
           <div className="ml-auto flex items-center gap-2 text-[11px] text-neutral-500">
+            <NotificationBell />
             <LanguageSwitcher compact tone="crm" />
             <span className="hidden sm:inline">{name}{readOnly ? (
             <span className="ml-1 rounded bg-amber-50 px-1.5 py-0.5 text-[9px] font-semibold uppercase text-amber-700">{t("crm.ui.readOnly")}</span>

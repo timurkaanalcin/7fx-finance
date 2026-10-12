@@ -554,6 +554,8 @@ model ChatThreadState {
   adminInChatUntil    DateTime?
   customerLastReadAt  DateTime?
   adminLastReadAt     DateTime?
+  supportMode         String    @default("AI") // AI | HUMAN
+  handoffAt           DateTime?
   updatedAt           DateTime  @updatedAt
 }
 
@@ -603,4 +605,28 @@ model License {
   updatedAt   DateTime @updatedAt
 
   @@index([active, sortOrder])
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  kind      String    @default("info") // chat | handoff | info
+  title     String
+  body      String    @db.Text
+  href      String?   @db.VarChar(500)
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, readAt, createdAt])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique @db.VarChar(700)
+  p256dh    String   @db.VarChar(255)
+  auth      String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }

@@ -78,3 +78,38 @@ self.addEventListener("fetch", (event) => {
     caches.match(req).then((cached) => cached || fetch(req))
   );
 });
+
+/* ——— Web Push (live support notifications) ——— */
+self.addEventListener("push", (event) => {
+  let d = {};
+  try { d = event.data ? event.data.json() : {}; } catch (e) { d = { body: event.data && event.data.text() }; }
+  const title = d.title || "7FX";
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body: d.body || "",
+      icon: "/icons/v3/icon-192.png",
+      badge: "/icons/v3/icon-192.png",
+      data: { href: d.href || "/" },
+      tag: d.href || "7fx",
+      renotify: true,
+    })
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const href = (event.notification.data && event.notification.data.href) || "/";
+  const url = new URL(href, self.location.origin).href;
+  event.waitUntil(
+    (async () => {
+      const wins = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+      for (const w of wins) {
+        if (new URL(w.url).origin === self.location.origin) {
+          await w.focus();
+          return w.navigate(url).catch(() => self.clients.openWindow(url));
+        }
+      }
+      return self.clients.openWindow(url);
+    })()
+  );
+});

@@ -6,6 +6,7 @@ import { useState, useRef, useEffect } from "react";
 import { fmtMoney, fmtPct } from "@/lib/format";
 import type { AccountMetrics, UserInfo } from "./types";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
+import NotificationBell from "@/components/notifications/NotificationBell";
 import { useI18n } from "@/lib/i18n/context";
 
 type Props = {
@@ -157,6 +158,7 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
           {avatar}
         </Link>
 
+        <NotificationBell tone="dark" />
         <LanguageSwitcher compact tone="dark" />
         {/* Desktop: dropdown menu */}
         <div className="relative hidden md:block" ref={menuRef}>
