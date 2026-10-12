@@ -91,7 +91,12 @@ export async function adminSessionBindOk(session: SessionPayload | null): Promis
     const ip = clientIpFromHeaders({ get: (n) => h.get(n) });
     const ua = h.get("user-agent") || "";
     const fp = deviceFingerprint(ip, ua);
-    if (session.ipHash && session.ipHash !== fp.ipHash) return false;
+    // IP binding disabled as a hard check: behind Railway's edge the forwarded client IP is not
+    // stable per request, which 403'd every admin API call (empty traders list / chats).
+    // UA binding stays enforced; IP drift is only logged.
+    if (session.ipHash && session.ipHash !== fp.ipHash) {
+      console.warn("[auth] admin session ip drift", { userId: (session as { userId?: string }).userId });
+    }
     if (session.uaHash && session.uaHash !== fp.uaHash) return false;
     return true;
   } catch {
