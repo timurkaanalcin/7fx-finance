@@ -70,7 +70,7 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
   }, []);
 
   const avatar = (
-    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-desk-elev to-desk-hover text-[11px] font-bold text-desk-text ring-1 ring-desk-border/80 md:text-xs">
+    <div className="flex h-7 w-7 items-center justify-center fx-avatar rounded-full bg-gradient-to-br from-desk-elev to-desk-hover text-[11px] font-bold text-desk-text ring-1 ring-desk-border/80 md:text-xs">
       {user.name.slice(0, 1).toUpperCase()}
     </div>
   );
@@ -138,7 +138,7 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
           type="button"
           onClick={onDeposit}
           title="Deposit"
-          className="flex h-7 items-center gap-1 rounded-[9px] bg-desk-accent px-2 text-[11px] font-semibold text-desk-accent-ink shadow-accent-glow-sm hover:brightness-110 md:h-8 md:gap-1.5 md:rounded-[10px] md:px-2.5 md:text-xs"
+          className="fx-deposit-btn flex h-7 items-center gap-1 rounded-[9px] bg-desk-accent px-2 text-[11px] font-semibold text-desk-accent-ink shadow-accent-glow-sm hover:brightness-110 md:h-8 md:gap-1.5 md:rounded-[10px] md:px-2.5 md:text-xs"
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
             <rect x="2" y="6" width="20" height="12" rx="2" />

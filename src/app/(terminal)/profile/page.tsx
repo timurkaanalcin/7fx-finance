@@ -463,7 +463,7 @@ export default function ProfileePage() {
         >
           <h2 className="mb-1 text-sm font-medium text-slate-300">Para Withdrawal</h2>
           <p className="mb-3 text-[11px] text-slate-500">
-            The request is deducted from your balance after admin approval. Withdrawable amount is limited by your balance and free
+            The request is deducted from your balance once approved. Withdrawable amount is limited by your balance and free
             margin ({money(profile.balance)}).
           </p>
           {profile.withdrawalsEnabled === false && (

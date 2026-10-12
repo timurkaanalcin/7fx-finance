@@ -497,3 +497,19 @@ html[data-fx-theme="light"] :is(.fx-desk, .fx-lx-overlay) :is(.bg-desk-buy, [cla
 html[data-fx-theme="light"] :is(.fx-desk, .fx-lx-overlay) :is(.bg-desk-buy, [class*="bg-desk-buy/9"], .bg-desk-sell, [class*="bg-desk-sell/9"]) * { color: #fff !important; }
 .fx-profile .fx-theme-toggle,
 .fx-desk .fx-theme-toggle { padding: 0 !important; width: 40px !important; height: 40px !important; min-height: 40px !important; flex: 0 0 40px; }
+/* day theme — third pass: top bar avatar/deposit, soft shadows */
+html[data-fx-theme="light"] .fx-desk .fx-deposit-btn {
+  background: linear-gradient(180deg, #d8bb7e 0%, #b8944f 100%) !important;
+  color: #1a140a !important;
+  box-shadow: 0 4px 14px rgba(168, 132, 63, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+}
+html[data-fx-theme="light"] .fx-desk .fx-deposit-btn * { color: #1a140a !important; }
+html[data-fx-theme="light"] .fx-desk .fx-avatar {
+  background: linear-gradient(135deg, #fbf6ea, #efe5cf) !important;
+  color: #6b5326 !important;
+  --tw-ring-color: rgba(168, 132, 63, 0.35) !important;
+}
+html[data-fx-theme="light"] .fx-desk a:has(> .fx-avatar) { background: #fff !important; }
+html[data-fx-theme="light"] .fx-desk :is([class*="shadow-desk-panel"], [class*="shadow-accent-glow"], [class*="shadow-lg"], [class*="shadow-xl"], [class*="shadow-2xl"]):not(.fx-deposit-btn) {
+  box-shadow: 0 6px 18px rgba(60, 45, 15, 0.08) !important;
+}

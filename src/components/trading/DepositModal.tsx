@@ -128,7 +128,7 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-desk-border px-4 py-3">
-          <h2 className="text-sm font-semibold tracking-wide">Depositma</h2>
+          <h2 className="text-sm font-semibold tracking-wide">Deposit</h2>
           <button onClick={onClose} className="rounded-[8px] px-2 py-1 text-desk-muted hover:bg-desk-hover hover:text-desk-text">
             ✕
           </button>

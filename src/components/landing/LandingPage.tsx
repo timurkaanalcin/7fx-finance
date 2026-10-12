@@ -396,18 +396,13 @@ export default function LandingPage() {
 
           <div className="fx-shell relative z-10 grid gap-7 pb-10 pt-8 sm:gap-12 sm:pb-20 sm:pt-16 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:gap-12 lg:pb-28 lg:pt-20">
             <div className="fx-reveal max-w-[640px]">
-              <div className="flex flex-wrap items-center gap-[1.5cm]">
+              <div className="flex flex-wrap items-center gap-[1cm]">
                 <Eyebrow>Multi-asset investment platform</Eyebrow>
                 <p
                   className="inline-flex items-center gap-2.5 rounded-full border border-[rgba(16,20,37,0.10)] bg-white/90 px-3.5 py-1.5 text-[12.5px] font-semibold tracking-tight text-[#111111] shadow-[0_6px_18px_rgba(16,20,37,0.06)]"
-                  aria-label="In partnership with ING Bank"
+                  aria-label="In partnership with Barclays"
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/ing-logo.png"
-                    alt="ING"
-                    className="h-5 w-auto object-contain"
-                  />
+                  <span className="text-[13px] font-semibold tracking-tight text-[#00AEEF]">Barclays</span>
                   <span className="text-[#5c657a]">in partnership with</span>
                 </p>
               </div>
@@ -793,8 +788,7 @@ export default function LandingPage() {
               commodity markets.
             </p>
             <p className="mt-3 inline-flex items-center gap-2 text-[12px] font-medium text-[#111111]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/ing-logo.png" alt="ING" className="h-4 w-auto object-contain" />
+              <span className="text-[13px] font-semibold tracking-tight text-[#00AEEF]">Barclays</span>
               <span>in partnership with</span>
             </p>
             <p className="mt-2 text-[12px]">© {new Date().getFullYear()} 7FX</p>

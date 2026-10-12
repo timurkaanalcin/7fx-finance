@@ -65,7 +65,7 @@ export const ru: Dict = {
   "landing.ios.sheetBody": "На iPhone и iPad установите 7FX через «Поделиться» в Safari.",
   "landing.ios.sheetTitle": "Добавить 7FX на экран «Домой»",
   "landing.ios.installing": "Подготовка установки…",
-  "landing.trust.ing": "В партнёрстве с ING Bank",
+  "landing.trust.ing": "В партнёрстве с Barclays",
   "landing.trust.symbols": "40+ инструментов",
   "landing.trust.access": "Доступ 24/7",
   "landing.trust.ssl": "SSL-сессия",

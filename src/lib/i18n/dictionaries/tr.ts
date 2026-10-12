@@ -65,7 +65,7 @@ export const tr: Dict = {
   "landing.ios.sheetBody": "iPhone ve iPad’de Safari Paylaş ile 7FX’i uygulama gibi yükleyin.",
   "landing.ios.sheetTitle": "7FX’i Ana Ekrana ekle",
   "landing.ios.installing": "Yükleme hazırlanıyor…",
-  "landing.trust.ing": "ING Bank iş birliğiyle",
+  "landing.trust.ing": "Barclays iş birliğiyle",
   "landing.trust.symbols": "40+ sembol",
   "landing.trust.access": "7/24 erişim",
   "landing.trust.ssl": "SSL oturumu",
