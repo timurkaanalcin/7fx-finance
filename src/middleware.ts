@@ -141,7 +141,8 @@ export function middleware(req: NextRequest) {
     (pathname.startsWith("/trade") ||
       pathname === "/izcrm" ||
       pathname.startsWith("/izcrm/") ||
-      pathname.startsWith("/profile")) &&
+      pathname.startsWith("/profile") ||
+      pathname.startsWith("/documents")) &&
     !token
   ) {
     return applyHeaders(NextResponse.redirect(new URL("/login", req.url)));

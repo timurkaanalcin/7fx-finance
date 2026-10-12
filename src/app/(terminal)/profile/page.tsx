@@ -278,6 +278,16 @@ export default function ProfileePage() {
         <div id="destek" className="mb-4 scroll-mt-20">
           <LiveSupportPanel />
         </div>
+        <Link
+          href="/documents"
+          className="mb-4 flex min-h-[56px] items-center justify-between rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] px-4 py-3 no-underline"
+        >
+          <span>
+            <span className="block text-sm font-semibold text-slate-100">{t("docs.title")}</span>
+            <span className="block text-xs text-slate-500">{t("docs.subtitle")}</span>
+          </span>
+          <span className="text-slate-400" aria-hidden>›</span>
+        </Link>
         <div className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
           <div className="mb-1 text-lg font-semibold">{profile.name}</div>
           <div className="text-xs text-slate-500">{profile.email}</div>

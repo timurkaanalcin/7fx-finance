@@ -49,6 +49,7 @@ export const CRM_NAV_GROUPS: CrmNavGroup[] = [
       { href: "/izcrm/communications", labelKey: "crm.nav.communications" },
       { href: "/izcrm/chat", labelKey: "crm.nav.chat" },
       { href: "/izcrm/documents", labelKey: "crm.nav.documents" },
+      { href: "/izcrm/evrak", labelKey: "crm.nav.evrak" },
       { href: "/izcrm/calendar", labelKey: "crm.nav.calendar" },
       { href: "/izcrm/mail", labelKey: "crm.nav.mail" },
     ],

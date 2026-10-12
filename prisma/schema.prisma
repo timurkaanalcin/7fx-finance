@@ -630,3 +630,19 @@ model PushSubscription {
 
   @@index([userId])
 }
+
+/// "Evraklar" — staff-uploaded customer documents (userId null = visible to all customers).
+/// Customers can only VIEW via the protected token viewer; staff can download.
+model CustomerDocument {
+  id           String   @id @default(cuid())
+  userId       String?
+  title        String   @db.VarChar(200)
+  fileName     String   @db.VarChar(255)
+  mime         String   @db.VarChar(120)
+  size         Int
+  data         Bytes    @db.LongBlob
+  uploadedById String?
+  createdAt    DateTime @default(now())
+
+  @@index([userId, createdAt])
+}

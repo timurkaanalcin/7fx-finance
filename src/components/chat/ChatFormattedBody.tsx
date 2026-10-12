@@ -2,7 +2,26 @@
 
 import { Fragment, type ReactNode } from "react";
 
+/** "/documents" typed by staff → link to the customer's Documents page. */
+function linkDocs(text: string, keyBase: string): ReactNode[] {
+  const parts = text.split(/(\/documents)(?![\w/-])/g);
+  if (parts.length === 1) return [text];
+  return parts.map((p, i) =>
+    p === "/documents" ? (
+      <a key={`${keyBase}-d${i}`} href="/documents" className="fx-chat-doclink font-semibold underline underline-offset-2">
+        /documents
+      </a>
+    ) : (
+      p
+    )
+  );
+}
+
 function formatInline(text: string): ReactNode[] {
+  return formatInlineRaw(text).flatMap((n, i) => (typeof n === "string" ? linkDocs(n, String(i)) : [n]));
+}
+
+function formatInlineRaw(text: string): ReactNode[] {
   const nodes: ReactNode[] = [];
   const re = /(\*\*[^*]+\*\*|__[^_]+__|\*[^*]+\*)/g;
   let last = 0;

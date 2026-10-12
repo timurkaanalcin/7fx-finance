@@ -11,10 +11,13 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
  */
 export default function ProtectedAttachmentViewer({
   attId,
+  apiBase = "/api/support/attachments",
   onClose,
   labels,
 }: {
   attId: string;
+  /** API base, e.g. "/api/support/attachments" (default) or "/api/documents". */
+  apiBase?: string;
   onClose: () => void;
   labels: { loading: string; failed: string; close: string; hold?: string };
 }) {
@@ -44,11 +47,11 @@ export default function ProtectedAttachmentViewer({
     let cancelled = false;
     (async () => {
       try {
-        const t = await fetch(`/api/support/attachments/${attId}/token`, { method: "POST", cache: "no-store", credentials: "include" });
+        const t = await fetch(`${apiBase}/${attId}/token`, { method: "POST", cache: "no-store", credentials: "include" });
         if (!t.ok) throw new Error();
         const meta = (await t.json()) as { token: string; kind: "pdf" | "image"; watermark: string };
         setMark(`${meta.watermark} · ${new Date().toLocaleString()}`);
-        const r = await fetch(`/api/support/attachments/${attId}/view`, {
+        const r = await fetch(`${apiBase}/${attId}/view`, {
           cache: "no-store",
           credentials: "include",
           headers: { "X-View-Token": meta.token },
