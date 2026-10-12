@@ -10,7 +10,8 @@ export type LedgerType =
   | "MARGIN_ADD"
   | "TRADE_PNL"
   | "FINANCE_SET"
-  | "CURRENCY_CHANGE";
+  | "CURRENCY_CHANGE"
+  | "TRANSFER";
 
 /** Record a balance-affecting event against the trader's 1:1 trading Account. */
 export async function recordLedger(opts: {

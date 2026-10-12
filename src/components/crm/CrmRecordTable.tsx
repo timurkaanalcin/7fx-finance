@@ -39,6 +39,10 @@ export type CrmColumn = {
   hideOnCreate?: boolean;
   /** hide from the table (only in forms) */
   hideInTable?: boolean;
+  /** only show in the add form when this returns true for the current draft */
+  showIf?: (draft: Record<string, string>) => boolean;
+  /** never show in inline-edit grids */
+  createOnly?: boolean;
   /** custom cell renderer for view mode */
   render?: (row: Record<string, unknown>) => ReactNode;
   /** custom input for edit/add mode (e.g. a client picker); `row` is undefined in the add form */
@@ -254,7 +258,7 @@ export function CrmFormGrid({
   const grid = cols === 2 ? "sm:grid-cols-2" : cols === 3 ? "sm:grid-cols-2 lg:grid-cols-3" : "sm:grid-cols-2 lg:grid-cols-4";
   return (
     <div className={`grid grid-cols-1 gap-2 ${grid}`}>
-      {columns.map((c) => (
+      {columns.filter((c) => !c.createOnly).map((c) => (
         <label
           key={c.key}
           className={`flex gap-1 text-[11px] ${c.type === "checkbox" ? "flex-row items-center pt-4" : "flex-col"} ${
@@ -308,7 +312,8 @@ export function CrmAddForm({
   const [apply, setApply] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
-  const cols = columns.filter((c) => c.editable !== false && c.type !== "readonly" && !c.hideOnCreate);
+  const allCols = columns.filter((c) => c.editable !== false && c.type !== "readonly" && !c.hideOnCreate);
+  const cols = allCols.filter((c) => !c.showIf || c.showIf(draft));
 
   function reset() {
     setDraft(initial || {});

@@ -61,6 +61,7 @@ const LEDGER_TYPES = [
   "TRADE_PNL",
   "FINANCE_SET",
   "CURRENCY_CHANGE",
+  "TRANSFER",
 ];
 
 class BadRequest extends Error {}
@@ -403,6 +404,96 @@ async function reflect(
   });
 }
 
+/**
+ * Internal transfer between two traders' accounts. Writes a ledger row on BOTH accounts
+ * (source: −amount "transfer out", target: +amount "transfer in") in one DB transaction.
+ * With applyToBalance the two Account balances move too; otherwise only history is written.
+ */
+async function internalTransfer(body: Body, targetUserId: string, admin: AdminRef, apply: boolean) {
+  const sourceUserId = reqStr(body.sourceUserId, "sourceUserId", 64);
+  if (sourceUserId === targetUserId) throw new BadRequest("Source and target account must differ");
+  const amount = num(body.amount, "amount");
+  if (!(amount > 0)) throw new BadRequest("Amount must be greater than 0");
+  const note = str(body.comment, 4000);
+  const createdAt = has(body, "createdAt") && body.createdAt !== "" ? date(body.createdAt, "createdAt") : undefined;
+  const result = await prisma.$transaction(async (tx) => {
+    const [src, dst] = await Promise.all([
+      tx.user.findUnique({ where: { id: sourceUserId }, include: { account: true } }),
+      tx.user.findUnique({ where: { id: targetUserId }, include: { account: true } }),
+    ]);
+    if (!src) throw new BadRequest("Source account not found");
+    if (!src.account || !dst?.account) throw new Error("ACCOUNT_NOT_FOUND");
+    if (src.account.currency !== dst.account.currency) {
+      throw new BadRequest(`Currency mismatch (${src.account.currency} → ${dst.account.currency})`);
+    }
+    if (src.account.balance + 1e-9 < amount) throw new BadRequest("Insufficient source balance");
+    const sb = src.account.balance;
+    const db = dst.account.balance;
+    const label = (u: { name: string; accountLoginId: string | null; email: string }) =>
+      `${u.name} (${u.accountLoginId || u.email})`;
+    const transferId = `TRF-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+    const common = {
+      type: "TRANSFER",
+      currency: dst.account.currency,
+      createdById: admin.id,
+      createdByName: admin.name,
+      refType: "TRANSFER",
+      refId: transferId,
+      ...(createdAt ? { createdAt } : {}),
+    };
+    if (apply) {
+      // Guarded decrement: fails if a concurrent change dropped the balance below amount.
+      const dec = await tx.account.updateMany({
+        where: { userId: sourceUserId, balance: { gte: amount } },
+        data: { balance: { decrement: amount } },
+      });
+      if (dec.count !== 1) throw new BadRequest("Insufficient source balance");
+      await tx.account.update({ where: { userId: targetUserId }, data: { balance: { increment: amount } } });
+    }
+    await tx.balanceLedger.create({
+      data: {
+        ...common,
+        userId: sourceUserId,
+        tradingAccountId: src.account.id,
+        amount: -amount,
+        balanceBefore: sb,
+        balanceAfter: sb - amount,
+        comment: `Transfer out to ${label(dst)}${note ? ` — ${note}` : ""}`.slice(0, 5000),
+      },
+    });
+    const row = await tx.balanceLedger.create({
+      data: {
+        ...common,
+        userId: targetUserId,
+        tradingAccountId: dst.account.id,
+        amount,
+        balanceBefore: db,
+        balanceAfter: db + amount,
+        comment: `Transfer in from ${label(src)}${note ? ` — ${note}` : ""}`.slice(0, 5000),
+      },
+    });
+    return { row, transferId, src: { before: sb, after: sb - amount }, dst: { before: db, after: db + amount } };
+  });
+  if (apply) {
+    const { refreshAccountMetrics } = await import("@/lib/trading");
+    await Promise.all([
+      refreshAccountMetrics(sourceUserId).catch(() => null),
+      refreshAccountMetrics(targetUserId).catch(() => null),
+    ]);
+  }
+  await writeAudit({
+    adminId: admin.id,
+    action: "CRM_INTERNAL_TRANSFER",
+    targetId: targetUserId,
+    note: `${amount} from ${sourceUserId}`,
+    meta: { sourceUserId, targetUserId, amount, applyToBalance: apply, transferId: result.transferId },
+  });
+  return {
+    row: result.row as unknown as { id: string } & Body,
+    balance: apply ? { source: result.src, target: result.dst, delta: amount } : null,
+  };
+}
+
 export async function POST(req: Request, ctx: Ctx) {
   await ensureDemoSeed();
   const body = await readBody(req);
@@ -463,6 +554,12 @@ export async function POST(req: Request, ctx: Ctx) {
         break;
       }
       case "ledger": {
+        if (String(body.type || "").toUpperCase() === "TRANSFER") {
+          const t = await internalTransfer(body, userId, admin, apply);
+          row = t.row;
+          balance = t.balance;
+          break;
+        }
         const data = ledgerData(body, true);
         const acc = user.account;
         if (!acc) throw new Error("ACCOUNT_NOT_FOUND");

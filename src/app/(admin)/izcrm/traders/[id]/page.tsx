@@ -88,6 +88,7 @@ const LEDGER_TYPES = [
   "RESET",
   "FINANCE_SET",
   "CURRENCY_CHANGE",
+  "TRANSFER",
 ];
 const REQ_STATUSES = ["PENDING", "APPROVED", "REJECTED"];
 
@@ -424,6 +425,48 @@ type LoginLinkRow = {
   passwordSetAt?: string | null;
 };
 
+
+type PickUser = { id: string; name: string; email: string; accountLoginId: string | null; role?: string; balance?: number; currency?: string };
+
+/** Searchable trader picker (name / email / 16-digit account ID) for internal transfers. */
+function SourceAccountPicker({ value, onChange, excludeId }: { value: string; onChange: (v: string) => void; excludeId: string }) {
+  const { i18n } = useCrmLabels();
+  const [q, setQ] = useState("");
+  const [opts, setOpts] = useState<PickUser[]>([]);
+  useEffect(() => {
+    let live = true;
+    const h = window.setTimeout(async () => {
+      try {
+        const r = await fetch(`/api/admin/users?q=${encodeURIComponent(q.trim())}&take=50`, { cache: "no-store" });
+        if (!r.ok) return;
+        const d = await r.json();
+        const list: PickUser[] = (d.users || []).filter((u: PickUser) => u.id !== excludeId && (u.role ?? "TRADER") !== "ADMIN");
+        if (live) setOpts(list);
+      } catch {
+        /* ignore */
+      }
+    }, 250);
+    return () => {
+      live = false;
+      window.clearTimeout(h);
+    };
+  }, [q, excludeId]);
+  const cls = "w-full min-w-[5rem] rounded border border-[#111111] bg-white px-1.5 py-1 text-[11px] text-[#111111] outline-none";
+  return (
+    <div className="flex flex-col gap-1">
+      <input className={cls} placeholder={i18n("crm.edit.sourceSearch")} value={q} onChange={(e) => setQ(e.target.value)} />
+      <select className={cls} value={value} onChange={(e) => onChange(e.target.value)}>
+        <option value="">{i18n("crm.edit.sourceSelect")}</option>
+        {opts.map((u) => (
+          <option key={u.id} value={u.id}>
+            {u.name} · {u.accountLoginId || u.email}
+            {typeof u.balance === "number" ? ` · ${u.balance.toFixed(2)} ${u.currency || ""}` : ""}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
 
 function Field({
   label,
@@ -1187,6 +1230,15 @@ export default function AdminUserDetailPage() {
   const ledgerTypeOpts = LEDGER_TYPES.map((t) => ({ value: t, label: code("crm.ledger", t) }));
   const ledgerCols: CrmColumn[] = [
     { key: "type", label: "crm.ui.type", type: "select", options: ledgerTypeOpts, required: true },
+    {
+      key: "sourceUserId",
+      label: "crm.edit.sourceAccount",
+      required: true,
+      hideInTable: true,
+      createOnly: true,
+      showIf: (d) => d.type === "TRANSFER",
+      editor: (v, onChange) => <SourceAccountPicker value={v} onChange={onChange} excludeId={id} />,
+    },
     { key: "amount", label: "crm.ui.amount", type: "money", required: true },
     { key: "balanceBefore", label: "crm.edit.balanceBefore", type: "money" },
     { key: "balanceAfter", label: "crm.edit.balanceAfter", type: "money" },
