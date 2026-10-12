@@ -252,7 +252,7 @@ export default function TerminalShell() {
   }
 
   return (
-    <div className="fx-desk flex h-screen flex-col overflow-hidden bg-desk-bg text-desk-text">
+    <div className="fx-desk flex h-screen h-[100dvh] flex-col overflow-hidden bg-desk-bg text-desk-text">
       <TopBar
         user={user}
         account={account}
@@ -345,7 +345,7 @@ export default function TerminalShell() {
                   onTimeframe={setTimeframe}
                   price={prices[symbol]}
                 />
-                <div className="pointer-events-none absolute bottom-[calc(0.75rem+0.50cm)] right-[1.85cm] z-20 md:bottom-[calc(1rem+0.50cm)] md:right-[1.85cm]">
+                <div className="pointer-events-none absolute bottom-[calc(0.75rem+0.50cm)] right-[1.85cm] z-20 hidden md:block md:bottom-[calc(1rem+0.50cm)] md:right-[1.85cm]">
                   <button
                     type="button"
                     onClick={() => openOrder("BUY")}
@@ -422,8 +422,27 @@ export default function TerminalShell() {
         </div>
       </div>
 
+      {/* Mobile sticky trade bar */}
+      <div className="fx-desk-tradebar shrink-0 border-t border-desk-border/80 bg-desk-panel md:hidden">
+        <button
+          type="button"
+          onClick={() => openOrder("SELL")}
+          disabled={user.tradingEnabled === false || !!user.mustChangePassword}
+          className="bg-desk-sell text-white disabled:opacity-40"
+        >
+          SELL
+        </button>
+        <button
+          type="button"
+          onClick={() => openOrder("BUY")}
+          disabled={user.tradingEnabled === false || !!user.mustChangePassword}
+          className="bg-desk-buy text-white disabled:opacity-40"
+        >
+          BUY
+        </button>
+      </div>
       {/* Mobile bottom tab bar — elite segmented control + safe-area */}
-      <nav className="fx-desk-mobile-nav shrink-0 border-t border-desk-border/80 bg-desk-panel/95 px-3 pt-2 md:hidden">
+      <nav className="fx-desk-mobile-nav shrink-0 bg-desk-panel px-3 pt-2 md:hidden">
         <div className="fx-desk-seg">
           {(
             [
@@ -446,6 +465,9 @@ export default function TerminalShell() {
               {t.label}
             </button>
           ))}
+          <a href="/profile" className="fx-desk-seg__btn flex items-center justify-center">
+            Account
+          </a>
         </div>
       </nav>
 
