@@ -68,30 +68,53 @@ export default function InstallBanner() {
     setShow(false);
   }
 
-  // Landing has a mobile sticky CTA at the bottom; sit just above it there.
-  const lift = pathname === "/" ? "bottom-[calc(76px+env(safe-area-inset-bottom,0px))] md:bottom-4" : "bottom-[calc(12px+env(safe-area-inset-bottom,0px))]";
+  // Landing has a mobile sticky CTA at the bottom; float just above it there.
+  const lift = pathname === "/" ? "bottom-[calc(80px+env(safe-area-inset-bottom,0px))] md:bottom-5" : "bottom-[calc(14px+env(safe-area-inset-bottom,0px))]";
 
   return (
-    <div className={`fixed inset-x-3 z-[90] mx-auto max-w-sm ${lift}`} role="region" aria-label="Uygulamayı yükle">
+    <div className={`fx-install-in fixed inset-x-3 z-[90] mx-auto max-w-[380px] ${lift}`} role="region" aria-label="Uygulamayı yükle">
       {steps && (
-        <div className="mb-2 rounded-xl border border-black/10 bg-white px-3 py-2.5 text-[12px] leading-relaxed text-[#111111] shadow-[0_10px_30px_rgba(0,0,0,0.15)]">
-          <p className="font-semibold">Ana ekrana ekleyin</p>
-          <ol className="mt-1 list-decimal pl-4 text-[#5c657a]">
-            <li>Safari&apos;de alttaki <b className="text-[#111111]">Paylaş</b> <span aria-hidden>⬆︎</span> simgesine dokunun</li>
-            <li><b className="text-[#111111]">Ana Ekrana Ekle</b>&apos;yi seçin, sonra <b className="text-[#111111]">Ekle</b>&apos;ye dokunun</li>
+        <div className="fx-install-steps mb-2 rounded-2xl border border-black/[0.06] bg-white px-4 py-3 text-[12px] leading-relaxed text-[#111111] shadow-[0_18px_40px_-12px_rgba(0,0,0,0.25)]">
+          <p className="text-[12.5px] font-semibold">Ana ekrana ekleyin</p>
+          <ol className="mt-1.5 space-y-1 text-[#5c657a]">
+            <li className="flex gap-2"><span className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#111111] text-[9px] font-bold text-white">1</span><span>Safari&apos;de <b className="text-[#111111]">Paylaş</b> <span aria-hidden>⬆︎</span> simgesine dokunun</span></li>
+            <li className="flex gap-2"><span className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#111111] text-[9px] font-bold text-white">2</span><span><b className="text-[#111111]">Ana Ekrana Ekle</b> → <b className="text-[#111111]">Ekle</b></span></li>
           </ol>
         </div>
       )}
-      <div className="flex items-center gap-2 rounded-full border border-black/10 bg-white/95 py-1.5 pl-2 pr-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.12)] backdrop-blur">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/icons/v3/icon-192.png" alt="" className="h-7 w-7 rounded-lg" />
-        <button type="button" onClick={onClick} className="flex-1 text-left text-[12.5px] font-semibold text-[#111111]">
-          Uygulamayı indirmek için tıklayınız
-        </button>
-        <button type="button" onClick={close} aria-label="Kapat" className="inline-flex h-6 w-6 items-center justify-center rounded-full text-[13px] text-neutral-500 hover:bg-neutral-100 hover:text-black">
+      <div className="fx-install-card relative overflow-hidden rounded-[20px] border border-black/[0.06] bg-white p-3 shadow-[0_20px_45px_-15px_rgba(0,0,0,0.35),0_2px_6px_rgba(0,0,0,0.06)]">
+        <span className="fx-install-shine pointer-events-none absolute inset-y-0 -left-1/2 w-1/2" aria-hidden />
+        <button type="button" onClick={close} aria-label="Kapat" className="absolute right-1.5 top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-full text-[14px] leading-none text-neutral-400 transition hover:bg-neutral-100 hover:text-black">
           ×
         </button>
+        <div className="flex items-center gap-3 pr-5">
+          <span className="fx-install-icon relative shrink-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/icons/v3/icon-192.png" alt="" className="h-11 w-11 rounded-[12px] shadow-[0_6px_14px_rgba(0,0,0,0.25)] ring-1 ring-black/5" />
+          </span>
+          <button type="button" onClick={onClick} className="min-w-0 flex-1 text-left">
+            <span className="block text-[13px] font-bold leading-tight tracking-tight text-[#111111]">Uygulamayı indirmek için tıklayınız</span>
+            <span className="mt-0.5 block text-[11.5px] text-neutral-500">Daha hızlı erişim, anında bildirimler</span>
+          </button>
+          <button
+            type="button"
+            onClick={onClick}
+            className="fx-install-cta shrink-0 rounded-full bg-[#111111] px-4 py-2 text-[12.5px] font-semibold text-white shadow-[0_6px_16px_rgba(0,0,0,0.3)] transition active:scale-95 hover:bg-black"
+          >
+            Yükle
+          </button>
+        </div>
       </div>
+      <style>{`
+        @keyframes fxInstallIn { from { opacity: 0; transform: translateY(24px) scale(.98) } to { opacity: 1; transform: none } }
+        @keyframes fxInstallShine { 0%, 70% { transform: translateX(0) } 100% { transform: translateX(400%) } }
+        @keyframes fxInstallPulse { 0%, 100% { box-shadow: 0 6px 16px rgba(0,0,0,.3), 0 0 0 0 rgba(17,17,17,.35) } 50% { box-shadow: 0 6px 16px rgba(0,0,0,.3), 0 0 0 7px rgba(17,17,17,0) } }
+        .fx-install-in { animation: fxInstallIn .55s cubic-bezier(.2,.8,.2,1) both }
+        .fx-install-steps { animation: fxInstallIn .3s ease-out both }
+        .fx-install-shine { background: linear-gradient(100deg, transparent, rgba(0,0,0,.045), transparent); animation: fxInstallShine 4.5s ease-in-out 1s infinite }
+        .fx-install-cta { animation: fxInstallPulse 2.4s ease-in-out 1.2s infinite }
+        @media (prefers-reduced-motion: reduce) { .fx-install-in, .fx-install-steps, .fx-install-shine, .fx-install-cta { animation: none } }
+      `}</style>
     </div>
   );
 }
