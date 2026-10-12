@@ -25,10 +25,12 @@ export type MarginSnapshot = {
 };
 
 export function isMarginCall(m: MarginSnapshot, thresholdPct: number = MARGIN_CALL_LEVEL): boolean {
+  // Only with at least one open position (used margin > 0). A new / zero-balance account
+  // with no positions is never in margin call.
+  if (!(m.margin > 0)) return false;
   if (m.equity <= 0) return true;
-  if (m.margin > 0 && m.freeMargin <= 0) return true;
-  if (m.margin > 0 && m.marginLevel < thresholdPct) return true;
-  return false;
+  if (m.freeMargin <= 0) return true;
+  return m.marginLevel <= thresholdPct;
 }
 
 export const MARGIN_CALL_RULE_EN = `Margin call: equity ≤ 0, or when margin is used free margin ≤ 0 / margin level < %${MARGIN_CALL_LEVEL}. Balance reset approval → ${DEFAULT_RESET_BALANCE.toLocaleString("en-US")} USD + open positions are closed.`;

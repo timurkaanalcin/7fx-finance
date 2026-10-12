@@ -199,7 +199,7 @@ export default function TerminalShell() {
   // Margin-call episode detection (once per episode)
   useEffect(() => {
     if (!account) return;
-    const inCall = !!account.marginCall;
+    const inCall = !!account.marginCall && Number(account.margin) > 0;
     if (inCall && !wasInCallRef.current) {
       episodeShownRef.current = false;
     }
@@ -288,7 +288,7 @@ export default function TerminalShell() {
           Market data warning: {priceError} (showing last known prices)
         </div>
       )}
-      {account?.marginCall && (
+      {account?.marginCall && Number(account?.margin) > 0 && (
         <div className="flex items-center justify-center gap-3 border-b border-desk-sell/40 bg-desk-sell/90 px-3 py-1.5 text-center text-[11px] font-medium text-white">
           <span>{t("terminal.mc.banner")}</span>
           <button
@@ -306,7 +306,7 @@ export default function TerminalShell() {
           {balanceReqBanner.amount != null ? ` (${balanceReqBanner.amount} ${account?.currency || "USD"})` : ""}
         </div>
       )}
-      {balanceReqBanner && balanceReqBanner.status === "REJECTED" && account?.marginCall && (
+      {balanceReqBanner && balanceReqBanner.status === "REJECTED" && account?.marginCall && Number(account?.margin) > 0 && (
         <div className="bg-desk-elev/90 px-3 py-1 text-center text-[11px] font-medium text-desk-text">
           {t("terminal.mc.rejectedBanner")}
           <button
