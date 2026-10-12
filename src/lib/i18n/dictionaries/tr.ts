@@ -248,6 +248,7 @@ export const tr: Dict = {
   "profile.support.subtitle": 'Destek ekibiyle sohbet edin',
   "profile.support.open": 'Aç',
   "profile.support.close": 'Kapat',
+  "profile.support.holdToView": 'Görüntülemek için basılı tutun',
   "profile.support.hint": 'Mesajlarınız destek ekibimize iletilir.',
   "profile.support.empty": 'Henüz mesaj yok. Sorunuzu aşağıya yazın.',
   "profile.support.placeholder": 'Mesajınızı yazın…',

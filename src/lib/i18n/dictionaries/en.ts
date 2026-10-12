@@ -248,6 +248,7 @@ export const en: Dict = {
   "profile.support.subtitle": 'Chat with our support team',
   "profile.support.open": 'Open',
   "profile.support.close": 'Close',
+  "profile.support.holdToView": 'Press and hold to view',
   "profile.support.hint": "Your messages are delivered to our support team.",
   "profile.support.empty": 'No messages yet. Write your question below.',
   "profile.support.placeholder": 'Type your message…',

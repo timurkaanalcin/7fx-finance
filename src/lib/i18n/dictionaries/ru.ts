@@ -248,6 +248,7 @@ export const ru: Dict = {
   "profile.support.subtitle": 'Чат со службой поддержки',
   "profile.support.open": 'Открыть',
   "profile.support.close": 'Закрыть',
+  "profile.support.holdToView": 'Нажмите и удерживайте для просмотра',
   "profile.support.hint": "Ваши сообщения передаются нашей службе поддержки.",
   "profile.support.empty": 'Пока нет сообщений. Напишите вопрос ниже.',
   "profile.support.placeholder": 'Введите сообщение…',

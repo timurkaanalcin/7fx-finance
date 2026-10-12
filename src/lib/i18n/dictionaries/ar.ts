@@ -248,6 +248,7 @@ export const ar: Dict = {
   "profile.support.subtitle": 'تحدث مع فريق الدعم',
   "profile.support.open": 'فتح',
   "profile.support.close": 'إغلاق',
+  "profile.support.holdToView": 'اضغط مع الاستمرار للعرض',
   "profile.support.hint": "تُرسل رسائلك إلى فريق الدعم لدينا.",
   "profile.support.empty": 'لا رسائل بعد. اكتب سؤالك أدناه.',
   "profile.support.placeholder": 'اكتب رسالتك…',

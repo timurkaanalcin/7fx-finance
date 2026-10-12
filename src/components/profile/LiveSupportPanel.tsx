@@ -257,6 +257,7 @@ export default function LiveSupportPanel() {
             loading: t("profile.support.attLoading"),
             failed: t("profile.support.attFailed"),
             close: t("profile.support.close"),
+            hold: t("profile.support.holdToView"),
           }}
         />
       )}

@@ -458,12 +458,12 @@ export default function ProfileePage() {
           </button>
         </form>
 
-        {/* Para Withdrawal — bottom of profile */}
+        {/* Withdraw funds — bottom of profile */}
         <section
           id="para-cekme"
           className="rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4"
         >
-          <h2 className="mb-1 text-sm font-medium text-slate-300">Para Withdrawal</h2>
+          <h2 className="mb-1 text-sm font-medium text-slate-300">Withdraw funds</h2>
           <p className="mb-3 text-[11px] text-slate-500">
             The request is deducted from your balance once approved. Withdrawable amount is limited by your balance and free
             margin ({money(profile.balance)}).
@@ -483,7 +483,7 @@ export default function ProfileePage() {
                   onClick={() => setWdMethod(m)}
                   className={`flex-1 rounded-md py-1.5 text-xs font-medium ${
                     wdMethod === m
-                      ? "bg-blue-600 text-white"
+                      ? "bg-white text-black shadow-sm"
                       : "text-slate-400 hover:bg-[#1f1f1f]"
                   }`}
                 >
@@ -507,7 +507,7 @@ export default function ProfileePage() {
 
             <label className="flex flex-col gap-1 text-xs">
               <span className="text-slate-500">
-                {wdMethod === "BANK" ? "IBAN / Account bilgisi" : "Wallet address"}
+                {wdMethod === "BANK" ? "IBAN / Account details" : "Wallet address"}
               </span>
               <input
                 required
@@ -521,7 +521,7 @@ export default function ProfileePage() {
             </label>
 
             <label className="flex flex-col gap-1 text-xs">
-              <span className="text-slate-500">Note (opsiyonel)</span>
+              <span className="text-slate-500">Note (optional)</span>
               <input
                 value={wdNote}
                 onChange={(e) => setWdNote(e.target.value)}

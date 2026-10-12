@@ -16,12 +16,28 @@ export default function ProtectedAttachmentViewer({
 }: {
   attId: string;
   onClose: () => void;
-  labels: { loading: string; failed: string; close: string };
+  labels: { loading: string; failed: string; close: string; hold?: string };
 }) {
   const holder = useRef<HTMLDivElement>(null);
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(true);
   const [hidden, setHidden] = useState(false);
+  /** Hold-to-reveal: content is black unless the customer is actively pressing (max 5s). */
+  const [revealed, setRevealed] = useState(false);
+  const revealTimer = useRef<number | null>(null);
+  const conceal = () => {
+    if (revealTimer.current) window.clearTimeout(revealTimer.current);
+    revealTimer.current = null;
+    setRevealed(false);
+  };
+  const reveal = (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    if (document.visibilityState !== "visible" || !document.hasFocus()) return;
+    setHidden(false);
+    setRevealed(true);
+    if (revealTimer.current) window.clearTimeout(revealTimer.current);
+    revealTimer.current = window.setTimeout(conceal, 5000);
+  };
   const [mark, setMark] = useState("");
 
   useEffect(() => {
@@ -78,14 +94,20 @@ export default function ProtectedAttachmentViewer({
   }, [attId, labels.failed]);
 
   useEffect(() => {
-    const hide = () => setHidden(true);
+    const hide = () => {
+      setHidden(true);
+      conceal();
+    };
     const show = () => setHidden(false);
-    const vis = () => setHidden(document.visibilityState !== "visible");
+    const vis = () => {
+      if (document.visibilityState !== "visible") hide();
+    };
+    const release = () => conceal();
     const key = (e: KeyboardEvent) => {
       const combo = (e.metaKey || e.ctrlKey) && (e.shiftKey || /^[ps]$/i.test(e.key));
       if (e.key === "PrintScreen" || combo) {
         if (combo) e.preventDefault();
-        setHidden(true);
+        hide();
         window.setTimeout(() => setHidden(!document.hasFocus()), 1500);
       }
       if (e.key === "Escape") onClose();
@@ -95,7 +117,20 @@ export default function ProtectedAttachmentViewer({
     document.addEventListener("visibilitychange", vis);
     window.addEventListener("keydown", key, true);
     window.addEventListener("keyup", key, true);
+    window.addEventListener("pagehide", hide);
+    window.addEventListener("resize", hide);
+    window.addEventListener("pointerup", release, true);
+    window.addEventListener("pointercancel", release, true);
+    window.addEventListener("touchend", release, true);
+    window.addEventListener("touchcancel", release, true);
     return () => {
+      window.removeEventListener("pagehide", hide);
+      window.removeEventListener("resize", hide);
+      window.removeEventListener("pointerup", release, true);
+      window.removeEventListener("pointercancel", release, true);
+      window.removeEventListener("touchend", release, true);
+      window.removeEventListener("touchcancel", release, true);
+      if (revealTimer.current) window.clearTimeout(revealTimer.current);
       window.removeEventListener("blur", hide);
       window.removeEventListener("focus", show);
       document.removeEventListener("visibilitychange", vis);
@@ -130,8 +165,25 @@ export default function ProtectedAttachmentViewer({
         <div aria-hidden className="pointer-events-none absolute inset-0" style={{ backgroundImage: `url("data:image/svg+xml,${wm}")` }} />
         {loading && <p className="p-6 text-center text-sm text-white/70">{labels.loading}</p>}
         {err && <p className="p-6 text-center text-sm text-red-300">{err}</p>}
+        {(!revealed || hidden) && !loading && !err && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-black">
+            <p className="px-6 text-center text-sm text-white/70">{labels.hold ?? "Press and hold to view"}</p>
+          </div>
+        )}
+        <div
+          aria-label={labels.hold ?? "Press and hold to view"}
+          className="absolute inset-0 z-20"
+          style={{ touchAction: "none", WebkitTouchCallout: "none" } as CSSProperties}
+          onPointerDown={reveal}
+          onPointerUp={conceal}
+          onPointerCancel={conceal}
+          onPointerLeave={conceal}
+          onTouchStart={reveal}
+          onTouchEnd={conceal}
+          onContextMenu={block}
+        />
       </div>
-      {hidden && <div className="absolute inset-0 z-10 bg-black" />}
+      {hidden && <div className="absolute inset-0 z-30 bg-black" />}
     </div>
   );
 }

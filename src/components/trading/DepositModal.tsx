@@ -256,7 +256,7 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-[10px] uppercase tracking-wide text-desk-muted">Note (opsiyonel)</label>
+                  <label className="mb-1 block text-[10px] uppercase tracking-wide text-desk-muted">Note (optional)</label>
                   <input
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
