@@ -45,8 +45,6 @@ export async function GET() {
       isResident: m.isResident,
       lastLoginAt: m.lastLoginAt,
       tradingServer: m.tradingServer,
-      tradingGroup: m.tradingGroup,
-      desk: m.desk,
       documentsStatus: m.documentsStatus,
       balance: m.balance,
       equity: m.equity,
@@ -54,10 +52,7 @@ export async function GET() {
       bonus: m.bonus,
       currency: m.currency,
       // CRM statuses visible read-only but not for edit
-      retentionStatus: m.retentionStatus,
-      saleStatus: m.saleStatus,
       ftd: m.ftd,
-      brokerName: m.brokerName,
     },
     editable: ["phone", "language", "timezone", "address"],
   });

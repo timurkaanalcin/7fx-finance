@@ -36,18 +36,13 @@ type Profilee = {
   isResident: boolean;
   lastLoginAt: string | null;
   tradingServer: string | null;
-  tradingGroup: string | null;
-  desk: string | null;
   documentsStatus: string;
   balance: number;
   equity: number;
   credit: number;
   bonus: number;
   currency: string;
-  retentionStatus: string | null;
-  saleStatus: string | null;
   ftd: boolean;
-  brokerName: string | null;
 };
 
 type WithdrawalRow = {
@@ -333,9 +328,7 @@ export default function ProfileePage() {
               profile.lastLoginAt ? new Date(profile.lastLoginAt).toLocaleString("en-US") : "—"
             }
           />
-          <Row label="Desk" value={profile.desk} />
-          <Row label="Server / Group" value={[profile.tradingServer, profile.tradingGroup].filter(Boolean).join(" / ") || "—"} />
-          <Row label="Broker" value={profile.brokerName} />
+          <Row label="Server" value={profile.tradingServer || "—"} />
         </section>
 
         <section className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
@@ -347,15 +340,6 @@ export default function ProfileePage() {
           <Row label="Para birimi" value={profile.currency} />
         </section>
 
-        <section className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
-          <h2 className="mb-2 text-sm font-medium text-slate-300">Status (salt okunur)</h2>
-          <Row label="Sell" value={profile.saleStatus} />
-          <Row label="Retansiyon" value={profile.retentionStatus} />
-          <Row label="FTD" value={profile.ftd ? "Yes" : "No"} />
-          <p className="mt-2 text-[10px] text-slate-600">
-            CRM status fields are managed by the desk only; not editable.
-          </p>
-        </section>
 
         <form onSubmit={save} className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
           <h2 className="mb-3 text-sm font-medium text-slate-300">Editable fields</h2>

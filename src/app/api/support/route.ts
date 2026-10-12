@@ -37,7 +37,6 @@ export async function GET() {
       title: m.title,
       body: m.description,
       from: m.workerName ? "support" : "customer",
-      workerName: m.workerName,
       createdAt: m.createdAt.toISOString(),
     })),
     presence: serializeChatPresence(state, u?.lastSeenAt ?? null),

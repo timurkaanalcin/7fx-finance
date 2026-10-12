@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { tradingDisabledMessage, mustChangePasswordMessage } from "@/lib/account-perms";
 import { placeOrder, processPendingOrders, checkSlTp } from "@/lib/trading";
 import { getMarketStatus } from "@/lib/market-hours";
+import { stripStaff } from "@/lib/customer-sanitize";
 
 export async function GET() {
   const user = await requireUser();
@@ -16,7 +17,7 @@ export async function GET() {
     orderBy: { createdAt: "desc" },
     take: 200,
   });
-  return NextResponse.json(orders);
+  return NextResponse.json(stripStaff(orders));
 }
 
 export async function POST(req: Request) {

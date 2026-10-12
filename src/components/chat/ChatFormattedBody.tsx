@@ -42,13 +42,30 @@ function formatInline(text: string): ReactNode[] {
 export function ChatFormattedBody({
   text,
   className,
+  renderAttachment,
 }: {
   text: string;
   className?: string;
+  /** renders [[att:ID]] markers (always stripped from the visible text) */
+  renderAttachment?: (id: string) => ReactNode;
 }) {
-  const lines = text.split("\n");
+  const ids: string[] = [];
+  const clean = text
+    .replace(/\[\[att:([a-z0-9]{10,40})\]\]/gi, (_m, id: string) => {
+      ids.push(id);
+      return "";
+    })
+    .replace(/\s+$/, "");
+  const lines = clean.split("\n");
   return (
     <div className={className ?? "break-words leading-relaxed"}>
+      {ids.length > 0 && renderAttachment && (
+        <div className="mb-1 flex flex-wrap gap-1">
+          {ids.map((id) => (
+            <Fragment key={id}>{renderAttachment(id)}</Fragment>
+          ))}
+        </div>
+      )}
       {lines.map((line, i) => {
         const bullet = /^[-•]\s+/.test(line);
         const content = bullet ? line.replace(/^[-•]\s+/, "") : line;

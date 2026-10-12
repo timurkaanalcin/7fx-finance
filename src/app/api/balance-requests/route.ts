@@ -3,6 +3,7 @@ import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { refreshAccountMetrics, processPendingOrders, checkSlTp } from "@/lib/trading";
 import { isMarginCall } from "@/lib/margin-call";
+import { stripStaff } from "@/lib/customer-sanitize";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,7 @@ export async function GET() {
     orderBy: { createdAt: "desc" },
     take: 50,
   });
-  return NextResponse.json({ requests });
+  return NextResponse.json({ requests: stripStaff(requests) });
 }
 
 /**
@@ -92,5 +93,5 @@ export async function POST(req: Request) {
     },
   });
 
-  return NextResponse.json({ ok: true, request });
+  return NextResponse.json({ ok: true, request: stripStaff(request) });
 }

@@ -752,7 +752,15 @@ export default function ChatPage() {
                                 </div>
                               </div>
                             ) : (
-                              <ChatFormattedBody text={m.body} className="break-words text-[13px] leading-relaxed" />
+                              <ChatFormattedBody
+                                text={m.body}
+                                className="break-words text-[13px] leading-relaxed"
+                                renderAttachment={(id) => (
+                                  <a href={`/api/admin/chat/attachments/${id}`} target="_blank" rel="noreferrer" className="rounded bg-black/5 px-2 py-0.5 text-[11px] font-semibold underline">
+                                    ⬇ {i18n("crm.chat.attach")}
+                                  </a>
+                                )}
+                              />
                             )}
                             <p className="mt-1 flex items-center justify-end gap-2 text-[10px] text-neutral-500">
                               {agent &&
@@ -889,10 +897,19 @@ export default function ChatPage() {
                     onChange={(e) => {
                       const f = e.target.files?.[0];
                       if (f && active) {
-                        void send(
-                          active.traderId,
-                          `📎 Dosya eklendi: ${f.name} (${Math.round(f.size / 1024)} KB)`,
-                        );
+                        const traderId = active.traderId;
+                        void (async () => {
+                          const fd = new FormData();
+                          fd.append("userId", traderId);
+                          fd.append("file", f);
+                          const r = await fetch("/api/admin/chat/attachments", { method: "POST", body: fd });
+                          const d = await r.json().catch(() => ({}));
+                          if (!r.ok || !d.attachment?.id) {
+                            flash(d.error || i18n("crm.chat.sendFail"));
+                            return;
+                          }
+                          await send(traderId, `📎 ${f.name} (${Math.round(f.size / 1024)} KB) [[att:${d.attachment.id}]]`);
+                        })();
                       }
                       e.target.value = "";
                     }}

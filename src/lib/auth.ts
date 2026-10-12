@@ -48,7 +48,7 @@ export function postLoginPath(user: {
   return "/trade";
 }
 
-function getAuthSecret(): Uint8Array {
+export function getAuthSecret(): Uint8Array {
   const secret =
     process.env.AUTH_SECRET ||
     process.env.JWT_SECRET ||

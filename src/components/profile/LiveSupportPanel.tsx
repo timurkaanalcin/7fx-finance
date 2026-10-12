@@ -4,6 +4,7 @@ import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
 import { ChatFormattedBody } from "@/components/chat/ChatFormattedBody";
 import { ChatStatusLine } from "@/components/chat/ChatStatusLine";
+import ProtectedAttachmentViewer from "@/components/chat/ProtectedAttachmentViewer";
 import {
   messageReadByPeer,
   type ChatPresenceSnapshot,
@@ -24,6 +25,7 @@ export default function LiveSupportPanel() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [presence, setPresence] = useState<ChatPresenceSnapshot | null>(null);
+  const [viewAtt, setViewAtt] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const typingIdleRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTypingSent = useRef(false);
@@ -195,7 +197,19 @@ export default function LiveSupportPanel() {
                           : "bg-[#1a1a1a] text-slate-100 ring-1 ring-[#2a2a2a]"
                       }`}
                     >
-                      <ChatFormattedBody text={m.body} className="break-words text-sm leading-relaxed" />
+                      <ChatFormattedBody
+                        text={m.body}
+                        className="break-words text-sm leading-relaxed"
+                        renderAttachment={(id) => (
+                          <button
+                            type="button"
+                            onClick={() => setViewAtt(id)}
+                            className="min-h-[36px] rounded-lg bg-white/10 px-2 text-xs font-semibold"
+                          >
+                            📎 {t("profile.support.viewAttachment")}
+                          </button>
+                        )}
+                      />
                       <p className={`mt-1 flex items-center justify-end gap-2 text-[10px] ${mine ? "text-white/70" : "text-slate-500"}`}>
                         {read && <span className="font-medium">{t("profile.support.read")}</span>}
                         <span>{new Date(m.createdAt).toLocaleString()}</span>
@@ -234,6 +248,17 @@ export default function LiveSupportPanel() {
             </form>
           </div>
         </div>
+      )}
+      {viewAtt && (
+        <ProtectedAttachmentViewer
+          attId={viewAtt}
+          onClose={() => setViewAtt(null)}
+          labels={{
+            loading: t("profile.support.attLoading"),
+            failed: t("profile.support.attFailed"),
+            close: t("profile.support.close"),
+          }}
+        />
       )}
     </>
   );

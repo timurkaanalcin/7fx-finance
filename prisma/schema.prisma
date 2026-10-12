@@ -557,3 +557,19 @@ model ChatThreadState {
   updatedAt           DateTime  @updatedAt
 }
 
+
+/// Live-support chat attachment (sent by staff). Customers can only VIEW it through a
+/// short-lived token endpoint (inline, no-store, watermarked viewer); staff can download.
+model ChatAttachment {
+  id           String   @id @default(cuid())
+  /// trader the attachment belongs to (chat thread owner)
+  userId       String
+  uploadedById String?
+  fileName     String   @db.VarChar(255)
+  mime         String   @db.VarChar(120)
+  size         Int
+  data         Bytes    @db.LongBlob
+  createdAt    DateTime @default(now())
+
+  @@index([userId, createdAt])
+}

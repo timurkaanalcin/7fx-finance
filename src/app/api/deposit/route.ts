@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
+import { stripStaff } from "@/lib/customer-sanitize";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,7 @@ export async function GET() {
     orderBy: { createdAt: "desc" },
     take: 50,
   });
-  return NextResponse.json({ requests });
+  return NextResponse.json({ requests: stripStaff(requests) });
 }
 
 /** Submit a deposit notification / request (does NOT credit balance until admin approves) */
@@ -55,5 +56,5 @@ export async function POST(req: Request) {
     include: { method: true },
   });
 
-  return NextResponse.json({ ok: true, request });
+  return NextResponse.json({ ok: true, request: stripStaff(request) });
 }

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { refreshAccountMetrics, processPendingOrders, checkSlTp } from "@/lib/trading";
+import { stripStaff } from "@/lib/customer-sanitize";
 
 export async function GET(req: Request) {
   const user = await requireUser();
@@ -16,5 +17,5 @@ export async function GET(req: Request) {
     orderBy: status === "OPEN" ? { openedAt: "desc" } : { closedAt: "desc" },
     take: 200,
   });
-  return NextResponse.json(positions);
+  return NextResponse.json(stripStaff(positions));
 }
