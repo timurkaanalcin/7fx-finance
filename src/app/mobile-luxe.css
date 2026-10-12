@@ -101,7 +101,7 @@
   }
 
   /* cards everywhere in the terminal */
-  .fx-desk .rounded-\[14px\],
+  .fx-desk .rounded-\[14px\]:not(button),
   .fx-desk .rounded-card {
     border-radius: var(--lx-r) !important;
     background: var(--lx-card) !important;
@@ -446,7 +446,7 @@ html[data-fx-theme="light"] :is(.fx-desk, .fx-profile, .fx-lx-overlay) :is(input
 }
 html[data-fx-theme="light"] :is(.fx-desk, .fx-profile, .fx-lx-overlay) ::placeholder { color: #9a9ca3 !important; }
 /* cards */
-html[data-fx-theme="light"] .fx-desk :is(.rounded-\[14px\], .rounded-card),
+html[data-fx-theme="light"] .fx-desk :is(.rounded-\[14px\]:not(button), .rounded-card),
 html[data-fx-theme="light"] .fx-profile :is(section, form, main > div.rounded-xl) {
   background: var(--lx-card) !important;
   border-color: var(--lx-line) !important;
