@@ -513,3 +513,9 @@ html[data-fx-theme="light"] .fx-desk a:has(> .fx-avatar) { background: #fff !imp
 html[data-fx-theme="light"] .fx-desk :is([class*="shadow-desk-panel"], [class*="shadow-accent-glow"], [class*="shadow-lg"], [class*="shadow-xl"], [class*="shadow-2xl"]):not(.fx-deposit-btn) {
   box-shadow: 0 6px 18px rgba(60, 45, 15, 0.08) !important;
 }
+/* Protected viewer (chat attachments / documents) must stay BLACK in every theme. */
+html[data-fx-theme] body .fx-protected.fx-protected,
+html[data-fx-theme] body .fx-protected .bg-black.bg-black { background-color: #000 !important; }
+html[data-fx-theme] body .fx-protected .fx-protected-cover.fx-protected-cover { background-color: #000 !important; }
+html[data-fx-theme] body .fx-protected p.fx-protected-hint { color: rgba(255, 255, 255, 0.7) !important; }
+html[data-fx-theme] body .fx-protected button.fx-protected-close { background: rgba(255, 255, 255, 0.12) !important; color: #fff !important; }

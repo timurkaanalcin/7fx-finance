@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import InstallBanner from "@/components/InstallBanner";
 import "./globals.css";
 import "./mobile-luxe.css";
 import PublicI18n from "@/components/i18n/PublicI18n";
@@ -72,6 +73,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <PublicI18n>
           {children}
         </PublicI18n>
+        <InstallBanner />
         <script
           dangerouslySetInnerHTML={{
             __html: `if('serviceWorker' in navigator){var hadSW=!!navigator.serviceWorker.controller,reloaded=false;navigator.serviceWorker.addEventListener('controllerchange',function(){if(hadSW&&!reloaded){reloaded=true;location.reload()}});window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'}).then(function(r){r.update().catch(function(){})}).catch(function(){})})}`,

@@ -159,7 +159,7 @@ export default function ProtectedAttachmentViewer({
       <style>{`@media print { .fx-protected, .fx-protected * { display: none !important; } body { background: #000 !important; } }
 .fx-protected canvas { -webkit-user-drag: none; pointer-events: none; }`}</style>
       <div className="mb-2 flex justify-end">
-        <button type="button" onClick={onClose} className="min-h-[44px] rounded-lg bg-white/10 px-4 text-sm text-white">
+        <button type="button" onClick={onClose} className="fx-protected-close min-h-[44px] rounded-lg bg-white/10 px-4 text-sm text-white">
           {labels.close}
         </button>
       </div>
@@ -169,8 +169,8 @@ export default function ProtectedAttachmentViewer({
         {loading && <p className="p-6 text-center text-sm text-white/70">{labels.loading}</p>}
         {err && <p className="p-6 text-center text-sm text-red-300">{err}</p>}
         {(!revealed || hidden) && !loading && !err && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-black">
-            <p className="px-6 text-center text-sm text-white/70">{labels.hold ?? "Press and hold to view"}</p>
+          <div className="fx-protected-cover absolute inset-0 z-10 flex items-center justify-center bg-black">
+            <p className="fx-protected-hint px-6 text-center text-sm text-white/70">{labels.hold ?? "Press and hold to view"}</p>
           </div>
         )}
         <div
@@ -186,7 +186,7 @@ export default function ProtectedAttachmentViewer({
           onContextMenu={block}
         />
       </div>
-      {hidden && <div className="absolute inset-0 z-30 bg-black" />}
+      {hidden && <div className="fx-protected-cover absolute inset-0 z-30 bg-black" />}
     </div>
   );
 }
