@@ -1,5 +1,6 @@
 "use client";
 
+import ThemeToggle from "@/components/theme/ThemeToggle";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { fmtMoney, fmtPct } from "@/lib/format";
@@ -132,6 +133,7 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
       </div>
 
       <div className="relative z-10 flex shrink-0 items-center gap-1 pl-1 md:gap-1.5 md:pl-1.5">
+        <ThemeToggle />
         <button
           type="button"
           onClick={onDeposit}

@@ -1,5 +1,6 @@
 "use client";
 
+import ThemeToggle from "@/components/theme/ThemeToggle";
 import ForcePasswordModal from "@/components/trading/ForcePasswordModal";
 import { useI18n } from "@/lib/i18n/context";
 
@@ -261,6 +262,7 @@ export default function ProfileePage() {
         >
           ← Terminal
         </Link>
+        <ThemeToggle />
         <button
           type="button"
           onClick={onLogout}

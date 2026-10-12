@@ -1,5 +1,6 @@
 "use client";
 
+import { useFxTheme } from "@/components/theme/ThemeToggle";
 import { useEffect, useRef, useState } from "react";
 import {
   createChart,
@@ -209,6 +210,26 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
     return () => clearInterval(t);
   }, []);
 
+  const fxTheme = useFxTheme();
+  const [chartGen, setChartGen] = useState(0);
+  useEffect(() => {
+    const c = chartRef.current;
+    if (!c) return;
+    const L = fxTheme === "light";
+    c.applyOptions({
+      layout: { background: { type: ColorType.Solid, color: L ? "#ffffff" : "#000000" }, textColor: L ? "#5b5e66" : "#8b97b0" },
+      grid: { vertLines: { color: L ? "#f1efe9" : "#141414" }, horzLines: { color: L ? "#f1efe9" : "#141414" } },
+      rightPriceScale: { borderColor: L ? "#e6e2d8" : "#2a2a2a" },
+      timeScale: { borderColor: L ? "#e6e2d8" : "#2a2a2a" },
+    });
+    seriesRef.current?.applyOptions({
+      upColor: L ? "#0f9d76" : "#26a69a", downColor: L ? "#d63c34" : "#ef5350",
+      borderUpColor: L ? "#0f9d76" : "#26a69a", borderDownColor: L ? "#d63c34" : "#ef5350",
+      wickUpColor: L ? "#0f9d76" : "#26a69a", wickDownColor: L ? "#d63c34" : "#ef5350",
+    });
+    lineRef.current?.applyOptions({ color: L ? "#111111" : "#ffffff" });
+  }, [fxTheme, mounted, chartGen]);
+
   useEffect(() => {
     if (!mounted || !containerRef.current) return;
     if (typeof window === "undefined") return;
@@ -247,6 +268,7 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
       visible: false,
     });
     lineRef.current = line;
+    setChartGen((g) => g + 1);
 
     const ro =
       typeof ResizeObserver !== "undefined"
