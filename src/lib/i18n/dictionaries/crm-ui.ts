@@ -887,6 +887,19 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.savedFilters.deleteConfirm", "Delete saved filter", "Kayıtlı filtre silinsin mi", "Удалить сохранённый фильтр", "Gespeicherten Filter löschen", "حذف الفلتر المحفوظ"],
   ["crm.savedFilters.clear", "Clear filters", "Filtreleri temizle", "Сбросить фильтры", "Filter zurücksetzen", "مسح الفلاتر"],
   ["crm.savedFilters.results", "results", "sonuç", "результатов", "Ergebnisse", "نتيجة"],
+  ["crm.canned.button", "Canned replies", "Hazır yanıtlar", "Шаблоны ответов", "Textbausteine", "ردود جاهزة"],
+  ["crm.canned.title", "Canned replies", "Hazır yanıtlar", "Шаблоны ответов", "Textbausteine", "ردود جاهزة"],
+  ["crm.canned.empty", "No templates yet. Add short replies you send often — saved in this browser only.", "Henüz şablon yok. Sık gönderdiğiniz kısa yanıtları ekleyin — yalnızca bu tarayıcıda saklanır.", "Шаблонов пока нет. Добавьте частые ответы — хранятся только в этом браузере.", "Noch keine Vorlagen. Häufige Antworten hinzufügen — nur in diesem Browser gespeichert.", "لا توجد قوالب بعد. أضف الردود المتكررة — تُحفظ في هذا المتصفح فقط."],
+  ["crm.canned.add", "New template", "Yeni şablon", "Новый шаблон", "Neue Vorlage", "قالب جديد"],
+  ["crm.canned.fromComposer", "Save current message", "Yazılan mesajı kaydet", "Сохранить текущее сообщение", "Aktuelle Nachricht speichern", "حفظ الرسالة الحالية"],
+  ["crm.canned.name", "Short name (e.g. Withdrawal info)", "Kısa ad (ör. Çekim bilgisi)", "Краткое имя (напр. Вывод)", "Kurzname (z. B. Auszahlung)", "اسم قصير (مثل معلومات السحب)"],
+  ["crm.canned.body", "Reply text", "Yanıt metni", "Текст ответа", "Antworttext", "نص الرد"],
+  ["crm.canned.deleteConfirm", "Delete template", "Şablon silinsin mi", "Удалить шаблон", "Vorlage löschen", "حذف القالب"],
+  ["crm.canned.full", "Limit reached (30)", "Sınır doldu (30)", "Достигнут лимит (30)", "Limit erreicht (30)", "تم بلوغ الحد (30)"],
+  ["crm.canned.insert", "Insert into message", "Mesaja ekle", "Вставить в сообщение", "In Nachricht einfügen", "إدراج في الرسالة"],
+  ["crm.canned.slashHint", "Tip: type / in the message box to quick-pick", "İpucu: mesaj kutusuna / yazarak hızlı seçin", "Совет: введите / в поле сообщения для быстрого выбора", "Tipp: / im Nachrichtenfeld tippen zur Schnellauswahl", "تلميح: اكتب / في مربع الرسالة للاختيار السريع"],
+  ["crm.canned.pickHint", "↑↓ select · Enter/Tab insert · Esc close", "↑↓ seç · Enter/Tab ekle · Esc kapat", "↑↓ выбор · Enter/Tab вставить · Esc закрыть", "↑↓ wählen · Enter/Tab einfügen · Esc schließen", "↑↓ اختيار · Enter/Tab إدراج · Esc إغلاق"],
+  ["crm.canned.docsLink", "Documents link (customer sees Evraklar link)", "Evraklar bağlantısı (müşteri link olarak görür)", "Ссылка на документы", "Dokumente-Link", "رابط المستندات"],
 ];
 
 function pack(index: 1|2|3|4|5): Dict {

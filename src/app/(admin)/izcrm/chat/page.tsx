@@ -8,6 +8,7 @@ import { ChatFormattedBody } from "@/components/chat/ChatFormattedBody";
 import { ChatFormatToolbar } from "@/components/chat/ChatFormatToolbar";
 import { applyFormatAction, type FormatAction } from "@/components/chat/chatFormat";
 import { ChatStatusLine } from "@/components/chat/ChatStatusLine";
+import { CannedRepliesPanel, slashQueryAt, slug, useCannedReplies } from "@/components/chat/CannedReplies";
 import { messageReadByPeer, type ChatPresenceSnapshot } from "@/lib/chat-presence-shared";
 import { presenceState } from "@/lib/presence-shared";
 
@@ -205,6 +206,26 @@ export default function ChatPage() {
   const [livePresence, setLivePresence] = useState<ChatPresenceSnapshot | null>(null);
   const typingIdleRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTypingSent = useRef(false);
+  // Staff-only canned replies (per browser) + "/" quick-pick in the composer
+  const canned = useCannedReplies();
+  const [cannedOpen, setCannedOpen] = useState(false);
+  const [slash, setSlash] = useState<{ query: string; start: number } | null>(null);
+  const [slashIdx, setSlashIdx] = useState(0);
+  const slashMatches = useMemo(() => {
+    if (!slash) return [] as { id: string; title: string; tag: string; body: string }[];
+    const q = slug(slash.query);
+    const rows: { id: string; title: string; tag: string; body: string }[] = [];
+    // Built-in: "/documents" stays a plain token → customer sees a link to Evraklar
+    if ("documents".startsWith(q)) {
+      rows.push({ id: "__documents", title: i18n("crm.canned.docsLink"), tag: "documents", body: "/documents " });
+    }
+    for (const r of canned.items) {
+      const tag = slug(r.title);
+      if (!q || tag.includes(q) || slug(r.body).includes(q)) rows.push({ id: r.id, title: r.title, tag, body: r.body });
+    }
+    rows.sort((a, b) => Number(b.tag.startsWith(q)) - Number(a.tag.startsWith(q)));
+    return rows.slice(0, 8);
+  }, [slash, canned.items, i18n]);
 
   const load = useCallback(async () => {
     const res = await fetch("/api/admin/chat");
@@ -340,7 +361,55 @@ export default function ChatPage() {
   }, [active?.traderId, active?.presence, pingPresence, pullPresence]);
 
 
+  function insertAtCaret(text: string) {
+    const el = messageRef.current;
+    const start = el?.selectionStart ?? message.length;
+    const end = el?.selectionEnd ?? message.length;
+    const next = message.slice(0, start) + text + message.slice(end);
+    setMessage(next);
+    setSlash(null);
+    requestAnimationFrame(() => {
+      if (!el) return;
+      el.focus();
+      const pos = start + text.length;
+      el.setSelectionRange(pos, pos);
+    });
+  }
+
+  function applySlash(body: string) {
+    if (!slash) return;
+    const el = messageRef.current;
+    const caret = el?.selectionStart ?? message.length;
+    const next = message.slice(0, slash.start) + body + message.slice(caret);
+    setMessage(next);
+    setSlash(null);
+    requestAnimationFrame(() => {
+      if (!el) return;
+      el.focus();
+      const pos = slash.start + body.length;
+      el.setSelectionRange(pos, pos);
+    });
+  }
+
   function onComposerKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
+    if (slash && slashMatches.length > 0 && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        e.preventDefault();
+        const d = e.key === "ArrowDown" ? 1 : -1;
+        setSlashIdx((i) => (i + d + slashMatches.length) % slashMatches.length);
+        return;
+      }
+      if ((e.key === "Enter" && !e.shiftKey) || e.key === "Tab") {
+        e.preventDefault();
+        applySlash(slashMatches[Math.min(slashIdx, slashMatches.length - 1)].body);
+        return;
+      }
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setSlash(null);
+        return;
+      }
+    }
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
       if (!busy && message.trim() && active) void send(active.traderId);
@@ -364,6 +433,7 @@ export default function ChatPage() {
       }
       setMessage("");
       setEmojiOpen(false);
+      setSlash(null);
       lastTypingSent.current = false;
       if (typingIdleRef.current) clearTimeout(typingIdleRef.current);
       void pingPresence(userId, { typing: false, inChat: true, markRead: true });
@@ -810,7 +880,81 @@ export default function ChatPage() {
                     ))}
                   </div>
                 )}
+                <CannedRepliesPanel
+                  open={cannedOpen}
+                  onClose={() => setCannedOpen(false)}
+                  onInsert={insertAtCaret}
+                  composerText={message}
+                  canned={canned}
+                  labels={{
+                    button: i18n("crm.canned.button"),
+                    title: i18n("crm.canned.title"),
+                    empty: i18n("crm.canned.empty"),
+                    add: i18n("crm.canned.add"),
+                    fromComposer: i18n("crm.canned.fromComposer"),
+                    name: i18n("crm.canned.name"),
+                    body: i18n("crm.canned.body"),
+                    save: i18n("crm.ui.save"),
+                    cancel: i18n("crm.ui.cancel"),
+                    edit: i18n("crm.ui.edit"),
+                    del: i18n("crm.ui.delete"),
+                    delConfirm: i18n("crm.canned.deleteConfirm"),
+                    full: i18n("crm.canned.full"),
+                    insert: i18n("crm.canned.insert"),
+                    slashHint: i18n("crm.canned.slashHint"),
+                  }}
+                />
+                {slash && slashMatches.length > 0 && !cannedOpen && (
+                  <ul
+                    className="absolute bottom-full left-3 right-3 z-30 mb-2 max-h-64 overflow-y-auto rounded-xl border border-neutral-200 bg-white p-1 shadow-xl sm:right-auto sm:w-[360px]"
+                    role="listbox"
+                    aria-label={i18n("crm.canned.title")}
+                  >
+                    {slashMatches.map((r, i) => (
+                      <li key={r.id} role="option" aria-selected={i === slashIdx}>
+                        <button
+                          type="button"
+                          onMouseDown={(ev) => {
+                            ev.preventDefault();
+                            applySlash(r.body);
+                          }}
+                          onMouseEnter={() => setSlashIdx(i)}
+                          className={`block w-full rounded-lg px-2.5 py-1.5 text-left ${
+                            i === slashIdx ? "bg-[var(--accent-tint)]" : "hover:bg-neutral-50"
+                          }`}
+                        >
+                          <span className="block truncate text-[12px] font-semibold text-neutral-900">
+                            /{r.tag} <span className="font-normal text-neutral-500">· {r.title}</span>
+                          </span>
+                          {r.id !== "__documents" && (
+                            <span className="block truncate text-[11px] text-neutral-500">{r.body}</span>
+                          )}
+                        </button>
+                      </li>
+                    ))}
+                    <li className="px-2.5 pb-1 pt-1.5 text-[10px] text-neutral-400">{i18n("crm.canned.pickHint")}</li>
+                  </ul>
+                )}
                 <div className="mb-2 flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEmojiOpen(false);
+                      setCannedOpen((v) => !v);
+                    }}
+                    aria-expanded={cannedOpen}
+                    className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ring-1 transition ${
+                      cannedOpen
+                        ? "bg-[var(--accent)] text-white ring-[var(--accent)]"
+                        : "bg-white text-neutral-700 ring-neutral-200 hover:bg-neutral-50"
+                    }`}
+                    title={i18n("crm.canned.slashHint")}
+                  >
+                    ⚡ {i18n("crm.canned.button")}
+                    {canned.items.length > 0 && (
+                      <span className="ml-1 text-neutral-400">{canned.items.length}</span>
+                    )}
+                  </button>
                   <button
                     type="button"
                     onClick={() => setMessage(GREETING_7FX)}
@@ -850,6 +994,9 @@ export default function ChatPage() {
                     onChange={(e) => {
                       const v = e.target.value;
                       setMessage(v);
+                      const sq = slashQueryAt(v, e.target.selectionStart ?? v.length);
+                      setSlash(sq);
+                      if (sq && sq.query !== slash?.query) setSlashIdx(0);
                       if (!active?.traderId) return;
                       if (typingIdleRef.current) clearTimeout(typingIdleRef.current);
                       if (v.trim()) {
@@ -867,6 +1014,7 @@ export default function ChatPage() {
                       }
                     }}
                     onKeyDown={onComposerKeyDown}
+                    onBlur={() => window.setTimeout(() => setSlash(null), 120)}
                     placeholder={i18n("crm.chat.enter")}
                     rows={3}
                     className="min-h-[2.75rem] max-h-40 min-w-0 flex-1 resize-y rounded-xl border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-900 outline-none focus:border-[var(--accent)]/40"
@@ -875,7 +1023,10 @@ export default function ChatPage() {
                   />
                   <button
                     type="button"
-                    onClick={() => setEmojiOpen((v) => !v)}
+                    onClick={() => {
+                      setCannedOpen(false);
+                      setEmojiOpen((v) => !v);
+                    }}
                     className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-neutral-200 text-neutral-500 hover:bg-neutral-100"
                     aria-label={i18n("crm.chat.emoji")}
                   >

@@ -5,6 +5,8 @@ import { calcPipDistance, formatPrice, getSymbol } from "@/lib/symbols";
 import { fmtDateTime, fmtNum } from "@/lib/format";
 import type { OrderRow, PositionRow } from "./types";
 import PnlCalendar, { closedDayKey } from "./PnlCalendar";
+import AccountStatement from "./AccountStatement";
+import { useI18n } from "@/lib/i18n/context";
 
 type Tab = "open" | "closed" | "pending";
 type SideFilter = "ALL" | "BUY" | "SELL";
@@ -385,6 +387,8 @@ type Props = {
   onCancelOrders?: (ids: string[]) => Promise<void> | void;
   /** Switch chart to position chartSymbol || symbol */
   onSelectSymbol?: (symbol: string) => void;
+  /** Account currency (statement totals label). */
+  currency?: string;
   className?: string;
 };
 
@@ -1223,8 +1227,13 @@ export default function BottomPanels({
   onCancelOrder,
   onCancelOrders,
   onSelectSymbol,
+  currency,
   className = "",
 }: Props) {
+  const { t } = useI18n();
+  // Monthly account statement (Hesap özeti) — client-only, from closed trades
+  const [showStatement, setShowStatement] = useState(false);
+  const closeStatement = useCallback(() => setShowStatement(false), []);
   const [showFilters, setShowFilters] = useState(false);
   const [sideFilter, setSideFilter] = useState<SideFilter>("ALL");
   const [symbolFilter, setSymbolFilter] = useState("");
@@ -1668,6 +1677,17 @@ export default function BottomPanels({
               Takvim
             </button>
           ) : null}
+          {tab === "closed" && closedPositions.length > 0 ? (
+            <button
+              type="button"
+              onClick={() => setShowStatement(true)}
+              aria-label={t("term.stmt.title")}
+              title={t("term.stmt.title")}
+              className="rounded-control border border-desk-border px-2.5 py-1 text-[11px] text-desk-muted transition-colors hover:bg-desk-hover hover:text-desk-text"
+            >
+              {t("term.stmt.button")}
+            </button>
+          ) : null}
           <button
             type="button"
             onClick={handleExportCsv}
@@ -1867,6 +1887,13 @@ export default function BottomPanels({
       {tab === "closed" && showPnlCal && closedPositions.length > 0 && (
         <PnlCalendar rows={calendarClosed} selectedDay={closedDay} onSelectDay={setClosedDay} />
       )}
+
+      <AccountStatement
+        open={showStatement}
+        onClose={closeStatement}
+        rows={closedPositions}
+        currency={currency}
+      />
 
       {/* Mobile card list — elite dense cards */}
       <div className="flex-1 space-y-2 overflow-auto p-2.5 md:hidden">
