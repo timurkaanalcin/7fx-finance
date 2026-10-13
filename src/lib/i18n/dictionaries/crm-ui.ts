@@ -878,6 +878,15 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.palette.pinned", "Pinned", "Sabitlenenler", "Закреплённые", "Angeheftet", "مثبّت"],
   ["crm.palette.pin", "Pin customer", "Müşteriyi sabitle", "Закрепить клиента", "Kunden anheften", "تثبيت العميل"],
   ["crm.palette.unpin", "Unpin customer", "Sabitlemeyi kaldır", "Открепить клиента", "Kunde lösen", "إلغاء التثبيت"],
+  ["crm.savedFilters.title", "Saved filters", "Kayıtlı filtreler", "Сохранённые фильтры", "Gespeicherte Filter", "الفلاتر المحفوظة"],
+  ["crm.savedFilters.empty", "none yet — set filters and save", "henüz yok — filtre seçip kaydedin", "пока нет — задайте фильтры и сохраните", "noch keine — Filter setzen und speichern", "لا يوجد بعد — اختر الفلاتر واحفظ"],
+  ["crm.savedFilters.save", "Save filter", "Filtreyi kaydet", "Сохранить фильтр", "Filter speichern", "حفظ الفلتر"],
+  ["crm.savedFilters.saveHint", "Save the current filters as a preset (this browser only)", "Mevcut filtreleri hazır ayar olarak kaydet (yalnız bu tarayıcı)", "Сохранить текущие фильтры (только этот браузер)", "Aktuelle Filter als Vorlage speichern (nur dieser Browser)", "حفظ الفلاتر الحالية (هذا المتصفح فقط)"],
+  ["crm.savedFilters.namePrompt", "Filter name", "Filtre adı", "Название фильтра", "Filtername", "اسم الفلتر"],
+  ["crm.savedFilters.delete", "Delete preset", "Ayarı sil", "Удалить", "Vorlage löschen", "حذف"],
+  ["crm.savedFilters.deleteConfirm", "Delete saved filter", "Kayıtlı filtre silinsin mi", "Удалить сохранённый фильтр", "Gespeicherten Filter löschen", "حذف الفلتر المحفوظ"],
+  ["crm.savedFilters.clear", "Clear filters", "Filtreleri temizle", "Сбросить фильтры", "Filter zurücksetzen", "مسح الفلاتر"],
+  ["crm.savedFilters.results", "results", "sonuç", "результатов", "Ergebnisse", "نتيجة"],
 ];
 
 function pack(index: 1|2|3|4|5): Dict {

@@ -525,3 +525,7 @@ html[data-fx-theme] .fx-desk .fx-fav.fx-fav--on { color: var(--lx-gold, #c8a96a)
 html[data-fx-theme] body .fx-doc-viewer.fx-doc-viewer.fx-doc-viewer { background-color: #000 !important; }
 html[data-fx-theme] body .fx-doc-viewer button { background: rgba(255, 255, 255, 0.15) !important; color: #fff !important; border: 0 !important; }
 html[data-fx-theme] body .fx-doc-viewer span, html[data-fx-theme] body .fx-doc-viewer p { color: rgba(255, 255, 255, 0.75) !important; }
+/* Daily P&L calendar — accent (white in night) → gold in day theme so selection/focus stay visible */
+html[data-fx-theme="light"] .fx-desk .fx-pnlcal [class*="border-desk-accent"] { border-color: var(--lx-gold) !important; }
+html[data-fx-theme="light"] .fx-desk .fx-pnlcal [class*="ring-desk-accent"] { --tw-ring-color: var(--lx-gold) !important; }
+html[data-fx-theme="light"] .fx-desk .fx-pnlcal :focus-visible { outline-color: var(--lx-gold) !important; }

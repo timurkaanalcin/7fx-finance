@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, useCallback, type ReactNode, type ReactEl
 import { calcPipDistance, formatPrice, getSymbol } from "@/lib/symbols";
 import { fmtDateTime, fmtNum } from "@/lib/format";
 import type { OrderRow, PositionRow } from "./types";
+import PnlCalendar, { closedDayKey } from "./PnlCalendar";
 
 type Tab = "open" | "closed" | "pending";
 type SideFilter = "ALL" | "BUY" | "SELL";
@@ -1236,6 +1237,21 @@ export default function BottomPanels({
   const [pendingSort, setPendingSort] = useState<SortState>(null);
   // Open tab: exact-symbol quick filter chip ("" = all)
   const [openSymbolChip, setOpenSymbolChip] = useState("");
+  // Closed tab: daily P&L calendar (per-device open state) + selected day ("" = all days)
+  const [showPnlCal, setShowPnlCal] = useState(false);
+  const [closedDay, setClosedDay] = useState("");
+  useEffect(() => {
+    try {
+      if (localStorage.getItem("7fx.pnlCal.open") === "1") setShowPnlCal(true);
+    } catch { /* ignore */ }
+  }, []);
+  const togglePnlCal = useCallback(() => {
+    setShowPnlCal((v) => {
+      const n = !v;
+      try { localStorage.setItem("7fx.pnlCal.open", n ? "1" : "0"); } catch { /* ignore */ }
+      return n;
+    });
+  }, []);
 
 
   const tabs: { id: Tab; label: string; shortLabel: string; count?: number }[] = [
@@ -1268,9 +1284,14 @@ export default function BottomPanels({
     const rows = filterPositions(openPositions, filterOpts);
     return openSymbolChip ? rows.filter((p) => p.symbol === openSymbolChip) : rows;
   }, [openPositions, filterOpts, openSymbolChip]);
-  const filteredClosed = useMemo(
+  // Calendar input: closed trades after the regular filters (before the day pick)
+  const calendarClosed = useMemo(
     () => filterPositions(closedPositions, { ...filterOpts, result: resultFilter }),
     [closedPositions, filterOpts, resultFilter]
+  );
+  const filteredClosed = useMemo(
+    () => (closedDay ? calendarClosed.filter((p) => closedDayKey(p) === closedDay) : calendarClosed),
+    [calendarClosed, closedDay]
   );
   const filteredPending = useMemo(
     () => filterOrders(pendingOrders, filterOpts),
@@ -1306,7 +1327,7 @@ export default function BottomPanels({
     periodFilter !== "ALL" ||
     textFilter.trim() !== "" ||
     (tab === "open" && openSymbolChip !== "") ||
-    (tab === "closed" && resultFilter !== "ALL");
+    (tab === "closed" && (resultFilter !== "ALL" || closedDay !== ""));
 
   const clearAllFilters = useCallback(() => {
     setSideFilter("ALL");
@@ -1315,6 +1336,7 @@ export default function BottomPanels({
     setPeriodFilter("ALL");
     setTextFilter("");
     setOpenSymbolChip("");
+    setClosedDay("");
   }, []);
 
   // Esc clears the open-symbol chip (unless typing in a field or a dialog is open)
@@ -1630,6 +1652,22 @@ export default function BottomPanels({
               {bulkBusy ? "…" : filtersActive ? "Filtreyi iptal" : "Tümünü iptal"}
             </button>
           ) : null}
+          {tab === "closed" && closedPositions.length > 0 ? (
+            <button
+              type="button"
+              onClick={togglePnlCal}
+              aria-pressed={showPnlCal}
+              aria-label="Günlük K/Z takvimi"
+              title="Günlük K/Z takvimi · Daily P&L calendar"
+              className={`rounded-control border px-2.5 py-1 text-[11px] transition-colors ${
+                showPnlCal || closedDay
+                  ? "border-desk-accent/50 bg-desk-accent/10 text-desk-text"
+                  : "border-desk-border text-desk-muted hover:bg-desk-hover hover:text-desk-text"
+              }`}
+            >
+              Takvim
+            </button>
+          ) : null}
           <button
             type="button"
             onClick={handleExportCsv}
@@ -1824,6 +1862,11 @@ export default function BottomPanels({
 
       {/* P&L summary strip (filtered) — shared by mobile + desktop */}
       {summaryStrip}
+
+      {/* Daily realised P&L calendar (closed tab) — click a day to filter the list */}
+      {tab === "closed" && showPnlCal && closedPositions.length > 0 && (
+        <PnlCalendar rows={calendarClosed} selectedDay={closedDay} onSelectDay={setClosedDay} />
+      )}
 
       {/* Mobile card list — elite dense cards */}
       <div className="flex-1 space-y-2 overflow-auto p-2.5 md:hidden">

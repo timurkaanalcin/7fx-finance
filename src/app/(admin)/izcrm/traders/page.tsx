@@ -50,6 +50,51 @@ type UserRow = {
 
 const REFRESH_MS = 20000;
 
+/** Saved filter presets for the traders list — per browser (localStorage), no server/schema change. */
+const SAVED_FILTERS_KEY = "7fx.crm.traderFilters.v1";
+type TraderFilterState = {
+  q: string;
+  status: string;
+  desk: string;
+  country: string;
+  saleStatus: string;
+  accountType: string;
+  dateFrom: string;
+  dateTo: string;
+  retentionStatus: string;
+  presence: string;
+  ftdOnly: boolean;
+};
+type SavedTraderFilter = { name: string; f: TraderFilterState };
+const EMPTY_FILTERS: TraderFilterState = {
+  q: "",
+  status: "all",
+  desk: "",
+  country: "",
+  saleStatus: "",
+  accountType: "",
+  dateFrom: "",
+  dateTo: "",
+  retentionStatus: "",
+  presence: "",
+  ftdOnly: false,
+};
+function readSavedFilters(): SavedTraderFilter[] {
+  try {
+    const raw = JSON.parse(localStorage.getItem(SAVED_FILTERS_KEY) || "[]");
+    if (!Array.isArray(raw)) return [];
+    return raw
+      .filter((x) => x && typeof x.name === "string" && x.f && typeof x.f === "object")
+      .map((x) => ({ name: String(x.name).slice(0, 40), f: { ...EMPTY_FILTERS, ...x.f } }))
+      .slice(0, 20);
+  } catch {
+    return [];
+  }
+}
+function sameFilters(a: TraderFilterState, b: TraderFilterState): boolean {
+  return (Object.keys(EMPTY_FILTERS) as (keyof TraderFilterState)[]).every((k) => a[k] === b[k]);
+}
+
 const emptyCreate = {
   email: "",
   password: "",
@@ -95,6 +140,56 @@ export default function AdminUsersPage() {
     } catch { /* ignore */ }
   }, []);
   const [presence, setPresence] = useState("");
+  const [savedFilters, setSavedFilters] = useState<SavedTraderFilter[]>([]);
+  useEffect(() => {
+    setSavedFilters(readSavedFilters());
+  }, []);
+  const currentFilters: TraderFilterState = {
+    q,
+    status,
+    desk,
+    country,
+    saleStatus,
+    accountType: accountTypeFilter,
+    dateFrom,
+    dateTo,
+    retentionStatus,
+    presence,
+    ftdOnly,
+  };
+  const anyFilterActive = !sameFilters(currentFilters, EMPTY_FILTERS);
+  const activePreset = savedFilters.find((p) => sameFilters(p.f, currentFilters))?.name ?? "";
+  function applyFilters(f: TraderFilterState) {
+    setQ(f.q);
+    setStatus(f.status || "all");
+    setDesk(f.desk);
+    setCountry(f.country);
+    setSaleStatus(f.saleStatus);
+    setAccountTypeFilter(f.accountType);
+    setDateFrom(f.dateFrom);
+    setDateTo(f.dateTo);
+    setRetentionStatus(f.retentionStatus);
+    setPresence(f.presence);
+    setFtdOnly(Boolean(f.ftdOnly));
+    setSelected(new Set());
+  }
+  function persistSaved(list: SavedTraderFilter[]) {
+    setSavedFilters(list);
+    try {
+      localStorage.setItem(SAVED_FILTERS_KEY, JSON.stringify(list));
+    } catch { /* ignore */ }
+  }
+  function saveCurrentFilters() {
+    const name = window.prompt(i18n("crm.savedFilters.namePrompt"), activePreset || "")?.trim().slice(0, 40);
+    if (!name) return;
+    const rest = savedFilters.filter((p) => p.name !== name);
+    persistSaved([...rest, { name, f: { ...currentFilters } }].slice(-20));
+  }
+  function deleteActivePreset() {
+    if (!activePreset) return;
+    if (!window.confirm(`${i18n("crm.savedFilters.deleteConfirm")}: ${activePreset}`)) return;
+    persistSaved(savedFilters.filter((p) => p.name !== activePreset));
+  }
   const [now, setNow] = useState(() => Date.now());
   const skew = useRef(0);
 
@@ -350,6 +445,59 @@ export default function AdminUsersPage() {
           />
           FTD
         </label>
+      </div>
+
+      {/* Saved filter presets (per browser) */}
+      <div className="mb-3 flex flex-wrap items-center gap-2 text-xs" aria-label={i18n("crm.savedFilters.title")}>
+        <span className="text-neutral-500">{i18n("crm.savedFilters.title")}:</span>
+        {savedFilters.length === 0 && (
+          <span className="text-neutral-400">{i18n("crm.savedFilters.empty")}</span>
+        )}
+        {savedFilters.map((p) => (
+          <button
+            key={p.name}
+            type="button"
+            onClick={() => applyFilters(p.f)}
+            aria-pressed={activePreset === p.name}
+            className={`rounded-full border px-2.5 py-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-black ${
+              activePreset === p.name
+                ? "border-black bg-black text-white"
+                : "border-[#e5e5e5] bg-[#ffffff] hover:bg-[#f5f5f5]"
+            }`}
+          >
+            {p.name}
+          </button>
+        ))}
+        <button
+          type="button"
+          onClick={saveCurrentFilters}
+          disabled={!anyFilterActive}
+          title={i18n("crm.savedFilters.saveHint")}
+          className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2.5 py-1 hover:bg-[#f5f5f5] disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          + {i18n("crm.savedFilters.save")}
+        </button>
+        {activePreset && (
+          <button
+            type="button"
+            onClick={deleteActivePreset}
+            className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2.5 py-1 text-red-600 hover:bg-red-50"
+          >
+            {i18n("crm.savedFilters.delete")}
+          </button>
+        )}
+        {anyFilterActive && (
+          <button
+            type="button"
+            onClick={() => applyFilters(EMPTY_FILTERS)}
+            className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2.5 py-1 text-neutral-600 hover:bg-[#f5f5f5]"
+          >
+            ✕ {i18n("crm.savedFilters.clear")}
+          </button>
+        )}
+        <span className="ml-auto text-neutral-400 tabular-nums">
+          {rows.length} {i18n("crm.savedFilters.results")}
+        </span>
       </div>
 
       {selected.size > 0 && (
