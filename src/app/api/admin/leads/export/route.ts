@@ -1,4 +1,4 @@
-import { canAccessUser, scopeUserWhere, assignedWhere, isScopedStaff } from "@/lib/crm-scope";
+import { scopeUserWhere } from "@/lib/crm-scope";
 import { NextResponse } from "next/server";
 import * as XLSX from "xlsx";
 import { requireAdminWrite, writeAudit } from "@/lib/auth";

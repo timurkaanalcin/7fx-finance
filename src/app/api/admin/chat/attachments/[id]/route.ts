@@ -1,4 +1,4 @@
-import { canAccessUser, scopeUserWhere, assignedWhere, isScopedStaff } from "@/lib/crm-scope";
+import { canAccessUser } from "@/lib/crm-scope";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NO_STORE } from "@/lib/chat/attachments";
