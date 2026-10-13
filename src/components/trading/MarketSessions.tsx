@@ -43,6 +43,24 @@ export function sessionOpen(now: Date, s: Session): boolean {
   return hour >= s.open && hour < s.close;
 }
 
+/** Minutes until local close for an open session (0 if not open / past close). */
+function minutesUntilClose(now: Date, s: Session): number {
+  const { hour, minute, weekday } = zoneParts(now, s.tz);
+  if (weekday === "Sat" || weekday === "Sun") return 0;
+  if (hour < s.open || hour >= s.close) return 0;
+  return (s.close - hour) * 60 - minute;
+}
+
+/** Compact countdown: `42m` or `2h15m` (omit 0m hour-only as `2h`). */
+function formatCountdown(mins: number): string {
+  if (mins <= 0) return "";
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  if (h <= 0) return `${m}m`;
+  if (m <= 0) return `${h}h`;
+  return `${h}h${m}m`;
+}
+
 export default function MarketSessions({ className = "" }: { className?: string }) {
   const { t } = useI18n();
   const [now, setNow] = useState<Date | null>(null);
@@ -72,18 +90,31 @@ export default function MarketSessions({ className = "" }: { className?: string 
       ) : (
         SESSIONS.map((s) => {
           const open = sessionOpen(now, s);
+          const left = open ? minutesUntilClose(now, s) : 0;
+          const cd = open ? formatCountdown(left) : "";
+          const closeTip = cd
+            ? ` · ${cd} kaldı / left until close`
+            : "";
           return (
             <span
               key={s.key}
               className={`inline-flex items-center gap-1 ${open ? "text-desk-text/85" : "text-desk-muted/60"}`}
-              title={`${t(`term.sessions.${s.key}`)} — ${open ? t("term.sessions.open") : t("term.sessions.closed")}`}
+              title={`${t(`term.sessions.${s.key}`)} — ${open ? t("term.sessions.open") : t("term.sessions.closed")}${closeTip}`}
             >
               <span
                 className={`h-1.5 w-1.5 rounded-full ${open ? "bg-desk-buy shadow-[0_0_4px_rgba(34,197,94,0.7)]" : "bg-desk-muted/40"}`}
                 aria-hidden
               />
               {s.label}
-              <span className="sr-only">{open ? t("term.sessions.open") : t("term.sessions.closed")}</span>
+              {cd ? (
+                <span className="tabular-nums text-desk-muted/80" aria-hidden>
+                  · {cd}
+                </span>
+              ) : null}
+              <span className="sr-only">
+                {open ? t("term.sessions.open") : t("term.sessions.closed")}
+                {cd ? ` ${cd}` : ""}
+              </span>
             </span>
           );
         })

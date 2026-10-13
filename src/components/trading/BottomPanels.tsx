@@ -1306,6 +1306,8 @@ export default function BottomPanels({
   const [pendingSort, setPendingSort] = useState<SortState>(null);
   // Open tab: exact-symbol quick filter chip ("" = all)
   const [openSymbolChip, setOpenSymbolChip] = useState("");
+  // Closed tab: exact-symbol quick filter chip ("" = all)
+  const [closedSymbolChip, setClosedSymbolChip] = useState("");
   // Closed tab: daily P&L calendar (per-device open state) + selected day ("" = all days)
   const [showPnlCal, setShowPnlCal] = useState(false);
   const [closedDay, setClosedDay] = useState("");
@@ -1353,15 +1355,32 @@ export default function BottomPanels({
     const rows = filterPositions(openPositions, filterOpts);
     return openSymbolChip ? rows.filter((p) => p.symbol === openSymbolChip) : rows;
   }, [openPositions, filterOpts, openSymbolChip]);
-  // Calendar input: closed trades after the regular filters (before the day pick)
+  // Calendar input: closed trades after the regular filters (before the day / symbol chips)
   const calendarClosed = useMemo(
     () => filterPositions(closedPositions, { ...filterOpts, result: resultFilter }),
     [closedPositions, filterOpts, resultFilter]
   );
-  const filteredClosed = useMemo(
-    () => (closedDay ? calendarClosed.filter((p) => closedDayKey(p) === closedDay) : calendarClosed),
-    [calendarClosed, closedDay]
-  );
+  // Distinct symbols among filtered closed rows (period/result/text), most first
+  const closedSymbolCounts = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const p of calendarClosed) m.set(p.symbol, (m.get(p.symbol) ?? 0) + 1);
+    return Array.from(m.entries()).sort((a, b) => b[1] - a[1] || cmpStr(a[0], b[0]));
+  }, [calendarClosed]);
+  const showClosedSymbolChips = closedSymbolCounts.length >= 2;
+
+  // Drop a stale closed chip when that symbol disappears from the filtered set
+  useEffect(() => {
+    if (closedSymbolChip && !closedSymbolCounts.some(([sym]) => sym === closedSymbolChip)) {
+      setClosedSymbolChip("");
+    }
+  }, [closedSymbolChip, closedSymbolCounts]);
+
+  const filteredClosed = useMemo(() => {
+    let rows = calendarClosed;
+    if (closedDay) rows = rows.filter((p) => closedDayKey(p) === closedDay);
+    if (closedSymbolChip) rows = rows.filter((p) => p.symbol === closedSymbolChip);
+    return rows;
+  }, [calendarClosed, closedDay, closedSymbolChip]);
   const filteredPending = useMemo(
     () => filterOrders(pendingOrders, filterOpts),
     [pendingOrders, filterOpts]
@@ -1396,7 +1415,7 @@ export default function BottomPanels({
     periodFilter !== "ALL" ||
     textFilter.trim() !== "" ||
     (tab === "open" && openSymbolChip !== "") ||
-    (tab === "closed" && (resultFilter !== "ALL" || closedDay !== ""));
+    (tab === "closed" && (resultFilter !== "ALL" || closedDay !== "" || closedSymbolChip !== ""));
 
   const clearAllFilters = useCallback(() => {
     setSideFilter("ALL");
@@ -1405,22 +1424,26 @@ export default function BottomPanels({
     setPeriodFilter("ALL");
     setTextFilter("");
     setOpenSymbolChip("");
+    setClosedSymbolChip("");
     setClosedDay("");
   }, []);
 
-  // Esc clears the open-symbol chip (unless typing in a field or a dialog is open)
+  // Esc clears the open/closed-symbol chip (unless typing in a field or a dialog is open)
   useEffect(() => {
-    if (tab !== "open" || !openSymbolChip) return;
+    const chip =
+      tab === "open" ? openSymbolChip : tab === "closed" ? closedSymbolChip : "";
+    if (!chip) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape" || e.defaultPrevented) return;
       const el = e.target as HTMLElement | null;
       if (el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName))) return;
       if (document.querySelector('[role="dialog"], [aria-modal="true"]')) return;
-      setOpenSymbolChip("");
+      if (tab === "open") setOpenSymbolChip("");
+      else if (tab === "closed") setClosedSymbolChip("");
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [tab, openSymbolChip]);
+  }, [tab, openSymbolChip, closedSymbolChip]);
 
   const exportRows =
     tab === "open" ? sortedOpen : tab === "closed" ? sortedClosed : sortedPending;
@@ -1932,6 +1955,33 @@ export default function BottomPanels({
               <Chip
                 active={openSymbolChip === sym}
                 onClick={() => setOpenSymbolChip((cur) => (cur === sym ? "" : sym))}
+              >
+                {sym} <span className="tabular-nums opacity-70">{n}</span>
+              </Chip>
+            </span>
+          ))}
+        </div>
+      )}
+
+      {tab === "closed" && showClosedSymbolChips && (
+        <div
+          className="flex items-center gap-1 overflow-x-auto border-b border-desk-border/60 px-2.5 py-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          role="group"
+          aria-label="Sembole göre filtrele · Filter by symbol"
+        >
+          <span className="mr-0.5 shrink-0 text-[9px] font-medium uppercase tracking-wider text-desk-muted">
+            Sembol
+          </span>
+          <span className="shrink-0">
+            <Chip active={closedSymbolChip === ""} onClick={() => setClosedSymbolChip("")}>
+              Tümü · All <span className="tabular-nums opacity-70">{calendarClosed.length}</span>
+            </Chip>
+          </span>
+          {closedSymbolCounts.map(([sym, n]) => (
+            <span key={sym} className="shrink-0">
+              <Chip
+                active={closedSymbolChip === sym}
+                onClick={() => setClosedSymbolChip((cur) => (cur === sym ? "" : sym))}
               >
                 {sym} <span className="tabular-nums opacity-70">{n}</span>
               </Chip>
