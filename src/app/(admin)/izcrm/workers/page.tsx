@@ -45,6 +45,8 @@ type Worker = {
   canAdjustBalance: boolean;
 };
 type Desk = { id: string; name: string; code: string | null; active: boolean };
+type WFilter = "all" | "active" | "inactive" | "stale";
+const STALE_MS = 7 * 24 * 60 * 60 * 1000;
 type Draft = Record<string, string>;
 
 const PERMS = [
@@ -87,6 +89,9 @@ export default function WorkersPage() {
   const [newErr, setNewErr] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<Worker | null>(null);
   const [archiveTarget, setArchiveTarget] = useState<{ w: Worker; count: number } | null>(null);
+  const [query, setQuery] = useState("");
+  const [wFilter, setWFilter] = useState<WFilter>("all");
+  const [roleFilter, setRoleFilter] = useState("");
 
   const load = useCallback(async () => {
     const r = await fetch("/api/admin/workers");
@@ -109,6 +114,45 @@ export default function WorkersPage() {
     () => desks.map((d) => ({ value: d.id, label: `${deskName(d)}${d.active ? "" : " ✕"}` })),
     [desks, deskName]
   );
+
+  const isStale = useCallback((w: Worker) => {
+    const last = w.lastLogin?.at || w.lastLoginAt;
+    if (!last) return true;
+    const t = new Date(last).getTime();
+    return !Number.isFinite(t) || Date.now() - t > STALE_MS;
+  }, []);
+
+  const wCounts = useMemo(
+    () => ({
+      all: rows.length,
+      active: rows.filter((w) => w.active).length,
+      inactive: rows.filter((w) => !w.active).length,
+      stale: rows.filter((w) => w.active && isStale(w)).length,
+    }),
+    [rows, isStale]
+  );
+
+  const roleChoices = useMemo(() => {
+    const seen = new Set<string>();
+    for (const w of rows) seen.add(w.jobTitle || "");
+    return Array.from(seen).sort((a, b) =>
+      (jobTitleLabel(a, locale) || "—").localeCompare(jobTitleLabel(b, locale) || "—", "tr")
+    );
+  }, [rows, locale]);
+
+  const shownRows = useMemo(() => {
+    const q = query.trim().toLocaleLowerCase("tr");
+    return rows.filter((w) => {
+      if (wFilter === "active" && !w.active) return false;
+      if (wFilter === "inactive" && w.active) return false;
+      if (wFilter === "stale" && !(w.active && isStale(w))) return false;
+      if (roleFilter && (w.jobTitle || "__none") !== roleFilter) return false;
+      if (!q) return true;
+      return [w.name, w.email, w.desk, jobTitleLabel(w.jobTitle, locale)].some((v) =>
+        String(v ?? "").toLocaleLowerCase("tr").includes(q)
+      );
+    });
+  }, [rows, query, wFilter, roleFilter, isStale, locale]);
 
   function columns(w: Worker | null, create: boolean): CrmColumn[] {
     const cols: CrmColumn[] = [
@@ -308,6 +352,87 @@ export default function WorkersPage() {
       {err && <p className="mb-2 text-xs text-red-600">{err}</p>}
 
       <div className="overflow-x-auto rounded-xl border border-[#e5e5e5] bg-white">
+        <div className="flex flex-wrap items-center gap-1.5 border-b border-[#e5e5e5] px-3 py-2">
+          {(
+            [
+              { k: "all", label: i18n("crm.ui.all"), title: "" },
+              { k: "active", label: i18n("crm.ui.active"), title: "" },
+              { k: "inactive", label: i18n("crm.ui.inactive"), title: "" },
+              {
+                k: "stale",
+                label: "7+ gün giriş yok",
+                title: "Aktif ama 7 günden uzun süredir (veya hiç) giriş yapmamış · Active but no login for 7+ days",
+              },
+            ] as { k: WFilter; label: string; title: string }[]
+          ).map(({ k, label, title }) => {
+            const on = wFilter === k;
+            const warn = k === "stale" && wCounts.stale > 0 && !on;
+            return (
+              <button
+                key={k}
+                type="button"
+                aria-pressed={on}
+                title={title || undefined}
+                onClick={() => setWFilter(k)}
+                className={`rounded-full border px-2.5 py-0.5 text-[11px] transition ${
+                  on
+                    ? "border-black bg-black text-white"
+                    : warn
+                      ? "border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100"
+                      : "border-neutral-300 bg-white text-neutral-600 hover:bg-neutral-50"
+                }`}
+              >
+                {label}
+                <span className="ml-1 tabular-nums opacity-70">{wCounts[k]}</span>
+              </button>
+            );
+          })}
+          <div className="ml-auto flex flex-wrap items-center gap-1.5">
+            {roleChoices.length > 1 && (
+              <select
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                aria-label={jt.field}
+                className="rounded border border-neutral-300 bg-white px-1.5 py-1 text-xs"
+              >
+                <option value="">
+                  {jt.field}: {i18n("crm.ui.all")}
+                </option>
+                {roleChoices.map((r) => (
+                  <option key={r || "__none"} value={r || "__none"}>
+                    {jobTitleLabel(r, locale) || "—"} ({rows.filter((w) => (w.jobTitle || "") === r).length})
+                  </option>
+                ))}
+              </select>
+            )}
+            <div className="relative">
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") setQuery("");
+                }}
+                placeholder="Ad, e-posta, masa, rol…"
+                aria-label={i18n("crm.ui.search")}
+                className="w-48 rounded border border-neutral-300 bg-white py-1 pl-2 pr-6 text-xs"
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => setQuery("")}
+                  aria-label={i18n("crm.ui.clearField")}
+                  title={i18n("crm.ui.clearField")}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 px-1 text-neutral-400 hover:text-neutral-700"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          </div>
+          <div className="w-full text-[10px] tabular-nums text-neutral-500">
+            {shownRows.length} / {rows.length}
+          </div>
+        </div>
         <table className="w-full text-left text-xs">
           <thead className="bg-white text-neutral-500">
             <tr>
@@ -322,7 +447,7 @@ export default function WorkersPage() {
             </tr>
           </thead>
           <tbody>
-            {rows.map((w) => {
+            {shownRows.map((w) => {
               const isEdit = editId === w.id;
               const locked = w.isMain || w.isSelf;
               const last = w.lastLogin?.at || w.lastLoginAt;
@@ -440,7 +565,7 @@ export default function WorkersPage() {
                 </Fragment>
               );
             })}
-            {rows.length === 0 && (
+            {shownRows.length === 0 && (
               <tr>
                 <td colSpan={8} className="px-3 py-8 text-center text-neutral-500">
                   {i18n("crm.ui.noRecords")}
