@@ -40,6 +40,21 @@ function defaultSlTp(
 
 const LOT_PRESETS = ["0.01", "0.10", "0.50", "1.00"];
 
+// SL/TP quick pip-distance chips (input-only; nothing is sent until Submit)
+const SLTP_PIP_PRESETS = [10, 20, 50, 100] as const;
+
+/** Pip size for a symbol; falls back like BottomPanels (FX-style 0.0001, else 0.01). */
+function ticketPipSize(def: SymbolDef | undefined): number {
+  if (def && Number.isFinite(def.pipSize) && def.pipSize > 0) return def.pipSize;
+  const digits = def?.digits ?? 5;
+  return digits >= 3 ? Math.pow(10, -(digits - 1)) : Math.pow(10, -digits);
+}
+
+function fmtPips(n: number): string {
+  if (!Number.isFinite(n)) return "—";
+  return n >= 100 ? n.toFixed(0) : n.toFixed(1);
+}
+
 function fmtSignedUsd(n: number): string {
   if (!Number.isFinite(n)) return "—";
   const abs = Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -219,6 +234,32 @@ export default function OrderTicket({
     }
     return (side === "BUY" ? price?.ask : price?.bid) ?? price?.mid ?? 0;
   }, [type, limitPrice, side, price?.ask, price?.bid, price?.mid]);
+
+  const pipSize = ticketPipSize(def);
+  const entryOk = Number.isFinite(entry) && entry > 0;
+
+  /** SL/TP price `pips` away from entry, on the correct side for the current direction. */
+  function pipLevel(kind: "sl" | "tp", pips: number): string | null {
+    if (!entryOk || !(pipSize > 0)) return null;
+    const dist = pips * pipSize;
+    const down = (kind === "sl") === (side === "BUY");
+    const lvl = down ? entry - dist : entry + dist;
+    if (!Number.isFinite(lvl) || lvl <= 0) return null;
+    return lvl.toFixed(digits);
+  }
+
+  /** Distance in pips from entry to an entered level + whether it is on the correct side. */
+  function levelInfo(kind: "sl" | "tp", raw: string): { pips: number; wrongSide: boolean } | null {
+    if (!entryOk || !(pipSize > 0) || raw.trim() === "") return null;
+    const v = Number(raw);
+    if (!Number.isFinite(v) || v <= 0) return null;
+    const below = v < entry;
+    const shouldBeBelow = (kind === "sl") === (side === "BUY");
+    return { pips: Math.abs(entry - v) / pipSize, wrongSide: v !== entry && below !== shouldBeBelow };
+  }
+
+  const slInfo = showSl ? levelInfo("sl", sl) : null;
+  const tpInfo = showTp ? levelInfo("tp", tp) : null;
 
   const preview = useMemo(() => {
     const vol = Number(volume);
@@ -590,8 +631,24 @@ export default function OrderTicket({
 
         {showSl && (
           <div>
-            <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-desk-muted">
-              Stop Loss
+            <div className="mb-1.5 flex items-end justify-between gap-2">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-desk-muted">
+                Stop Loss
+              </span>
+              {slInfo && (
+                <span
+                  className={`text-[10px] font-semibold tabular-nums ${
+                    slInfo.wrongSide ? "text-amber-500" : "text-desk-muted"
+                  }`}
+                  title={
+                    slInfo.wrongSide
+                      ? "Seviye girişin ters tarafında · Level is on the wrong side of entry"
+                      : "Girişe uzaklık (pip) · Distance from entry (pips)"
+                  }
+                >
+                  ≈ {fmtPips(slInfo.pips)} pip{slInfo.wrongSide ? " ⚠" : ""}
+                </span>
+              )}
             </div>
             <input
               value={sl}
@@ -600,6 +657,28 @@ export default function OrderTicket({
               autoFocus
               className="w-full rounded-[12px] border border-desk-sell/40 bg-desk-bg px-3 py-2.5 text-sm tabular-nums text-desk-text outline-none focus:border-desk-sell md:rounded-control md:px-2.5 md:py-2"
             />
+            <div className="mt-1.5 flex flex-wrap items-center gap-1" role="group" aria-label="SL pip mesafesi · SL pip distance">
+              {SLTP_PIP_PRESETS.map((pips) => {
+                const lvl = pipLevel("sl", pips);
+                const dirTr = side === "BUY" ? "aşağı" : "yukarı";
+                const dirEn = side === "BUY" ? "below" : "above";
+                return (
+                  <button
+                    key={pips}
+                    type="button"
+                    disabled={lvl == null}
+                    onClick={() => {
+                      if (lvl != null) setSl(lvl);
+                    }}
+                    title={`SL ${pips} pip ${dirTr} · ${pips} pips ${dirEn} entry${lvl ? ` (${lvl})` : ""}`}
+                    aria-label={`SL ${pips} pip ${dirTr}`}
+                    className="rounded-full border border-desk-border/70 bg-desk-elev px-2 py-0.5 text-[10px] font-semibold tabular-nums text-desk-muted hover:bg-desk-hover hover:text-desk-text disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-desk-elev disabled:hover:text-desk-muted"
+                  >
+                    {pips}p
+                  </button>
+                );
+              })}
+            </div>
             {preview.sl != null && (
               <div
                 className={`mt-1 text-right text-[10px] font-semibold tabular-nums ${
@@ -702,8 +781,24 @@ export default function OrderTicket({
 
         {showTp && (
           <div>
-            <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-desk-muted">
-              Take Profit
+            <div className="mb-1.5 flex items-end justify-between gap-2">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-desk-muted">
+                Take Profit
+              </span>
+              {tpInfo && (
+                <span
+                  className={`text-[10px] font-semibold tabular-nums ${
+                    tpInfo.wrongSide ? "text-amber-500" : "text-desk-muted"
+                  }`}
+                  title={
+                    tpInfo.wrongSide
+                      ? "Seviye girişin ters tarafında · Level is on the wrong side of entry"
+                      : "Girişe uzaklık (pip) · Distance from entry (pips)"
+                  }
+                >
+                  ≈ {fmtPips(tpInfo.pips)} pip{tpInfo.wrongSide ? " ⚠" : ""}
+                </span>
+              )}
             </div>
             <input
               value={tp}
@@ -711,6 +806,28 @@ export default function OrderTicket({
               placeholder="Price"
               className="w-full rounded-[12px] border border-desk-buy/40 bg-desk-bg px-3 py-2.5 text-sm tabular-nums text-desk-text outline-none focus:border-desk-buy md:rounded-control md:px-2.5 md:py-2"
             />
+            <div className="mt-1.5 flex flex-wrap items-center gap-1" role="group" aria-label="TP pip mesafesi · TP pip distance">
+              {SLTP_PIP_PRESETS.map((pips) => {
+                const lvl = pipLevel("tp", pips);
+                const dirTr = side === "BUY" ? "yukarı" : "aşağı";
+                const dirEn = side === "BUY" ? "above" : "below";
+                return (
+                  <button
+                    key={pips}
+                    type="button"
+                    disabled={lvl == null}
+                    onClick={() => {
+                      if (lvl != null) setTp(lvl);
+                    }}
+                    title={`TP ${pips} pip ${dirTr} · ${pips} pips ${dirEn} entry${lvl ? ` (${lvl})` : ""}`}
+                    aria-label={`TP ${pips} pip ${dirTr}`}
+                    className="rounded-full border border-desk-border/70 bg-desk-elev px-2 py-0.5 text-[10px] font-semibold tabular-nums text-desk-muted hover:bg-desk-hover hover:text-desk-text disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-desk-elev disabled:hover:text-desk-muted"
+                  >
+                    {pips}p
+                  </button>
+                );
+              })}
+            </div>
             {preview.tp != null && (
               <div
                 className={`mt-1 text-right text-[10px] font-semibold tabular-nums ${
@@ -726,7 +843,14 @@ export default function OrderTicket({
 
         {preview.rr != null && (
           <div className="flex items-center justify-between rounded-[12px] border border-desk-border/60 bg-desk-bg/70 px-3 py-2 text-[11px] md:rounded-control md:px-2.5 md:py-1.5">
-            <span className="font-semibold uppercase tracking-wider text-desk-muted">Risk / Reward</span>
+            <span className="font-semibold uppercase tracking-wider text-desk-muted">
+              Risk / Reward
+              {slInfo && tpInfo && slInfo.pips > 0 && tpInfo.pips > 0 && (
+                <span className="ml-1.5 font-medium normal-case tracking-normal text-desk-muted/80">
+                  ({fmtPips(slInfo.pips)} / {fmtPips(tpInfo.pips)} pip)
+                </span>
+              )}
+            </span>
             <span
               className={`font-bold tabular-nums ${preview.rr >= 1 ? "text-desk-buy" : "text-desk-text"}`}
             >

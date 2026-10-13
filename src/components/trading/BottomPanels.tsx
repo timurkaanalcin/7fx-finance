@@ -11,7 +11,7 @@ import { useI18n } from "@/lib/i18n/context";
 type Tab = "open" | "closed" | "pending";
 type SideFilter = "ALL" | "BUY" | "SELL";
 type ResultFilter = "ALL" | "PROFIT" | "LOSS";
-type PeriodFilter = "ALL" | "TODAY" | "7D" | "30D";
+type PeriodFilter = "ALL" | "TODAY" | "YESTERDAY" | "7D" | "30D";
 
 function csvCell(v: unknown): string {
   if (v == null) return "";
@@ -57,6 +57,11 @@ function periodCutoff(period: PeriodFilter): Date | null {
   if (period === "ALL") return null;
   const today = startOfLocalDay();
   if (period === "TODAY") return today;
+  if (period === "YESTERDAY") {
+    const y = new Date(today);
+    y.setDate(y.getDate() - 1);
+    return y;
+  }
   const days = period === "7D" ? 7 : 30;
   const cut = new Date(today);
   cut.setDate(cut.getDate() - (days - 1));
@@ -69,6 +74,8 @@ function matchesPeriod(iso: string | null | undefined, period: PeriodFilter): bo
   if (!iso) return false;
   const t = new Date(iso).getTime();
   if (Number.isNaN(t)) return false;
+  // Yesterday = previous local calendar day: start of yesterday <= t < start of today
+  if (period === "YESTERDAY") return t >= cut.getTime() && t < startOfLocalDay().getTime();
   return t >= cut.getTime();
 }
 
@@ -341,11 +348,13 @@ function Chip({
   onClick,
   children,
   tone,
+  title,
 }: {
   active: boolean;
   onClick: () => void;
   children: ReactNode;
   tone?: "buy" | "sell" | "neutral";
+  title?: string;
 }) {
   const activeCls =
     tone === "buy"
@@ -357,6 +366,8 @@ function Chip({
     <button
       type="button"
       onClick={onClick}
+      title={title}
+      aria-pressed={active}
       className={`rounded-[7px] border px-2 py-0.5 text-[10px] font-semibold transition-colors ${
         active
           ? activeCls
@@ -1915,6 +1926,13 @@ export default function BottomPanels({
             </Chip>
             <Chip active={periodFilter === "TODAY"} onClick={() => setPeriodFilter("TODAY")}>
               Bugün
+            </Chip>
+            <Chip
+              active={periodFilter === "YESTERDAY"}
+              onClick={() => setPeriodFilter("YESTERDAY")}
+              title="Dün · Yesterday"
+            >
+              Dün
             </Chip>
             <Chip active={periodFilter === "7D"} onClick={() => setPeriodFilter("7D")}>
               7 gün
