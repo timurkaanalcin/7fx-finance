@@ -83,10 +83,11 @@ if (!g2.__7fxScopeMw) {
     }
     if (params.action === "create" || params.action === "createMany" || params.action === "upsert") {
       const rows = params.action === "createMany" ? [].concat(args.data || []) : [params.action === "upsert" ? args.create : args.data];
-      for (const d of rows as Record<string, any>[]) {
+      for (const d of rows as Record<string, unknown>[]) {
         if (!d) continue;
         if (model === "User") throw new Error("Scoped staff cannot create users");
-        const owner = model === "AuditLog" ? d.adminId ?? d.admin?.connect?.id : d.userId ?? d.user?.connect?.id;
+        const dd = d as { adminId?: string; userId?: string; admin?: { connect?: { id?: string } }; user?: { connect?: { id?: string } } };
+        const owner = model === "AuditLog" ? dd.adminId ?? dd.admin?.connect?.id : dd.userId ?? dd.user?.connect?.id;
         if (owner && !ids.includes(owner)) throw new Error("Scoped staff: forbidden owner");
       }
     }
