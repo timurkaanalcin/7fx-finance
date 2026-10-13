@@ -22,6 +22,19 @@ function toLocalInput(iso: string | null): string {
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
 }
 
+/** Quick follow-up presets (browser local time). "+N gün" = now + N days, rounded up to the next full hour. */
+function quickFollow(kind: "today10" | number): string {
+  const d = new Date();
+  if (kind === "today10") {
+    d.setHours(10, 0, 0, 0);
+  } else {
+    d.setDate(d.getDate() + kind);
+    if (d.getMinutes() || d.getSeconds() || d.getMilliseconds()) d.setHours(d.getHours() + 1);
+    d.setMinutes(0, 0, 0);
+  }
+  return toLocalInput(d.toISOString());
+}
+
 /** Retention card: status, note, follow-up date, quick notes. Server enforces assignment scope. */
 export default function RetentionPanel({ userId }: { userId: string }) {
   const { i18n, code } = useCrmLabels();
@@ -83,6 +96,37 @@ export default function RetentionPanel({ userId }: { userId: string }) {
         <label className="flex flex-col gap-1">
           {i18n("crm.ret.followUp", "Takip tarihi")}
           <input type="datetime-local" className="rounded border px-2 py-1" value={follow} onChange={(e) => setFollow(e.target.value)} />
+          <span className="flex flex-wrap gap-1" title={i18n("crm.ret.qHint", "Sadece tarihi doldurur — uygulamak için Kaydet'e basın")}>
+            {([
+              ["today10", i18n("crm.ret.qToday10", "Bugün 10:00")],
+              [1, i18n("crm.ret.qPlus1", "+1 gün")],
+              [3, i18n("crm.ret.qPlus3", "+3 gün")],
+              [7, i18n("crm.ret.qPlus7", "+7 gün")],
+            ] as const).map(([k, label]) => (
+              <button
+                key={String(k)}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setFollow(quickFollow(k));
+                }}
+                className="rounded border border-black/15 px-2 py-0.5 text-xs hover:bg-black/5"
+              >
+                {label}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                setFollow("");
+              }}
+              disabled={!follow}
+              className="rounded border border-black/15 px-2 py-0.5 text-xs text-neutral-500 hover:bg-black/5 disabled:opacity-40"
+            >
+              {i18n("crm.ret.qClear", "Temizle")}
+            </button>
+          </span>
         </label>
         <label className="flex flex-col gap-1 sm:col-span-2">
           {i18n("crm.ret.note", "Retention notu")}

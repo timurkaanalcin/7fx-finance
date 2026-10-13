@@ -16,6 +16,8 @@ const ROWS: { keys: string[]; label: string }[] = [
   { keys: ["1"], label: "term.kb.tabOpen" },
   { keys: ["2"], label: "term.kb.tabClosed" },
   { keys: ["3"], label: "term.kb.tabPending" },
+  { keys: ["["], label: "term.kb.tfPrev" },
+  { keys: ["]"], label: "term.kb.tfNext" },
   { keys: ["?"], label: "term.kb.help" },
   { keys: ["Esc"], label: "term.kb.esc" },
 ];

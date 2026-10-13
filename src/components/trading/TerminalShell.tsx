@@ -5,6 +5,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 const TERM_PREFS_KEY = "7fx_term_prefs_v1";
 type TermPrefs = { symbol?: string; timeframe?: string; tab?: "open" | "closed" | "pending" };
+/** Chart timeframes in UI order (used by restore + [ / ] keyboard shortcuts). */
+const CHART_TIMEFRAMES = ["1m", "5m", "15m", "1h", "4h", "1D", "1W"] as const;
 function readTermPrefs(): TermPrefs {
   try {
     const v = JSON.parse(localStorage.getItem(TERM_PREFS_KEY) || "{}");
@@ -67,7 +69,7 @@ export default function TerminalShell() {
   const [timeframe, setTimeframe] = useState(() => {
     if (typeof window === "undefined") return "1W";
     const tf = readTermPrefs().timeframe;
-    const allowed = new Set(["1m", "5m", "15m", "1h", "4h", "1D", "1W"]);
+    const allowed = new Set<string>(CHART_TIMEFRAMES);
     return typeof tf === "string" && allowed.has(tf) ? tf : "1W";
   });
   const [tab, setTab] = useState<"open" | "closed" | "pending">(() => {
@@ -290,7 +292,7 @@ export default function TerminalShell() {
     setOrderOpen(true);
   }
 
-  // Keyboard shortcuts (desktop): B/S order, / search, 1-3 tabs, ? help, Esc closes help.
+  // Keyboard shortcuts (desktop): B/S order, / search, 1-3 tabs, [ ] timeframe, ? help, Esc closes help.
   const kbRef = useRef({ orderOpen, depositOpen, marginModalOpen, helpOpen, calcOpen, user });
   kbRef.current = { orderOpen, depositOpen, marginModalOpen, helpOpen, calcOpen, user };
   const openOrderRef = useRef(openOrder);
@@ -359,6 +361,18 @@ export default function TerminalShell() {
         case "3":
           setTab("pending");
           return;
+        case "[":
+        case "]": {
+          e.preventDefault();
+          const dir = e.key === "]" ? 1 : -1;
+          setTimeframe((cur) => {
+            const i = CHART_TIMEFRAMES.indexOf(cur as (typeof CHART_TIMEFRAMES)[number]);
+            if (i < 0) return cur;
+            const j = Math.min(CHART_TIMEFRAMES.length - 1, Math.max(0, i + dir));
+            return CHART_TIMEFRAMES[j];
+          });
+          return;
+        }
       }
     }
     window.addEventListener("keydown", onKey);

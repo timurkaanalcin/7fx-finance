@@ -242,6 +242,8 @@ export const tr: Dict = {
   "term.kb.tabPending": "Bekleyen emirler",
   "term.kb.help": "Bu yardımı göster / gizle",
   "term.kb.esc": "Pencereyi kapat",
+  "term.kb.tfPrev": "Önceki grafik zaman dilimi",
+  "term.kb.tfNext": "Sonraki grafik zaman dilimi",
   "term.sessions.title": "Piyasa seansları",
   "term.sessions.hint": "Forex işlem seansları (yerel piyasa saatleri, yaz saati dahil)",
   "term.sessions.weekend": "FX piyasası kapalı (hafta sonu)",

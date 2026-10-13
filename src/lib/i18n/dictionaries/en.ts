@@ -242,6 +242,8 @@ export const en: Dict = {
   "term.kb.tabPending": "Pending orders",
   "term.kb.help": "Show / hide this help",
   "term.kb.esc": "Close dialog",
+  "term.kb.tfPrev": "Previous chart timeframe",
+  "term.kb.tfNext": "Next chart timeframe",
   "term.sessions.title": "Market sessions",
   "term.sessions.hint": "Forex trading sessions (local market hours, DST-aware)",
   "term.sessions.weekend": "FX market closed (weekend)",
