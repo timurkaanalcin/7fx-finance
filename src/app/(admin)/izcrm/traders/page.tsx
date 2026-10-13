@@ -8,6 +8,7 @@ import { dayEndIso, dayStartIso } from "@/lib/crm-api";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LocationLabel, PresenceCell } from "@/components/crm/Presence";
+import CopyButton from "@/components/crm/CopyButton";
 
 type DeskOpt = { id: string; name: string; code: string | null };
 
@@ -471,6 +472,7 @@ export default function AdminUsersPage() {
                   {u.accountLoginId && (
                     <div className="font-mono text-[10px] tracking-wide text-sky-600">
                       {i18n("crm.ui.accountId")}: {u.accountLoginId}
+                      <CopyButton value={u.accountLoginId} title="Hesap ID kopyala" className="ml-1" />
                     </div>
                   )}
                   <div className="mt-0.5 flex flex-wrap gap-1">

@@ -3,6 +3,7 @@
 import { LOCALES } from "@/lib/i18n/locales";
 import EditablePositionsTable from "@/components/crm/EditablePositionsTable";
 import EditableOrdersTable from "@/components/crm/EditableOrdersTable";
+import CopyButton from "@/components/crm/CopyButton";
 import CrmRecordTable, { CrmAddForm, type CrmColumn } from "@/components/crm/CrmRecordTable";
 import { fmtCrmDate, fmtCrmMoney, fromDatetimeLocalValue, toDatetimeLocalValue } from "@/lib/crm-format";
 import { SYMBOLS } from "@/lib/symbols";
@@ -1385,6 +1386,7 @@ export default function AdminUserDetailPage() {
         {user.accountLoginId && (
           <span className="rounded bg-sky-50 px-2 py-0.5 font-mono text-[10px] text-sky-700">
             {i18n("crm.ui.accountId")}: {user.accountLoginId}
+            <CopyButton value={user.accountLoginId} title="Hesap ID kopyala" className="ml-1" />
           </span>
         )}
         <span

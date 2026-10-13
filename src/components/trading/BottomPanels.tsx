@@ -10,6 +10,40 @@ type SideFilter = "ALL" | "BUY" | "SELL";
 type ResultFilter = "ALL" | "PROFIT" | "LOSS";
 type PeriodFilter = "ALL" | "TODAY" | "7D" | "30D";
 
+function csvCell(v: unknown): string {
+  if (v == null) return "";
+  const str = typeof v === "number" ? (Number.isFinite(v) ? String(v) : "") : String(v);
+  if (/[",\r\n;]/.test(str)) return `"${str.replace(/"/g, '""')}"`;
+  return str;
+}
+
+function localDateStamp(d = new Date()): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function downloadCsv(filename: string, header: string[], rows: unknown[][]) {
+  if (typeof window === "undefined") return;
+  const lines = [header, ...rows].map((r) => r.map(csvCell).join(","));
+  const blob = new Blob(["\uFEFF" + lines.join("\r\n")], {
+    type: "text/csv;charset=utf-8",
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.rel = "noopener";
+  a.style.display = "none";
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    a.remove();
+    URL.revokeObjectURL(url);
+  }, 0);
+}
+
 function startOfLocalDay(d = new Date()) {
   const x = new Date(d);
   x.setHours(0, 0, 0, 0);
@@ -390,6 +424,43 @@ export default function BottomPanels({
     periodFilter !== "ALL" ||
     (tab === "closed" && resultFilter !== "ALL");
 
+  const exportRows =
+    tab === "open" ? filteredOpen : tab === "closed" ? filteredClosed : filteredPending;
+  const canExport = exportRows.length > 0;
+
+  const handleExportCsv = () => {
+    if (!canExport) return;
+    const stamp = localDateStamp();
+    if (tab === "open") {
+      downloadCsv(
+        `7fx-open-${stamp}.csv`,
+        ["id", "symbol", "side", "volume", "openPrice", "currentPrice", "stopLoss", "takeProfit", "profit", "margin", "openedAt"],
+        filteredOpen.map((p) => [
+          p.id, p.symbol, p.side, p.volume, p.openPrice, p.currentPrice,
+          p.stopLoss, p.takeProfit, p.profit, p.margin, p.openedAt,
+        ])
+      );
+    } else if (tab === "closed") {
+      downloadCsv(
+        `7fx-closed-${stamp}.csv`,
+        ["id", "symbol", "side", "volume", "openPrice", "closePrice", "closeProfit", "stopLoss", "takeProfit", "openedAt", "closedAt"],
+        filteredClosed.map((p) => [
+          p.id, p.symbol, p.side, p.volume, p.openPrice, p.closePrice ?? p.currentPrice,
+          p.closeProfit ?? p.profit, p.stopLoss, p.takeProfit, p.openedAt, p.closedAt ?? "",
+        ])
+      );
+    } else {
+      downloadCsv(
+        `7fx-pending-${stamp}.csv`,
+        ["id", "symbol", "side", "type", "volume", "price", "openPrice", "stopLoss", "takeProfit", "status", "createdAt"],
+        filteredPending.map((o) => [
+          o.id, o.symbol, o.side, o.type, o.volume, o.price, o.openPrice,
+          o.stopLoss, o.takeProfit, o.status, o.createdAt,
+        ])
+      );
+    }
+  };
+
   const openSummary = useMemo(() => {
     let pnl = 0;
     let buys = 0;
@@ -496,6 +567,16 @@ export default function BottomPanels({
           </button>
         ))}
         <div className="ml-auto flex items-center gap-2 self-center pb-1.5">
+          <button
+            type="button"
+            onClick={handleExportCsv}
+            disabled={!canExport}
+            title={canExport ? "Filtrelenmiş işlemleri CSV indir" : "İndirilecek işlem yok"}
+            aria-label="Filtrelenmiş işlemleri CSV indir"
+            className="rounded-control border border-desk-border px-2.5 py-1 text-[11px] text-desk-muted transition-colors hover:bg-desk-hover hover:text-desk-text disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-desk-muted"
+          >
+            CSV
+          </button>
           <button
             type="button"
             onClick={() => setShowFilters((v) => !v)}
