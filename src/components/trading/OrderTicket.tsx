@@ -105,6 +105,26 @@ function saveLastLot(symbol: string, volume: string) {
   }
 }
 
+// Per-device opt-in: show a review step before the order is sent
+const CONFIRM_KEY = "fx-order-confirm";
+
+function loadConfirmPref(): boolean {
+  try {
+    return window.localStorage.getItem(CONFIRM_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function saveConfirmPref(on: boolean) {
+  try {
+    if (on) window.localStorage.setItem(CONFIRM_KEY, "1");
+    else window.localStorage.removeItem(CONFIRM_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
 export default function OrderTicket({
   symbol,
   symbols,
@@ -135,6 +155,19 @@ export default function OrderTicket({
   const [msg, setMsg] = useState("");
   const [riskAmount, setRiskAmount] = useState("");
   const [riskError, setRiskError] = useState("");
+  const [confirmOn, setConfirmOn] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  // Guards against a double-click opening the review and confirming at once
+  const confirmOpenedAtRef = useRef(0);
+
+  useEffect(() => {
+    setConfirmOn(loadConfirmPref());
+  }, []);
+
+  // Any change to the order invalidates a pending review
+  useEffect(() => {
+    setConfirming(false);
+  }, [symbol, side, type, volume, limitPrice, sl, tp, showSl, showTp]);
 
   const def = symbols.find((s) => s.symbol === symbol);
   const digits = def?.digits ?? 5;
@@ -210,11 +243,26 @@ export default function OrderTicket({
   useEffect(() => {
     if (!onClose || !modal) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key !== "Escape") return;
+      if (confirming) {
+        setConfirming(false);
+        return;
+      }
+      onClose();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onClose, modal]);
+  }, [onClose, modal, confirming]);
+
+  // Inline (desktop) ticket: Esc cancels a pending review
+  useEffect(() => {
+    if (!confirming || modal) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setConfirming(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [confirming, modal]);
 
   function enableSl() {
     setShowSl((v) => {
@@ -253,6 +301,48 @@ export default function OrderTicket({
       return;
     }
     setVolume(vol.toFixed(2));
+  }
+
+  function requestSubmit() {
+    if (busy) return;
+    if (!confirmOn) {
+      void submit();
+      return;
+    }
+    if (confirming) {
+      if (Date.now() - confirmOpenedAtRef.current < 450) return;
+      setConfirming(false);
+      void submit();
+      return;
+    }
+    setMsg("");
+    const vol = Number(volume);
+    if (!Number.isFinite(vol) || vol < LOT_MIN || vol > LOT_MAX) {
+      setMsg("Geçersiz lot · Invalid volume");
+      return;
+    }
+    if (type !== "MARKET" && !(Number(limitPrice) > 0)) {
+      setMsg("Geçersiz fiyat · Invalid price");
+      return;
+    }
+    if (showSl && !(sl.trim() !== "" && Number.isFinite(Number(sl)))) {
+      setMsg("Enter Stop Loss price");
+      return;
+    }
+    if (showTp && !(tp.trim() !== "" && Number.isFinite(Number(tp)))) {
+      setMsg("Enter Take Profit price");
+      return;
+    }
+    confirmOpenedAtRef.current = Date.now();
+    setConfirming(true);
+  }
+
+  function toggleConfirmPref() {
+    setConfirmOn((v) => {
+      saveConfirmPref(!v);
+      return !v;
+    });
+    setConfirming(false);
   }
 
   async function submit() {
@@ -645,18 +735,105 @@ export default function OrderTicket({
           </div>
         )}
 
+        {confirming && (
+          <div
+            role="alertdialog"
+            aria-label="Emir onayı"
+            className="space-y-1.5 rounded-[12px] border border-desk-accent/50 bg-desk-accent/10 px-3 py-2.5 text-[11px] md:rounded-control md:px-2.5 md:py-2"
+          >
+            <div className="text-[10px] font-semibold uppercase tracking-wider text-desk-accent">
+              Emir onayı · Review order
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-desk-muted">İşlem</span>
+              <span className={`font-bold ${side === "BUY" ? "text-desk-buy" : "text-desk-sell"}`}>
+                {side === "BUY" ? "AL · BUY" : "SAT · SELL"} {symbol}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-desk-muted">Tür / Lot</span>
+              <span className="font-semibold tabular-nums text-desk-text">
+                {type === "MARKET" ? "Piyasa" : type === "LIMIT" ? "Limit" : "Stop"} · {Number(volume).toFixed(2)}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-desk-muted">{type === "MARKET" ? "Tahmini giriş" : "Emir fiyatı"}</span>
+              <span className="font-semibold tabular-nums text-desk-text">
+                {entry ? formatPrice(symbol, entry) : "—"}
+              </span>
+            </div>
+            {showSl && sl.trim() !== "" && (
+              <div className="flex items-center justify-between">
+                <span className="text-desk-muted">Stop Loss</span>
+                <span className="font-semibold tabular-nums text-desk-text">
+                  {sl}
+                  {preview.sl != null && (
+                    <span className="ml-1 text-desk-sell">({fmtSignedUsd(preview.sl)})</span>
+                  )}
+                </span>
+              </div>
+            )}
+            {showTp && tp.trim() !== "" && (
+              <div className="flex items-center justify-between">
+                <span className="text-desk-muted">Take Profit</span>
+                <span className="font-semibold tabular-nums text-desk-text">
+                  {tp}
+                  {preview.tp != null && (
+                    <span className="ml-1 text-desk-buy">({fmtSignedUsd(preview.tp)})</span>
+                  )}
+                </span>
+              </div>
+            )}
+            {notional > 0 && (
+              <div className="flex items-center justify-between">
+                <span className="text-desk-muted">Pozisyon değeri</span>
+                <span className="font-semibold tabular-nums text-desk-text">{fmtUsd(notional)}</span>
+              </div>
+            )}
+            {type === "MARKET" && (
+              <div className="text-[10px] text-desk-muted">
+                Piyasa emri anlık fiyattan gerçekleşir; fiyat değişebilir.
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => setConfirming(false)}
+              className="w-full rounded-full border border-desk-border/70 bg-desk-elev py-1.5 text-[11px] font-semibold text-desk-muted hover:bg-desk-hover hover:text-desk-text"
+            >
+              Vazgeç · Cancel (Esc)
+            </button>
+          </div>
+        )}
+
         <button
           type="button"
           disabled={busy}
-          onClick={submit}
+          onClick={requestSubmit}
           className={`w-full rounded-[14px] py-3.5 text-[15px] font-bold tracking-wide text-white disabled:opacity-60 md:rounded-control md:py-3 md:text-sm ${
             side === "BUY"
               ? "bg-desk-buy shadow-buy-glow hover:brightness-110"
               : "bg-desk-sell shadow-sell-glow hover:brightness-110"
           }`}
         >
-          {busy ? "Submitting…" : side === "BUY" ? "Submit Buy Order" : "Submit Sell Order"}
+          {busy
+            ? "Submitting…"
+            : confirming
+              ? side === "BUY"
+                ? "Onayla · Confirm Buy"
+                : "Onayla · Confirm Sell"
+              : side === "BUY"
+                ? "Submit Buy Order"
+                : "Submit Sell Order"}
         </button>
+        <label className="flex cursor-pointer select-none items-center justify-center gap-1.5 text-[10px] font-medium text-desk-muted">
+          <input
+            type="checkbox"
+            checked={confirmOn}
+            onChange={toggleConfirmPref}
+            className="h-3 w-3 accent-current"
+          />
+          Göndermeden önce onay iste
+        </label>
         {msg && (
           <div className="rounded-[12px] bg-desk-accent/10 px-2.5 py-2 text-center text-xs font-medium text-desk-accent md:rounded-control md:px-2 md:py-1.5">
             {msg}
