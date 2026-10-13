@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { formatPrice } from "@/lib/symbols";
+import { calcTradeProfit } from "@/lib/pnl";
 import SymbolIcon from "@/components/ui/SymbolIcon";
 import type { PriceTick, SymbolDef } from "./types";
 
@@ -31,6 +32,14 @@ function defaultSlTp(
     sl: slRaw.toFixed(digits),
     tp: tpRaw.toFixed(digits),
   };
+}
+
+const LOT_PRESETS = ["0.01", "0.10", "0.50", "1.00"];
+
+function fmtSignedUsd(n: number): string {
+  if (!Number.isFinite(n)) return "—";
+  const abs = Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return `${n < 0 ? "−" : "+"}$${abs}`;
 }
 
 function fmtUsd(n: number): string {
@@ -91,6 +100,44 @@ export default function OrderTicket({
     if (!Number.isFinite(vol) || vol <= 0 || !mid) return 0;
     return vol * contract * mid;
   }, [volume, price?.mid, def?.contractSize]);
+
+  // Estimated entry: ask for BUY / bid for SELL on market, else the entered price
+  const entry = useMemo(() => {
+    if (type !== "MARKET") {
+      const p = Number(limitPrice);
+      return Number.isFinite(p) && p > 0 ? p : 0;
+    }
+    return (side === "BUY" ? price?.ask : price?.bid) ?? price?.mid ?? 0;
+  }, [type, limitPrice, side, price?.ask, price?.bid, price?.mid]);
+
+  const preview = useMemo(() => {
+    const vol = Number(volume);
+    const cs = def?.contractSize ?? 1;
+    if (!entry || !Number.isFinite(vol) || vol <= 0) return { sl: null, tp: null, rr: null };
+    const slN = Number(sl);
+    const tpN = Number(tp);
+    const slPnl =
+      showSl && sl.trim() !== "" && Number.isFinite(slN) && slN > 0
+        ? calcTradeProfit(side, vol, entry, slN, cs)
+        : null;
+    const tpPnl =
+      showTp && tp.trim() !== "" && Number.isFinite(tpN) && tpN > 0
+        ? calcTradeProfit(side, vol, entry, tpN, cs)
+        : null;
+    const rr =
+      slPnl != null && tpPnl != null && slPnl < 0 && tpPnl > 0 ? tpPnl / Math.abs(slPnl) : null;
+    return { sl: slPnl, tp: tpPnl, rr };
+  }, [entry, volume, def?.contractSize, side, sl, tp, showSl, showTp]);
+
+  // Escape closes the ticket (modal / mobile sheet)
+  useEffect(() => {
+    if (!onClose || !modal) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose, modal]);
 
   function enableSl() {
     setShowSl((v) => {
@@ -299,7 +346,24 @@ export default function OrderTicket({
               +
             </button>
           </div>
-          <div className="mt-1 flex justify-end">
+          <div className="mt-1.5 flex items-center justify-between gap-2">
+            <div className="flex gap-1" role="group" aria-label="Quick lot size">
+              {LOT_PRESETS.map((p) => (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => setVolume(p)}
+                  aria-pressed={Number(volume) === Number(p)}
+                  className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold tabular-nums transition ${
+                    Number(volume) === Number(p)
+                      ? "border-desk-accent/60 bg-desk-accent/15 text-desk-accent"
+                      : "border-desk-border/70 bg-desk-elev text-desk-muted hover:bg-desk-hover hover:text-desk-text"
+                  }`}
+                >
+                  {Number(p)}
+                </button>
+              ))}
+            </div>
             <span className="text-[10px] tabular-nums text-desk-muted/80">
               Notional {fmtUsd(notional)}
             </span>
@@ -356,6 +420,16 @@ export default function OrderTicket({
               autoFocus
               className="w-full rounded-[12px] border border-desk-sell/40 bg-desk-bg px-3 py-2.5 text-sm tabular-nums text-desk-text outline-none focus:border-desk-sell md:rounded-control md:px-2.5 md:py-2"
             />
+            {preview.sl != null && (
+              <div
+                className={`mt-1 text-right text-[10px] font-semibold tabular-nums ${
+                  preview.sl < 0 ? "text-desk-sell" : "text-desk-buy"
+                }`}
+                title="Estimated P&L if Stop Loss is hit"
+              >
+                ≈ {fmtSignedUsd(preview.sl)}
+              </div>
+            )}
           </div>
         )}
 
@@ -370,6 +444,27 @@ export default function OrderTicket({
               placeholder="Price"
               className="w-full rounded-[12px] border border-desk-buy/40 bg-desk-bg px-3 py-2.5 text-sm tabular-nums text-desk-text outline-none focus:border-desk-buy md:rounded-control md:px-2.5 md:py-2"
             />
+            {preview.tp != null && (
+              <div
+                className={`mt-1 text-right text-[10px] font-semibold tabular-nums ${
+                  preview.tp < 0 ? "text-desk-sell" : "text-desk-buy"
+                }`}
+                title="Estimated P&L if Take Profit is hit"
+              >
+                ≈ {fmtSignedUsd(preview.tp)}
+              </div>
+            )}
+          </div>
+        )}
+
+        {preview.rr != null && (
+          <div className="flex items-center justify-between rounded-[12px] border border-desk-border/60 bg-desk-bg/70 px-3 py-2 text-[11px] md:rounded-control md:px-2.5 md:py-1.5">
+            <span className="font-semibold uppercase tracking-wider text-desk-muted">Risk / Reward</span>
+            <span
+              className={`font-bold tabular-nums ${preview.rr >= 1 ? "text-desk-buy" : "text-desk-text"}`}
+            >
+              1 : {preview.rr.toFixed(2)}
+            </span>
           </div>
         )}
 
