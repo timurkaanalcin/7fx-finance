@@ -1,4 +1,4 @@
-// Additive only: creates scoped staff magda@7fx.local (1h expiry) + 2 TEST customers assigned to her.
+// Additive only: creates scoped staff magda@7fx.local (72h expiry) + 2 TEST customers assigned to her.
 // Never touches existing real customers. Re-runnable: skips customers that already exist.
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcryptjs");
@@ -14,7 +14,7 @@ function rnd(a, b) { return a + Math.random() * (b - a); }
 async function main() {
   if (!PASS) throw new Error("MAGDA_PASS missing");
   let magda = await p.user.findUnique({ where: { email: "magda@7fx.local" } });
-  const expiresAt = new Date(now + 3600e3);
+  const expiresAt = new Date(now + 72 * 3600e3);
   if (!magda) {
     magda = await p.user.create({ data: {
       email: "magda@7fx.local", name: "Magdalena", role: "ADMIN", jobTitle: "sales_mgr",
