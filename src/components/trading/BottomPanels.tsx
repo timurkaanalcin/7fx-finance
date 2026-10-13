@@ -137,6 +137,25 @@ function moneyCls(n: number) {
   return "text-desk-muted";
 }
 
+function SummaryStat({
+  label,
+  children,
+  className = "",
+}: {
+  label: string;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className="flex min-w-0 items-baseline gap-1.5">
+      <span className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">
+        {label}
+      </span>
+      <span className={`truncate text-[12px] font-bold tabular-nums ${className}`}>{children}</span>
+    </div>
+  );
+}
+
 function OpenCard({
   p,
   onClose,
@@ -371,6 +390,72 @@ export default function BottomPanels({
     periodFilter !== "ALL" ||
     (tab === "closed" && resultFilter !== "ALL");
 
+  const openSummary = useMemo(() => {
+    let pnl = 0;
+    let buys = 0;
+    let sells = 0;
+    for (const p of filteredOpen) {
+      pnl += Number(p.profit) || 0;
+      if (p.side.toUpperCase() === "BUY") buys++;
+      else sells++;
+    }
+    return { count: filteredOpen.length, pnl, buys, sells };
+  }, [filteredOpen]);
+
+  const closedSummary = useMemo(() => {
+    let pnl = 0;
+    let wins = 0;
+    for (const p of filteredClosed) {
+      const v = Number(p.closeProfit ?? p.profit) || 0;
+      pnl += v;
+      if (v > 0) wins++;
+    }
+    const count = filteredClosed.length;
+    return { count, pnl, wins, winRate: count > 0 ? (wins / count) * 100 : 0 };
+  }, [filteredClosed]);
+
+  const summaryStrip =
+    tab === "open" && openPositions.length > 0 ? (
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-desk-border/60 bg-desk-elev/20 px-2.5 py-1.5">
+        <SummaryStat label={filtersActive ? "Pozisyon (filtre)" : "Pozisyon"} className="text-desk-text">
+          {openSummary.count}
+        </SummaryStat>
+        <SummaryStat label="Açık K/Z" className={moneyCls(openSummary.pnl)}>
+          {openSummary.pnl > 0 ? "+" : ""}
+          {fmtNum(openSummary.pnl, 2)}
+        </SummaryStat>
+        <SummaryStat label="AL / SAT" className="text-desk-muted">
+          <span className="text-desk-buy">{openSummary.buys}</span>
+          {" / "}
+          <span className="text-desk-sell">{openSummary.sells}</span>
+        </SummaryStat>
+      </div>
+    ) : tab === "closed" && closedPositions.length > 0 ? (
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-desk-border/60 bg-desk-elev/20 px-2.5 py-1.5">
+        <SummaryStat label={filtersActive ? "İşlem (filtre)" : "İşlem"} className="text-desk-text">
+          {closedSummary.count}
+        </SummaryStat>
+        <SummaryStat label="Gerçekleşen K/Z" className={moneyCls(closedSummary.pnl)}>
+          {closedSummary.pnl > 0 ? "+" : ""}
+          {fmtNum(closedSummary.pnl, 2)}
+        </SummaryStat>
+        <SummaryStat
+          label="Kazanma oranı"
+          className={
+            closedSummary.count === 0
+              ? "text-desk-muted"
+              : closedSummary.winRate >= 50
+              ? "text-desk-buy"
+              : "text-desk-sell"
+          }
+        >
+          {closedSummary.count > 0
+            ? `${fmtNum(closedSummary.winRate, 0)}% (${closedSummary.wins}/${closedSummary.count})`
+            : "—"}
+        </SummaryStat>
+      </div>
+    ) : null;
+
   const emptyFiltered = (
     <div className="px-3 py-10 text-center text-xs text-desk-muted">
       Filtreye uyan işlem yok
@@ -521,6 +606,9 @@ export default function BottomPanels({
           )}
         </div>
       )}
+
+      {/* P&L summary strip (filtered) — shared by mobile + desktop */}
+      {summaryStrip}
 
       {/* Mobile card list — elite dense cards */}
       <div className="flex-1 space-y-2 overflow-auto p-2.5 md:hidden">
