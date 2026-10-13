@@ -1393,6 +1393,8 @@ export default function BottomPanels({
   const [openSymbolChip, setOpenSymbolChip] = useState("");
   // Closed tab: exact-symbol quick filter chip ("" = all)
   const [closedSymbolChip, setClosedSymbolChip] = useState("");
+  // Pending tab: exact-symbol quick filter chip ("" = all)
+  const [pendingSymbolChip, setPendingSymbolChip] = useState("");
   // Closed tab: daily P&L calendar (per-device open state) + selected day ("" = all days)
   const [showPnlCal, setShowPnlCal] = useState(false);
   const [closedDay, setClosedDay] = useState("");
@@ -1466,10 +1468,25 @@ export default function BottomPanels({
     if (closedSymbolChip) rows = rows.filter((p) => p.symbol === closedSymbolChip);
     return rows;
   }, [calendarClosed, closedDay, closedSymbolChip]);
-  const filteredPending = useMemo(
-    () => filterOrders(pendingOrders, filterOpts),
-    [pendingOrders, filterOpts]
-  );
+  // Distinct symbols across all pending orders (independent of other filters), most orders first
+  const pendingSymbolCounts = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const o of pendingOrders) m.set(o.symbol, (m.get(o.symbol) ?? 0) + 1);
+    return Array.from(m.entries()).sort((a, b) => b[1] - a[1] || cmpStr(a[0], b[0]));
+  }, [pendingOrders]);
+  const showPendingSymbolChips = pendingSymbolCounts.length >= 2;
+
+  // Drop a stale pending chip when that symbol has no pending orders anymore
+  useEffect(() => {
+    if (pendingSymbolChip && !pendingSymbolCounts.some(([sym]) => sym === pendingSymbolChip)) {
+      setPendingSymbolChip("");
+    }
+  }, [pendingSymbolChip, pendingSymbolCounts]);
+
+  const filteredPending = useMemo(() => {
+    const rows = filterOrders(pendingOrders, filterOpts);
+    return pendingSymbolChip ? rows.filter((o) => o.symbol === pendingSymbolChip) : rows;
+  }, [pendingOrders, filterOpts, pendingSymbolChip]);
 
   const sortedOpen = useMemo(
     () => sortPositions(filteredOpen, openSort, "open"),
@@ -1500,6 +1517,7 @@ export default function BottomPanels({
     periodFilter !== "ALL" ||
     textFilter.trim() !== "" ||
     (tab === "open" && openSymbolChip !== "") ||
+    (tab === "pending" && pendingSymbolChip !== "") ||
     (tab === "closed" && (resultFilter !== "ALL" || closedDay !== "" || closedSymbolChip !== ""));
 
   const clearAllFilters = useCallback(() => {
@@ -1510,13 +1528,20 @@ export default function BottomPanels({
     setTextFilter("");
     setOpenSymbolChip("");
     setClosedSymbolChip("");
+    setPendingSymbolChip("");
     setClosedDay("");
   }, []);
 
-  // Esc clears the open/closed-symbol chip (unless typing in a field or a dialog is open)
+  // Esc clears the open/closed/pending-symbol chip (unless typing in a field or a dialog is open)
   useEffect(() => {
     const chip =
-      tab === "open" ? openSymbolChip : tab === "closed" ? closedSymbolChip : "";
+      tab === "open"
+        ? openSymbolChip
+        : tab === "closed"
+          ? closedSymbolChip
+          : tab === "pending"
+            ? pendingSymbolChip
+            : "";
     if (!chip) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape" || e.defaultPrevented) return;
@@ -1525,10 +1550,11 @@ export default function BottomPanels({
       if (document.querySelector('[role="dialog"], [aria-modal="true"]')) return;
       if (tab === "open") setOpenSymbolChip("");
       else if (tab === "closed") setClosedSymbolChip("");
+      else if (tab === "pending") setPendingSymbolChip("");
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [tab, openSymbolChip, closedSymbolChip]);
+  }, [tab, openSymbolChip, closedSymbolChip, pendingSymbolChip]);
 
   const exportRows =
     tab === "open" ? sortedOpen : tab === "closed" ? sortedClosed : sortedPending;
@@ -2075,6 +2101,33 @@ export default function BottomPanels({
               <Chip
                 active={closedSymbolChip === sym}
                 onClick={() => setClosedSymbolChip((cur) => (cur === sym ? "" : sym))}
+              >
+                {sym} <span className="tabular-nums opacity-70">{n}</span>
+              </Chip>
+            </span>
+          ))}
+        </div>
+      )}
+
+      {tab === "pending" && showPendingSymbolChips && (
+        <div
+          className="flex items-center gap-1 overflow-x-auto border-b border-desk-border/60 px-2.5 py-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          role="group"
+          aria-label="Sembole göre filtrele · Filter by symbol"
+        >
+          <span className="mr-0.5 shrink-0 text-[9px] font-medium uppercase tracking-wider text-desk-muted">
+            Sembol
+          </span>
+          <span className="shrink-0">
+            <Chip active={pendingSymbolChip === ""} onClick={() => setPendingSymbolChip("")}>
+              Tümü · All <span className="tabular-nums opacity-70">{pendingOrders.length}</span>
+            </Chip>
+          </span>
+          {pendingSymbolCounts.map(([sym, n]) => (
+            <span key={sym} className="shrink-0">
+              <Chip
+                active={pendingSymbolChip === sym}
+                onClick={() => setPendingSymbolChip((cur) => (cur === sym ? "" : sym))}
               >
                 {sym} <span className="tabular-nums opacity-70">{n}</span>
               </Chip>
