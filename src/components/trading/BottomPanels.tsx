@@ -513,6 +513,29 @@ function symbolPipSize(symbol: string): number {
 
 const PIP_PRESETS = [10, 20, 50] as const;
 
+/** Absolute distance (pips) from current market price to an SL/TP level; null if unset/invalid. */
+function levelDistancePips(p: PositionRow, level: number | null | undefined): number | null {
+  if (level == null || !Number.isFinite(level) || level <= 0) return null;
+  const ref = Number.isFinite(p.currentPrice) && p.currentPrice > 0 ? p.currentPrice : p.openPrice;
+  const size = symbolPipSize(p.symbol);
+  if (!Number.isFinite(ref) || !(size > 0)) return null;
+  return Math.abs(ref - level) / size;
+}
+
+/** Small "SL 12.3p" / "TP 45.0p" distance-to-level hint (client-only display). */
+function LevelDistance({ p, kind, className = "" }: { p: PositionRow; kind: "sl" | "tp"; className?: string }) {
+  const d = levelDistancePips(p, kind === "sl" ? p.stopLoss : p.takeProfit);
+  if (d == null) return null;
+  return (
+    <span
+      className={`tabular-nums text-[9.5px] ${kind === "sl" ? "text-desk-sell/80" : "text-desk-buy/90"} ${className}`}
+      title={kind === "sl" ? "Stop Loss seviyesine uzaklık (güncel fiyattan, pip)" : "Take Profit seviyesine uzaklık (güncel fiyattan, pip)"}
+    >
+      {kind === "sl" ? "SL" : "TP"} {fmtNum(d, 1)}p
+    </span>
+  );
+}
+
 /**
  * Price `pips` away from reference in the protective (SL) or profit (TP) direction.
  * BUY: SL below, TP above. SELL: SL above, TP below.
@@ -784,6 +807,12 @@ function OpenCard({
             {" / "}
             {p.takeProfit != null ? formatPrice(p.symbol, p.takeProfit) : "—"}
           </div>
+          {(p.stopLoss != null || p.takeProfit != null) && (
+            <div className="mt-0.5 flex flex-wrap gap-x-1.5 leading-tight">
+              <LevelDistance p={p} kind="sl" />
+              <LevelDistance p={p} kind="tp" />
+            </div>
+          )}
         </div>
       </div>
 
@@ -1850,10 +1879,12 @@ export default function BottomPanels({
                       {formatPrice(p.symbol, p.currentPrice)}
                     </td>
                     <td className="px-2 py-1.5 tabular-nums text-desk-muted">
-                      {p.stopLoss != null ? formatPrice(p.symbol, p.stopLoss) : "—"}
+                      <div>{p.stopLoss != null ? formatPrice(p.symbol, p.stopLoss) : "—"}</div>
+                      <LevelDistance p={p} kind="sl" className="block leading-tight" />
                     </td>
                     <td className="px-2 py-1.5 tabular-nums text-desk-muted">
-                      {p.takeProfit != null ? formatPrice(p.symbol, p.takeProfit) : "—"}
+                      <div>{p.takeProfit != null ? formatPrice(p.symbol, p.takeProfit) : "—"}</div>
+                      <LevelDistance p={p} kind="tp" className="block leading-tight" />
                     </td>
                     <td className="px-2 py-1.5 text-desk-muted">0.00</td>
                     <td className="px-2 py-1.5 text-desk-muted">0.00</td>
