@@ -2,22 +2,12 @@ import { NextResponse } from "next/server";
 import { requireAdmin, requireAdminWrite, writeAudit } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { canAccessUser } from "@/lib/crm-scope";
+import { RETENTION_STATUSES } from "@/lib/membership";
 
 export const dynamic = "force-dynamic";
 
 type Ctx = { params: { id: string } };
 
-const RETENTION_STATUSES = [
-  "NEW",
-  "CONTACTED",
-  "FOLLOW_UP",
-  "INTERESTED",
-  "NO_ANSWER",
-  "CALL_AGAIN",
-  "DEPOSITED",
-  "NOT_INTERESTED",
-  "LOST",
-] as const;
 
 async function load(id: string) {
   return prisma.user.findFirst({
@@ -52,7 +42,7 @@ export async function PATCH(req: Request, ctx: Ctx) {
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   const id = ctx.params.id;
   if (!(await canAccessUser(admin, id))) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  const target = await prisma.user.findFirst({ where: { id, role: "TRADER" }, select: { id: true } });
+  const target = await prisma.user.findFirst({ where: { id, role: "TRADER" }, select: { id: true, retentionFollowUpAt: true } });
   if (!target) return NextResponse.json({ error: "Not found" }, { status: 404 });
   const body = (await req.json().catch(() => ({}))) as Record<string, unknown>;
 
@@ -73,7 +63,8 @@ export async function PATCH(req: Request, ctx: Ctx) {
     data.retentionFollowUpAt = followUp;
   }
   if (Object.keys(data).length) await prisma.user.update({ where: { id }, data: data as never });
-  if (followUp) {
+  // Only create a reminder when the follow-up date actually changes (avoid duplicates on every save).
+  if (followUp && followUp.getTime() !== (target.retentionFollowUpAt?.getTime() ?? -1)) {
     await prisma.reminder.create({
       data: { userId: id, workerId: admin.id, workerName: admin.name, body: "Retention takip", remindAt: followUp },
     });

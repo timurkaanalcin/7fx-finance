@@ -37,6 +37,8 @@ const STAFF_KEYS = new Set([
   "affiliateC",
   "referralCodeUsed",
   "retentionStatus",
+  "retentionNote",
+  "retentionFollowUpAt",
   "saleStatus",
   "potentialStatus",
   "validationStatus",

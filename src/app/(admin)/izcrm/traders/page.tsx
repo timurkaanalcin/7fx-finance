@@ -42,6 +42,7 @@ type UserRow = {
   saleStatus: string | null;
   retentionStatus: string | null;
   brokerName: string | null;
+  assigneeName?: string | null;
   ftd: boolean;
   phone: string | null;
   accountType: string;
@@ -784,7 +785,14 @@ export default function AdminUsersPage() {
                     )}
                   </div>
                 </td>
-                <td className="px-3 py-2.5 text-neutral-500">{u.brokerName || "—"}</td>
+                <td className="px-3 py-2.5 text-neutral-500">
+                  {u.brokerName || "—"}
+                  {u.assigneeName ? (
+                    <div className="text-[9px] text-neutral-400" title={i18n("crm.ui.assignee")}>
+                      {i18n("crm.ui.assignee")}: {u.assigneeName}
+                    </div>
+                  ) : null}
+                </td>
                 <td className="px-3 py-2.5 text-[10px] text-neutral-500">
                   {u.lastLoginAt ? fmtCrmDate(u.lastLoginAt) : "—"}
                 </td>

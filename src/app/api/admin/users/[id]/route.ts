@@ -1,3 +1,4 @@
+import { canAccessUser, isScopedStaff } from "@/lib/crm-scope";
 import { NextResponse } from "next/server";
 import { writeAudit, requireAdmin, requireAdminPerm, isCrmReadOnlyAdmin } from "@/lib/auth";
 import { maskTraderForRoViewer } from "@/lib/security/mask";
@@ -23,6 +24,7 @@ export async function GET(_req: Request, ctx: Ctx) {
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const id = ctx.params.id;
+  if (!(await canAccessUser(admin, id))) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const user = await prisma.user.findUnique({
     where: { id },
     include: {
@@ -139,6 +141,8 @@ export async function PATCH(req: Request, ctx: Ctx) {
   await ensureDemoSeed();
   const admin = await requireAdminPerm("canManageUsers");
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  // Scoped staff (Sales/Retention Manager) never edit profiles or reassign; retention goes via /api/admin/retention/[id].
+  if (isScopedStaff(admin)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const id = ctx.params.id;
   const target = await prisma.user.findUnique({ where: { id } });
@@ -194,6 +198,7 @@ export async function PATCH(req: Request, ctx: Ctx) {
   }
 
   if (body.assigneeId !== undefined) {
+    if (target.role !== "TRADER") return NextResponse.json({ error: "Only customers can be assigned" }, { status: 400 });
     const aid = String(body.assigneeId || "").trim();
     if (!aid) {
       (data as Record<string, unknown>).assigneeId = null;
@@ -203,6 +208,16 @@ export async function PATCH(req: Request, ctx: Ctx) {
       (data as Record<string, unknown>).assigneeId = staff.id;
       (data as Record<string, unknown>).assigneeName = staff.name;
     }
+  }
+
+  if (body.retentionNote !== undefined) {
+    (data as Record<string, unknown>).retentionNote = String(body.retentionNote || "").slice(0, 4000) || null;
+  }
+  if (body.retentionFollowUpAt !== undefined) {
+    const raw = String(body.retentionFollowUpAt || "").trim();
+    const d = raw ? new Date(raw) : null;
+    if (d && Number.isNaN(d.getTime())) return NextResponse.json({ error: "Invalid date" }, { status: 400 });
+    (data as Record<string, unknown>).retentionFollowUpAt = d;
   }
 
   if (body.jobTitle !== undefined) {
