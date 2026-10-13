@@ -127,14 +127,29 @@ export default function AdminDepositsPage() {
         </div>
       </div>
       <div className="mb-3 flex flex-wrap items-center gap-2">
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={i18n("crm.dep.searchPh")}
-          aria-label={i18n("crm.ui.search")}
-          className="w-full max-w-xs rounded border border-[#e5e5e5] bg-white px-2 py-1 text-xs outline-none focus:border-black/40"
-        />
+        <div className="relative w-full max-w-xs">
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") setQuery("");
+            }}
+            placeholder={i18n("crm.dep.searchPh")}
+            aria-label={i18n("crm.ui.search")}
+            className="w-full rounded border border-[#e5e5e5] bg-white py-1 pl-2 pr-6 text-xs outline-none focus:border-black/40"
+          />
+          {query && (
+            <button
+              type="button"
+              onClick={() => setQuery("")}
+              aria-label={i18n("crm.ui.clearField")}
+              title={i18n("crm.ui.clearField")}
+              className="absolute right-1 top-1/2 -translate-y-1/2 px-1 text-neutral-400 hover:text-neutral-700"
+            >
+              ×
+            </button>
+          )}
+        </div>
         <span className="rounded bg-[#f2f2f2] px-2 py-1 text-xs tabular-nums">
           {i18n("crm.dep.count")}: <b>{shown.length}</b>
         </span>

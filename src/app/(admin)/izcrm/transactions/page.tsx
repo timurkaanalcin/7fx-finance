@@ -27,6 +27,11 @@ const LEDGER_TYPES = [
 
 const ctl = "rounded border border-neutral-300 bg-white px-2 py-1.5 text-xs";
 
+function csvCell(v: unknown): string {
+  const s = v == null ? "" : String(v);
+  return /[",\r\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
 /**
  * Global balance ledger. Writes reuse /api/admin/users/[id]/records (entity=ledger) —
  * the same API and 'Bakiyeye yansıt' rule as the trader-detail "Bakiye geçmişi" tab.
@@ -42,6 +47,9 @@ export default function TransactionsPage() {
   const [to, setTo] = useState("");
   const [limit, setLimit] = useState("400");
   const [loading, setLoading] = useState(false);
+  // Per-type counts captured from the last load WITHOUT a type filter, so chips stay
+  // stable while a type chip is active (the API filters by type server-side).
+  const [baseCounts, setBaseCounts] = useState<{ total: number; byType: [string, number][] } | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setQDebounced(q.trim()), 300);
@@ -63,7 +71,16 @@ export default function TransactionsPage() {
       const res = await fetch(`/api/admin/transactions?${p}`);
       if (!res.ok) return;
       const data = await res.json();
-      setRows(data.transactions || []);
+      const list: Row[] = data.transactions || [];
+      setRows(list);
+      if (!type) {
+        const m = new Map<string, number>();
+        for (const r of list) {
+          const t = String(r.type || "");
+          if (t) m.set(t, (m.get(t) || 0) + 1);
+        }
+        setBaseCounts({ total: list.length, byType: Array.from(m.entries()).sort((a, b) => b[1] - a[1]) });
+      }
     } finally {
       setLoading(false);
     }
@@ -81,6 +98,54 @@ export default function TransactionsPage() {
     }
     return Array.from(m.entries());
   }, [rows]);
+
+  const typeChips = useMemo(() => {
+    const base = baseCounts || { total: rows.length, byType: [] as [string, number][] };
+    const m = new Map(base.byType);
+    // Active type: trust the freshly loaded rows; keep it visible even if absent from base.
+    if (type) m.set(type, rows.length);
+    const list = Array.from(m.entries());
+    return { total: base.total, list };
+  }, [baseCounts, rows.length, type]);
+
+  function downloadCsv() {
+    const header = [
+      i18n("crm.ui.date"),
+      i18n("crm.ui.type"),
+      i18n("crm.ui.amount"),
+      i18n("crm.ui.currency"),
+      i18n("crm.ui.trader"),
+      i18n("crm.ui.comment"),
+      i18n("crm.edit.ref"),
+    ];
+    const lines = [header.map(csvCell).join(",")];
+    for (const r of rows) {
+      const trader = [r.trader, r.traderEmail].filter(Boolean).map(String).join(" · ");
+      const ref = r.refType ? `${r.refType}${r.refId ? ` · ${String(r.refId)}` : ""}` : "";
+      lines.push(
+        [
+          r.createdAt ? String(r.createdAt) : "",
+          r.type ? code("crm.ledger", String(r.type)) : "",
+          r.amount ?? "",
+          r.currency || "",
+          trader,
+          r.comment || "",
+          ref,
+        ]
+          .map(csvCell)
+          .join(","),
+      );
+    }
+    const blob = new Blob(["\uFEFF" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `transactions-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
 
   const byId = useMemo(() => new Map(rows.map((r) => [String(r.id), r])), [rows]);
 
@@ -187,12 +252,28 @@ export default function TransactionsPage() {
         </label>
         <label className="flex flex-col gap-1">
           <span className="text-[10px] text-neutral-500">{i18n("crm.ui.search")}</span>
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder={i18n("crm.edit.searchClient")}
-            className={ctl + " w-56"}
-          />
+          <div className="relative">
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") setQ("");
+              }}
+              placeholder={i18n("crm.edit.searchClient")}
+              className={ctl + " w-56 pr-6"}
+            />
+            {q && (
+              <button
+                type="button"
+                onClick={() => setQ("")}
+                aria-label={i18n("crm.ui.clearField")}
+                title={i18n("crm.ui.clearField")}
+                className="absolute right-1 top-1/2 -translate-y-1/2 px-1 text-neutral-400 hover:text-neutral-700"
+              >
+                ×
+              </button>
+            )}
+          </div>
         </label>
         <label className="flex flex-col gap-1">
           <span className="text-[10px] text-neutral-500">{i18n("crm.ui.trader")}</span>
@@ -241,6 +322,36 @@ export default function TransactionsPage() {
         <button type="button" className={ctl + " hover:bg-neutral-50"} onClick={load}>
           {loading ? i18n("crm.ui.loading") : i18n("crm.ui.refresh")}
         </button>
+        <button
+          type="button"
+          onClick={downloadCsv}
+          disabled={rows.length === 0}
+          title="Yüklenen satırları CSV indir · Download loaded rows as CSV"
+          className={ctl + " font-medium text-neutral-700 hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-40"}
+        >
+          CSV
+        </button>
+      </div>
+      <div className="mb-2 flex flex-wrap items-center gap-1.5">
+        {[["", typeChips.total] as [string, number], ...typeChips.list].map(([t, n]) => {
+          const active = type === t;
+          return (
+            <button
+              key={t || "__all"}
+              type="button"
+              aria-pressed={active}
+              onClick={() => setType(t)}
+              className={`rounded-full border px-2.5 py-0.5 text-[11px] transition ${
+                active
+                  ? "border-black bg-black text-white"
+                  : "border-neutral-300 bg-white text-neutral-600 hover:bg-neutral-50"
+              }`}
+            >
+              {t ? code("crm.ledger", t) : i18n("crm.ui.all")}
+              <span className="ml-1 tabular-nums opacity-70">{n}</span>
+            </button>
+          );
+        })}
       </div>
       <div className="mb-2 flex flex-wrap gap-3 text-[11px] text-neutral-600">
         <span>
