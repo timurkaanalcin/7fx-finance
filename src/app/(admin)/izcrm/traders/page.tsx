@@ -43,6 +43,7 @@ type UserRow = {
   retentionStatus: string | null;
   brokerName: string | null;
   assigneeName?: string | null;
+  retentionFollowUpAt?: string | null;
   ftd: boolean;
   phone: string | null;
   accountType: string;
@@ -74,6 +75,7 @@ type TraderFilterState = {
   retentionStatus: string;
   presence: string;
   ftdOnly: boolean;
+  followUp: string;
 };
 type SavedTraderFilter = { name: string; f: TraderFilterState };
 const EMPTY_FILTERS: TraderFilterState = {
@@ -88,6 +90,7 @@ const EMPTY_FILTERS: TraderFilterState = {
   retentionStatus: "",
   presence: "",
   ftdOnly: false,
+  followUp: "",
 };
 function readSavedFilters(): SavedTraderFilter[] {
   try {
@@ -150,6 +153,8 @@ export default function AdminUsersPage() {
     } catch { /* ignore */ }
   }, []);
   const [presence, setPresence] = useState("");
+  const [followUp, setFollowUp] = useState("");
+  const [followUpDue, setFollowUpDue] = useState<{ overdue: number; today: number }>({ overdue: 0, today: 0 });
   const [savedFilters, setSavedFilters] = useState<SavedTraderFilter[]>([]);
   useEffect(() => {
     setSavedFilters(readSavedFilters());
@@ -183,6 +188,7 @@ export default function AdminUsersPage() {
     retentionStatus,
     presence,
     ftdOnly,
+    followUp,
   };
   const anyFilterActive = !sameFilters(currentFilters, EMPTY_FILTERS);
   const activePreset = savedFilters.find((p) => sameFilters(p.f, currentFilters))?.name ?? "";
@@ -198,6 +204,7 @@ export default function AdminUsersPage() {
     setRetentionStatus(f.retentionStatus);
     setPresence(f.presence);
     setFtdOnly(Boolean(f.ftdOnly));
+    setFollowUp(f.followUp || "");
     setSelected(new Set());
   }
   function persistSaved(list: SavedTraderFilter[]) {
@@ -234,6 +241,8 @@ export default function AdminUsersPage() {
     if (tt) params.set("to", tt);
     if (retentionStatus) params.set("retentionStatus", retentionStatus);
     if (presence) params.set("presence", presence);
+    if (followUp) params.set("followUp", followUp);
+    params.set("tzo", String(new Date().getTimezoneOffset()));
     const res = await fetch(`/api/admin/users?${params}`, { cache: "no-store" });
     if (!res.ok) return;
     const data = await res.json();
@@ -244,7 +253,13 @@ export default function AdminUsersPage() {
     if (ftdOnly) list = list.filter((u: UserRow) => u.ftd);
     setRows(list);
     setDeskOptions(data.deskOptions || []);
-  }, [q, status, desk, country, saleStatus, retentionStatus, ftdOnly, presence, accountTypeFilter, dateFrom, dateTo]);
+    if (data.followUpDue) {
+      setFollowUpDue({
+        overdue: Number(data.followUpDue.overdue) || 0,
+        today: Number(data.followUpDue.today) || 0,
+      });
+    }
+  }, [q, status, desk, country, saleStatus, retentionStatus, ftdOnly, presence, accountTypeFilter, dateFrom, dateTo, followUp]);
 
   useEffect(() => {
     load();
@@ -464,6 +479,19 @@ export default function AdminUsersPage() {
             </option>
           ))}
         </select>
+        <select
+          value={followUp}
+          onChange={(e) => setFollowUp(e.target.value)}
+          className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
+          aria-label={i18n("crm.fu.filter")}
+          data-fx-followup-filter
+        >
+          <option value="">{i18n("crm.fu.filter")}</option>
+          <option value="overdue">{i18n("crm.fu.overdue")}</option>
+          <option value="today">{i18n("crm.fu.today")}</option>
+          <option value="week">{i18n("crm.fu.week")}</option>
+          <option value="any">{i18n("crm.fu.any")}</option>
+        </select>
         <label className="flex items-center gap-1 text-neutral-500">
           <input
             type="checkbox"
@@ -473,6 +501,49 @@ export default function AdminUsersPage() {
           FTD
         </label>
       </div>
+
+      {(followUpDue.overdue > 0 || followUpDue.today > 0 || followUp) && (
+        <div className="mb-3 flex flex-wrap items-center gap-2 text-xs" data-fx-followup-due aria-label={i18n("crm.fu.title")}>
+          <span className="text-neutral-500">⏰ {i18n("crm.fu.title")}:</span>
+          <button
+            type="button"
+            onClick={() => setFollowUp(followUp === "overdue" ? "" : "overdue")}
+            aria-pressed={followUp === "overdue"}
+            className={`rounded-full border px-2.5 py-1 tabular-nums ${
+              followUp === "overdue"
+                ? "border-red-500 bg-red-500 text-white"
+                : followUpDue.overdue > 0
+                  ? "border-red-300 bg-red-50 text-red-700"
+                  : "border-[#e5e5e5] text-neutral-500"
+            }`}
+          >
+            {i18n("crm.fu.overdue")} · {followUpDue.overdue}
+          </button>
+          <button
+            type="button"
+            onClick={() => setFollowUp(followUp === "today" ? "" : "today")}
+            aria-pressed={followUp === "today"}
+            className={`rounded-full border px-2.5 py-1 tabular-nums ${
+              followUp === "today"
+                ? "border-amber-500 bg-amber-500 text-white"
+                : followUpDue.today > 0
+                  ? "border-amber-300 bg-amber-50 text-amber-800"
+                  : "border-[#e5e5e5] text-neutral-500"
+            }`}
+          >
+            {i18n("crm.fu.todayLeft")} · {followUpDue.today}
+          </button>
+          {followUp && (
+            <button
+              type="button"
+              onClick={() => setFollowUp("")}
+              className="rounded-full border border-[#e5e5e5] px-2.5 py-1 text-neutral-500 hover:text-neutral-800"
+            >
+              ✕ {i18n("crm.fu.clear")}
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Saved filter presets (per browser) */}
       <div className="mb-3 flex flex-wrap items-center gap-2 text-xs" aria-label={i18n("crm.savedFilters.title")}>
@@ -740,6 +811,28 @@ export default function AdminUsersPage() {
                 <td className="px-3 py-2.5">
                   <div>{code("crm.sale", u.saleStatus)}</div>
                   <div className="text-neutral-500">{code("crm.retention", u.retentionStatus)}</div>
+                  {u.retentionFollowUpAt ? (() => {
+                    const t = new Date(u.retentionFollowUpAt).getTime();
+                    if (!Number.isFinite(t)) return null;
+                    const end = new Date(now);
+                    end.setHours(24, 0, 0, 0);
+                    const tone =
+                      t < now
+                        ? "bg-red-500/15 text-red-700"
+                        : t < end.getTime()
+                          ? "bg-amber-500/15 text-amber-800"
+                          : "bg-neutral-500/10 text-neutral-500";
+                    return (
+                      <div
+                        className={`mt-0.5 w-fit rounded px-1.5 py-0.5 text-[9px] tabular-nums ${tone}`}
+                        title={i18n("crm.ret.followUp")}
+                        data-fx-followup-badge
+                      >
+                        ⏰ {fmtCrmDate(u.retentionFollowUpAt)}
+                        {t < now ? ` · ${i18n("crm.fu.late")}` : ""}
+                      </div>
+                    );
+                  })() : null}
                 </td>
                 <td className="px-3 py-2.5 tabular-nums">
                   <div>

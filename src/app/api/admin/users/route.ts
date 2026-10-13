@@ -34,6 +34,15 @@ export async function GET(req: Request) {
   const to = (searchParams.get("to") || "").trim();
   const retentionStatus = (searchParams.get("retentionStatus") || "").trim();
   const presence = (searchParams.get("presence") || "").trim(); // online | recent | offline
+  // Retention follow-up filter: overdue | today | week | any (day boundaries in the viewer's local time via tzo)
+  const followUp = (searchParams.get("followUp") || "").trim();
+  const tzoRaw = Number(searchParams.get("tzo"));
+  const tzo = Number.isFinite(tzoRaw) && Math.abs(tzoRaw) <= 900 ? tzoRaw : 0;
+  const nowMs = Date.now();
+  const DAY = 86_400_000;
+  const localMidnight = Math.floor((nowMs - tzo * 60_000) / DAY) * DAY + tzo * 60_000;
+  const todayStart = new Date(localMidnight);
+  const todayEnd = new Date(localMidnight + DAY);
 
   const where: Record<string, unknown> = {};
   const and: Record<string, unknown>[] = [];
@@ -86,14 +95,29 @@ export async function GET(req: Request) {
     else if (presence === "offline")
       and.push({ OR: [{ lastSeenAt: null }, { lastSeenAt: { lt: recentSince } }] });
   }
+  if (followUp === "overdue") and.push({ retentionFollowUpAt: { lt: new Date(nowMs) } });
+  else if (followUp === "today") and.push({ retentionFollowUpAt: { gte: todayStart, lt: todayEnd } });
+  else if (followUp === "week") and.push({ retentionFollowUpAt: { lt: new Date(localMidnight + 8 * DAY) } });
+  else if (followUp === "any") and.push({ retentionFollowUpAt: { not: null } });
+  const followUpActive = ["overdue", "today", "week", "any"].includes(followUp);
   if (and.length) where.AND = and;
 
   const users = await prisma.user.findMany({
     where: scopeUserWhere(admin, Object.keys(where).length ? where : undefined),
     include: { account: true },
-    orderBy: { createdAt: "desc" },
+    orderBy: followUpActive ? [{ retentionFollowUpAt: "asc" }, { createdAt: "desc" }] : { createdAt: "desc" },
     take: 500,
   });
+
+  // Due follow-up counters (scoped: Sales/Retention managers only count their own customers)
+  const [fuOverdue, fuToday] = await Promise.all([
+    prisma.user.count({
+      where: scopeUserWhere(admin, { role: "TRADER", retentionFollowUpAt: { lt: new Date(nowMs) } }),
+    }),
+    prisma.user.count({
+      where: scopeUserWhere(admin, { role: "TRADER", retentionFollowUpAt: { gte: new Date(nowMs), lt: todayEnd } }),
+    }),
+  ]).catch(() => [0, 0]);
 
   const desks = await prisma.user.findMany({
     where: { desk: { not: null } },
@@ -126,6 +150,7 @@ export async function GET(req: Request) {
       return roViewer ? maskTraderForRoViewer(row as Record<string, unknown>) : row;
     }),
     serverTime: new Date().toISOString(),
+    followUpDue: { overdue: fuOverdue, today: fuToday },
     desks: deskOptions.map((d) => d.name),
     deskOptions,
     permissionDefs: ADMIN_PERMISSIONS,
