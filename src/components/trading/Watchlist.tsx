@@ -14,9 +14,12 @@ type Props = {
 };
 
 const FAV_KEY = "fx-watch-favs";
+const RECENT_KEY = "fx-watch-recent";
+const RECENT_MAX = 12;
 
 const FILTERS = [
   { id: "FAV", label: "★" },
+  { id: "RECENT", label: "Recent" },
   { id: "ALL", label: "All" },
   { id: "STOCK", label: "Stocks" },
   { id: "FX", label: "FX" },
@@ -46,18 +49,51 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
     });
   };
 
+  /** Recently viewed symbols (most-recent-first) — per device, localStorage. */
+  const [recent, setRecent] = useState<string[]>([]);
+  useEffect(() => {
+    let stored: string[] = [];
+    try {
+      const v = JSON.parse(localStorage.getItem(RECENT_KEY) || "[]");
+      if (Array.isArray(v)) stored = v.filter((x) => typeof x === "string").slice(0, RECENT_MAX);
+    } catch {}
+    setRecent(stored);
+  }, []);
+  useEffect(() => {
+    if (!selected) return;
+    setRecent((prev) => {
+      let base = prev;
+      if (!base.length) {
+        try {
+          const v = JSON.parse(localStorage.getItem(RECENT_KEY) || "[]");
+          if (Array.isArray(v)) base = v.filter((x) => typeof x === "string");
+        } catch {}
+      }
+      if (base[0] === selected) return base;
+      const next = [selected, ...base.filter((x) => x !== selected)].slice(0, RECENT_MAX);
+      try {
+        localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  }, [selected]);
+
   const list = useMemo(() => {
+    const qq = q.toLowerCase();
+    const match = (s: SymbolDef) => !q || s.symbol.toLowerCase().includes(qq) || s.name.toLowerCase().includes(qq);
+    if (filter === "RECENT") {
+      const bySym = new Map(symbols.map((s) => [s.symbol, s] as const));
+      return recent.map((r) => bySym.get(r)).filter((s): s is SymbolDef => !!s && match(s));
+    }
     const out = symbols.filter((s) => {
       if (filter === "FAV") {
         if (!favs.includes(s.symbol)) return false;
       } else if (filter !== "ALL" && s.class !== filter) return false;
-      if (!q) return true;
-      const qq = q.toLowerCase();
-      return s.symbol.toLowerCase().includes(qq) || s.name.toLowerCase().includes(qq);
+      return match(s);
     });
     if (!favs.length) return out;
     return [...out.filter((s) => favs.includes(s.symbol)), ...out.filter((s) => !favs.includes(s.symbol))];
-  }, [symbols, q, filter, favs]);
+  }, [symbols, q, filter, favs, recent]);
 
   return (
     <aside
@@ -101,6 +137,9 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
         </div>
         {filter === "FAV" && list.length === 0 && (
           <p className="mt-2 text-[11px] text-desk-muted">Tap ☆ next to a symbol to add it to favourites.</p>
+        )}
+        {filter === "RECENT" && recent.length === 0 && (
+          <p className="mt-2 text-[11px] text-desk-muted">Symbols you open will appear here.</p>
         )}
         <div className="hidden">
         </div>
@@ -191,7 +230,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
             </button>
           );
         })}
-        {list.length === 0 && (
+        {list.length === 0 && !(filter === "RECENT" && recent.length === 0) && (
           <div className="px-3 py-8 text-center text-xs text-desk-muted">Symbol not found</div>
         )}
       </div>

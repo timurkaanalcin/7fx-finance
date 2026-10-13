@@ -6,6 +6,64 @@ import type { PriceTick } from "./types";
 
 type Alert = { id: string; symbol: string; price: number; dir: "above" | "below"; createdAt: number };
 const KEY = "fx-price-alerts";
+const SOUND_KEY = "fx-price-alert-sound";
+
+function loadSound(): boolean {
+  try {
+    return localStorage.getItem(SOUND_KEY) !== "0";
+  } catch {
+    return true;
+  }
+}
+
+/** Shared AudioContext — created/resumed lazily (ideally inside a user gesture). */
+let audioCtx: AudioContext | null = null;
+function getAudio(): AudioContext | null {
+  try {
+    if (!audioCtx) {
+      const AC: typeof AudioContext | undefined =
+        typeof window !== "undefined" ? window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext : undefined;
+      if (!AC) return null;
+      audioCtx = new AC();
+    }
+    if (audioCtx.state === "suspended") void audioCtx.resume().catch(() => {});
+    return audioCtx;
+  } catch {
+    return null;
+  }
+}
+
+/** Short, soft two-tone chime (~0.35s). Fails silently if audio is unavailable/blocked. */
+function beep() {
+  try {
+    const ctx = getAudio();
+    if (!ctx) return;
+    if (ctx.state !== "running") {
+      // Autoplay policy: only plays if a prior user gesture unlocked audio; otherwise silently skipped.
+      void ctx.resume().then(() => ctx.state === "running" && play(ctx)).catch(() => {});
+      return;
+    }
+    play(ctx);
+  } catch {}
+}
+function play(ctx: AudioContext) {
+  try {
+    const t0 = ctx.currentTime;
+    [880, 1320].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = freq;
+      const start = t0 + i * 0.14;
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(0.12, start + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.2);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(start);
+      osc.stop(start + 0.22);
+    });
+  } catch {}
+}
 
 function load(): Alert[] {
   try {
@@ -31,8 +89,28 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
   const [val, setVal] = useState("");
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<number | null>(null);
+  const [sound, setSound] = useState(true);
+  const soundRef = useRef(true);
 
-  useEffect(() => setAlerts(load()), []);
+  useEffect(() => {
+    setAlerts(load());
+    const s = loadSound();
+    setSound(s);
+    soundRef.current = s;
+  }, []);
+
+  function toggleSound() {
+    const next = !sound;
+    setSound(next);
+    soundRef.current = next;
+    try {
+      localStorage.setItem(SOUND_KEY, next ? "1" : "0");
+    } catch {}
+    if (next) {
+      getAudio();
+      beep();
+    }
+  }
 
   const mid = (t?: PriceTick) => (t ? (Number(t.bid) + Number(t.ask)) / 2 : NaN);
 
@@ -59,6 +137,7 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
     try {
       navigator.vibrate?.(120);
     } catch {}
+    if (soundRef.current) beep();
   }, [prices, alerts]);
 
   const cur = mid(prices[symbol]);
@@ -87,7 +166,10 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
       <div className="absolute bottom-9 left-[52px] z-20">
         <button
           type="button"
-          onClick={() => setOpen((o) => !o)}
+          onClick={() => {
+            setOpen((o) => !o);
+            if (soundRef.current) getAudio();
+          }}
           aria-label="Price alerts"
           title="Price alerts"
           className="relative flex h-9 w-9 items-center justify-center rounded-full border border-desk-border bg-desk-panel/90 text-desk-text shadow-desk-panel backdrop-blur"
@@ -106,18 +188,54 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
           <div className="absolute bottom-11 left-0 w-[260px] rounded-[14px] border border-desk-border bg-desk-panel p-3 shadow-desk-panel">
             <div className="mb-2 flex items-center justify-between">
               <span className="text-xs font-semibold text-desk-text">{symbol} · alert</span>
-              <span className="text-[11px] tabular-nums text-desk-muted">{Number.isFinite(cur) ? formatPrice(symbol, cur) : "—"}</span>
+              <span className="flex items-center gap-1.5">
+                <span className="text-[11px] tabular-nums text-desk-muted">{Number.isFinite(cur) ? formatPrice(symbol, cur) : "—"}</span>
+                <button
+                  type="button"
+                  onClick={toggleSound}
+                  aria-label={sound ? "Mute alert sound" : "Unmute alert sound"}
+                  aria-pressed={!sound}
+                  title={sound ? "Sound on" : "Sound off"}
+                  className={`flex h-6 w-6 items-center justify-center rounded-full ${sound ? "text-desk-text" : "text-desk-muted/60"} hover:bg-desk-elev`}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M11 5 6 9H3v6h3l5 4V5z" />
+                    {sound ? (
+                      <>
+                        <path d="M15.5 8.5a5 5 0 0 1 0 7" />
+                        <path d="M18.5 5.5a9 9 0 0 1 0 13" />
+                      </>
+                    ) : (
+                      <>
+                        <path d="m16 9 5 5" />
+                        <path d="m21 9-5 5" />
+                      </>
+                    )}
+                  </svg>
+                </button>
+              </span>
             </div>
             <div className="flex gap-2">
               <input
                 inputMode="decimal"
                 value={val}
                 onChange={(e) => setVal(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && add()}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    if (soundRef.current) getAudio();
+                    add();
+                  }
+                }}
                 placeholder={Number.isFinite(cur) ? formatPrice(symbol, cur) : "Price"}
                 className="min-w-0 flex-1 rounded-[10px] border border-desk-border bg-desk-bg px-2.5 py-2 text-sm tabular-nums text-desk-text outline-none"
               />
-              <button type="button" onClick={add} className="min-h-[38px] rounded-[10px] bg-desk-accent px-3 text-xs font-semibold text-desk-accent-ink">
+              <button
+                type="button"
+                onClick={() => {
+                  if (soundRef.current) getAudio();
+                  add();
+                }}
+                className="min-h-[38px] rounded-[10px] bg-desk-accent px-3 text-xs font-semibold text-desk-accent-ink">
                 Add
               </button>
             </div>
