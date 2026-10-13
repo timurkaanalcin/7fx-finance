@@ -43,6 +43,17 @@ type Draft = Record<string, string>;
 
 const KIND_KEYS: KindKey[] = ["DEPOSIT", "WITHDRAW", "MARGIN_ADD", "MARGIN_RESET"];
 const STATUSES = ["PENDING", "APPROVED", "REJECTED"];
+/** Kind filter values understood by /api/admin/tickets, mapped to Ticket.kind. */
+const KIND_FILTERS: { value: string; kind: Ticket["kind"] }[] = [
+  { value: "deposit", kind: "DEPOSIT" },
+  { value: "margin", kind: "MARGIN" },
+  { value: "withdraw", kind: "WITHDRAW" },
+];
+
+function csvCell(v: unknown): string {
+  const s = v == null ? "" : String(v);
+  return /[",\r\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
 
 function kindKeyOf(t: Ticket): KindKey {
   if (t.kind === "DEPOSIT") return "DEPOSIT";
@@ -123,6 +134,10 @@ export default function TicketsPage() {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
+  // Per-kind counts from the last load WITHOUT a kind filter, so chips stay stable
+  // while a kind chip is active (the API filters by kind server-side).
+  const [baseCounts, setBaseCounts] = useState<{ total: number; byKind: Record<string, number> } | null>(null);
   // inline edit
   const [editKey, setEditKey] = useState<string | null>(null);
   const [draft, setDraft] = useState<Draft>({});
@@ -151,12 +166,94 @@ export default function TicketsPage() {
     const tt = dayEndIso(to);
     if (f) params.set("from", f);
     if (tt) params.set("to", tt);
-    const res = await fetch(`/api/admin/tickets?${params}`);
-    if (!res.ok) return;
-    const data = await res.json();
-    setTickets(data.tickets || []);
-    setMethods(data.methods || []);
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/admin/tickets?${params}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      const list: Ticket[] = data.tickets || [];
+      setTickets(list);
+      setMethods(data.methods || []);
+      if (kind === "all") {
+        const byKind: Record<string, number> = {};
+        for (const t of list) byKind[t.kind] = (byKind[t.kind] || 0) + 1;
+        setBaseCounts({ total: list.length, byKind });
+      }
+    } finally {
+      setLoading(false);
+    }
   }, [status, kind, qDebounced, from, to]);
+
+  const kindChips = useMemo(() => {
+    const base = baseCounts || { total: tickets.length, byKind: {} as Record<string, number> };
+    return {
+      total: base.total,
+      list: KIND_FILTERS.map((f) => ({
+        ...f,
+        // Active chip: trust freshly loaded rows.
+        n: kind === f.value ? tickets.length : base.byKind[f.kind] || 0,
+      })),
+    };
+  }, [baseCounts, tickets.length, kind]);
+
+  /** Amount totals of the shown rows, per kind + currency (rows without amount skipped). */
+  const totals = useMemo(() => {
+    const m = new Map<string, { kind: Ticket["kind"]; currency: string; sum: number; n: number }>();
+    for (const t of tickets) {
+      if (t.amount == null) continue;
+      const key = `${t.kind}|${t.currency || "USD"}`;
+      const cur = m.get(key) || { kind: t.kind, currency: t.currency || "USD", sum: 0, n: 0 };
+      cur.sum += Number(t.amount) || 0;
+      cur.n += 1;
+      m.set(key, cur);
+    }
+    return Array.from(m.values());
+  }, [tickets]);
+
+  function downloadCsv() {
+    const header = [
+      i18n("crm.ui.type"),
+      i18n("crm.ui.amount"),
+      i18n("crm.ui.currency"),
+      i18n("crm.ui.client"),
+      "E-mail",
+      i18n("crm.ui.account"),
+      i18n("crm.ui.method"),
+      i18n("crm.ui.status"),
+      i18n("crm.ui.opened"),
+      i18n("crm.edit.reviewedAt"),
+      i18n("crm.edit.approvalReason"),
+    ];
+    const lines = [header.map(csvCell).join(",")];
+    for (const t of tickets) {
+      lines.push(
+        [
+          code("crm.kind", t.kind),
+          t.amount ?? "",
+          t.amount != null ? t.currency || "" : "",
+          t.customer,
+          t.customerEmail,
+          t.accountLoginId || t.tradingAccountId || "",
+          methodLabel(t),
+          code("crm.status", t.status),
+          t.openedAt || "",
+          t.closedAt || "",
+          t.approvalReason || "",
+        ]
+          .map(csvCell)
+          .join(","),
+      );
+    }
+    const blob = new Blob(["\uFEFF" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `tickets-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
 
   useEffect(() => {
     load();
@@ -485,12 +582,28 @@ export default function TicketsPage() {
           <option value="margin">{code("crm.kind", "MARGIN")}</option>
           <option value="withdraw">{code("crm.kind", "WITHDRAW")}</option>
         </select>
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder={i18n("crm.edit.searchClient")}
-          className="w-52 rounded border border-neutral-300 bg-white px-2 py-1.5"
-        />
+        <div className="relative">
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") setQ("");
+            }}
+            placeholder={i18n("crm.edit.searchClient")}
+            className="w-52 rounded border border-neutral-300 bg-white px-2 py-1.5 pr-6"
+          />
+          {q && (
+            <button
+              type="button"
+              onClick={() => setQ("")}
+              aria-label={i18n("crm.ui.clearField")}
+              title={i18n("crm.ui.clearField")}
+              className="absolute right-1 top-1/2 -translate-y-1/2 px-1 text-neutral-400 hover:text-neutral-700"
+            >
+              ×
+            </button>
+          )}
+        </div>
         <label className="flex items-center gap-1 text-neutral-500">
           {i18n("crm.ui.from")}
           <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="rounded border border-neutral-300 bg-white px-2 py-1" />
@@ -499,6 +612,35 @@ export default function TicketsPage() {
           {i18n("crm.ui.to")}
           <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="rounded border border-neutral-300 bg-white px-2 py-1" />
         </label>
+        <button
+          type="button"
+          onClick={() => {
+            setStatus("PENDING");
+            setKind("all");
+            setQ("");
+            setFrom("");
+            setTo("");
+          }}
+          className="rounded border border-neutral-300 bg-white px-2 py-1.5 hover:bg-neutral-50"
+        >
+          {i18n("crm.ui.clear")}
+        </button>
+        <button
+          type="button"
+          onClick={load}
+          className="rounded border border-neutral-300 bg-white px-2 py-1.5 hover:bg-neutral-50"
+        >
+          {loading ? i18n("crm.ui.loading") : i18n("crm.ui.refresh")}
+        </button>
+        <button
+          type="button"
+          onClick={downloadCsv}
+          disabled={tickets.length === 0}
+          title="Gösterilen satırları CSV indir · Download shown rows as CSV"
+          className="rounded border border-neutral-300 bg-white px-2 py-1.5 font-medium text-neutral-700 hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          CSV
+        </button>
         <button
           type="button"
           onClick={openAdd}
@@ -515,6 +657,36 @@ export default function TicketsPage() {
         >
           {i18n("crm.tickets.legacyMargin")}
         </Link>
+      </div>
+      <div className="mb-2 flex flex-wrap items-center gap-1.5">
+        {[{ value: "all", label: i18n("crm.ui.all"), n: kindChips.total }, ...kindChips.list.map((c) => ({ value: c.value, label: code("crm.kind", c.kind), n: c.n }))].map((c) => {
+          const active = kind === c.value;
+          return (
+            <button
+              key={c.value}
+              type="button"
+              aria-pressed={active}
+              onClick={() => setKind(c.value)}
+              className={`rounded-full border px-2.5 py-0.5 text-[11px] transition ${
+                active ? "border-black bg-black text-white" : "border-neutral-300 bg-white text-neutral-600 hover:bg-neutral-50"
+              }`}
+            >
+              {c.label}
+              <span className="ml-1 tabular-nums opacity-70">{c.n}</span>
+            </button>
+          );
+        })}
+      </div>
+      <div className="mb-3 flex flex-wrap gap-3 text-[11px] text-neutral-600">
+        <span>
+          {tickets.length} {i18n("crm.ui.records")}
+        </span>
+        {totals.map((t) => (
+          <span key={`${t.kind}|${t.currency}`} className="tabular-nums" title={`${t.n}`}>
+            {code("crm.kind", t.kind)} {t.currency}: <b>{fmtCrmMoney(t.sum, 2)}</b>
+            <span className="ml-0.5 text-neutral-400">({t.n})</span>
+          </span>
+        ))}
       </div>
       <p className="mb-3 rounded border border-amber-200 bg-amber-50 p-2 text-[11px] text-amber-900">
         {i18n("crm.edit.balanceRule")} {i18n("crm.tickets.kindChangeHint")}
