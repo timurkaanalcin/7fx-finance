@@ -81,7 +81,7 @@ export default function ProtectedAttachmentViewer({
 
   const btn = "min-h-[44px] min-w-[44px] rounded-lg bg-white/15 px-3 text-sm font-semibold text-white";
   return (
-    <div className="fx-doc-viewer fixed inset-0 z-[200] flex flex-col bg-black/95" style={{ paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)" }}>
+    <div className="fx-doc-viewer fixed inset-0 z-[200] flex flex-col bg-black" style={{ paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)" }}>
       <div className="flex items-center justify-end gap-2 p-2">
         <button type="button" aria-label="Zoom out" className={btn} onClick={() => setZoom((z) => Math.max(0.5, +(z - 0.25).toFixed(2)))}>−</button>
         <span className="w-12 text-center text-xs text-white/70">{Math.round(zoom * 100)}%</span>
