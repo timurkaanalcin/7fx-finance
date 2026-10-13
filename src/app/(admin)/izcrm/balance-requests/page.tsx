@@ -4,7 +4,8 @@ import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 import { fmtCrmDate } from "@/lib/crm-format";
 
-import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { DEFAULT_RESET_BALANCE } from "@/lib/margin-call";
 
 type Row = {
@@ -30,21 +31,72 @@ export default function AdminBalanceRequestsPage() {
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState("");
   const [ruleTr, setRuleTr] = useState("");
+  const [query, setQuery] = useState("");
+  const [loadedAt, setLoadedAt] = useState<Date | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const load = useCallback(async () => {
     const q = filter ? `?status=${filter}` : "";
-    const res = await fetch(`/api/admin/balance-requests${q}`);
-    if (!res.ok) return;
-    const data = await res.json();
-    setRows(data.requests || []);
-    if (data.config?.ruleTr) setRuleTr(data.config.ruleTr);
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/admin/balance-requests${q}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      setRows(data.requests || []);
+      if (data.config?.ruleTr) setRuleTr(data.config.ruleTr);
+      setLoadedAt(new Date());
+    } finally {
+      setLoading(false);
+    }
   }, [filter]);
 
   useEffect(() => {
     load();
   }, [load]);
 
+  // Pending queue refreshes itself so new requests show up without a manual reload.
+  useEffect(() => {
+    if (filter !== "PENDING") return;
+    const t = window.setInterval(() => {
+      if (document.visibilityState === "visible") load();
+    }, 30_000);
+    return () => window.clearInterval(t);
+  }, [filter, load]);
+
+  const shown = useMemo(() => {
+    const q = query.trim().toLocaleLowerCase("tr");
+    if (!q) return rows;
+    return rows.filter((r) =>
+      [r.user.name, r.user.email, r.type, r.reason || "", r.adminNote || ""]
+        .join(" ")
+        .toLocaleLowerCase("tr")
+        .includes(q),
+    );
+  }, [rows, query]);
+
+  const totals = useMemo(() => {
+    let add = 0;
+    let resets = 0;
+    for (const r of shown) {
+      if (r.type === "RESET") resets += 1;
+      else if (r.type === "ADD") add += Number(r.amount) || 0;
+    }
+    return { add, resets };
+  }, [shown]);
+
+  function usd(amount: number) {
+    return amount.toLocaleString("en-US", { style: "currency", currency: "USD" });
+  }
+
   async function act(id: string, action: "approve" | "reject") {
+    const row = rows.find((r) => r.id === id);
+    const what =
+      row?.type === "ADD" && row.amount != null
+        ? `${i18n("crm.bal.add")} · ${usd(row.amount)}`
+        : `${i18n("crm.bal.reset")} → ${DEFAULT_RESET_BALANCE.toLocaleString("en-US")} USD`;
+    const detail = row ? `\n\n${row.user.name} · ${row.user.email}\n${what}` : "";
+    const question = action === "approve" ? i18n("crm.bal.confirmApprove") : i18n("crm.bal.confirmReject");
+    if (!window.confirm(question + detail)) return;
     setBusy(id);
     setMsg("");
     try {
@@ -89,6 +141,40 @@ export default function AdminBalanceRequestsPage() {
         <p>{i18n("crm.bal.rejected")}</p>
       </div>
 
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={i18n("crm.bal.searchPh")}
+          aria-label={i18n("crm.ui.search")}
+          className="w-full max-w-xs rounded border border-[#e5e5e5] bg-white px-2 py-1 text-xs outline-none focus:border-black/40"
+        />
+        <span className="rounded bg-[#f2f2f2] px-2 py-1 text-xs tabular-nums">
+          {i18n("crm.bal.count")}: <b>{shown.length}</b>
+        </span>
+        <span className="rounded bg-[#f2f2f2] px-2 py-1 text-xs tabular-nums">
+          {i18n("crm.bal.totalAdd")}: <b>{usd(totals.add)}</b>
+        </span>
+        <span className="rounded bg-[#f2f2f2] px-2 py-1 text-xs tabular-nums">
+          {i18n("crm.bal.resetCount")}: <b>{totals.resets}</b>
+        </span>
+        <div className="ml-auto flex items-center gap-2 text-[11px] text-neutral-500">
+          {loadedAt && (
+            <span title={filter === "PENDING" ? i18n("crm.bal.autoRefresh") : undefined}>
+              {i18n("crm.bal.updated")} {loadedAt.toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+            </span>
+          )}
+          <button
+            onClick={() => load()}
+            disabled={loading}
+            className="rounded bg-[#e5e5e5] px-2 py-1 text-xs text-black disabled:opacity-50"
+          >
+            {i18n("crm.bal.refresh")}
+          </button>
+        </div>
+      </div>
+
       {msg && <p className="mb-3 text-xs text-emerald-400">{msg}</p>}
       <div className="overflow-x-auto rounded-lg border border-[#e5e5e5]">
         <table className="w-full text-left text-xs">
@@ -104,13 +190,15 @@ export default function AdminBalanceRequestsPage() {
             </tr>
           </thead>
           <tbody>
-            {rows.map((r) => (
+            {shown.map((r) => (
               <tr key={r.id} className="border-t border-[#e5e5e5]">
                 <td className="px-3 py-2 whitespace-nowrap">
                   {fmtCrmDate(r.createdAt)}
                 </td>
                 <td className="px-3 py-2">
-                  <div>{r.user.name}</div>
+                  <Link href={`/izcrm/traders/${r.user.id}`} className="text-sky-600 hover:underline">
+                    {r.user.name}
+                  </Link>
                   <div className="text-neutral-500">{r.user.email}</div>
                 </td>
                 <td className="px-3 py-2">
@@ -160,7 +248,7 @@ export default function AdminBalanceRequestsPage() {
                 </td>
               </tr>
             ))}
-            {rows.length === 0 && (
+            {shown.length === 0 && (
               <tr>
                 <td colSpan={7} className="px-3 py-8 text-center text-neutral-500">
                   {i18n("crm.ui.noRecords")}

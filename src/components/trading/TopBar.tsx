@@ -22,6 +22,8 @@ function Metric({
   danger,
   positive,
   className = "flex",
+  sub,
+  title,
 }: {
   label: string;
   value: string;
@@ -29,6 +31,9 @@ function Metric({
   positive?: boolean;
   /** Display utilities — default `flex`; use `hidden md:flex` for desktop-only chips */
   className?: string;
+  /** Optional compact secondary text shown beside the value (same tone). */
+  sub?: string;
+  title?: string;
 }) {
   const tone = danger
     ? "text-desk-sell"
@@ -38,12 +43,14 @@ function Metric({
   return (
     <div
       className={`${className} min-w-[64px] flex-col rounded-[10px] border border-desk-border/60 bg-desk-elev/40 px-2 py-1 sm:min-w-[86px] sm:px-2.5`}
+      title={title}
     >
       <span className="text-[8px] font-semibold uppercase tracking-[0.1em] text-desk-muted sm:text-[9px] sm:tracking-[0.08em]">
         {label}
       </span>
       <span className={`text-[12px] font-semibold tabular-nums leading-tight sm:text-[13px] ${tone}`}>
         {value}
+        {sub && <span className="ml-1 text-[9px] font-medium opacity-80 sm:text-[10px]">{sub}</span>}
       </span>
     </div>
   );
@@ -103,6 +110,12 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
   const a = account;
   const ml = a?.marginLevel ?? 0;
   const pnl = a?.profitLoss ?? 0;
+  const eq = a?.equity ?? 0;
+  const pnlPctRaw = eq > 0 ? (pnl / eq) * 100 : NaN;
+  const pnlPct =
+    a && Number.isFinite(pnlPctRaw)
+      ? `(${pnlPctRaw > 0 ? "+" : ""}${pnlPctRaw.toFixed(Math.abs(pnlPctRaw) < 10 ? 2 : 1)}%)`
+      : undefined;
   const shortId = `#${user.id.slice(-10)}`;
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -173,6 +186,8 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
           value={a ? fmtMoney(pnl, 2, a.currency) : "—"}
           danger={pnl < 0}
           positive={pnl > 0}
+          sub={pnlPct}
+          title={pnlPct ? `Açık P&L / equity · Open P&L / equity ${pnlPct}` : undefined}
         />
         {(a?.credit ?? 0) > 0 && (
           <Metric
