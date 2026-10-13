@@ -3,8 +3,13 @@
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { StatusBadge } from "@/components/crm/StubPage";
+import { fmtCrmDate } from "@/lib/crm-format";
+
+const DOC_STATUSES = ["PENDING", "APPROVED", "REJECTED"] as const;
+/** API returns at most this many rows per request. */
+const DOC_CAP = 300;
 
 type Doc = {
   id: string;
@@ -30,14 +35,42 @@ export default function DocumentsPage() {
   const [form, setForm] = useState({ userId: "", name: "", docType: "ID", note: "" });
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+  const [query, setQuery] = useState("");
+  const [counts, setCounts] = useState<Record<string, number>>({});
 
   const load = useCallback(async () => {
     const q = status ? `?status=${status}` : "";
-    const res = await fetch(`/api/admin/documents${q}`);
+    const [res, allRes] = await Promise.all([
+      fetch(`/api/admin/documents${q}`),
+      status ? fetch("/api/admin/documents") : Promise.resolve(null),
+    ]);
     if (!res.ok) return;
     const data = await res.json();
-    setDocs(data.documents || []);
+    const list: Doc[] = data.documents || [];
+    setDocs(list);
+    let all = list;
+    if (allRes && allRes.ok) {
+      const allData = await allRes.json().catch(() => ({}));
+      all = allData.documents || [];
+    }
+    if (!status || (allRes && allRes.ok)) {
+      const c: Record<string, number> = { "": all.length };
+      for (const d of all) c[d.status] = (c[d.status] || 0) + 1;
+      setCounts(c);
+    }
   }, [status]);
+
+  const shown = useMemo(() => {
+    const needle = query.trim().toLocaleLowerCase("tr");
+    if (!needle) return docs;
+    return docs.filter((d) =>
+      [d.name, d.docType, d.trader, d.traderEmail, d.note, d.desk]
+        .filter(Boolean)
+        .join(" ")
+        .toLocaleLowerCase("tr")
+        .includes(needle)
+    );
+  }, [docs, query]);
 
   useEffect(() => {
     load();
@@ -106,19 +139,58 @@ export default function DocumentsPage() {
       {msg && <p className="mb-2 text-[11px] text-neutral-500">{msg}</p>}
       <div className="mb-3 grid gap-3 lg:grid-cols-3">
         <div className="lg:col-span-2 overflow-x-auto rounded-lg border border-neutral-200">
-          <div className="border-b border-neutral-200 bg-[#ffffff] px-3 py-2">
-            <select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              className="rounded border border-neutral-300 bg-white px-2 py-1 text-xs"
-            >
-              <option value="">{i18n("crm.ui.allStatuses")}</option>
-              {["PENDING", "APPROVED", "REJECTED"].map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
+          <div className="flex flex-wrap items-center gap-1.5 border-b border-neutral-200 bg-[#ffffff] px-3 py-2">
+            {(["", ...DOC_STATUSES] as string[]).map((s) => {
+              const n = counts[s] ?? 0;
+              const active = status === s;
+              const capped = s === "" && n >= DOC_CAP;
+              return (
+                <button
+                  key={s || "ALL"}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => setStatus(s)}
+                  className={`rounded-full border px-2.5 py-0.5 text-[11px] transition ${
+                    active
+                      ? "border-black bg-black text-white"
+                      : s === "PENDING" && n > 0
+                        ? "border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100"
+                        : "border-neutral-300 bg-white text-neutral-600 hover:bg-neutral-50"
+                  }`}
+                >
+                  {s ? i18n(`crm.status.${s}`, s) : i18n("crm.ui.all")}
+                  <span className="ml-1 tabular-nums opacity-70">{capped ? `${DOC_CAP}+` : n}</span>
+                </button>
+              );
+            })}
+            <div className="relative ml-auto">
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") setQuery("");
+                }}
+                placeholder={i18n("crm.docs.searchPh", "Belge, müşteri, e-posta…")}
+                aria-label={i18n("crm.ui.search")}
+                className="w-48 rounded border border-neutral-300 bg-white py-1 pl-2 pr-6 text-xs"
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => setQuery("")}
+                  aria-label={i18n("crm.ui.clearField")}
+                  title={i18n("crm.ui.clearField")}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 px-1 text-neutral-400 hover:text-neutral-700"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+            {query && (
+              <span className="w-full text-[10px] text-neutral-500">
+                {i18n("crm.docs.matches", "{n} sonuç").replace("{n}", String(shown.length))}
+              </span>
+            )}
           </div>
           <table className="w-full text-left text-[11px]">
             <thead className="bg-[#ffffff] text-neutral-500">
@@ -132,7 +204,7 @@ export default function DocumentsPage() {
               </tr>
             </thead>
             <tbody>
-              {docs.map((d) => (
+              {shown.map((d) => (
                 <tr key={d.id} className="border-t border-neutral-200">
                   <td className="px-2 py-1.5">
                     <div className="font-medium">{d.name}</div>
@@ -148,7 +220,7 @@ export default function DocumentsPage() {
                     <StatusBadge status={d.status} />
                   </td>
                   <td className="px-2 py-1.5 text-neutral-500">
-                    {new Date(d.createdAt).toLocaleString("en-US")}
+                    {fmtCrmDate(d.createdAt)}
                   </td>
                   <td className="px-2 py-1.5 space-x-1">
                     {d.status === "PENDING" && (
@@ -159,7 +231,7 @@ export default function DocumentsPage() {
                           onClick={() => review(d.id, "APPROVED")}
                           className="rounded bg-emerald-600/80 px-1.5 py-0.5 text-[10px] hover:bg-emerald-500"
                         >
-                          Onay
+                          {i18n("crm.ui.approve")}
                         </button>
                         <button
                           type="button"
@@ -167,17 +239,17 @@ export default function DocumentsPage() {
                           onClick={() => review(d.id, "REJECTED")}
                           className="rounded bg-red-600/80 px-1.5 py-0.5 text-[10px] hover:bg-red-500"
                         >
-                          Red
+                          {i18n("crm.ui.reject")}
                         </button>
                       </>
                     )}
                   </td>
                 </tr>
               ))}
-              {docs.length === 0 && (
+              {shown.length === 0 && (
                 <tr>
                   <td colSpan={6} className="px-3 py-8 text-center text-neutral-500">
-                    {i18n("crm.docs.none")}
+                    {query && docs.length > 0 ? i18n("crm.docs.noMatch", "Aramayla eşleşen belge yok") : i18n("crm.docs.none")}
                   </td>
                 </tr>
               )}
@@ -228,7 +300,7 @@ export default function DocumentsPage() {
               onClick={create}
               className="w-full rounded bg-black text-white px-3 py-1.5 font-medium hover:bg-neutral-800 disabled:opacity-50"
             >
-              Ekle
+              {i18n("crm.ui.add")}
             </button>
           </div>
         </div>
