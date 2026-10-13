@@ -274,5 +274,14 @@ export const de: Dict = {
   "auth.totpPrompt": 'Geben Sie den 6-stelligen Code aus Ihrer Authenticator-App ein.',
   "auth.totpCode": 'Authentifizierungscode',
   "auth.verifyTotp": 'Bestätigen',
-  "auth.backToLogin": 'Zurück zur Anmeldung'
+  "auth.backToLogin": 'Zurück zur Anmeldung',
+  "term.sessions.title": "Marktsitzungen",
+  "term.sessions.hint": "Forex-Handelssitzungen (lokale Marktzeiten, inkl. Sommerzeit)",
+  "term.sessions.weekend": "FX-Markt geschlossen (Wochenende)",
+  "term.sessions.open": "offen",
+  "term.sessions.closed": "geschlossen",
+  "term.sessions.syd": "Sydney",
+  "term.sessions.tyo": "Tokio",
+  "term.sessions.lon": "London",
+  "term.sessions.nyc": "New York",
 };

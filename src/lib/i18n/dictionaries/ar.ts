@@ -274,5 +274,14 @@ export const ar: Dict = {
   "auth.totpPrompt": 'أدخل الرمز المكون من 6 أرقام من تطبيق المصادقة.',
   "auth.totpCode": 'رمز المصادقة',
   "auth.verifyTotp": 'تحقق',
-  "auth.backToLogin": 'العودة لتسجيل الدخول'
+  "auth.backToLogin": 'العودة لتسجيل الدخول',
+  "term.sessions.title": "جلسات السوق",
+  "term.sessions.hint": "جلسات تداول الفوركس (بتوقيت السوق المحلي)",
+  "term.sessions.weekend": "سوق الفوركس مغلق (عطلة نهاية الأسبوع)",
+  "term.sessions.open": "مفتوحة",
+  "term.sessions.closed": "مغلقة",
+  "term.sessions.syd": "سيدني",
+  "term.sessions.tyo": "طوكيو",
+  "term.sessions.lon": "لندن",
+  "term.sessions.nyc": "نيويورك",
 };

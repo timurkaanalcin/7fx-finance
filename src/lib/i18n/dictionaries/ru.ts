@@ -274,5 +274,14 @@ export const ru: Dict = {
   "auth.totpPrompt": 'Введите 6-значный код из приложения-аутентификатора.',
   "auth.totpCode": 'Код подтверждения',
   "auth.verifyTotp": 'Подтвердить',
-  "auth.backToLogin": 'Назад ко входу'
+  "auth.backToLogin": 'Назад ко входу',
+  "term.sessions.title": "Торговые сессии",
+  "term.sessions.hint": "Сессии рынка Forex (местное время биржи, с учётом летнего времени)",
+  "term.sessions.weekend": "Рынок FX закрыт (выходные)",
+  "term.sessions.open": "открыта",
+  "term.sessions.closed": "закрыта",
+  "term.sessions.syd": "Сидней",
+  "term.sessions.tyo": "Токио",
+  "term.sessions.lon": "Лондон",
+  "term.sessions.nyc": "Нью-Йорк",
 };
