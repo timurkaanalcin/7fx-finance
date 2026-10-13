@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { formatPrice } from "@/lib/symbols";
 import type { PriceTick, SymbolDef } from "./types";
 import SymbolIcon from "@/components/ui/SymbolIcon";
@@ -12,6 +12,48 @@ type Props = {
   onSelect: (symbol: string) => void;
   className?: string;
 };
+
+
+function FlashPrice({
+  value,
+  text,
+  title,
+}: {
+  value: number | undefined;
+  text: string;
+  title: string;
+}) {
+  const prev = useRef<number | null>(null);
+  const [dir, setDir] = useState<"up" | "down" | null>(null);
+  const [flashKey, setFlashKey] = useState(0);
+
+  useEffect(() => {
+    if (value == null || !Number.isFinite(value)) return;
+    if (prev.current == null) {
+      prev.current = value;
+      return;
+    }
+    if (value === prev.current) return;
+    const nextDir = value > prev.current ? "up" : "down";
+    prev.current = value;
+    setDir(nextDir);
+    setFlashKey((k) => k + 1);
+    const t = window.setTimeout(() => setDir(null), 500);
+    return () => window.clearTimeout(t);
+  }, [value]);
+
+  return (
+    <span
+      key={flashKey}
+      title={title}
+      className={
+        dir === "up" ? "fx-px-flash-up" : dir === "down" ? "fx-px-flash-down" : undefined
+      }
+    >
+      {text}
+    </span>
+  );
+}
 
 const FAV_KEY = "fx-watch-favs";
 const RECENT_KEY = "fx-watch-recent";
@@ -211,9 +253,17 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
                   </div>
                   <div className="flex shrink-0 flex-col items-end gap-0.5 tabular-nums">
                     <div className="flex items-baseline gap-1.5 text-[11px] font-medium text-desk-text/80 md:gap-1 md:text-[10px]">
-                      <span title="Bid">{p ? formatPrice(s.symbol, p.bid) : "—"}</span>
+                      <FlashPrice
+                        title="Bid"
+                        value={p?.bid}
+                        text={p ? formatPrice(s.symbol, p.bid) : "—"}
+                      />
                       <span className="text-desk-muted/50">/</span>
-                      <span title="Ask">{p ? formatPrice(s.symbol, p.ask) : "—"}</span>
+                      <FlashPrice
+                        title="Ask"
+                        value={p?.ask}
+                        text={p ? formatPrice(s.symbol, p.ask) : "—"}
+                      />
                     </div>
                     <span
                       className={`rounded-[6px] px-1.5 py-0.5 text-[11px] font-semibold md:rounded md:px-1 md:py-px md:text-[10px] ${

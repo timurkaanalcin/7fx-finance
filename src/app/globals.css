@@ -900,3 +900,23 @@ body:has(.fx-crm) {
 .fx-ios-install-bar {
   animation: fx-ios-bar 1.1s ease-in-out infinite;
 }
+
+/* Watchlist bid/ask tick flash (decorative) */
+@keyframes fx-px-flash-up {
+  0% { background-color: color-mix(in srgb, var(--buy) 48%, transparent); color: var(--buy); }
+  100% { background-color: transparent; }
+}
+@keyframes fx-px-flash-down {
+  0% { background-color: color-mix(in srgb, var(--sell) 48%, transparent); color: var(--sell); }
+  100% { background-color: transparent; }
+}
+.fx-px-flash-up {
+  animation: fx-px-flash-up 0.5s ease-out;
+  border-radius: 3px;
+  padding: 0 2px;
+}
+.fx-px-flash-down {
+  animation: fx-px-flash-down 0.5s ease-out;
+  border-radius: 3px;
+  padding: 0 2px;
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useCallback, type ReactNode } from "react";
+import { useEffect, useMemo, useState, useCallback, type ReactNode, type ReactElement } from "react";
 import { calcPipDistance, formatPrice, getSymbol } from "@/lib/symbols";
 import { fmtDateTime, fmtNum } from "@/lib/format";
 import type { OrderRow, PositionRow } from "./types";
@@ -119,6 +119,107 @@ function filterOrders(
     return true;
   });
 }
+
+type SortDir = "asc" | "desc";
+type SortKey = "symbol" | "side" | "type" | "profit" | "time";
+type SortState = { key: SortKey; dir: SortDir } | null;
+
+function cycleSort(prev: SortState, key: SortKey): SortState {
+  if (!prev || prev.key !== key) return { key, dir: "asc" };
+  if (prev.dir === "asc") return { key, dir: "desc" };
+  return null;
+}
+
+function cmpStr(a: string, b: string): number {
+  return a.localeCompare(b, undefined, { sensitivity: "base" });
+}
+
+function cmpNum(a: number, b: number): number {
+  const an = Number.isFinite(a) ? a : 0;
+  const bn = Number.isFinite(b) ? b : 0;
+  return an - bn;
+}
+
+function cmpTime(a: string | null | undefined, b: string | null | undefined): number {
+  const ta = a ? new Date(a).getTime() : 0;
+  const tb = b ? new Date(b).getTime() : 0;
+  const aa = Number.isFinite(ta) ? ta : 0;
+  const bb = Number.isFinite(tb) ? tb : 0;
+  return aa - bb;
+}
+
+function sortPositions(rows: PositionRow[], sort: SortState, mode: "open" | "closed"): PositionRow[] {
+  if (!sort) return rows;
+  const mul = sort.dir === "asc" ? 1 : -1;
+  const out = rows.slice();
+  out.sort((a, b) => {
+    let d = 0;
+    if (sort.key === "symbol") d = cmpStr(a.symbol, b.symbol);
+    else if (sort.key === "side") d = cmpStr(a.side, b.side);
+    else if (sort.key === "profit") {
+      const pa = mode === "closed" ? Number(a.closeProfit ?? a.profit) : Number(a.profit);
+      const pb = mode === "closed" ? Number(b.closeProfit ?? b.profit) : Number(b.profit);
+      d = cmpNum(pa, pb);
+    } else if (sort.key === "time") {
+      d =
+        mode === "closed"
+          ? cmpTime(a.closedAt ?? a.openedAt, b.closedAt ?? b.openedAt)
+          : cmpTime(a.openedAt, b.openedAt);
+    }
+    return d * mul;
+  });
+  return out;
+}
+
+function sortOrders(rows: OrderRow[], sort: SortState): OrderRow[] {
+  if (!sort) return rows;
+  const mul = sort.dir === "asc" ? 1 : -1;
+  const out = rows.slice();
+  out.sort((a, b) => {
+    let d = 0;
+    if (sort.key === "symbol") d = cmpStr(a.symbol, b.symbol);
+    else if (sort.key === "side") d = cmpStr(a.side, b.side);
+    else if (sort.key === "type") d = cmpStr(a.type, b.type);
+    else if (sort.key === "time") d = cmpTime(a.createdAt, b.createdAt);
+    return d * mul;
+  });
+  return out;
+}
+
+function SortTh({
+  label,
+  col,
+  sort,
+  onSort,
+  className = "",
+}: {
+  label: string;
+  col: SortKey;
+  sort: SortState;
+  onSort: (key: SortKey) => void;
+  className?: string;
+}): ReactElement {
+  const active = sort?.key === col;
+  const indicator = active ? (sort!.dir === "asc" ? " ▲" : " ▼") : "";
+  return (
+    <th className={`px-2 py-2 ${className}`}>
+      <button
+        type="button"
+        onClick={() => onSort(col)}
+        className={`inline-flex items-center gap-0.5 rounded px-0.5 -mx-0.5 font-medium uppercase tracking-wider transition-colors hover:text-desk-text ${
+          active ? "text-desk-text" : "text-desk-muted"
+        }`}
+        aria-label={`Sort by ${label}${active ? `, ${sort!.dir}ending` : ""}`}
+      >
+        {label}
+        <span className="tabular-nums text-[8px] opacity-80" aria-hidden>
+          {indicator || " "}
+        </span>
+      </button>
+    </th>
+  );
+}
+
 
 function Chip({
   active,
@@ -951,6 +1052,10 @@ export default function BottomPanels({
   const [resultFilter, setResultFilter] = useState<ResultFilter>("ALL");
   const [periodFilter, setPeriodFilter] = useState<PeriodFilter>("ALL");
   const [bulkBusy, setBulkBusy] = useState(false);
+  const [openSort, setOpenSort] = useState<SortState>(null);
+  const [closedSort, setClosedSort] = useState<SortState>(null);
+  const [pendingSort, setPendingSort] = useState<SortState>(null);
+
 
   const tabs: { id: Tab; label: string; shortLabel: string; count?: number }[] = [
     { id: "open", label: "Open Trades", shortLabel: "Open", count: openPositions.length || undefined },
@@ -976,6 +1081,29 @@ export default function BottomPanels({
     [pendingOrders, filterOpts]
   );
 
+  const sortedOpen = useMemo(
+    () => sortPositions(filteredOpen, openSort, "open"),
+    [filteredOpen, openSort]
+  );
+  const sortedClosed = useMemo(
+    () => sortPositions(filteredClosed, closedSort, "closed"),
+    [filteredClosed, closedSort]
+  );
+  const sortedPending = useMemo(
+    () => sortOrders(filteredPending, pendingSort),
+    [filteredPending, pendingSort]
+  );
+
+  const onOpenSort = useCallback((key: SortKey) => {
+    setOpenSort((prev) => cycleSort(prev, key));
+  }, []);
+  const onClosedSort = useCallback((key: SortKey) => {
+    setClosedSort((prev) => cycleSort(prev, key));
+  }, []);
+  const onPendingSort = useCallback((key: SortKey) => {
+    setPendingSort((prev) => cycleSort(prev, key));
+  }, []);
+
   const filtersActive =
     sideFilter !== "ALL" ||
     symbolFilter.trim() !== "" ||
@@ -983,7 +1111,7 @@ export default function BottomPanels({
     (tab === "closed" && resultFilter !== "ALL");
 
   const exportRows =
-    tab === "open" ? filteredOpen : tab === "closed" ? filteredClosed : filteredPending;
+    tab === "open" ? sortedOpen : tab === "closed" ? sortedClosed : sortedPending;
   const canExport = exportRows.length > 0;
 
   const handleCloseAllFiltered = useCallback(async () => {
@@ -1035,7 +1163,7 @@ export default function BottomPanels({
       downloadCsv(
         `7fx-open-${stamp}.csv`,
         ["id", "symbol", "side", "volume", "openPrice", "currentPrice", "stopLoss", "takeProfit", "profit", "margin", "openedAt"],
-        filteredOpen.map((p) => [
+        sortedOpen.map((p) => [
           p.id, p.symbol, p.side, p.volume, p.openPrice, p.currentPrice,
           p.stopLoss, p.takeProfit, p.profit, p.margin, p.openedAt,
         ])
@@ -1044,7 +1172,7 @@ export default function BottomPanels({
       downloadCsv(
         `7fx-closed-${stamp}.csv`,
         ["id", "symbol", "side", "volume", "openPrice", "closePrice", "closeProfit", "stopLoss", "takeProfit", "openedAt", "closedAt"],
-        filteredClosed.map((p) => [
+        sortedClosed.map((p) => [
           p.id, p.symbol, p.side, p.volume, p.openPrice, p.closePrice ?? p.currentPrice,
           p.closeProfit ?? p.profit, p.stopLoss, p.takeProfit, p.openedAt, p.closedAt ?? "",
         ])
@@ -1053,7 +1181,7 @@ export default function BottomPanels({
       downloadCsv(
         `7fx-pending-${stamp}.csv`,
         ["id", "symbol", "side", "type", "volume", "price", "openPrice", "stopLoss", "takeProfit", "status", "createdAt"],
-        filteredPending.map((o) => [
+        sortedPending.map((o) => [
           o.id, o.symbol, o.side, o.type, o.volume, o.price, o.openPrice,
           o.stopLoss, o.takeProfit, o.status, o.createdAt,
         ])
@@ -1331,7 +1459,7 @@ export default function BottomPanels({
               <div className="px-3 py-10 text-center text-xs text-desk-muted">No open trades</div>
             )}
             {openPositions.length > 0 && filteredOpen.length === 0 && emptyFiltered}
-            {filteredOpen.map((p) => (
+            {sortedOpen.map((p) => (
               <OpenCard key={p.id} p={p} onClose={onClosePosition} onModifySlTp={onModifySlTp} onSelectSymbol={onSelectSymbol} />
             ))}
           </>
@@ -1344,7 +1472,7 @@ export default function BottomPanels({
               </div>
             )}
             {closedPositions.length > 0 && filteredClosed.length === 0 && emptyFiltered}
-            {filteredClosed.map((p) => (
+            {sortedClosed.map((p) => (
               <ClosedCard key={p.id} p={p} />
             ))}
           </>
@@ -1355,7 +1483,7 @@ export default function BottomPanels({
               <div className="px-3 py-10 text-center text-xs text-desk-muted">Pending emir yok</div>
             )}
             {pendingOrders.length > 0 && filteredPending.length === 0 && emptyFiltered}
-            {filteredPending.map((o) => (
+            {sortedPending.map((o) => (
               <PendingCard key={o.id} o={o} onCancel={onCancelOrder} />
             ))}
           </>
@@ -1369,9 +1497,9 @@ export default function BottomPanels({
             <thead className="sticky top-0 z-[1] bg-desk-bg/95 text-[9px] font-medium uppercase tracking-wider text-desk-muted backdrop-blur-sm">
               <tr>
                 <th className="px-2 py-2">#</th>
-                <th className="px-2 py-2">Zaman</th>
-                <th className="px-2 py-2">Type</th>
-                <th className="px-2 py-2">Asset</th>
+                <SortTh label="Zaman" col="time" sort={openSort} onSort={onOpenSort} />
+                <SortTh label="Type" col="side" sort={openSort} onSort={onOpenSort} />
+                <SortTh label="Asset" col="symbol" sort={openSort} onSort={onOpenSort} />
                 <th className="px-2 py-2">Volume</th>
                 <th className="px-2 py-2">Pip</th>
                 <th className="px-2 py-2">Open</th>
@@ -1381,7 +1509,7 @@ export default function BottomPanels({
                 <th className="px-2 py-2">Takas</th>
                 <th className="px-2 py-2">Commission</th>
                 <th className="px-2 py-2">Tic. Kom.</th>
-                <th className="px-2 py-2">Profit</th>
+                <SortTh label="Profit" col="profit" sort={openSort} onSort={onOpenSort} />
                 <th className="px-2 py-2">Net Profit</th>
                 <th className="px-2 py-2">Close</th>
               </tr>
@@ -1401,7 +1529,7 @@ export default function BottomPanels({
                   </td>
                 </tr>
               )}
-              {filteredOpen.map((p, i) => {
+              {sortedOpen.map((p, i) => {
                 const pip =
                   calcPipDistance(p.symbol, p.openPrice, p.currentPrice) *
                   (p.side === "BUY" ? 1 : -1);
@@ -1467,15 +1595,15 @@ export default function BottomPanels({
             <thead className="sticky top-0 z-[1] bg-desk-bg/95 text-[9px] font-medium uppercase tracking-wider text-desk-muted backdrop-blur-sm">
               <tr>
                 <th className="px-2 py-2">#</th>
-                <th className="px-2 py-2">Zaman</th>
-                <th className="px-2 py-2">Type</th>
-                <th className="px-2 py-2">Asset</th>
+                <SortTh label="Zaman" col="time" sort={closedSort} onSort={onClosedSort} />
+                <SortTh label="Type" col="side" sort={closedSort} onSort={onClosedSort} />
+                <SortTh label="Asset" col="symbol" sort={closedSort} onSort={onClosedSort} />
                 <th className="px-2 py-2">Volume</th>
                 <th className="px-2 py-2">Open</th>
                 <th className="px-2 py-2">Close</th>
                 <th className="px-2 py-2">SL</th>
                 <th className="px-2 py-2">TP</th>
-                <th className="px-2 py-2">Profit</th>
+                <SortTh label="Profit" col="profit" sort={closedSort} onSort={onClosedSort} />
                 <th className="px-2 py-2">Net Profit</th>
               </tr>
             </thead>
@@ -1494,7 +1622,7 @@ export default function BottomPanels({
                   </td>
                 </tr>
               )}
-              {filteredClosed.map((p, i) => (
+              {sortedClosed.map((p, i) => (
                 <tr
                   key={p.id}
                   className="border-t border-desk-border/50 transition-colors hover:bg-desk-hover/40"
@@ -1549,10 +1677,10 @@ export default function BottomPanels({
             <thead className="sticky top-0 z-[1] bg-desk-bg/95 text-[9px] font-medium uppercase tracking-wider text-desk-muted backdrop-blur-sm">
               <tr>
                 <th className="px-2 py-2">#</th>
-                <th className="px-2 py-2">Zaman</th>
-                <th className="px-2 py-2">Type</th>
-                <th className="px-2 py-2">Order</th>
-                <th className="px-2 py-2">Asset</th>
+                <SortTh label="Zaman" col="time" sort={pendingSort} onSort={onPendingSort} />
+                <SortTh label="Type" col="side" sort={pendingSort} onSort={onPendingSort} />
+                <SortTh label="Order" col="type" sort={pendingSort} onSort={onPendingSort} />
+                <SortTh label="Asset" col="symbol" sort={pendingSort} onSort={onPendingSort} />
                 <th className="px-2 py-2">Volume</th>
                 <th className="px-2 py-2">Price</th>
                 <th className="px-2 py-2">SL</th>
@@ -1575,7 +1703,7 @@ export default function BottomPanels({
                   </td>
                 </tr>
               )}
-              {filteredPending.map((o, i) => (
+              {sortedPending.map((o, i) => (
                 <tr
                   key={o.id}
                   className="border-t border-desk-border/50 transition-colors hover:bg-desk-hover/40"
