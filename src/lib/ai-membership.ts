@@ -1,9 +1,7 @@
 import { prisma } from "./prisma";
 
 export const AI_PLANS = [
-  { id: "MONTHLY", days: 30, priceUsd: 29 },
-  { id: "QUARTERLY", days: 90, priceUsd: 79 },
-  { id: "YEARLY", days: 365, priceUsd: 249 },
+  { id: "YEARLY", days: 365, priceUsd: 10000 },
 ] as const;
 export type AiPlanId = (typeof AI_PLANS)[number]["id"];
 export function planById(id: unknown) {

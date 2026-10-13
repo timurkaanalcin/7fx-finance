@@ -49,11 +49,11 @@ export default function MembershipPage() {
           {s?.pending && <p className="mt-2 text-sm text-amber-400">⏳ {L.memPending} ({L[s.pendingPlan || ""] || s.pendingPlan})</p>}
         </div>
         {!s?.unlimited && (
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-3">
             {(d?.plans || []).map((p) => (
-              <div key={p.id} className={`rounded-2xl border p-4 ${p.id === "QUARTERLY" ? "border-[#c9a54a]/70" : "border-[#2a2a2a]"} bg-[#0a0a0a]`}>
+              <div key={p.id} className={`rounded-2xl border p-4 border-[#c9a54a]/70 bg-[#0a0a0a]`}>
                 <div className="text-sm font-semibold">{L[p.id]}</div>
-                <div className="mt-1 text-2xl font-bold text-[#c9a54a]">${p.priceUsd}</div>
+                <div className="mt-1 text-3xl font-bold text-[#c9a54a]">${p.priceUsd.toLocaleString("en-US")} <span className="text-sm font-medium text-slate-400">/ {p.days} {L.days}</span></div>
                 <div className="text-xs text-slate-500">{p.days} {L.days}</div>
                 <button type="button" disabled={!!busy} onClick={() => buy(p.id)} className="mt-3 min-h-[44px] w-full rounded-xl bg-gradient-to-r from-[#b8923a] to-[#e0c27a] text-sm font-semibold text-black disabled:opacity-50">
                   {busy === p.id ? "…" : L.buy}

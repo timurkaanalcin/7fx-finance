@@ -1,6 +1,5 @@
 import PresenceHeartbeat from "@/components/presence/PresenceHeartbeat";
 import SymbolCatalogSync from "@/components/trading/SymbolCatalogSync";
-import HesapKimligiGate from "@/components/ai/HesapKimligiGate";
 import ScreenshotGuard from "@/components/security/ScreenshotGuard";
 
 export default function TerminalGroupLayout({ children }: { children: React.ReactNode }) {
@@ -9,7 +8,6 @@ export default function TerminalGroupLayout({ children }: { children: React.Reac
       <PresenceHeartbeat />
       <SymbolCatalogSync />
       <ScreenshotGuard />
-      <HesapKimligiGate />
       {children}
     </>
   );

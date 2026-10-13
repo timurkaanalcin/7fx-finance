@@ -284,7 +284,7 @@ export default function ProfileePage() {
         >
           <span>
             <span className="block text-sm font-semibold text-slate-100">7FX AI</span>
-            <span className="block text-xs text-slate-500">{({tr:"AI asistan · Üyelik",en:"AI assistant · Membership",ru:"AI ассистент · Подписка",ar:"المساعد الذكي · العضوية",de:"KI-Assistent · Mitgliedschaft"} as Record<string,string>)[locale] ?? "AI"}</span>
+            <span className="block text-xs text-slate-500">{({tr:"AI asistan · Yıllık AI Üyelik $10,000/yıl",en:"AI assistant · Yearly AI Membership $10,000/year",ru:"AI ассистент · Годовая подписка $10,000/год",ar:"المساعد الذكي · عضوية سنوية $10,000/سنة",de:"KI-Assistent · Jahresmitgliedschaft $10,000/Jahr"} as Record<string,string>)[locale] ?? "AI"}</span>
           </span>
           <span className="text-[#c9a54a]" aria-hidden>›</span>
         </Link>
