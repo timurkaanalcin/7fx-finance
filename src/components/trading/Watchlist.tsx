@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { formatPrice } from "@/lib/symbols";
 import type { PriceTick, SymbolDef } from "./types";
 import SymbolIcon from "@/components/ui/SymbolIcon";
@@ -13,7 +13,10 @@ type Props = {
   className?: string;
 };
 
+const FAV_KEY = "fx-watch-favs";
+
 const FILTERS = [
+  { id: "FAV", label: "★" },
   { id: "ALL", label: "All" },
   { id: "STOCK", label: "Stocks" },
   { id: "FX", label: "FX" },
@@ -25,15 +28,36 @@ const FILTERS = [
 export default function Watchlist({ symbols, prices, selected, onSelect, className = "" }: Props) {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState("ALL");
+  /** Favourites (★) — per device, localStorage; shown first in every list. */
+  const [favs, setFavs] = useState<string[]>([]);
+  useEffect(() => {
+    try {
+      const v = JSON.parse(localStorage.getItem(FAV_KEY) || "[]");
+      if (Array.isArray(v)) setFavs(v.filter((x) => typeof x === "string").slice(0, 200));
+    } catch {}
+  }, []);
+  const toggleFav = (sym: string) => {
+    setFavs((prev) => {
+      const next = prev.includes(sym) ? prev.filter((x) => x !== sym) : [...prev, sym];
+      try {
+        localStorage.setItem(FAV_KEY, JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  };
 
   const list = useMemo(() => {
-    return symbols.filter((s) => {
-      if (filter !== "ALL" && s.class !== filter) return false;
+    const out = symbols.filter((s) => {
+      if (filter === "FAV") {
+        if (!favs.includes(s.symbol)) return false;
+      } else if (filter !== "ALL" && s.class !== filter) return false;
       if (!q) return true;
       const qq = q.toLowerCase();
       return s.symbol.toLowerCase().includes(qq) || s.name.toLowerCase().includes(qq);
     });
-  }, [symbols, q, filter]);
+    if (!favs.length) return out;
+    return [...out.filter((s) => favs.includes(s.symbol)), ...out.filter((s) => !favs.includes(s.symbol))];
+  }, [symbols, q, filter, favs]);
 
   return (
     <aside
@@ -56,7 +80,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Symbol ara…"
+            placeholder="Search symbol…"
             className="w-full rounded-[12px] border border-desk-border/80 bg-desk-bg py-2 pl-7 pr-2 text-xs text-desk-text outline-none placeholder:text-desk-muted/70 focus:border-desk-accent md:rounded-control md:py-1.5"
           />
         </div>
@@ -74,6 +98,11 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
               {f.label}
             </button>
           ))}
+        </div>
+        {filter === "FAV" && list.length === 0 && (
+          <p className="mt-2 text-[11px] text-desk-muted">Tap ☆ next to a symbol to add it to favourites.</p>
+        )}
+        <div className="hidden">
         </div>
       </div>
       <div className="flex items-center justify-between px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.1em] text-desk-muted/80 md:px-2.5 md:py-1 md:font-medium md:tracking-[0.08em]">
@@ -106,11 +135,33 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
                 <div className="flex items-center justify-between gap-2">
                   <div className="min-w-0">
                     <span
-                      className={`block truncate text-[13px] font-semibold tracking-tight md:text-[12px] ${
+                      className={`flex items-center truncate text-[13px] font-semibold tracking-tight md:text-[12px] ${
                         active ? "text-desk-accent" : "text-desk-text"
                       }`}
                     >
                       {s.symbol}
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        aria-label={favs.includes(s.symbol) ? "Remove from favourites" : "Add to favourites"}
+                        aria-pressed={favs.includes(s.symbol)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleFav(s.symbol);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            toggleFav(s.symbol);
+                          }
+                        }}
+                        className={`fx-fav ml-1.5 inline-flex h-6 w-6 -my-1 items-center justify-center rounded-full align-middle text-[13px] leading-none md:h-4 md:w-4 md:text-[11px] ${
+                          favs.includes(s.symbol) ? "fx-fav--on text-[#c8a96a]" : "text-desk-muted/60 hover:text-desk-text"
+                        }`}
+                      >
+                        {favs.includes(s.symbol) ? "★" : "☆"}
+                      </span>
                     </span>
                     <span className="mt-0.5 block truncate text-[10px] text-desk-muted/70 md:hidden">
                       {s.name}
