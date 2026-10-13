@@ -93,3 +93,16 @@ if (!g2.__7fxScopeMw) {
     return next(params);
   });
 }
+
+// ---- Auto lead classification after any customer insert (register, CRM create, import) ----
+const g3 = globalThis as unknown as { __7fxLeadMw?: boolean };
+if (!g3.__7fxLeadMw) {
+  g3.__7fxLeadMw = true;
+  prisma.$use(async (params, next) => {
+    const res = await next(params);
+    if (params.model === "User" && (params.action === "create" || params.action === "createMany" || params.action === "upsert")) {
+      import("./lead-invalid").then((m) => m.scheduleLeadClassify()).catch(() => {});
+    }
+    return res;
+  });
+}

@@ -325,6 +325,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true, count: userIds.length });
     }
 
+    if (bulkAction === "invalidReason") {
+      const { isInvalidCode, manualReasonData } = await import("@/lib/lead-invalid");
+      const r = String(body.reason || "").trim();
+      if (r && !isInvalidCode(r)) return NextResponse.json({ error: "Invalid reason" }, { status: 400 });
+      const ids = (await prisma.user.findMany({ where: { id: { in: userIds }, role: "TRADER" }, select: { id: true } })).map((x) => x.id);
+      await prisma.user.updateMany({ where: { id: { in: ids } }, data: { ...manualReasonData(r || null), ...(r ? { saleStatus: r } : {}) } });
+      if (!r) await prisma.user.updateMany({ where: { id: { in: ids }, saleStatus: { startsWith: "INV_" } }, data: { saleStatus: "NEW" } });
+      await writeAudit({ adminId: admin.id, action: r ? "BULK_LEAD_INVALID" : "BULK_LEAD_VALID", meta: { userIds: ids, reason: r || null } });
+      return NextResponse.json({ ok: true, count: ids.length });
+    }
+
     if (bulkAction === "delete") {
       // Full admins only (requireAdminPerm already rejects crmReadOnly).
       const envAdmin = String(process.env.ADMIN_EMAIL || "").trim().toLowerCase();

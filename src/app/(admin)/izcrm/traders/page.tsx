@@ -753,6 +753,21 @@ export default function AdminUsersPage() {
           >
             {i18n("crm.ui.assignBroker")}
           </button>
+          <select
+            disabled={busy}
+            value=""
+            onChange={(e) => {
+              const v = e.target.value;
+              if (v) void bulk("invalidReason", { reason: v === "__VALID" ? "" : v });
+            }}
+            className="rounded border border-red-700 bg-white px-2 py-1 text-sm text-red-800"
+          >
+            <option value="">⛔ Invalid / Невалид…</option>
+            <option value="__VALID">✓ Valid / Валид</option>
+            {SALE_STATUSES.filter((x) => x.startsWith("INV_")).map((x) => (
+              <option key={x} value={x}>{code("crm.sale", x)}</option>
+            ))}
+          </select>
           {canManageUsers && (
             <button
               disabled={busy}

@@ -105,6 +105,10 @@ model User {
   /// Lead marked invalid by admin (affiliate stats)
   leadInvalid          Boolean          @default(false)
   leadInvalidAt        DateTime?
+  /// Invalid reason code (INV_*) — see src/lib/lead-invalid.ts
+  leadInvalidReason    String?          @db.VarChar(32)
+  /// MANUAL | AUTO — auto-classifier never overwrites MANUAL
+  leadInvalidSource    String?          @db.VarChar(8)
   /// Test/demo record (excluded from real stats)
   isTest               Boolean          @default(false)
   /// Account auto-expires (login + sessions refused after this time)
@@ -482,6 +486,8 @@ model SystemSettings {
   terminalImpersonationEnabled Boolean @default(true)
   /// JSON: { valid: string[], invalid: string[], potential: string[] } saleStatus / potentialStatus lists
   leadStatusMappingJson String? @db.Text
+  /// JSON lead auto-classification rules (working hours, allowed countries, age)
+  leadRulesJson     String?  @db.Text
   updatedAt         DateTime @updatedAt
 }
 

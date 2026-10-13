@@ -226,6 +226,23 @@ export async function PATCH(req: Request, ctx: Ctx) {
     (data as Record<string, unknown>).jobTitle = jt.data ?? null;
   }
 
+  // Invalid reason (explicit field or INV_* sale status) → leadInvalid sync (manual, never overwritten by auto)
+  {
+    const { isInvalidCode, manualReasonData } = await import("@/lib/lead-invalid");
+    const d = data as Record<string, unknown>;
+    if (body.leadInvalidReason !== undefined) {
+      const r = String(body.leadInvalidReason || "").trim();
+      if (r && !isInvalidCode(r)) return NextResponse.json({ error: "Invalid reason" }, { status: 400 });
+      Object.assign(d, manualReasonData(r || null));
+      if (r) d.saleStatus = r;
+      else if (String(target.saleStatus || "").startsWith("INV_") && d.saleStatus === undefined) d.saleStatus = "NEW";
+    } else if (d.saleStatus !== undefined && d.saleStatus !== target.saleStatus) {
+      const ss = String(d.saleStatus || "");
+      if (isInvalidCode(ss)) Object.assign(d, manualReasonData(ss));
+      else if (target.leadInvalidReason || String(target.saleStatus || "").startsWith("INV_")) Object.assign(d, manualReasonData(null));
+    }
+  }
+
   // User.name is required — ignore an empty display name instead of failing.
   if (data.name === null) delete data.name;
 

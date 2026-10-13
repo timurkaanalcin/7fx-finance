@@ -50,6 +50,7 @@ export function classifySaleStatus(
   const s = String(saleStatus || "").trim().toUpperCase();
   if (!s) return "other";
   if (s === CALLBACK_SALE_STATUS) return "callback";
+  if (s.startsWith("INV_")) return "invalid";
   if (mapping.valid.includes(s)) return "valid";
   if (mapping.invalid.includes(s)) return "invalid";
   return "other";

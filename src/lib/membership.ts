@@ -39,6 +39,18 @@ export const SALE_STATUSES = [
   "CONVERTED",
   "CONTACTED",
   "LOST",
+  "INV_WRONG_GEO",
+  "INV_WRONG_LANGUAGE",
+  "INV_WRONG_PERSON",
+  "INV_WRONG_NUMBER",
+  "INV_WRONG_INFO",
+  "INV_WRONG_SOURCE",
+  "INV_UNDERAGE",
+  "INV_TRASH",
+  "INV_DUPLICATE",
+  "INV_NOT_REGISTERED",
+  "INV_NOT_IN_WH",
+  "INV_NO_DOCS",
 ] as const;
 
 export const RETENTION_STATUSES = [
@@ -249,6 +261,9 @@ export function serializeUserMembership(u: Record<string, unknown>) {
     affiliateC: u.affiliateC ?? null,
     retentionStatus: u.retentionStatus ?? null,
     saleStatus: u.saleStatus ?? null,
+    leadInvalid: Boolean(u.leadInvalid),
+    leadInvalidReason: u.leadInvalidReason ?? null,
+    leadInvalidSource: u.leadInvalidSource ?? null,
     potentialStatus: u.potentialStatus ?? null,
     validationStatus: u.validationStatus ?? null,
     ftd: Boolean(u.ftd),
