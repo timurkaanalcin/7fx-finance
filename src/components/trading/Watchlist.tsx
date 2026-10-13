@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { formatPrice } from "@/lib/symbols";
-import type { PriceTick, SymbolDef } from "./types";
+import type { PositionRow, PriceTick, SymbolDef } from "./types";
 import SymbolIcon from "@/components/ui/SymbolIcon";
 
 type Props = {
@@ -11,6 +11,8 @@ type Props = {
   selected: string;
   onSelect: (symbol: string) => void;
   className?: string;
+  /** Optional open positions — shows a per-symbol count + floating P&L badge and an "Açık" filter. */
+  openPositions?: PositionRow[];
 };
 
 
@@ -81,9 +83,43 @@ const FILTERS = [
   { id: "INDEX", label: "Indices" },
 ];
 
-export default function Watchlist({ symbols, prices, selected, onSelect, className = "" }: Props) {
+type OpenAgg = { count: number; profit: number; buyLots: number; sellLots: number };
+
+function fmtSignedMoney(n: number): string {
+  const abs = Math.abs(n);
+  const txt = abs >= 1000 ? abs.toLocaleString("en-US", { maximumFractionDigits: 0 }) : abs.toFixed(2);
+  return `${n >= 0 ? "+" : "−"}${txt}`;
+}
+
+export default function Watchlist({ symbols, prices, selected, onSelect, className = "", openPositions }: Props) {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState("ALL");
+
+  /** Open positions grouped by catalog symbol (matches both symbol and chartSymbol). */
+  const openBySymbol = useMemo(() => {
+    const m = new Map<string, OpenAgg>();
+    if (!openPositions?.length) return m;
+    const known = new Set(symbols.map((s) => s.symbol.toUpperCase()));
+    for (const p of openPositions) {
+      const a = (p.symbol || "").trim().toUpperCase();
+      const b = (p.chartSymbol || "").trim().toUpperCase();
+      const key = known.has(a) ? a : known.has(b) ? b : a;
+      if (!key) continue;
+      const cur = m.get(key) || { count: 0, profit: 0, buyLots: 0, sellLots: 0 };
+      cur.count += 1;
+      const pr = Number(p.profit);
+      if (Number.isFinite(pr)) cur.profit += pr;
+      const vol = Number(p.volume) || 0;
+      if (p.side === "SELL") cur.sellLots += vol;
+      else cur.buyLots += vol;
+      m.set(key, cur);
+    }
+    return m;
+  }, [openPositions, symbols]);
+  const hasOpen = openBySymbol.size > 0;
+  useEffect(() => {
+    if (filter === "OPEN" && !hasOpen) setFilter("ALL");
+  }, [filter, hasOpen]);
   /** Favourites (★) — per device, localStorage; shown first in every list. */
   const [favs, setFavs] = useState<string[]>([]);
   useEffect(() => {
@@ -177,12 +213,14 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
     const out = symbols.filter((s) => {
       if (filter === "FAV") {
         if (!favs.includes(s.symbol)) return false;
+      } else if (filter === "OPEN") {
+        if (!openBySymbol.has(s.symbol.toUpperCase())) return false;
       } else if (filter !== "ALL" && s.class !== filter) return false;
       return match(s);
     });
     if (!favs.length) return out;
     return [...out.filter((s) => favs.includes(s.symbol)), ...out.filter((s) => !favs.includes(s.symbol))];
-  }, [symbols, q, filter, favs, recent]);
+  }, [symbols, q, filter, favs, recent, openBySymbol]);
 
   const list = useMemo(() => {
     // Favourites always float to the top; sortMode applies within fav / non-fav groups.
@@ -226,18 +264,42 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Escape" && q) {
+                e.preventDefault();
+                e.stopPropagation();
+                setQ("");
+              }
+            }}
             placeholder="Search symbol…"
             data-fx-watchlist-search=""
             aria-label="Search symbol"
             aria-keyshortcuts="/"
-            className="w-full rounded-[12px] border border-desk-border/80 bg-desk-bg py-2 pl-7 pr-2 text-xs text-desk-text outline-none placeholder:text-desk-muted/70 focus:border-desk-accent md:rounded-control md:py-1.5"
+            className="w-full rounded-[12px] border border-desk-border/80 bg-desk-bg py-2 pl-7 pr-7 text-xs text-desk-text outline-none placeholder:text-desk-muted/70 focus:border-desk-accent md:rounded-control md:py-1.5"
           />
+          {q && (
+            <button
+              type="button"
+              onClick={() => setQ("")}
+              title="Aramayı temizle (Esc)"
+              aria-label="Aramayı temizle"
+              data-fx-watch-clear=""
+              className="absolute right-1.5 top-1/2 inline-flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full text-[12px] leading-none text-desk-muted hover:bg-desk-hover hover:text-desk-text"
+            >
+              ×
+            </button>
+          )}
         </div>
         <div className="mt-2 flex gap-1 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:flex-wrap md:overflow-visible">
-          {FILTERS.map((f) => (
+          {(hasOpen
+            ? [FILTERS[0], { id: "OPEN", label: `Açık · ${openBySymbol.size}` }, ...FILTERS.slice(1)]
+            : FILTERS
+          ).map((f) => (
             <button
               key={f.id}
               onClick={() => setFilter(f.id)}
+              aria-pressed={filter === f.id}
+              title={f.id === "OPEN" ? "Açık pozisyonunuz olan semboller" : undefined}
               className={`shrink-0 rounded-[8px] px-2 py-1 text-[10px] font-semibold transition-colors md:rounded-[7px] md:px-1.5 md:py-0.5 md:font-medium ${
                 filter === f.id
                   ? "bg-desk-accent text-desk-accent-ink shadow-accent-glow-sm"
@@ -336,6 +398,29 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
                     <span className="mt-0.5 block truncate text-[10px] text-desk-muted/70 md:hidden">
                       {s.name}
                     </span>
+                    {(() => {
+                      const agg = openBySymbol.get(s.symbol.toUpperCase());
+                      if (!agg) return null;
+                      const lots = [
+                        agg.buyLots > 0 ? `Alış ${+agg.buyLots.toFixed(2)} lot` : "",
+                        agg.sellLots > 0 ? `Satış ${+agg.sellLots.toFixed(2)} lot` : "",
+                      ]
+                        .filter(Boolean)
+                        .join(" · ");
+                      return (
+                        <span
+                          data-fx-watch-open={agg.count}
+                          title={`${agg.count} açık pozisyon${lots ? ` (${lots})` : ""} · Anlık K/Z ${fmtSignedMoney(agg.profit)}`}
+                          className={`mt-0.5 inline-flex max-w-full items-center gap-1 rounded-[6px] px-1 py-px text-[9.5px] font-semibold tabular-nums leading-tight ${
+                            agg.profit >= 0 ? "bg-desk-buy/10 text-desk-buy" : "bg-desk-sell/10 text-desk-sell"
+                          }`}
+                        >
+                          <span aria-hidden>●</span>
+                          <span>{agg.count}</span>
+                          <span className="truncate">{fmtSignedMoney(agg.profit)}</span>
+                        </span>
+                      );
+                    })()}
                   </div>
                   <div className="flex shrink-0 flex-col items-end gap-0.5 tabular-nums">
                     <div className="flex items-baseline gap-1.5 text-[11px] font-medium text-desk-text/80 md:gap-1 md:text-[10px]">
@@ -378,7 +463,31 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
           );
         })}
         {list.length === 0 && !(filter === "RECENT" && recent.length === 0) && (
-          <div className="px-3 py-8 text-center text-xs text-desk-muted">Symbol not found</div>
+          <div className="px-3 py-8 text-center text-xs text-desk-muted">
+            <div>Symbol not found</div>
+            {(q || filter !== "ALL") && (
+              <div className="mt-2 flex flex-wrap items-center justify-center gap-1.5">
+                {filter !== "ALL" && q && (
+                  <button
+                    type="button"
+                    onClick={() => setFilter("ALL")}
+                    className="rounded-[8px] bg-desk-elev/80 px-2 py-1 text-[10px] font-semibold text-desk-text hover:bg-desk-hover"
+                  >
+                    Tüm piyasalarda ara
+                  </button>
+                )}
+                {q && (
+                  <button
+                    type="button"
+                    onClick={() => setQ("")}
+                    className="rounded-[8px] bg-desk-elev/80 px-2 py-1 text-[10px] font-semibold text-desk-muted hover:bg-desk-hover hover:text-desk-text"
+                  >
+                    Aramayı temizle
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
         )}
       </div>
     </aside>

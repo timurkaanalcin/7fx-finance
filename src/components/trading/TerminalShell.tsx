@@ -574,6 +574,7 @@ export default function TerminalShell() {
           <Watchlist
             symbols={symbols}
             prices={prices}
+            openPositions={openPositions}
             selected={symbol}
             onSelect={setSymbol}
           />
@@ -641,6 +642,7 @@ export default function TerminalShell() {
                 className="h-full border-r-0"
                 symbols={symbols}
                 prices={prices}
+                openPositions={openPositions}
                 selected={symbol}
                 onSelect={(s) => {
                   setSymbol(s);
