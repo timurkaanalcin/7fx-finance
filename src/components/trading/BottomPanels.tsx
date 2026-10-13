@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState, useCallback, type ReactNode } from "react";
-import { calcPipDistance, formatPrice } from "@/lib/symbols";
+import { useEffect, useMemo, useState, useCallback, type ReactNode } from "react";
+import { calcPipDistance, formatPrice, getSymbol } from "@/lib/symbols";
 import { fmtDateTime, fmtNum } from "@/lib/format";
 import type { OrderRow, PositionRow } from "./types";
 
@@ -214,6 +214,197 @@ function lotPreset(full: number, pct: number, step = DEFAULT_VOLUME_STEP): numbe
   return snapLot(full * (pct / 100), step);
 }
 
+/* ---------- Holding time (open positions) ---------- */
+
+function fmtHoldTime(fromIso: string | Date | null | undefined, now: number): string {
+  if (!fromIso) return "";
+  const start = new Date(fromIso).getTime();
+  if (!Number.isFinite(start)) return "";
+  const sec = Math.max(0, Math.floor((now - start) / 1000));
+  if (sec < 60) return `${sec}s`;
+  const min = Math.floor(sec / 60);
+  if (min < 60) return `${min}m`;
+  const hrs = Math.floor(min / 60);
+  if (hrs < 24) return `${hrs}h ${min % 60}m`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ${hrs % 24}h`;
+}
+
+/** Live "time held" label; re-renders every 5s for the first minute, then every 30s. */
+function HoldTime({
+  openedAt,
+  className = "",
+}: {
+  openedAt: string | Date | null | undefined;
+  className?: string;
+}) {
+  const [now, setNow] = useState(() => Date.now());
+  const start = openedAt ? new Date(openedAt).getTime() : NaN;
+  const young = Number.isFinite(start) && now - start < 60_000;
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(Date.now()), young ? 5_000 : 30_000);
+    return () => window.clearInterval(id);
+  }, [young]);
+  const label = fmtHoldTime(openedAt, now);
+  if (!label) return null;
+  return (
+    <span
+      suppressHydrationWarning
+      title="Açık kalma süresi · Time held"
+      className={`tabular-nums text-desk-muted ${className}`}
+    >
+      ⏱ {label}
+    </span>
+  );
+}
+
+/* ---------- SL/TP quick presets (input-only; user still presses Save) ---------- */
+
+function symbolPipSize(symbol: string): number {
+  const def = getSymbol(symbol);
+  if (def && Number.isFinite(def.pipSize) && def.pipSize > 0) return def.pipSize;
+  const digits = def?.digits ?? 5;
+  // Fallback: forex-style pip = one digit above the last quoted decimal.
+  return digits >= 3 ? Math.pow(10, -(digits - 1)) : Math.pow(10, -digits);
+}
+
+const PIP_PRESETS = [10, 20, 50] as const;
+
+/**
+ * Price `pips` away from reference in the protective (SL) or profit (TP) direction.
+ * BUY: SL below, TP above. SELL: SL above, TP below.
+ */
+function pipOffsetPrice(
+  p: PositionRow,
+  kind: "sl" | "tp",
+  pips: number
+): string {
+  const ref = Number.isFinite(p.currentPrice) && p.currentPrice > 0 ? p.currentPrice : p.openPrice;
+  const dist = pips * symbolPipSize(p.symbol);
+  const isBuy = p.side === "BUY";
+  const down = kind === "sl" ? isBuy : !isBuy;
+  const price = down ? ref - dist : ref + dist;
+  return formatPrice(p.symbol, Math.max(0, price));
+}
+
+/** Breakeven is only accepted by the server when the position is already in profit. */
+function breakevenAllowed(p: PositionRow): boolean {
+  if (!Number.isFinite(p.currentPrice) || !(p.currentPrice > 0)) return false;
+  return p.side === "BUY" ? p.openPrice < p.currentPrice : p.openPrice > p.currentPrice;
+}
+
+function QuickChip({
+  onClick,
+  children,
+  title,
+  disabled,
+  tone = "neutral",
+  size = "md",
+}: {
+  onClick: () => void;
+  children: ReactNode;
+  title?: string;
+  disabled?: boolean;
+  tone?: "neutral" | "buy" | "sell" | "accent";
+  size?: "sm" | "md";
+}) {
+  const toneCls =
+    tone === "buy"
+      ? "text-desk-buy border-desk-buy/30 hover:bg-desk-buy/10"
+      : tone === "sell"
+        ? "text-desk-sell border-desk-sell/30 hover:bg-desk-sell/10"
+        : tone === "accent"
+          ? "text-desk-text border-desk-accent/40 hover:bg-desk-accent/10"
+          : "text-desk-muted border-desk-border/50 hover:text-desk-text hover:bg-desk-hover";
+  const sizeCls =
+    size === "sm" ? "rounded px-1 py-0 text-[8.5px]" : "rounded-[6px] px-1.5 py-0.5 text-[9.5px]";
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      title={title}
+      disabled={disabled}
+      className={`border bg-desk-elev/50 font-semibold tabular-nums transition-colors disabled:cursor-not-allowed disabled:opacity-35 ${toneCls} ${sizeCls}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function SlQuickChips({
+  p,
+  onSet,
+  size = "md",
+}: {
+  p: PositionRow;
+  onSet: (v: string) => void;
+  size?: "sm" | "md";
+}) {
+  const beOk = breakevenAllowed(p);
+  return (
+    <div className="mt-1 flex flex-wrap gap-0.5">
+      <QuickChip
+        size={size}
+        tone="accent"
+        disabled={!beOk}
+        onClick={() => onSet(formatPrice(p.symbol, p.openPrice))}
+        title={
+          beOk
+            ? "Başabaş: SL = açılış fiyatı · Breakeven: SL at open price"
+            : "Başabaş için pozisyon kârda olmalı · Position must be in profit for breakeven"
+        }
+      >
+        BE
+      </QuickChip>
+      {PIP_PRESETS.map((n) => (
+        <QuickChip
+          key={n}
+          size={size}
+          tone="sell"
+          onClick={() => onSet(pipOffsetPrice(p, "sl", n))}
+          title={`SL ${n} pip (güncel fiyattan · from current price)`}
+        >
+          {p.side === "BUY" ? "−" : "+"}
+          {n}
+        </QuickChip>
+      ))}
+      <QuickChip size={size} onClick={() => onSet("")} title="SL temizle · Clear SL">
+        ✕
+      </QuickChip>
+    </div>
+  );
+}
+
+function TpQuickChips({
+  p,
+  onSet,
+  size = "md",
+}: {
+  p: PositionRow;
+  onSet: (v: string) => void;
+  size?: "sm" | "md";
+}) {
+  return (
+    <div className="mt-1 flex flex-wrap gap-0.5">
+      {PIP_PRESETS.map((n) => (
+        <QuickChip
+          key={n}
+          size={size}
+          tone="buy"
+          onClick={() => onSet(pipOffsetPrice(p, "tp", n))}
+          title={`TP ${n} pip (güncel fiyattan · from current price)`}
+        >
+          {p.side === "BUY" ? "+" : "−"}
+          {n}
+        </QuickChip>
+      ))}
+      <QuickChip size={size} onClick={() => onSet("")} title="TP temizle · Clear TP">
+        ✕
+      </QuickChip>
+    </div>
+  );
+}
+
 function OpenCard({
   p,
   onClose,
@@ -315,7 +506,10 @@ function OpenCard({
               {fmtNum(p.volume, 2)} lot
             </span>
           </div>
-          <div className="mt-1 text-[10px] text-desk-muted">{fmtDateTime(p.openedAt)}</div>
+          <div className="mt-1 flex items-center gap-1.5 text-[10px] text-desk-muted">
+            <span>{fmtDateTime(p.openedAt)}</span>
+            <HoldTime openedAt={p.openedAt} className="rounded-[5px] bg-desk-bg/60 px-1 py-px text-[9.5px]" />
+          </div>
         </div>
         <div className="text-right">
           <div className={`text-[14px] font-bold tabular-nums ${moneyCls(p.profit)}`}>
@@ -433,6 +627,7 @@ function OpenCard({
                 placeholder="—"
                 className="mt-0.5 w-full rounded-[8px] border border-desk-border/60 bg-desk-elev px-2 py-1.5 text-[12px] tabular-nums text-desk-text outline-none focus:border-desk-accent"
               />
+              <SlQuickChips p={p} onSet={setSlInput} />
             </label>
             <label className="block">
               <span className="text-[9px] text-desk-muted">Take Profit</span>
@@ -443,6 +638,7 @@ function OpenCard({
                 placeholder="—"
                 className="mt-0.5 w-full rounded-[8px] border border-desk-border/60 bg-desk-elev px-2 py-1.5 text-[12px] tabular-nums text-desk-text outline-none focus:border-desk-accent"
               />
+              <TpQuickChips p={p} onSet={setTpInput} />
             </label>
           </div>
           <div className="mt-2 flex gap-2">
@@ -547,22 +743,28 @@ function OpenRowActions({
 
   if (mode === "edit") {
     return (
-      <div className="min-w-[160px] rounded-[8px] border border-desk-border/60 bg-desk-elev/80 p-1.5 shadow-sm">
+      <div className="min-w-[200px] rounded-[8px] border border-desk-border/60 bg-desk-elev/80 p-1.5 shadow-sm">
         <div className="grid grid-cols-2 gap-1">
-          <input
-            type="number"
-            value={slInput}
-            onChange={(e) => setSlInput(e.target.value)}
-            placeholder="SL"
-            className="w-full rounded-[6px] border border-desk-border/50 bg-desk-bg px-1.5 py-0.5 text-[10px] tabular-nums text-desk-text outline-none"
-          />
-          <input
-            type="number"
-            value={tpInput}
-            onChange={(e) => setTpInput(e.target.value)}
-            placeholder="TP"
-            className="w-full rounded-[6px] border border-desk-border/50 bg-desk-bg px-1.5 py-0.5 text-[10px] tabular-nums text-desk-text outline-none"
-          />
+          <div className="min-w-0">
+            <input
+              type="number"
+              value={slInput}
+              onChange={(e) => setSlInput(e.target.value)}
+              placeholder="SL"
+              className="w-full rounded-[6px] border border-desk-border/50 bg-desk-bg px-1.5 py-0.5 text-[10px] tabular-nums text-desk-text outline-none"
+            />
+            <SlQuickChips p={p} onSet={setSlInput} size="sm" />
+          </div>
+          <div className="min-w-0">
+            <input
+              type="number"
+              value={tpInput}
+              onChange={(e) => setTpInput(e.target.value)}
+              placeholder="TP"
+              className="w-full rounded-[6px] border border-desk-border/50 bg-desk-bg px-1.5 py-0.5 text-[10px] tabular-nums text-desk-text outline-none"
+            />
+            <TpQuickChips p={p} onSet={setTpInput} size="sm" />
+          </div>
         </div>
         <div className="mt-1 flex gap-1">
           <button
@@ -1210,7 +1412,8 @@ export default function BottomPanels({
                   >
                     <td className="px-2 py-1.5 text-desk-muted">{i + 1}</td>
                     <td className="whitespace-nowrap px-2 py-1.5 text-desk-muted">
-                      {fmtDateTime(p.openedAt)}
+                      <div>{fmtDateTime(p.openedAt)}</div>
+                      <HoldTime openedAt={p.openedAt} className="text-[9.5px] opacity-80" />
                     </td>
                     <td
                       className={`px-2 py-1.5 font-semibold ${
