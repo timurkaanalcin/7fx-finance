@@ -191,7 +191,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
       </div>
       <div className="flex items-center justify-between px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.1em] text-desk-muted/80 md:px-2.5 md:py-1 md:font-medium md:tracking-[0.08em]">
         <span>Symbol</span>
-        <span>BID / ASK · %</span>
+        <span>BID / ASK · SPR · %</span>
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto">
         {list.map((s) => {
@@ -265,6 +265,14 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
                         text={p ? formatPrice(s.symbol, p.ask) : "—"}
                       />
                     </div>
+                    <span
+                      className="text-[10px] tabular-nums text-desk-muted/70 md:text-[9px]"
+                      title="Spread (ask − bid)"
+                    >
+                      {p && Number.isFinite(p.bid) && Number.isFinite(p.ask)
+                        ? formatPrice(s.symbol, Number(p.ask) - Number(p.bid))
+                        : "—"}
+                    </span>
                     <span
                       className={`rounded-[6px] px-1.5 py-0.5 text-[11px] font-semibold md:rounded md:px-1 md:py-px md:text-[10px] ${
                         !p

@@ -65,6 +65,8 @@ function play(ctx: AudioContext) {
   } catch {}
 }
 
+const PCT_CHIPS = [-1, -0.5, -0.1, 0.1, 0.5, 1] as const;
+
 function load(): Alert[] {
   try {
     const v = JSON.parse(localStorage.getItem(KEY) || "[]");
@@ -155,6 +157,31 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
       if (typeof Notification !== "undefined" && Notification.permission === "default") void Notification.requestPermission();
     } catch {}
   }
+  function addAt(price: number) {
+    if (!Number.isFinite(price) || price <= 0 || !Number.isFinite(cur)) return;
+    const a: Alert = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      symbol,
+      price,
+      dir: price >= cur ? "above" : "below",
+      createdAt: Date.now(),
+    };
+    const next = [...alerts, a].slice(-100);
+    setAlerts(next);
+    save(next);
+    setVal("");
+    try {
+      if (typeof Notification !== "undefined" && Notification.permission === "default") void Notification.requestPermission();
+    } catch {}
+  }
+
+  function quickPct(pct: number) {
+    if (!Number.isFinite(cur)) return;
+    const target = cur * (1 + pct / 100);
+    if (soundRef.current) getAudio();
+    addAt(target);
+  }
+
   function remove(id: string) {
     const next = alerts.filter((a) => a.id !== id);
     setAlerts(next);
@@ -239,6 +266,23 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
                 Add
               </button>
             </div>
+            {Number.isFinite(cur) && (
+              <div className="mt-2 flex flex-wrap gap-1" role="group" aria-label="Quick percent offsets from mid">
+                {PCT_CHIPS.map((pct) => (
+                  <button
+                    key={pct}
+                    type="button"
+                    onClick={() => quickPct(pct)}
+                    aria-label={`Alert at mid ${pct > 0 ? "+" : ""}${pct}%`}
+                    title={`${pct > 0 ? "+" : ""}${pct}% from mid`}
+                    className="rounded-[8px] border border-desk-border bg-desk-elev/80 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-desk-muted hover:border-desk-accent hover:text-desk-text"
+                  >
+                    {pct > 0 ? "+" : ""}
+                    {pct}%
+                  </button>
+                ))}
+              </div>
+            )}
             {mine.length > 0 ? (
               <ul className="mt-2 space-y-1">
                 {mine.map((a) => (

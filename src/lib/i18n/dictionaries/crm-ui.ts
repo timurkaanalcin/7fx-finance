@@ -848,6 +848,9 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.palette.move", "move", "gez", "выбор", "bewegen", "تنقّل"],
   ["crm.palette.open", "open", "aç", "открыть", "öffnen", "فتح"],
   ["crm.palette.search", "Search", "Ara", "Поиск", "Suche", "بحث"],
+  ["crm.palette.pinned", "Pinned", "Sabitlenenler", "Закреплённые", "Angeheftet", "مثبّت"],
+  ["crm.palette.pin", "Pin customer", "Müşteriyi sabitle", "Закрепить клиента", "Kunden anheften", "تثبيت العميل"],
+  ["crm.palette.unpin", "Unpin customer", "Sabitlemeyi kaldır", "Открепить клиента", "Kunde lösen", "إلغاء التثبيت"],
 ];
 
 function pack(index: 1|2|3|4|5): Dict {
