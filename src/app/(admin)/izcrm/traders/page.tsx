@@ -58,6 +58,7 @@ type UserRow = {
   lastDevice?: string | null;
   lastBrowser?: string | null;
   lastOs?: string | null;
+  createdAt?: string | null;
 };
 
 const REFRESH_MS = 20000;
@@ -107,6 +108,11 @@ function readSavedFilters(): SavedTraderFilter[] {
 }
 function sameFilters(a: TraderFilterState, b: TraderFilterState): boolean {
   return (Object.keys(EMPTY_FILTERS) as (keyof TraderFilterState)[]).every((k) => a[k] === b[k]);
+}
+
+function csvCell(v: unknown): string {
+  const s = v == null ? "" : String(v);
+  return /[",\r\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
 const emptyCreate = {
@@ -331,6 +337,92 @@ export default function AdminUsersPage() {
       await load();
     } finally {
       setBusy(false);
+    }
+  }
+
+  /**
+   * CSV of the rows currently shown (after server + client filters). Client-side only,
+   * but gated by the existing export-audit endpoint: it audits the export and rejects
+   * read-only admins / scoped staff, so no new export capability is opened. Phone is
+   * intentionally left out (contact data stays in the CRM).
+   */
+  const [csvBusy, setCsvBusy] = useState(false);
+  async function downloadCsv() {
+    if (rows.length === 0 || csvBusy) return;
+    setCsvBusy(true);
+    try {
+      const audit = await fetch("/api/admin/export-audit", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kind: "traders_csv", path: "/izcrm/traders", rows: rows.length }),
+      }).catch(() => null);
+      if (!audit || !audit.ok) {
+        setMsg(i18n("crm.ui.csvDenied", "CSV dışa aktarma bu hesap için kapalı."));
+        return;
+      }
+      const header = [
+        i18n("crm.ui.name"),
+        i18n("crm.ui.email"),
+        i18n("crm.ui.accountId"),
+        "User ID",
+        i18n("crm.ui.desk"),
+        i18n("crm.ui.country"),
+        i18n("crm.ui.status"),
+        i18n("crm.ui.accountType"),
+        "FTD",
+        i18n("crm.ui.saleStatus"),
+        i18n("crm.ui.retention"),
+        i18n("crm.ui.assignee"),
+        i18n("crm.ui.broker"),
+        i18n("crm.ui.balance"),
+        i18n("crm.ui.equity"),
+        i18n("crm.ui.credit"),
+        i18n("crm.ui.bonus"),
+        i18n("crm.ui.currency"),
+        i18n("crm.ui.lastLogin"),
+        i18n("crm.ui.regDate"),
+      ];
+      const lines = [header.map(csvCell).join(",")];
+      for (const u of rows) {
+        lines.push(
+          [
+            u.name,
+            u.email,
+            u.accountLoginId ?? "",
+            u.id,
+            u.desk ? deskName(u.desk) : "",
+            u.country ?? "",
+            u.active ? i18n("crm.ui.active") : i18n("crm.ui.frozen"),
+            u.accountType ? code("crm.accountType", u.accountType) : "",
+            u.ftd ? "YES" : "NO",
+            u.saleStatus ? code("crm.sale", u.saleStatus) : "",
+            u.retentionStatus ? code("crm.retention", u.retentionStatus) : "",
+            u.assigneeName ?? "",
+            u.brokerName ?? "",
+            Number.isFinite(u.balance) ? u.balance : "",
+            Number.isFinite(u.equity) ? u.equity : "",
+            Number.isFinite(u.credit) ? u.credit : "",
+            Number.isFinite(u.bonus) ? u.bonus : "",
+            u.currency ?? "",
+            u.lastLoginAt ?? "",
+            u.createdAt ?? "",
+          ]
+            .map(csvCell)
+            .join(","),
+        );
+      }
+      const blob = new Blob(["\uFEFF" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `traders-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } finally {
+      setCsvBusy(false);
     }
   }
 
@@ -641,6 +733,17 @@ export default function AdminUsersPage() {
         <span className="ml-auto text-neutral-400 tabular-nums">
           {rows.length} {i18n("crm.savedFilters.results")}
         </span>
+        {!crmReadOnly && (
+          <button
+            type="button"
+            onClick={downloadCsv}
+            disabled={rows.length === 0 || csvBusy}
+            title="Gösterilen satırları CSV indir · Download shown rows as CSV"
+            className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2.5 py-1 font-medium hover:bg-[#f5f5f5] disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            CSV
+          </button>
+        )}
       </div>
 
       {recentClients.length > 0 && (

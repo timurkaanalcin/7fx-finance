@@ -24,6 +24,13 @@ type Row = {
   user: { id: string; email: string; name: string };
 };
 
+function csvCell(v: unknown): string {
+  const s = v == null ? "" : String(v);
+  return /[",\r\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
+const TYPE_FILTERS = ["", "ADD", "RESET"] as const;
+
 export default function AdminBalanceRequestsPage() {
   const { i18n, code } = useCrmLabels();
   const [rows, setRows] = useState<Row[]>([]);
@@ -32,6 +39,8 @@ export default function AdminBalanceRequestsPage() {
   const [msg, setMsg] = useState("");
   const [ruleTr, setRuleTr] = useState("");
   const [query, setQuery] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
+  const [csvBusy, setCsvBusy] = useState(false);
   const [loadedAt, setLoadedAt] = useState<Date | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -63,16 +72,86 @@ export default function AdminBalanceRequestsPage() {
     return () => window.clearInterval(t);
   }, [filter, load]);
 
+  // Stable base counts per type from the loaded set (independent of the type chip / search)
+  const typeCounts = useMemo(() => {
+    const c: Record<string, number> = { "": rows.length, ADD: 0, RESET: 0 };
+    for (const r of rows) c[r.type] = (c[r.type] || 0) + 1;
+    return c;
+  }, [rows]);
+
   const shown = useMemo(() => {
     const q = query.trim().toLocaleLowerCase("tr");
-    if (!q) return rows;
-    return rows.filter((r) =>
-      [r.user.name, r.user.email, r.type, r.reason || "", r.adminNote || ""]
+    return rows.filter((r) => {
+      if (typeFilter && r.type !== typeFilter) return false;
+      if (!q) return true;
+      return [r.user.name, r.user.email, r.type, r.reason || "", r.adminNote || ""]
         .join(" ")
         .toLocaleLowerCase("tr")
-        .includes(q),
-    );
-  }, [rows, query]);
+        .includes(q);
+    });
+  }, [rows, query, typeFilter]);
+
+  /** CSV of shown rows; gated + audited by the existing export-audit endpoint (RO / scoped staff denied). */
+  async function downloadCsv() {
+    if (shown.length === 0 || csvBusy) return;
+    setCsvBusy(true);
+    try {
+      const audit = await fetch("/api/admin/export-audit", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kind: "balance_requests_csv", path: "/izcrm/balance-requests", rows: shown.length }),
+      }).catch(() => null);
+      if (!audit || !audit.ok) {
+        setMsg(i18n("crm.ui.csvDenied", "CSV dışa aktarma bu hesap için kapalı."));
+        return;
+      }
+      const header = [
+        i18n("crm.ui.date"),
+        i18n("crm.ui.name"),
+        i18n("crm.ui.email"),
+        i18n("crm.ui.type"),
+        i18n("crm.ui.amount"),
+        i18n("crm.ui.equity"),
+        "Margin %",
+        i18n("crm.ui.status"),
+        i18n("crm.bal.reason", "Sebep"),
+        i18n("crm.ui.note"),
+        i18n("crm.bal.riskAck"),
+      ];
+      const lines = [header.map(csvCell).join(",")];
+      for (const r of shown) {
+        lines.push(
+          [
+            r.createdAt,
+            r.user.name,
+            r.user.email,
+            r.type === "RESET" ? i18n("crm.bal.reset") : r.type === "ADD" ? i18n("crm.bal.add") : r.type,
+            r.type === "ADD" && r.amount != null ? r.amount : r.type === "RESET" ? `-> ${DEFAULT_RESET_BALANCE}` : "",
+            r.equityAt ?? "",
+            r.marginLvl != null ? r.marginLvl.toFixed(1) : "",
+            code("crm.status", r.status),
+            r.reason || "",
+            r.adminNote || "",
+            r.type === "ADD" ? (r.riskAcknowledged ? `YES${r.riskAcknowledgedAt ? ` ${r.riskAcknowledgedAt}` : ""}` : "NO") : "",
+          ]
+            .map(csvCell)
+            .join(","),
+        );
+      }
+      const blob = new Blob(["\uFEFF" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `balance-requests-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } finally {
+      setCsvBusy(false);
+    }
+  }
 
   const totals = useMemo(() => {
     let add = 0;
@@ -142,14 +221,56 @@ export default function AdminBalanceRequestsPage() {
       </div>
 
       <div className="mb-3 flex flex-wrap items-center gap-2">
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={i18n("crm.bal.searchPh")}
-          aria-label={i18n("crm.ui.search")}
-          className="w-full max-w-xs rounded border border-[#e5e5e5] bg-white px-2 py-1 text-xs outline-none focus:border-black/40"
-        />
+        <div className="relative w-full max-w-xs">
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") setQuery("");
+            }}
+            placeholder={i18n("crm.bal.searchPh")}
+            aria-label={i18n("crm.ui.search")}
+            className="w-full rounded border border-[#e5e5e5] bg-white px-2 py-1 pr-6 text-xs outline-none focus:border-black/40"
+          />
+          {query && (
+            <button
+              type="button"
+              onClick={() => setQuery("")}
+              aria-label={i18n("crm.ui.clearSearch", "Aramayı temizle")}
+              title={`${i18n("crm.ui.clearSearch", "Aramayı temizle")} (Esc)`}
+              className="absolute right-1 top-1/2 -translate-y-1/2 px-1 text-neutral-400 hover:text-neutral-700"
+            >
+              ×
+            </button>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-1" role="group" aria-label={i18n("crm.ui.type")}>
+          {TYPE_FILTERS.map((t) => (
+            <button
+              key={t || "ALL"}
+              type="button"
+              onClick={() => setTypeFilter(t)}
+              aria-pressed={typeFilter === t}
+              className={`rounded-full border px-2.5 py-0.5 text-xs ${typeFilter === t ? "border-black bg-black text-white" : "border-[#e5e5e5] bg-white"}`}
+            >
+              {t === "ADD" ? i18n("crm.bal.add") : t === "RESET" ? i18n("crm.bal.reset") : i18n("crm.ui.all")}{" "}
+              <span className={`tabular-nums ${typeFilter === t ? "text-white/70" : "text-neutral-400"}`}>{typeCounts[t] || 0}</span>
+            </button>
+          ))}
+        </div>
+        {(query || typeFilter) && (
+          <button
+            type="button"
+            onClick={() => {
+              setQuery("");
+              setTypeFilter("");
+            }}
+            className="rounded border border-[#e5e5e5] bg-white px-2 py-1 text-xs text-neutral-600 hover:bg-[#f5f5f5]"
+          >
+            {i18n("crm.ui.clear")}
+          </button>
+        )}
         <span className="rounded bg-[#f2f2f2] px-2 py-1 text-xs tabular-nums">
           {i18n("crm.bal.count")}: <b>{shown.length}</b>
         </span>
@@ -171,6 +292,15 @@ export default function AdminBalanceRequestsPage() {
             className="rounded bg-[#e5e5e5] px-2 py-1 text-xs text-black disabled:opacity-50"
           >
             {i18n("crm.bal.refresh")}
+          </button>
+          <button
+            type="button"
+            onClick={downloadCsv}
+            disabled={shown.length === 0 || csvBusy}
+            title="Gösterilen satırları CSV indir · Download shown rows as CSV"
+            className="rounded border border-[#e5e5e5] bg-white px-2 py-1 text-xs font-medium text-black hover:bg-[#f5f5f5] disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            CSV
           </button>
         </div>
       </div>
