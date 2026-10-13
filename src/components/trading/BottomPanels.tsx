@@ -412,6 +412,36 @@ function SummaryStat({
   );
 }
 
+/** Tiny cumulative P&L curve (equity-style) for the closed-trades summary strip. */
+function PnlSparkline({ values }: { values: number[] }) {
+  const W = 96;
+  const H = 22;
+  const pad = 2;
+  const min = Math.min(0, ...values);
+  const max = Math.max(0, ...values);
+  const span = max - min || 1;
+  const x = (i: number) => pad + (i / Math.max(1, values.length - 1)) * (W - pad * 2);
+  const y = (v: number) => pad + (1 - (v - min) / span) * (H - pad * 2);
+  const pts = values.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+  const last = values[values.length - 1] ?? 0;
+  const tone = last > 0 ? "text-desk-buy" : last < 0 ? "text-desk-sell" : "text-desk-muted";
+  const zy = y(0).toFixed(1);
+  return (
+    <svg
+      width={W}
+      height={H}
+      viewBox={`0 0 ${W} ${H}`}
+      className={`shrink-0 ${tone}`}
+      role="img"
+      aria-label={`Kümülatif K/Z eğrisi, son değer ${last.toFixed(2)}`}
+    >
+      <line x1={pad} x2={W - pad} y1={zy} y2={zy} stroke="currentColor" strokeOpacity={0.25} strokeDasharray="2 2" strokeWidth={1} />
+      <polygon points={`${x(0).toFixed(1)},${zy} ${pts} ${x(values.length - 1).toFixed(1)},${zy}`} fill="currentColor" fillOpacity={0.12} />
+      <polyline points={pts} fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinejoin="round" strokeLinecap="round" />
+      <circle cx={x(values.length - 1)} cy={y(last)} r={1.8} fill="currentColor" />
+    </svg>
+  );
+}
 
 const DEFAULT_VOLUME_STEP = 0.01;
 
@@ -1333,13 +1363,47 @@ export default function BottomPanels({
   const closedSummary = useMemo(() => {
     let pnl = 0;
     let wins = 0;
+    let losses = 0;
+    let grossWin = 0;
+    let grossLoss = 0;
+    let best = -Infinity;
+    let worst = Infinity;
+    const timed: { t: number; v: number }[] = [];
     for (const p of filteredClosed) {
       const v = Number(p.closeProfit ?? p.profit) || 0;
       pnl += v;
-      if (v > 0) wins++;
+      if (v > 0) {
+        wins++;
+        grossWin += v;
+      } else if (v < 0) {
+        losses++;
+        grossLoss += -v;
+      }
+      if (v > best) best = v;
+      if (v < worst) worst = v;
+      const t = Date.parse(String(p.closedAt ?? p.openedAt ?? "")) || 0;
+      timed.push({ t, v });
+    }
+    timed.sort((a, b) => a.t - b.t);
+    let run = 0;
+    const curve: number[] = [0];
+    for (const x of timed) {
+      run += x.v;
+      curve.push(run);
     }
     const count = filteredClosed.length;
-    return { count, pnl, wins, winRate: count > 0 ? (wins / count) * 100 : 0 };
+    return {
+      count,
+      pnl,
+      wins,
+      winRate: count > 0 ? (wins / count) * 100 : 0,
+      avgWin: wins > 0 ? grossWin / wins : 0,
+      avgLoss: losses > 0 ? grossLoss / losses : 0,
+      profitFactor: grossLoss > 0 ? grossWin / grossLoss : grossWin > 0 ? Infinity : 0,
+      best: count > 0 ? best : 0,
+      worst: count > 0 ? worst : 0,
+      curve,
+    };
   }, [filteredClosed]);
 
   const summaryStrip =
@@ -1381,6 +1445,47 @@ export default function BottomPanels({
             ? `${fmtNum(closedSummary.winRate, 0)}% (${closedSummary.wins}/${closedSummary.count})`
             : "—"}
         </SummaryStat>
+        {closedSummary.count > 0 && (
+          <>
+            <SummaryStat
+              label="Kâr faktörü"
+              className={
+                closedSummary.profitFactor >= 1 ? "text-desk-buy" : "text-desk-sell"
+              }
+            >
+              {Number.isFinite(closedSummary.profitFactor)
+                ? fmtNum(closedSummary.profitFactor, 2)
+                : "∞"}
+            </SummaryStat>
+            <SummaryStat label="Ort. kâr / zarar" className="text-desk-muted">
+              <span className="text-desk-buy">+{fmtNum(closedSummary.avgWin, 2)}</span>
+              {" / "}
+              <span className="text-desk-sell">-{fmtNum(closedSummary.avgLoss, 2)}</span>
+            </SummaryStat>
+            <SummaryStat label="En iyi / kötü" className="text-desk-muted">
+              <span className={moneyCls(closedSummary.best)}>
+                {closedSummary.best > 0 ? "+" : ""}
+                {fmtNum(closedSummary.best, 2)}
+              </span>
+              {" / "}
+              <span className={moneyCls(closedSummary.worst)}>
+                {closedSummary.worst > 0 ? "+" : ""}
+                {fmtNum(closedSummary.worst, 2)}
+              </span>
+            </SummaryStat>
+            {closedSummary.curve.length > 2 && (
+              <div
+                className="flex items-center gap-1.5"
+                title="Kümülatif gerçekleşen K/Z (kapanış sırasına göre) · Cumulative realised P&L"
+              >
+                <span className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">
+                  Eğri
+                </span>
+                <PnlSparkline values={closedSummary.curve} />
+              </div>
+            )}
+          </>
+        )}
       </div>
     ) : null;
 
