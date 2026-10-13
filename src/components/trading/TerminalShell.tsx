@@ -32,6 +32,7 @@ import ToolRail from "./ToolRail";
 import DepositModal from "./DepositModal";
 import MarginCallModal, { type BalanceRequestRow } from "./MarginCallModal";
 import ForcePasswordModal from "./ForcePasswordModal";
+import ShortcutsHelp from "./ShortcutsHelp";
 import { useI18n } from "@/lib/i18n/context";
 import BrandLoader from "@/components/ui/BrandLoader";
 import { normalizeLocale } from "@/lib/i18n/locales";
@@ -82,6 +83,7 @@ export default function TerminalShell() {
   const [marginModalOpen, setMarginModalOpen] = useState(false);
   const [orderOpen, setOrderOpen] = useState(false);
   const [orderSide, setOrderSide] = useState<"BUY" | "SELL">("BUY");
+  const [helpOpen, setHelpOpen] = useState(false);
   const [pendingBalanceReq, setPendingBalanceReq] = useState<BalanceRequestRow | null>(null);
   const [balanceReqBanner, setBalanceReqBanner] = useState<BalanceRequestRow | null>(null);
   /** Once per margin-call episode: suppress re-open until call clears */
@@ -273,6 +275,76 @@ export default function TerminalShell() {
     setOrderOpen(true);
   }
 
+  // Keyboard shortcuts (desktop): B/S order, / search, 1-3 tabs, ? help, Esc closes help.
+  const kbRef = useRef({ orderOpen, depositOpen, marginModalOpen, helpOpen, user });
+  kbRef.current = { orderOpen, depositOpen, marginModalOpen, helpOpen, user };
+  const openOrderRef = useRef(openOrder);
+  openOrderRef.current = openOrder;
+  useEffect(() => {
+    function isTyping(el: EventTarget | null) {
+      const n = el as HTMLElement | null;
+      if (!n || !n.tagName) return false;
+      const tag = n.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
+      if (n.isContentEditable) return true;
+      return !!n.closest?.("[contenteditable='true'],[contenteditable='']");
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
+      if (isTyping(e.target) || isTyping(document.activeElement)) return;
+      const st = kbRef.current;
+      if (st.helpOpen) {
+        if (e.key === "Escape" || e.key === "?") {
+          e.preventDefault();
+          setHelpOpen(false);
+        }
+        return;
+      }
+      // Other modals own the keyboard while open
+      if (st.orderOpen || st.depositOpen || st.marginModalOpen) return;
+      if (st.user?.mustChangePassword) return;
+      switch (e.key) {
+        case "?":
+          e.preventDefault();
+          setHelpOpen(true);
+          return;
+        case "b":
+        case "B":
+          e.preventDefault();
+          openOrderRef.current("BUY");
+          return;
+        case "s":
+        case "S":
+          e.preventDefault();
+          openOrderRef.current("SELL");
+          return;
+        case "/": {
+          const inputs = Array.from(
+            document.querySelectorAll<HTMLInputElement>("input[data-fx-watchlist-search]")
+          );
+          const el = inputs.find((i) => i.offsetParent !== null) || null;
+          if (el) {
+            e.preventDefault();
+            el.focus();
+            el.select();
+          }
+          return;
+        }
+        case "1":
+          setTab("open");
+          return;
+        case "2":
+          setTab("closed");
+          return;
+        case "3":
+          setTab("pending");
+          return;
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   async function onClosePosition(id: string) {
     await fetch("/api/positions/close", {
       method: "POST",
@@ -436,7 +508,7 @@ export default function TerminalShell() {
                   </button>
                 </div>
               </div>
-              <ToolRail />
+              <ToolRail onHelp={() => setHelpOpen(true)} helpLabel={t("term.kb.button")} />
             </div>
 
             {/* Desktop bottom panels — fixed height so chart keeps prior larger share */}
@@ -569,6 +641,7 @@ export default function TerminalShell() {
           onClose={() => setOrderOpen(false)}
         />
       )}
+      <ShortcutsHelp open={helpOpen} onClose={() => setHelpOpen(false)} />
       <DepositModal
         open={depositOpen}
         onClose={() => setDepositOpen(false)}

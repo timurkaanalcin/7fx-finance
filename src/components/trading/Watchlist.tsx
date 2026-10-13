@@ -117,6 +117,9 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search symbol…"
+            data-fx-watchlist-search=""
+            aria-label="Search symbol"
+            aria-keyshortcuts="/"
             className="w-full rounded-[12px] border border-desk-border/80 bg-desk-bg py-2 pl-7 pr-2 text-xs text-desk-text outline-none placeholder:text-desk-muted/70 focus:border-desk-accent md:rounded-control md:py-1.5"
           />
         </div>

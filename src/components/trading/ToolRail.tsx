@@ -9,7 +9,7 @@ const ICONS = [
   { title: "Calendar", d: "M6 4v2M18 4v2M4 8h16M6 10h2v2H6zm4 0h2v2h-2zm4 0h2v2h-2zM4 6a2 2 0 012-2h12a2 2 0 012 2v14H4V6z" },
 ];
 
-export default function ToolRail() {
+export default function ToolRail({ onHelp, helpLabel }: { onHelp?: () => void; helpLabel?: string } = {}) {
   return (
     <div className="hidden w-9 shrink-0 flex-col items-center gap-0.5 border-l border-desk-border/80 bg-desk-bg py-2 md:flex">
       {ICONS.map((ic) => (
@@ -23,6 +23,18 @@ export default function ToolRail() {
           </svg>
         </button>
       ))}
+      {onHelp && (
+        <button
+          type="button"
+          onClick={onHelp}
+          title={helpLabel || "Keyboard shortcuts (?)"}
+          aria-label={helpLabel || "Keyboard shortcuts (?)"}
+          aria-keyshortcuts="?"
+          className="mt-auto flex h-7 w-7 items-center justify-center rounded-[7px] text-[12px] font-bold text-desk-muted/70 transition-colors hover:bg-desk-elev hover:text-desk-text"
+        >
+          ?
+        </button>
+      )}
     </div>
   );
 }
