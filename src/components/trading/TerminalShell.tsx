@@ -34,6 +34,7 @@ import MarginCallModal, { type BalanceRequestRow } from "./MarginCallModal";
 import ForcePasswordModal from "./ForcePasswordModal";
 import ShortcutsHelp from "./ShortcutsHelp";
 import TradingCalculator from "./TradingCalculator";
+import { FeedBanner, FeedRecoveredToast, useFeedHealth } from "./FeedStatus";
 import { useI18n } from "@/lib/i18n/context";
 import BrandLoader from "@/components/ui/BrandLoader";
 import { normalizeLocale } from "@/lib/i18n/locales";
@@ -91,6 +92,14 @@ export default function TerminalShell() {
   /** Once per margin-call episode: suppress re-open until call clears */
   const episodeShownRef = useRef(false);
   const wasInCallRef = useRef(false);
+  /** Price-feed health: re-pull hooks registered by the polling effects below. */
+  const pullBatchRef = useRef<() => void>(() => {});
+  const pullActiveRef = useRef<() => void>(() => {});
+  const feed = useFeedHealth(() => {
+    pullBatchRef.current();
+    pullActiveRef.current();
+  });
+  const markFeedOk = feed.markOk;
 
   // Keep margin-call / terminal UI in profile language (fx_lang EN|TR|RU|DE|AR)
   useEffect(() => {
@@ -184,9 +193,10 @@ export default function TerminalShell() {
     let cancelled = false;
     async function pullBatch() {
       try {
-        const res = await fetch("/api/market/quote");
+        const res = await fetch("/api/market/quote", { cache: "no-store" });
         const data = await res.json();
         if (cancelled) return;
+        if (res.ok || (data.prices || []).length) markFeedOk();
         if (!res.ok && !(data.prices || []).length) {
           setPriceError(data.error || "Could not fetch price");
           return;
@@ -203,13 +213,14 @@ export default function TerminalShell() {
         if (!cancelled) setPriceError("Price connection error");
       }
     }
+    pullBatchRef.current = () => void pullBatch();
     pullBatch();
     const id = setInterval(pullBatch, 3000);
     return () => {
       cancelled = true;
       clearInterval(id);
     };
-  }, []);
+  }, [markFeedOk]);
 
   useEffect(() => {
     let cancelled = false;
@@ -222,6 +233,7 @@ export default function TerminalShell() {
         const data = await res.json();
         if (cancelled) return;
         const ticks = (data.prices || []) as PriceTick[];
+        if (res.ok || ticks.length) markFeedOk();
         if (!ticks.length) return;
         const tick = { ...ticks[0], ts: Date.now() };
         setPrices((prev) => ({ ...prev, [tick.symbol]: tick }));
@@ -231,13 +243,14 @@ export default function TerminalShell() {
         /* keep last good */
       }
     }
+    pullActiveRef.current = () => void pullActive();
     pullActive();
     const id = setInterval(pullActive, 800);
     return () => {
       cancelled = true;
       clearInterval(id);
     };
-  }, [symbol]);
+  }, [symbol, markFeedOk]);
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -455,7 +468,15 @@ export default function TerminalShell() {
           {t("term.tradingDisabledBanner")}
         </div>
       )}
-      {priceError && (
+      <FeedBanner
+        state={feed.state}
+        ageSec={feed.ageSec}
+        onRetry={() => {
+          feed.kick();
+          void refreshAll();
+        }}
+      />
+      {priceError && feed.state === "live" && (
         <div className="border-b border-desk-warn/30 bg-desk-warn/90 px-3 py-1.5 text-center text-[11px] font-medium text-black">
           Market data warning: {priceError} (showing last known prices)
         </div>
@@ -670,7 +691,8 @@ export default function TerminalShell() {
         </div>
       </nav>
 
-      <FooterTicker symbols={symbols} prices={prices} onSelect={setSymbol} />
+      <FooterTicker symbols={symbols} prices={prices} onSelect={setSymbol} feedState={feed.state} />
+      <FeedRecoveredToast show={feed.recovered} onClose={feed.dismissRecovered} />
       {user.mustChangePassword && !user.impersonatedBy && (
         <ForcePasswordModal onDone={() => void refreshAll()} />
       )}

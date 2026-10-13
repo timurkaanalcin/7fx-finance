@@ -4,20 +4,23 @@ import { formatPrice } from "@/lib/symbols";
 import type { PriceTick, SymbolDef } from "./types";
 import SymbolIcon from "@/components/ui/SymbolIcon";
 import MarketSessions from "./MarketSessions";
+import { FeedDot, type FeedState } from "./FeedStatus";
 
 type Props = {
   symbols: SymbolDef[];
   prices: Record<string, PriceTick>;
   onSelect: (symbol: string) => void;
   className?: string;
+  feedState?: FeedState;
 };
 
-export default function FooterTicker({ symbols, prices, onSelect, className = "" }: Props) {
+export default function FooterTicker({ symbols, prices, onSelect, className = "", feedState }: Props) {
   const items = [...symbols, ...symbols];
   return (
     <footer
       className={`hidden h-7 shrink-0 items-center overflow-hidden border-t border-desk-border/80 bg-desk-panel/60 md:flex ${className}`}
     >
+      {feedState && <FeedDot state={feedState} />}
       <MarketSessions className="relative z-[1] h-full bg-desk-panel" />
       <div className="min-w-0 flex-1 overflow-hidden">
       <div className="ticker-track flex whitespace-nowrap">

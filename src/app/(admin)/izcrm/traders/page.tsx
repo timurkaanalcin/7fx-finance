@@ -9,6 +9,15 @@ import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LocationLabel, PresenceCell } from "@/components/crm/Presence";
 import CopyButton from "@/components/crm/CopyButton";
+import {
+  clearRecentClients,
+  loadRecentClients,
+  RECENT_CLIENTS_EVENT,
+  RECENT_CLIENTS_KEY,
+  recentAgo,
+  removeRecentClient,
+  type RecentClient,
+} from "@/lib/crm-recent-clients";
 
 type DeskOpt = { id: string; name: string; code: string | null };
 
@@ -143,6 +152,23 @@ export default function AdminUsersPage() {
   const [savedFilters, setSavedFilters] = useState<SavedTraderFilter[]>([]);
   useEffect(() => {
     setSavedFilters(readSavedFilters());
+  }, []);
+  // Recently viewed customers (per browser; name + login id only)
+  const [recentClients, setRecentClients] = useState<RecentClient[]>([]);
+  useEffect(() => {
+    const sync = () => setRecentClients(loadRecentClients());
+    sync();
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === RECENT_CLIENTS_KEY) sync();
+    };
+    window.addEventListener(RECENT_CLIENTS_EVENT, sync);
+    window.addEventListener("storage", onStorage);
+    const tick = window.setInterval(sync, 60_000); // keep "5 dk" labels fresh
+    return () => {
+      window.removeEventListener(RECENT_CLIENTS_EVENT, sync);
+      window.removeEventListener("storage", onStorage);
+      window.clearInterval(tick);
+    };
   }, []);
   const currentFilters: TraderFilterState = {
     q,
@@ -499,6 +525,59 @@ export default function AdminUsersPage() {
           {rows.length} {i18n("crm.savedFilters.results")}
         </span>
       </div>
+
+      {recentClients.length > 0 && (
+        <div
+          className="mb-3 flex flex-wrap items-center gap-2 text-xs"
+          role="region"
+          aria-label={i18n("crm.recentClients.title")}
+          data-fx-recent-clients
+        >
+          <span className="text-neutral-500">◷ {i18n("crm.recentClients.title")}:</span>
+          {recentClients.map((r) => {
+            const ago = recentAgo(r.at, {
+              now: i18n("crm.recentClients.now"),
+              min: i18n("crm.recentClients.min"),
+              hour: i18n("crm.recentClients.hour"),
+              day: i18n("crm.recentClients.day"),
+            });
+            return (
+              <span
+                key={r.href}
+                className="inline-flex max-w-full items-center overflow-hidden rounded-full border border-[#e5e5e5] bg-[#ffffff]"
+              >
+                <Link
+                  href={r.href}
+                  className="inline-flex min-w-0 items-center gap-1.5 py-1 pl-2.5 pr-1 hover:bg-[#f5f5f5] focus-visible:outline focus-visible:outline-2 focus-visible:outline-black"
+                  title={[r.title, r.sub, ago].filter(Boolean).join(" · ")}
+                >
+                  <span className="max-w-[160px] truncate font-medium text-neutral-800">{r.title}</span>
+                  {r.sub && <span className="hidden text-neutral-400 sm:inline">{r.sub}</span>}
+                  {ago && <span className="text-[10px] text-neutral-400 tabular-nums">{ago}</span>}
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => removeRecentClient(r.href)}
+                  aria-label={`${i18n("crm.recentClients.remove")}: ${r.title}`}
+                  title={i18n("crm.recentClients.remove")}
+                  className="px-1.5 py-1 text-neutral-300 hover:text-neutral-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-black"
+                >
+                  ×
+                </button>
+              </span>
+            );
+          })}
+          <button
+            type="button"
+            onClick={() => {
+              if (window.confirm(i18n("crm.recentClients.clearConfirm"))) clearRecentClients();
+            }}
+            className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2.5 py-1 text-neutral-500 hover:bg-[#f5f5f5]"
+          >
+            {i18n("crm.recentClients.clear")}
+          </button>
+        </div>
+      )}
 
       {selected.size > 0 && (
         <div className="mb-3 flex flex-wrap items-center gap-2 rounded-lg border border-[#e5e5e5] bg-[#ffffff] p-2 text-xs">

@@ -4,15 +4,23 @@
  * CRM quick jump (Ctrl/⌘+K): search CRM pages and customers (name / login id / phone)
  * and open them with the keyboard. Recent pages are kept per-device (paths only —
  * no customer data is stored locally). Staff can pin up to 8 customers (name +
- * account login id only) for empty-query quick access. Read-only viewers get
- * page search only — no pin UI or customer search.
+ * account login id only) for empty-query quick access. Recently viewed customers
+ * (opened via /izcrm/traders/[id], same name + login id only) are listed under the
+ * pins. Read-only viewers get page search only — no pin UI or customer search.
  */
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent as ReactMouseEvent } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { CRM_NAV_GROUPS } from "@/lib/crm-nav";
 import { useI18n } from "@/lib/i18n/context";
+import {
+  loadRecentClients,
+  RECENT_CLIENTS_EVENT,
+  RECENT_CLIENTS_KEY,
+  recentAgo,
+  type RecentClient,
+} from "@/lib/crm-recent-clients";
 
-type Item = { kind: "page" | "client"; href: string; title: string; sub?: string };
+type Item = { kind: "page" | "client"; href: string; title: string; sub?: string; section?: "pinned" | "recent"; baseSub?: string };
 type PinnedClient = { href: string; title: string; sub?: string };
 
 const RECENT_KEY = "fx-crm-recent-pages";
@@ -66,6 +74,7 @@ export default function CrmCommandPalette({ readOnly }: { readOnly?: boolean }) 
   const [loading, setLoading] = useState(false);
   const [recent, setRecent] = useState<string[]>([]);
   const [pinned, setPinned] = useState<PinnedClient[]>([]);
+  const [recentClients, setRecentClients] = useState<RecentClient[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -95,6 +104,17 @@ export default function CrmCommandPalette({ readOnly }: { readOnly?: boolean }) 
   useEffect(() => {
     if (readOnly) return;
     setPinned(loadPinned());
+    setRecentClients(loadRecentClients());
+    const sync = () => setRecentClients(loadRecentClients());
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === RECENT_CLIENTS_KEY) sync();
+    };
+    window.addEventListener(RECENT_CLIENTS_EVENT, sync);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener(RECENT_CLIENTS_EVENT, sync);
+      window.removeEventListener("storage", onStorage);
+    };
   }, [readOnly]);
 
   useEffect(() => {
@@ -120,7 +140,10 @@ export default function CrmCommandPalette({ readOnly }: { readOnly?: boolean }) 
       setQ("");
       setSel(0);
       setClients([]);
-      if (!readOnly) setPinned(loadPinned());
+      if (!readOnly) {
+        setPinned(loadPinned());
+        setRecentClients(loadRecentClients());
+      }
       setTimeout(() => inputRef.current?.focus(), 0);
     }
   }, [open, readOnly]);
@@ -172,13 +195,38 @@ export default function CrmCommandPalette({ readOnly }: { readOnly?: boolean }) 
 
   const pinnedItems: Item[] = useMemo(() => {
     if (readOnly || q.trim()) return [];
-    return pinned.map((p) => ({ kind: "client" as const, href: p.href, title: p.title, sub: p.sub }));
+    return pinned.map((p) => ({ kind: "client" as const, href: p.href, title: p.title, sub: p.sub, section: "pinned" as const }));
   }, [pinned, q, readOnly]);
+
+  const recentClientItems: Item[] = useMemo(() => {
+    if (readOnly || q.trim()) return [];
+    const pinnedSet = new Set(pinned.map((p) => p.href));
+    const units = {
+      now: t("crm.recentClients.now"),
+      min: t("crm.recentClients.min"),
+      hour: t("crm.recentClients.hour"),
+      day: t("crm.recentClients.day"),
+    };
+    return recentClients
+      .filter((r) => !pinnedSet.has(r.href) && r.href !== pathname)
+      .slice(0, 5)
+      .map((r) => {
+        const ago = recentAgo(r.at, units);
+        return {
+          kind: "client" as const,
+          href: r.href,
+          title: r.title,
+          sub: [r.sub, ago].filter(Boolean).join(" · ") || undefined,
+          section: "recent" as const,
+          baseSub: r.sub,
+        };
+      });
+  }, [recentClients, pinned, q, readOnly, pathname, t]);
 
   const items: Item[] = useMemo(() => {
     if (q.trim()) return [...clients, ...pageResults];
-    return [...pinnedItems, ...pageResults];
-  }, [q, clients, pinnedItems, pageResults]);
+    return [...pinnedItems, ...recentClientItems, ...pageResults];
+  }, [q, clients, pinnedItems, recentClientItems, pageResults]);
 
   const pinnedHrefs = useMemo(() => new Set(pinned.map((p) => p.href)), [pinned]);
 
@@ -207,7 +255,8 @@ export default function CrmCommandPalette({ readOnly }: { readOnly?: boolean }) 
       if (exists) {
         next = prev.filter((p) => p.href !== it.href);
       } else {
-        const entry: PinnedClient = { href: it.href, title: it.title, ...(it.sub ? { sub: it.sub } : {}) };
+        const pinSub = it.section === "recent" ? it.baseSub : it.sub;
+        const entry: PinnedClient = { href: it.href, title: it.title, ...(pinSub ? { sub: pinSub } : {}) };
         next = [entry, ...prev.filter((p) => p.href !== it.href)].slice(0, PINNED_MAX);
       }
       savePinned(next);
@@ -268,20 +317,19 @@ export default function CrmCommandPalette({ readOnly }: { readOnly?: boolean }) 
           ) : (
             items.map((it, i) => {
               const prev = i > 0 ? items[i - 1] : null;
-              const inPinnedSection = emptyQ && it.kind === "client" && pinnedHrefs.has(it.href);
-              const prevInPinned = !!(prev && emptyQ && prev.kind === "client" && pinnedHrefs.has(prev.href));
-              const showHeader =
-                i === 0 ||
-                (inPinnedSection && !prevInPinned) ||
-                (!inPinnedSection && (prevInPinned || (prev && prev.kind !== it.kind)));
+              const inPinnedSection = it.section === "pinned";
+              const inRecentSection = it.section === "recent";
+              const secKey = (x: Item) => x.section || x.kind;
+              const showHeader = i === 0 || (!!prev && secKey(prev) !== secKey(it));
               const isPinned = pinnedHrefs.has(it.href);
               let headerLabel = t("crm.palette.pages");
               if (inPinnedSection) headerLabel = t("crm.palette.pinned");
+              else if (inRecentSection) headerLabel = t("crm.recentClients.title");
               else if (it.kind === "client") headerLabel = t("crm.palette.clients");
               else if (emptyQ && recent.length) headerLabel = t("crm.palette.recentAndPages");
 
               return (
-                <div key={(inPinnedSection ? "pin:" : "") + it.kind + it.href}>
+                <div key={(it.section ? it.section + ":" : "") + it.kind + it.href}>
                   {showHeader && (
                     <div className="px-3 pb-0.5 pt-2 text-[9px] font-semibold uppercase tracking-wider text-neutral-400">
                       {headerLabel}
@@ -303,7 +351,9 @@ export default function CrmCommandPalette({ readOnly }: { readOnly?: boolean }) 
                         {it.kind === "client"
                           ? inPinnedSection
                             ? "★"
-                            : "👤"
+                            : inRecentSection
+                              ? "◷"
+                              : "👤"
                           : emptyQ && recentSet.has(it.href)
                             ? "↺"
                             : "▸"}

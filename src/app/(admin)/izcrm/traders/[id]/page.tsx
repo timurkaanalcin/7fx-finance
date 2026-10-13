@@ -1,5 +1,6 @@
 "use client";
 
+import { pushRecentClient } from "@/lib/crm-recent-clients";
 import { LOCALES } from "@/lib/i18n/locales";
 import EditablePositionsTable from "@/components/crm/EditablePositionsTable";
 import EditableOrdersTable from "@/components/crm/EditableOrdersTable";
@@ -1035,6 +1036,14 @@ export default function AdminUserDetailPage() {
     if (!res.ok) return;
     const data = await res.json();
     setUser(data.user as Membership);
+    // Recently viewed customers (per browser; name + login id only).
+    if (data.user?.id && (data.user.role || "TRADER") === "TRADER") {
+      try {
+        pushRecentClient({ id: data.user.id, name: data.user.name, accountLoginId: data.user.accountLoginId });
+      } catch {
+        /* ignore */
+      }
+    }
     setIsMainAdminTarget(false);
     // Detect main admin via permissions endpoint (does not expose ADMIN_EMAIL to client)
     try {
