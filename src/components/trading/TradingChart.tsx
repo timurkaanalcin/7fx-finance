@@ -128,6 +128,10 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
   const lastTickAtRef = useRef<number>(0);
   const timeframeRef = useRef(timeframe);
   const [ohlc, setOhlc] = useState<{ o: number; h: number; l: number; c: number } | null>(null);
+  /** Bar under the crosshair (null = show live/last bar). */
+  const [hoverBar, setHoverBar] = useState<{ o: number; h: number; l: number; c: number; t: number } | null>(null);
+  /** True when the user has scrolled the chart away from the live edge. */
+  const [awayFromLive, setAwayFromLive] = useState(false);
   const [chartType, setChartType] = useState<"candle" | "line">(() => {
     try {
       const v = localStorage.getItem("7fx_chart_type");
@@ -285,6 +289,37 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
     lineRef.current = line;
     setChartGen((g) => g + 1);
 
+    // Crosshair legend: show OHLC of the hovered bar.
+    const onCrosshair = (param: { time?: Time; seriesData: Map<unknown, unknown> }) => {
+      if (param.time == null) {
+        setHoverBar(null);
+        return;
+      }
+      const d = param.seriesData.get(candle) as CandlestickData<Time> | undefined;
+      if (d && typeof d.open === "number") {
+        setHoverBar({ o: d.open, h: d.high, l: d.low, c: d.close, t: param.time as number });
+        return;
+      }
+      const ld = param.seriesData.get(line) as { value?: number } | undefined;
+      if (ld && typeof ld.value === "number") {
+        setHoverBar({ o: ld.value, h: ld.value, l: ld.value, c: ld.value, t: param.time as number });
+        return;
+      }
+      setHoverBar(null);
+    };
+    chart.subscribeCrosshairMove(onCrosshair as never);
+
+    // "Back to live" button when scrolled into history.
+    const onRange = () => {
+      try {
+        const pos = chart.timeScale().scrollPosition();
+        setAwayFromLive(Number.isFinite(pos) && pos < -3);
+      } catch {
+        /* ignore */
+      }
+    };
+    chart.timeScale().subscribeVisibleLogicalRangeChange(onRange);
+
     const ro =
       typeof ResizeObserver !== "undefined"
         ? new ResizeObserver(() => {
@@ -300,6 +335,12 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
 
     return () => {
       ro?.disconnect();
+      try {
+        chart.unsubscribeCrosshairMove(onCrosshair as never);
+        chart.timeScale().unsubscribeVisibleLogicalRangeChange(onRange);
+      } catch {
+        /* ignore */
+      }
       chart.remove();
       chartRef.current = null;
       seriesRef.current = null;
@@ -463,6 +504,15 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
           ? 5
           : 2;
   const fmt = (n: number) => n.toFixed(digits);
+  const legend = hoverBar ?? ohlc;
+  const legendChg = legend && legend.o > 0 ? ((legend.c - legend.o) / legend.o) * 100 : null;
+  const hoverLabel = (() => {
+    if (!hoverBar) return null;
+    const d = new Date(hoverBar.t * 1000);
+    const p2 = (n: number) => String(n).padStart(2, "0");
+    const date = `${p2(d.getDate())}.${p2(d.getMonth() + 1)}${timeframe === "1D" || timeframe === "1W" ? `.${d.getFullYear()}` : ""}`;
+    return timeframe === "1D" || timeframe === "1W" ? date : `${date} ${p2(d.getHours())}:${p2(d.getMinutes())}`;
+  })();
 
   return (
     <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-desk-bg">
@@ -488,20 +538,35 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
           <div className="text-[15px] font-semibold tracking-tight text-desk-text md:text-sm">
             {symbol}
           </div>
-          {ohlc && (
-            <div className="mt-0.5 flex flex-wrap gap-x-2.5 gap-y-0.5 text-[10px] tabular-nums text-desk-muted">
+          {legend && (
+            <div
+              className="mt-0.5 flex flex-wrap gap-x-2.5 gap-y-0.5 text-[10px] tabular-nums text-desk-muted"
+              aria-live="off"
+              title={hoverBar ? "İmleç altındaki mum · Bar under cursor" : "Son mum · Latest bar"}
+            >
+              {hoverLabel && (
+                <span className="rounded-[5px] bg-desk-elev/80 px-1 text-desk-text/80 ring-1 ring-desk-border/60">
+                  {hoverLabel}
+                </span>
+              )}
               <span>
-                O <span className="text-desk-text/80">{fmt(ohlc.o)}</span>
+                O <span className="text-desk-text/80">{fmt(legend.o)}</span>
               </span>
               <span>
-                H <span className="text-desk-buy">{fmt(ohlc.h)}</span>
+                H <span className="text-desk-buy">{fmt(legend.h)}</span>
               </span>
               <span>
-                L <span className="text-desk-sell">{fmt(ohlc.l)}</span>
+                L <span className="text-desk-sell">{fmt(legend.l)}</span>
               </span>
               <span>
-                C <span className="text-desk-text/80">{fmt(ohlc.c)}</span>
+                C <span className="text-desk-text/80">{fmt(legend.c)}</span>
               </span>
+              {legendChg != null && Number.isFinite(legendChg) && (
+                <span className={legendChg >= 0 ? "text-desk-buy" : "text-desk-sell"}>
+                  {legendChg >= 0 ? "+" : ""}
+                  {legendChg.toFixed(2)}%
+                </span>
+              )}
             </div>
           )}
         </div>
@@ -550,6 +615,25 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
         <div className="absolute bottom-3 left-1/2 z-20 -translate-x-1/2 rounded-control bg-desk-warn/95 px-3 py-1.5 text-[11px] font-medium text-black shadow-lg">
           {feedError}
         </div>
+      )}
+
+      {awayFromLive && (
+        <button
+          type="button"
+          onClick={() => {
+            try {
+              chartRef.current?.timeScale().scrollToRealTime();
+            } catch {
+              /* ignore */
+            }
+          }}
+          className="fx-tap-compact absolute bottom-10 right-[4.5rem] z-20 flex items-center gap-1 rounded-full border border-desk-border/70 bg-desk-panel/95 px-3 py-1.5 text-[11px] font-semibold text-desk-text shadow-desk-panel hover:bg-desk-hover"
+          title="Canlı fiyata dön · Back to live"
+          aria-label="Canlı fiyata dön · Back to live"
+        >
+          Canlı
+          <span aria-hidden="true">⇥</span>
+        </button>
       )}
 
       <div ref={containerRef} className="min-h-0 flex-1" />
