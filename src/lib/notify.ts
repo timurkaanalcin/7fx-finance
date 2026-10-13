@@ -31,7 +31,7 @@ export async function notifyUsers(userIds: string[], n: NotifyInput) {
     await Promise.all(
       subs.map(async (s) => {
         try {
-          await webpush.sendNotification({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } }, payload, { TTL: 3600 });
+          await webpush.sendNotification({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } }, payload, { TTL: 3600, urgency: "high", topic: n.kind.replace(/[^A-Za-z0-9_-]/g, "").slice(0, 32) || undefined });
         } catch (err: unknown) {
           const code = (err as { statusCode?: number }).statusCode;
           if (code === 404 || code === 410) await prisma.pushSubscription.delete({ where: { id: s.id } }).catch(() => {});
