@@ -42,7 +42,7 @@ export default function HesapKimligiGate() {
 
   if (!show) return null;
   return (
-    <div className="fx-hid-gate fixed inset-0 z-[200] flex items-center justify-center bg-black/70 p-4 backdrop-blur-md" style={{ paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)" }}>
+    <div className="fx-hid-gate fx-lx-overlay fixed inset-0 z-[200] flex items-center justify-center bg-black/70 p-4 backdrop-blur-md" style={{ paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)" }}>
       <div className="w-full max-w-sm rounded-2xl border border-[#2a2a2a] bg-[#0a0a0a] p-6 text-slate-100 shadow-2xl">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/icons/v3/icon-192.png" alt="" className="mx-auto mb-3 h-12 w-12 rounded-xl" />
