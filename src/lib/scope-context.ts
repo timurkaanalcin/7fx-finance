@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { AsyncLocalStorage } from "node:async_hooks";
 
 /**
  * Per-request data scope for scoped CRM staff (Sales/Retention Manager).
@@ -16,7 +17,19 @@ function raw(): PrismaClient {
 
 const cache = new WeakMap<object, Promise<ScopeCtx | null>>();
 
+/**
+ * Internal server-only maintenance (startup auto-seed) may be first triggered from a
+ * scoped staff member's request; it must not inherit that staff member's data scope
+ * (it creates/updates fixed system rows, never anything request-driven).
+ */
+const gu = globalThis as unknown as { __7fxUnscoped?: AsyncLocalStorage<true> };
+const unscoped = gu.__7fxUnscoped || (gu.__7fxUnscoped = new AsyncLocalStorage<true>());
+export function runUnscoped<T>(fn: () => Promise<T>): Promise<T> {
+  return unscoped.run(true, fn);
+}
+
 export async function resolveScope(): Promise<ScopeCtx | null> {
+  if (unscoped.getStore()) return null;
   let key: object;
   let url = "";
   try {

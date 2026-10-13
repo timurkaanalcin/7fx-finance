@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
+import { runUnscoped } from "./scope-context";
 import { ensureTradingSettings } from "./trading-settings";
 import { ensureSystemSettings } from "./system-settings";
 import {
@@ -876,7 +877,7 @@ export function ensureDemoSeed(): Promise<void> {
   }
 
   if (!seedPromise) {
-    seedPromise = (async () => {
+    seedPromise = runUnscoped(async () => {
       try {
         const allowDemoSeed =
           !isProductionRuntime() || process.env.ALLOW_DEMO_SEED === "1";
@@ -950,7 +951,7 @@ export function ensureDemoSeed(): Promise<void> {
         seedPromise = null;
         console.error("[7fx] Auto-seed failed:", err);
       }
-    })();
+    });
   }
   return seedPromise;
 }
