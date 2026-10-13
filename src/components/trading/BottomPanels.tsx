@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState, useCallback, type ReactNode } from "react";
 import { calcPipDistance, formatPrice } from "@/lib/symbols";
 import { fmtDateTime, fmtNum } from "@/lib/format";
 import type { OrderRow, PositionRow } from "./types";
@@ -159,7 +159,11 @@ type Props = {
   closedPositions: PositionRow[];
   pendingOrders: OrderRow[];
   onClosePosition: (id: string) => void;
+  /** Close several open positions (one refresh at end). */
+  onClosePositions?: (ids: string[]) => Promise<void> | void;
   onCancelOrder: (id: string) => void;
+  /** Cancel several pending orders (one refresh at end). */
+  onCancelOrders?: (ids: string[]) => Promise<void> | void;
   /** Switch chart to position chartSymbol || symbol */
   onSelectSymbol?: (symbol: string) => void;
   className?: string;
@@ -384,7 +388,9 @@ export default function BottomPanels({
   closedPositions,
   pendingOrders,
   onClosePosition,
+  onClosePositions,
   onCancelOrder,
+  onCancelOrders,
   onSelectSymbol,
   className = "",
 }: Props) {
@@ -393,6 +399,7 @@ export default function BottomPanels({
   const [symbolFilter, setSymbolFilter] = useState("");
   const [resultFilter, setResultFilter] = useState<ResultFilter>("ALL");
   const [periodFilter, setPeriodFilter] = useState<PeriodFilter>("ALL");
+  const [bulkBusy, setBulkBusy] = useState(false);
 
   const tabs: { id: Tab; label: string; shortLabel: string; count?: number }[] = [
     { id: "open", label: "Open Trades", shortLabel: "Open", count: openPositions.length || undefined },
@@ -427,6 +434,48 @@ export default function BottomPanels({
   const exportRows =
     tab === "open" ? filteredOpen : tab === "closed" ? filteredClosed : filteredPending;
   const canExport = exportRows.length > 0;
+
+  const handleCloseAllFiltered = useCallback(async () => {
+    if (bulkBusy || filteredOpen.length === 0) return;
+    const n = filteredOpen.length;
+    const ok = window.confirm(
+      filtersActive
+        ? `Filtreye uyan ${n} açık pozisyon kapatılsın mı?`
+        : `${n} açık pozisyonun tümü kapatılsın mı?`
+    );
+    if (!ok) return;
+    setBulkBusy(true);
+    try {
+      const ids = filteredOpen.map((p) => p.id);
+      if (onClosePositions) await onClosePositions(ids);
+      else {
+        for (const id of ids) onClosePosition(id);
+      }
+    } finally {
+      setBulkBusy(false);
+    }
+  }, [bulkBusy, filteredOpen, filtersActive, onClosePositions, onClosePosition]);
+
+  const handleCancelAllFiltered = useCallback(async () => {
+    if (bulkBusy || filteredPending.length === 0) return;
+    const n = filteredPending.length;
+    const ok = window.confirm(
+      filtersActive
+        ? `Filtreye uyan ${n} bekleyen emir iptal edilsin mi?`
+        : `${n} bekleyen emirin tümü iptal edilsin mi?`
+    );
+    if (!ok) return;
+    setBulkBusy(true);
+    try {
+      const ids = filteredPending.map((o) => o.id);
+      if (onCancelOrders) await onCancelOrders(ids);
+      else {
+        for (const id of ids) onCancelOrder(id);
+      }
+    } finally {
+      setBulkBusy(false);
+    }
+  }, [bulkBusy, filteredPending, filtersActive, onCancelOrders, onCancelOrder]);
 
   const handleExportCsv = () => {
     if (!canExport) return;
@@ -567,6 +616,38 @@ export default function BottomPanels({
           </button>
         ))}
         <div className="ml-auto flex items-center gap-2 self-center pb-1.5">
+          {tab === "open" && filteredOpen.length > 0 ? (
+            <button
+              type="button"
+              onClick={handleCloseAllFiltered}
+              disabled={bulkBusy}
+              title={
+                filtersActive
+                  ? "Filtrelenmiş açık pozisyonları kapat"
+                  : "Tümünü kapat"
+              }
+              aria-label="Açık pozisyonları kapat"
+              className="rounded-control border border-desk-sell/40 px-2.5 py-1 text-[11px] font-semibold text-desk-sell transition-colors hover:bg-desk-sell/10 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {bulkBusy ? "…" : filtersActive ? "Filtreyi kapat" : "Tümünü kapat"}
+            </button>
+          ) : null}
+          {tab === "pending" && filteredPending.length > 0 ? (
+            <button
+              type="button"
+              onClick={handleCancelAllFiltered}
+              disabled={bulkBusy}
+              title={
+                filtersActive
+                  ? "Filtrelenmiş bekleyen emirleri iptal et"
+                  : "Tüm bekleyen emirleri iptal et"
+              }
+              aria-label="Bekleyen emirleri iptal et"
+              className="rounded-control border border-desk-warn/50 px-2.5 py-1 text-[11px] font-semibold text-desk-warn transition-colors hover:bg-desk-warn/10 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {bulkBusy ? "…" : filtersActive ? "Filtreyi iptal" : "Tümünü iptal"}
+            </button>
+          ) : null}
           <button
             type="button"
             onClick={handleExportCsv}

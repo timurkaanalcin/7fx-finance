@@ -2,6 +2,25 @@
 
 import PriceAlerts from "./PriceAlerts";
 import { useCallback, useEffect, useRef, useState } from "react";
+
+const TERM_PREFS_KEY = "7fx_term_prefs_v1";
+type TermPrefs = { symbol?: string; timeframe?: string; tab?: "open" | "closed" | "pending" };
+function readTermPrefs(): TermPrefs {
+  try {
+    const v = JSON.parse(localStorage.getItem(TERM_PREFS_KEY) || "{}");
+    return v && typeof v === "object" ? v : {};
+  } catch {
+    return {};
+  }
+}
+function writeTermPrefs(patch: TermPrefs) {
+  try {
+    const next = { ...readTermPrefs(), ...patch };
+    localStorage.setItem(TERM_PREFS_KEY, JSON.stringify(next));
+  } catch {
+    /* ignore */
+  }
+}
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import TopBar from "./TopBar";
@@ -37,9 +56,22 @@ export default function TerminalShell() {
   const [account, setAccount] = useState<AccountMetrics | null>(null);
   const [symbols, setSymbols] = useState<SymbolDef[]>([]);
   const [prices, setPrices] = useState<Record<string, PriceTick>>({});
-  const [symbol, setSymbol] = useState("AAPL");
-  const [timeframe, setTimeframe] = useState("1W");
-  const [tab, setTab] = useState<"open" | "closed" | "pending">("open");
+  const [symbol, setSymbol] = useState(() => {
+    if (typeof window === "undefined") return "AAPL";
+    const s = readTermPrefs().symbol;
+    return typeof s === "string" && s.trim() ? s.trim() : "AAPL";
+  });
+  const [timeframe, setTimeframe] = useState(() => {
+    if (typeof window === "undefined") return "1W";
+    const tf = readTermPrefs().timeframe;
+    const allowed = new Set(["1m", "5m", "15m", "1h", "4h", "1D", "1W"]);
+    return typeof tf === "string" && allowed.has(tf) ? tf : "1W";
+  });
+  const [tab, setTab] = useState<"open" | "closed" | "pending">(() => {
+    if (typeof window === "undefined") return "open";
+    const t = readTermPrefs().tab;
+    return t === "open" || t === "closed" || t === "pending" ? t : "open";
+  });
   const [mobileTab, setMobileTab] = useState<"markets" | "order" | "positions">("markets");
   const [openPositions, setOpenPositions] = useState<PositionRow[]>([]);
   const [closedPositions, setClosedPositions] = useState<PositionRow[]>([]);
@@ -123,12 +155,25 @@ export default function TerminalShell() {
   useEffect(() => {
     async function boot() {
       const symRes = await fetch("/api/symbols");
-      if (symRes.ok) setSymbols(await symRes.json());
+      if (symRes.ok) {
+        const list: SymbolDef[] = await symRes.json();
+        setSymbols(list);
+        setSymbol((prev) => {
+          if (list.some((s) => s.symbol === prev)) return prev;
+          const saved = readTermPrefs().symbol;
+          if (typeof saved === "string" && list.some((s) => s.symbol === saved)) return saved;
+          return list[0]?.symbol || prev || "AAPL";
+        });
+      }
       await refreshAll();
       setReady(true);
     }
     boot();
   }, [refreshAll]);
+
+  useEffect(() => {
+    writeTermPrefs({ symbol, timeframe, tab });
+  }, [symbol, timeframe, tab]);
 
   // Watchlist batch (~3s) + active symbol fast path (≤1s) so forming candle tracks mid.
   useEffect(() => {
@@ -238,6 +283,22 @@ export default function TerminalShell() {
     await refreshAll();
   }
 
+  async function onClosePositions(ids: string[]) {
+    for (const id of ids) {
+      try {
+        await fetch("/api/positions/close", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id }),
+        });
+      } catch {
+        /* continue remaining */
+      }
+    }
+    await refreshAll();
+  }
+
   async function onCancelOrder(id: string) {
     await fetch("/api/orders/cancel", {
       method: "POST",
@@ -245,6 +306,22 @@ export default function TerminalShell() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id }),
     });
+    await refreshAll();
+  }
+
+  async function onCancelOrders(ids: string[]) {
+    for (const id of ids) {
+      try {
+        await fetch("/api/orders/cancel", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id }),
+        });
+      } catch {
+        /* continue remaining */
+      }
+    }
     await refreshAll();
   }
 
@@ -371,7 +448,9 @@ export default function TerminalShell() {
                 closedPositions={closedPositions}
                 pendingOrders={pendingOrders}
                 onClosePosition={onClosePosition}
+                onClosePositions={onClosePositions}
                 onCancelOrder={onCancelOrder}
+                onCancelOrders={onCancelOrders}
                 onSelectSymbol={setSymbol}
               />
             </div>
@@ -413,7 +492,9 @@ export default function TerminalShell() {
                 closedPositions={closedPositions}
                 pendingOrders={pendingOrders}
                 onClosePosition={onClosePosition}
+                onClosePositions={onClosePositions}
                 onCancelOrder={onCancelOrder}
+                onCancelOrders={onCancelOrders}
                 onSelectSymbol={setSymbol}
               />
             )}

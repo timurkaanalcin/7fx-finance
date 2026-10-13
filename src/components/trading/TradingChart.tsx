@@ -128,7 +128,14 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
   const lastTickAtRef = useRef<number>(0);
   const timeframeRef = useRef(timeframe);
   const [ohlc, setOhlc] = useState<{ o: number; h: number; l: number; c: number } | null>(null);
-  const [chartType, setChartType] = useState<"candle" | "line">("candle");
+  const [chartType, setChartType] = useState<"candle" | "line">(() => {
+    try {
+      const v = localStorage.getItem("7fx_chart_type");
+      return v === "line" || v === "candle" ? v : "candle";
+    } catch {
+      return "candle";
+    }
+  });
   const [utcClock, setUtcClock] = useState("");
   const [feedError, setFeedError] = useState<string | null>(null);
   const [livePulse, setLivePulse] = useState(false);
@@ -141,6 +148,14 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("7fx_chart_type", chartType);
+    } catch {
+      /* ignore */
+    }
+  }, [chartType]);
 
   const safeUpdate = (bar: LiveBar) => {
     const candle: CandlestickData<Time> = {
