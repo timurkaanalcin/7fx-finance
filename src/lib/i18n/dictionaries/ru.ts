@@ -234,6 +234,8 @@ export const ru: Dict = {
   "auth.accessClosed": "Доступ к вашему счёту закрыт.",
   "term.tradingDisabledBanner": "Торговля на вашем счёте отключена",
   "term.tradingDisabled": "Торговля на вашем счёте отключена.",
+  "term.reopen": "Открыть снова",
+  "term.reopenTitle": "Заполнить заявку тем же символом, стороной и лотом",
   "term.withdrawalsDisabled": "Вывод средств на вашем счёте отключён.",
   "auth.setNewPasswordTitle": "Задайте новый пароль",
   "auth.setNewPasswordBody": "Перед использованием терминала нужно задать новый пароль.",

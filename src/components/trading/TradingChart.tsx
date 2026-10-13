@@ -6,8 +6,10 @@ import {
   createChart,
   CandlestickSeries,
   LineSeries,
+  LineStyle,
   type IChartApi,
   type ISeriesApi,
+  type IPriceLine,
   type CandlestickData,
   type Time,
   ColorType,
@@ -101,11 +103,21 @@ function dedupeBars(bars: CandlestickData<Time>[]): CandlestickData<Time>[] {
     .map(([, v]) => v);
 }
 
+export type ChartLevel = {
+  id: string;
+  side: "BUY" | "SELL";
+  openPrice: number;
+  stopLoss: number | null;
+  takeProfit: number | null;
+};
+
 type Props = {
   symbol: string;
   timeframe: string;
   onTimeframe: (tf: string) => void;
   price?: PriceTick;
+  /** Open positions for the current chart symbol (entry / SL / TP lines). */
+  levels?: ChartLevel[];
 };
 
 type LiveBar = {
@@ -116,11 +128,12 @@ type LiveBar = {
   close: number;
 };
 
-export default function TradingChart({ symbol, timeframe, onTimeframe, price }: Props) {
+export default function TradingChart({ symbol, timeframe, onTimeframe, price, levels }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
   const lineRef = useRef<ISeriesApi<"Line"> | null>(null);
+  const priceLinesRef = useRef<IPriceLine[]>([]);
   const liveBarRef = useRef<LiveBar | null>(null);
   const lastBarTimeRef = useRef<number | null>(null);
   const lastMidRef = useRef<number | null>(null);
@@ -341,6 +354,7 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
       } catch {
         /* ignore */
       }
+      priceLinesRef.current = [];
       chart.remove();
       chartRef.current = null;
       seriesRef.current = null;
@@ -494,6 +508,97 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price }: 
     if (seriesRef.current) seriesRef.current.applyOptions({ visible: chartType === "candle" });
     if (lineRef.current) lineRef.current.applyOptions({ visible: chartType === "line" });
   }, [chartType]);
+
+  // Open-position entry / SL / TP price lines for the current symbol.
+  useEffect(() => {
+    const series = seriesRef.current;
+    // Clear previous lines (series may be gone after chart recreate)
+    for (const pl of priceLinesRef.current) {
+      try {
+        series?.removePriceLine(pl);
+      } catch {
+        /* ignore */
+      }
+    }
+    priceLinesRef.current = [];
+    if (!series || !levels?.length) return;
+
+    const L = fxTheme === "light";
+    const buyColor = L ? "#0f9d76" : "#26a69a";
+    const sellColor = L ? "#d63c34" : "#ef5350";
+    const next: IPriceLine[] = [];
+
+    const ticketSuffix = (id: string) => {
+      const s = String(id || "");
+      return s.length <= 4 ? s : s.slice(-4);
+    };
+
+    for (const lv of levels) {
+      if (!Number.isFinite(lv.openPrice) || lv.openPrice <= 0) continue;
+      const entryColor = lv.side === "BUY" ? buyColor : sellColor;
+      const sideLabel = lv.side === "BUY" ? "AL" : "SAT";
+      const suffix = levels.length > 1 ? ` ·${ticketSuffix(lv.id)}` : "";
+      try {
+        next.push(
+          series.createPriceLine({
+            price: lv.openPrice,
+            color: entryColor,
+            lineWidth: 1,
+            lineStyle: LineStyle.Solid,
+            axisLabelVisible: true,
+            title: `${sideLabel} · Giriş${suffix}`,
+          })
+        );
+      } catch {
+        /* ignore */
+      }
+      if (lv.stopLoss != null && Number.isFinite(lv.stopLoss) && lv.stopLoss > 0) {
+        try {
+          next.push(
+            series.createPriceLine({
+              price: lv.stopLoss,
+              color: sellColor,
+              lineWidth: 1,
+              lineStyle: LineStyle.Dashed,
+              axisLabelVisible: true,
+              title: `SL${suffix}`,
+            })
+          );
+        } catch {
+          /* ignore */
+        }
+      }
+      if (lv.takeProfit != null && Number.isFinite(lv.takeProfit) && lv.takeProfit > 0) {
+        try {
+          next.push(
+            series.createPriceLine({
+              price: lv.takeProfit,
+              color: buyColor,
+              lineWidth: 1,
+              lineStyle: LineStyle.Dashed,
+              axisLabelVisible: true,
+              title: `TP${suffix}`,
+            })
+          );
+        } catch {
+          /* ignore */
+        }
+      }
+    }
+    priceLinesRef.current = next;
+
+    return () => {
+      const s = seriesRef.current;
+      for (const pl of priceLinesRef.current) {
+        try {
+          s?.removePriceLine(pl);
+        } catch {
+          /* ignore */
+        }
+      }
+      priceLinesRef.current = [];
+    };
+  }, [levels, symbol, fxTheme, chartGen, mounted]);
 
   const digits =
     price?.mid != null && price.mid >= 100

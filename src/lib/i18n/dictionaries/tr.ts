@@ -271,6 +271,8 @@ export const tr: Dict = {
   "term.calc.note": "Yalnızca tahmindir — komisyon ve swap hariçtir. Bu hesaplayıcıdan emir verilmez.",
   "term.kb.note": "Bir alana yazarken kısayollar devre dışıdır.",
   "term.kb.button": "Klavye kısayolları (?)",
+  "term.reopen": "Tekrar aç",
+  "term.reopenTitle": "Aynı sembol, yön ve lot ile emir formunu doldur",
   "term.tradingDisabled": "Hesabınızda işlem yetkisi kapalı.",
   "term.withdrawalsDisabled": "Hesabınızda para çekme yetkisi kapalı.",
   "auth.setNewPasswordTitle": "Yeni şifre belirle",

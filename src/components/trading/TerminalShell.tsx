@@ -1,7 +1,7 @@
 "use client";
 
 import PriceAlerts from "./PriceAlerts";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const TERM_PREFS_KEY = "7fx_term_prefs_v1";
 type TermPrefs = { symbol?: string; timeframe?: string; tab?: "open" | "closed" | "pending" };
@@ -87,6 +87,9 @@ export default function TerminalShell() {
   const [marginModalOpen, setMarginModalOpen] = useState(false);
   const [orderOpen, setOrderOpen] = useState(false);
   const [orderSide, setOrderSide] = useState<"BUY" | "SELL">("BUY");
+  const [orderPrefill, setOrderPrefill] = useState<
+    { volume: string; side: "BUY" | "SELL"; nonce: number } | null
+  >(null);
   const [helpOpen, setHelpOpen] = useState(false);
   const [calcOpen, setCalcOpen] = useState(false);
   const [pendingBalanceReq, setPendingBalanceReq] = useState<BalanceRequestRow | null>(null);
@@ -288,9 +291,46 @@ export default function TerminalShell() {
   function openOrder(side: "BUY" | "SELL" = "BUY") {
     if (user && user.tradingEnabled === false) return;
     if (user && user.mustChangePassword) return;
+    setOrderPrefill(null);
     setOrderSide(side);
     setOrderOpen(true);
   }
+
+  const chartLevels = useMemo(() => {
+    const cur = symbol.trim().toUpperCase();
+    return openPositions
+      .filter((p) => {
+        const a = (p.symbol || "").trim().toUpperCase();
+        const b = (p.chartSymbol || "").trim().toUpperCase();
+        return a === cur || b === cur;
+      })
+      .map((p) => ({
+        id: p.id,
+        side: (p.side === "SELL" ? "SELL" : "BUY") as "BUY" | "SELL",
+        openPrice: Number(p.openPrice),
+        stopLoss: p.stopLoss != null ? Number(p.stopLoss) : null,
+        takeProfit: p.takeProfit != null ? Number(p.takeProfit) : null,
+      }));
+  }, [openPositions, symbol]);
+
+  const onReopenTrade = useCallback(
+    (draft: { symbol: string; side: "BUY" | "SELL"; volume: number }) => {
+      if (user && user.tradingEnabled === false) return;
+      if (user && user.mustChangePassword) return;
+      const sym = (draft.symbol || "").trim().toUpperCase();
+      if (sym) setSymbol(sym);
+      setOrderSide(draft.side);
+      const vol = Number(draft.volume);
+      const volume =
+        Number.isFinite(vol) && vol > 0
+          ? (Math.round(vol * 100) / 100).toFixed(2)
+          : "0.10";
+      setOrderPrefill({ volume, side: draft.side, nonce: Date.now() });
+      setOrderOpen(true);
+      setMobileTab("order");
+    },
+    [user]
+  );
 
   // Keyboard shortcuts (desktop): B/S order, / search, 1-3 tabs, [ ] timeframe, ? help, Esc closes help.
   const kbRef = useRef({ orderOpen, depositOpen, marginModalOpen, helpOpen, calcOpen, user });
@@ -551,6 +591,7 @@ export default function TerminalShell() {
                   timeframe={timeframe}
                   onTimeframe={setTimeframe}
                   price={prices[symbol]}
+                  levels={chartLevels}
                 />
                 <PriceAlerts symbol={symbol} prices={prices} />
                 <div className="pointer-events-none absolute bottom-[calc(0.75rem+0.50cm)] right-[1.85cm] z-20 hidden md:block md:bottom-[calc(1rem+0.50cm)] md:right-[1.85cm]">
@@ -589,6 +630,7 @@ export default function TerminalShell() {
                 onCancelOrder={onCancelOrder}
                 onCancelOrders={onCancelOrders}
                 onSelectSymbol={setSymbol}
+                onReopenTrade={onReopenTrade}
               />
             </div>
 
@@ -647,6 +689,7 @@ export default function TerminalShell() {
                 onCancelOrder={onCancelOrder}
                 onCancelOrders={onCancelOrders}
                 onSelectSymbol={setSymbol}
+                onReopenTrade={onReopenTrade}
               />
             )}
             </div>
@@ -719,8 +762,12 @@ export default function TerminalShell() {
           initialSide={orderSide}
           equity={account?.equity}
           currency={account?.currency || "USD"}
+          prefill={orderPrefill}
           onPlaced={refreshAll}
-          onClose={() => setOrderOpen(false)}
+          onClose={() => {
+            setOrderOpen(false);
+            setOrderPrefill(null);
+          }}
         />
       )}
       <ShortcutsHelp open={helpOpen} onClose={() => setHelpOpen(false)} />

@@ -20,6 +20,8 @@ type Props = {
   equity?: number;
   /** Account currency label (default USD) */
   currency?: string;
+  /** Prefill from closed-trade re-open (nonce forces re-apply on same values). */
+  prefill?: { volume: string; side: "BUY" | "SELL"; nonce: number } | null;
 };
 
 function defaultSlTp(
@@ -151,7 +153,9 @@ export default function OrderTicket({
   className = "",
   equity,
   currency = "USD",
+  prefill = null,
 }: Props) {
+  const rootRef = useRef<HTMLDivElement | null>(null);
   const [side, setSide] = useState<"BUY" | "SELL">(initialSide);
   const [type, setType] = useState<"MARKET" | "LIMIT" | "STOP">("MARKET");
   const [volume, setVolumeRaw] = useState("0.10");
@@ -203,6 +207,32 @@ export default function OrderTicket({
     if (price?.mid) setLimitPrice(formatPrice(symbol, price.mid));
     // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally ignore live price ticks
   }, [symbol, initialSide]);
+
+  // Re-open from a closed trade: apply side + volume once per nonce (do not auto-submit).
+  useEffect(() => {
+    if (!prefill) return;
+    setSide(prefill.side);
+    setType("MARKET");
+    setVolume(prefill.volume);
+    setSl("");
+    setTp("");
+    setShowSl(false);
+    setShowTp(false);
+    setMsg("");
+    setRiskAmount("");
+    setRiskError("");
+    setConfirming(false);
+    // Brief focus / scroll into view when modal is open
+    try {
+      const el = rootRef.current;
+      el?.scrollIntoView?.({ block: "nearest", behavior: "smooth" });
+      const focusable = el?.querySelector<HTMLElement>("button, input, select, textarea");
+      focusable?.focus?.({ preventScroll: true });
+    } catch {
+      /* ignore */
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- volume setter + prefill nonce drive this
+  }, [prefill?.nonce, prefill?.side, prefill?.volume, setVolume]);
 
   // Remember the user's last lot for this symbol (debounced, valid values only)
   useEffect(() => {
@@ -979,6 +1009,7 @@ export default function OrderTicket({
         }}
       >
         <div
+          ref={rootRef}
           className={`flex max-h-[92vh] w-full max-w-[420px] flex-col overflow-hidden rounded-t-[20px] border border-desk-border bg-desk-panel shadow-2xl sm:rounded-[16px] ${className}`}
         >
           {body}
@@ -989,6 +1020,7 @@ export default function OrderTicket({
 
   return (
     <aside
+      ref={rootRef}
       className={`flex w-full shrink-0 flex-col border-l border-desk-border bg-desk-panel md:w-[268px] ${className}`}
     >
       {body}

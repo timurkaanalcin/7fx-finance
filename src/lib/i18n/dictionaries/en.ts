@@ -271,6 +271,8 @@ export const en: Dict = {
   "term.calc.note": "Estimate only — excludes commission and swap. Nothing is placed from this calculator.",
   "term.kb.note": "Shortcuts are disabled while typing in a field.",
   "term.kb.button": "Keyboard shortcuts (?)",
+  "term.reopen": "Re-open",
+  "term.reopenTitle": "Fill the order ticket with the same symbol, side and lot",
   "term.tradingDisabled": "Trading is disabled on your account.",
   "term.withdrawalsDisabled": "Withdrawals are disabled on your account.",
   "auth.setNewPasswordTitle": "Set a new password",

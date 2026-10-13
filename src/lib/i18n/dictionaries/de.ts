@@ -234,6 +234,8 @@ export const de: Dict = {
   "auth.accessClosed": "Der Zugang zu Ihrem Konto wurde gesperrt.",
   "term.tradingDisabledBanner": "Handel auf Ihrem Konto deaktiviert",
   "term.tradingDisabled": "Der Handel auf Ihrem Konto ist deaktiviert.",
+  "term.reopen": "Erneut öffnen",
+  "term.reopenTitle": "Auftrag mit gleichem Symbol, Seite und Lot vorausfüllen",
   "term.withdrawalsDisabled": "Auszahlungen auf Ihrem Konto sind deaktiviert.",
   "auth.setNewPasswordTitle": "Neues Passwort festlegen",
   "auth.setNewPasswordBody": "Sie müssen ein neues Passwort festlegen, bevor Sie das Terminal nutzen.",

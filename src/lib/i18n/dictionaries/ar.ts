@@ -234,6 +234,8 @@ export const ar: Dict = {
   "auth.accessClosed": "تم إغلاق الوصول إلى حسابك.",
   "term.tradingDisabledBanner": "صلاحية التداول على حسابك مغلقة",
   "term.tradingDisabled": "التداول معطّل على حسابك.",
+  "term.reopen": "إعادة الفتح",
+  "term.reopenTitle": "تعبئة تذكرة الأمر بنفس الرمز والاتجاه والكمية",
   "term.withdrawalsDisabled": "السحب معطّل على حسابك.",
   "auth.setNewPasswordTitle": "تعيين كلمة مرور جديدة",
   "auth.setNewPasswordBody": "يجب تعيين كلمة مرور جديدة قبل استخدام المنصة.",
