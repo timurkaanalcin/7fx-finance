@@ -8,7 +8,7 @@ import ThemeToggle from "@/components/theme/ThemeToggle";
 
 type Doc = { id: string; title: string; kind: "pdf" | "image"; size: number; createdAt: string };
 
-/** Customer "Evraklar": view-only list; opens in the protected (hold-to-reveal, watermarked) viewer. */
+/** Customer "Evraklar": view-only list; opens in the direct document viewer (scroll + zoom). */
 export default function DocumentsPage() {
   const { t, locale } = useI18n();
   const [docs, setDocs] = useState<Doc[] | null>(null);
