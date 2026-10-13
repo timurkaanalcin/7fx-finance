@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
 
-type PickUser = { id: string; name: string; email: string; accountLoginId?: string | null; role?: string };
+type PickUser = { id: string; name: string; firstName?: string | null; lastName?: string | null; email: string; accountLoginId?: string | null; phone?: string | null };
 type Doc = {
   id: string;
   userId: string | null;
@@ -16,11 +16,11 @@ type Doc = {
 };
 
 const T: Record<string, Record<string, string>> = {
-  tr: { title: "Evrak Ekle", customer: "Müşteri", search: "Ad / e-posta / hesap no ara", pick: "Müşteri seçin", global: "Tüm müşterilere (genel)", docTitle: "Evrak başlığı", file: "Dosya (PNG, JPG, WEBP, GIF, PDF · en fazla 8 MB)", save: "Kaydet", list: "Mevcut evraklar", filter: "Sadece seçili müşteri", del: "Sil", dl: "İndir", none: "Evrak yok", saved: "Evrak eklendi", confirm: "Bu evrak silinsin mi?", all: "Genel" },
-  en: { title: "Add document", customer: "Customer", search: "Search name / email / account ID", pick: "Select customer", global: "All customers (global)", docTitle: "Document title", file: "File (PNG, JPG, WEBP, GIF, PDF · max 8 MB)", save: "Save", list: "Existing documents", filter: "Selected customer only", del: "Delete", dl: "Download", none: "No documents", saved: "Document added", confirm: "Delete this document?", all: "Global" },
-  ru: { title: "Добавить документ", customer: "Клиент", search: "Поиск: имя / e-mail / номер счёта", pick: "Выберите клиента", global: "Всем клиентам (общий)", docTitle: "Название документа", file: "Файл (PNG, JPG, WEBP, GIF, PDF · до 8 МБ)", save: "Сохранить", list: "Документы", filter: "Только выбранный клиент", del: "Удалить", dl: "Скачать", none: "Документов нет", saved: "Документ добавлен", confirm: "Удалить документ?", all: "Общий" },
-  ar: { title: "إضافة مستند", customer: "العميل", search: "ابحث بالاسم / البريد / رقم الحساب", pick: "اختر العميل", global: "لكل العملاء (عام)", docTitle: "عنوان المستند", file: "ملف (PNG, JPG, WEBP, GIF, PDF · حتى 8 ميغابايت)", save: "حفظ", list: "المستندات الحالية", filter: "العميل المحدد فقط", del: "حذف", dl: "تنزيل", none: "لا توجد مستندات", saved: "تمت إضافة المستند", confirm: "حذف هذا المستند؟", all: "عام" },
-  de: { title: "Dokument hinzufügen", customer: "Kunde", search: "Name / E-Mail / Kontonr. suchen", pick: "Kunde auswählen", global: "Alle Kunden (global)", docTitle: "Dokumenttitel", file: "Datei (PNG, JPG, WEBP, GIF, PDF · max. 8 MB)", save: "Speichern", list: "Vorhandene Dokumente", filter: "Nur ausgewählter Kunde", del: "Löschen", dl: "Herunterladen", none: "Keine Dokumente", saved: "Dokument hinzugefügt", confirm: "Dokument löschen?", all: "Global" },
+  tr: { title: "Evrak Ekle", customer: "Müşteri", search: "Ad, e-posta, hesap no veya telefon yazın", noMatch: "Eşleşen müşteri yok", searching: "…", change: "Değiştir", pick: "Müşteri seçin", global: "Tüm müşterilere (genel)", docTitle: "Evrak başlığı", file: "Dosya (PNG, JPG, WEBP, GIF, PDF · en fazla 8 MB)", save: "Kaydet", list: "Mevcut evraklar", filter: "Sadece seçili müşteri", del: "Sil", dl: "İndir", none: "Evrak yok", saved: "Evrak eklendi", confirm: "Bu evrak silinsin mi?", all: "Genel" },
+  en: { title: "Add document", customer: "Customer", search: "Type name, email, account ID or phone", noMatch: "No matching customers", searching: "…", change: "Change", pick: "Select customer", global: "All customers (global)", docTitle: "Document title", file: "File (PNG, JPG, WEBP, GIF, PDF · max 8 MB)", save: "Save", list: "Existing documents", filter: "Selected customer only", del: "Delete", dl: "Download", none: "No documents", saved: "Document added", confirm: "Delete this document?", all: "Global" },
+  ru: { title: "Добавить документ", customer: "Клиент", search: "Имя, e-mail, номер счёта или телефон", noMatch: "Клиенты не найдены", searching: "…", change: "Изменить", pick: "Выберите клиента", global: "Всем клиентам (общий)", docTitle: "Название документа", file: "Файл (PNG, JPG, WEBP, GIF, PDF · до 8 МБ)", save: "Сохранить", list: "Документы", filter: "Только выбранный клиент", del: "Удалить", dl: "Скачать", none: "Документов нет", saved: "Документ добавлен", confirm: "Удалить документ?", all: "Общий" },
+  ar: { title: "إضافة مستند", customer: "العميل", search: "اكتب الاسم أو البريد أو رقم الحساب أو الهاتف", noMatch: "لا يوجد عملاء مطابقون", searching: "…", change: "تغيير", pick: "اختر العميل", global: "لكل العملاء (عام)", docTitle: "عنوان المستند", file: "ملف (PNG, JPG, WEBP, GIF, PDF · حتى 8 ميغابايت)", save: "حفظ", list: "المستندات الحالية", filter: "العميل المحدد فقط", del: "حذف", dl: "تنزيل", none: "لا توجد مستندات", saved: "تمت إضافة المستند", confirm: "حذف هذا المستند؟", all: "عام" },
+  de: { title: "Dokument hinzufügen", customer: "Kunde", search: "Name, E-Mail, Kontonr. oder Telefon eingeben", noMatch: "Keine passenden Kunden", searching: "…", change: "Ändern", pick: "Kunde auswählen", global: "Alle Kunden (global)", docTitle: "Dokumenttitel", file: "Datei (PNG, JPG, WEBP, GIF, PDF · max. 8 MB)", save: "Speichern", list: "Vorhandene Dokumente", filter: "Nur ausgewählter Kunde", del: "Löschen", dl: "Herunterladen", none: "Keine Dokumente", saved: "Dokument hinzugefügt", confirm: "Dokument löschen?", all: "Global" },
 };
 
 const cls = "w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm text-[#111] outline-none focus:border-black/30";
@@ -30,7 +30,10 @@ export default function EvrakPage() {
   const L = T[locale] ?? T.tr;
   const [q, setQ] = useState("");
   const [opts, setOpts] = useState<PickUser[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [dropOpen, setDropOpen] = useState(false);
   const [userId, setUserId] = useState("");
+  const [picked, setPicked] = useState<PickUser | null>(null);
   const [global, setGlobal] = useState(false);
   const [title, setTitle] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -40,17 +43,31 @@ export default function EvrakPage() {
   const [onlySel, setOnlySel] = useState(false);
 
   useEffect(() => {
+    const term = q.trim();
+    if (term.length < 1) {
+      setOpts([]);
+      return;
+    }
+    let cancelled = false;
+    setSearching(true);
     const h = window.setTimeout(async () => {
       try {
-        const r = await fetch(`/api/admin/users?q=${encodeURIComponent(q.trim())}&take=50`, { cache: "no-store" });
-        const d = await r.json();
-        setOpts((d.users || []).filter((u: PickUser) => (u.role ?? "TRADER") !== "ADMIN"));
+        const r = await fetch(`/api/admin/customer-documents/search?q=${encodeURIComponent(term)}`, { cache: "no-store" });
+        const d = await r.json().catch(() => ({}));
+        if (!cancelled) setOpts(r.ok ? d.users || [] : []);
       } catch {
-        setOpts([]);
+        if (!cancelled) setOpts([]);
+      } finally {
+        if (!cancelled) setSearching(false);
       }
     }, 250);
-    return () => window.clearTimeout(h);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(h);
+    };
   }, [q]);
+
+  const label = (u: PickUser) => u.name || [u.firstName, u.lastName].filter(Boolean).join(" ") || u.email;
 
   const load = useCallback(async () => {
     const qs = onlySel && userId ? `?userId=${encodeURIComponent(userId)}` : "";
@@ -100,16 +117,72 @@ export default function EvrakPage() {
       <div className="mb-6 grid gap-3 rounded-xl border border-black/10 bg-white p-4 shadow-sm md:grid-cols-2">
         <div className="space-y-2">
           <label className="block text-xs font-medium text-[#5c657a]">{L.customer}</label>
-          <input className={cls} placeholder={L.search} value={q} onChange={(e) => setQ(e.target.value)} disabled={global} />
-          <select className={cls} value={userId} onChange={(e) => setUserId(e.target.value)} disabled={global}>
-            <option value="">{L.pick}</option>
-            {opts.map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.name} · {u.email}
-                {u.accountLoginId ? ` · ${u.accountLoginId}` : ""}
-              </option>
-            ))}
-          </select>
+          {picked && !global ? (
+            <div className="flex items-center justify-between gap-2 rounded-lg border border-black/15 bg-[#f6f6f6] px-3 py-2">
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-semibold text-[#111]">{label(picked)}</span>
+                <span className="block truncate text-xs text-[#5c657a]">
+                  {picked.email}
+                  {picked.accountLoginId ? ` · ${picked.accountLoginId}` : ""}
+                </span>
+              </span>
+              <button
+                type="button"
+                className="shrink-0 rounded-md border border-black/15 px-2 py-1 text-xs text-[#111]"
+                onClick={() => {
+                  setPicked(null);
+                  setUserId("");
+                  setDropOpen(true);
+                }}
+              >
+                {L.change}
+              </button>
+            </div>
+          ) : (
+            <div className="relative">
+              <input
+                className={cls}
+                placeholder={L.search}
+                value={q}
+                disabled={global}
+                autoComplete="off"
+                onFocus={() => setDropOpen(true)}
+                onBlur={() => window.setTimeout(() => setDropOpen(false), 150)}
+                onChange={(e) => {
+                  setQ(e.target.value);
+                  setDropOpen(true);
+                }}
+              />
+              {dropOpen && !global && q.trim().length >= 1 && (
+                <ul className="absolute left-0 right-0 top-full z-20 mt-1 max-h-72 overflow-auto rounded-lg border border-black/10 bg-white shadow-lg">
+                  {searching && opts.length === 0 && <li className="px-3 py-2 text-sm text-[#5c657a]">{L.searching}</li>}
+                  {!searching && opts.length === 0 && <li className="px-3 py-2 text-sm text-[#5c657a]">{L.noMatch}</li>}
+                  {opts.map((u) => (
+                    <li key={u.id}>
+                      <button
+                        type="button"
+                        className="block w-full px-3 py-2 text-left hover:bg-[#f3f3f3]"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => {
+                          setPicked(u);
+                          setUserId(u.id);
+                          setDropOpen(false);
+                          setQ("");
+                        }}
+                      >
+                        <span className="block text-sm font-medium text-[#111]">{label(u)}</span>
+                        <span className="block text-xs text-[#5c657a]">
+                          {u.email}
+                          {u.accountLoginId ? ` · ${u.accountLoginId}` : ""}
+                          {u.phone ? ` · ${u.phone}` : ""}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
           <label className="flex items-center gap-2 text-sm text-[#111]">
             <input type="checkbox" checked={global} onChange={(e) => setGlobal(e.target.checked)} />
             {L.global}
@@ -147,7 +220,30 @@ export default function EvrakPage() {
           {L.filter}
         </label>
       </div>
-      <div className="overflow-x-auto rounded-xl border border-black/10 bg-white">
+      <div className="space-y-2 md:hidden">
+        {docs.length === 0 && <div className="rounded-xl border border-black/10 bg-white p-6 text-center text-sm text-[#5c657a]">{L.none}</div>}
+        {docs.map((d) => (
+          <div key={d.id} className="rounded-xl border border-black/10 bg-white p-3">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0 break-words text-sm font-semibold text-[#111]">{d.title}</div>
+              <span className="shrink-0 rounded bg-[#f3f3f3] px-1.5 py-0.5 text-[10px] font-bold text-[#5c657a]">{d.mime === "application/pdf" ? "PDF" : "IMG"}</span>
+            </div>
+            <div className="mt-1 break-words text-xs text-[#5c657a]">{d.user ? `${d.user.name} · ${d.user.accountLoginId || d.user.email}` : L.all}</div>
+            <div className="mt-0.5 text-xs text-[#5c657a]">
+              {new Date(d.createdAt).toLocaleString()} · {Math.max(1, Math.round(d.size / 1024))} KB
+            </div>
+            <div className="mt-2 flex gap-2">
+              <a href={`/api/admin/customer-documents/${d.id}`} className="flex min-h-[40px] flex-1 items-center justify-center rounded-lg border border-black/15 text-sm text-[#111]">
+                {L.dl}
+              </a>
+              <button type="button" onClick={() => del(d.id)} className="min-h-[40px] flex-1 rounded-lg border border-red-200 text-sm text-red-600">
+                {L.del}
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="hidden overflow-x-auto rounded-xl border border-black/10 bg-white md:block">
         <table className="w-full text-sm">
           <tbody>
             {docs.length === 0 && (
