@@ -45,6 +45,9 @@ const LOT_PRESETS = ["0.01", "0.10", "0.50", "1.00"];
 // SL/TP quick pip-distance chips (input-only; nothing is sent until Submit)
 const SLTP_PIP_PRESETS = [10, 20, 50, 100] as const;
 
+// Reward:risk quick chips — set TP so its distance = SL distance × ratio (input-only)
+const RR_PRESETS = [1, 1.5, 2, 3] as const;
+
 /** Pip size for a symbol; falls back like BottomPanels (FX-style 0.0001, else 0.01). */
 function ticketPipSize(def: SymbolDef | undefined): number {
   if (def && Number.isFinite(def.pipSize) && def.pipSize > 0) return def.pipSize;
@@ -303,6 +306,29 @@ export default function OrderTicket({
 
   const slInfo = showSl ? levelInfo("sl", sl) : null;
   const tpInfo = showTp ? levelInfo("tp", tp) : null;
+
+  // R:R chips are usable only with a valid SL on the correct side of a known entry
+  const rrSlOk = showSl && slInfo != null && !slInfo.wrongSide && slInfo.pips > 0;
+  const rrDisabledTitle = !showSl
+    ? "Önce SL girin · Set a Stop Loss first"
+    : !entryOk
+      ? "Giriş fiyatı bilinmiyor · Entry price unknown"
+      : slInfo?.wrongSide
+        ? "SL girişin ters tarafında · SL is on the wrong side of entry"
+        : "Geçerli SL girin · Enter a valid Stop Loss";
+
+  /** TP price giving reward/risk ≈ ratio (same pip math as the SL/TP pip chips). */
+  function rrTpLevel(ratio: number): string | null {
+    if (!rrSlOk || !slInfo) return null;
+    return pipLevel("tp", slInfo.pips * ratio);
+  }
+
+  function applyRr(ratio: number) {
+    const lvl = rrTpLevel(ratio);
+    if (lvl == null) return;
+    setShowTp(true);
+    setTp(lvl);
+  }
 
   const preview = useMemo(() => {
     const vol = Number(volume);
@@ -903,6 +929,41 @@ export default function OrderTicket({
           </div>
         )}
 
+        {(showSl || showTp) && (
+          <div className="flex flex-wrap items-center gap-1" role="group" aria-label="R:R hedefi · Reward/risk target">
+            <span className="mr-0.5 text-[10px] font-semibold uppercase tracking-wider text-desk-muted">
+              R:R
+            </span>
+            {RR_PRESETS.map((ratio) => {
+              const lvl = rrTpLevel(ratio);
+              const label = `1:${ratio}`;
+              const active = lvl != null && preview.rr != null && Math.abs(preview.rr - ratio) < 0.05;
+              return (
+                <button
+                  key={ratio}
+                  type="button"
+                  disabled={lvl == null}
+                  onClick={() => applyRr(ratio)}
+                  aria-pressed={active}
+                  title={
+                    lvl != null
+                      ? `TP'yi ${label} risk/ödül oranına ayarla · Set TP for ${label} reward/risk (${lvl})`
+                      : rrDisabledTitle
+                  }
+                  aria-label={`TP ${label} risk/ödül · TP ${label} reward/risk`}
+                  className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold tabular-nums transition disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-desk-elev disabled:hover:text-desk-muted ${
+                    active
+                      ? "border-desk-buy/60 bg-desk-buy/15 text-desk-buy"
+                      : "border-desk-border/70 bg-desk-elev text-desk-muted hover:bg-desk-hover hover:text-desk-text"
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         {preview.rr != null && (
           <div className="flex items-center justify-between rounded-[12px] border border-desk-border/60 bg-desk-bg/70 px-3 py-2 text-[11px] md:rounded-control md:px-2.5 md:py-1.5">
             <span className="font-semibold uppercase tracking-wider text-desk-muted">
@@ -967,6 +1028,14 @@ export default function OrderTicket({
                   {preview.tp != null && (
                     <span className="ml-1 text-desk-buy">({fmtSignedUsd(preview.tp)})</span>
                   )}
+                </span>
+              </div>
+            )}
+            {preview.rr != null && (
+              <div className="flex items-center justify-between">
+                <span className="text-desk-muted">Risk / Ödül · R:R</span>
+                <span className={`font-semibold tabular-nums ${preview.rr >= 1 ? "text-desk-buy" : "text-desk-text"}`}>
+                  1 : {preview.rr.toFixed(2)}
                 </span>
               </div>
             )}
