@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, useCallback, type ReactNode, type ReactElement, type MouseEvent as ReactMouseEvent } from "react";
 import { calcPipDistance, formatPrice, getSymbol } from "@/lib/symbols";
 import { fmtDateTime, fmtNum } from "@/lib/format";
-import type { OrderRow, PositionRow } from "./types";
+import type { OrderRow, PositionRow, PriceTick } from "./types";
 import PnlCalendar, { closedDayKey } from "./PnlCalendar";
 import AccountStatement from "./AccountStatement";
 import { useI18n } from "@/lib/i18n/context";
@@ -389,6 +389,8 @@ type Props = {
   onSelectSymbol?: (symbol: string) => void;
   /** Account currency (statement totals label). */
   currency?: string;
+  /** Live prices (for pending-order distance to trigger). */
+  prices?: Record<string, PriceTick>;
   className?: string;
 };
 
@@ -537,6 +539,58 @@ function LevelDistance({ p, kind, className = "" }: { p: PositionRow; kind: "sl"
       title={kind === "sl" ? "Stop Loss seviyesine uzaklık (güncel fiyattan, pip)" : "Take Profit seviyesine uzaklık (güncel fiyattan, pip)"}
     >
       {kind === "sl" ? "SL" : "TP"} {fmtNum(d, 1)}p
+    </span>
+  );
+}
+
+/** Live mid (or bid/ask fallback) for a symbol from the price map. */
+function liveMid(prices: Record<string, PriceTick> | undefined, symbol: string): number | null {
+  if (!prices) return null;
+  const t = prices[symbol];
+  if (!t) return null;
+  if (Number.isFinite(t.mid) && t.mid > 0) return t.mid;
+  if (Number.isFinite(t.bid) && Number.isFinite(t.ask) && t.bid > 0 && t.ask > 0) return (t.bid + t.ask) / 2;
+  if (Number.isFinite(t.bid) && t.bid > 0) return t.bid;
+  if (Number.isFinite(t.ask) && t.ask > 0) return t.ask;
+  return null;
+}
+
+/** Absolute distance (pips) from current market to pending order trigger; null if unknown. */
+function pendingTriggerDistancePips(
+  o: OrderRow,
+  prices: Record<string, PriceTick> | undefined
+): number | null {
+  const trigger = o.price != null && Number.isFinite(o.price) && o.price > 0
+    ? o.price
+    : o.openPrice != null && Number.isFinite(o.openPrice) && o.openPrice > 0
+      ? o.openPrice
+      : null;
+  if (trigger == null) return null;
+  const mid = liveMid(prices, o.symbol);
+  if (mid == null) return null;
+  const size = symbolPipSize(o.symbol);
+  if (!(size > 0)) return null;
+  return Math.abs(mid - trigger) / size;
+}
+
+/** "12.3 pip" distance-to-trigger hint for pending orders (client-only). */
+function PendingTriggerDistance({
+  o,
+  prices,
+  className = "",
+}: {
+  o: OrderRow;
+  prices?: Record<string, PriceTick>;
+  className?: string;
+}) {
+  const d = pendingTriggerDistancePips(o, prices);
+  if (d == null) return <span className={`tabular-nums text-[9.5px] text-desk-muted/60 ${className}`}>—</span>;
+  return (
+    <span
+      className={`tabular-nums text-[9.5px] text-desk-accent/90 ${className}`}
+      title="Tetik fiyatına uzaklık (güncel piyasadan, pip) · Distance to trigger"
+    >
+      {fmtNum(d, 1)} pip
     </span>
   );
 }
@@ -1163,9 +1217,11 @@ function ClosedCard({ p }: { p: PositionRow }) {
 function PendingCard({
   o,
   onCancel,
+  prices,
 }: {
   o: OrderRow;
   onCancel: (id: string) => void;
+  prices?: Record<string, PriceTick>;
 }) {
   return (
     <div className="rounded-[14px] border border-desk-border/60 bg-desk-elev/40 p-3">
@@ -1199,10 +1255,13 @@ function PendingCard({
       </div>
       <div className="mt-2.5 flex items-center justify-between gap-2 text-[11px]">
         <div className="rounded-[8px] bg-desk-bg/60 px-2 py-1.5">
-          <span className="text-desk-muted">Price </span>
-          <span className="font-medium tabular-nums">
+          <div className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">Price</div>
+          <div className="mt-0.5 font-medium tabular-nums">
             {o.price != null ? formatPrice(o.symbol, o.price) : "—"}
-          </span>
+          </div>
+          <div className="mt-0.5 leading-tight">
+            <PendingTriggerDistance o={o} prices={prices} />
+          </div>
         </div>
         <button
           onClick={() => onCancel(o.id)}
@@ -1228,6 +1287,7 @@ export default function BottomPanels({
   onCancelOrders,
   onSelectSymbol,
   currency,
+  prices,
   className = "",
 }: Props) {
   const { t } = useI18n();
@@ -1928,7 +1988,7 @@ export default function BottomPanels({
             )}
             {pendingOrders.length > 0 && filteredPending.length === 0 && emptyFiltered}
             {sortedPending.map((o) => (
-              <PendingCard key={o.id} o={o} onCancel={onCancelOrder} />
+              <PendingCard key={o.id} o={o} onCancel={onCancelOrder} prices={prices} />
             ))}
           </>
         )}
@@ -2135,6 +2195,7 @@ export default function BottomPanels({
                 <SortTh label="Asset" col="symbol" sort={pendingSort} onSort={onPendingSort} />
                 <th className="px-2 py-2">Volume</th>
                 <th className="px-2 py-2">Price</th>
+                <th className="px-2 py-2" title="Tetik fiyatına uzaklık (pip)">Uzaklık</th>
                 <th className="px-2 py-2">SL</th>
                 <th className="px-2 py-2">TP</th>
                 <th className="px-2 py-2">Cancel</th>
@@ -2143,14 +2204,14 @@ export default function BottomPanels({
             <tbody>
               {pendingOrders.length === 0 && (
                 <tr>
-                  <td colSpan={10} className="px-3 py-8 text-center text-desk-muted">
+                  <td colSpan={11} className="px-3 py-8 text-center text-desk-muted">
                     Pending emir yok
                   </td>
                 </tr>
               )}
               {pendingOrders.length > 0 && filteredPending.length === 0 && (
                 <tr>
-                  <td colSpan={10} className="px-3 py-8 text-center text-desk-muted">
+                  <td colSpan={11} className="px-3 py-8 text-center text-desk-muted">
                     Filtreye uyan işlem yok
                   </td>
                 </tr>
@@ -2179,6 +2240,9 @@ export default function BottomPanels({
                   <td className="px-2 py-1.5 tabular-nums">{fmtNum(o.volume, 2)}</td>
                   <td className="px-2 py-1.5 tabular-nums">
                     {o.price != null ? formatPrice(o.symbol, o.price) : "—"}
+                  </td>
+                  <td className="px-2 py-1.5 tabular-nums">
+                    <PendingTriggerDistance o={o} prices={prices} />
                   </td>
                   <td className="px-2 py-1.5 text-desk-muted">
                     {o.stopLoss != null ? formatPrice(o.symbol, o.stopLoss) : "—"}

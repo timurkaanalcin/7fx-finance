@@ -546,6 +546,7 @@ export default function TerminalShell() {
                 openPositions={openPositions}
                 closedPositions={closedPositions}
                 currency={account?.currency || "USD"}
+                prices={prices}
                 pendingOrders={pendingOrders}
                 onClosePosition={onClosePosition}
                 onClosePositions={onClosePositions}
@@ -603,6 +604,7 @@ export default function TerminalShell() {
                 openPositions={openPositions}
                 closedPositions={closedPositions}
                 currency={account?.currency || "USD"}
+                prices={prices}
                 pendingOrders={pendingOrders}
                 onClosePosition={onClosePosition}
                 onClosePositions={onClosePositions}

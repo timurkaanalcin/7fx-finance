@@ -89,12 +89,13 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
   useEffect(() => {
     try {
       const v = JSON.parse(localStorage.getItem(FAV_KEY) || "[]");
-      if (Array.isArray(v)) setFavs(v.filter((x) => typeof x === "string").slice(0, 200));
+      if (Array.isArray(v)) setFavs(v.filter((x) => typeof x === "string").slice(0, 40));
     } catch {}
   }, []);
   const toggleFav = (sym: string) => {
     setFavs((prev) => {
-      const next = prev.includes(sym) ? prev.filter((x) => x !== sym) : [...prev, sym];
+      let next = prev.includes(sym) ? prev.filter((x) => x !== sym) : [...prev, sym];
+      if (next.length > 40) next = next.slice(-40);
       try {
         localStorage.setItem(FAV_KEY, JSON.stringify(next));
       } catch {}
@@ -184,24 +185,25 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
   }, [symbols, q, filter, favs, recent]);
 
   const list = useMemo(() => {
-    if (sortMode === "DEFAULT") return baseList;
+    // Favourites always float to the top; sortMode applies within fav / non-fav groups.
+    if (sortMode === "DEFAULT") return baseList; // baseList already favs-first
     const arr = [...baseList];
-    if (sortMode === "AZ") {
-      arr.sort((a, b) => a.symbol.localeCompare(b.symbol));
-      return arr;
-    }
-    const dir = sortMode === "GAIN" ? -1 : 1;
-    arr.sort((a, b) => {
+    const secondary = (a: SymbolDef, b: SymbolDef) => {
+      if (sortMode === "AZ") return a.symbol.localeCompare(b.symbol);
+      const dir = sortMode === "GAIN" ? -1 : 1;
       const pa = pctSnap[a.symbol];
       const pb = pctSnap[b.symbol];
       const ha = Number.isFinite(pa);
       const hb = Number.isFinite(pb);
       if (ha !== hb) return ha ? -1 : 1; // symbols without a price go last
       if (!ha) return 0;
-      return dir * (pa - pb);
-    });
-    return arr;
-  }, [baseList, sortMode, pctSnap]);
+      return dir * ((pa as number) - (pb as number));
+    };
+    if (!favs.length) return arr.sort(secondary);
+    const favsPart = arr.filter((s) => favs.includes(s.symbol)).sort(secondary);
+    const restPart = arr.filter((s) => !favs.includes(s.symbol)).sort(secondary);
+    return [...favsPart, ...restPart];
+  }, [baseList, sortMode, pctSnap, favs]);
 
   return (
     <aside
@@ -247,7 +249,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
           ))}
         </div>
         {filter === "FAV" && list.length === 0 && (
-          <p className="mt-2 text-[11px] text-desk-muted">Tap ☆ next to a symbol to add it to favourites.</p>
+          <p className="mt-2 text-[11px] text-desk-muted">Favori eklemek için sembolün yanındaki ☆ işaretine dokunun.</p>
         )}
         {filter === "RECENT" && recent.length === 0 && (
           <p className="mt-2 text-[11px] text-desk-muted">Symbols you open will appear here.</p>
@@ -310,7 +312,8 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
                       <span
                         role="button"
                         tabIndex={0}
-                        aria-label={favs.includes(s.symbol) ? "Remove from favourites" : "Add to favourites"}
+                        title={favs.includes(s.symbol) ? "Favorilerden çıkar" : "Favori"}
+                        aria-label={favs.includes(s.symbol) ? "Favorilerden çıkar" : "Favori"}
                         aria-pressed={favs.includes(s.symbol)}
                         onClick={(e) => {
                           e.stopPropagation();
