@@ -174,6 +174,7 @@ export const en: Dict = {
   "crm.nav.calendar": "Calendar",
   "crm.nav.mail": "Mail Templates",
   "crm.nav.finance": "Finance",
+  "crm.nav.affiliates": "Affiliates",
   "crm.nav.scoreboard": "Scoreboard",
   "crm.nav.report": "Report",
   "crm.nav.summary": "Account Summary",

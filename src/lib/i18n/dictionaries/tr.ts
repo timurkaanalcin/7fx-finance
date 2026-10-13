@@ -174,6 +174,7 @@ export const tr: Dict = {
   "crm.nav.calendar": "Takvim",
   "crm.nav.mail": "Mail şablonları",
   "crm.nav.finance": "Finans",
+  "crm.nav.affiliates": "Affiliateler",
   "crm.nav.scoreboard": "Skor tablosu",
   "crm.nav.report": "Rapor",
   "crm.nav.summary": "Hesap özeti",

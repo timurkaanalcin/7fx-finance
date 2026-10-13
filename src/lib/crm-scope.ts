@@ -52,6 +52,7 @@ const RULES: Rule[] = [
   { methods: ["GET"], re: /^\/api\/admin\/chat\/attachments\/[^/]+\/?$/ },
   { methods: ["GET", "POST"], re: /^\/api\/admin\/chat\/presence\/?$/, idQuery: "userId" },
   { methods: ["GET"], re: /^\/api\/admin\/leads\/export\/?$/ },
+  { methods: ["GET"], re: /^\/api\/admin\/analytics\/affiliates\/?$/ },
   { methods: ["GET", "POST", "PATCH"], re: /^\/api\/admin\/retention\/([^/]+)\/?$/, idGroup: 1 },
 ];
 

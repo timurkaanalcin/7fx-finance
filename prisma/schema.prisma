@@ -102,6 +102,9 @@ model User {
   /// Retention follow-up date + short note (scoped staff)
   retentionFollowUpAt  DateTime?
   retentionNote        String?          @db.Text
+  /// Lead marked invalid by admin (affiliate stats)
+  leadInvalid          Boolean          @default(false)
+  leadInvalidAt        DateTime?
 
   /// Documents stub
   documentsStatus      String           @default("NONE") // NONE | PENDING | APPROVED | REJECTED

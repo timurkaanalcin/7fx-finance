@@ -61,6 +61,7 @@ export const CRM_NAV_GROUPS: CrmNavGroup[] = [
     items: [
       { href: "/izcrm/analytics/finance", labelKey: "crm.nav.finance" },
       { href: "/izcrm/analytics/scoreboard", labelKey: "crm.nav.scoreboard" },
+      { href: "/izcrm/analytics/affiliates", labelKey: "crm.nav.affiliates" },
       { href: "/izcrm/analytics/report", labelKey: "crm.nav.report" },
       { href: "/izcrm/summary", labelKey: "crm.nav.summary" },
     ],

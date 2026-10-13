@@ -174,6 +174,7 @@ export const ru: Dict = {
   "crm.nav.calendar": "Календарь",
   "crm.nav.mail": "Шаблоны писем",
   "crm.nav.finance": "Финансы",
+  "crm.nav.affiliates": "Аффилейты",
   "crm.nav.scoreboard": "Табло",
   "crm.nav.report": "Отчёт",
   "crm.nav.summary": "Сводка счетов",

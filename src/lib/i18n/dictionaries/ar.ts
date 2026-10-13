@@ -174,6 +174,7 @@ export const ar: Dict = {
   "crm.nav.calendar": "التقويم",
   "crm.nav.mail": "قوالب البريد",
   "crm.nav.finance": "المالية",
+  "crm.nav.affiliates": "الشركاء التسويقيون",
   "crm.nav.scoreboard": "لوحة النتائج",
   "crm.nav.report": "التقرير",
   "crm.nav.summary": "ملخص الحسابات",
