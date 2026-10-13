@@ -44,6 +44,7 @@ type UserRow = {
   brokerName: string | null;
   assigneeName?: string | null;
   retentionFollowUpAt?: string | null;
+  retentionNote?: string | null;
   ftd: boolean;
   phone: string | null;
   accountType: string;
@@ -877,6 +878,20 @@ export default function AdminUsersPage() {
                       </div>
                     );
                   })() : null}
+                  {(() => {
+                    const note = (u.retentionNote || "").replace(/\s+/g, " ").trim();
+                    if (!note) return null;
+                    const short = note.length > 90 ? `${note.slice(0, 90).trimEnd()}…` : note;
+                    return (
+                      <div
+                        className="mt-0.5 max-w-[220px] truncate text-[9px] italic text-neutral-400"
+                        title={u.retentionNote || ""}
+                        data-fx-retention-note-preview
+                      >
+                        📝 {short}
+                      </div>
+                    );
+                  })()}
                 </td>
                 <td className="px-3 py-2.5 tabular-nums">
                   <div>

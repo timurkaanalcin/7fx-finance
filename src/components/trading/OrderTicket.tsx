@@ -75,6 +75,19 @@ const LAST_LOT_MAX_ENTRIES = 50;
 const LOT_MIN = 0.01;
 const LOT_MAX = 1000;
 
+/** Halve / double a lot value, snapped to the symbol step (default 0.01) and clamped. */
+function scaleLot(v: string, factor: number, step?: number): string {
+  const st = typeof step === "number" && Number.isFinite(step) && step > 0 ? step : 0.01;
+  const n = Number(v);
+  const base = Number.isFinite(n) && n > 0 ? n : 0.1;
+  const min = Math.max(LOT_MIN, st);
+  let next = Math.round((base * factor) / st) * st;
+  if (!Number.isFinite(next)) next = base;
+  next = Math.min(LOT_MAX, Math.max(min, next));
+  const decimals = Math.max(2, Math.min(4, (String(st).split(".")[1] ?? "").length));
+  return next.toFixed(decimals);
+}
+
 function sanitizeLot(v: unknown): string | null {
   const n = typeof v === "number" ? v : typeof v === "string" ? Number(v.trim()) : NaN;
   if (!Number.isFinite(n) || n < LOT_MIN || n > LOT_MAX) return null;
@@ -597,8 +610,8 @@ export default function OrderTicket({
               +
             </button>
           </div>
-          <div className="mt-1.5 flex items-center justify-between gap-2">
-            <div className="flex gap-1" role="group" aria-label="Quick lot size">
+          <div className="mt-1.5 flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
+            <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Quick lot size">
               {LOT_PRESETS.map((p) => (
                 <button
                   key={p}
@@ -614,6 +627,25 @@ export default function OrderTicket({
                   {Number(p)}
                 </button>
               ))}
+              <span className="mx-0.5 w-px self-stretch bg-desk-border/60" aria-hidden />
+              <button
+                type="button"
+                onClick={() => setVolume((v) => scaleLot(v, 0.5, (def as { volumeStep?: number } | undefined)?.volumeStep))}
+                aria-label="Lot yarıya · Halve lot"
+                title="Lot yarıya · Halve lot"
+                className="rounded-full border border-desk-border/70 bg-desk-elev px-2 py-0.5 text-[10px] font-semibold tabular-nums text-desk-muted transition hover:bg-desk-hover hover:text-desk-text"
+              >
+                ÷2
+              </button>
+              <button
+                type="button"
+                onClick={() => setVolume((v) => scaleLot(v, 2, (def as { volumeStep?: number } | undefined)?.volumeStep))}
+                aria-label="Lot iki kat · Double lot"
+                title="Lot iki kat · Double lot"
+                className="rounded-full border border-desk-border/70 bg-desk-elev px-2 py-0.5 text-[10px] font-semibold tabular-nums text-desk-muted transition hover:bg-desk-hover hover:text-desk-text"
+              >
+                ×2
+              </button>
             </div>
             <span className="text-[10px] tabular-nums text-desk-muted/80">
               Notional {fmtUsd(notional)}

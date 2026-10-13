@@ -522,6 +522,39 @@ function HoldTime({
   );
 }
 
+/** Fixed holding duration for closed trades (openedAt → closedAt). */
+function closedHoldLabel(
+  openedAt: string | Date | null | undefined,
+  closedAt: string | Date | null | undefined
+): string {
+  if (!openedAt || !closedAt) return "";
+  const end = new Date(closedAt).getTime();
+  if (!Number.isFinite(end)) return "";
+  return fmtHoldTime(openedAt, end);
+}
+
+function ClosedHoldTime({
+  openedAt,
+  closedAt,
+  className = "",
+}: {
+  openedAt: string | Date | null | undefined;
+  closedAt: string | Date | null | undefined;
+  className?: string;
+}) {
+  const label = closedHoldLabel(openedAt, closedAt);
+  if (!label) return null;
+  return (
+    <span
+      title="Tutma süresi · Holding duration"
+      aria-label={`Tutma süresi · Holding duration: ${label}`}
+      className={`tabular-nums text-desk-muted ${className}`}
+    >
+      ⏱ {label}
+    </span>
+  );
+}
+
 /* ---------- SL/TP quick presets (input-only; user still presses Save) ---------- */
 
 function symbolPipSize(symbol: string): number {
@@ -1214,6 +1247,7 @@ function ClosedCard({
           </div>
           <div className="mt-1 flex items-center gap-1.5 text-[10px] text-desk-muted">
             <span>{fmtDateTime(p.openedAt)}</span>
+            <ClosedHoldTime openedAt={p.openedAt} closedAt={p.closedAt} className="rounded-[5px] bg-desk-bg/60 px-1 py-px text-[9.5px]" />
             <CopyTicket id={p.id} />
           </div>
         </div>
@@ -1557,10 +1591,11 @@ export default function BottomPanels({
     } else if (tab === "closed") {
       downloadCsv(
         `7fx-closed-${stamp}.csv`,
-        ["id", "symbol", "side", "volume", "openPrice", "closePrice", "closeProfit", "stopLoss", "takeProfit", "openedAt", "closedAt"],
+        ["id", "symbol", "side", "volume", "openPrice", "closePrice", "closeProfit", "stopLoss", "takeProfit", "openedAt", "closedAt", "holdDuration"],
         sortedClosed.map((p) => [
           p.id, p.symbol, p.side, p.volume, p.openPrice, p.closePrice ?? p.currentPrice,
           p.closeProfit ?? p.profit, p.stopLoss, p.takeProfit, p.openedAt, p.closedAt ?? "",
+          closedHoldLabel(p.openedAt, p.closedAt),
         ])
       );
     } else {
@@ -2251,7 +2286,8 @@ export default function BottomPanels({
                     <div className="opacity-90"><CopyTicket id={p.id} variant="table" /></div>
                   </td>
                   <td className="whitespace-nowrap px-2 py-1.5 text-desk-muted">
-                    {fmtDateTime(p.openedAt)}
+                    <div>{fmtDateTime(p.openedAt)}</div>
+                    <ClosedHoldTime openedAt={p.openedAt} closedAt={p.closedAt} className="text-[9.5px] opacity-80" />
                   </td>
                   <td
                     className={`px-2 py-1.5 font-semibold ${
