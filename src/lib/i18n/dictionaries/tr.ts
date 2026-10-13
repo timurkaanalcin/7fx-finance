@@ -255,6 +255,7 @@ export const tr: Dict = {
   "docs.back": 'Geri',
   "docs.general": 'Genel',
   "crm.nav.evrak": 'Evrak Ekle',
+  "crm.nav.uyelikler": 'Üyelikler',
   "profile.support.holdToView": 'Görüntülemek için basılı tutun',
   "profile.support.hint": 'Mesajlarınız destek ekibimize iletilir.',
   "profile.support.empty": 'Henüz mesaj yok. Sorunuzu aşağıya yazın.',

@@ -646,3 +646,21 @@ model CustomerDocument {
 
   @@index([userId, createdAt])
 }
+
+/// AI assistant membership (üyelik) tied to a user's 16-digit Hesap Kimliği. Additive.
+model AiMembership {
+  id          String    @id @default(cuid())
+  userId      String
+  plan        String    @db.VarChar(32) // MONTHLY | QUARTERLY | YEARLY
+  status      String    @default("PENDING") @db.VarChar(16) // PENDING | ACTIVE | CANCELLED | EXPIRED
+  priceUsd    Float     @default(0)
+  expiresAt   DateTime?
+  activatedAt DateTime?
+  activatedBy String?   @db.VarChar(64)
+  note        String?   @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}

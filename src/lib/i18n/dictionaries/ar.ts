@@ -255,6 +255,7 @@ export const ar: Dict = {
   "docs.back": 'رجوع',
   "docs.general": 'عام',
   "crm.nav.evrak": 'إضافة مستند',
+  "crm.nav.uyelikler": 'العضويات',
   "profile.support.holdToView": 'اضغط مع الاستمرار للعرض',
   "profile.support.hint": "تُرسل رسائلك إلى فريق الدعم لدينا.",
   "profile.support.empty": 'لا رسائل بعد. اكتب سؤالك أدناه.',

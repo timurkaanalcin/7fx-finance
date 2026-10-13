@@ -76,7 +76,7 @@ const STATUS_LABEL: Record<string, string> = {
 
 export default function ProfileePage() {
   const router = useRouter();
-  const { t, setLocale } = useI18n();
+  const { t, setLocale, locale } = useI18n();
   const [profile, setProfilee] = useState<Profilee | null>(null);
   const [phone, setPhone] = useState("");
   const [language, setLanguage] = useState("en");
@@ -278,6 +278,16 @@ export default function ProfileePage() {
         <div id="destek" className="mb-4 scroll-mt-20">
           <LiveSupportPanel />
         </div>
+        <Link
+          href="/assistant"
+          className="mb-4 flex min-h-[56px] items-center justify-between rounded-xl border border-[#c9a54a]/50 bg-[#0a0a0a] px-4 py-3 no-underline"
+        >
+          <span>
+            <span className="block text-sm font-semibold text-slate-100">7FX AI</span>
+            <span className="block text-xs text-slate-500">{({tr:"AI asistan · Üyelik",en:"AI assistant · Membership",ru:"AI ассистент · Подписка",ar:"المساعد الذكي · العضوية",de:"KI-Assistent · Mitgliedschaft"} as Record<string,string>)[locale] ?? "AI"}</span>
+          </span>
+          <span className="text-[#c9a54a]" aria-hidden>›</span>
+        </Link>
         <Link
           href="/documents"
           className="mb-4 flex min-h-[56px] items-center justify-between rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] px-4 py-3 no-underline"

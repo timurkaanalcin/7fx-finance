@@ -255,6 +255,7 @@ export const ru: Dict = {
   "docs.back": 'Назад',
   "docs.general": 'Общий',
   "crm.nav.evrak": 'Добавить документ',
+  "crm.nav.uyelikler": 'Подписки',
   "profile.support.holdToView": 'Нажмите и удерживайте для просмотра',
   "profile.support.hint": "Ваши сообщения передаются нашей службе поддержки.",
   "profile.support.empty": 'Пока нет сообщений. Напишите вопрос ниже.',

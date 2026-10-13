@@ -255,6 +255,7 @@ export const en: Dict = {
   "docs.back": 'Back',
   "docs.general": 'General',
   "crm.nav.evrak": 'Add document',
+  "crm.nav.uyelikler": 'Memberships',
   "profile.support.holdToView": 'Press and hold to view',
   "profile.support.hint": "Your messages are delivered to our support team.",
   "profile.support.empty": 'No messages yet. Write your question below.',

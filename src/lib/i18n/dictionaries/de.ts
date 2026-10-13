@@ -255,6 +255,7 @@ export const de: Dict = {
   "docs.back": 'Zurück',
   "docs.general": 'Allgemein',
   "crm.nav.evrak": 'Dokument hinzufügen',
+  "crm.nav.uyelikler": 'Mitgliedschaften',
   "profile.support.holdToView": 'Zum Anzeigen gedrückt halten',
   "profile.support.hint": "Ihre Nachrichten werden an unser Support-Team übermittelt.",
   "profile.support.empty": 'Noch keine Nachrichten. Schreiben Sie unten Ihre Frage.',

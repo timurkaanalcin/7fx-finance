@@ -142,7 +142,9 @@ export function middleware(req: NextRequest) {
       pathname === "/izcrm" ||
       pathname.startsWith("/izcrm/") ||
       pathname.startsWith("/profile") ||
-      pathname.startsWith("/documents")) &&
+      pathname.startsWith("/documents") ||
+      pathname.startsWith("/assistant") ||
+      pathname.startsWith("/membership")) &&
     !token
   ) {
     return applyHeaders(NextResponse.redirect(new URL("/login", req.url)));
