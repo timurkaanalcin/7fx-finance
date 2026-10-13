@@ -11,6 +11,7 @@ import SymbolCatalogSync from "@/components/trading/SymbolCatalogSync";
 import { useI18n } from "@/lib/i18n/context";
 import CrmSecurityShell from "@/components/crm/CrmSecurityShell";
 import BrandLoader from "@/components/ui/BrandLoader";
+import CrmCommandPalette from "@/components/crm/CrmCommandPalette";
 
 function AdminChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -164,6 +165,16 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
             ))}
           </div>
           <div className="ml-auto flex items-center gap-2 text-[11px] text-neutral-500">
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new Event("fx-crm-palette"))}
+              className="flex items-center gap-1.5 rounded border border-black/10 px-2 py-1 text-neutral-500 hover:bg-neutral-100 hover:text-black"
+              title={`${t("crm.palette.title")} (Ctrl/⌘ + K)`}
+            >
+              <span aria-hidden>⌕</span>
+              <span className="hidden sm:inline">{t("crm.palette.search")}</span>
+              <kbd className="hidden rounded bg-neutral-100 px-1 text-[9px] text-neutral-500 lg:inline">⌘K</kbd>
+            </button>
             <NotificationBell />
             <LanguageSwitcher compact tone="crm" />
             <span className="hidden sm:inline">{name}{readOnly ? (
@@ -187,6 +198,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
           </div>
         </header>
         <main className="flex-1 overflow-auto bg-white p-3 md:p-4">{children}</main>
+        <CrmCommandPalette readOnly={readOnly} />
       </div>
     </div>
     </CrmSecurityShell>

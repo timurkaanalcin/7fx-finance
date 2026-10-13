@@ -838,6 +838,16 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.import.assignModel", "Rule-based (automatic): every imported lead gets the Desk and Assignee you set below. No manual per-row assignment during upload. Change desk/assignee later on the trader card.", "Kural tabanlı (otomatik): içe aktarılan her lead, aşağıdaki Masa ve Atanan değerlerini alır. Yüklemede satır satır manuel atama yok. Sonra trader kartından değiştirebilirsiniz.", "Правило (авто): каждый импортированный лид получает Desk и Assignee ниже. Без ручного назначения по строкам. Потом можно изменить в карточке.", "Regelbasiert (auto): Jeder importierte Lead erhält Desk und Assignee unten. Keine manuelle Zeilen-Zuweisung. Später in der Trader-Karte änderbar.", "قائم على قواعد (تلقائي): كل عميل مستورد يأخذ المكتب والمُعيَّن أدناه. لا تعيين يدوي لكل صف. يمكن التغيير لاحقاً من بطاقة المتداول."],
   ["crm.import.assignee", "Assignee (worker)", "Atanan (çalışan)", "Исполнитель", "Zuständig (Worker)", "المُعيَّن (موظف)"],
   ["crm.import.assigneePh", "e.g. worker name", "örn. çalışan adı", "напр. имя сотрудника", "z. B. Worker-Name", "مثال: اسم الموظف"],
+  ["crm.palette.title", "Quick jump", "Hızlı geçiş", "Быстрый переход", "Schnellsprung", "انتقال سريع"],
+  ["crm.palette.ph", "Search pages or customers (name, ID, phone)…", "Sayfa veya müşteri ara (ad, ID, telefon)…", "Поиск страниц или клиентов (имя, ID, телефон)…", "Seiten oder Kunden suchen (Name, ID, Telefon)…", "ابحث عن صفحة أو عميل (الاسم، المعرّف، الهاتف)…"],
+  ["crm.palette.phPages", "Search pages…", "Sayfa ara…", "Поиск страниц…", "Seiten suchen…", "ابحث عن صفحة…"],
+  ["crm.palette.empty", "No results", "Sonuç yok", "Ничего не найдено", "Keine Ergebnisse", "لا نتائج"],
+  ["crm.palette.clients", "Customers", "Müşteriler", "Клиенты", "Kunden", "العملاء"],
+  ["crm.palette.pages", "Pages", "Sayfalar", "Страницы", "Seiten", "الصفحات"],
+  ["crm.palette.recentAndPages", "Recent & pages", "Son kullanılanlar ve sayfalar", "Недавние и страницы", "Zuletzt & Seiten", "الأخيرة والصفحات"],
+  ["crm.palette.move", "move", "gez", "выбор", "bewegen", "تنقّل"],
+  ["crm.palette.open", "open", "aç", "открыть", "öffnen", "فتح"],
+  ["crm.palette.search", "Search", "Ara", "Поиск", "Suche", "بحث"],
 ];
 
 function pack(index: 1|2|3|4|5): Dict {
