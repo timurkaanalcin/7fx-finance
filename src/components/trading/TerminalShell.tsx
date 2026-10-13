@@ -345,12 +345,27 @@ export default function TerminalShell() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  async function onClosePosition(id: string) {
+  async function onClosePosition(id: string, volume?: number) {
+    const body: { id: string; volume?: number } = { id };
+    if (volume != null && Number.isFinite(volume)) body.volume = volume;
     await fetch("/api/positions/close", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
+      body: JSON.stringify(body),
+    });
+    await refreshAll();
+  }
+
+  async function onModifySlTp(
+    id: string,
+    levels: { stopLoss: number | null; takeProfit: number | null }
+  ) {
+    await fetch("/api/positions/modify", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, ...levels }),
     });
     await refreshAll();
   }
@@ -521,6 +536,7 @@ export default function TerminalShell() {
                 pendingOrders={pendingOrders}
                 onClosePosition={onClosePosition}
                 onClosePositions={onClosePositions}
+                onModifySlTp={onModifySlTp}
                 onCancelOrder={onCancelOrder}
                 onCancelOrders={onCancelOrders}
                 onSelectSymbol={setSymbol}
@@ -565,6 +581,7 @@ export default function TerminalShell() {
                 pendingOrders={pendingOrders}
                 onClosePosition={onClosePosition}
                 onClosePositions={onClosePositions}
+                onModifySlTp={onModifySlTp}
                 onCancelOrder={onCancelOrder}
                 onCancelOrders={onCancelOrders}
                 onSelectSymbol={setSymbol}

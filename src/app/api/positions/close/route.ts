@@ -20,7 +20,16 @@ export async function POST(req: Request) {
   }
   try {
     const body = await req.json();
-    const account = await closePosition(user.id, String(body.id));
+    const rawVol = body.volume;
+    let volume: number | undefined;
+    if (rawVol != null && rawVol !== "") {
+      const n = Number(rawVol);
+      if (!Number.isFinite(n) || n <= 0) {
+        return NextResponse.json({ error: "Invalid volume" }, { status: 400 });
+      }
+      volume = n;
+    }
+    const account = await closePosition(user.id, String(body.id), volume);
     return NextResponse.json({ ok: true, account });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Close error";

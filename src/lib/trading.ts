@@ -236,7 +236,29 @@ export async function placeOrder(input: {
   });
 }
 
-export async function closePosition(userId: string, positionId: string) {
+function assertVolumeStep(volume: number, minVolume: number, volumeStep: number | null) {
+  if (!(volume > 0)) throw new Error("Invalid volume");
+  if (volume < minVolume) {
+    throw new Error(`Volume must be at least ${minVolume}`);
+  }
+  if (volumeStep && volumeStep > 0) {
+    const base = minVolume > 0 ? minVolume : 0;
+    const steps = (volume - base) / volumeStep;
+    if (Math.abs(steps - Math.round(steps)) > 1e-6) {
+      throw new Error(`Volume step is ${volumeStep}`);
+    }
+  }
+}
+
+/**
+ * Close an open position. Optional `volume` closes only that slice (partial close).
+ * Omitting volume or passing >= position.volume performs a full close.
+ */
+export async function closePosition(
+  userId: string,
+  positionId: string,
+  volume?: number
+) {
   await ensureTicked();
   const pos = await prisma.position.findFirst({
     where: { id: positionId, userId, status: "OPEN" },
@@ -249,6 +271,88 @@ export async function closePosition(userId: string, positionId: string) {
   const closePrice = pos.side === "BUY" ? tick.bid : tick.ask;
   const rates = await getEffectiveRates(pos.symbol);
   if (!rates) throw new Error("No symbol settings");
+
+  const wantPartial =
+    volume != null && Number.isFinite(volume) && volume > 0 && volume < pos.volume;
+
+  if (wantPartial) {
+    const closedVol = volume as number;
+    assertVolumeStep(closedVol, rates.minVolume, rates.volumeStep);
+    const remaining = Math.round((pos.volume - closedVol) * 1e8) / 1e8;
+    if (remaining > 0) {
+      assertVolumeStep(remaining, rates.minVolume, rates.volumeStep);
+    }
+
+    const profit = calcProfitWithRates(
+      rates,
+      pos.side as "BUY" | "SELL",
+      closedVol,
+      pos.openPrice,
+      closePrice
+    );
+
+    const account = await prisma.account.findUnique({ where: { userId } });
+    if (!account) throw new Error("Account not found");
+
+    // History row for the closed slice (keeps parent OPEN with reduced volume)
+    await prisma.position.create({
+      data: {
+        userId,
+        symbol: pos.symbol,
+        chartSymbol: pos.chartSymbol,
+        side: pos.side,
+        volume: closedVol,
+        openPrice: pos.openPrice,
+        currentPrice: closePrice,
+        stopLoss: pos.stopLoss,
+        takeProfit: pos.takeProfit,
+        profit,
+        margin: 0,
+        status: "CLOSED",
+        openedAt: pos.openedAt,
+        closedAt: new Date(),
+        closePrice,
+        closeProfit: profit,
+      },
+    });
+
+    const remainMargin = calcMarginWithRates(
+      rates,
+      remaining,
+      pos.openPrice,
+      account.leverage
+    );
+    const remainProfit = calcProfitWithRates(
+      rates,
+      pos.side as "BUY" | "SELL",
+      remaining,
+      pos.openPrice,
+      closePrice
+    );
+
+    await prisma.position.update({
+      where: { id: pos.id },
+      data: {
+        volume: remaining,
+        margin: remainMargin,
+        currentPrice: closePrice,
+        profit: remainProfit,
+      },
+    });
+
+    await prisma.account.update({
+      where: { userId },
+      data: { balance: account.balance + profit },
+    });
+
+    return refreshAccountMetrics(userId);
+  }
+
+  // Full close (volume omitted, invalid, or >= position.volume)
+  if (volume != null && Number.isFinite(volume) && volume > 0 && volume > pos.volume) {
+    throw new Error("Volume exceeds position size");
+  }
+
   const profit = calcProfitWithRates(
     rates,
     pos.side as "BUY" | "SELL",
@@ -278,6 +382,79 @@ export async function closePosition(userId: string, positionId: string) {
   }
 
   return refreshAccountMetrics(userId);
+}
+
+/**
+ * Update stop loss / take profit on an open position without closing it.
+ * Pass null to clear a level; omit a field to leave it unchanged.
+ */
+export async function modifyPositionSlTp(
+  userId: string,
+  positionId: string,
+  levels: { stopLoss?: number | null; takeProfit?: number | null }
+) {
+  await ensureTicked();
+  const pos = await prisma.position.findFirst({
+    where: { id: positionId, userId, status: "OPEN" },
+  });
+  if (!pos) throw new Error("Position not found");
+
+  const tick = await getPrice(priceFeedSymbol(pos));
+  const current =
+    tick != null
+      ? pos.side === "BUY"
+        ? tick.bid
+        : tick.ask
+      : pos.currentPrice || pos.openPrice;
+  const ref = Number.isFinite(current) && current > 0 ? current : pos.openPrice;
+  const side = pos.side as "BUY" | "SELL";
+
+  const data: { stopLoss?: number | null; takeProfit?: number | null } = {};
+
+  if ("stopLoss" in levels) {
+    const sl = levels.stopLoss;
+    if (sl == null) {
+      data.stopLoss = null;
+    } else if (!Number.isFinite(sl) || sl <= 0) {
+      throw new Error("Invalid stop loss");
+    } else {
+      if (side === "BUY" && sl >= ref) {
+        throw new Error("Stop loss must be below current price for BUY");
+      }
+      if (side === "SELL" && sl <= ref) {
+        throw new Error("Stop loss must be above current price for SELL");
+      }
+      data.stopLoss = sl;
+    }
+  }
+
+  if ("takeProfit" in levels) {
+    const tp = levels.takeProfit;
+    if (tp == null) {
+      data.takeProfit = null;
+    } else if (!Number.isFinite(tp) || tp <= 0) {
+      throw new Error("Invalid take profit");
+    } else {
+      if (side === "BUY" && tp <= ref) {
+        throw new Error("Take profit must be above current price for BUY");
+      }
+      if (side === "SELL" && tp >= ref) {
+        throw new Error("Take profit must be below current price for SELL");
+      }
+      data.takeProfit = tp;
+    }
+  }
+
+  if (Object.keys(data).length === 0) {
+    throw new Error("Nothing to update");
+  }
+
+  await prisma.position.update({
+    where: { id: pos.id },
+    data,
+  });
+
+  return prisma.position.findUnique({ where: { id: pos.id } });
 }
 
 export async function checkSlTp(userId: string) {

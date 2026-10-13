@@ -158,9 +158,14 @@ type Props = {
   openPositions: PositionRow[];
   closedPositions: PositionRow[];
   pendingOrders: OrderRow[];
-  onClosePosition: (id: string) => void;
+  onClosePosition: (id: string, volume?: number) => void;
   /** Close several open positions (one refresh at end). */
   onClosePositions?: (ids: string[]) => Promise<void> | void;
+  /** Edit SL/TP on an open position without closing. */
+  onModifySlTp?: (
+    id: string,
+    levels: { stopLoss: number | null; takeProfit: number | null }
+  ) => void | Promise<void>;
   onCancelOrder: (id: string) => void;
   /** Cancel several pending orders (one refresh at end). */
   onCancelOrders?: (ids: string[]) => Promise<void> | void;
@@ -194,18 +199,89 @@ function SummaryStat({
   );
 }
 
+
+const DEFAULT_VOLUME_STEP = 0.01;
+
+function snapLot(vol: number, step = DEFAULT_VOLUME_STEP): number {
+  if (!Number.isFinite(vol) || vol <= 0) return step;
+  if (!(step > 0)) return Math.round(vol * 100) / 100;
+  const steps = Math.round(vol / step);
+  return Math.max(step, Math.round(steps * step * 1e8) / 1e8);
+}
+
+function lotPreset(full: number, pct: number, step = DEFAULT_VOLUME_STEP): number {
+  if (pct >= 100) return snapLot(full, step);
+  return snapLot(full * (pct / 100), step);
+}
+
 function OpenCard({
   p,
   onClose,
+  onModifySlTp,
   onSelectSymbol,
 }: {
   p: PositionRow;
   onSelectSymbol?: (symbol: string) => void;
-  onClose: (id: string) => void;
+  onClose: (id: string, volume?: number) => void;
+  onModifySlTp?: (
+    id: string,
+    levels: { stopLoss: number | null; takeProfit: number | null }
+  ) => void | Promise<void>;
 }) {
+  const [closeOpen, setCloseOpen] = useState(false);
+  const [editSlTp, setEditSlTp] = useState(false);
+  const [closeVol, setCloseVol] = useState(String(p.volume));
+  const [slInput, setSlInput] = useState(p.stopLoss != null ? String(p.stopLoss) : "");
+  const [tpInput, setTpInput] = useState(p.takeProfit != null ? String(p.takeProfit) : "");
+  const [busy, setBusy] = useState(false);
   const pip =
     calcPipDistance(p.symbol, p.openPrice, p.currentPrice) *
     (p.side === "BUY" ? 1 : -1);
+
+  const openClosePanel = () => {
+    setEditSlTp(false);
+    setCloseVol(String(snapLot(p.volume)));
+    setCloseOpen(true);
+  };
+
+  const openEditPanel = () => {
+    setCloseOpen(false);
+    setSlInput(p.stopLoss != null ? String(p.stopLoss) : "");
+    setTpInput(p.takeProfit != null ? String(p.takeProfit) : "");
+    setEditSlTp(true);
+  };
+
+  const confirmClose = async () => {
+    const v = Number(closeVol);
+    if (!Number.isFinite(v) || v <= 0) return;
+    const vol = snapLot(Math.min(v, p.volume));
+    setBusy(true);
+    try {
+      if (vol >= p.volume - 1e-9) onClose(p.id);
+      else onClose(p.id, vol);
+      setCloseOpen(false);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const saveSlTp = async () => {
+    if (!onModifySlTp) return;
+    const slRaw = slInput.trim();
+    const tpRaw = tpInput.trim();
+    const stopLoss = slRaw === "" ? null : Number(slRaw);
+    const takeProfit = tpRaw === "" ? null : Number(tpRaw);
+    if (stopLoss != null && !Number.isFinite(stopLoss)) return;
+    if (takeProfit != null && !Number.isFinite(takeProfit)) return;
+    setBusy(true);
+    try {
+      await onModifySlTp(p.id, { stopLoss, takeProfit });
+      setEditSlTp(false);
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <div className="rounded-[14px] border border-desk-border/60 bg-desk-elev/40 p-3">
       <div className="flex items-start justify-between gap-2">
@@ -272,12 +348,284 @@ function OpenCard({
           </div>
         </div>
       </div>
+
+      {!closeOpen && !editSlTp && (
+        <div className="mt-2.5 flex gap-2">
+          <button
+            type="button"
+            onClick={openClosePanel}
+            className="flex-1 rounded-[10px] bg-desk-sell/90 py-2 text-[12px] font-bold text-white hover:bg-desk-sell"
+          >
+            Close / Kapat
+          </button>
+          {onModifySlTp && (
+            <button
+              type="button"
+              onClick={openEditPanel}
+              className="rounded-[10px] border border-desk-border/70 bg-desk-bg/50 px-3 py-2 text-[11px] font-semibold text-desk-text hover:bg-desk-hover"
+              title="Edit SL/TP"
+            >
+              SL/TP
+            </button>
+          )}
+        </div>
+      )}
+
+      {closeOpen && (
+        <div className="mt-2.5 rounded-[10px] border border-desk-border/60 bg-desk-bg/50 p-2.5">
+          <div className="text-[10px] font-medium uppercase tracking-wider text-desk-muted">
+            Volume · Kısmi kapat
+          </div>
+          <input
+            type="number"
+            step={DEFAULT_VOLUME_STEP}
+            min={DEFAULT_VOLUME_STEP}
+            max={p.volume}
+            value={closeVol}
+            onChange={(e) => setCloseVol(e.target.value)}
+            className="mt-1.5 w-full rounded-[8px] border border-desk-border/60 bg-desk-elev px-2 py-1.5 text-[12px] tabular-nums text-desk-text outline-none focus:border-desk-accent"
+          />
+          <div className="mt-1.5 flex flex-wrap gap-1">
+            {[25, 50, 75, 100].map((pct) => (
+              <button
+                key={pct}
+                type="button"
+                onClick={() => setCloseVol(String(lotPreset(p.volume, pct)))}
+                className="rounded-[6px] border border-desk-border/50 bg-desk-elev/60 px-2 py-0.5 text-[10px] font-semibold text-desk-muted hover:text-desk-text"
+              >
+                {pct}%
+              </button>
+            ))}
+          </div>
+          <div className="mt-2 flex gap-2">
+            <button
+              type="button"
+              disabled={busy}
+              onClick={confirmClose}
+              className="flex-1 rounded-[8px] bg-desk-sell/90 py-1.5 text-[11px] font-bold text-white hover:bg-desk-sell disabled:opacity-50"
+            >
+              Confirm
+            </button>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => setCloseOpen(false)}
+              className="rounded-[8px] border border-desk-border/60 px-3 py-1.5 text-[11px] font-semibold text-desk-muted hover:text-desk-text"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {editSlTp && (
+        <div className="mt-2.5 rounded-[10px] border border-desk-border/60 bg-desk-bg/50 p-2.5">
+          <div className="text-[10px] font-medium uppercase tracking-wider text-desk-muted">
+            Düzenle · Edit SL / TP
+          </div>
+          <div className="mt-1.5 grid grid-cols-2 gap-2">
+            <label className="block">
+              <span className="text-[9px] text-desk-muted">Stop Loss</span>
+              <input
+                type="number"
+                value={slInput}
+                onChange={(e) => setSlInput(e.target.value)}
+                placeholder="—"
+                className="mt-0.5 w-full rounded-[8px] border border-desk-border/60 bg-desk-elev px-2 py-1.5 text-[12px] tabular-nums text-desk-text outline-none focus:border-desk-accent"
+              />
+            </label>
+            <label className="block">
+              <span className="text-[9px] text-desk-muted">Take Profit</span>
+              <input
+                type="number"
+                value={tpInput}
+                onChange={(e) => setTpInput(e.target.value)}
+                placeholder="—"
+                className="mt-0.5 w-full rounded-[8px] border border-desk-border/60 bg-desk-elev px-2 py-1.5 text-[12px] tabular-nums text-desk-text outline-none focus:border-desk-accent"
+              />
+            </label>
+          </div>
+          <div className="mt-2 flex gap-2">
+            <button
+              type="button"
+              disabled={busy}
+              onClick={saveSlTp}
+              className="flex-1 rounded-[8px] bg-desk-accent py-1.5 text-[11px] font-bold text-desk-accent-ink hover:brightness-110 disabled:opacity-50"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => setEditSlTp(false)}
+              className="rounded-[8px] border border-desk-border/60 px-3 py-1.5 text-[11px] font-semibold text-desk-muted hover:text-desk-text"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+function OpenRowActions({
+  p,
+  onClose,
+  onModifySlTp,
+}: {
+  p: PositionRow;
+  onClose: (id: string, volume?: number) => void;
+  onModifySlTp?: (
+    id: string,
+    levels: { stopLoss: number | null; takeProfit: number | null }
+  ) => void | Promise<void>;
+}) {
+  const [mode, setMode] = useState<"idle" | "close" | "edit">("idle");
+  const [closeVol, setCloseVol] = useState(String(p.volume));
+  const [slInput, setSlInput] = useState(p.stopLoss != null ? String(p.stopLoss) : "");
+  const [tpInput, setTpInput] = useState(p.takeProfit != null ? String(p.takeProfit) : "");
+  const [busy, setBusy] = useState(false);
+
+  if (mode === "close") {
+    return (
+      <div className="min-w-[140px] rounded-[8px] border border-desk-border/60 bg-desk-elev/80 p-1.5 shadow-sm">
+        <input
+          type="number"
+          step={DEFAULT_VOLUME_STEP}
+          min={DEFAULT_VOLUME_STEP}
+          max={p.volume}
+          value={closeVol}
+          onChange={(e) => setCloseVol(e.target.value)}
+          className="w-full rounded-[6px] border border-desk-border/50 bg-desk-bg px-1.5 py-0.5 text-[10px] tabular-nums text-desk-text outline-none"
+        />
+        <div className="mt-1 flex flex-wrap gap-0.5">
+          {[25, 50, 75, 100].map((pct) => (
+            <button
+              key={pct}
+              type="button"
+              onClick={() => setCloseVol(String(lotPreset(p.volume, pct)))}
+              className="rounded px-1 text-[9px] font-semibold text-desk-muted hover:text-desk-text"
+            >
+              {pct}%
+            </button>
+          ))}
+        </div>
+        <div className="mt-1 flex gap-1">
+          <button
+            type="button"
+            disabled={busy}
+            onClick={async () => {
+              const v = Number(closeVol);
+              if (!Number.isFinite(v) || v <= 0) return;
+              const vol = snapLot(Math.min(v, p.volume));
+              setBusy(true);
+              try {
+                if (vol >= p.volume - 1e-9) onClose(p.id);
+                else onClose(p.id, vol);
+                setMode("idle");
+              } finally {
+                setBusy(false);
+              }
+            }}
+            className="flex-1 rounded-[6px] bg-desk-sell/85 px-1.5 py-0.5 text-[9px] font-bold text-white"
+          >
+            OK
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("idle")}
+            className="rounded-[6px] px-1.5 py-0.5 text-[9px] font-semibold text-desk-muted"
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (mode === "edit") {
+    return (
+      <div className="min-w-[160px] rounded-[8px] border border-desk-border/60 bg-desk-elev/80 p-1.5 shadow-sm">
+        <div className="grid grid-cols-2 gap-1">
+          <input
+            type="number"
+            value={slInput}
+            onChange={(e) => setSlInput(e.target.value)}
+            placeholder="SL"
+            className="w-full rounded-[6px] border border-desk-border/50 bg-desk-bg px-1.5 py-0.5 text-[10px] tabular-nums text-desk-text outline-none"
+          />
+          <input
+            type="number"
+            value={tpInput}
+            onChange={(e) => setTpInput(e.target.value)}
+            placeholder="TP"
+            className="w-full rounded-[6px] border border-desk-border/50 bg-desk-bg px-1.5 py-0.5 text-[10px] tabular-nums text-desk-text outline-none"
+          />
+        </div>
+        <div className="mt-1 flex gap-1">
+          <button
+            type="button"
+            disabled={busy || !onModifySlTp}
+            onClick={async () => {
+              if (!onModifySlTp) return;
+              const slRaw = slInput.trim();
+              const tpRaw = tpInput.trim();
+              const stopLoss = slRaw === "" ? null : Number(slRaw);
+              const takeProfit = tpRaw === "" ? null : Number(tpRaw);
+              if (stopLoss != null && !Number.isFinite(stopLoss)) return;
+              if (takeProfit != null && !Number.isFinite(takeProfit)) return;
+              setBusy(true);
+              try {
+                await onModifySlTp(p.id, { stopLoss, takeProfit });
+                setMode("idle");
+              } finally {
+                setBusy(false);
+              }
+            }}
+            className="flex-1 rounded-[6px] bg-desk-accent px-1.5 py-0.5 text-[9px] font-bold text-desk-accent-ink"
+          >
+            Save
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("idle")}
+            className="rounded-[6px] px-1.5 py-0.5 text-[9px] font-semibold text-desk-muted"
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-1">
       <button
-        onClick={() => onClose(p.id)}
-        className="mt-2.5 w-full rounded-[10px] bg-desk-sell/90 py-2 text-[12px] font-bold text-white hover:bg-desk-sell"
+        type="button"
+        onClick={() => {
+          setCloseVol(String(snapLot(p.volume)));
+          setMode("close");
+        }}
+        className="rounded-[7px] bg-desk-sell/85 px-2 py-0.5 text-[10px] font-semibold text-white hover:bg-desk-sell"
       >
-        Close Position
+        Close
       </button>
+      {onModifySlTp && (
+        <button
+          type="button"
+          onClick={() => {
+            setSlInput(p.stopLoss != null ? String(p.stopLoss) : "");
+            setTpInput(p.takeProfit != null ? String(p.takeProfit) : "");
+            setMode("edit");
+          }}
+          className="rounded-[7px] border border-desk-border/60 bg-desk-bg/40 px-1.5 py-0.5 text-[10px] font-semibold text-desk-muted hover:text-desk-text"
+          title="Düzenle SL/TP"
+        >
+          ✎
+        </button>
+      )}
     </div>
   );
 }
@@ -389,6 +737,7 @@ export default function BottomPanels({
   pendingOrders,
   onClosePosition,
   onClosePositions,
+  onModifySlTp,
   onCancelOrder,
   onCancelOrders,
   onSelectSymbol,
@@ -781,7 +1130,7 @@ export default function BottomPanels({
             )}
             {openPositions.length > 0 && filteredOpen.length === 0 && emptyFiltered}
             {filteredOpen.map((p) => (
-              <OpenCard key={p.id} p={p} onClose={onClosePosition} onSelectSymbol={onSelectSymbol} />
+              <OpenCard key={p.id} p={p} onClose={onClosePosition} onModifySlTp={onModifySlTp} onSelectSymbol={onSelectSymbol} />
             ))}
           </>
         )}
@@ -897,12 +1246,11 @@ export default function BottomPanels({
                       {fmtNum(p.profit, 2)}
                     </td>
                     <td className="px-2 py-1.5">
-                      <button
-                        onClick={() => onClosePosition(p.id)}
-                        className="rounded-[7px] bg-desk-sell/85 px-2 py-0.5 text-[10px] font-semibold text-white hover:bg-desk-sell"
-                      >
-                        Close
-                      </button>
+                      <OpenRowActions
+                        p={p}
+                        onClose={onClosePosition}
+                        onModifySlTp={onModifySlTp}
+                      />
                     </td>
                   </tr>
                 );
