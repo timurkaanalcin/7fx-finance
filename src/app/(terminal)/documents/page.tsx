@@ -84,11 +84,11 @@ export default function DocumentsPage() {
         ) : (
           <ul className="space-y-3">
             {(shown || []).map((d) => (
-              <li key={d.id}>
+              <li key={d.id} className="flex items-stretch gap-2">
                 <button
                   type="button"
                   onClick={() => openDoc(d.id)}
-                  className="flex min-h-[64px] w-full items-center gap-3 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] px-4 py-3 text-left"
+                  className="flex min-h-[64px] min-w-0 flex-1 items-center gap-3 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] px-4 py-3 text-left"
                 >
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#1f1f1f] text-[10px] font-bold uppercase tracking-wider text-slate-300">
                     {d.kind === "pdf" ? "PDF" : "IMG"}
@@ -108,6 +108,15 @@ export default function DocumentsPage() {
                   </span>
                   <span className="shrink-0 text-xs font-semibold text-slate-300">{t("docs.view")} ›</span>
                 </button>
+                <a
+                  href={`/api/documents/${d.id}/download`}
+                  download
+                  aria-label={({tr:"İndir",en:"Download",ru:"Скачать",ar:"تنزيل",de:"Herunterladen"} as Record<string,string>)[locale] ?? "İndir"}
+                  className="flex min-h-[64px] shrink-0 flex-col items-center justify-center rounded-xl border border-[#c9a54a]/50 bg-[#0a0a0a] px-3 text-xs font-semibold text-[#c9a54a] no-underline"
+                >
+                  <span aria-hidden className="text-base leading-none">⬇</span>
+                  <span className="mt-1">{({tr:"İndir",en:"Download",ru:"Скачать",ar:"تنزيل",de:"Herunterladen"} as Record<string,string>)[locale] ?? "İndir"}</span>
+                </a>
               </li>
             ))}
           </ul>
@@ -117,11 +126,13 @@ export default function DocumentsPage() {
         <ProtectedAttachmentViewer
           attId={open}
           apiBase="/api/documents"
+          downloadHref={`/api/documents/${open}/download`}
           onClose={() => setOpen(null)}
           labels={{
             loading: t("profile.support.attLoading"),
             failed: t("profile.support.attFailed"),
             close: t("profile.support.close"),
+            download: ({tr:"İndir",en:"Download",ru:"Скачать",ar:"تنزيل",de:"Herunterladen"} as Record<string,string>)[locale] ?? "İndir",
             hold: t("profile.support.holdToView"),
           }}
         />

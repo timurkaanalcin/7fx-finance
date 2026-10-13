@@ -12,11 +12,13 @@ export default function ProtectedAttachmentViewer({
   apiBase = "/api/support/attachments",
   onClose,
   labels,
+  downloadHref,
 }: {
   attId: string;
   apiBase?: string;
   onClose: () => void;
-  labels: { loading: string; failed: string; close: string; hold?: string };
+  labels: { loading: string; failed: string; close: string; hold?: string; download?: string };
+  downloadHref?: string;
 }) {
   const holder = useRef<HTMLDivElement>(null);
   const [err, setErr] = useState("");
@@ -86,6 +88,7 @@ export default function ProtectedAttachmentViewer({
         <button type="button" aria-label="Zoom out" className={btn} onClick={() => setZoom((z) => Math.max(0.5, +(z - 0.25).toFixed(2)))}>−</button>
         <span className="w-12 text-center text-xs text-white/70">{Math.round(zoom * 100)}%</span>
         <button type="button" aria-label="Zoom in" className={btn} onClick={() => setZoom((z) => Math.min(4, +(z + 0.25).toFixed(2)))}>+</button>
+        {downloadHref && <a href={downloadHref} download className={`${btn} inline-flex items-center px-4 no-underline`}>⬇ {labels.download ?? "Download"}</a>}
         <button type="button" onClick={onClose} className={`${btn} ml-2 px-4`}>{labels.close}</button>
       </div>
       <div className="flex-1 overflow-auto overscroll-contain px-2 pb-4" style={{ touchAction: "pan-x pan-y pinch-zoom", WebkitOverflowScrolling: "touch" }}>
