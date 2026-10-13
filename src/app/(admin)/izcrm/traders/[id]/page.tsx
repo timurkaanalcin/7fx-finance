@@ -161,7 +161,7 @@ async function jsonCall(url: string, method: string, body: unknown): Promise<Res
   }
 }
 
-function TraderAccessTools({ userId, traderName, readOnly = false }: { userId: string; traderName: string; readOnly?: boolean }) {
+function TraderAccessTools({ userId, traderName, readOnly = false, isStaff = false }: { userId: string; traderName: string; readOnly?: boolean; isStaff?: boolean }) {
   const { i18n } = useCrmLabels();
   const [busy, setBusy] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
@@ -336,6 +336,11 @@ function TraderAccessTools({ userId, traderName, readOnly = false }: { userId: s
         >
           {i18n("crm.ui.copy")}
         </button>
+      )}
+      {isStaff && !err && (
+        <span className="text-[10px] font-medium text-amber-700">
+          Bu hesap personel (ADMIN) rolünde — terminal/otomatik giriş için Profil → Rol: Trader olmalı.
+        </span>
       )}
       {msg && <span className="text-[10px] text-emerald-600">{msg}</span>}
       {err && <span className="text-[10px] text-red-500">{err}</span>}
@@ -1430,7 +1435,7 @@ export default function AdminUserDetailPage() {
         <span className="rounded bg-neutral-100 px-2 py-0.5 text-[10px] tabular-nums text-neutral-700">
           {i18n("crm.ui.balance")}: {fmtCrmMoney(user.balance, 2)} {user.currency}
         </span>
-        <TraderAccessTools readOnly={crmReadOnly} userId={user.id} traderName={user.name} />
+        <TraderAccessTools readOnly={crmReadOnly} userId={user.id} traderName={user.name} isStaff={user.role === "ADMIN"} />
       </div>
 
       <div className="mb-4 flex flex-wrap gap-1 border-b border-[#e5e5e5] pb-2">

@@ -17,8 +17,12 @@ export async function POST(req: Request, { params }: Ctx) {
 
   const userId = String(params.id || "").trim();
   const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (!user || user.role === "ADMIN") {
+  if (!user) {
     return NextResponse.json({ error: "Trader not found" }, { status: 404 });
+  }
+  if (user.role === "ADMIN") {
+    // Staff accounts are never impersonated / auto-logged-in (unchanged protection); explain why.
+    return NextResponse.json({ error: "Bu hesap personel (ADMIN) rolünde; otomatik giriş/terminal sadece müşteri (TRADER) hesaplarında çalışır. Profil → Rol alanını Trader yapın.", code: "TARGET_IS_STAFF" }, { status: 409 });
   }
 
   const body = await req.json().catch(() => ({}));
