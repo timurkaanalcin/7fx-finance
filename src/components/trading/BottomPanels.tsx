@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useCallback, type ReactNode, type ReactElement } from "react";
+import { useEffect, useMemo, useState, useCallback, type ReactNode, type ReactElement, type MouseEvent as ReactMouseEvent } from "react";
 import { calcPipDistance, formatPrice, getSymbol } from "@/lib/symbols";
 import { fmtDateTime, fmtNum } from "@/lib/format";
 import type { OrderRow, PositionRow } from "./types";
@@ -84,6 +84,90 @@ function matchesSymbol(
 /** Short ticket shown in UI (last 8 chars of id, upper-case) — searchable as displayed. */
 function ticketLabel(id: string): string {
   return `#${String(id).slice(-8).toUpperCase()}`;
+}
+
+/**
+ * Click-to-copy ticket chip: shows the short ticket, copies the FULL id.
+ * Uses a real <button> (Enter/Space for free) and stops propagation so row/card actions don't fire.
+ */
+function CopyTicket({
+  id,
+  variant = "card",
+}: {
+  id: string;
+  variant?: "card" | "table";
+}) {
+  const [copied, setCopied] = useState(false);
+  useEffect(() => {
+    if (!copied) return;
+    const t = window.setTimeout(() => setCopied(false), 1200);
+    return () => window.clearTimeout(t);
+  }, [copied]);
+  const onClick = useCallback(
+    async (e: ReactMouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      e.preventDefault();
+      const full = String(id);
+      let ok = false;
+      try {
+        if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(full);
+          ok = true;
+        }
+      } catch {
+        ok = false;
+      }
+      if (!ok) {
+        try {
+          const ta = document.createElement("textarea");
+          ta.value = full;
+          ta.setAttribute("readonly", "");
+          ta.style.position = "fixed";
+          ta.style.opacity = "0";
+          document.body.appendChild(ta);
+          ta.select();
+          ok = document.execCommand("copy");
+          document.body.removeChild(ta);
+        } catch {
+          ok = false;
+        }
+      }
+      if (ok) setCopied(true);
+    },
+    [id]
+  );
+  const title = copied ? "Kopyalandı · Copied" : `Bileti kopyala · Copy ticket (${id})`;
+  const sizeCls =
+    variant === "table"
+      ? "text-[9px] px-0.5 -mx-0.5 py-px"
+      : "text-[9.5px] min-h-[28px] px-1.5 -mx-1 py-1 touch-manipulation";
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      onMouseDown={(e) => e.stopPropagation()}
+      onTouchStart={(e) => e.stopPropagation()}
+      title={title}
+      aria-label={title}
+      className={`inline-flex items-center gap-0.5 rounded-[5px] font-mono transition-colors hover:bg-desk-hover/70 hover:text-desk-text focus:outline-none focus-visible:ring-1 focus-visible:ring-desk-accent/60 ${sizeCls} ${
+        copied ? "text-desk-buy opacity-100" : "opacity-80"
+      }`}
+    >
+      {copied ? (
+        <>
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" aria-hidden>
+            <path d="M5 12l5 5L20 7" />
+          </svg>
+          <span>Kopyalandı</span>
+        </>
+      ) : (
+        <span>{ticketLabel(id)}</span>
+      )}
+      <span aria-live="polite" className="sr-only">
+        {copied ? "Kopyalandı · Copied" : ""}
+      </span>
+    </button>
+  );
 }
 
 /**
@@ -637,9 +721,7 @@ function OpenCard({
           </div>
           <div className="mt-1 flex items-center gap-1.5 text-[10px] text-desk-muted">
             <span>{fmtDateTime(p.openedAt)}</span>
-            <span className="font-mono text-[9.5px] opacity-80" title={`Ticket ${p.id}`}>
-              {ticketLabel(p.id)}
-            </span>
+            <CopyTicket id={p.id} />
             <HoldTime openedAt={p.openedAt} className="rounded-[5px] bg-desk-bg/60 px-1 py-px text-[9.5px]" />
           </div>
         </div>
@@ -989,9 +1071,7 @@ function ClosedCard({ p }: { p: PositionRow }) {
           </div>
           <div className="mt-1 flex items-center gap-1.5 text-[10px] text-desk-muted">
             <span>{fmtDateTime(p.openedAt)}</span>
-            <span className="font-mono text-[9.5px] opacity-80" title={`Ticket ${p.id}`}>
-              {ticketLabel(p.id)}
-            </span>
+            <CopyTicket id={p.id} />
           </div>
         </div>
         <div className={`text-[14px] font-bold tabular-nums ${moneyCls(profit)}`}>
@@ -1046,9 +1126,7 @@ function PendingCard({
           </div>
           <div className="mt-1 flex items-center gap-1.5 text-[10px] text-desk-muted">
             <span>{fmtDateTime(o.createdAt)}</span>
-            <span className="font-mono text-[9.5px] opacity-80" title={`Ticket ${o.id}`}>
-              {ticketLabel(o.id)}
-            </span>
+            <CopyTicket id={o.id} />
           </div>
         </div>
         <div className="text-right text-[12px] font-semibold tabular-nums text-desk-text">
@@ -1642,7 +1720,7 @@ export default function BottomPanels({
                   >
                     <td className="px-2 py-1.5 text-desk-muted" title={`Ticket ${p.id}`}>
                       <div>{i + 1}</div>
-                      <div className="font-mono text-[9px] opacity-70">{ticketLabel(p.id)}</div>
+                      <div className="opacity-90"><CopyTicket id={p.id} variant="table" /></div>
                     </td>
                     <td className="whitespace-nowrap px-2 py-1.5 text-desk-muted">
                       <div>{fmtDateTime(p.openedAt)}</div>
@@ -1734,7 +1812,7 @@ export default function BottomPanels({
                 >
                   <td className="px-2 py-1.5 text-desk-muted" title={`Ticket ${p.id}`}>
                     <div>{i + 1}</div>
-                    <div className="font-mono text-[9px] opacity-70">{ticketLabel(p.id)}</div>
+                    <div className="opacity-90"><CopyTicket id={p.id} variant="table" /></div>
                   </td>
                   <td className="whitespace-nowrap px-2 py-1.5 text-desk-muted">
                     {fmtDateTime(p.openedAt)}
@@ -1818,7 +1896,7 @@ export default function BottomPanels({
                 >
                   <td className="px-2 py-1.5 text-desk-muted" title={`Ticket ${o.id}`}>
                     <div>{i + 1}</div>
-                    <div className="font-mono text-[9px] opacity-70">{ticketLabel(o.id)}</div>
+                    <div className="opacity-90"><CopyTicket id={o.id} variant="table" /></div>
                   </td>
                   <td className="whitespace-nowrap px-2 py-1.5 text-desk-muted">
                     {fmtDateTime(o.createdAt)}

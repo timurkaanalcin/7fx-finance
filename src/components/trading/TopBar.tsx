@@ -49,6 +49,55 @@ function Metric({
   );
 }
 
+/**
+ * Compact margin-usage indicator (desktop only). Fill = used margin / equity;
+ * colour follows margin level thresholds (>=200 healthy, 100–200 caution, <100 danger).
+ */
+function MarginUsageBar({ account }: { account: AccountMetrics | null }) {
+  const a = account;
+  const margin = a?.margin ?? 0;
+  const equity = a?.equity ?? 0;
+  const freeMargin = a?.freeMargin ?? 0;
+  const ml = a?.marginLevel ?? 0;
+  const denom = equity > 0 ? equity : margin + freeMargin;
+  const rawPct = denom > 0 ? (margin / denom) * 100 : 0;
+  const usedPct = Number.isFinite(rawPct) ? Math.max(0, Math.min(100, rawPct)) : 0;
+  const level: "healthy" | "caution" | "danger" =
+    ml > 0 && ml < 100 ? "danger" : ml >= 100 && ml < 200 ? "caution" : "healthy";
+  const fillCls =
+    level === "danger" ? "bg-desk-sell" : level === "caution" ? "bg-desk-warn" : "bg-desk-buy";
+  const textCls =
+    level === "danger" ? "text-desk-sell" : level === "caution" ? "text-desk-warn" : "text-desk-text";
+  const cur = a?.currency;
+  const label = a
+    ? `Marj kullanımı / Margin usage: ${usedPct.toFixed(1)}% · Marj / Margin ${fmtMoney(margin, 2, cur)} · Serbest / Free ${fmtMoney(freeMargin, 2, cur)} · Marj seviyesi / Margin level ${ml > 0 ? fmtPct(ml) : "—"}`
+    : "Marj kullanımı / Margin usage: —";
+  return (
+    <div
+      className="hidden min-w-[72px] flex-col justify-center rounded-[10px] border border-desk-border/60 bg-desk-elev/40 px-2 py-1 md:flex sm:min-w-[86px] sm:px-2.5"
+      title={label}
+      aria-label={label}
+      role="meter"
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={Math.round(usedPct)}
+    >
+      <span className="text-[8px] font-semibold uppercase tracking-[0.1em] text-desk-muted sm:text-[9px] sm:tracking-[0.08em]">
+        Kullanım
+      </span>
+      <span className={`text-[12px] font-semibold tabular-nums leading-tight sm:text-[13px] ${textCls}`}>
+        {a ? `${usedPct.toFixed(usedPct > 0 && usedPct < 10 ? 1 : 0)}%` : "—"}
+      </span>
+      <span className="mt-0.5 block h-[3px] w-full max-w-[72px] overflow-hidden rounded-full bg-desk-border/70">
+        <span
+          className={`block h-full rounded-full transition-[width] duration-300 ${fillCls}`}
+          style={{ width: `${usedPct}%` }}
+        />
+      </span>
+    </div>
+  );
+}
+
 export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
   const { t } = useI18n();
   const a = account;
@@ -118,6 +167,7 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
           danger={ml > 0 && ml < 100}
           className="hidden md:flex"
         />
+        <MarginUsageBar account={a} />
         <Metric
           label="P/L"
           value={a ? fmtMoney(pnl, 2, a.currency) : "—"}
