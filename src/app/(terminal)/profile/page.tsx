@@ -12,6 +12,7 @@ import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 import LiveSupportPanel from "@/components/profile/LiveSupportPanel";
 import NotificationBell from "@/components/notifications/NotificationBell";
 import BrandLoader from "@/components/ui/BrandLoader";
+import { getSeenDocs } from "@/lib/docs-seen";
 import { normalizeLocale, PUBLIC_DEFAULT_LOCALE } from "@/lib/i18n/locales";
 
 type Profilee = {
@@ -79,6 +80,16 @@ export default function ProfileePage() {
   const { t, setLocale, locale } = useI18n();
   const [profile, setProfilee] = useState<Profilee | null>(null);
   const [phone, setPhone] = useState("");
+  const [newDocs, setNewDocs] = useState(0);
+  useEffect(() => {
+    fetch("/api/documents", { cache: "no-store", credentials: "include" })
+      .then((r) => (r.ok ? r.json() : { documents: [] }))
+      .then((d: { documents?: { id: string }[] }) => {
+        const seen = getSeenDocs();
+        setNewDocs((d.documents || []).filter((x) => !seen.has(x.id)).length);
+      })
+      .catch(() => {});
+  }, []);
   const [language, setLanguage] = useState("en");
   const [timezone, setTimezone] = useState("Europe/Istanbul");
   const [address, setAddress] = useState("");
@@ -296,7 +307,17 @@ export default function ProfileePage() {
             <span className="block text-sm font-semibold text-slate-100">{t("docs.title")}</span>
             <span className="block text-xs text-slate-500">{t("docs.subtitle")}</span>
           </span>
-          <span className="text-slate-400" aria-hidden>›</span>
+          <span className="flex items-center gap-2">
+            {newDocs > 0 && (
+              <span
+                className="rounded-full bg-[#c9a54a] px-2 py-0.5 text-[11px] font-bold leading-none text-black"
+                aria-label={`${newDocs} ${t("docs.new")}`}
+              >
+                {newDocs}
+              </span>
+            )}
+            <span className="text-slate-400" aria-hidden>›</span>
+          </span>
         </Link>
         <div className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
           <div className="mb-1 text-lg font-semibold">{profile.name}</div>

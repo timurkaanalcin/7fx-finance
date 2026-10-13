@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { getSeenDocs, markDocsSeen } from "@/lib/docs-seen";
 import { useI18n } from "@/lib/i18n/context";
 import ProtectedAttachmentViewer from "@/components/chat/ProtectedAttachmentViewer";
 import ThemeToggle from "@/components/theme/ThemeToggle";
@@ -13,6 +14,22 @@ export default function DocumentsPage() {
   const { t, locale } = useI18n();
   const [docs, setDocs] = useState<Doc[] | null>(null);
   const [open, setOpen] = useState<string | null>(null);
+  const [seen, setSeen] = useState<Set<string>>(new Set());
+  const [q, setQ] = useState("");
+
+  useEffect(() => setSeen(getSeenDocs()), []);
+
+  const openDoc = (id: string) => {
+    setOpen(id);
+    setSeen(new Set(markDocsSeen([id])));
+  };
+
+  const shown = useMemo(() => {
+    const term = q.trim().toLocaleLowerCase(locale);
+    if (!docs || !term) return docs;
+    return docs.filter((d) => d.title.toLocaleLowerCase(locale).includes(term));
+  }, [docs, q, locale]);
+  const unseen = (docs || []).filter((d) => !seen.has(d.id)).length;
 
   useEffect(() => {
     fetch("/api/documents", { cache: "no-store", credentials: "include" })
@@ -34,24 +51,57 @@ export default function DocumentsPage() {
       </header>
       <main className="mx-auto max-w-2xl p-4 pb-10 md:p-6">
         <p className="mb-4 text-xs text-slate-500">{t("docs.subtitle")}</p>
+        {docs && docs.length > 0 && (unseen > 0 || docs.length > 4) && (
+          <div className="mb-3 flex items-center gap-2">
+            {docs.length > 4 && (
+              <input
+                type="search"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                onKeyDown={(e) => e.key === "Escape" && setQ("")}
+                placeholder={t("docs.search")}
+                aria-label={t("docs.search")}
+                className="min-h-[40px] min-w-0 flex-1 rounded-lg border border-[#2a2a2a] bg-[#0a0a0a] px-3 text-sm text-slate-100 placeholder:text-slate-500"
+              />
+            )}
+            {unseen > 0 && (
+              <button
+                type="button"
+                onClick={() => setSeen(new Set(markDocsSeen(docs.map((d) => d.id))))}
+                className="ml-auto shrink-0 rounded-md bg-[#2a2a2a] px-2.5 py-2 text-xs text-slate-200 hover:bg-[#1f1f1f]"
+              >
+                {t("docs.markAll")} ({unseen})
+              </button>
+            )}
+          </div>
+        )}
         {docs === null ? (
           <p className="p-6 text-center text-sm text-slate-500">…</p>
         ) : docs.length === 0 ? (
           <div className="rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-8 text-center text-sm text-slate-500">{t("docs.empty")}</div>
+        ) : shown && shown.length === 0 ? (
+          <p className="p-6 text-center text-sm text-slate-500">{t("docs.noMatch")}</p>
         ) : (
           <ul className="space-y-3">
-            {docs.map((d) => (
+            {(shown || []).map((d) => (
               <li key={d.id}>
                 <button
                   type="button"
-                  onClick={() => setOpen(d.id)}
+                  onClick={() => openDoc(d.id)}
                   className="flex min-h-[64px] w-full items-center gap-3 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] px-4 py-3 text-left"
                 >
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#1f1f1f] text-[10px] font-bold uppercase tracking-wider text-slate-300">
                     {d.kind === "pdf" ? "PDF" : "IMG"}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-semibold text-slate-100">{d.title}</span>
+                    <span className="flex items-center gap-2">
+                      <span className="truncate text-sm font-semibold text-slate-100">{d.title}</span>
+                      {!seen.has(d.id) && (
+                        <span className="shrink-0 rounded-full bg-[#c9a54a] px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none text-black">
+                          {t("docs.new")}
+                        </span>
+                      )}
+                    </span>
                     <span className="block text-xs text-slate-500">
                       {new Date(d.createdAt).toLocaleDateString(locale)} · {Math.max(1, Math.round(d.size / 1024))} KB
                     </span>
