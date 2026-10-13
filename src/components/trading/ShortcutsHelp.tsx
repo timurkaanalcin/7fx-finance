@@ -12,6 +12,7 @@ const ROWS: { keys: string[]; label: string }[] = [
   { keys: ["B"], label: "term.kb.buy" },
   { keys: ["S"], label: "term.kb.sell" },
   { keys: ["/"], label: "term.kb.search" },
+  { keys: ["C"], label: "term.kb.calc" },
   { keys: ["1"], label: "term.kb.tabOpen" },
   { keys: ["2"], label: "term.kb.tabClosed" },
   { keys: ["3"], label: "term.kb.tabPending" },

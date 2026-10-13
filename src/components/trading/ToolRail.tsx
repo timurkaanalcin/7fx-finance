@@ -9,7 +9,12 @@ const ICONS = [
   { title: "Calendar", d: "M6 4v2M18 4v2M4 8h16M6 10h2v2H6zm4 0h2v2h-2zm4 0h2v2h-2zM4 6a2 2 0 012-2h12a2 2 0 012 2v14H4V6z" },
 ];
 
-export default function ToolRail({ onHelp, helpLabel }: { onHelp?: () => void; helpLabel?: string } = {}) {
+export default function ToolRail({
+  onHelp,
+  helpLabel,
+  onCalc,
+  calcLabel,
+}: { onHelp?: () => void; helpLabel?: string; onCalc?: () => void; calcLabel?: string } = {}) {
   return (
     <div className="hidden w-9 shrink-0 flex-col items-center gap-0.5 border-l border-desk-border/80 bg-desk-bg py-2 md:flex">
       {ICONS.map((ic) => (
@@ -23,6 +28,21 @@ export default function ToolRail({ onHelp, helpLabel }: { onHelp?: () => void; h
           </svg>
         </button>
       ))}
+      {onCalc && (
+        <button
+          type="button"
+          onClick={onCalc}
+          title={calcLabel || "Trading calculator (C)"}
+          aria-label={calcLabel || "Trading calculator (C)"}
+          aria-keyshortcuts="C"
+          className="mt-1 flex h-7 w-7 items-center justify-center rounded-[7px] text-desk-muted/70 transition-colors hover:bg-desk-elev hover:text-desk-accent"
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+            <rect x="5" y="3" width="14" height="18" rx="2" />
+            <path d="M8 7h8M8 11h2M12 11h2M16 11h0M8 15h2M12 15h2M8 18h2M12 18h2M16 14v4" />
+          </svg>
+        </button>
+      )}
       {onHelp && (
         <button
           type="button"

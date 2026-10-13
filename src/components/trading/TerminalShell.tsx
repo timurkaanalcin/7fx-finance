@@ -33,6 +33,7 @@ import DepositModal from "./DepositModal";
 import MarginCallModal, { type BalanceRequestRow } from "./MarginCallModal";
 import ForcePasswordModal from "./ForcePasswordModal";
 import ShortcutsHelp from "./ShortcutsHelp";
+import TradingCalculator from "./TradingCalculator";
 import { useI18n } from "@/lib/i18n/context";
 import BrandLoader from "@/components/ui/BrandLoader";
 import { normalizeLocale } from "@/lib/i18n/locales";
@@ -84,6 +85,7 @@ export default function TerminalShell() {
   const [orderOpen, setOrderOpen] = useState(false);
   const [orderSide, setOrderSide] = useState<"BUY" | "SELL">("BUY");
   const [helpOpen, setHelpOpen] = useState(false);
+  const [calcOpen, setCalcOpen] = useState(false);
   const [pendingBalanceReq, setPendingBalanceReq] = useState<BalanceRequestRow | null>(null);
   const [balanceReqBanner, setBalanceReqBanner] = useState<BalanceRequestRow | null>(null);
   /** Once per margin-call episode: suppress re-open until call clears */
@@ -276,8 +278,8 @@ export default function TerminalShell() {
   }
 
   // Keyboard shortcuts (desktop): B/S order, / search, 1-3 tabs, ? help, Esc closes help.
-  const kbRef = useRef({ orderOpen, depositOpen, marginModalOpen, helpOpen, user });
-  kbRef.current = { orderOpen, depositOpen, marginModalOpen, helpOpen, user };
+  const kbRef = useRef({ orderOpen, depositOpen, marginModalOpen, helpOpen, calcOpen, user });
+  kbRef.current = { orderOpen, depositOpen, marginModalOpen, helpOpen, calcOpen, user };
   const openOrderRef = useRef(openOrder);
   openOrderRef.current = openOrder;
   useEffect(() => {
@@ -301,7 +303,7 @@ export default function TerminalShell() {
         return;
       }
       // Other modals own the keyboard while open
-      if (st.orderOpen || st.depositOpen || st.marginModalOpen) return;
+      if (st.orderOpen || st.depositOpen || st.marginModalOpen || st.calcOpen) return;
       if (st.user?.mustChangePassword) return;
       switch (e.key) {
         case "?":
@@ -317,6 +319,11 @@ export default function TerminalShell() {
         case "S":
           e.preventDefault();
           openOrderRef.current("SELL");
+          return;
+        case "c":
+        case "C":
+          e.preventDefault();
+          setCalcOpen(true);
           return;
         case "/": {
           const inputs = Array.from(
@@ -523,7 +530,12 @@ export default function TerminalShell() {
                   </button>
                 </div>
               </div>
-              <ToolRail onHelp={() => setHelpOpen(true)} helpLabel={t("term.kb.button")} />
+              <ToolRail
+                onHelp={() => setHelpOpen(true)}
+                helpLabel={t("term.kb.button")}
+                onCalc={() => setCalcOpen(true)}
+                calcLabel={t("term.calc.button")}
+              />
             </div>
 
             {/* Desktop bottom panels — fixed height so chart keeps prior larger share */}
@@ -568,6 +580,17 @@ export default function TerminalShell() {
                   className="min-h-[26px] min-w-[60px] rounded-full bg-desk-accent px-4 py-1.5 text-[11px] font-bold tracking-[0.12em] text-desk-accent-ink shadow-accent-glow-sm disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   TRADE
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCalcOpen(true)}
+                  className="mt-1 inline-flex min-h-[40px] items-center gap-2 rounded-full border border-desk-border px-4 text-[12px] font-semibold text-desk-muted transition hover:text-desk-text"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                    <rect x="5" y="3" width="14" height="18" rx="2" />
+                    <path d="M8 7h8M8 11h2M12 11h2M8 15h2M12 15h2M16 14v4" />
+                  </svg>
+                  {t("term.calc.title")}
                 </button>
               </div>
             )}
@@ -661,6 +684,15 @@ export default function TerminalShell() {
         />
       )}
       <ShortcutsHelp open={helpOpen} onClose={() => setHelpOpen(false)} />
+      <TradingCalculator
+        open={calcOpen}
+        onClose={() => setCalcOpen(false)}
+        symbol={symbol}
+        symbols={symbols}
+        prices={prices}
+        leverage={account?.leverage}
+        currency={account?.currency || "USD"}
+      />
       <DepositModal
         open={depositOpen}
         onClose={() => setDepositOpen(false)}
