@@ -31,6 +31,8 @@ export type CrmColumn = {
     | "password";
   /** input placeholder */
   placeholder?: string;
+  /** optional i18n key: short muted explanation shown in parentheses after the label (forms only) */
+  hint?: string;
   options?: { value: string; label: string }[];
   required?: boolean;
   /** false = shown but never editable (computed/system) */
@@ -269,6 +271,7 @@ export function CrmFormGrid({
             <span className="text-neutral-500">
               {i18n(c.label)}
               {c.required ? " *" : ""}
+              {c.hint ? <span className="ml-1 text-[10px] font-normal text-neutral-400">({i18n(c.hint)})</span> : null}
             </span>
           )}
           {c.type === "checkbox" && c.editable === false ? (
@@ -286,7 +289,12 @@ export function CrmFormGrid({
               onChange={(v) => setDraft((d) => ({ ...d, [c.key]: v }))}
             />
           )}
-          {c.type === "checkbox" ? <span className="text-neutral-700">{i18n(c.label)}</span> : null}
+          {c.type === "checkbox" ? (
+            <span className="min-w-0 whitespace-normal leading-tight text-neutral-700">
+              {i18n(c.label)}
+              {c.hint ? <span className="ml-1 text-[10px] font-normal text-neutral-400">({i18n(c.hint)})</span> : null}
+            </span>
+          ) : null}
         </label>
       ))}
     </div>
@@ -366,6 +374,7 @@ export function CrmAddForm({
             <span className="text-neutral-500">
               {i18n(c.label)}
               {c.required ? " *" : ""}
+              {c.hint ? <span className="ml-1 text-[10px] font-normal text-neutral-400">({i18n(c.hint)})</span> : null}
             </span>
             <CellInput
               col={c}

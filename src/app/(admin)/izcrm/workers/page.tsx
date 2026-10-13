@@ -48,11 +48,11 @@ type Desk = { id: string; name: string; code: string | null; active: boolean };
 type Draft = Record<string, string>;
 
 const PERMS = [
-  { key: "canManageUsers", label: "crm.perm.users" },
-  { key: "canApproveDeposits", label: "crm.perm.deposits" },
-  { key: "canEditRates", label: "crm.perm.rates" },
-  { key: "canManageMethods", label: "crm.perm.methods" },
-  { key: "canAdjustBalance", label: "crm.perm.balance" },
+  { key: "canManageUsers", label: "crm.perm.users", hint: "crm.permHint.users" },
+  { key: "canApproveDeposits", label: "crm.perm.deposits", hint: "crm.permHint.deposits" },
+  { key: "canEditRates", label: "crm.perm.rates", hint: "crm.permHint.rates" },
+  { key: "canManageMethods", label: "crm.perm.methods", hint: "crm.permHint.methods" },
+  { key: "canAdjustBalance", label: "crm.perm.balance", hint: "crm.permHint.balance" },
 ] as const;
 
 function workerDraft(w: Worker): Draft {
@@ -120,15 +120,17 @@ export default function WorkersPage() {
         key: "password",
         label: create ? "crm.workers.password" : "crm.workers.newPassword",
         type: "password",
+        hint: "crm.permHint.password",
         required: create,
         editable: !(w?.isMain && !w?.isSelf),
       },
-      { key: "active", label: "crm.ui.active", type: "checkbox", editable: !(w?.isMain || w?.isSelf) },
+      { key: "active", label: "crm.ui.active", hint: "crm.permHint.active", type: "checkbox", editable: !(w?.isMain || w?.isSelf) },
     ];
     for (const p of PERMS) {
       cols.push({
         key: p.key,
         label: p.label,
+        hint: p.hint,
         type: "checkbox",
         // can't grant what you don't hold; main admin's flags are locked; keep own user-management
         editable: !(w?.isMain) && !(w?.isSelf && p.key === "canManageUsers") && myPerms[p.key] !== false,
