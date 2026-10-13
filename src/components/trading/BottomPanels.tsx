@@ -81,6 +81,29 @@ function matchesSymbol(
   return false;
 }
 
+/** Short ticket shown in UI (last 8 chars of id, upper-case) — searchable as displayed. */
+function ticketLabel(id: string): string {
+  return `#${String(id).slice(-8).toUpperCase()}`;
+}
+
+/**
+ * Case-insensitive substring match on ticket / order id (full id, displayed
+ * short ticket with or without "#") and any comment / note text on the row.
+ */
+function matchesTicketText(row: { id: string } & Record<string, unknown>, q: string): boolean {
+  const needle = q.trim().toLowerCase().replace(/^#+/, "");
+  if (!needle) return true;
+  const id = String(row.id ?? "").toLowerCase();
+  if (id.includes(needle)) return true;
+  if (ticketLabel(String(row.id ?? "")).toLowerCase().includes(needle)) return true;
+  for (const key of ["comment", "note", "notes", "ticket", "orderId", "positionId"]) {
+    const v = row[key];
+    if (v == null) continue;
+    if (String(v).toLowerCase().includes(needle)) return true;
+  }
+  return false;
+}
+
 function matchesSide(side: string, filter: SideFilter): boolean {
   if (filter === "ALL") return true;
   return side.toUpperCase() === filter;
@@ -92,11 +115,14 @@ function filterPositions(
     side: SideFilter;
     symbolQ: string;
     period: PeriodFilter;
+    textQ?: string;
     result?: ResultFilter;
   }
 ): PositionRow[] {
   return rows.filter((p) => {
     if (!matchesSide(p.side, opts.side)) return false;
+    if (opts.textQ && !matchesTicketText(p as PositionRow & Record<string, unknown>, opts.textQ))
+      return false;
     if (!matchesSymbol(p.symbol, p.chartSymbol, opts.symbolQ)) return false;
     if (!matchesPeriod(p.openedAt, opts.period)) return false;
     if (opts.result && opts.result !== "ALL") {
@@ -110,10 +136,12 @@ function filterPositions(
 
 function filterOrders(
   rows: OrderRow[],
-  opts: { side: SideFilter; symbolQ: string; period: PeriodFilter }
+  opts: { side: SideFilter; symbolQ: string; period: PeriodFilter; textQ?: string }
 ): OrderRow[] {
   return rows.filter((o) => {
     if (!matchesSide(o.side, opts.side)) return false;
+    if (opts.textQ && !matchesTicketText(o as OrderRow & Record<string, unknown>, opts.textQ))
+      return false;
     if (!matchesSymbol(o.symbol, undefined, opts.symbolQ)) return false;
     if (!matchesPeriod(o.createdAt, opts.period)) return false;
     return true;
@@ -609,6 +637,9 @@ function OpenCard({
           </div>
           <div className="mt-1 flex items-center gap-1.5 text-[10px] text-desk-muted">
             <span>{fmtDateTime(p.openedAt)}</span>
+            <span className="font-mono text-[9.5px] opacity-80" title={`Ticket ${p.id}`}>
+              {ticketLabel(p.id)}
+            </span>
             <HoldTime openedAt={p.openedAt} className="rounded-[5px] bg-desk-bg/60 px-1 py-px text-[9.5px]" />
           </div>
         </div>
@@ -956,7 +987,12 @@ function ClosedCard({ p }: { p: PositionRow }) {
               {fmtNum(p.volume, 2)} lot
             </span>
           </div>
-          <div className="mt-1 text-[10px] text-desk-muted">{fmtDateTime(p.openedAt)}</div>
+          <div className="mt-1 flex items-center gap-1.5 text-[10px] text-desk-muted">
+            <span>{fmtDateTime(p.openedAt)}</span>
+            <span className="font-mono text-[9.5px] opacity-80" title={`Ticket ${p.id}`}>
+              {ticketLabel(p.id)}
+            </span>
+          </div>
         </div>
         <div className={`text-[14px] font-bold tabular-nums ${moneyCls(profit)}`}>
           {fmtNum(profit, 2)}
@@ -1008,7 +1044,12 @@ function PendingCard({
               {o.type}
             </span>
           </div>
-          <div className="mt-1 text-[10px] text-desk-muted">{fmtDateTime(o.createdAt)}</div>
+          <div className="mt-1 flex items-center gap-1.5 text-[10px] text-desk-muted">
+            <span>{fmtDateTime(o.createdAt)}</span>
+            <span className="font-mono text-[9.5px] opacity-80" title={`Ticket ${o.id}`}>
+              {ticketLabel(o.id)}
+            </span>
+          </div>
         </div>
         <div className="text-right text-[12px] font-semibold tabular-nums text-desk-text">
           {fmtNum(o.volume, 2)} lot
@@ -1051,6 +1092,7 @@ export default function BottomPanels({
   const [symbolFilter, setSymbolFilter] = useState("");
   const [resultFilter, setResultFilter] = useState<ResultFilter>("ALL");
   const [periodFilter, setPeriodFilter] = useState<PeriodFilter>("ALL");
+  const [textFilter, setTextFilter] = useState("");
   const [bulkBusy, setBulkBusy] = useState(false);
   const [openSort, setOpenSort] = useState<SortState>(null);
   const [closedSort, setClosedSort] = useState<SortState>(null);
@@ -1064,8 +1106,8 @@ export default function BottomPanels({
   ];
 
   const filterOpts = useMemo(
-    () => ({ side: sideFilter, symbolQ: symbolFilter, period: periodFilter }),
-    [sideFilter, symbolFilter, periodFilter]
+    () => ({ side: sideFilter, symbolQ: symbolFilter, period: periodFilter, textQ: textFilter }),
+    [sideFilter, symbolFilter, periodFilter, textFilter]
   );
 
   const filteredOpen = useMemo(
@@ -1108,7 +1150,16 @@ export default function BottomPanels({
     sideFilter !== "ALL" ||
     symbolFilter.trim() !== "" ||
     periodFilter !== "ALL" ||
+    textFilter.trim() !== "" ||
     (tab === "closed" && resultFilter !== "ALL");
+
+  const clearAllFilters = useCallback(() => {
+    setSideFilter("ALL");
+    setSymbolFilter("");
+    setResultFilter("ALL");
+    setPeriodFilter("ALL");
+    setTextFilter("");
+  }, []);
 
   const exportRows =
     tab === "open" ? sortedOpen : tab === "closed" ? sortedClosed : sortedPending;
@@ -1257,7 +1308,14 @@ export default function BottomPanels({
 
   const emptyFiltered = (
     <div className="px-3 py-10 text-center text-xs text-desk-muted">
-      Filtreye uyan işlem yok
+      <div>Filtreye uyan işlem yok</div>
+      <button
+        type="button"
+        onClick={clearAllFilters}
+        className="mt-2 rounded-[7px] border border-desk-border px-2.5 py-1 text-[11px] font-medium text-desk-muted hover:bg-desk-hover hover:text-desk-text"
+      >
+        Filtreleri temizle · Clear filters
+      </button>
     </div>
   );
 
@@ -1337,6 +1395,17 @@ export default function BottomPanels({
           >
             CSV
           </button>
+          {filtersActive && !showFilters ? (
+            <button
+              type="button"
+              onClick={clearAllFilters}
+              title="Filtreleri temizle · Clear filters"
+              aria-label="Filtreleri temizle · Clear filters"
+              className="rounded-control border border-desk-border px-2 py-1 text-[11px] text-desk-muted transition-colors hover:bg-desk-hover hover:text-desk-text"
+            >
+              ✕<span className="ml-1 hidden sm:inline">Temizle</span>
+            </button>
+          ) : null}
           <button
             type="button"
             onClick={() => setShowFilters((v) => !v)}
@@ -1390,6 +1459,43 @@ export default function BottomPanels({
               className="min-w-0 flex-1 rounded-[7px] border border-desk-border bg-desk-bg px-2 py-1 text-[11px] text-desk-text outline-none placeholder:text-desk-muted/60 focus:border-desk-accent/50"
             />
           </div>
+          <div className="flex min-w-[140px] flex-1 items-center gap-1 sm:max-w-[220px]">
+            <span
+              className="text-[9px] font-medium uppercase tracking-wider text-desk-muted"
+              title="Bilet / yorum ara · Search ticket / comment"
+            >
+              Ara
+            </span>
+            <div className="relative min-w-0 flex-1">
+              <input
+                type="search"
+                inputMode="search"
+                autoComplete="off"
+                spellCheck={false}
+                value={textFilter}
+                onChange={(e) => setTextFilter(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape" && textFilter) {
+                    e.stopPropagation();
+                    setTextFilter("");
+                  }
+                }}
+                placeholder="Bilet # / yorum · Ticket / comment"
+                aria-label="Bilet veya yorum ara · Search ticket or comment"
+                className="w-full min-w-0 rounded-[7px] border border-desk-border bg-desk-bg py-1 pl-2 pr-6 text-[11px] text-desk-text outline-none placeholder:text-desk-muted/60 focus:border-desk-accent/50 [&::-webkit-search-cancel-button]:hidden"
+              />
+              {textFilter ? (
+                <button
+                  type="button"
+                  onClick={() => setTextFilter("")}
+                  aria-label="Aramayı temizle · Clear search"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 rounded px-1 text-[11px] leading-none text-desk-muted hover:text-desk-text"
+                >
+                  ✕
+                </button>
+              ) : null}
+            </div>
+          </div>
           {tab === "closed" && (
             <div className="flex items-center gap-1">
               <span className="mr-0.5 text-[9px] font-medium uppercase tracking-wider text-desk-muted">
@@ -1434,15 +1540,11 @@ export default function BottomPanels({
           {filtersActive && (
             <button
               type="button"
-              onClick={() => {
-                setSideFilter("ALL");
-                setSymbolFilter("");
-                setResultFilter("ALL");
-                setPeriodFilter("ALL");
-              }}
+              onClick={clearAllFilters}
+              title="Tüm filtreleri sıfırla · Reset all filters"
               className="ml-auto rounded-[7px] border border-desk-border px-2 py-0.5 text-[10px] font-medium text-desk-muted hover:bg-desk-hover hover:text-desk-text"
             >
-              Temizle
+              Filtreleri temizle · Clear filters
             </button>
           )}
         </div>
@@ -1538,7 +1640,10 @@ export default function BottomPanels({
                     key={p.id}
                     className="border-t border-desk-border/50 transition-colors hover:bg-desk-hover/50"
                   >
-                    <td className="px-2 py-1.5 text-desk-muted">{i + 1}</td>
+                    <td className="px-2 py-1.5 text-desk-muted" title={`Ticket ${p.id}`}>
+                      <div>{i + 1}</div>
+                      <div className="font-mono text-[9px] opacity-70">{ticketLabel(p.id)}</div>
+                    </td>
                     <td className="whitespace-nowrap px-2 py-1.5 text-desk-muted">
                       <div>{fmtDateTime(p.openedAt)}</div>
                       <HoldTime openedAt={p.openedAt} className="text-[9.5px] opacity-80" />
@@ -1627,7 +1732,10 @@ export default function BottomPanels({
                   key={p.id}
                   className="border-t border-desk-border/50 transition-colors hover:bg-desk-hover/40"
                 >
-                  <td className="px-2 py-1.5 text-desk-muted">{i + 1}</td>
+                  <td className="px-2 py-1.5 text-desk-muted" title={`Ticket ${p.id}`}>
+                    <div>{i + 1}</div>
+                    <div className="font-mono text-[9px] opacity-70">{ticketLabel(p.id)}</div>
+                  </td>
                   <td className="whitespace-nowrap px-2 py-1.5 text-desk-muted">
                     {fmtDateTime(p.openedAt)}
                   </td>
@@ -1708,7 +1816,10 @@ export default function BottomPanels({
                   key={o.id}
                   className="border-t border-desk-border/50 transition-colors hover:bg-desk-hover/40"
                 >
-                  <td className="px-2 py-1.5 text-desk-muted">{i + 1}</td>
+                  <td className="px-2 py-1.5 text-desk-muted" title={`Ticket ${o.id}`}>
+                    <div>{i + 1}</div>
+                    <div className="font-mono text-[9px] opacity-70">{ticketLabel(o.id)}</div>
+                  </td>
                   <td className="whitespace-nowrap px-2 py-1.5 text-desk-muted">
                     {fmtDateTime(o.createdAt)}
                   </td>
