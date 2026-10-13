@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { formatPrice } from "@/lib/symbols";
 import { calcTradeProfit, calcVolumeForRisk } from "@/lib/pnl";
 import SymbolIcon from "@/components/ui/SymbolIcon";
@@ -52,6 +52,59 @@ function fmtUsd(n: number): string {
   return `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
+// Per-device memory of the last lot size, keyed by symbol (client-only, invisible)
+const LAST_LOT_KEY = "fx-last-lot-by-symbol";
+const LAST_LOT_MAX_ENTRIES = 50;
+const LOT_MIN = 0.01;
+const LOT_MAX = 1000;
+
+function sanitizeLot(v: unknown): string | null {
+  const n = typeof v === "number" ? v : typeof v === "string" ? Number(v.trim()) : NaN;
+  if (!Number.isFinite(n) || n < LOT_MIN || n > LOT_MAX) return null;
+  return (Math.round(n * 100) / 100).toFixed(2);
+}
+
+function readLotMap(): Record<string, string> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(LAST_LOT_KEY);
+    if (!raw) return {};
+    const parsed: unknown = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
+    const out: Record<string, string> = {};
+    for (const [k, v] of Object.entries(parsed as Record<string, unknown>)) {
+      const lot = sanitizeLot(v);
+      if (lot && k && k.length <= 32) out[k] = lot;
+    }
+    return out;
+  } catch {
+    return {};
+  }
+}
+
+function loadLastLot(symbol: string): string | null {
+  return readLotMap()[symbol] ?? null;
+}
+
+function saveLastLot(symbol: string, volume: string) {
+  if (typeof window === "undefined" || !symbol) return;
+  const lot = sanitizeLot(volume);
+  if (!lot) return;
+  try {
+    const map = readLotMap();
+    // Re-insert so most recent is last; cap to the newest N symbols
+    delete map[symbol];
+    map[symbol] = lot;
+    const keys = Object.keys(map);
+    if (keys.length > LAST_LOT_MAX_ENTRIES) {
+      for (const k of keys.slice(0, keys.length - LAST_LOT_MAX_ENTRIES)) delete map[k];
+    }
+    window.localStorage.setItem(LAST_LOT_KEY, JSON.stringify(map));
+  } catch {
+    /* storage full / disabled — ignore */
+  }
+}
+
 export default function OrderTicket({
   symbol,
   symbols,
@@ -66,7 +119,13 @@ export default function OrderTicket({
 }: Props) {
   const [side, setSide] = useState<"BUY" | "SELL">(initialSide);
   const [type, setType] = useState<"MARKET" | "LIMIT" | "STOP">("MARKET");
-  const [volume, setVolume] = useState("0.10");
+  const [volume, setVolumeRaw] = useState("0.10");
+  // Only persist volumes the user chose (not resets / restores)
+  const volumeDirtyRef = useRef(false);
+  const setVolume = useCallback((v: string | ((prev: string) => string)) => {
+    volumeDirtyRef.current = true;
+    setVolumeRaw(v);
+  }, []);
   const [limitPrice, setLimitPrice] = useState("");
   const [sl, setSl] = useState("");
   const [tp, setTp] = useState("");
@@ -84,7 +143,8 @@ export default function OrderTicket({
   useEffect(() => {
     setSide(initialSide);
     setType("MARKET");
-    setVolume("0.10");
+    volumeDirtyRef.current = false;
+    setVolumeRaw(loadLastLot(symbol) ?? "0.10");
     setSl("");
     setTp("");
     setShowSl(false);
@@ -95,6 +155,13 @@ export default function OrderTicket({
     if (price?.mid) setLimitPrice(formatPrice(symbol, price.mid));
     // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally ignore live price ticks
   }, [symbol, initialSide]);
+
+  // Remember the user's last lot for this symbol (debounced, valid values only)
+  useEffect(() => {
+    if (!volumeDirtyRef.current) return;
+    const t = window.setTimeout(() => saveLastLot(symbol, volume), 400);
+    return () => window.clearTimeout(t);
+  }, [volume, symbol]);
 
   // Keep limit field roughly synced while editing MARKET→LIMIT without wiping SL/TP
   useEffect(() => {

@@ -1234,6 +1234,8 @@ export default function BottomPanels({
   const [openSort, setOpenSort] = useState<SortState>(null);
   const [closedSort, setClosedSort] = useState<SortState>(null);
   const [pendingSort, setPendingSort] = useState<SortState>(null);
+  // Open tab: exact-symbol quick filter chip ("" = all)
+  const [openSymbolChip, setOpenSymbolChip] = useState("");
 
 
   const tabs: { id: Tab; label: string; shortLabel: string; count?: number }[] = [
@@ -1247,10 +1249,25 @@ export default function BottomPanels({
     [sideFilter, symbolFilter, periodFilter, textFilter]
   );
 
-  const filteredOpen = useMemo(
-    () => filterPositions(openPositions, filterOpts),
-    [openPositions, filterOpts]
-  );
+  // Distinct symbols across all open positions (independent of other filters), most positions first
+  const openSymbolCounts = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const p of openPositions) m.set(p.symbol, (m.get(p.symbol) ?? 0) + 1);
+    return Array.from(m.entries()).sort((a, b) => b[1] - a[1] || cmpStr(a[0], b[0]));
+  }, [openPositions]);
+  const showOpenSymbolChips = openSymbolCounts.length >= 2;
+
+  // Drop a stale chip when that symbol has no open positions anymore
+  useEffect(() => {
+    if (openSymbolChip && !openSymbolCounts.some(([sym]) => sym === openSymbolChip)) {
+      setOpenSymbolChip("");
+    }
+  }, [openSymbolChip, openSymbolCounts]);
+
+  const filteredOpen = useMemo(() => {
+    const rows = filterPositions(openPositions, filterOpts);
+    return openSymbolChip ? rows.filter((p) => p.symbol === openSymbolChip) : rows;
+  }, [openPositions, filterOpts, openSymbolChip]);
   const filteredClosed = useMemo(
     () => filterPositions(closedPositions, { ...filterOpts, result: resultFilter }),
     [closedPositions, filterOpts, resultFilter]
@@ -1288,6 +1305,7 @@ export default function BottomPanels({
     symbolFilter.trim() !== "" ||
     periodFilter !== "ALL" ||
     textFilter.trim() !== "" ||
+    (tab === "open" && openSymbolChip !== "") ||
     (tab === "closed" && resultFilter !== "ALL");
 
   const clearAllFilters = useCallback(() => {
@@ -1296,7 +1314,22 @@ export default function BottomPanels({
     setResultFilter("ALL");
     setPeriodFilter("ALL");
     setTextFilter("");
+    setOpenSymbolChip("");
   }, []);
+
+  // Esc clears the open-symbol chip (unless typing in a field or a dialog is open)
+  useEffect(() => {
+    if (tab !== "open" || !openSymbolChip) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape" || e.defaultPrevented) return;
+      const el = e.target as HTMLElement | null;
+      if (el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName))) return;
+      if (document.querySelector('[role="dialog"], [aria-modal="true"]')) return;
+      setOpenSymbolChip("");
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [tab, openSymbolChip]);
 
   const exportRows =
     tab === "open" ? sortedOpen : tab === "closed" ? sortedClosed : sortedPending;
@@ -1759,6 +1792,33 @@ export default function BottomPanels({
               Filtreleri temizle · Clear filters
             </button>
           )}
+        </div>
+      )}
+
+      {tab === "open" && showOpenSymbolChips && (
+        <div
+          className="flex items-center gap-1 overflow-x-auto border-b border-desk-border/60 px-2.5 py-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          role="group"
+          aria-label="Sembole göre filtrele · Filter by symbol"
+        >
+          <span className="mr-0.5 shrink-0 text-[9px] font-medium uppercase tracking-wider text-desk-muted">
+            Sembol
+          </span>
+          <span className="shrink-0">
+            <Chip active={openSymbolChip === ""} onClick={() => setOpenSymbolChip("")}>
+              Tümü · All <span className="tabular-nums opacity-70">{openPositions.length}</span>
+            </Chip>
+          </span>
+          {openSymbolCounts.map(([sym, n]) => (
+            <span key={sym} className="shrink-0">
+              <Chip
+                active={openSymbolChip === sym}
+                onClick={() => setOpenSymbolChip((cur) => (cur === sym ? "" : sym))}
+              >
+                {sym} <span className="tabular-nums opacity-70">{n}</span>
+              </Chip>
+            </span>
+          ))}
         </div>
       )}
 
