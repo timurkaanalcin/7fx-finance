@@ -1,3 +1,4 @@
+import { canAccessUser, scopeUserWhere, assignedWhere, isScopedStaff } from "@/lib/crm-scope";
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -32,7 +33,7 @@ export async function GET(req: Request) {
     }
   }
   const users = await prisma.user.findMany({
-    where,
+    where: scopeUserWhere(admin, where),
     select: {
       id: true,
       name: true,

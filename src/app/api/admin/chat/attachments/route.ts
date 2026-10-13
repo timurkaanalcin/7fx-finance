@@ -1,3 +1,4 @@
+import { canAccessUser, scopeUserWhere, assignedWhere, isScopedStaff } from "@/lib/crm-scope";
 import { NextResponse } from "next/server";
 import { requireAdminWrite, writeAudit } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -18,6 +19,7 @@ export async function POST(req: Request) {
   if (file.size <= 0 || file.size > ATT_MAX_BYTES) {
     return NextResponse.json({ error: "File must be 1 B – 8 MB" }, { status: 400 });
   }
+  if (!(await canAccessUser(admin, userId))) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true } });
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
   const buf = Buffer.from(await file.arrayBuffer());

@@ -1,3 +1,4 @@
+import { canAccessUser, scopeUserWhere, assignedWhere, isScopedStaff } from "@/lib/crm-scope";
 import { NextResponse } from "next/server";
 import * as XLSX from "xlsx";
 import { requireAdminWrite, writeAudit } from "@/lib/auth";
@@ -12,7 +13,7 @@ export async function GET() {
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const users = await prisma.user.findMany({
-    where: { role: "TRADER" },
+    where: scopeUserWhere(admin, { role: "TRADER" }),
     include: {
       account: true,
       notes: { orderBy: { createdAt: "asc" } },

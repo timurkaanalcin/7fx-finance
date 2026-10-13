@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-/** Job title / role in company — informational only, never used for access control. */
+/** Job title / role in company. Informational, EXCEPT sales_mgr / retention_manager which scope CRM access (see src/lib/crm-scope.ts). */
 export const JOB_TITLE_KEYS = [
   "owner_ceo",
   "sales_head",
@@ -11,6 +11,8 @@ export const JOB_TITLE_KEYS = [
   "sales_manager",
   "marketer",
   "administrator",
+  "sales_mgr",
+  "retention_manager",
   "other",
 ] as const;
 export type JobTitle = (typeof JOB_TITLE_KEYS)[number];
@@ -26,6 +28,8 @@ const LABELS: Record<JobTitle, Record<L, string>> = {
   sales_manager: { en: "Sales Manager", tr: "Satış Temsilcisi", ru: "Менеджер по продажам", ar: "مدير مبيعات", de: "Vertriebsmitarbeiter" },
   marketer: { en: "Marketer", tr: "Pazarlamacı", ru: "Маркетолог", ar: "مسوق", de: "Marketer" },
   administrator: { en: "Administrator", tr: "Yönetici", ru: "Администратор", ar: "مسؤول", de: "Administrator" },
+  sales_mgr: { en: "Sales Manager", tr: "Sales Manager", ru: "Sales Manager", ar: "Sales Manager", de: "Sales Manager" },
+  retention_manager: { en: "Retention Manager", tr: "Retention Manager", ru: "Retention Manager", ar: "Retention Manager", de: "Retention Manager" },
   other: { en: "Other", tr: "Diğer", ru: "Другое", ar: "أخرى", de: "Sonstiges" },
 };
 

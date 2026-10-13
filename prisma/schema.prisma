@@ -97,6 +97,11 @@ model User {
   ftd                  Boolean          @default(false)
   brokerName           String?
   assigneeName         String?
+  /// Staff user id this customer is assigned to (Sales/Retention Manager scope)
+  assigneeId           String?          @db.VarChar(191)
+  /// Retention follow-up date + short note (scoped staff)
+  retentionFollowUpAt  DateTime?
+  retentionNote        String?          @db.Text
 
   /// Documents stub
   documentsStatus      String           @default("NONE") // NONE | PENDING | APPROVED | REJECTED
@@ -121,6 +126,7 @@ model User {
   chatThreadState    ChatThreadState?
 
   @@index([lastSeenAt])
+  @@index([assigneeId])
 }
 
 model Account {

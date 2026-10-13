@@ -28,6 +28,14 @@ export function middleware(req: NextRequest) {
   const host = hostnameFromRequest(req);
   const crmHost = isCrmHostname(host);
 
+  // Server-trusted request path/method for CRM scope checks (always overwrites any client value).
+  const passNext = () => {
+    const h = new Headers(req.headers);
+    h.set("x-7fx-url", pathname + (req.nextUrl.search || ""));
+    h.set("x-7fx-method", req.method.toUpperCase());
+    return NextResponse.next({ request: { headers: h } });
+  };
+
   const applyHeaders = (res: NextResponse) => {
     res.headers.set("X-Frame-Options", "DENY");
     res.headers.set("X-Content-Type-Options", "nosniff");
@@ -79,21 +87,21 @@ export function middleware(req: NextRequest) {
       pathname.startsWith("/icons/") ||
       pathname.startsWith("/sw.js")
     ) {
-      return applyHeaders(NextResponse.next());
+      return applyHeaders(passNext());
     }
 
     if (pathname === "/login") {
       if (token) {
         return applyHeaders(NextResponse.redirect(new URL("/izcrm", req.url)));
       }
-      return applyHeaders(NextResponse.next());
+      return applyHeaders(passNext());
     }
 
     if (pathname === "/izcrm" || pathname.startsWith("/izcrm/")) {
       if (!token) {
         return applyHeaders(NextResponse.redirect(new URL("/login", req.url)));
       }
-      return applyHeaders(NextResponse.next());
+      return applyHeaders(passNext());
     }
 
     if (pathname === "/admin" || pathname.startsWith("/admin/")) {
@@ -134,7 +142,7 @@ export function middleware(req: NextRequest) {
     if (token) {
       return applyHeaders(NextResponse.redirect(new URL("/trade", req.url)));
     }
-    return applyHeaders(NextResponse.next());
+    return applyHeaders(passNext());
   }
 
   if (
@@ -150,7 +158,7 @@ export function middleware(req: NextRequest) {
     return applyHeaders(NextResponse.redirect(new URL("/login", req.url)));
   }
 
-  return applyHeaders(NextResponse.next());
+  return applyHeaders(passNext());
 }
 
 function awaitBlank(): string {

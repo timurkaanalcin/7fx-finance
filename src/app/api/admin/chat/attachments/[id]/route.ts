@@ -1,3 +1,4 @@
+import { canAccessUser, scopeUserWhere, assignedWhere, isScopedStaff } from "@/lib/crm-scope";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NO_STORE } from "@/lib/chat/attachments";
@@ -10,6 +11,7 @@ export async function GET(_req: Request, ctx: { params: { id: string } }) {
   if (!admin) return new Response("Unauthorized", { status: 403 });
   const att = await prisma.chatAttachment.findUnique({ where: { id: ctx.params.id } });
   if (!att) return new Response("Not found", { status: 404 });
+  if (!(await canAccessUser(admin, (att as { userId?: string | null }).userId))) return new Response("Forbidden", { status: 403 });
   const name = encodeURIComponent(att.fileName);
   return new Response(new Uint8Array(att.data), {
     headers: {

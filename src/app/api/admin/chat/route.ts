@@ -1,3 +1,4 @@
+import { canAccessUser, scopeUserWhere, assignedWhere, isScopedStaff } from "@/lib/crm-scope";
 import { NextResponse } from "next/server";
 import { requireAdmin, requireAdminWrite } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -14,7 +15,8 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const userId = (searchParams.get("userId") || "").trim();
 
-  const where = userId ? { type: "CHAT", userId } : { type: "CHAT" };
+  const baseWhere: Record<string, unknown> = userId ? { type: "CHAT", userId } : { type: "CHAT" };
+  const where = isScopedStaff(admin) ? { ...baseWhere, user: assignedWhere(admin) } : baseWhere;
   const rows = await prisma.communication.findMany({
     where,
     orderBy: { createdAt: "desc" },
@@ -136,7 +138,7 @@ export async function GET(req: Request) {
   }));
 
   const traders = await prisma.user.findMany({
-    where: { role: "TRADER" },
+    where: scopeUserWhere(admin, { role: "TRADER" }),
     select: { id: true, name: true, email: true },
     orderBy: { name: "asc" },
     take: 200,
@@ -157,6 +159,7 @@ export async function POST(req: Request) {
   if (!userId || !message) {
     return NextResponse.json({ error: "userId ve message zorunlu" }, { status: 400 });
   }
+  if (!(await canAccessUser(admin, userId))) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) return NextResponse.json({ error: "Trader not found" }, { status: 404 });
 
@@ -196,6 +199,7 @@ export async function PATCH(req: Request) {
   }
 
   const existing = await prisma.communication.findUnique({ where: { id } });
+  if (existing && !(await canAccessUser(admin, existing.userId))) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   if (!existing || existing.type !== "CHAT") {
     return NextResponse.json({ error: "Message not found" }, { status: 404 });
   }

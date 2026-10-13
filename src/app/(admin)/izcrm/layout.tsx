@@ -4,7 +4,8 @@ import NotificationBell from "@/components/notifications/NotificationBell";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { CRM_NAV_GROUPS } from "@/lib/crm-nav";
+import { CRM_NAV_GROUPS as ALL_NAV_GROUPS } from "@/lib/crm-nav";
+import { scopedPageAllowed } from "@/lib/crm-scope-pages";
 import CrmI18n from "@/components/i18n/CrmI18n";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 import SymbolCatalogSync from "@/components/trading/SymbolCatalogSync";
@@ -23,6 +24,9 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
   const [adminId, setAdminId] = useState("");
   const [perms, setPerms] = useState<Record<string, boolean>>({});
   const readOnly = Boolean(perms.crmReadOnly);
+  const CRM_NAV_GROUPS = perms.scoped
+    ? ALL_NAV_GROUPS.map((g) => ({ ...g, items: g.items.filter((n) => scopedPageAllowed(n.href)) })).filter((g) => g.items.length)
+    : ALL_NAV_GROUPS;
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
     main: true,
     ops: true,
@@ -49,10 +53,17 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
         setEmail(d.user.email || "");
         setAdminId(d.user.id || "");
         setPerms(d.permissions || {});
+        if (d.permissions?.scoped && !scopedPageAllowed(window.location.pathname)) {
+          router.replace("/izcrm/traders");
+        }
         setReady(true);
       })
       .catch(() => router.push("/login"));
   }, [router]);
+
+  useEffect(() => {
+    if (perms.scoped && pathname && !scopedPageAllowed(pathname)) router.replace("/izcrm/traders");
+  }, [perms.scoped, pathname, router]);
 
   useEffect(() => {
     for (const g of CRM_NAV_GROUPS) {

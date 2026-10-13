@@ -1,3 +1,4 @@
+import { canAccessUser, scopeUserWhere, assignedWhere, isScopedStaff } from "@/lib/crm-scope";
 import { NextResponse } from "next/server";
 import { writeAudit, requireAdmin, requireAdminPerm, isCrmReadOnlyAdmin } from "@/lib/auth";
 import { maskTraderForRoViewer } from "@/lib/security/mask";
@@ -190,6 +191,18 @@ export async function PATCH(req: Request, ctx: Ctx) {
         return NextResponse.json({ error: "You cannot remove your own admin role" }, { status: 400 });
       }
       data.role = role;
+    }
+  }
+
+  if (body.assigneeId !== undefined) {
+    const aid = String(body.assigneeId || "").trim();
+    if (!aid) {
+      (data as Record<string, unknown>).assigneeId = null;
+    } else {
+      const staff = await prisma.user.findFirst({ where: { id: aid, role: "ADMIN" }, select: { id: true, name: true } });
+      if (!staff) return NextResponse.json({ error: "Staff not found" }, { status: 400 });
+      (data as Record<string, unknown>).assigneeId = staff.id;
+      (data as Record<string, unknown>).assigneeName = staff.name;
     }
   }
 

@@ -11,6 +11,7 @@ import { SYMBOLS } from "@/lib/symbols";
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import RetentionPanel, { AssigneePicker } from "@/components/crm/RetentionPanel";
 import { useCallback, useEffect, useState } from "react";
 import { LoginHistory, TraderPresenceHeader } from "@/components/crm/Presence";
 import AccountPermissionsPanel from "@/components/crm/AccountPermissionsPanel";
@@ -1661,6 +1662,8 @@ export default function AdminUserDetailPage() {
             <Field label={i18n("crm.ui.broker")} value={fv("brokerName") as string} onChange={(v) => setF("brokerName", v)} disabled={!ed} />
             <Field label={i18n("crm.ui.assignee")} value={fv("assigneeName") as string} onChange={(v) => setF("assigneeName", v)} disabled={!ed} />
           </div>
+          {canManageUsers ? <AssigneePicker userId={user.id} current={(user as { assigneeId?: string | null }).assigneeId ?? null} /> : null}
+          <RetentionPanel userId={user.id} />
 
           <LoginHistory userId={user.id} />
 

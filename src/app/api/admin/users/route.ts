@@ -1,3 +1,4 @@
+import { canAccessUser, scopeUserWhere, assignedWhere, isScopedStaff } from "@/lib/crm-scope";
 import { NextResponse } from "next/server";
 import { writeAudit, ADMIN_PERMISSIONS, hashPassword, requireAdmin, requireAdminPerm, isCrmReadOnlyAdmin } from "@/lib/auth";
 import { maskTraderForRoViewer } from "@/lib/security/mask";
@@ -88,7 +89,7 @@ export async function GET(req: Request) {
   if (and.length) where.AND = and;
 
   const users = await prisma.user.findMany({
-    where: Object.keys(where).length ? where : undefined,
+    where: scopeUserWhere(admin, Object.keys(where).length ? where : undefined),
     include: { account: true },
     orderBy: { createdAt: "desc" },
     take: 500,

@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
 import { ensureDemoSeed } from "./ensure-seed";
 import { touchPresenceInBackground } from "./presence";
+import { isScopedStaff, scopedRequestAllowed } from "./crm-scope";
 
 const COOKIE_NAME = "7fx_session";
 const LEGACY_COOKIE_NAME = "deskflow_session";
@@ -227,6 +228,19 @@ export async function requireAdmin() {
   }
   const user = await requireUser();
   if (!user || user.role !== "ADMIN") return null;
+  // Scoped staff (Sales/Retention Manager): deny-by-default admin API allowlist + ownership.
+  if (isScopedStaff(user)) {
+    let url: string | null = null;
+    let method: string | null = null;
+    try {
+      const h = headers();
+      url = h.get("x-7fx-url");
+      method = h.get("x-7fx-method");
+    } catch {
+      return null;
+    }
+    if (!(await scopedRequestAllowed(user, url, method))) return null;
+  }
   return user;
 }
 
@@ -259,6 +273,7 @@ export async function requireAdminWrite(perm?: AdminPermission) {
   if (!user) return null;
   if (isCrmReadOnly(user as { crmReadOnly?: boolean })) return null;
   if (perm && (user as Record<string, unknown>)[perm] === false) return null;
+  if (perm && isScopedStaff(user)) return null;
   return user;
 }
 
@@ -271,6 +286,7 @@ export async function requireAdminPerm(perm?: AdminPermission) {
 
 export function permissionsOf(user: {
   role: string;
+  jobTitle?: string | null;
   canManageUsers?: boolean;
   canApproveDeposits?: boolean;
   canEditRates?: boolean;
@@ -279,6 +295,19 @@ export function permissionsOf(user: {
   crmReadOnly?: boolean;
 }) {
   const isAdmin = user.role === "ADMIN";
+  if (isScopedStaff(user)) {
+    // Sales/Retention Manager: only assigned customers + retention, no admin settings / staff mgmt.
+    return {
+      isAdmin: true,
+      crmReadOnly: false,
+      scoped: true,
+      canManageUsers: false,
+      canApproveDeposits: false,
+      canEditRates: false,
+      canManageMethods: false,
+      canAdjustBalance: false,
+    };
+  }
   const readOnly = isAdmin && user.crmReadOnly === true;
   // Read-only CRM admins: view-all, no can* write flags.
   if (readOnly) {

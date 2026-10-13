@@ -1,3 +1,4 @@
+import { canAccessUser, scopeUserWhere, assignedWhere, isScopedStaff } from "@/lib/crm-scope";
 import { NextResponse } from "next/server";
 import { requireAdmin, requireAdminWrite } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -38,6 +39,7 @@ export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}));
   const userId = String(body.userId || "").trim();
   if (!userId) return NextResponse.json({ error: "userId required" }, { status: 400 });
+  if (!(await canAccessUser(admin, userId))) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
