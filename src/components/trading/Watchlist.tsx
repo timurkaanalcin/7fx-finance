@@ -58,6 +58,17 @@ function FlashPrice({
 const FAV_KEY = "fx-watch-favs";
 const RECENT_KEY = "fx-watch-recent";
 const RECENT_MAX = 12;
+const SORT_KEY = "fx-watch-sort";
+
+type SortMode = "DEFAULT" | "GAIN" | "LOSS" | "AZ";
+const SORT_CYCLE: SortMode[] = ["DEFAULT", "GAIN", "LOSS", "AZ"];
+const SORT_LABEL: Record<SortMode, string> = {
+  DEFAULT: "Default",
+  GAIN: "Top gainers",
+  LOSS: "Top losers",
+  AZ: "A–Z",
+};
+const SORT_ICON: Record<SortMode, string> = { DEFAULT: "⇅", GAIN: "▲%", LOSS: "▼%", AZ: "A–Z" };
 
 const FILTERS = [
   { id: "FAV", label: "★" },
@@ -120,7 +131,42 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
     });
   }, [selected]);
 
-  const list = useMemo(() => {
+  /** Sort mode — per device. Change-% sorts use a snapshot refreshed every 3s so rows don't jump on every tick. */
+  const [sortMode, setSortMode] = useState<SortMode>("DEFAULT");
+  useEffect(() => {
+    try {
+      const v = localStorage.getItem(SORT_KEY) as SortMode | null;
+      if (v && SORT_CYCLE.includes(v)) setSortMode(v);
+    } catch {}
+  }, []);
+  const cycleSort = () => {
+    setSortMode((prev) => {
+      const next = SORT_CYCLE[(SORT_CYCLE.indexOf(prev) + 1) % SORT_CYCLE.length];
+      try {
+        localStorage.setItem(SORT_KEY, next);
+      } catch {}
+      return next;
+    });
+  };
+  const pricesRef = useRef(prices);
+  pricesRef.current = prices;
+  const [pctSnap, setPctSnap] = useState<Record<string, number>>({});
+  useEffect(() => {
+    if (sortMode !== "GAIN" && sortMode !== "LOSS") return;
+    const take = () => {
+      const snap: Record<string, number> = {};
+      for (const [k, v] of Object.entries(pricesRef.current)) {
+        const n = Number(v?.changePct);
+        if (Number.isFinite(n)) snap[k] = n;
+      }
+      setPctSnap(snap);
+    };
+    take();
+    const t = window.setInterval(take, 3000);
+    return () => window.clearInterval(t);
+  }, [sortMode]);
+
+  const baseList = useMemo(() => {
     const qq = q.toLowerCase();
     const match = (s: SymbolDef) => !q || s.symbol.toLowerCase().includes(qq) || s.name.toLowerCase().includes(qq);
     if (filter === "RECENT") {
@@ -136,6 +182,26 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
     if (!favs.length) return out;
     return [...out.filter((s) => favs.includes(s.symbol)), ...out.filter((s) => !favs.includes(s.symbol))];
   }, [symbols, q, filter, favs, recent]);
+
+  const list = useMemo(() => {
+    if (sortMode === "DEFAULT") return baseList;
+    const arr = [...baseList];
+    if (sortMode === "AZ") {
+      arr.sort((a, b) => a.symbol.localeCompare(b.symbol));
+      return arr;
+    }
+    const dir = sortMode === "GAIN" ? -1 : 1;
+    arr.sort((a, b) => {
+      const pa = pctSnap[a.symbol];
+      const pb = pctSnap[b.symbol];
+      const ha = Number.isFinite(pa);
+      const hb = Number.isFinite(pb);
+      if (ha !== hb) return ha ? -1 : 1; // symbols without a price go last
+      if (!ha) return 0;
+      return dir * (pa - pb);
+    });
+    return arr;
+  }, [baseList, sortMode, pctSnap]);
 
   return (
     <aside
@@ -190,7 +256,24 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
         </div>
       </div>
       <div className="flex items-center justify-between px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.1em] text-desk-muted/80 md:px-2.5 md:py-1 md:font-medium md:tracking-[0.08em]">
-        <span>Symbol</span>
+        <button
+          type="button"
+          onClick={cycleSort}
+          title={`Sort: ${SORT_LABEL[sortMode]} (click to change)`}
+          aria-label={`Sort watchlist: ${SORT_LABEL[sortMode]}. Click to change.`}
+          data-fx-watch-sort={sortMode}
+          className={`-mx-1 inline-flex items-center gap-1 rounded-[6px] px-1 py-0.5 uppercase transition-colors hover:bg-desk-hover hover:text-desk-text ${
+            sortMode !== "DEFAULT" ? "text-desk-accent" : ""
+          }`}
+        >
+          <span>Symbol</span>
+          <span className="normal-case tracking-normal" aria-hidden>
+            {SORT_ICON[sortMode]}
+          </span>
+          {sortMode !== "DEFAULT" && (
+            <span className="normal-case tracking-normal text-desk-muted/80">· {SORT_LABEL[sortMode]}</span>
+          )}
+        </button>
         <span>BID / ASK · SPR · %</span>
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto">
