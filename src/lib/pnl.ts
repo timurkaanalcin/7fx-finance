@@ -69,3 +69,34 @@ export function calcExitPriceForProfit(
 export function normalizeSide(side: unknown): TradeSide {
   return String(side ?? "BUY").toUpperCase() === "SELL" ? "SELL" : "BUY";
 }
+
+/**
+ * Lot size for a max risk amount given entry, stop-loss, and contract size.
+ * volume = riskAmount / (|entry − sl| × contractSize)
+ * Clamped to [0.01, 100], rounded to 2 decimals. Returns null if inputs are invalid.
+ */
+export function calcVolumeForRisk(
+  riskAmount: number,
+  entry: number,
+  sl: number,
+  contractSize: number
+): number | null {
+  if (
+    !Number.isFinite(riskAmount) ||
+    riskAmount <= 0 ||
+    !Number.isFinite(entry) ||
+    entry <= 0 ||
+    !Number.isFinite(sl) ||
+    sl <= 0 ||
+    !Number.isFinite(contractSize) ||
+    contractSize <= 0
+  ) {
+    return null;
+  }
+  const denom = Math.abs(entry - sl) * contractSize;
+  if (!Number.isFinite(denom) || denom === 0) return null;
+  const raw = riskAmount / denom;
+  if (!Number.isFinite(raw) || raw <= 0) return null;
+  const clamped = Math.min(100, Math.max(0.01, raw));
+  return Math.round(clamped * 100) / 100;
+}

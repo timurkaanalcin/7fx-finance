@@ -637,6 +637,8 @@ export default function TerminalShell() {
           symbols={symbols}
           price={prices[symbol]}
           initialSide={orderSide}
+          equity={account?.equity}
+          currency={account?.currency || "USD"}
           onPlaced={refreshAll}
           onClose={() => setOrderOpen(false)}
         />

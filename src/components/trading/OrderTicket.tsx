@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { formatPrice } from "@/lib/symbols";
-import { calcTradeProfit } from "@/lib/pnl";
+import { calcTradeProfit, calcVolumeForRisk } from "@/lib/pnl";
 import SymbolIcon from "@/components/ui/SymbolIcon";
 import type { PriceTick, SymbolDef } from "./types";
 
@@ -16,6 +16,10 @@ type Props = {
   modal?: boolean;
   initialSide?: "BUY" | "SELL";
   className?: string;
+  /** Account equity for optional % risk presets */
+  equity?: number;
+  /** Account currency label (default USD) */
+  currency?: string;
 };
 
 function defaultSlTp(
@@ -57,6 +61,8 @@ export default function OrderTicket({
   modal = false,
   initialSide = "BUY",
   className = "",
+  equity,
+  currency = "USD",
 }: Props) {
   const [side, setSide] = useState<"BUY" | "SELL">(initialSide);
   const [type, setType] = useState<"MARKET" | "LIMIT" | "STOP">("MARKET");
@@ -68,6 +74,8 @@ export default function OrderTicket({
   const [showTp, setShowTp] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+  const [riskAmount, setRiskAmount] = useState("");
+  const [riskError, setRiskError] = useState("");
 
   const def = symbols.find((s) => s.symbol === symbol);
   const digits = def?.digits ?? 5;
@@ -82,6 +90,8 @@ export default function OrderTicket({
     setShowSl(false);
     setShowTp(false);
     setMsg("");
+    setRiskAmount("");
+    setRiskError("");
     if (price?.mid) setLimitPrice(formatPrice(symbol, price.mid));
     // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally ignore live price ticks
   }, [symbol, initialSide]);
@@ -163,6 +173,19 @@ export default function OrderTicket({
       setTp(d.tp);
       return true;
     });
+  }
+
+  function applyRiskLot() {
+    setRiskError("");
+    const risk = Number(riskAmount);
+    const slN = Number(sl);
+    const cs = def?.contractSize ?? 1;
+    const vol = calcVolumeForRisk(risk, entry, slN, cs);
+    if (vol == null) {
+      setRiskError("Invalid SL / entry for risk sizing");
+      return;
+    }
+    setVolume(vol.toFixed(2));
   }
 
   async function submit() {
@@ -432,6 +455,93 @@ export default function OrderTicket({
             )}
           </div>
         )}
+
+        {showSl &&
+          Number(sl) > 0 &&
+          entry > 0 &&
+          (def?.contractSize ?? 0) > 0 &&
+          Number.isFinite(Number(sl)) && (
+            <div className="space-y-2 rounded-[12px] border border-desk-border/60 bg-desk-bg/70 p-2.5 md:rounded-control md:p-2">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-desk-muted">
+                  Risk sizing
+                </span>
+                <span
+                  className="text-[10px] font-semibold tabular-nums text-desk-muted"
+                  title="Current risk at entered volume if SL hits"
+                >
+                  Risk{" "}
+                  {preview.sl != null
+                    ? fmtUsd(Math.abs(preview.sl))
+                    : "—"}
+                  {currency && currency !== "USD" ? ` ${currency}` : ""}
+                </span>
+              </div>
+              <input
+                type="number"
+                min={0}
+                step="1"
+                value={riskAmount}
+                onChange={(e) => {
+                  setRiskAmount(e.target.value);
+                  setRiskError("");
+                }}
+                placeholder={currency === "USD" || !currency ? "Max risk $" : `Max risk (${currency})`}
+                className={inputCls + " tabular-nums"}
+              />
+              <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Risk presets">
+                {[25, 50, 100].map((amt) => (
+                  <button
+                    key={amt}
+                    type="button"
+                    onClick={() => {
+                      setRiskAmount(String(amt));
+                      setRiskError("");
+                    }}
+                    className="rounded-full border border-desk-border/70 bg-desk-elev px-2 py-0.5 text-[10px] font-semibold tabular-nums text-desk-muted hover:bg-desk-hover hover:text-desk-text"
+                  >
+                    ${amt}
+                  </button>
+                ))}
+                {typeof equity === "number" && equity > 0 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRiskAmount((Math.round(equity * 0.01 * 100) / 100).toFixed(2));
+                        setRiskError("");
+                      }}
+                      className="rounded-full border border-desk-border/70 bg-desk-elev px-2 py-0.5 text-[10px] font-semibold tabular-nums text-desk-muted hover:bg-desk-hover hover:text-desk-text"
+                      title={`1% of equity (${fmtUsd(equity)})`}
+                    >
+                      1%
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRiskAmount((Math.round(equity * 0.02 * 100) / 100).toFixed(2));
+                        setRiskError("");
+                      }}
+                      className="rounded-full border border-desk-border/70 bg-desk-elev px-2 py-0.5 text-[10px] font-semibold tabular-nums text-desk-muted hover:bg-desk-hover hover:text-desk-text"
+                      title={`2% of equity (${fmtUsd(equity)})`}
+                    >
+                      2%
+                    </button>
+                  </>
+                )}
+                <button
+                  type="button"
+                  onClick={applyRiskLot}
+                  className="ml-auto rounded-full border border-desk-accent/50 bg-desk-accent/15 px-2.5 py-0.5 text-[10px] font-semibold text-desk-accent hover:bg-desk-accent/25"
+                >
+                  Lot uygula
+                </button>
+              </div>
+              {riskError && (
+                <div className="text-[10px] font-medium text-desk-sell">{riskError}</div>
+              )}
+            </div>
+          )}
 
         {showTp && (
           <div>
