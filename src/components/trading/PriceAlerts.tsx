@@ -1,10 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { formatPrice } from "@/lib/symbols";
+import { formatPrice, getSymbol } from "@/lib/symbols";
 import type { PriceTick } from "./types";
 
-type Alert = { id: string; symbol: string; price: number; dir: "above" | "below"; createdAt: number };
+/**
+ * repeat: false/undefined = fire once then remove (legacy behaviour).
+ * repeat: true = keep after firing, disarm (armed:false) until mid moves back past the level by the hysteresis.
+ */
+type Alert = { id: string; symbol: string; price: number; dir: "above" | "below"; createdAt: number; repeat?: boolean; armed?: boolean };
 const KEY = "fx-price-alerts";
 const SOUND_KEY = "fx-price-alert-sound";
 
@@ -67,6 +71,16 @@ function play(ctx: AudioContext) {
 
 const PCT_CHIPS = [-1, -0.5, -0.1, 0.1, 0.5, 1] as const;
 
+/** Re-arm band for repeat alerts: max(0.02% of level, one display tick). */
+function hysteresis(symbol: string, price: number): number {
+  let digits = 5;
+  try {
+    const d = getSymbol(symbol)?.digits;
+    if (typeof d === "number" && Number.isFinite(d) && d >= 0) digits = d;
+  } catch {}
+  return Math.max(Math.abs(price) * 0.0002, Math.pow(10, -digits));
+}
+
 function load(): Alert[] {
   try {
     const v = JSON.parse(localStorage.getItem(KEY) || "[]");
@@ -92,6 +106,7 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<number | null>(null);
   const [sound, setSound] = useState(true);
+  const [repeatNew, setRepeatNew] = useState(false);
   const soundRef = useRef(true);
 
   useEffect(() => {
@@ -119,17 +134,38 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
   useEffect(() => {
     if (!alerts.length) return;
     const hit: Alert[] = [];
-    const keep = alerts.filter((a) => {
+    let changed = false;
+    const keep: Alert[] = [];
+    for (const a of alerts) {
       const m = mid(prices[a.symbol]);
-      if (!Number.isFinite(m)) return true;
+      if (!Number.isFinite(m)) {
+        keep.push(a);
+        continue;
+      }
+      if (a.armed === false) {
+        // Cooling: re-arm only once mid has moved back past the level (with hysteresis)
+        const h = hysteresis(a.symbol, a.price);
+        const rearm = a.dir === "above" ? m < a.price - h : m > a.price + h;
+        if (rearm) {
+          keep.push({ ...a, armed: true });
+          changed = true;
+        } else keep.push(a);
+        continue;
+      }
       const fired = a.dir === "above" ? m >= a.price : m <= a.price;
-      if (fired) hit.push(a);
-      return !fired;
-    });
-    if (!hit.length) return;
+      if (!fired) {
+        keep.push(a);
+        continue;
+      }
+      hit.push(a);
+      changed = true;
+      if (a.repeat) keep.push({ ...a, armed: false });
+    }
+    if (!changed) return;
     setAlerts(keep);
     save(keep);
-    const msg = hit.map((a) => `${a.symbol} ${a.dir === "above" ? "≥" : "≤"} ${formatPrice(a.symbol, a.price)}`).join(" · ");
+    if (!hit.length) return;
+    const msg = hit.map((a) => `${a.symbol} ${a.dir === "above" ? "≥" : "≤"} ${formatPrice(a.symbol, a.price)}${a.repeat ? " ↻" : ""}`).join(" · ");
     setToast(msg);
     if (toastTimer.current) window.clearTimeout(toastTimer.current);
     toastTimer.current = window.setTimeout(() => setToast(null), 8000);
@@ -148,7 +184,7 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
   function add() {
     const p = Number(String(val).replace(",", "."));
     if (!Number.isFinite(p) || p <= 0 || !Number.isFinite(cur)) return;
-    const a: Alert = { id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, symbol, price: p, dir: p >= cur ? "above" : "below", createdAt: Date.now() };
+    const a: Alert = { id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, symbol, price: p, dir: p >= cur ? "above" : "below", createdAt: Date.now(), repeat: repeatNew, armed: true };
     const next = [...alerts, a].slice(-100);
     setAlerts(next);
     save(next);
@@ -165,6 +201,8 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
       price,
       dir: price >= cur ? "above" : "below",
       createdAt: Date.now(),
+      repeat: repeatNew,
+      armed: true,
     };
     const next = [...alerts, a].slice(-100);
     setAlerts(next);
@@ -180,6 +218,12 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
     const target = cur * (1 + pct / 100);
     if (soundRef.current) getAudio();
     addAt(target);
+  }
+
+  function toggleRepeat(id: string) {
+    const next = alerts.map((a) => (a.id === id ? { ...a, repeat: !a.repeat } : a));
+    setAlerts(next);
+    save(next);
   }
 
   function remove(id: string) {
@@ -266,6 +310,20 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
                 Add
               </button>
             </div>
+            <div className="mt-2 flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setRepeatNew((r) => !r)}
+                aria-pressed={repeatNew}
+                title={repeatNew ? "Tekrarla: tetiklenince kalır, fiyat geri dönünce yeniden kurulur · Repeat" : "Tek sefer: tetiklenince silinir · Once"}
+                className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold transition ${
+                  repeatNew ? "border-[#c8a96a] bg-[#c8a96a]/15 text-desk-text" : "border-desk-border bg-desk-elev/80 text-desk-muted hover:text-desk-text"
+                }`}
+              >
+                ↻ Tekrarla · Repeat
+              </button>
+              <span className="text-[10px] text-desk-muted">{repeatNew ? "Tekrarlı · Repeat" : "Tek sefer · Once"}</span>
+            </div>
             {Number.isFinite(cur) && (
               <div className="mt-2 flex flex-wrap gap-1" role="group" aria-label="Quick percent offsets from mid">
                 {PCT_CHIPS.map((pct) => (
@@ -286,13 +344,30 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
             {mine.length > 0 ? (
               <ul className="mt-2 space-y-1">
                 {mine.map((a) => (
-                  <li key={a.id} className="flex items-center justify-between rounded-[8px] bg-desk-elev/80 px-2 py-1.5 text-xs text-desk-text">
-                    <span className="tabular-nums">
+                  <li key={a.id} className="flex items-center justify-between gap-1 rounded-[8px] bg-desk-elev/80 px-2 py-1.5 text-xs text-desk-text">
+                    <span className={`min-w-0 tabular-nums ${a.armed === false ? "text-desk-muted" : ""}`}>
                       {a.dir === "above" ? "▲ ≥" : "▼ ≤"} {formatPrice(symbol, a.price)}
+                      {a.armed === false && (
+                        <span className="ml-1.5 text-[10px] italic text-desk-muted/80" title="Fiyat seviyenin gerisine dönünce yeniden kurulur · Re-arms after price moves back">
+                          Bekliyor · Cooling
+                        </span>
+                      )}
                     </span>
-                    <button type="button" onClick={() => remove(a.id)} className="px-1 text-desk-muted hover:text-desk-sell" aria-label="Remove alert">
-                      ✕
-                    </button>
+                    <span className="flex shrink-0 items-center">
+                      <button
+                        type="button"
+                        onClick={() => toggleRepeat(a.id)}
+                        aria-pressed={!!a.repeat}
+                        aria-label={a.repeat ? "Repeat alert — switch to once" : "Once alert — switch to repeat"}
+                        title={a.repeat ? "Tekrarlı · Repeat → Tek sefer yap" : "Tek sefer · Once → Tekrarla"}
+                        className={`rounded-[6px] px-1.5 text-[10px] font-semibold ${a.repeat ? "text-[#c8a96a]" : "text-desk-muted"} hover:text-desk-text`}
+                      >
+                        {a.repeat ? "↻" : "1×"}
+                      </button>
+                      <button type="button" onClick={() => remove(a.id)} className="px-1 text-desk-muted hover:text-desk-sell" aria-label="Remove alert" title="Sil · Remove">
+                        ✕
+                      </button>
+                    </span>
                   </li>
                 ))}
               </ul>

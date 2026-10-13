@@ -900,6 +900,9 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.canned.slashHint", "Tip: type / in the message box to quick-pick", "İpucu: mesaj kutusuna / yazarak hızlı seçin", "Совет: введите / в поле сообщения для быстрого выбора", "Tipp: / im Nachrichtenfeld tippen zur Schnellauswahl", "تلميح: اكتب / في مربع الرسالة للاختيار السريع"],
   ["crm.canned.pickHint", "↑↓ select · Enter/Tab insert · Esc close", "↑↓ seç · Enter/Tab ekle · Esc kapat", "↑↓ выбор · Enter/Tab вставить · Esc закрыть", "↑↓ wählen · Enter/Tab einfügen · Esc schließen", "↑↓ اختيار · Enter/Tab إدراج · Esc إغلاق"],
   ["crm.canned.docsLink", "Documents link (customer sees Evraklar link)", "Evraklar bağlantısı (müşteri link olarak görür)", "Ссылка на документы", "Dokumente-Link", "رابط المستندات"],
+  ["crm.chat.pin", "Pin to top", "Üste sabitle", "Закрепить сверху", "Oben anheften", "تثبيت في الأعلى"],
+  ["crm.chat.unpin", "Unpin", "Sabitlemeyi kaldır", "Открепить", "Lösen", "إلغاء التثبيت"],
+  ["crm.chat.pinned", "Pinned", "Sabit", "Закреплено", "Angeheftet", "مثبت"],
 ];
 
 function pack(index: 1|2|3|4|5): Dict {

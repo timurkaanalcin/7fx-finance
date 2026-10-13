@@ -184,6 +184,26 @@ function ProfileeRow({
   );
 }
 
+const PIN_KEY = "7fx.crm.chat.pinned.v1";
+const PIN_MAX = 20;
+/** Per-browser pinned live-support threads (traderIds, newest pin first). Soft-fails. */
+function loadPins(): string[] {
+  try {
+    const v = JSON.parse(localStorage.getItem(PIN_KEY) || "[]");
+    if (!Array.isArray(v)) return [];
+    const out: string[] = [];
+    for (const x of v) if (typeof x === "string" && x && !out.includes(x)) out.push(x);
+    return out.slice(0, PIN_MAX);
+  } catch {
+    return [];
+  }
+}
+function savePins(list: string[]) {
+  try {
+    localStorage.setItem(PIN_KEY, JSON.stringify(list));
+  } catch {}
+}
+
 export default function ChatPage() {
   const { i18n, locale } = useCrmLabels();
   const [threads, setThreads] = useState<Thread[]>([]);
@@ -211,6 +231,18 @@ export default function ChatPage() {
   const [cannedOpen, setCannedOpen] = useState(false);
   const [slash, setSlash] = useState<{ query: string; start: number } | null>(null);
   const [slashIdx, setSlashIdx] = useState(0);
+  // Staff-only pinned threads (per browser, max 20, newest pin first)
+  const [pins, setPins] = useState<string[]>([]);
+  useEffect(() => {
+    setPins(loadPins());
+  }, []);
+  const togglePin = useCallback((traderId: string) => {
+    setPins((prev) => {
+      const next = prev.includes(traderId) ? prev.filter((x) => x !== traderId) : [traderId, ...prev].slice(0, PIN_MAX);
+      savePins(next);
+      return next;
+    });
+  }, []);
   const slashMatches = useMemo(() => {
     if (!slash) return [] as { id: string; title: string; tag: string; body: string }[];
     const q = slug(slash.query);
@@ -260,8 +292,14 @@ export default function ChatPage() {
           t.messages.some((m) => m.body.toLowerCase().includes(q)),
       );
     }
+    if (pins.length) {
+      const rank = new Map(pins.map((id, i) => [id, i]));
+      const pinned = rows.filter((t) => rank.has(t.traderId)).sort((a, b) => (rank.get(a.traderId) ?? 0) - (rank.get(b.traderId) ?? 0));
+      if (pinned.length) rows = [...pinned, ...rows.filter((t) => !rank.has(t.traderId))];
+    }
     return rows;
-  }, [threads, tab, query]);
+  }, [threads, tab, query, pins]);
+  const pinnedInList = useMemo(() => list.filter((t) => pins.includes(t.traderId)).length, [list, pins]);
 
   // Deep link from notifications: /izcrm/chat?user=<traderId>
   useEffect(() => {
@@ -622,12 +660,41 @@ export default function ChatPage() {
                 {i18n("crm.chat.emptyList")}
               </li>
             )}
+            {pinnedInList > 0 && (
+              <li className="px-2.5 pb-0.5 pt-1 text-[10px] font-semibold uppercase tracking-wide text-neutral-400">
+                📌 {i18n("crm.chat.pinned")} · {pinnedInList}
+              </li>
+            )}
             {list.map((t) => {
               const last = t.messages[t.messages.length - 1];
               const isActive = active?.traderId === t.traderId;
               const unread = isUnanswered(t);
+              const isPinned = pins.includes(t.traderId);
               return (
-                <li key={t.traderId}>
+                <li key={t.traderId} className="group relative">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      togglePin(t.traderId);
+                    }}
+                    aria-pressed={isPinned}
+                    aria-label={isPinned ? i18n("crm.chat.unpin") : i18n("crm.chat.pin")}
+                    title={isPinned ? i18n("crm.chat.unpin") : i18n("crm.chat.pin")}
+                    className={`absolute bottom-1.5 right-1.5 z-10 flex h-6 w-6 items-center justify-center rounded-md text-[12px] transition ${
+                      isPinned
+                        ? "opacity-100"
+                        : "opacity-40 grayscale hover:bg-neutral-200 hover:opacity-100 group-hover:opacity-70"
+                    }`}
+                  >
+                    {isPinned ? "📌" : (
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-neutral-500" aria-hidden>
+                        <path d="M12 17v5" />
+                        <path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z" />
+                      </svg>
+                    )}
+                  </button>
                   <button
                     type="button"
                     onClick={() => setSelected(t.traderId)}
@@ -667,7 +734,7 @@ export default function ChatPage() {
                           {relativeTimeTr(t.lastAt, locale)}
                         </span>
                       </span>
-                      <span className="mt-0.5 flex items-center gap-1.5">
+                      <span className="mt-0.5 flex items-center gap-1.5 pr-6">
                         <span
                           className={`truncate text-[11px] ${
                             unread ? "font-semibold text-neutral-800" : "text-neutral-500"
