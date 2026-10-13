@@ -7,6 +7,7 @@ import type { OrderRow, PositionRow, PriceTick } from "./types";
 import PnlCalendar, { closedDayKey } from "./PnlCalendar";
 import AccountStatement from "./AccountStatement";
 import { useI18n } from "@/lib/i18n/context";
+import TradeNote from "./TradeNote";
 
 type Tab = "open" | "closed" | "pending";
 type SideFilter = "ALL" | "BUY" | "SELL";
@@ -1234,8 +1235,12 @@ function ClosedCard({
           </div>
         </div>
       </div>
+      <div className="mt-2.5 flex items-center justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <TradeNote id={p.id} symbol={p.symbol} />
+        </div>
       {onReopenTrade && (
-        <div className="mt-2.5 flex justify-end">
+        <div className="flex shrink-0 justify-end">
           <button
             type="button"
             title={reopenTitle}
@@ -1252,6 +1257,7 @@ function ClosedCard({
           </button>
         </div>
       )}
+      </div>
     </div>
   );
 }
@@ -2217,19 +2223,20 @@ export default function BottomPanels({
                 <SortTh label="Profit" col="profit" sort={closedSort} onSort={onClosedSort} />
                 <th className="px-2 py-2">Net Profit</th>
                 <th className="px-2 py-2">{reopenLabel}</th>
+                <th className="px-2 py-2">{t("term.note.title")}</th>
               </tr>
             </thead>
             <tbody>
               {closedPositions.length === 0 && (
                 <tr>
-                  <td colSpan={12} className="px-3 py-8 text-center text-desk-muted">
+                  <td colSpan={13} className="px-3 py-8 text-center text-desk-muted">
                     No closed positions
                   </td>
                 </tr>
               )}
               {closedPositions.length > 0 && filteredClosed.length === 0 && (
                 <tr>
-                  <td colSpan={12} className="px-3 py-8 text-center text-desk-muted">
+                  <td colSpan={13} className="px-3 py-8 text-center text-desk-muted">
                     Filtreye uyan işlem yok
                   </td>
                 </tr>
@@ -2298,6 +2305,9 @@ export default function BottomPanels({
                         {reopenLabel}
                       </button>
                     )}
+                  </td>
+                  <td className="px-2 py-1.5">
+                    <TradeNote id={p.id} symbol={p.symbol} variant="table" />
                   </td>
                 </tr>
               ))}

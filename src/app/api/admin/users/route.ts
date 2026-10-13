@@ -119,6 +119,22 @@ export async function GET(req: Request) {
     }),
   ]).catch(() => [0, 0]);
 
+  // Retention status distribution (scoped like the list; TRADER only; nulls skipped)
+  const retentionCounts: Record<string, number> = {};
+  try {
+    const groups = await prisma.user.groupBy({
+      by: ["retentionStatus"],
+      where: scopeUserWhere(admin, { role: "TRADER", retentionStatus: { not: null } }),
+      _count: { _all: true },
+    });
+    for (const g of groups) {
+      const key = (g as { retentionStatus: string | null }).retentionStatus;
+      if (key) retentionCounts[key] = (g as { _count: { _all: number } })._count._all;
+    }
+  } catch {
+    /* counts are best-effort */
+  }
+
   const desks = await prisma.user.findMany({
     where: { desk: { not: null } },
     select: { desk: true },
@@ -151,6 +167,7 @@ export async function GET(req: Request) {
     }),
     serverTime: new Date().toISOString(),
     followUpDue: { overdue: fuOverdue, today: fuToday },
+    retentionCounts,
     desks: deskOptions.map((d) => d.name),
     deskOptions,
     permissionDefs: ADMIN_PERMISSIONS,

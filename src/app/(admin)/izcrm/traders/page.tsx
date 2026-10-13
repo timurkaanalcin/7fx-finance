@@ -155,6 +155,7 @@ export default function AdminUsersPage() {
   const [presence, setPresence] = useState("");
   const [followUp, setFollowUp] = useState("");
   const [followUpDue, setFollowUpDue] = useState<{ overdue: number; today: number }>({ overdue: 0, today: 0 });
+  const [retentionCounts, setRetentionCounts] = useState<Record<string, number>>({});
   const [savedFilters, setSavedFilters] = useState<SavedTraderFilter[]>([]);
   useEffect(() => {
     setSavedFilters(readSavedFilters());
@@ -258,6 +259,9 @@ export default function AdminUsersPage() {
         overdue: Number(data.followUpDue.overdue) || 0,
         today: Number(data.followUpDue.today) || 0,
       });
+    }
+    if (data.retentionCounts && typeof data.retentionCounts === "object") {
+      setRetentionCounts(data.retentionCounts as Record<string, number>);
     }
   }, [q, status, desk, country, saleStatus, retentionStatus, ftdOnly, presence, accountTypeFilter, dateFrom, dateTo, followUp]);
 
@@ -537,6 +541,46 @@ export default function AdminUsersPage() {
             <button
               type="button"
               onClick={() => setFollowUp("")}
+              className="rounded-full border border-[#e5e5e5] px-2.5 py-1 text-neutral-500 hover:text-neutral-800"
+            >
+              ✕ {i18n("crm.fu.clear")}
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Retention status distribution (scoped; click to filter) */}
+      {(RETENTION_STATUSES.some((s) => (retentionCounts[s] || 0) > 0) || retentionStatus) && (
+        <div className="mb-3 flex flex-wrap items-center gap-2 text-xs" data-fx-retention-dist aria-label={i18n("crm.ui.retention")}>
+          <span className="text-neutral-500">{i18n("crm.ui.retention")}:</span>
+          {RETENTION_STATUSES.map((s) => {
+            const n = retentionCounts[s] || 0;
+            const on = retentionStatus === s;
+            if (!n && !on) return null;
+            const tone =
+              s === "AT_RISK"
+                ? "border-red-300 bg-red-50 text-red-700"
+                : s === "VIP"
+                  ? "border-amber-300 bg-amber-50 text-amber-800"
+                  : s === "ACTIVE"
+                    ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+                    : "border-[#e5e5e5] text-neutral-600";
+            return (
+              <button
+                key={s}
+                type="button"
+                onClick={() => setRetentionStatus(on ? "" : s)}
+                aria-pressed={on}
+                className={`rounded-full border px-2.5 py-1 tabular-nums ${on ? "border-black bg-black text-white" : tone}`}
+              >
+                {code("crm.retention", s)} · {n}
+              </button>
+            );
+          })}
+          {retentionStatus && (
+            <button
+              type="button"
+              onClick={() => setRetentionStatus("")}
               className="rounded-full border border-[#e5e5e5] px-2.5 py-1 text-neutral-500 hover:text-neutral-800"
             >
               ✕ {i18n("crm.fu.clear")}
