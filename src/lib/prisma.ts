@@ -42,3 +42,54 @@ export const prisma =
   });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+
+// ---- Scoped-staff data isolation (Sales/Retention Manager) ----
+const USER_OWNED = new Set([
+  "Account", "UserNote", "Order", "Position", "DepositRequest", "BalanceRequest", "WithdrawalRequest",
+  "BalanceLedger", "Communication", "ClientActivityEvent", "DocumentRecord", "Reminder", "AutoLoginLink",
+  "LoginEvent", "ChatThreadState", "ChatAttachment", "Notification", "PushSubscription", "CustomerDocument",
+  "AiMembership",
+]);
+const WHERE_OPS = new Set([
+  "findUnique", "findUniqueOrThrow", "findFirst", "findFirstOrThrow", "findMany", "count", "aggregate", "groupBy",
+  "update", "updateMany", "delete", "deleteMany", "upsert",
+]);
+const READ_OPS = new Set(["findFirst", "findMany", "count", "aggregate", "groupBy"]);
+const TEST_REL = new Set(["Account", "UserNote", "Order", "Position", "DepositRequest", "BalanceRequest", "WithdrawalRequest", "BalanceLedger", "Communication", "ClientActivityEvent", "DocumentRecord", "LoginEvent", "ChatThreadState"]);
+const g2 = globalThis as unknown as { __7fxScopeMw?: boolean };
+if (!g2.__7fxScopeMw) {
+  g2.__7fxScopeMw = true;
+  prisma.$use(async (params, next) => {
+    const model = params.model;
+    if (!model || (model !== "User" && model !== "AuditLog" && !USER_OWNED.has(model))) return next(params);
+    const { resolveScope } = await import("./scope-context");
+    const scope = await resolveScope();
+    if (!scope) return next(params);
+    if ("excludeTest" in scope) {
+      // Real-business stats/reports: ignore TEST/demo customers.
+      const rel = model === "User" ? { isTest: false } : TEST_REL.has(model) ? { user: { isTest: false } } : null;
+      if (rel && READ_OPS.has(params.action)) {
+        const a = (params.args ||= {});
+        a.where = a.where ? { AND: [a.where, rel] } : rel;
+      }
+      return next(params);
+    }
+    const ids = scope.allowedUserIds;
+    const field = model === "User" ? "id" : model === "AuditLog" ? "adminId" : "userId";
+    const filter = model === "AuditLog" ? { adminId: scope.selfId } : { [field]: { in: ids } };
+    const args = (params.args ||= {});
+    if (WHERE_OPS.has(params.action)) {
+      args.where = args.where ? { ...args.where, AND: [...(Array.isArray(args.where.AND) ? args.where.AND : args.where.AND ? [args.where.AND] : []), filter] } : filter;
+    }
+    if (params.action === "create" || params.action === "createMany" || params.action === "upsert") {
+      const rows = params.action === "createMany" ? [].concat(args.data || []) : [params.action === "upsert" ? args.create : args.data];
+      for (const d of rows as Record<string, any>[]) {
+        if (!d) continue;
+        if (model === "User") throw new Error("Scoped staff cannot create users");
+        const owner = model === "AuditLog" ? d.adminId ?? d.admin?.connect?.id : d.userId ?? d.user?.connect?.id;
+        if (owner && !ids.includes(owner)) throw new Error("Scoped staff: forbidden owner");
+      }
+    }
+    return next(params);
+  });
+}

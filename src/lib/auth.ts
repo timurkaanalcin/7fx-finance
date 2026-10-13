@@ -202,6 +202,8 @@ export async function requireUser() {
   });
   if (!user) return null;
   if ((user as { active?: boolean }).active === false) return null;
+  const expAt = (user as { expiresAt?: Date | null }).expiresAt;
+  if (expAt && expAt.getTime() <= Date.now()) return null;
   // loginEnabled=false kills non-impersonation sessions (separate from freeze).
   // Admin impersonation from CRM still works so support can inspect the account.
   if (

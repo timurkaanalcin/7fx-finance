@@ -105,6 +105,10 @@ model User {
   /// Lead marked invalid by admin (affiliate stats)
   leadInvalid          Boolean          @default(false)
   leadInvalidAt        DateTime?
+  /// Test/demo record (excluded from real stats)
+  isTest               Boolean          @default(false)
+  /// Account auto-expires (login + sessions refused after this time)
+  expiresAt            DateTime?
 
   /// Documents stub
   documentsStatus      String           @default("NONE") // NONE | PENDING | APPROVED | REJECTED

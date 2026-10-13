@@ -123,6 +123,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
+    const exp = (user as { expiresAt?: Date | null }).expiresAt;
+    if (exp && exp.getTime() <= Date.now()) {
+      return NextResponse.json({ error: "Account expired" }, { status: 403 });
+    }
+
     if ((user as { active?: boolean }).active === false) {
       await recordLoginEvent({
         userId: user.id,

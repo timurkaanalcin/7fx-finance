@@ -77,7 +77,14 @@ export async function scopedRequestAllowed(
     }
     return true;
   }
+  // Read-only access to every other CRM section: data is isolated to assigned
+  // customers by the Prisma scope middleware (lib/prisma.ts). Sensitive/system areas stay denied.
+  if (method === "GET" && !SCOPED_DENY_GET.some((re) => re.test(path))) return true;
   return false;
 }
+
+const SCOPED_DENY_GET: RegExp[] = [
+  /^\/api\/admin\/(2fa|impersonate|import|cleanup-audit|export-audit|licenses|mail|export)(\/|$)/,
+];
 
 export { scopedPageAllowed } from "./crm-scope-pages";
