@@ -1,10 +1,122 @@
 "use client";
 
+import { useMemo, useState, type ReactNode } from "react";
 import { calcPipDistance, formatPrice } from "@/lib/symbols";
 import { fmtDateTime, fmtNum } from "@/lib/format";
 import type { OrderRow, PositionRow } from "./types";
 
 type Tab = "open" | "closed" | "pending";
+type SideFilter = "ALL" | "BUY" | "SELL";
+type ResultFilter = "ALL" | "PROFIT" | "LOSS";
+type PeriodFilter = "ALL" | "TODAY" | "7D" | "30D";
+
+function startOfLocalDay(d = new Date()) {
+  const x = new Date(d);
+  x.setHours(0, 0, 0, 0);
+  return x;
+}
+
+function periodCutoff(period: PeriodFilter): Date | null {
+  if (period === "ALL") return null;
+  const today = startOfLocalDay();
+  if (period === "TODAY") return today;
+  const days = period === "7D" ? 7 : 30;
+  const cut = new Date(today);
+  cut.setDate(cut.getDate() - (days - 1));
+  return cut;
+}
+
+function matchesPeriod(iso: string | null | undefined, period: PeriodFilter): boolean {
+  const cut = periodCutoff(period);
+  if (!cut) return true;
+  if (!iso) return false;
+  const t = new Date(iso).getTime();
+  if (Number.isNaN(t)) return false;
+  return t >= cut.getTime();
+}
+
+function matchesSymbol(
+  symbol: string,
+  chartSymbol: string | null | undefined,
+  q: string
+): boolean {
+  const needle = q.trim().toLowerCase();
+  if (!needle) return true;
+  if (symbol.toLowerCase().includes(needle)) return true;
+  if (chartSymbol && chartSymbol.toLowerCase().includes(needle)) return true;
+  return false;
+}
+
+function matchesSide(side: string, filter: SideFilter): boolean {
+  if (filter === "ALL") return true;
+  return side.toUpperCase() === filter;
+}
+
+function filterPositions(
+  rows: PositionRow[],
+  opts: {
+    side: SideFilter;
+    symbolQ: string;
+    period: PeriodFilter;
+    result?: ResultFilter;
+  }
+): PositionRow[] {
+  return rows.filter((p) => {
+    if (!matchesSide(p.side, opts.side)) return false;
+    if (!matchesSymbol(p.symbol, p.chartSymbol, opts.symbolQ)) return false;
+    if (!matchesPeriod(p.openedAt, opts.period)) return false;
+    if (opts.result && opts.result !== "ALL") {
+      const pnl = p.closeProfit ?? p.profit;
+      if (opts.result === "PROFIT" && !(pnl > 0)) return false;
+      if (opts.result === "LOSS" && !(pnl < 0)) return false;
+    }
+    return true;
+  });
+}
+
+function filterOrders(
+  rows: OrderRow[],
+  opts: { side: SideFilter; symbolQ: string; period: PeriodFilter }
+): OrderRow[] {
+  return rows.filter((o) => {
+    if (!matchesSide(o.side, opts.side)) return false;
+    if (!matchesSymbol(o.symbol, undefined, opts.symbolQ)) return false;
+    if (!matchesPeriod(o.createdAt, opts.period)) return false;
+    return true;
+  });
+}
+
+function Chip({
+  active,
+  onClick,
+  children,
+  tone,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: ReactNode;
+  tone?: "buy" | "sell" | "neutral";
+}) {
+  const activeCls =
+    tone === "buy"
+      ? "border-desk-buy/50 bg-desk-buy/15 text-desk-buy"
+      : tone === "sell"
+        ? "border-desk-sell/50 bg-desk-sell/15 text-desk-sell"
+        : "border-desk-accent/50 bg-desk-accent/15 text-desk-text";
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-[7px] border px-2 py-0.5 text-[10px] font-semibold transition-colors ${
+        active
+          ? activeCls
+          : "border-desk-border bg-desk-elev/40 text-desk-muted hover:bg-desk-hover hover:text-desk-text"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
 
 type Props = {
   tab: Tab;
@@ -223,11 +335,47 @@ export default function BottomPanels({
   onSelectSymbol,
   className = "",
 }: Props) {
+  const [showFilters, setShowFilters] = useState(false);
+  const [sideFilter, setSideFilter] = useState<SideFilter>("ALL");
+  const [symbolFilter, setSymbolFilter] = useState("");
+  const [resultFilter, setResultFilter] = useState<ResultFilter>("ALL");
+  const [periodFilter, setPeriodFilter] = useState<PeriodFilter>("ALL");
+
   const tabs: { id: Tab; label: string; shortLabel: string; count?: number }[] = [
     { id: "open", label: "Open Trades", shortLabel: "Open", count: openPositions.length || undefined },
     { id: "closed", label: "Closed", shortLabel: "Closed", count: closedPositions.length || undefined },
     { id: "pending", label: "Pending", shortLabel: "Pending", count: pendingOrders.length || undefined },
   ];
+
+  const filterOpts = useMemo(
+    () => ({ side: sideFilter, symbolQ: symbolFilter, period: periodFilter }),
+    [sideFilter, symbolFilter, periodFilter]
+  );
+
+  const filteredOpen = useMemo(
+    () => filterPositions(openPositions, filterOpts),
+    [openPositions, filterOpts]
+  );
+  const filteredClosed = useMemo(
+    () => filterPositions(closedPositions, { ...filterOpts, result: resultFilter }),
+    [closedPositions, filterOpts, resultFilter]
+  );
+  const filteredPending = useMemo(
+    () => filterOrders(pendingOrders, filterOpts),
+    [pendingOrders, filterOpts]
+  );
+
+  const filtersActive =
+    sideFilter !== "ALL" ||
+    symbolFilter.trim() !== "" ||
+    periodFilter !== "ALL" ||
+    (tab === "closed" && resultFilter !== "ALL");
+
+  const emptyFiltered = (
+    <div className="px-3 py-10 text-center text-xs text-desk-muted">
+      Filtreye uyan işlem yok
+    </div>
+  );
 
   return (
     <div
@@ -262,12 +410,117 @@ export default function BottomPanels({
             )}
           </button>
         ))}
-        <div className="ml-auto hidden items-center gap-2 self-center pb-1.5 sm:flex">
-          <button className="rounded-control border border-desk-border px-2.5 py-1 text-[11px] text-desk-muted hover:bg-desk-hover hover:text-desk-text">
+        <div className="ml-auto flex items-center gap-2 self-center pb-1.5">
+          <button
+            type="button"
+            onClick={() => setShowFilters((v) => !v)}
+            className={`rounded-control border px-2.5 py-1 text-[11px] transition-colors ${
+              showFilters || filtersActive
+                ? "border-desk-accent/50 bg-desk-accent/10 text-desk-text"
+                : "border-desk-border text-desk-muted hover:bg-desk-hover hover:text-desk-text"
+            }`}
+          >
             Filtre
+            {filtersActive ? (
+              <span className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-desk-accent align-middle" />
+            ) : null}
           </button>
         </div>
       </div>
+
+      {showFilters && (
+        <div className="flex flex-wrap items-center gap-2 border-b border-desk-border/60 bg-desk-elev/30 px-2.5 py-2">
+          <div className="flex items-center gap-1">
+            <span className="mr-0.5 text-[9px] font-medium uppercase tracking-wider text-desk-muted">
+              Side
+            </span>
+            <Chip active={sideFilter === "ALL"} onClick={() => setSideFilter("ALL")}>
+              Tümü
+            </Chip>
+            <Chip
+              active={sideFilter === "BUY"}
+              onClick={() => setSideFilter("BUY")}
+              tone="buy"
+            >
+              AL
+            </Chip>
+            <Chip
+              active={sideFilter === "SELL"}
+              onClick={() => setSideFilter("SELL")}
+              tone="sell"
+            >
+              SAT
+            </Chip>
+          </div>
+          <div className="flex min-w-[120px] flex-1 items-center gap-1 sm:max-w-[180px]">
+            <span className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">
+              Symbol
+            </span>
+            <input
+              type="text"
+              value={symbolFilter}
+              onChange={(e) => setSymbolFilter(e.target.value)}
+              placeholder="EURUSD…"
+              className="min-w-0 flex-1 rounded-[7px] border border-desk-border bg-desk-bg px-2 py-1 text-[11px] text-desk-text outline-none placeholder:text-desk-muted/60 focus:border-desk-accent/50"
+            />
+          </div>
+          {tab === "closed" && (
+            <div className="flex items-center gap-1">
+              <span className="mr-0.5 text-[9px] font-medium uppercase tracking-wider text-desk-muted">
+                Sonuç
+              </span>
+              <Chip active={resultFilter === "ALL"} onClick={() => setResultFilter("ALL")}>
+                Tümü
+              </Chip>
+              <Chip
+                active={resultFilter === "PROFIT"}
+                onClick={() => setResultFilter("PROFIT")}
+                tone="buy"
+              >
+                Kâr
+              </Chip>
+              <Chip
+                active={resultFilter === "LOSS"}
+                onClick={() => setResultFilter("LOSS")}
+                tone="sell"
+              >
+                Zarar
+              </Chip>
+            </div>
+          )}
+          <div className="flex items-center gap-1">
+            <span className="mr-0.5 text-[9px] font-medium uppercase tracking-wider text-desk-muted">
+              Period
+            </span>
+            <Chip active={periodFilter === "ALL"} onClick={() => setPeriodFilter("ALL")}>
+              Tümü
+            </Chip>
+            <Chip active={periodFilter === "TODAY"} onClick={() => setPeriodFilter("TODAY")}>
+              Bugün
+            </Chip>
+            <Chip active={periodFilter === "7D"} onClick={() => setPeriodFilter("7D")}>
+              7 gün
+            </Chip>
+            <Chip active={periodFilter === "30D"} onClick={() => setPeriodFilter("30D")}>
+              30 gün
+            </Chip>
+          </div>
+          {filtersActive && (
+            <button
+              type="button"
+              onClick={() => {
+                setSideFilter("ALL");
+                setSymbolFilter("");
+                setResultFilter("ALL");
+                setPeriodFilter("ALL");
+              }}
+              className="ml-auto rounded-[7px] border border-desk-border px-2 py-0.5 text-[10px] font-medium text-desk-muted hover:bg-desk-hover hover:text-desk-text"
+            >
+              Temizle
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Mobile card list — elite dense cards */}
       <div className="flex-1 space-y-2 overflow-auto p-2.5 md:hidden">
@@ -276,7 +529,8 @@ export default function BottomPanels({
             {openPositions.length === 0 && (
               <div className="px-3 py-10 text-center text-xs text-desk-muted">No open trades</div>
             )}
-            {openPositions.map((p) => (
+            {openPositions.length > 0 && filteredOpen.length === 0 && emptyFiltered}
+            {filteredOpen.map((p) => (
               <OpenCard key={p.id} p={p} onClose={onClosePosition} onSelectSymbol={onSelectSymbol} />
             ))}
           </>
@@ -288,7 +542,8 @@ export default function BottomPanels({
                 No closed positions
               </div>
             )}
-            {closedPositions.map((p) => (
+            {closedPositions.length > 0 && filteredClosed.length === 0 && emptyFiltered}
+            {filteredClosed.map((p) => (
               <ClosedCard key={p.id} p={p} />
             ))}
           </>
@@ -298,7 +553,8 @@ export default function BottomPanels({
             {pendingOrders.length === 0 && (
               <div className="px-3 py-10 text-center text-xs text-desk-muted">Pending emir yok</div>
             )}
-            {pendingOrders.map((o) => (
+            {pendingOrders.length > 0 && filteredPending.length === 0 && emptyFiltered}
+            {filteredPending.map((o) => (
               <PendingCard key={o.id} o={o} onCancel={onCancelOrder} />
             ))}
           </>
@@ -337,7 +593,14 @@ export default function BottomPanels({
                   </td>
                 </tr>
               )}
-              {openPositions.map((p, i) => {
+              {openPositions.length > 0 && filteredOpen.length === 0 && (
+                <tr>
+                  <td colSpan={16} className="px-3 py-8 text-center text-desk-muted">
+                    Filtreye uyan işlem yok
+                  </td>
+                </tr>
+              )}
+              {filteredOpen.map((p, i) => {
                 const pip =
                   calcPipDistance(p.symbol, p.openPrice, p.currentPrice) *
                   (p.side === "BUY" ? 1 : -1);
@@ -423,7 +686,14 @@ export default function BottomPanels({
                   </td>
                 </tr>
               )}
-              {closedPositions.map((p, i) => (
+              {closedPositions.length > 0 && filteredClosed.length === 0 && (
+                <tr>
+                  <td colSpan={11} className="px-3 py-8 text-center text-desk-muted">
+                    Filtreye uyan işlem yok
+                  </td>
+                </tr>
+              )}
+              {filteredClosed.map((p, i) => (
                 <tr
                   key={p.id}
                   className="border-t border-desk-border/50 transition-colors hover:bg-desk-hover/40"
@@ -497,7 +767,14 @@ export default function BottomPanels({
                   </td>
                 </tr>
               )}
-              {pendingOrders.map((o, i) => (
+              {pendingOrders.length > 0 && filteredPending.length === 0 && (
+                <tr>
+                  <td colSpan={10} className="px-3 py-8 text-center text-desk-muted">
+                    Filtreye uyan işlem yok
+                  </td>
+                </tr>
+              )}
+              {filteredPending.map((o, i) => (
                 <tr
                   key={o.id}
                   className="border-t border-desk-border/50 transition-colors hover:bg-desk-hover/40"
