@@ -13,6 +13,7 @@ import {
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { allocateUniqueAccountLoginId } from "@/lib/account-login-id";
 import { recordLedger } from "@/lib/ledger";
+import { ensureLastContactBackfill } from "@/lib/last-contact";
 import { ONLINE_MS, RECENT_MS, serializePresence } from "@/lib/presence-shared";
 
 export const dynamic = "force-dynamic";
@@ -24,18 +25,20 @@ export async function GET(req: Request) {
   const roViewer = isCrmReadOnlyAdmin(admin);
 
   const { searchParams } = new URL(req.url);
+  await ensureLastContactBackfill();
+  /** Multi-select filters arrive comma-separated (also accepts repeated params). */
+  const multi = (k: string): string[] => {
+    const out = new Set<string>();
+    for (const raw of searchParams.getAll(k)) for (const v of raw.split(",")) if (v.trim()) out.add(v.trim());
+    return Array.from(out).slice(0, 50);
+  };
   const q = (searchParams.get("q") || "").trim();
-  const status = (searchParams.get("status") || "").trim(); // active | frozen | all
-  const desk = (searchParams.get("desk") || "").trim();
   const country = (searchParams.get("country") || "").trim();
-  const saleStatus = (searchParams.get("saleStatus") || "").trim();
   const accountType = (searchParams.get("accountType") || "").trim();
   const from = (searchParams.get("from") || "").trim();
   const to = (searchParams.get("to") || "").trim();
-  const retentionStatus = (searchParams.get("retentionStatus") || "").trim();
   const presence = (searchParams.get("presence") || "").trim(); // online | recent | offline
   // Retention follow-up filter: overdue | today | week | any (day boundaries in the viewer's local time via tzo)
-  const followUp = (searchParams.get("followUp") || "").trim();
   const tzoRaw = Number(searchParams.get("tzo"));
   const tzo = Number.isFinite(tzoRaw) && Math.abs(tzoRaw) <= 900 ? tzoRaw : 0;
   const nowMs = Date.now();
@@ -60,33 +63,50 @@ export async function GET(req: Request) {
       ],
     });
   }
-  if (status === "active") and.push({ active: true });
-  if (status === "frozen") and.push({ active: false });
-  if (status === "trade_off") and.push({ tradingEnabled: false });
-  if (status === "withdraw_off") and.push({ withdrawalsEnabled: false });
-  if (status === "login_off") and.push({ loginEnabled: false });
-  if (desk) {
-    const match = await prisma.desk.findFirst({
-      where: { OR: [{ id: desk }, { code: desk }, { name: desk }] },
-    });
-    const ors: Record<string, string>[] = [{ desk }, { deskId: desk }];
-    if (match) {
-      ors.push({ desk: match.name }, { deskId: match.id });
-      if (match.code) {
-        ors.push({ deskId: match.code });
-        ors.push({ desk: match.code });
+  const STATUS_WHERE: Record<string, Record<string, unknown>> = {
+    active: { active: true },
+    frozen: { active: false },
+    trade_off: { tradingEnabled: false },
+    withdraw_off: { withdrawalsEnabled: false },
+    login_off: { loginEnabled: false },
+  };
+  const statusOrs = multi("status").filter((x) => STATUS_WHERE[x]).map((x) => STATUS_WHERE[x]);
+  if (statusOrs.length) and.push({ OR: statusOrs });
+  const desks = multi("desk");
+  if (desks.length) {
+    const ors: Record<string, string>[] = [];
+    for (const dk of desks) {
+      const match = await prisma.desk.findFirst({
+        where: { OR: [{ id: dk }, { code: dk }, { name: dk }] },
+      });
+      ors.push({ desk: dk }, { deskId: dk });
+      if (match) {
+        ors.push({ desk: match.name }, { deskId: match.id });
+        if (match.code) {
+          ors.push({ deskId: match.code });
+          ors.push({ desk: match.code });
+        }
       }
     }
     and.push({ OR: ors });
   }
   if (country) and.push({ country: { equals: country } });
-  if (saleStatus) and.push({ saleStatus: { equals: saleStatus } });
+  const saleStatuses = multi("saleStatus");
+  if (saleStatuses.length) and.push({ saleStatus: { in: saleStatuses } });
   if (accountType) and.push({ accountType: { equals: accountType } });
   const createdAt: { gte?: Date; lte?: Date } = {};
   if (from && !Number.isNaN(new Date(from).getTime())) createdAt.gte = new Date(from);
   if (to && !Number.isNaN(new Date(to).getTime())) createdAt.lte = new Date(to);
   if (createdAt.gte || createdAt.lte) and.push({ createdAt });
-  if (retentionStatus) and.push({ retentionStatus: { equals: retentionStatus } });
+  const retentionStatuses = multi("retentionStatus");
+  if (retentionStatuses.length) and.push({ retentionStatus: { in: retentionStatuses } });
+  // "Son iletişim" (last staff contact) date range
+  const lcFrom = (searchParams.get("lastContactFrom") || "").trim();
+  const lcTo = (searchParams.get("lastContactTo") || "").trim();
+  const lastContact: { gte?: Date; lte?: Date } = {};
+  if (lcFrom && !Number.isNaN(new Date(lcFrom).getTime())) lastContact.gte = new Date(lcFrom);
+  if (lcTo && !Number.isNaN(new Date(lcTo).getTime())) lastContact.lte = new Date(lcTo);
+  if (lastContact.gte || lastContact.lte) and.push({ lastContactAt: lastContact });
   if (presence) {
     const onlineSince = new Date(Date.now() - ONLINE_MS);
     const recentSince = new Date(Date.now() - RECENT_MS);
@@ -95,17 +115,30 @@ export async function GET(req: Request) {
     else if (presence === "offline")
       and.push({ OR: [{ lastSeenAt: null }, { lastSeenAt: { lt: recentSince } }] });
   }
-  if (followUp === "overdue") and.push({ retentionFollowUpAt: { lt: new Date(nowMs) } });
-  else if (followUp === "today") and.push({ retentionFollowUpAt: { gte: todayStart, lt: todayEnd } });
-  else if (followUp === "week") and.push({ retentionFollowUpAt: { lt: new Date(localMidnight + 8 * DAY) } });
-  else if (followUp === "any") and.push({ retentionFollowUpAt: { not: null } });
-  const followUpActive = ["overdue", "today", "week", "any"].includes(followUp);
+  const FU_WHERE: Record<string, Record<string, unknown>> = {
+    overdue: { retentionFollowUpAt: { lt: new Date(nowMs) } },
+    today: { retentionFollowUpAt: { gte: todayStart, lt: todayEnd } },
+    week: { retentionFollowUpAt: { lt: new Date(localMidnight + 8 * DAY) } },
+    any: { retentionFollowUpAt: { not: null } },
+  };
+  const fuOrs = multi("followUp").filter((x) => FU_WHERE[x]).map((x) => FU_WHERE[x]);
+  if (fuOrs.length) and.push({ OR: fuOrs });
+  const followUpActive = fuOrs.length > 0;
+  const sort = (searchParams.get("sort") || "").trim(); // lastContact_desc | lastContact_asc
   if (and.length) where.AND = and;
 
   const users = await prisma.user.findMany({
     where: scopeUserWhere(admin, Object.keys(where).length ? where : undefined),
     include: { account: true },
-    orderBy: followUpActive ? [{ retentionFollowUpAt: "asc" }, { createdAt: "desc" }] : { createdAt: "desc" },
+    orderBy:
+      sort === "lastContact_desc" || sort === "lastContact_asc"
+        ? [
+            { lastContactAt: { sort: sort === "lastContact_asc" ? "asc" : "desc", nulls: "last" } },
+            { createdAt: "desc" },
+          ]
+        : followUpActive
+          ? [{ retentionFollowUpAt: "asc" }, { createdAt: "desc" }]
+          : { createdAt: "desc" },
     take: 500,
   });
 
@@ -135,7 +168,7 @@ export async function GET(req: Request) {
     /* counts are best-effort */
   }
 
-  const desks = await prisma.user.findMany({
+  const deskRows = await prisma.user.findMany({
     where: { desk: { not: null } },
     select: { desk: true },
     distinct: ["desk"],
@@ -149,7 +182,7 @@ export async function GET(req: Request) {
   });
   const deskOptions = catalog.map((d) => ({ id: d.id, name: d.name, code: d.code }));
   const knownNames = new Set(catalog.map((d) => d.name));
-  for (const row of desks) {
+  for (const row of deskRows) {
     const name = row.desk;
     if (name && !knownNames.has(name)) {
       deskOptions.push({ id: name, name, code: null });

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin, requireAdminWrite } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { touchLastContact } from "@/lib/last-contact";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 
 export const dynamic = "force-dynamic";
@@ -67,5 +68,6 @@ export async function POST(req: Request) {
       workerId: admin.id,
     },
   });
+  await touchLastContact(userId, row.createdAt);
   return NextResponse.json({ ok: true, id: row.id });
 }

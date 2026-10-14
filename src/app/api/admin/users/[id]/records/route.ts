@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { writeAudit, requireAdminPerm } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
+import { recomputeLastContact, touchLastContact } from "@/lib/last-contact";
 import { isSupportedAccountCurrency, normalizeAccountCurrency } from "@/lib/membership";
 import {
   applyBalanceDelta,
@@ -172,6 +173,10 @@ function noteData(body: Body, create: boolean) {
   const d: Body = {};
   if (create || has(body, "body")) d.body = reqStr(body.body, "body", 5000);
   if (has(body, "authorName")) d.authorName = str(body.authorName, 120);
+  if (has(body, "team")) {
+    const t = String(body.team ?? "").trim().toUpperCase();
+    d.team = t ? oneOf(t, ["SALE", "RET"], "team") : null;
+  }
   if (has(body, "createdAt") && body.createdAt !== "") d.createdAt = date(body.createdAt, "createdAt");
   return d;
 }
@@ -181,7 +186,8 @@ function commData(body: Body, create: boolean) {
   if (has(body, "title")) d.title = str(body.title, 191);
   if (create || has(body, "description")) d.description = reqStr(body.description, "description", 5000);
   if (has(body, "workerName")) d.workerName = str(body.workerName, 120);
-  if (has(body, "createdAt") && body.createdAt !== "") d.createdAt = date(body.createdAt, "createdAt");
+  // New contact logs are always stamped "now" by the DB default; only edits may correct the date.
+  if (!create && has(body, "createdAt") && body.createdAt !== "") d.createdAt = date(body.createdAt, "createdAt");
   return d;
 }
 function docData(body: Body, create: boolean, prevStatus: string | null) {
@@ -524,6 +530,7 @@ export async function POST(req: Request, ctx: Ctx) {
         row = await prisma.communication.create({
           data: withWorker(userId, admin, commData(body, true)) as never,
         });
+        await touchLastContact(userId, (row as { createdAt?: Date }).createdAt ?? new Date());
         break;
       case "document":
         row = await prisma.documentRecord.create({ data: { userId, ...docData(body, true, null) } as never });
@@ -636,6 +643,7 @@ export async function PATCH(req: Request, ctx: Ctx) {
         before = await prisma.communication.findFirst({ where: { id, userId } });
         if (!before) break;
         after = await prisma.communication.update({ where: { id }, data: commData(body, false) as never });
+        await recomputeLastContact(userId);
         break;
       }
       case "document": {
@@ -779,7 +787,10 @@ export async function DELETE(req: Request, ctx: Ctx) {
         break;
       case "communication":
         before = await prisma.communication.findFirst({ where: { id, userId } });
-        if (before) await prisma.communication.delete({ where: { id } });
+        if (before) {
+          await prisma.communication.delete({ where: { id } });
+          await recomputeLastContact(userId);
+        }
         break;
       case "document":
         before = await prisma.documentRecord.findFirst({ where: { id, userId } });

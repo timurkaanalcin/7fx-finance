@@ -271,6 +271,7 @@ export function serializeUserMembership(u: Record<string, unknown>) {
     assigneeName: u.assigneeName ?? null,
     assigneeId: (u.assigneeId as string | null | undefined) ?? null,
     retentionNote: (u.retentionNote as string | null | undefined) ?? null,
+    lastContactAt: u.lastContactAt instanceof Date ? u.lastContactAt.toISOString() : ((u.lastContactAt as string | null | undefined) ?? null),
     retentionFollowUpAt: (u.retentionFollowUpAt as Date | string | null | undefined) ?? null,
     documentsStatus: u.documentsStatus ?? "NONE",
     referralCodeUsed: (u.referralCodeUsed as string | null) ?? null,

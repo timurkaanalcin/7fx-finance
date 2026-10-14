@@ -102,6 +102,8 @@ model User {
   /// Retention follow-up date + short note (scoped staff)
   retentionFollowUpAt  DateTime?
   retentionNote        String?          @db.Text
+  /// Last staff contact (Communication created by CRM staff); denormalized for filter/sort
+  lastContactAt        DateTime?
   /// Lead marked invalid by admin (affiliate stats)
   leadInvalid          Boolean          @default(false)
   leadInvalidAt        DateTime?
@@ -138,6 +140,7 @@ model User {
 
   @@index([lastSeenAt])
   @@index([assigneeId])
+  @@index([lastContactAt])
 }
 
 model Account {
@@ -162,9 +165,12 @@ model UserNote {
   authorId   String?
   authorName String?
   body       String   @db.Text
+  /// Comment area: SALE | RET (null = legacy/general note)
+  team       String?  @db.VarChar(8)
   createdAt  DateTime @default(now())
 
   @@index([userId, createdAt])
+  @@index([userId, team])
 }
 
 model Order {

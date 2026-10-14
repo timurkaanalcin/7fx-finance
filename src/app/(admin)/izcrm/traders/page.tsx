@@ -9,6 +9,7 @@ import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LocationLabel, PresenceCell } from "@/components/crm/Presence";
 import CopyButton from "@/components/crm/CopyButton";
+import MultiSelect, { csvList, toggleCsv } from "@/components/crm/MultiSelect";
 import {
   clearRecentClients,
   loadRecentClients,
@@ -45,6 +46,7 @@ type UserRow = {
   assigneeName?: string | null;
   retentionFollowUpAt?: string | null;
   retentionNote?: string | null;
+  lastContactAt?: string | null;
   ftd: boolean;
   phone: string | null;
   accountType: string;
@@ -78,6 +80,9 @@ type TraderFilterState = {
   presence: string;
   ftdOnly: boolean;
   followUp: string;
+  lastContactFrom: string;
+  lastContactTo: string;
+  sort: string;
 };
 type SavedTraderFilter = { name: string; f: TraderFilterState };
 const EMPTY_FILTERS: TraderFilterState = {
@@ -93,6 +98,9 @@ const EMPTY_FILTERS: TraderFilterState = {
   presence: "",
   ftdOnly: false,
   followUp: "",
+  lastContactFrom: "",
+  lastContactTo: "",
+  sort: "",
 };
 function readSavedFilters(): SavedTraderFilter[] {
   try {
@@ -161,6 +169,9 @@ export default function AdminUsersPage() {
   }, []);
   const [presence, setPresence] = useState("");
   const [followUp, setFollowUp] = useState("");
+  const [lastContactFrom, setLastContactFrom] = useState("");
+  const [lastContactTo, setLastContactTo] = useState("");
+  const [sort, setSort] = useState("");
   const [followUpDue, setFollowUpDue] = useState<{ overdue: number; today: number }>({ overdue: 0, today: 0 });
   const [retentionCounts, setRetentionCounts] = useState<Record<string, number>>({});
   const [savedFilters, setSavedFilters] = useState<SavedTraderFilter[]>([]);
@@ -197,6 +208,9 @@ export default function AdminUsersPage() {
     presence,
     ftdOnly,
     followUp,
+    lastContactFrom,
+    lastContactTo,
+    sort,
   };
   const anyFilterActive = !sameFilters(currentFilters, EMPTY_FILTERS);
   const activePreset = savedFilters.find((p) => sameFilters(p.f, currentFilters))?.name ?? "";
@@ -213,6 +227,9 @@ export default function AdminUsersPage() {
     setPresence(f.presence);
     setFtdOnly(Boolean(f.ftdOnly));
     setFollowUp(f.followUp || "");
+    setLastContactFrom(f.lastContactFrom || "");
+    setLastContactTo(f.lastContactTo || "");
+    setSort(f.sort || "");
     setSelected(new Set());
   }
   function persistSaved(list: SavedTraderFilter[]) {
@@ -238,7 +255,7 @@ export default function AdminUsersPage() {
   const load = useCallback(async () => {
     const params = new URLSearchParams();
     if (q) params.set("q", q);
-    if (status !== "all") params.set("status", status);
+    if (status && status !== "all") params.set("status", status);
     if (desk) params.set("desk", desk);
     if (country) params.set("country", country);
     if (saleStatus) params.set("saleStatus", saleStatus);
@@ -250,6 +267,11 @@ export default function AdminUsersPage() {
     if (retentionStatus) params.set("retentionStatus", retentionStatus);
     if (presence) params.set("presence", presence);
     if (followUp) params.set("followUp", followUp);
+    const lcf = dayStartIso(lastContactFrom);
+    const lct = dayEndIso(lastContactTo);
+    if (lcf) params.set("lastContactFrom", lcf);
+    if (lct) params.set("lastContactTo", lct);
+    if (sort) params.set("sort", sort);
     params.set("tzo", String(new Date().getTimezoneOffset()));
     const res = await fetch(`/api/admin/users?${params}`, { cache: "no-store" });
     if (!res.ok) return;
@@ -270,7 +292,7 @@ export default function AdminUsersPage() {
     if (data.retentionCounts && typeof data.retentionCounts === "object") {
       setRetentionCounts(data.retentionCounts as Record<string, number>);
     }
-  }, [q, status, desk, country, saleStatus, retentionStatus, ftdOnly, presence, accountTypeFilter, dateFrom, dateTo, followUp]);
+  }, [q, status, desk, country, saleStatus, retentionStatus, ftdOnly, presence, accountTypeFilter, dateFrom, dateTo, followUp, lastContactFrom, lastContactTo, sort]);
 
   useEffect(() => {
     load();
@@ -381,6 +403,7 @@ export default function AdminUsersPage() {
         i18n("crm.ui.bonus"),
         i18n("crm.ui.currency"),
         i18n("crm.ui.lastLogin"),
+        i18n("crm.ui.lastContact", "Son iletişim"),
         i18n("crm.ui.regDate"),
       ];
       const lines = [header.map(csvCell).join(",")];
@@ -406,6 +429,7 @@ export default function AdminUsersPage() {
             Number.isFinite(u.bonus) ? u.bonus : "",
             u.currency ?? "",
             u.lastLoginAt ?? "",
+            u.lastContactAt ?? "",
             u.createdAt ?? "",
           ]
             .map(csvCell)
@@ -482,18 +506,20 @@ export default function AdminUsersPage() {
       </div>
 
       <div className="mb-3 flex flex-wrap gap-2 text-xs">
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
-        >
-          <option value="all">{i18n("crm.ui.allStatuses")}</option>
-          <option value="active">{i18n("crm.ui.active")}</option>
-          <option value="frozen">{i18n("crm.ui.frozen")}</option>
-          <option value="trade_off">{i18n("crm.perms.filterTradeOff")}</option>
-          <option value="withdraw_off">{i18n("crm.perms.filterWithdrawOff")}</option>
-          <option value="login_off">{i18n("crm.perms.filterLoginOff")}</option>
-        </select>
+        <MultiSelect
+          dataAttr="status"
+          placeholder={i18n("crm.ui.allStatuses")}
+          clearLabel={i18n("crm.fu.clear")}
+          value={status === "all" ? "" : status}
+          onChange={(v) => setStatus(v || "all")}
+          options={[
+            { value: "active", label: i18n("crm.ui.active") },
+            { value: "frozen", label: i18n("crm.ui.frozen") },
+            { value: "trade_off", label: i18n("crm.perms.filterTradeOff") },
+            { value: "withdraw_off", label: i18n("crm.perms.filterWithdrawOff") },
+            { value: "login_off", label: i18n("crm.perms.filterLoginOff") },
+          ]}
+        />
         <select
           value={presence}
           onChange={(e) => setPresence(e.target.value)}
@@ -504,36 +530,28 @@ export default function AdminUsersPage() {
           <option value="recent">{i18n("crm.presence.filterRecent")}</option>
           <option value="offline">{i18n("crm.presence.filterOffline")}</option>
         </select>
-        <select
+        <MultiSelect
+          dataAttr="desk"
+          placeholder={i18n("crm.ui.allDesks")}
+          clearLabel={i18n("crm.fu.clear")}
           value={desk}
-          onChange={(e) => setDesk(e.target.value)}
-          className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
-        >
-          <option value="">{i18n("crm.ui.allDesks")}</option>
-          {deskOptions.map((d) => (
-            <option key={d.id} value={d.code || d.id}>
-              {deskName(d)}
-            </option>
-          ))}
-        </select>
+          onChange={setDesk}
+          options={deskOptions.map((d) => ({ value: d.code || d.id, label: deskName(d) }))}
+        />
         <input
           value={country}
           onChange={(e) => setCountry(e.target.value)}
           placeholder={i18n("crm.ui.country")}
           className="w-20 rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
         />
-        <select
+        <MultiSelect
+          dataAttr="saleStatus"
+          placeholder={i18n("crm.ui.saleStatus")}
+          clearLabel={i18n("crm.fu.clear")}
           value={saleStatus}
-          onChange={(e) => setSaleStatus(e.target.value)}
-          className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
-        >
-          <option value="">{i18n("crm.ui.saleStatus")}</option>
-          {SALE_STATUSES.map((s) => (
-            <option key={s} value={s}>
-              {code("crm.sale", s)}
-            </option>
-          ))}
-        </select>
+          onChange={setSaleStatus}
+          options={SALE_STATUSES.map((x) => ({ value: x, label: code("crm.sale", x) }))}
+        />
         <select
           value={accountTypeFilter}
           onChange={(e) => setAccountTypeFilter(e.target.value)}
@@ -564,30 +582,50 @@ export default function AdminUsersPage() {
             className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
           />
         </label>
-        <select
+        <MultiSelect
+          dataAttr="retentionStatus"
+          placeholder={i18n("crm.ui.retention")}
+          clearLabel={i18n("crm.fu.clear")}
           value={retentionStatus}
-          onChange={(e) => setRetentionStatus(e.target.value)}
-          className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
-        >
-          <option value="">{i18n("crm.ui.retention")}</option>
-          {RETENTION_STATUSES.map((s) => (
-            <option key={s} value={s}>
-              {code("crm.retention", s)}
-            </option>
-          ))}
-        </select>
-        <select
+          onChange={setRetentionStatus}
+          options={RETENTION_STATUSES.map((x) => ({ value: x, label: code("crm.retention", x) }))}
+        />
+        <MultiSelect
+          dataAttr="followUp"
+          placeholder={i18n("crm.fu.filter")}
+          clearLabel={i18n("crm.fu.clear")}
           value={followUp}
-          onChange={(e) => setFollowUp(e.target.value)}
+          onChange={setFollowUp}
+          options={(["overdue", "today", "week", "any"] as const).map((x) => ({ value: x, label: i18n(`crm.fu.${x}`) }))}
+        />
+        <label className="flex items-center gap-1 text-neutral-500" data-fx-last-contact-range>
+          <span>{i18n("crm.ui.lastContact", "Son iletişim")}</span>
+          <input
+            type="date"
+            value={lastContactFrom}
+            onChange={(e) => setLastContactFrom(e.target.value)}
+            aria-label={`${i18n("crm.ui.lastContact", "Son iletişim")} ${i18n("crm.ui.from")}`}
+            className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
+          />
+          <span>–</span>
+          <input
+            type="date"
+            value={lastContactTo}
+            onChange={(e) => setLastContactTo(e.target.value)}
+            aria-label={`${i18n("crm.ui.lastContact", "Son iletişim")} ${i18n("crm.ui.to")}`}
+            className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
+          />
+        </label>
+        <select
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
           className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
-          aria-label={i18n("crm.fu.filter")}
-          data-fx-followup-filter
+          aria-label={i18n("crm.ui.sort", "Sıralama")}
+          data-fx-sort
         >
-          <option value="">{i18n("crm.fu.filter")}</option>
-          <option value="overdue">{i18n("crm.fu.overdue")}</option>
-          <option value="today">{i18n("crm.fu.today")}</option>
-          <option value="week">{i18n("crm.fu.week")}</option>
-          <option value="any">{i18n("crm.fu.any")}</option>
+          <option value="">{i18n("crm.ui.sortDefault", "Sıralama: kayıt tarihi")}</option>
+          <option value="lastContact_desc">{i18n("crm.ui.sortLastContactDesc", "Son iletişim (yeni → eski)")}</option>
+          <option value="lastContact_asc">{i18n("crm.ui.sortLastContactAsc", "Son iletişim (eski → yeni)")}</option>
         </select>
         <label className="flex items-center gap-1 text-neutral-500">
           <input
@@ -604,10 +642,10 @@ export default function AdminUsersPage() {
           <span className="text-neutral-500">⏰ {i18n("crm.fu.title")}:</span>
           <button
             type="button"
-            onClick={() => setFollowUp(followUp === "overdue" ? "" : "overdue")}
-            aria-pressed={followUp === "overdue"}
+            onClick={() => setFollowUp(toggleCsv(followUp, "overdue"))}
+            aria-pressed={csvList(followUp).includes("overdue")}
             className={`rounded-full border px-2.5 py-1 tabular-nums ${
-              followUp === "overdue"
+              csvList(followUp).includes("overdue")
                 ? "border-red-500 bg-red-500 text-white"
                 : followUpDue.overdue > 0
                   ? "border-red-300 bg-red-50 text-red-700"
@@ -618,10 +656,10 @@ export default function AdminUsersPage() {
           </button>
           <button
             type="button"
-            onClick={() => setFollowUp(followUp === "today" ? "" : "today")}
-            aria-pressed={followUp === "today"}
+            onClick={() => setFollowUp(toggleCsv(followUp, "today"))}
+            aria-pressed={csvList(followUp).includes("today")}
             className={`rounded-full border px-2.5 py-1 tabular-nums ${
-              followUp === "today"
+              csvList(followUp).includes("today")
                 ? "border-amber-500 bg-amber-500 text-white"
                 : followUpDue.today > 0
                   ? "border-amber-300 bg-amber-50 text-amber-800"
@@ -648,7 +686,7 @@ export default function AdminUsersPage() {
           <span className="text-neutral-500">{i18n("crm.ui.retention")}:</span>
           {RETENTION_STATUSES.map((s) => {
             const n = retentionCounts[s] || 0;
-            const on = retentionStatus === s;
+            const on = csvList(retentionStatus).includes(s);
             if (!n && !on) return null;
             const tone =
               s === "AT_RISK"
@@ -662,7 +700,7 @@ export default function AdminUsersPage() {
               <button
                 key={s}
                 type="button"
-                onClick={() => setRetentionStatus(on ? "" : s)}
+                onClick={() => setRetentionStatus(toggleCsv(retentionStatus, s))}
                 aria-pressed={on}
                 className={`rounded-full border px-2.5 py-1 tabular-nums ${on ? "border-black bg-black text-white" : tone}`}
               >
@@ -918,6 +956,18 @@ export default function AdminUsersPage() {
               <th className="px-3 py-2.5">{i18n("crm.presence.accountStatus")}</th>
               <th className="px-3 py-2.5">{i18n("crm.ui.broker")}</th>
               <th className="px-3 py-2.5">{i18n("crm.ui.lastLogin")}</th>
+              <th className="px-3 py-2.5">
+                <button
+                  type="button"
+                  onClick={() => setSort(sort === "lastContact_desc" ? "lastContact_asc" : "lastContact_desc")}
+                  className="hover:text-neutral-900"
+                  title={i18n("crm.ui.sort", "Sıralama")}
+                  data-fx-sort-last-contact
+                >
+                  {i18n("crm.ui.lastContact", "Son iletişim")}
+                  {sort === "lastContact_desc" ? " ↓" : sort === "lastContact_asc" ? " ↑" : " ↕"}
+                </button>
+              </th>
               <th className="px-3 py-2.5"></th>
             </tr>
           </thead>
@@ -1065,6 +1115,9 @@ export default function AdminUsersPage() {
                 </td>
                 <td className="px-3 py-2.5 text-[10px] text-neutral-500">
                   {u.lastLoginAt ? fmtCrmDate(u.lastLoginAt) : "—"}
+                </td>
+                <td className="px-3 py-2.5 text-[10px] text-neutral-500" data-fx-last-contact>
+                  {u.lastContactAt ? fmtCrmDate(u.lastContactAt) : "—"}
                 </td>
                 <td className="px-3 py-2.5">
                   <Link

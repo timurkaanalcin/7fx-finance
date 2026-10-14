@@ -12,6 +12,7 @@ import { SYMBOLS } from "@/lib/symbols";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import RetentionPanel, { AssigneePicker } from "@/components/crm/RetentionPanel";
+import TeamComments from "@/components/crm/TeamComments";
 import { useCallback, useEffect, useState } from "react";
 import { LoginHistory, TraderPresenceHeader } from "@/components/crm/Presence";
 import AccountPermissionsPanel from "@/components/crm/AccountPermissionsPanel";
@@ -1294,7 +1295,8 @@ export default function AdminUserDetailPage() {
     { key: "title", label: "crm.ui.title" },
     { key: "description", label: "crm.ui.description", type: "textarea", required: true },
     { key: "workerName", label: "crm.ui.worker" },
-    { key: "createdAt", label: "crm.ui.date", type: "datetime" },
+    // Date/time is stamped automatically (now) when a contact log is added.
+    { key: "createdAt", label: "crm.ui.date", type: "datetime", hideOnCreate: true },
   ];
   const docCols: CrmColumn[] = [
     { key: "name", label: "crm.ui.name", required: true },
@@ -1345,6 +1347,16 @@ export default function AdminUserDetailPage() {
   ];
   const noteCols: CrmColumn[] = [
     { key: "body", label: "crm.ui.body", type: "textarea", required: true },
+    {
+      key: "team",
+      label: "crm.ui.commentArea",
+      type: "select",
+      options: [
+        { value: "", label: "—" },
+        { value: "SALE", label: "Sale" },
+        { value: "RET", label: "Ret" },
+      ],
+    },
     { key: "authorName", label: "crm.edit.author", hideOnCreate: true },
     { key: "createdAt", label: "crm.ui.date", type: "datetime", hideOnCreate: true },
   ];
@@ -1669,6 +1681,7 @@ export default function AdminUserDetailPage() {
           </div>
           {canManageUsers ? <AssigneePicker userId={user.id} current={(user as { assigneeId?: string | null }).assigneeId ?? null} /> : null}
           <RetentionPanel userId={user.id} />
+          <TeamComments userId={user.id} notes={notes as never} readOnly={crmReadOnly} onChanged={load} />
 
           <LoginHistory userId={user.id} />
 

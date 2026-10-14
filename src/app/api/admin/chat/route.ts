@@ -2,6 +2,7 @@ import { canAccessUser, scopeUserWhere, assignedWhere, isScopedStaff } from "@/l
 import { NextResponse } from "next/server";
 import { requireAdmin, requireAdminWrite } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { touchLastContact } from "@/lib/last-contact";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { serializeChatPresence } from "@/lib/chat-presence";
 
@@ -173,6 +174,7 @@ export async function POST(req: Request) {
       workerId: admin.id,
     },
   });
+  await touchLastContact(userId, row.createdAt);
   const { upsertChatPresence } = await import("@/lib/chat-presence");
   await upsertChatPresence(userId, {
     adminTyping: false,
