@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { fmtCrmDate } from "@/lib/crm-format";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
@@ -16,18 +16,36 @@ type View = "ALL" | Team;
  */
 export default function TeamComments({
   userId,
-  notes,
   readOnly,
   onChanged,
 }: {
   userId: string;
-  notes: Note[];
   readOnly?: boolean;
-  onChanged: () => void | Promise<void>;
+  onChanged?: () => void | Promise<void>;
 }) {
   const { i18n } = useCrmLabels();
+  const [notes, setNotes] = useState<Note[]>([]);
+  // Server decides what this viewer may see / write (Sale staff never receive Retention comments).
+  const [visible, setVisible] = useState<Team[]>([]);
+  const [writable, setWritable] = useState<Team[]>([]);
   const [view, setView] = useState<View>("SALE");
   const [target, setTarget] = useState<Team>("SALE");
+  const apply = useCallback((d: { notes?: Note[]; visibleTeams?: Team[]; writableTeams?: Team[] }) => {
+    setNotes(Array.isArray(d.notes) ? d.notes : []);
+    const vis = Array.isArray(d.visibleTeams) ? d.visibleTeams : [];
+    const wr = Array.isArray(d.writableTeams) ? d.writableTeams : [];
+    setVisible(vis);
+    setWritable(wr);
+    setTarget((t) => (wr.includes(t) ? t : wr[0] || "SALE"));
+    setView((v) => (v === "ALL" ? (vis.length > 1 ? "ALL" : vis[0] || "SALE") : vis.includes(v) ? v : wr[0] || vis[0] || "SALE"));
+  }, []);
+  const reload = useCallback(async () => {
+    const res = await fetch(`/api/admin/users/${userId}/team-notes`, { cache: "no-store" }).catch(() => null);
+    if (res && res.ok) apply(await res.json());
+  }, [userId, apply]);
+  useEffect(() => {
+    void reload();
+  }, [reload]);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
@@ -36,11 +54,11 @@ export default function TeamComments({
   const count = (t: View) => (t === "ALL" ? teamNotes.length : teamNotes.filter((n) => n.team === t).length);
   const list = view === "ALL" ? teamNotes : teamNotes.filter((n) => n.team === view);
   const teamTitle = (t: Team) =>
-    t === "SALE" ? i18n("crm.ui.saleComments", "Sale yorumları") : i18n("crm.ui.retComments", "Ret yorumları");
+    t === "SALE" ? i18n("crm.ui.saleComments", "Sale yorumları") : i18n("crm.ui.retComments", "Retention yorumları");
 
   function pickView(v: View) {
     setView(v);
-    if (v !== "ALL") setTarget(v);
+    if (v !== "ALL" && writable.includes(v)) setTarget(v);
   }
 
   async function add() {
@@ -49,30 +67,35 @@ export default function TeamComments({
     setBusy(true);
     setMsg("");
     try {
-      const res = await fetch(`/api/admin/users/${userId}/records`, {
+      const res = await fetch(`/api/admin/users/${userId}/team-notes`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ entity: "note", body, team: target }),
+        body: JSON.stringify({ body, team: target }),
       });
       const d = await res.json().catch(() => ({}));
       if (res.ok) {
         setText("");
-        await onChanged();
+        apply(d);
+        await onChanged?.();
       } else setMsg(String(d.error || i18n("crm.ret.error", "Hata")));
     } finally {
       setBusy(false);
     }
   }
 
-  const segs: { v: View; label: string }[] = [
-    { v: "ALL", label: i18n("crm.ui.all", "Tümü") },
-    { v: "SALE", label: "Sale" },
-    { v: "RET", label: "Ret" },
-  ];
-  const targets: { t: Team; icon: string; desc: string }[] = [
+  const segs: { v: View; label: string }[] = (
+    [
+      { v: "ALL", label: i18n("crm.ui.all", "Tümü") },
+      { v: "SALE", label: "Sale" },
+      { v: "RET", label: "Retention" },
+    ] as { v: View; label: string }[]
+  ).filter((x) => (x.v === "ALL" ? visible.length > 1 : visible.includes(x.v as Team)));
+  const allTargets: { t: Team; icon: string; desc: string }[] = [
     { t: "SALE", icon: "💼", desc: i18n("crm.ui.saleCommentDesc", "Sale manager notu — satış görüşmeleri ve teklifler.") },
-    { t: "RET", icon: "🔁", desc: i18n("crm.ui.retCommentDesc", "Ret manager notu — retention takibi ve müşteri ilişkisi.") },
+    { t: "RET", icon: "🔁", desc: i18n("crm.ui.retCommentDesc", "Retention manager notu — retention takibi ve müşteri ilişkisi.") },
   ];
+  const targets = allTargets.filter((x) => writable.includes(x.t));
+  if (!visible.length) return null;
 
   return (
     <section className="mt-4 rounded-xl border border-[#e5e7eb] bg-white p-4 text-xs" data-fx-team-comments>
@@ -85,7 +108,7 @@ export default function TeamComments({
         <div className="flex items-center gap-1 text-neutral-400">
           <button
             type="button"
-            onClick={() => void onChanged()}
+            onClick={() => void reload()}
             title={i18n("crm.ui.refresh", "Yenile")}
             aria-label={i18n("crm.ui.refresh", "Yenile")}
             className="rounded-md p-1 text-base leading-none hover:bg-neutral-100 hover:text-neutral-700"
@@ -118,10 +141,10 @@ export default function TeamComments({
       </div>
 
       {/* Add comment: target cards + input + actions */}
-      {!readOnly && (
+      {!readOnly && targets.length > 0 && (
         <div className="mb-4" data-fx-team-add>
           <div className="mb-2 text-[12px] text-neutral-600">{i18n("crm.ui.commentArea", "Yorum alanı")}</div>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className={`grid gap-3 ${targets.length > 1 ? "sm:grid-cols-2" : ""}`}>
             {targets.map(({ t, icon, desc }) => {
               const on = target === t;
               return (
@@ -188,7 +211,7 @@ export default function TeamComments({
                     n.team === "SALE" ? "bg-[#dbeafe] text-[#1d4ed8]" : "bg-[#ede9fe] text-[#6d28d9]"
                   }`}
                 >
-                  {n.team === "SALE" ? "Sale" : "Ret"}
+                  {n.team === "SALE" ? "Sale" : "Retention"}
                 </span>
                 <span className="text-[12px] font-semibold text-neutral-800">{String(n.authorName || "—")}</span>
                 <span className="ml-auto text-[11px] text-neutral-400">{fmtCrmDate(String(n.createdAt || ""))}</span>

@@ -1,5 +1,6 @@
 import { scopeUserWhere } from "@/lib/crm-scope";
 import { NextResponse } from "next/server";
+import { noteVisibilityWhere } from "@/lib/comment-teams";
 import * as XLSX from "xlsx";
 import { requireAdminWrite, writeAudit } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -16,7 +17,7 @@ export async function GET() {
     where: scopeUserWhere(admin, { role: "TRADER" }),
     include: {
       account: true,
-      notes: { orderBy: { createdAt: "asc" } },
+      notes: { where: noteVisibilityWhere(admin), orderBy: { createdAt: "asc" } },
     },
     orderBy: { createdAt: "desc" },
   });

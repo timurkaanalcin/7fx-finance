@@ -1354,7 +1354,7 @@ export default function AdminUserDetailPage() {
       options: [
         { value: "", label: "—" },
         { value: "SALE", label: "Sale" },
-        { value: "RET", label: "Ret" },
+        { value: "RET", label: "Retention" },
       ],
     },
     { key: "authorName", label: "crm.edit.author", hideOnCreate: true },
@@ -1681,7 +1681,7 @@ export default function AdminUserDetailPage() {
           </div>
           {canManageUsers ? <AssigneePicker userId={user.id} current={(user as { assigneeId?: string | null }).assigneeId ?? null} /> : null}
           <RetentionPanel userId={user.id} />
-          <TeamComments userId={user.id} notes={notes as never} readOnly={crmReadOnly} onChanged={load} />
+          <TeamComments userId={user.id} readOnly={crmReadOnly} onChanged={load} />
 
           <LoginHistory userId={user.id} />
 

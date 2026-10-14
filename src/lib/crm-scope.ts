@@ -54,6 +54,7 @@ const RULES: Rule[] = [
   { methods: ["GET"], re: /^\/api\/admin\/leads\/export\/?$/ },
   { methods: ["GET"], re: /^\/api\/admin\/analytics\/affiliates\/?$/ },
   { methods: ["GET", "POST", "PATCH"], re: /^\/api\/admin\/retention\/([^/]+)\/?$/, idGroup: 1 },
+  { methods: ["GET", "POST"], re: /^\/api\/admin\/users\/([^/]+)\/team-notes\/?$/, idGroup: 1 },
 ];
 
 /** Central gate for scoped staff. Unknown path → deny. */

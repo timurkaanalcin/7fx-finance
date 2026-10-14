@@ -3,13 +3,14 @@ import { requireAdmin, requireAdminWrite, writeAudit } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { canAccessUser } from "@/lib/crm-scope";
 import { RETENTION_STATUSES } from "@/lib/membership";
+import { noteVisibilityWhere, type StaffLike } from "@/lib/comment-teams";
 
 export const dynamic = "force-dynamic";
 
 type Ctx = { params: { id: string } };
 
 
-async function load(id: string) {
+async function load(id: string, staff: StaffLike) {
   return prisma.user.findFirst({
     where: { id, role: "TRADER" },
     select: {
@@ -20,7 +21,7 @@ async function load(id: string) {
       retentionFollowUpAt: true,
       assigneeId: true,
       assigneeName: true,
-      notes: { orderBy: { createdAt: "desc" }, take: 50 },
+      notes: { where: noteVisibilityWhere(staff), orderBy: { createdAt: "desc" }, take: 50 },
       reminders: { orderBy: { remindAt: "desc" }, take: 20 },
     },
   });
@@ -31,7 +32,7 @@ export async function GET(_req: Request, ctx: Ctx) {
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   if (!(await canAccessUser(admin, ctx.params.id))) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  const u = await load(ctx.params.id);
+  const u = await load(ctx.params.id, admin);
   if (!u) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json({ retention: u, statuses: RETENTION_STATUSES });
 }
@@ -74,7 +75,7 @@ export async function PATCH(req: Request, ctx: Ctx) {
     await prisma.userNote.create({ data: { userId: id, authorId: admin.id, authorName: admin.name, body: addNote } });
   }
   await writeAudit({ adminId: admin.id, action: "RETENTION_UPDATE", targetId: id, note: JSON.stringify({ ...data, addNote: addNote ? addNote.slice(0, 120) : undefined }).slice(0, 400) });
-  return NextResponse.json({ ok: true, retention: await load(id) });
+  return NextResponse.json({ ok: true, retention: await load(id, admin) });
 }
 
 export const POST = PATCH;

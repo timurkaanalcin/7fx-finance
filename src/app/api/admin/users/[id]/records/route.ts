@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { writeAudit, requireAdminPerm } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
+import { canSeeTeam, writableTeams, type StaffLike } from "@/lib/comment-teams";
 import { recomputeLastContact, touchLastContact } from "@/lib/last-contact";
 import { isSupportedAccountCurrency, normalizeAccountCurrency } from "@/lib/membership";
 import {
@@ -139,7 +140,7 @@ async function auth(entity: Entity, applyToBalance: boolean) {
   if (applyToBalance && !(await requireAdminPerm("canAdjustBalance"))) {
     return { error: NextResponse.json({ error: "No permission to adjust balance" }, { status: 403 }) };
   }
-  return { admin: { id: admin.id, name: admin.name } as AdminRef };
+  return { admin: { id: admin.id, name: admin.name } as AdminRef, staff: admin as StaffLike };
 }
 
 async function readBody(req: Request): Promise<Body> {
@@ -522,6 +523,8 @@ export async function POST(req: Request, ctx: Ctx) {
     let balance: unknown = null;
     switch (entity) {
       case "note":
+        if (has(body, "team") && body.team && !(writableTeams(a.staff) as string[]).includes(String(body.team).toUpperCase()))
+          return NextResponse.json({ error: "Bu alana yorum yazma yetkiniz yok" }, { status: 403 });
         row = await prisma.userNote.create({
           data: { userId, authorId: admin.id, authorName: admin.name, ...noteData(body, true) } as never,
         });
@@ -636,6 +639,11 @@ export async function PATCH(req: Request, ctx: Ctx) {
       case "note": {
         before = await prisma.userNote.findFirst({ where: { id, userId } });
         if (!before) break;
+        if (
+          (before.team && !(writableTeams(a.staff) as string[]).includes(String(before.team))) ||
+          (has(body, "team") && body.team && !(writableTeams(a.staff) as string[]).includes(String(body.team).toUpperCase()))
+        )
+          return NextResponse.json({ error: "Bu alana yorum yazma yetkiniz yok" }, { status: 403 });
         after = await prisma.userNote.update({ where: { id }, data: noteData(body, false) as never });
         break;
       }
@@ -783,6 +791,9 @@ export async function DELETE(req: Request, ctx: Ctx) {
     switch (entity) {
       case "note":
         before = await prisma.userNote.findFirst({ where: { id, userId } });
+        if (before && !canSeeTeam(a.staff, before.team)) before = null;
+        if (before && before.team && !(writableTeams(a.staff) as string[]).includes(String(before.team)))
+          return NextResponse.json({ error: "Bu alana yorum yazma yetkiniz yok" }, { status: 403 });
         if (before) await prisma.userNote.delete({ where: { id } });
         break;
       case "communication":

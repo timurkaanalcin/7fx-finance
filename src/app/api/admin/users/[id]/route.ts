@@ -13,6 +13,7 @@ import { isAccountLoginId } from "@/lib/account-login-id";
 import { recordLedger } from "@/lib/ledger";
 import { jobTitleSchema } from "@/lib/job-titles";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
+import { noteVisibilityWhere } from "@/lib/comment-teams";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +30,7 @@ export async function GET(_req: Request, ctx: Ctx) {
     where: { id },
     include: {
       account: true,
-      notes: { orderBy: { createdAt: "desc" }, take: 100 },
+      notes: { where: noteVisibilityWhere(admin), orderBy: { createdAt: "desc" }, take: 100 },
     },
   });
   if (!user) return NextResponse.json({ error: "User yok" }, { status: 404 });
