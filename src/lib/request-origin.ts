@@ -1,9 +1,25 @@
 /**
  * Public site origin for redirects and shareable links.
- * On Railway (and similar), `req.url` is often the internal bind
- * (`https://0.0.0.0:8080/...`) — never use that for Location or copied URLs.
+ * Prefer the host the browser actually used (customer / financeunit / control / login)
+ * so a session cookie set without Domain stays on that host. NEXT_PUBLIC_APP_URL is
+ * only a fallback for internal binds (`https://0.0.0.0:8080`), never a cross-host redirect.
  */
 export function publicRequestOrigin(req: Request): string {
+  const xfHostRaw = req.headers.get("x-forwarded-host") || req.headers.get("host") || "";
+  const host = xfHostRaw.split(",")[0].trim().replace(/:\d+$/, "");
+  const looksInternal =
+    !host ||
+    host.startsWith("0.0.0.0") ||
+    host.startsWith("127.") ||
+    host === "localhost" ||
+    host.startsWith("[::]");
+
+  if (!looksInternal) {
+    const xfProtoRaw = req.headers.get("x-forwarded-proto") || "https";
+    const proto = xfProtoRaw.split(",")[0].trim() || "https";
+    return `${proto}://${host}`;
+  }
+
   const env =
     process.env.NEXT_PUBLIC_SITE_URL ||
     process.env.APP_URL ||
@@ -15,21 +31,6 @@ export function publicRequestOrigin(req: Request): string {
     } catch {
       /* ignore bad env */
     }
-  }
-
-  const xfHostRaw = req.headers.get("x-forwarded-host") || req.headers.get("host") || "";
-  const host = xfHostRaw.split(",")[0].trim();
-  const looksInternal =
-    !host ||
-    host.startsWith("0.0.0.0") ||
-    host.startsWith("127.") ||
-    host.startsWith("localhost") ||
-    host.startsWith("[::]");
-
-  if (!looksInternal) {
-    const xfProtoRaw = req.headers.get("x-forwarded-proto") || "https";
-    const proto = xfProtoRaw.split(",")[0].trim() || "https";
-    return `${proto}://${host}`;
   }
 
   // Last resort — prefer known production host over broken internal bind.

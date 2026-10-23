@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { shouldCoverForCapture } from "@/lib/security/screenshot-cover";
 
 /**
  * Customer-site screenshot deterrent (best effort; browsers cannot block OS screenshots).
- * Instant full-screen black overlay on PrintScreen / Cmd|Ctrl+Shift(+3/4/5/S) / blur / hidden / pagehide,
- * and black output when printing. Content is otherwise shown normally.
+ * Desktop: black overlay on PrintScreen / screenshot chords / print, and when the
+ * tab is actually hidden. Phones and WebViews keep the terminal visible — blur
+ * while the page is still shown must not cover it.
  */
 export default function ScreenshotShield() {
   const [on, setOn] = useState(false);
@@ -21,18 +23,30 @@ export default function ScreenshotShield() {
       const k = e.key;
       const mod = e.metaKey || e.ctrlKey;
       if (k === "PrintScreen" || (mod && e.shiftKey && /^[345s]$/i.test(k)) || (e.metaKey && e.shiftKey) || (mod && /^p$/i.test(k))) {
-        black(2000);
+        if (shouldCoverForCapture({ reason: "key", visibilityState: document.visibilityState })) black(2000);
       }
     };
-    const vis = () => (document.visibilityState === "visible" ? clear() : black());
-    const blur = () => { window.setTimeout(() => { if (document.activeElement?.tagName === "IFRAME") return; black(); }, 0); };
+    const vis = () => {
+      if (document.visibilityState === "visible") clear();
+      else if (shouldCoverForCapture({ reason: "visibility", visibilityState: document.visibilityState })) black();
+    };
+    const blur = () => {
+      window.setTimeout(() => {
+        if (document.activeElement?.tagName === "IFRAME") return;
+        if (shouldCoverForCapture({ reason: "blur", visibilityState: document.visibilityState })) black();
+      }, 0);
+    };
+    const onPageHide = () => {
+      if (shouldCoverForCapture({ reason: "pagehide", visibilityState: document.visibilityState })) black();
+    };
     window.addEventListener("keydown", key, true);
     window.addEventListener("keyup", key, true);
     window.addEventListener("blur", blur);
     window.addEventListener("focus", clear);
-    window.addEventListener("pagehide", () => black());
+    const onBeforePrint = () => black();
+    window.addEventListener("pagehide", onPageHide);
     window.addEventListener("pageshow", clear);
-    window.addEventListener("beforeprint", () => black());
+    window.addEventListener("beforeprint", onBeforePrint);
     window.addEventListener("afterprint", clear);
     document.addEventListener("visibilitychange", vis);
     return () => {
@@ -40,9 +54,9 @@ export default function ScreenshotShield() {
       window.removeEventListener("keyup", key, true);
       window.removeEventListener("blur", blur);
       window.removeEventListener("focus", clear);
-      window.removeEventListener("pagehide", blur);
+      window.removeEventListener("pagehide", onPageHide);
       window.removeEventListener("pageshow", clear);
-      window.removeEventListener("beforeprint", blur);
+      window.removeEventListener("beforeprint", onBeforePrint);
       window.removeEventListener("afterprint", clear);
       document.removeEventListener("visibilitychange", vis);
       if (t) window.clearTimeout(t);
