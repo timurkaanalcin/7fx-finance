@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/context";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
@@ -95,65 +95,13 @@ export default function LoginForm() {
       }
       const err = sp.get("error");
       if (err && !sp.get("loginBlocked")) setError(err);
+      const challenge = sp.get("challenge");
+      if (challenge) setChallengeToken(challenge);
     } catch {
       /* ignore */
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  async function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: identifier.trim(), password }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        if (data.code === "LOGIN_DISABLED") {
-          showLoginBlocked(String(data.message || ""));
-          return;
-        }
-        if (data.code === "LOCKED") {
-          setError(data.error || "Account locked");
-          return;
-        }
-        setError(data.error || t("auth.loginFailed"));
-        return;
-      }
-      if (data.requires2fa && data.challengeToken) {
-        setChallengeToken(data.challengeToken);
-        return;
-      }
-      {
-        const role = data.user?.role;
-        const crmReadOnly = Boolean(
-          data.user?.crmReadOnly ?? data.permissions?.crmReadOnly
-        );
-        const onCrmHost =
-          typeof window !== "undefined" &&
-          (window.location.hostname === "crm7fx.customer.org.tr" ||
-            window.location.hostname === "crm7fx.localhost");
-        // CRM host → always CRM UI. Main host: RO admins get trading like customers.
-        if (onCrmHost) {
-          window.location.assign(role === "ADMIN" ? "/izcrm" : "https://7fx.customer.org.tr/trade");
-        } else if (role === "ADMIN" && !crmReadOnly) {
-          // TEMP: full ADMIN stays on /izcrm until Natro crm7fx is live
-          window.location.assign("/izcrm");
-        } else {
-          window.location.assign("/trade");
-        }
-      }
-    } catch {
-      setError(t("auth.connectionError"));
-    } finally {
-      setLoading(false);
-    }
-  }
 
   return (
     <>
@@ -168,48 +116,19 @@ export default function LoginForm() {
       
       {challengeToken ? (
         <form
-          onSubmit={async (e) => {
-            e.preventDefault();
-            setLoading(true);
-            setError("");
-            try {
-              const res = await fetch("/api/auth/2fa/verify", {
-                method: "POST",
-                credentials: "include",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ challengeToken, code: totpCode }),
-              });
-              const data = await res.json();
-              if (!res.ok) {
-                setError(data.error || t("auth.loginFailed"));
-                return;
-              }
-              const role = data.user?.role;
-              const crmReadOnly = Boolean(data.user?.crmReadOnly ?? data.permissions?.crmReadOnly);
-              const onCrmHost =
-                window.location.hostname === "crm7fx.customer.org.tr" ||
-                window.location.hostname === "crm7fx.localhost";
-              if (onCrmHost) {
-                window.location.assign(role === "ADMIN" ? "/izcrm" : "https://7fx.customer.org.tr/trade");
-              } else if (role === "ADMIN" && !crmReadOnly) {
-                // TEMP: full ADMIN stays on /izcrm until Natro crm7fx is live
-                window.location.assign("/izcrm");
-              } else {
-                window.location.assign("/trade");
-              }
-            } catch {
-              setError(t("auth.connectionError"));
-            } finally {
-              setLoading(false);
-            }
-          }}
+          method="post"
+          action="/api/auth/2fa/verify"
           className="space-y-4"
+          onSubmit={() => setLoading(true)}
         >
+          <input type="hidden" name="nav" value="1" />
+          <input type="hidden" name="challengeToken" value={challengeToken} />
           <p className="text-sm text-[#5c657a]">{t("auth.totpPrompt")}</p>
           <div>
             <label className={labelClass} htmlFor="fx-totp">{t("auth.totpCode")}</label>
             <input
               id="fx-totp"
+              name="code"
               className={inputClass}
               inputMode="numeric"
               autoComplete="one-time-code"
@@ -234,19 +153,27 @@ export default function LoginForm() {
               setChallengeToken(null);
               setTotpCode("");
               setError("");
+              window.history.replaceState(null, "", "/login");
             }}
           >
             {t("auth.backToLogin")}
           </button>
         </form>
       ) : (
-<form onSubmit={onSubmit} className="space-y-4" noValidate>
+<form
+        method="post"
+        action="/api/auth/login"
+        className="space-y-4"
+        onSubmit={() => setLoading(true)}
+      >
+        <input type="hidden" name="nav" value="1" />
         <div>
           <label htmlFor="fx-login-identifier" className={labelClass}>
             {t("auth.identifier")}
           </label>
           <input
             id="fx-login-identifier"
+            name="email"
             className={inputClass}
             type="text"
             autoComplete="username"
@@ -264,6 +191,7 @@ export default function LoginForm() {
           </label>
           <input
             id="fx-login-password"
+            name="password"
             className={inputClass}
             type="password"
             autoComplete="current-password"

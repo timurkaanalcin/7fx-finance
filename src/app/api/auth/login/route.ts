@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { SignJWT } from "jose";
 import { prisma } from "@/lib/prisma";
 import { attachSessionCookie, permissionsOf, signSessionToken, verifyPassword } from "@/lib/auth";
+import { isDocumentNav, loginLandingPath, navRedirect, readAuthBody } from "@/lib/auth-nav";
 import { hostnameFromRequest } from "@/lib/crm-host";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { isAccountLoginId } from "@/lib/account-login-id";
@@ -37,31 +38,53 @@ export async function POST(req: Request) {
   try {
     await ensureDemoSeed();
     const ip = clientIpFromHeaders({ get: (n) => req.headers.get(n) });
+    const body = await readAuthBody(req);
+    const nav = isDocumentNav(req, body);
+    const fail = (
+      payload: { error: string; code?: string; lockedUntil?: string; message?: string },
+      status: number,
+      extraHeaders?: Record<string, string>
+    ) => {
+      if (!nav) return NextResponse.json(payload, { status, headers: extraHeaders });
+      const q = new URLSearchParams();
+      if (payload.code === "LOGIN_DISABLED") q.set("loginBlocked", "1");
+      else q.set("error", payload.error.slice(0, 180));
+      const res = navRedirect(req, `/login?${q.toString()}`);
+      if (payload.code === "LOGIN_DISABLED" && payload.message) {
+        res.cookies.set("7fx_login_block_msg", Buffer.from(payload.message, "utf8").toString("base64url"), {
+          httpOnly: false,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          path: "/",
+          maxAge: 600,
+        });
+      }
+      return res;
+    };
+
     const rl = rateLimit(`login:ip:${ip}`, 30, 60_000);
     if (!rl.ok) {
-      return NextResponse.json(
+      return fail(
         { error: "Too many attempts. Try again later.", code: "RATE_LIMIT" },
-        { status: 429, headers: { "Retry-After": String(rl.retryAfterSec) } }
+        429,
+        { "Retry-After": String(rl.retryAfterSec) }
       );
     }
 
-    const body = await req.json();
     const raw = String(
       body.email || body.identifier || body.accountLoginId || body.username || ""
     ).trim();
     const password = String(body.password || "");
     if (!raw || !password) {
-      return NextResponse.json(
-        { error: "Email, username or account ID and password are required" },
-        { status: 400 }
-      );
+      return fail({ error: "Email, username or account ID and password are required" }, 400);
     }
 
     const idRl = rateLimit(`login:id:${raw.toLowerCase()}`, 12, 60_000);
     if (!idRl.ok) {
-      return NextResponse.json(
+      return fail(
         { error: "Too many attempts. Try again later.", code: "RATE_LIMIT" },
-        { status: 429, headers: { "Retry-After": String(idRl.retryAfterSec) } }
+        429,
+        { "Retry-After": String(idRl.retryAfterSec) }
       );
     }
 
@@ -81,7 +104,7 @@ export async function POST(req: Request) {
 
     const meta = currentRequestMeta();
     if (!user) {
-      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+      return fail({ error: "Invalid credentials" }, 401);
     }
 
     const lockedUntil = (user as { lockedUntil?: Date | null }).lockedUntil;
@@ -93,13 +116,13 @@ export async function POST(req: Request) {
         reason: "locked",
         meta,
       });
-      return NextResponse.json(
+      return fail(
         {
           error: "Account temporarily locked after failed logins",
           code: "LOCKED",
           lockedUntil: lockedUntil.toISOString(),
         },
-        { status: 423 }
+        423
       );
     }
 
@@ -120,12 +143,12 @@ export async function POST(req: Request) {
         reason: "bad_password",
         meta,
       });
-      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+      return fail({ error: "Invalid credentials" }, 401);
     }
 
     const exp = (user as { expiresAt?: Date | null }).expiresAt;
     if (exp && exp.getTime() <= Date.now()) {
-      return NextResponse.json({ error: "Account expired" }, { status: 403 });
+      return fail({ error: "Account expired" }, 403);
     }
 
     if ((user as { active?: boolean }).active === false) {
@@ -136,7 +159,7 @@ export async function POST(req: Request) {
         reason: "frozen",
         meta,
       });
-      return NextResponse.json({ error: "Account frozen" }, { status: 403 });
+      return fail({ error: "Account frozen" }, 403);
     }
     if ((user as { loginEnabled?: boolean }).loginEnabled === false) {
       await recordLoginEvent({
@@ -150,13 +173,13 @@ export async function POST(req: Request) {
         ((user as { loginBlockedMessage?: string | null }).loginBlockedMessage &&
           String((user as { loginBlockedMessage?: string | null }).loginBlockedMessage).trim()) ||
         loginDisabledFallbackMessage((user as { language?: string }).language);
-      return NextResponse.json(
+      return fail(
         {
           error: loginDisabledFallbackMessage((user as { language?: string }).language),
           code: LOGIN_DISABLED_CODE,
           message,
         },
-        { status: 403 }
+        403
       );
     }
 
@@ -179,6 +202,7 @@ export async function POST(req: Request) {
         reason: "awaiting_2fa",
         meta,
       });
+      if (nav) return navRedirect(req, `/login?challenge=${encodeURIComponent(challengeToken)}`);
       return NextResponse.json({
         ok: true,
         requires2fa: true,
@@ -201,23 +225,29 @@ export async function POST(req: Request) {
     });
     const permissions = permissionsOf(user);
     const host = hostnameFromRequest({ headers: { get: (n: string) => req.headers.get(n) } });
-    const res = NextResponse.json({
-      ok: true,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role,
-        accountLoginId: user.accountLoginId ?? null,
-        crmReadOnly: permissions.crmReadOnly === true,
-        totpEnabled,
-      },
-      permissions,
-    });
+    const res = nav
+      ? navRedirect(req, loginLandingPath(req, { role, crmReadOnly: permissions.crmReadOnly === true }))
+      : NextResponse.json({
+          ok: true,
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role,
+            accountLoginId: user.accountLoginId ?? null,
+            crmReadOnly: permissions.crmReadOnly === true,
+            totpEnabled,
+          },
+          permissions,
+        });
     attachSessionCookie(res, token, host);
     return res;
   } catch (e) {
     console.error(e);
+    const ct = req.headers.get("content-type") || "";
+    if (ct.includes("application/x-www-form-urlencoded") || ct.includes("multipart/form-data")) {
+      return navRedirect(req, "/login?error=Sign-in%20error");
+    }
     return NextResponse.json({ error: "Sign-in error" }, { status: 500 });
   }
 }
