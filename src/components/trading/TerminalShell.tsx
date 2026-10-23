@@ -490,6 +490,8 @@ export default function TerminalShell() {
     return <BrandLoader variant="desk" label={t("common.loading") || "Loading…"} />;
   }
 
+  const chartSymbol = symbols.find((s) => s.symbol === symbol);
+
   return (
     <div className="fx-desk flex h-screen h-[100dvh] flex-col overflow-hidden bg-desk-bg text-desk-text">
       <TopBar
@@ -589,6 +591,8 @@ export default function TerminalShell() {
               <div className="relative flex h-full min-h-0 min-w-0 flex-1 flex-col">
                 <TradingChart
                   symbol={symbol}
+                  symbolName={chartSymbol?.name}
+                  symbolFlag={chartSymbol?.flag}
                   timeframe={timeframe}
                   onTimeframe={setTimeframe}
                   price={prices[symbol]}

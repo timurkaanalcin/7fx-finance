@@ -519,9 +519,14 @@ export default function OrderTicket({
           Order Ticket
         </span>
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-desk-border/60 bg-desk-elev/80 px-2.5 py-0.5 text-[10px] font-semibold text-desk-text">
+          <span className="inline-flex max-w-[min(68vw,280px)] items-center gap-1.5 rounded-full border border-desk-border/60 bg-desk-elev/80 px-2.5 py-0.5 text-[10px] font-semibold text-desk-text">
             <SymbolIcon symbol={symbol} fallback={def?.flag || "•"} size={16} />
-            {symbol}
+            <span className="shrink-0">{symbol}</span>
+            {def?.name && def.name.toUpperCase() !== symbol.toUpperCase() && (
+              <span className="truncate font-medium text-desk-muted" title={def.name}>
+                {def.name}
+              </span>
+            )}
           </span>
           {onClose && (
             <button

@@ -16,6 +16,8 @@ import {
   CrosshairMode,
 } from "lightweight-charts";
 import type { PriceTick } from "./types";
+import { formatPrice, getSymbol } from "@/lib/symbols";
+import SymbolIcon from "@/components/ui/SymbolIcon";
 
 const TIMEFRAMES = [
   { id: "1m", label: "1′" },
@@ -113,6 +115,9 @@ export type ChartLevel = {
 
 type Props = {
   symbol: string;
+  /** Catalog display name (falls back to the built-in symbol list). */
+  symbolName?: string;
+  symbolFlag?: string;
   timeframe: string;
   onTimeframe: (tf: string) => void;
   price?: PriceTick;
@@ -128,7 +133,15 @@ type LiveBar = {
   close: number;
 };
 
-export default function TradingChart({ symbol, timeframe, onTimeframe, price, levels }: Props) {
+export default function TradingChart({
+  symbol,
+  symbolName,
+  symbolFlag,
+  timeframe,
+  onTimeframe,
+  price,
+  levels,
+}: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
@@ -619,16 +632,27 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price, le
     return timeframe === "1D" || timeframe === "1W" ? date : `${date} ${p2(d.getHours())}:${p2(d.getMinutes())}`;
   })();
 
+  const catalog = getSymbol(symbol);
+  const company = (symbolName || catalog?.name || "").trim();
+  const showName = company.length > 0 && company.toUpperCase() !== symbol.toUpperCase();
+  const flag = symbolFlag || catalog?.flag;
+  const hasQuote =
+    price != null && Number.isFinite(price.bid) && Number.isFinite(price.ask) && price.bid > 0 && price.ask > 0;
+  const quoteUp = (price?.change ?? 0) >= 0;
+
   return (
     <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-desk-bg">
-      <div className="absolute left-3 top-3 z-10 flex items-start gap-2 md:left-3 md:top-2.5 md:gap-2.5">
+      <div
+        className="pointer-events-none absolute left-2 top-2 z-10 flex max-w-[calc(100%-0.75rem-1.5cm)] items-start gap-1.5 sm:max-w-[calc(100%-24rem)] md:left-2.5 md:top-2"
+        data-fx-chart-head=""
+      >
         <span
-          className={`mt-0.5 flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-[0.08em] ring-1 md:gap-1 md:px-2 md:py-0.5 md:tracking-wide ${
+          className={`mt-1 flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-[0.08em] ring-1 md:gap-1 md:px-2 md:py-0.5 md:tracking-wide ${
             liveFresh
               ? `bg-desk-accent/15 text-desk-accent ring-desk-accent/35 ${livePulse ? "ring-desk-accent/70 bg-desk-accent/25" : ""}`
               : "bg-desk-elev/80 text-desk-muted ring-desk-border/60"
           }`}
-          title={liveFresh ? "Live Yahoo mid" : "Waiting…"}
+          title={liveFresh ? "Live Yahoo quote" : "Waiting…"}
         >
           <span
             className={`h-1.5 w-1.5 rounded-full ${
@@ -639,45 +663,73 @@ export default function TradingChart({ symbol, timeframe, onTimeframe, price, le
           />
           LIVE
         </span>
-        <div>
-          <div className="text-[15px] font-semibold tracking-tight text-desk-text md:text-sm">
-            {symbol}
-          </div>
-          {legend && (
-            <div
-              className="mt-0.5 flex flex-wrap gap-x-2.5 gap-y-0.5 text-[10px] tabular-nums text-desk-muted"
-              aria-live="off"
-              title={hoverBar ? "İmleç altındaki mum · Bar under cursor" : "Son mum · Latest bar"}
-            >
-              {hoverLabel && (
-                <span className="rounded-[5px] bg-desk-elev/80 px-1 text-desk-text/80 ring-1 ring-desk-border/60">
-                  {hoverLabel}
-                </span>
-              )}
-              <span>
-                O <span className="text-desk-text/80">{fmt(legend.o)}</span>
+        <div className="flex min-w-0 items-start gap-1.5 rounded-[12px] bg-desk-bg/80 px-1.5 py-1 ring-1 ring-desk-border/40 backdrop-blur-[2px] md:gap-2 md:px-2">
+          <SymbolIcon symbol={symbol} fallback={flag || "•"} size={28} className="mt-0.5 md:!h-6 md:!w-6" />
+          <div className="min-w-0">
+            <div className="flex min-w-0 items-baseline gap-1.5">
+              <span className="shrink-0 text-[15px] font-semibold tracking-tight text-desk-text md:text-sm">
+                {symbol}
               </span>
-              <span>
-                H <span className="text-desk-buy">{fmt(legend.h)}</span>
-              </span>
-              <span>
-                L <span className="text-desk-sell">{fmt(legend.l)}</span>
-              </span>
-              <span>
-                C <span className="text-desk-text/80">{fmt(legend.c)}</span>
-              </span>
-              {legendChg != null && Number.isFinite(legendChg) && (
-                <span className={legendChg >= 0 ? "text-desk-buy" : "text-desk-sell"}>
-                  {legendChg >= 0 ? "+" : ""}
-                  {legendChg.toFixed(2)}%
+              {showName && (
+                <span className="min-w-0 truncate text-[11px] font-medium text-desk-muted md:text-[12px]" title={company}>
+                  {company}
                 </span>
               )}
             </div>
-          )}
+            <div
+              className="mt-0.5 flex flex-wrap items-baseline gap-x-1.5 gap-y-0 text-[11px] font-semibold tabular-nums leading-tight md:text-[12px]"
+              data-fx-chart-quote=""
+              title="Live bid / ask"
+              aria-live="off"
+            >
+              <span className="text-[9px] font-medium uppercase tracking-wide text-desk-muted">Bid</span>
+              <span className="text-desk-sell">{hasQuote && price ? formatPrice(symbol, price.bid) : "—"}</span>
+              <span className="text-desk-muted/40">/</span>
+              <span className="text-[9px] font-medium uppercase tracking-wide text-desk-muted">Ask</span>
+              <span className="text-desk-buy">{hasQuote && price ? formatPrice(symbol, price.ask) : "—"}</span>
+              {hasQuote && price && Number.isFinite(price.changePct) && (
+                <span className={quoteUp ? "text-desk-buy" : "text-desk-sell"}>
+                  {quoteUp ? "+" : ""}
+                  {price.changePct.toFixed(2)}%
+                </span>
+              )}
+            </div>
+            {legend && (
+              <div
+                className="mt-0.5 flex flex-wrap gap-x-2.5 gap-y-0.5 text-[10px] tabular-nums text-desk-muted"
+                aria-live="off"
+                title={hoverBar ? "İmleç altındaki mum · Bar under cursor" : "Son mum · Latest bar"}
+              >
+                {hoverLabel && (
+                  <span className="rounded-[5px] bg-desk-elev/80 px-1 text-desk-text/80 ring-1 ring-desk-border/60">
+                    {hoverLabel}
+                  </span>
+                )}
+                <span>
+                  O <span className="text-desk-text/80">{fmt(legend.o)}</span>
+                </span>
+                <span>
+                  H <span className="text-desk-buy">{fmt(legend.h)}</span>
+                </span>
+                <span>
+                  L <span className="text-desk-sell">{fmt(legend.l)}</span>
+                </span>
+                <span>
+                  C <span className="text-desk-text/80">{fmt(legend.c)}</span>
+                </span>
+                {legendChg != null && Number.isFinite(legendChg) && (
+                  <span className={legendChg >= 0 ? "text-desk-buy" : "text-desk-sell"}>
+                    {legendChg >= 0 ? "+" : ""}
+                    {legendChg.toFixed(2)}%
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="absolute left-2 right-[calc(0.5rem+1.5cm)] top-[3.6rem] z-10 flex items-center justify-start gap-1.5 sm:left-auto sm:top-2.5 sm:justify-end sm:right-[calc(0.75rem+1.5cm)] sm:max-w-none md:right-[calc(0.75rem+1.5cm)] md:top-2">
+      <div className="absolute left-2 right-[calc(0.5rem+1.5cm)] top-[6.75rem] z-10 flex items-center justify-start gap-1.5 sm:left-auto sm:top-2.5 sm:justify-end sm:right-[calc(0.75rem+1.5cm)] sm:max-w-none md:right-[calc(0.75rem+1.5cm)] md:top-2">
         <span className="hidden rounded-control border border-desk-border/60 bg-desk-panel/70 px-2 py-1 text-[10px] tabular-nums text-desk-muted sm:inline">
           {utcClock}
         </span>
