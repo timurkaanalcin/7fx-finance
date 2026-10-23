@@ -395,9 +395,11 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
                         {favs.includes(s.symbol) ? "★" : "☆"}
                       </span>
                     </span>
-                    <span className="mt-0.5 block truncate text-[10px] text-desk-muted/70 md:hidden">
-                      {s.name}
-                    </span>
+                    {s.name && s.name.toUpperCase() !== s.symbol.toUpperCase() && (
+                      <span className="mt-0.5 block truncate text-[10px] text-desk-muted/70" title={s.name}>
+                        {s.name}
+                      </span>
+                    )}
                     {(() => {
                       const agg = openBySymbol.get(s.symbol.toUpperCase());
                       if (!agg) return null;
