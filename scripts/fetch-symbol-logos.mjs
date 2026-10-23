@@ -252,6 +252,18 @@ const STOCK_DOMAIN = {
   INTC: "intel.com",
   BAC: "bankofamerica.com",
   XOM: "exxonmobil.com",
+  CVX: "chevron.com",
+  COP: "conocophillips.com",
+  EOG: "eogresources.com",
+  OXY: "oxy.com",
+  SLB: "slb.com",
+  MPC: "marathonpetroleum.com",
+  PSX: "phillips66.com",
+  VLO: "valero.com",
+  BP: "bp.com",
+  SHEL: "shell.com",
+  TTE: "totalenergies.com",
+  EQNR: "equinor.com",
   KO: "coca-cola.com",
   DIS: "thewaltdisneycompany.com",
   THYAO: "turkishairlines.com",
@@ -407,6 +419,23 @@ async function fetchOne(sym) {
   return { ok: false };
 }
 
+/** Keep public/logos/manifest.json aligned with files on disk (SymbolIcon reads it). */
+function writeManifest() {
+  const map = {};
+  for (const cls of ["stock", "fx", "crypto", "commodity", "index"]) {
+    const dir = path.join(OUT, cls);
+    if (!fs.existsSync(dir)) continue;
+    for (const fn of fs.readdirSync(dir)) {
+      if (fn.startsWith(".")) continue;
+      const sym = path.parse(fn).name;
+      map[sym] = `/logos/${cls}/${fn}`;
+    }
+  }
+  const ordered = Object.fromEntries(Object.keys(map).sort().map((k) => [k, map[k]]));
+  fs.writeFileSync(path.join(OUT, "manifest.json"), JSON.stringify(ordered, null, 2) + "\n");
+  return Object.keys(ordered).length;
+}
+
 async function main() {
   const symbols = loadSymbols();
   console.log(`Fetching logos for ${symbols.length} symbols…`);
@@ -450,6 +479,7 @@ async function main() {
   console.log(`OK ${report.ok.length}/${symbols.length}`);
   console.log("Missing:", report.fail.join(", ") || "(none)");
   console.log("byClass", report.byClass);
+  console.log(`manifest entries: ${writeManifest()}`);
 }
 
 main().catch((e) => {
