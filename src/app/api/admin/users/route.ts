@@ -13,6 +13,7 @@ import {
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { allocateUniqueAccountLoginId } from "@/lib/account-login-id";
 import { recordLedger } from "@/lib/ledger";
+import { FxError, appendFxNote, convertAmountToUsd, type UsdConversion } from "@/lib/fx-usd";
 import { ensureLastContactBackfill } from "@/lib/last-contact";
 import { ONLINE_MS, RECENT_MS, serializePresence } from "@/lib/presence-shared";
 
@@ -244,7 +245,7 @@ export async function POST(req: Request) {
     const passwordHash = await hashPassword(password);
     const accountLoginId = await allocateUniqueAccountLoginId();
     // Real accounts start at 0 unless the admin explicitly enters a starting balance.
-    const balance =
+    let balance =
       body.balance !== undefined && body.balance !== null && body.balance !== "" && Number.isFinite(Number(body.balance))
         ? Number(body.balance)
         : 0;
@@ -255,6 +256,17 @@ export async function POST(req: Request) {
       );
     }
     const currency = normalizeAccountCurrency(body.currency, "USD");
+    let openingFx = "";
+    if (balance !== 0) {
+      try {
+        const conv = await convertAmountToUsd(balance, currency);
+        openingFx = appendFxNote("", conv);
+        balance = conv.usdAmount;
+      } catch (e) {
+        if (e instanceof FxError) return NextResponse.json({ error: e.message }, { status: 503 });
+        throw e;
+      }
+    }
     const credit = Number.isFinite(Number(body.credit)) ? Number(body.credit) : 0;
     const bonus = Number.isFinite(Number(body.bonus)) ? Number(body.bonus) : 0;
     const role = String(body.role || "TRADER").toUpperCase() === "ADMIN" ? "ADMIN" : "TRADER";
@@ -284,6 +296,21 @@ export async function POST(req: Request) {
       },
       include: { account: true },
     });
+
+    if (openingFx && user.account) {
+      await recordLedger({
+        userId: user.id,
+        type: "ADJUSTMENT",
+        amount: user.account.balance,
+        balanceBefore: 0,
+        balanceAfter: user.account.balance,
+        currency: "USD",
+        comment: openingFx,
+        createdById: admin.id,
+        createdByName: admin.name,
+        refType: "AuditLog",
+      });
+    }
 
     await writeAudit({
       adminId: admin.id,
@@ -507,8 +534,25 @@ export async function POST(req: Request) {
     if (!Number.isFinite(value)) {
       return NextResponse.json({ error: "Valid amount required" }, { status: 400 });
     }
+    let enteredCur = target.account.currency || "USD";
+    if (body.currency != null && body.currency !== "") {
+      if (!isSupportedAccountCurrency(body.currency)) {
+        return NextResponse.json(
+          { error: "Invalid currency. Supported: USD, EUR, TRY, GBP, CHF, JPY, AUD, CAD" },
+          { status: 400 }
+        );
+      }
+      enteredCur = normalizeAccountCurrency(body.currency);
+    }
+    let conv;
+    try {
+      conv = await convertAmountToUsd(value, enteredCur);
+    } catch (e) {
+      if (e instanceof FxError) return NextResponse.json({ error: e.message }, { status: 503 });
+      throw e;
+    }
     const balanceBefore = target.account.balance;
-    const balanceAfter = action === "setBalance" ? value : balanceBefore + value;
+    const balanceAfter = action === "setBalance" ? conv.usdAmount : balanceBefore + conv.usdAmount;
     const amount = balanceAfter - balanceBefore;
     if (action === "adjustBalance" && amount === 0) {
       return NextResponse.json({ error: "Amount cannot be 0" }, { status: 400 });
@@ -525,11 +569,13 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Withdrawal must be a negative amount" }, { status: 400 });
       }
     }
-    const note =
+    const note = appendFxNote(
       String(body.note || "").trim().slice(0, 500) ||
-      (action === "setBalance"
-        ? `CRM: main balance set ${balanceBefore} → ${balanceAfter}`
-        : `CRM: manual ${ledgerType.toLowerCase()} ${amount >= 0 ? "+" : ""}${amount}`);
+        (action === "setBalance"
+          ? `CRM: main balance set ${balanceBefore} → ${balanceAfter}`
+          : `CRM: manual ${ledgerType.toLowerCase()} ${amount >= 0 ? "+" : ""}${amount}`),
+      conv
+    );
     if (amount !== 0) {
       await prisma.account.update({
         where: { userId },
@@ -541,7 +587,7 @@ export async function POST(req: Request) {
         amount,
         balanceBefore,
         balanceAfter,
-        currency: target.account.currency,
+        currency: "USD",
         comment: note,
         createdById: balAdmin.id,
         createdByName: balAdmin.name,
@@ -611,9 +657,19 @@ export async function POST(req: Request) {
     const balanceBefore = target.account.balance;
     const currencyBefore = target.account.currency;
     const note = body.note != null && String(body.note).trim() ? String(body.note).trim().slice(0, 500) : null;
-    await prisma.account.update({ where: { userId }, data });
     const currencyAfter =
       typeof data.currency === "string" ? data.currency : target.account.currency;
+    let financeConv: UsdConversion | null = null;
+    if (typeof data.balance === "number") {
+      try {
+        financeConv = await convertAmountToUsd(data.balance, currencyAfter);
+        data.balance = financeConv.usdAmount;
+      } catch (e) {
+        if (e instanceof FxError) return NextResponse.json({ error: e.message }, { status: 503 });
+        throw e;
+      }
+    }
+    await prisma.account.update({ where: { userId }, data });
     if (typeof data.balance === "number" && data.balance !== balanceBefore) {
       await recordLedger({
         userId,
@@ -621,8 +677,8 @@ export async function POST(req: Request) {
         amount: data.balance - balanceBefore,
         balanceBefore,
         balanceAfter: data.balance,
-        currency: currencyAfter,
-        comment: note || "Finance update",
+        currency: "USD",
+        comment: appendFxNote(note || "Finance update", financeConv!),
         createdById: balAdmin.id,
         createdByName: balAdmin.name,
         refType: "AuditLog",

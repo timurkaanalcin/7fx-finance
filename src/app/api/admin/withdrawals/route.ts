@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { refreshAccountMetrics } from "@/lib/trading";
 import { recordLedger } from "@/lib/ledger";
 import { readApprovalPayload } from "@/lib/ticket-scenario";
+import { FxError, appendFxNote, convertAmountToUsd } from "@/lib/fx-usd";
 
 export const dynamic = "force-dynamic";
 
@@ -55,12 +56,23 @@ export async function POST(req: Request) {
   const account = await prisma.account.findUnique({ where: { userId: request.userId } });
   if (!account) return NextResponse.json({ error: "User has no account" }, { status: 404 });
 
-  if (request.amount > account.balance + 1e-9) {
+  let usdAmount = request.amount;
+  let comment = adminNote || `Withdrawal via ${request.method}`;
+  try {
+    const conv = await convertAmountToUsd(request.amount, request.currency);
+    usdAmount = conv.usdAmount;
+    comment = appendFxNote(comment, conv);
+  } catch (e) {
+    if (e instanceof FxError) return NextResponse.json({ error: e.message }, { status: 503 });
+    throw e;
+  }
+
+  if (usdAmount > account.balance + 1e-9) {
     return NextResponse.json({ error: "Account bakiyesi yetersiz" }, { status: 400 });
   }
 
   const balanceBefore = account.balance;
-  const balanceAfter = balanceBefore - request.amount;
+  const balanceAfter = balanceBefore - usdAmount;
 
   await prisma.$transaction([
     prisma.account.update({
@@ -76,11 +88,11 @@ export async function POST(req: Request) {
   await recordLedger({
     userId: request.userId,
     type: "WITHDRAWAL",
-    amount: -request.amount,
+    amount: -usdAmount,
     balanceBefore,
     balanceAfter,
-    currency: request.currency,
-    comment: adminNote || `Withdrawal via ${request.method}`,
+    currency: "USD",
+    comment,
     createdById: admin.id,
     createdByName: admin.name,
     refType: "WithdrawalRequest",

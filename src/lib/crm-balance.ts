@@ -70,6 +70,8 @@ export async function applyBalanceDelta(opts: {
   admin: AdminRef;
   refType?: string | null;
   refId?: string | null;
+  /** Ledger currency label. Account.balance is USD, so converted credits pass "USD". */
+  currency?: string;
 }) {
   const delta = Number(opts.delta);
   if (!Number.isFinite(delta) || Math.abs(delta) < 1e-9) return null;
@@ -84,8 +86,8 @@ export async function applyBalanceDelta(opts: {
     amount: delta,
     balanceBefore,
     balanceAfter,
-    currency: account.currency,
-    comment: opts.comment.slice(0, 500),
+    currency: opts.currency || "USD",
+    comment: opts.comment.slice(0, 2000),
     createdById: opts.admin.id,
     createdByName: opts.admin.name,
     refType: opts.refType ?? null,
