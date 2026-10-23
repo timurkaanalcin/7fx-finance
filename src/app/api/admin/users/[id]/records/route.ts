@@ -14,6 +14,7 @@ import {
   withdrawalEffect,
   type AdminRef,
 } from "@/lib/crm-balance";
+import { FxError, appendFxNote, convertAmountToUsd } from "@/lib/fx-usd";
 
 export const dynamic = "force-dynamic";
 
@@ -377,6 +378,7 @@ function withWorker(userId: string, admin: AdminRef, d: Body) {
 
 function fail(e: unknown) {
   if (e instanceof BadRequest) return NextResponse.json({ error: e.message }, { status: 400 });
+  if (e instanceof FxError) return NextResponse.json({ error: e.message }, { status: 503 });
   if (e instanceof Error && e.message === "ACCOUNT_NOT_FOUND") {
     return NextResponse.json({ error: "Trader has no trading account" }, { status: 404 });
   }
@@ -386,28 +388,45 @@ function fail(e: unknown) {
   return NextResponse.json({ error: "Server error" }, { status: 500 });
 }
 
+function ticketCurrency(entity: Entity, row: Body | null, accountCurrency: string): string {
+  if (entity === "balanceRequest") return accountCurrency || "USD";
+  const raw = row?.currency ?? accountCurrency ?? "USD";
+  return String(raw || "USD").trim().toUpperCase() || "USD";
+}
+
+/** Ticket effects are in the ticket currency. Account.balance is always USD. */
 async function reflect(
   entity: Entity,
   userId: string,
   admin: AdminRef,
-  before: number,
-  after: number,
+  beforeAmount: number,
+  beforeCurrency: string,
+  afterAmount: number,
+  afterCurrency: string,
   refId: string,
   verb: string
 ) {
-  const delta = after - before;
+  const before = await convertAmountToUsd(beforeAmount, beforeCurrency);
+  const after = await convertAmountToUsd(afterAmount, afterCurrency);
+  const delta = after.usdAmount - before.usdAmount;
   if (Math.abs(delta) < 1e-9) return null;
   const type = entity === "deposit" ? "DEPOSIT" : entity === "withdrawal" ? "WITHDRAWAL" : "MARGIN_ADD";
   const refType =
     entity === "deposit" ? "DepositRequest" : entity === "withdrawal" ? "WithdrawalRequest" : "BalanceRequest";
+  const fx = [before, after]
+    .filter((c) => c.sourceCurrency !== "USD" && Math.abs(c.sourceAmount) > 1e-9)
+    .map((c) => appendFxNote("", c))
+    .filter((n, i, arr) => n && arr.indexOf(n) === i)
+    .join("; ");
   return applyBalanceDelta({
     userId,
     delta,
     type,
-    comment: `CRM ${verb}: ${refType} ${refId}`,
+    comment: [`CRM ${verb}: ${refType} ${refId}`, fx].filter(Boolean).join(" · "),
     admin,
     refType,
     refId,
+    currency: "USD",
   });
 }
 
@@ -423,6 +442,16 @@ async function internalTransfer(body: Body, targetUserId: string, admin: AdminRe
   if (!(amount > 0)) throw new BadRequest("Amount must be greater than 0");
   const note = str(body.comment, 4000);
   const createdAt = has(body, "createdAt") && body.createdAt !== "" ? date(body.createdAt, "createdAt") : undefined;
+  let conv = await convertAmountToUsd(amount, "USD");
+  if (apply) {
+    const previewSrc = await prisma.account.findUnique({
+      where: { userId: sourceUserId },
+      select: { currency: true },
+    });
+    conv = await convertAmountToUsd(amount, previewSrc?.currency || "USD");
+  }
+  const posted = apply ? conv.usdAmount : amount;
+  const fx = apply ? appendFxNote("", conv) : "";
   const result = await prisma.$transaction(async (tx) => {
     const [src, dst] = await Promise.all([
       tx.user.findUnique({ where: { id: sourceUserId }, include: { account: true } }),
@@ -433,7 +462,7 @@ async function internalTransfer(body: Body, targetUserId: string, admin: AdminRe
     if (src.account.currency !== dst.account.currency) {
       throw new BadRequest(`Currency mismatch (${src.account.currency} → ${dst.account.currency})`);
     }
-    if (src.account.balance + 1e-9 < amount) throw new BadRequest("Insufficient source balance");
+    if (src.account.balance + 1e-9 < posted) throw new BadRequest("Insufficient source balance");
     const sb = src.account.balance;
     const db = dst.account.balance;
     const label = (u: { name: string; accountLoginId: string | null; email: string }) =>
@@ -441,31 +470,32 @@ async function internalTransfer(body: Body, targetUserId: string, admin: AdminRe
     const transferId = `TRF-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
     const common = {
       type: "TRANSFER",
-      currency: dst.account.currency,
+      currency: apply ? "USD" : dst.account.currency,
       createdById: admin.id,
       createdByName: admin.name,
       refType: "TRANSFER",
       refId: transferId,
       ...(createdAt ? { createdAt } : {}),
     };
+    const tail = [note, fx].filter(Boolean).join(" — ");
     if (apply) {
-      // Guarded decrement: fails if a concurrent change dropped the balance below amount.
+      // Guarded decrement: fails if a concurrent change dropped the balance below the USD amount.
       const dec = await tx.account.updateMany({
-        where: { userId: sourceUserId, balance: { gte: amount } },
-        data: { balance: { decrement: amount } },
+        where: { userId: sourceUserId, balance: { gte: posted } },
+        data: { balance: { decrement: posted } },
       });
       if (dec.count !== 1) throw new BadRequest("Insufficient source balance");
-      await tx.account.update({ where: { userId: targetUserId }, data: { balance: { increment: amount } } });
+      await tx.account.update({ where: { userId: targetUserId }, data: { balance: { increment: posted } } });
     }
     await tx.balanceLedger.create({
       data: {
         ...common,
         userId: sourceUserId,
         tradingAccountId: src.account.id,
-        amount: -amount,
+        amount: -posted,
         balanceBefore: sb,
-        balanceAfter: sb - amount,
-        comment: `Transfer out to ${label(dst)}${note ? ` — ${note}` : ""}`.slice(0, 5000),
+        balanceAfter: sb - posted,
+        comment: `Transfer out to ${label(dst)}${tail ? ` — ${tail}` : ""}`.slice(0, 5000),
       },
     });
     const row = await tx.balanceLedger.create({
@@ -473,13 +503,13 @@ async function internalTransfer(body: Body, targetUserId: string, admin: AdminRe
         ...common,
         userId: targetUserId,
         tradingAccountId: dst.account.id,
-        amount,
+        amount: posted,
         balanceBefore: db,
-        balanceAfter: db + amount,
-        comment: `Transfer in from ${label(src)}${note ? ` — ${note}` : ""}`.slice(0, 5000),
+        balanceAfter: db + posted,
+        comment: `Transfer in from ${label(src)}${tail ? ` — ${tail}` : ""}`.slice(0, 5000),
       },
     });
-    return { row, transferId, src: { before: sb, after: sb - amount }, dst: { before: db, after: db + amount } };
+    return { row, transferId, src: { before: sb, after: sb - posted }, dst: { before: db, after: db + posted } };
   });
   if (apply) {
     const { refreshAccountMetrics } = await import("@/lib/trading");
@@ -492,12 +522,22 @@ async function internalTransfer(body: Body, targetUserId: string, admin: AdminRe
     adminId: admin.id,
     action: "CRM_INTERNAL_TRANSFER",
     targetId: targetUserId,
-    note: `${amount} from ${sourceUserId}`,
-    meta: { sourceUserId, targetUserId, amount, applyToBalance: apply, transferId: result.transferId },
+    note: apply
+      ? `${amount} ${conv.sourceCurrency} (${posted} USD) from ${sourceUserId}`
+      : `${amount} from ${sourceUserId}`,
+    meta: {
+      sourceUserId,
+      targetUserId,
+      amount,
+      usdAmount: posted,
+      currency: conv.sourceCurrency,
+      applyToBalance: apply,
+      transferId: result.transferId,
+    },
   });
   return {
     row: result.row as unknown as { id: string } & Body,
-    balance: apply ? { source: result.src, target: result.dst, delta: amount } : null,
+    balance: apply ? { source: result.src, target: result.dst, delta: posted } : null,
   };
 }
 
@@ -517,6 +557,7 @@ export async function POST(req: Request, ctx: Ctx) {
   const userId = ctx.params.id;
   const user = await prisma.user.findUnique({ where: { id: userId }, include: { account: true } });
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
+  const accountCurrency = user.account?.currency || "USD";
 
   try {
     let row: { id: string } & Body;
@@ -547,20 +588,40 @@ export async function POST(req: Request, ctx: Ctx) {
       case "deposit": {
         const data = await depositData(body, true, null);
         row = await prisma.depositRequest.create({ data: { userId, ...data } as never });
-        if (apply) balance = await reflect(entity, userId, admin, 0, depositEffect(row as never), row.id, "create");
+        if (apply) {
+          balance = await reflect(
+            entity, userId, admin,
+            0, "USD",
+            depositEffect(row as never), ticketCurrency(entity, row, accountCurrency),
+            row.id, "create"
+          );
+        }
         break;
       }
       case "withdrawal": {
         row = await prisma.withdrawalRequest.create({ data: { userId, ...withdrawalData(body, true, null) } as never });
-        if (apply) balance = await reflect(entity, userId, admin, 0, withdrawalEffect(row as never), row.id, "create");
+        if (apply) {
+          balance = await reflect(
+            entity, userId, admin,
+            0, "USD",
+            withdrawalEffect(row as never), ticketCurrency(entity, row, accountCurrency),
+            row.id, "create"
+          );
+        }
         break;
       }
       case "balanceRequest": {
         row = await prisma.balanceRequest.create({
           data: { userId, ...balanceRequestData(body, true, null) } as never,
         });
-        if (apply)
-          balance = await reflect(entity, userId, admin, 0, balanceRequestEffect(row as never), row.id, "create");
+        if (apply) {
+          balance = await reflect(
+            entity, userId, admin,
+            0, "USD",
+            balanceRequestEffect(row as never), ticketCurrency(entity, row, accountCurrency),
+            row.id, "create"
+          );
+        }
         break;
       }
       case "ledger": {
@@ -574,8 +635,17 @@ export async function POST(req: Request, ctx: Ctx) {
         const acc = user.account;
         if (!acc) throw new Error("ACCOUNT_NOT_FOUND");
         const type = String(data.type);
-        const amount = Number(data.amount);
+        let amount = Number(data.amount);
         const target = ledgerTarget(type);
+        if (apply && target === "balance") {
+          const cur = String(data.currency || acc.currency || "USD");
+          const conv = await convertAmountToUsd(amount, cur);
+          amount = conv.usdAmount;
+          data.amount = amount;
+          data.currency = "USD";
+          const noted = appendFxNote(data.comment != null ? String(data.comment) : "", conv);
+          if (noted) data.comment = noted;
+        }
         if (apply) {
           data.balanceBefore = acc.balance;
           data.balanceAfter = target === "balance" ? acc.balance + amount : acc.balance;
@@ -628,6 +698,8 @@ export async function PATCH(req: Request, ctx: Ctx) {
   const userId = ctx.params.id;
   const id = String(body.id || "").trim();
   if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
+  const accountCurrency =
+    (await prisma.account.findUnique({ where: { userId }, select: { currency: true } }))?.currency || "USD";
 
   try {
     let before: Body | null = null;
@@ -691,8 +763,18 @@ export async function PATCH(req: Request, ctx: Ctx) {
           after = created;
           convertedTo = convertTo;
           if (apply) {
-            const r1 = await reflect(entity, userId, admin, ticketEffect(entity, prev), 0, id, "convert");
-            const r2 = await reflect(convertTo, ownerId, admin, 0, ticketEffect(convertTo, created), created.id, "convert");
+            const r1 = await reflect(
+              entity, userId, admin,
+              ticketEffect(entity, prev), ticketCurrency(entity, prev, accountCurrency),
+              0, "USD",
+              id, "convert"
+            );
+            const r2 = await reflect(
+              convertTo, ownerId, admin,
+              0, "USD",
+              ticketEffect(convertTo, created), ticketCurrency(convertTo, created, accountCurrency),
+              created.id, "convert"
+            );
             balance = [r1, r2];
           }
           break;
@@ -713,11 +795,18 @@ export async function PATCH(req: Request, ctx: Ctx) {
               : await prisma.balanceRequest.update({ where: { id }, data: data as never });
         after = next;
         if (apply) {
+          const prevCur = ticketCurrency(entity, prev, accountCurrency);
+          const nextCur = ticketCurrency(entity, next, accountCurrency);
           if (ownerId === userId) {
-            balance = await reflect(entity, userId, admin, ticketEffect(entity, prev), ticketEffect(entity, next), id, "edit");
+            balance = await reflect(
+              entity, userId, admin,
+              ticketEffect(entity, prev), prevCur,
+              ticketEffect(entity, next), nextCur,
+              id, "edit"
+            );
           } else {
-            const r1 = await reflect(entity, userId, admin, ticketEffect(entity, prev), 0, id, "move");
-            const r2 = await reflect(entity, ownerId, admin, 0, ticketEffect(entity, next), id, "move");
+            const r1 = await reflect(entity, userId, admin, ticketEffect(entity, prev), prevCur, 0, "USD", id, "move");
+            const r2 = await reflect(entity, ownerId, admin, 0, "USD", ticketEffect(entity, next), nextCur, id, "move");
             balance = [r1, r2];
           }
         }
@@ -739,17 +828,33 @@ export async function PATCH(req: Request, ctx: Ctx) {
         const next = await prisma.balanceLedger.update({ where: { id }, data: data as never });
         after = next;
         if (apply) {
+          let applied = next;
+          if (ledgerTarget(String(next.type)) === "balance" && String(next.currency || "USD").toUpperCase() !== "USD") {
+            const conv = await convertAmountToUsd(Number(next.amount), String(next.currency));
+            const comment = appendFxNote(next.comment != null ? String(next.comment) : "", conv);
+            applied = await prisma.balanceLedger.update({
+              where: { id },
+              data: {
+                amount: conv.usdAmount,
+                currency: "USD",
+                comment: comment || null,
+                balanceAfter: Number(next.balanceBefore) + conv.usdAmount,
+              },
+            });
+          }
+          const appliedAmount = Number(applied.amount);
           if (ownerId !== userId) {
-            const r1 = await applyLedgerRowDelta(userId, prev.type, -prev.amount);
-            const r2 = await applyLedgerRowDelta(ownerId, next.type, next.amount);
+            const r1 = await applyLedgerRowDelta(userId, prev.type, -Number(prev.amount));
+            const r2 = await applyLedgerRowDelta(ownerId, String(applied.type), appliedAmount);
             balance = [r1, r2];
-          } else if (ledgerTarget(prev.type) === ledgerTarget(next.type)) {
-            balance = await applyLedgerRowDelta(userId, next.type, next.amount - prev.amount);
+          } else if (ledgerTarget(String(prev.type)) === ledgerTarget(String(applied.type))) {
+            balance = await applyLedgerRowDelta(userId, String(applied.type), appliedAmount - Number(prev.amount));
           } else {
-            const r1 = await applyLedgerRowDelta(userId, prev.type, -prev.amount);
-            const r2 = await applyLedgerRowDelta(userId, next.type, next.amount);
+            const r1 = await applyLedgerRowDelta(userId, prev.type, -Number(prev.amount));
+            const r2 = await applyLedgerRowDelta(userId, String(applied.type), appliedAmount);
             balance = [r1, r2];
           }
+          after = applied;
         }
         break;
       }
@@ -784,6 +889,8 @@ export async function DELETE(req: Request, ctx: Ctx) {
   const userId = ctx.params.id;
   const id = String(body.id || "").trim();
   if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
+  const accountCurrency =
+    (await prisma.account.findUnique({ where: { userId }, select: { currency: true } }))?.currency || "USD";
 
   try {
     let before: Body | null = null;
@@ -819,7 +926,14 @@ export async function DELETE(req: Request, ctx: Ctx) {
         before = prev;
         if (prev) {
           await prisma.depositRequest.delete({ where: { id } });
-          if (apply) balance = await reflect(entity, userId, admin, depositEffect(prev), 0, id, "delete");
+          if (apply) {
+            balance = await reflect(
+              entity, userId, admin,
+              depositEffect(prev), ticketCurrency(entity, prev, accountCurrency),
+              0, "USD",
+              id, "delete"
+            );
+          }
         }
         break;
       }
@@ -828,7 +942,14 @@ export async function DELETE(req: Request, ctx: Ctx) {
         before = prev;
         if (prev) {
           await prisma.withdrawalRequest.delete({ where: { id } });
-          if (apply) balance = await reflect(entity, userId, admin, withdrawalEffect(prev), 0, id, "delete");
+          if (apply) {
+            balance = await reflect(
+              entity, userId, admin,
+              withdrawalEffect(prev), ticketCurrency(entity, prev, accountCurrency),
+              0, "USD",
+              id, "delete"
+            );
+          }
         }
         break;
       }
@@ -837,7 +958,14 @@ export async function DELETE(req: Request, ctx: Ctx) {
         before = prev;
         if (prev) {
           await prisma.balanceRequest.delete({ where: { id } });
-          if (apply) balance = await reflect(entity, userId, admin, balanceRequestEffect(prev), 0, id, "delete");
+          if (apply) {
+            balance = await reflect(
+              entity, userId, admin,
+              balanceRequestEffect(prev), ticketCurrency(entity, prev, accountCurrency),
+              0, "USD",
+              id, "delete"
+            );
+          }
         }
         break;
       }

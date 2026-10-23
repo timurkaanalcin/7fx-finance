@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { refreshAccountMetrics } from "@/lib/trading";
 import { recordLedger } from "@/lib/ledger";
 import { readApprovalPayload } from "@/lib/ticket-scenario";
+import { FxError, appendFxNote, convertAmountToUsd } from "@/lib/fx-usd";
 
 export const dynamic = "force-dynamic";
 
@@ -53,12 +54,23 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, request: updated });
   }
 
-  // Approve: credit balance
+  // Approve: credit the USD trading balance. Ticket amount/currency stay as entered.
   const account = await prisma.account.findUnique({ where: { userId: request.userId } });
   if (!account) return NextResponse.json({ error: "User has no account" }, { status: 404 });
 
+  let usdAmount = request.amount;
+  let comment = adminNote || "CRM deposit approved";
+  try {
+    const conv = await convertAmountToUsd(request.amount, request.currency);
+    usdAmount = conv.usdAmount;
+    comment = appendFxNote(comment, conv);
+  } catch (e) {
+    if (e instanceof FxError) return NextResponse.json({ error: e.message }, { status: 503 });
+    throw e;
+  }
+
   const balanceBefore = account.balance;
-  const balanceAfter = balanceBefore + request.amount;
+  const balanceAfter = balanceBefore + usdAmount;
 
   await prisma.$transaction([
     prisma.account.update({
@@ -74,11 +86,11 @@ export async function POST(req: Request) {
   await recordLedger({
     userId: request.userId,
     type: "DEPOSIT",
-    amount: request.amount,
+    amount: usdAmount,
     balanceBefore,
     balanceAfter,
-    currency: request.currency,
-    comment: adminNote || "CRM deposit approved",
+    currency: "USD",
+    comment,
     createdById: admin.id,
     createdByName: admin.name,
     refType: "DepositRequest",

@@ -5,6 +5,7 @@ import { applyBalanceAdd, applyBalanceReset } from "@/lib/trading";
 import { recordLedger } from "@/lib/ledger";
 import { readApprovalPayload } from "@/lib/ticket-scenario";
 import { DEFAULT_RESET_BALANCE, MARGIN_CALL_LEVEL, MARGIN_CALL_RULE_EN } from "@/lib/margin-call";
+import { FxError, appendFxNote, convertAmountToUsd } from "@/lib/fx-usd";
 
 export const dynamic = "force-dynamic";
 
@@ -64,6 +65,7 @@ export async function POST(req: Request) {
   const beforeAcc = await prisma.account.findUnique({ where: { userId: request.userId } });
   const balanceBefore = beforeAcc?.balance ?? 0;
 
+  let ledgerComment = adminNote || `Margin-call ${request.type} approved`;
   if (request.type === "RESET") {
     await applyBalanceReset(request.userId);
   } else if (request.type === "ADD") {
@@ -71,7 +73,16 @@ export async function POST(req: Request) {
     if (amt == null || !Number.isFinite(amt) || amt <= 0) {
       return NextResponse.json({ error: "Invalid request amount" }, { status: 400 });
     }
-    await applyBalanceAdd(request.userId, amt);
+    let usd = amt;
+    try {
+      const conv = await convertAmountToUsd(amt, beforeAcc?.currency || "USD");
+      usd = conv.usdAmount;
+      ledgerComment = appendFxNote(ledgerComment, conv);
+    } catch (e) {
+      if (e instanceof FxError) return NextResponse.json({ error: e.message }, { status: 503 });
+      throw e;
+    }
+    await applyBalanceAdd(request.userId, usd);
   } else {
     return NextResponse.json({ error: "Bilinmeyen talep tipi" }, { status: 400 });
   }
@@ -84,8 +95,8 @@ export async function POST(req: Request) {
     amount: balanceAfter - balanceBefore,
     balanceBefore,
     balanceAfter,
-    currency: afterAcc?.currency || "USD",
-    comment: adminNote || `Margin-call ${request.type} approved`,
+    currency: "USD",
+    comment: ledgerComment,
     createdById: admin.id,
     createdByName: admin.name,
     refType: "BalanceRequest",
