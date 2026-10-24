@@ -416,8 +416,14 @@ type Props = {
   onReopenTrade?: (draft: { symbol: string; side: "BUY" | "SELL"; volume: number }) => void;
   /** Account currency (statement totals label). */
   currency?: string;
-  /** Live prices (for pending-order distance to trigger). */
+  /** Live prices (pending-order distance, and open-position mark display). */
   prices?: Record<string, PriceTick>;
+  /** Compact closed-trade ledger used for calendar and summary totals. */
+  closedCalendar?: PositionRow[];
+  closedHasMore?: boolean;
+  closedLoading?: boolean;
+  onLoadMoreClosed?: () => void;
+  onLoadClosedDay?: (day: string) => void;
   className?: string;
 };
 
@@ -580,18 +586,46 @@ function symbolPipSize(symbol: string): number {
 
 const PIP_PRESETS = [10, 20, 50] as const;
 
-/** Absolute distance (pips) from current market price to an SL/TP level; null if unset/invalid. */
-function levelDistancePips(p: PositionRow, level: number | null | undefined): number | null {
+/** Live position mark: bid for a buy, ask for a sell. Falls back to the server snapshot. */
+function markPrice(p: PositionRow, prices?: Record<string, PriceTick>): number {
+  const keys = [p.symbol, p.chartSymbol || ""];
+  for (const key of keys) {
+    if (!key || !prices) continue;
+    const t = prices[key] || prices[key.toUpperCase()];
+    if (!t) continue;
+    const q = String(p.side).toUpperCase() === "SELL" ? t.ask : t.bid;
+    if (Number.isFinite(q) && q > 0) return q;
+    if (Number.isFinite(t.mid) && t.mid > 0) return t.mid;
+  }
+  return Number.isFinite(p.currentPrice) && p.currentPrice > 0 ? p.currentPrice : p.openPrice;
+}
+
+/** Absolute distance (pips) from the live mark to an SL/TP level; null if unset/invalid. */
+function levelDistancePips(
+  p: PositionRow,
+  level: number | null | undefined,
+  prices?: Record<string, PriceTick>
+): number | null {
   if (level == null || !Number.isFinite(level) || level <= 0) return null;
-  const ref = Number.isFinite(p.currentPrice) && p.currentPrice > 0 ? p.currentPrice : p.openPrice;
+  const ref = markPrice(p, prices);
   const size = symbolPipSize(p.symbol);
   if (!Number.isFinite(ref) || !(size > 0)) return null;
   return Math.abs(ref - level) / size;
 }
 
 /** Small "SL 12.3p" / "TP 45.0p" distance-to-level hint (client-only display). */
-function LevelDistance({ p, kind, className = "" }: { p: PositionRow; kind: "sl" | "tp"; className?: string }) {
-  const d = levelDistancePips(p, kind === "sl" ? p.stopLoss : p.takeProfit);
+function LevelDistance({
+  p,
+  kind,
+  prices,
+  className = "",
+}: {
+  p: PositionRow;
+  kind: "sl" | "tp";
+  prices?: Record<string, PriceTick>;
+  className?: string;
+}) {
+  const d = levelDistancePips(p, kind === "sl" ? p.stopLoss : p.takeProfit, prices);
   if (d == null) return null;
   return (
     <span
@@ -662,9 +696,10 @@ function PendingTriggerDistance({
 function pipOffsetPrice(
   p: PositionRow,
   kind: "sl" | "tp",
-  pips: number
+  pips: number,
+  prices?: Record<string, PriceTick>
 ): string {
-  const ref = Number.isFinite(p.currentPrice) && p.currentPrice > 0 ? p.currentPrice : p.openPrice;
+  const ref = markPrice(p, prices);
   const dist = pips * symbolPipSize(p.symbol);
   const isBuy = p.side === "BUY";
   const down = kind === "sl" ? isBuy : !isBuy;
@@ -673,9 +708,10 @@ function pipOffsetPrice(
 }
 
 /** Breakeven is only accepted by the server when the position is already in profit. */
-function breakevenAllowed(p: PositionRow): boolean {
-  if (!Number.isFinite(p.currentPrice) || !(p.currentPrice > 0)) return false;
-  return p.side === "BUY" ? p.openPrice < p.currentPrice : p.openPrice > p.currentPrice;
+function breakevenAllowed(p: PositionRow, prices?: Record<string, PriceTick>): boolean {
+  const mark = markPrice(p, prices);
+  if (!Number.isFinite(mark) || !(mark > 0)) return false;
+  return p.side === "BUY" ? p.openPrice < mark : p.openPrice > mark;
 }
 
 function QuickChip({
@@ -719,13 +755,15 @@ function QuickChip({
 function SlQuickChips({
   p,
   onSet,
+  prices,
   size = "md",
 }: {
   p: PositionRow;
   onSet: (v: string) => void;
+  prices?: Record<string, PriceTick>;
   size?: "sm" | "md";
 }) {
-  const beOk = breakevenAllowed(p);
+  const beOk = breakevenAllowed(p, prices);
   return (
     <div className="mt-1 flex flex-wrap gap-0.5">
       <QuickChip
@@ -746,7 +784,7 @@ function SlQuickChips({
           key={n}
           size={size}
           tone="sell"
-          onClick={() => onSet(pipOffsetPrice(p, "sl", n))}
+          onClick={() => onSet(pipOffsetPrice(p, "sl", n, prices))}
           title={`SL ${n} pip (güncel fiyattan · from current price)`}
         >
           {p.side === "BUY" ? "−" : "+"}
@@ -763,10 +801,12 @@ function SlQuickChips({
 function TpQuickChips({
   p,
   onSet,
+  prices,
   size = "md",
 }: {
   p: PositionRow;
   onSet: (v: string) => void;
+  prices?: Record<string, PriceTick>;
   size?: "sm" | "md";
 }) {
   return (
@@ -776,7 +816,7 @@ function TpQuickChips({
           key={n}
           size={size}
           tone="buy"
-          onClick={() => onSet(pipOffsetPrice(p, "tp", n))}
+          onClick={() => onSet(pipOffsetPrice(p, "tp", n, prices))}
           title={`TP ${n} pip (güncel fiyattan · from current price)`}
         >
           {p.side === "BUY" ? "+" : "−"}
@@ -795,8 +835,10 @@ function OpenCard({
   onClose,
   onModifySlTp,
   onSelectSymbol,
+  prices,
 }: {
   p: PositionRow;
+  prices?: Record<string, PriceTick>;
   onSelectSymbol?: (symbol: string) => void;
   onClose: (
     id: string,
@@ -815,8 +857,9 @@ function OpenCard({
   const [tpInput, setTpInput] = useState(p.takeProfit != null ? String(p.takeProfit) : "");
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState("");
+  const mark = markPrice(p, prices);
   const pip =
-    calcPipDistance(p.symbol, p.openPrice, p.currentPrice) *
+    calcPipDistance(p.symbol, p.openPrice, mark) *
     (p.side === "BUY" ? 1 : -1);
 
   const openClosePanel = () => {
@@ -935,7 +978,7 @@ function OpenCard({
         <div className="rounded-[8px] bg-desk-bg/60 px-2 py-1.5">
           <div className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">Current</div>
           <div className="mt-0.5 font-medium tabular-nums text-desk-text">
-            {formatPrice(p.symbol, p.currentPrice)}
+            {formatPrice(p.symbol, mark)}
           </div>
         </div>
         <div className="rounded-[8px] bg-desk-bg/60 px-2 py-1.5">
@@ -947,8 +990,8 @@ function OpenCard({
           </div>
           {(p.stopLoss != null || p.takeProfit != null) && (
             <div className="mt-0.5 flex flex-wrap gap-x-1.5 leading-tight">
-              <LevelDistance p={p} kind="sl" />
-              <LevelDistance p={p} kind="tp" />
+              <LevelDistance p={p} kind="sl" prices={prices} />
+              <LevelDistance p={p} kind="tp" prices={prices} />
             </div>
           )}
         </div>
@@ -1038,7 +1081,7 @@ function OpenCard({
                 placeholder="—"
                 className="mt-0.5 w-full rounded-[8px] border border-desk-border/60 bg-desk-elev px-2 py-1.5 text-[12px] tabular-nums text-desk-text outline-none focus:border-desk-accent"
               />
-              <SlQuickChips p={p} onSet={setSlInput} />
+              <SlQuickChips p={p} onSet={setSlInput} prices={prices} />
             </label>
             <label className="block">
               <span className="text-[9px] text-desk-muted">Take Profit</span>
@@ -1049,7 +1092,7 @@ function OpenCard({
                 placeholder="—"
                 className="mt-0.5 w-full rounded-[8px] border border-desk-border/60 bg-desk-elev px-2 py-1.5 text-[12px] tabular-nums text-desk-text outline-none focus:border-desk-accent"
               />
-              <TpQuickChips p={p} onSet={setTpInput} />
+              <TpQuickChips p={p} onSet={setTpInput} prices={prices} />
             </label>
           </div>
           <div className="mt-2 flex gap-2">
@@ -1086,8 +1129,10 @@ function OpenRowActions({
   p,
   onClose,
   onModifySlTp,
+  prices,
 }: {
   p: PositionRow;
+  prices?: Record<string, PriceTick>;
   onClose: (
     id: string,
     volume?: number
@@ -1186,7 +1231,7 @@ function OpenRowActions({
               placeholder="SL"
               className="w-full rounded-[6px] border border-desk-border/50 bg-desk-bg px-1.5 py-0.5 text-[10px] tabular-nums text-desk-text outline-none"
             />
-            <SlQuickChips p={p} onSet={setSlInput} size="sm" />
+            <SlQuickChips p={p} onSet={setSlInput} prices={prices} size="sm" />
           </div>
           <div className="min-w-0">
             <input
@@ -1196,7 +1241,7 @@ function OpenRowActions({
               placeholder="TP"
               className="w-full rounded-[6px] border border-desk-border/50 bg-desk-bg px-1.5 py-0.5 text-[10px] tabular-nums text-desk-text outline-none"
             />
-            <TpQuickChips p={p} onSet={setTpInput} size="sm" />
+            <TpQuickChips p={p} onSet={setTpInput} prices={prices} size="sm" />
           </div>
         </div>
         <div className="mt-1 flex gap-1">
@@ -1439,6 +1484,11 @@ export default function BottomPanels({
   onReopenTrade,
   currency,
   prices,
+  closedCalendar,
+  closedHasMore = false,
+  closedLoading = false,
+  onLoadMoreClosed,
+  onLoadClosedDay,
   className = "",
 }: Props) {
   const { t } = useI18n();
@@ -1478,11 +1528,16 @@ export default function BottomPanels({
       return n;
     });
   }, []);
+  useEffect(() => {
+    if (closedDay) onLoadClosedDay?.(closedDay);
+  }, [closedDay, onLoadClosedDay]);
+
+  const closedLedger = closedCalendar && closedCalendar.length ? closedCalendar : closedPositions;
 
 
   const tabs: { id: Tab; label: string; shortLabel: string; count?: number }[] = [
     { id: "open", label: t("term.openTrades"), shortLabel: t("term.watch.open"), count: openPositions.length || undefined },
-    { id: "closed", label: t("term.closed"), shortLabel: t("term.closed"), count: closedPositions.length || undefined },
+    { id: "closed", label: t("term.closed"), shortLabel: t("term.closed"), count: closedLedger.length || undefined },
     { id: "pending", label: t("term.pending"), shortLabel: t("term.pending"), count: pendingOrders.length || undefined },
   ];
 
@@ -1512,8 +1567,8 @@ export default function BottomPanels({
   }, [openPositions, filterOpts, openSymbolChip]);
   // Calendar input: closed trades after the regular filters (before the day / symbol chips)
   const calendarClosed = useMemo(
-    () => filterPositions(closedPositions, { ...filterOpts, result: resultFilter }),
-    [closedPositions, filterOpts, resultFilter]
+    () => filterPositions(closedLedger, { ...filterOpts, result: resultFilter }),
+    [closedLedger, filterOpts, resultFilter]
   );
   // Distinct symbols among filtered closed rows (period/result/text), most first
   const closedSymbolCounts = useMemo(() => {
@@ -1531,6 +1586,12 @@ export default function BottomPanels({
   }, [closedSymbolChip, closedSymbolCounts]);
 
   const filteredClosed = useMemo(() => {
+    let rows = filterPositions(closedPositions, { ...filterOpts, result: resultFilter });
+    if (closedDay) rows = rows.filter((p) => closedDayKey(p) === closedDay);
+    if (closedSymbolChip) rows = rows.filter((p) => p.symbol === closedSymbolChip);
+    return rows;
+  }, [closedPositions, filterOpts, resultFilter, closedDay, closedSymbolChip]);
+  const summaryClosed = useMemo(() => {
     let rows = calendarClosed;
     if (closedDay) rows = rows.filter((p) => closedDayKey(p) === closedDay);
     if (closedSymbolChip) rows = rows.filter((p) => p.symbol === closedSymbolChip);
@@ -1625,7 +1686,7 @@ export default function BottomPanels({
   }, [tab, openSymbolChip, closedSymbolChip, pendingSymbolChip]);
 
   const exportRows =
-    tab === "open" ? sortedOpen : tab === "closed" ? sortedClosed : sortedPending;
+    tab === "open" ? sortedOpen : tab === "closed" ? summaryClosed : sortedPending;
   const canExport = exportRows.length > 0;
 
   const handleCloseAllFiltered = useCallback(async () => {
@@ -1674,15 +1735,16 @@ export default function BottomPanels({
         `7fx-open-${stamp}.csv`,
         ["id", "symbol", "side", "volume", "openPrice", "currentPrice", "stopLoss", "takeProfit", "profit", "margin", "openedAt"],
         sortedOpen.map((p) => [
-          p.id, p.symbol, p.side, p.volume, p.openPrice, p.currentPrice,
+          p.id, p.symbol, p.side, p.volume, p.openPrice, markPrice(p, prices),
           p.stopLoss, p.takeProfit, p.profit, p.margin, p.openedAt,
         ])
       );
     } else if (tab === "closed") {
+      const exportClosed = sortPositions(summaryClosed, closedSort, "closed");
       downloadCsv(
         `7fx-closed-${stamp}.csv`,
         ["id", "symbol", "side", "volume", "openPrice", "closePrice", "closeProfit", "stopLoss", "takeProfit", "openedAt", "closedAt", "holdDuration"],
-        sortedClosed.map((p) => [
+        exportClosed.map((p) => [
           p.id, p.symbol, p.side, p.volume, p.openPrice, p.closePrice ?? p.currentPrice,
           p.closeProfit ?? p.profit, p.stopLoss, p.takeProfit, p.openedAt, p.closedAt ?? "",
           closedHoldLabel(p.openedAt, p.closedAt),
@@ -1721,7 +1783,7 @@ export default function BottomPanels({
     let best = -Infinity;
     let worst = Infinity;
     const timed: { t: number; v: number }[] = [];
-    for (const p of filteredClosed) {
+    for (const p of summaryClosed) {
       const v = Number(p.closeProfit ?? p.profit) || 0;
       pnl += v;
       if (v > 0) {
@@ -1743,7 +1805,7 @@ export default function BottomPanels({
       run += x.v;
       curve.push(run);
     }
-    const count = filteredClosed.length;
+    const count = summaryClosed.length;
     return {
       count,
       pnl,
@@ -1756,7 +1818,7 @@ export default function BottomPanels({
       worst: count > 0 ? worst : 0,
       curve,
     };
-  }, [filteredClosed]);
+  }, [summaryClosed]);
 
   const summaryStrip =
     tab === "open" && openPositions.length > 0 ? (
@@ -1774,7 +1836,7 @@ export default function BottomPanels({
           <span className="text-desk-sell">{openSummary.sells}</span>
         </SummaryStat>
       </div>
-    ) : tab === "closed" && closedPositions.length > 0 ? (
+    ) : tab === "closed" && closedLedger.length > 0 ? (
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-desk-border/60 bg-desk-elev/20 px-2.5 py-1.5">
         <SummaryStat label={filtersActive ? "İşlem (filtre)" : "İşlem"} className="text-desk-text">
           {closedSummary.count}
@@ -2197,14 +2259,14 @@ export default function BottomPanels({
       {summaryStrip}
 
       {/* Daily realised P&L calendar (closed tab) — click a day to filter the list */}
-      {tab === "closed" && showPnlCal && closedPositions.length > 0 && (
+      {tab === "closed" && showPnlCal && closedLedger.length > 0 && (
         <PnlCalendar rows={calendarClosed} selectedDay={closedDay} onSelectDay={setClosedDay} />
       )}
 
       <AccountStatement
         open={showStatement}
         onClose={closeStatement}
-        rows={closedPositions}
+        rows={closedLedger}
         currency={currency}
       />
 
@@ -2217,7 +2279,7 @@ export default function BottomPanels({
             )}
             {openPositions.length > 0 && filteredOpen.length === 0 && emptyFiltered}
             {sortedOpen.map((p) => (
-              <OpenCard key={p.id} p={p} onClose={onClosePosition} onModifySlTp={onModifySlTp} onSelectSymbol={onSelectSymbol} />
+              <OpenCard key={p.id} p={p} prices={prices} onClose={onClosePosition} onModifySlTp={onModifySlTp} onSelectSymbol={onSelectSymbol} />
             ))}
           </>
         )}
@@ -2232,6 +2294,18 @@ export default function BottomPanels({
             {sortedClosed.map((p) => (
               <ClosedCard key={p.id} p={p} onReopenTrade={onReopenTrade} reopenLabel={reopenLabel} reopenTitle={reopenTitle} />
             ))}
+            {closedHasMore && (
+              <div className="pt-1 text-center">
+                <button
+                  type="button"
+                  disabled={closedLoading}
+                  onClick={() => onLoadMoreClosed?.()}
+                  className="rounded-full border border-desk-border px-3 py-1 text-[11px] font-semibold text-desk-muted hover:bg-desk-hover hover:text-desk-text disabled:opacity-50"
+                >
+                  {t("term.loadMore")}
+                </button>
+              </div>
+            )}
           </>
         )}
         {tab === "pending" && (
@@ -2287,8 +2361,9 @@ export default function BottomPanels({
                 </tr>
               )}
               {sortedOpen.map((p, i) => {
+                const mark = markPrice(p, prices);
                 const pip =
-                  calcPipDistance(p.symbol, p.openPrice, p.currentPrice) *
+                  calcPipDistance(p.symbol, p.openPrice, mark) *
                   (p.side === "BUY" ? 1 : -1);
                 return (
                   <tr
@@ -2319,15 +2394,15 @@ export default function BottomPanels({
                       {formatPrice(p.symbol, p.openPrice)}
                     </td>
                     <td className="px-2 py-1.5 tabular-nums">
-                      {formatPrice(p.symbol, p.currentPrice)}
+                      {formatPrice(p.symbol, mark)}
                     </td>
                     <td className="px-2 py-1.5 tabular-nums text-desk-muted">
                       <div>{p.stopLoss != null ? formatPrice(p.symbol, p.stopLoss) : "—"}</div>
-                      <LevelDistance p={p} kind="sl" className="block leading-tight" />
+                      <LevelDistance p={p} kind="sl" prices={prices} className="block leading-tight" />
                     </td>
                     <td className="px-2 py-1.5 tabular-nums text-desk-muted">
                       <div>{p.takeProfit != null ? formatPrice(p.symbol, p.takeProfit) : "—"}</div>
-                      <LevelDistance p={p} kind="tp" className="block leading-tight" />
+                      <LevelDistance p={p} kind="tp" prices={prices} className="block leading-tight" />
                     </td>
                     <td className="px-2 py-1.5 text-desk-muted">0.00</td>
                     <td className="px-2 py-1.5 text-desk-muted">0.00</td>
@@ -2341,6 +2416,7 @@ export default function BottomPanels({
                     <td className="px-2 py-1.5">
                       <OpenRowActions
                         p={p}
+                        prices={prices}
                         onClose={onClosePosition}
                         onModifySlTp={onModifySlTp}
                       />
@@ -2457,6 +2533,20 @@ export default function BottomPanels({
                   </td>
                 </tr>
               ))}
+              {closedHasMore && (
+                <tr>
+                  <td colSpan={13} className="px-3 py-2 text-center">
+                    <button
+                      type="button"
+                      disabled={closedLoading}
+                      onClick={() => onLoadMoreClosed?.()}
+                      className="rounded-full border border-desk-border px-3 py-1 text-[11px] font-semibold text-desk-muted hover:bg-desk-hover hover:text-desk-text disabled:opacity-50"
+                    >
+                      {t("term.loadMore")}
+                    </button>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         )}

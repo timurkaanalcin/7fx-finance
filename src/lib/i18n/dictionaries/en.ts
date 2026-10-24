@@ -158,6 +158,7 @@ export const en: Dict = {
   "term.watch.sortAz": "A–Z",
   "term.emptyOpen": "No open trades",
   "term.emptyClosed": "No closed positions",
+  "term.loadMore": "Load more",
   "term.emptyPending": "No pending orders",
   "term.emptyFilter": "No trades match the filter",
   "term.clearFilters": "Clear filters",

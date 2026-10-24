@@ -158,6 +158,7 @@ export const tr: Dict = {
   "term.watch.sortAz": "A–Z",
   "term.emptyOpen": "Açık işlem yok",
   "term.emptyClosed": "Kapalı pozisyon yok",
+  "term.loadMore": "Daha fazla",
   "term.emptyPending": "Bekleyen emir yok",
   "term.emptyFilter": "Filtreye uyan işlem yok",
   "term.clearFilters": "Filtreleri temizle",

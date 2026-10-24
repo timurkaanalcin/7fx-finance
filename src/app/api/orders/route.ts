@@ -7,15 +7,21 @@ import { placeOrder, processPendingOrders, checkSlTp } from "@/lib/trading";
 import { getMarketStatus } from "@/lib/market-hours";
 import { stripStaff } from "@/lib/customer-sanitize";
 
-export async function GET() {
+export async function GET(req: Request) {
   const user = await requireUser();
   if (!user) return NextResponse.json({ error: "No session" }, { status: 401 });
   await processPendingOrders(user.id);
   await checkSlTp(user.id);
+  const status = new URL(req.url).searchParams.get("status");
+  const pendingOnly = status === "PENDING";
   const orders = await prisma.order.findMany({
-    where: { userId: user.id },
+    where: {
+      userId: user.id,
+      ...(pendingOnly ? { status: "PENDING" } : {}),
+    },
     orderBy: { createdAt: "desc" },
-    take: 200,
+    // Pending-only is the working-order blotter. A mixed history of 200 would drop older working orders.
+    take: pendingOnly ? 500 : 200,
   });
   return NextResponse.json(stripStaff(orders));
 }
