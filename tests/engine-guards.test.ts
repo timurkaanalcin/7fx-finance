@@ -11,6 +11,7 @@ import { localizeTradeError } from "../src/lib/trade-errors";
 import {
   POSITION_NOT_FOUND,
   isPositionNotFound,
+  bookedFreeMargin,
   pendingFillBlockedByMargin,
   positionLevelHit,
 } from "../src/lib/trading";
@@ -32,6 +33,15 @@ async function main() {
   assert.equal(pendingFillBlockedByMargin(150, 100, "LIMIT"), false);
   assert.equal(pendingFillBlockedByMargin(10, 100, "MARKET"), false);
   assert.equal(pendingFillBlockedByMargin(0, 100, "MARKET"), false);
+
+  assert.equal(bookedFreeMargin(1000, []), 1000);
+  assert.equal(bookedFreeMargin(1000, [{ margin: 100, profit: 25 }, { margin: 50, profit: -10 }]), 865);
+  const before = bookedFreeMargin(1000, []);
+  assert.equal(pendingFillBlockedByMargin(before, 400, "LIMIT"), false);
+  const afterFirstFill = bookedFreeMargin(1000 - 2, [{ margin: 400, profit: 0 }]);
+  assert.equal(afterFirstFill, 598);
+  assert.equal(pendingFillBlockedByMargin(afterFirstFill, 700, "LIMIT"), true);
+  assert.equal(pendingFillBlockedByMargin(afterFirstFill, 598, "STOP"), false);
 
   assert.equal(positionLevelHit("BUY", 100, 100, null), true);
   assert.equal(positionLevelHit("BUY", 99.9, 100, null), true);
@@ -80,7 +90,9 @@ async function main() {
   }
 
   const trading = readSrc("src/lib/trading.ts");
-  assert.match(trading, /pendingFillBlockedByMargin\(account\.freeMargin, margin, order\.type\)/);
+  assert.match(trading, /pendingFillBlockedByMargin\(freeMargin, margin, order\.type\)/);
+  assert.match(trading, /bookedFreeMargin\(account\.balance, openBook\)/);
+  assert.match(trading, /FOR UPDATE/);
   assert.match(trading, /status: "PENDING"/);
   assert.match(trading, /status: "OPEN", volume: pos\.volume/);
   assert.equal(count(trading, "calcProfitWithRates("), 5);
