@@ -108,8 +108,8 @@ export default function ProductStage() {
             <img
               src="/landing/terminal-desktop.webp"
               alt={t("landing.demo.desktop")}
-              width={1440}
-              height={900}
+              width={640}
+              height={400}
               sizes="(min-width: 1024px) 720px, 100vw"
               loading="lazy"
               decoding="async"
@@ -128,8 +128,8 @@ export default function ProductStage() {
             <img
               src="/landing/terminal-mobile.webp"
               alt={t("landing.demo.mobile")}
-              width={780}
-              height={1688}
+              width={360}
+              height={780}
               sizes="220px"
               loading="lazy"
               decoding="async"

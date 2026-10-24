@@ -1,38 +1,41 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import BrandLogo from "@/components/landing/BrandLogo";
+import type { PublicNavCopy } from "@/lib/public-doc-copy";
 
-const NAV = [
-  { href: "/markets", label: "Markets" },
-  { href: "/platform", label: "Platform" },
-  { href: "/faq", label: "FAQ" },
-  { href: "/login", label: "Sign in" },
+const NAV_HREFS = [
+  { href: "/markets", key: "markets" },
+  { href: "/platform", key: "platform" },
+  { href: "/faq", key: "faq" },
+  { href: "/login", key: "signIn" },
 ] as const;
 
-/** Light public document. Server-rendered, English copy, no trading client bundle. */
+/** Light public document. Server-rendered. Copy follows fx_lang; missing cookie stays English. */
 export default function PublicDoc({
   title,
   lede,
+  nav,
   children,
 }: {
   title: string;
   lede: string;
+  nav: PublicNavCopy;
   children: ReactNode;
 }) {
   return (
     <div className="min-h-screen bg-white text-[#15161a]">
       <a href="#content" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-10 focus:bg-white focus:px-3 focus:py-2">
-        Skip to content
+        {nav.skip}
       </a>
       <header className="border-b border-black/10">
         <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 px-5 py-4">
-          <Link href="/" aria-label="7FX home">
+          <Link href="/" aria-label={nav.home}>
             <BrandLogo height={32} />
           </Link>
-          <nav aria-label="Public pages" className="flex flex-wrap gap-x-4 gap-y-2 text-sm font-semibold">
-            {NAV.map((item) => (
+          <nav aria-label={nav.nav} className="flex flex-wrap gap-x-4 gap-y-2 text-sm font-semibold">
+            {NAV_HREFS.map((item) => (
               <Link key={item.href} href={item.href} className="underline-offset-4 hover:underline">
-                {item.label}
+                {nav[item.key]}
               </Link>
             ))}
           </nav>

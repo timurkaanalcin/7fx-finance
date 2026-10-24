@@ -179,11 +179,17 @@ const ShortcutsHelp = dynamic(() => import("./ShortcutsHelp"));
 const TradingCalculator = dynamic(() => import("./TradingCalculator"));
 const PriceAlerts = dynamic(() => import("./PriceAlerts"));
 
-export default function TerminalShell() {
+export default function TerminalShell({
+  initialUser = null,
+  initialAccount = null,
+}: {
+  initialUser?: UserInfo | null;
+  initialAccount?: AccountMetrics | null;
+}) {
   const router = useRouter();
   const { t, setLocale, locale } = useI18n();
-  const [user, setUser] = useState<UserInfo | null>(null);
-  const [account, setAccount] = useState<AccountMetrics | null>(null);
+  const [user, setUser] = useState<UserInfo | null>(initialUser);
+  const [account, setAccount] = useState<AccountMetrics | null>(initialAccount);
   const [symbols, setSymbols] = useState<SymbolDef[]>([]);
   const [prices, setPrices] = useState<Record<string, PriceTick>>({});
   const [symbol, setSymbol] = useState(() => {
@@ -925,7 +931,7 @@ export default function TerminalShell() {
     setActionError(firstError || null);
   }
 
-  if (!ready || !user) {
+  if (!user) {
     return <BrandLoader variant="desk" label={t("common.loading") || "Loading…"} />;
   }
 
@@ -1066,6 +1072,17 @@ export default function TerminalShell() {
             <div className="relative flex min-h-[44vh] flex-1 md:min-h-0">
               {/* Chart canvas wrapper: TRADE overlays bottom-right ON the chart */}
               <div className="relative flex h-full min-h-0 min-w-0 flex-1 flex-col">
+                {/* First-paint poster. It stays mounted so the later chart canvas does not replace LCP. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/landing/terminal-desktop.avif"
+                  alt=""
+                  width={640}
+                  height={400}
+                  fetchPriority="high"
+                  decoding="sync"
+                  className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
+                />
                 <TradingChart
                   symbol={symbol}
                   symbolName={chartSymbol?.name}
