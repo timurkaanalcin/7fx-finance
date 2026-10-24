@@ -1,7 +1,8 @@
 /**
- * Live-support auto-reply. Uses an LLM only when OPENAI_API_KEY is set; otherwise
- * answers from a fixed FAQ built from site content. Never invents account data,
- * licences, returns or guarantees.
+ * Optional FAQ / LLM helper. The customer live-support route does not call this
+ * on every message: opening acknowledgements live in support-autoreply.ts.
+ * Uses an LLM only when OPENAI_API_KEY is set; otherwise answers from a fixed FAQ.
+ * Never invents account data, licences, returns or guarantees.
  */
 
 export const AI_WORKER_NAME = "7FX Asistan";

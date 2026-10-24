@@ -7,6 +7,7 @@ import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { serializeChatPresence } from "@/lib/chat-presence";
 import type { Prisma } from "@prisma/client";
 import { chatMessageWindow, chatThreadWindow } from "@/lib/trader-list";
+import { SYSTEM_WORKER_ID, isSystemAutoReply } from "@/lib/support-autoreply";
 
 export const dynamic = "force-dynamic";
 
@@ -75,6 +76,7 @@ async function pagedThreadMessages(
         title: true,
         description: true,
         workerName: true,
+        workerId: true,
         createdAt: true,
       },
     }),
@@ -89,6 +91,7 @@ async function pagedThreadMessages(
       title: m.title,
       description: m.description,
       workerName: m.workerName,
+      workerId: m.workerId,
       createdAt: m.createdAt,
       user,
     })),
@@ -146,6 +149,7 @@ async function pagedThreads(
             title: true,
             description: true,
             workerName: true,
+            workerId: true,
             createdAt: true,
             user: { select: CHAT_USER_SELECT },
           },
@@ -229,6 +233,7 @@ function threadFromMessages(
     title: string | null;
     description: string;
     workerName: string | null;
+    workerId?: string | null;
     createdAt: Date;
     user: {
       id: string;
@@ -305,6 +310,8 @@ function threadFromMessages(
       title: m.title,
       body: m.description,
       workerName: m.workerName,
+      workerId: m.workerId ?? null,
+      automatic: isSystemAutoReply(m),
       createdAt: m.createdAt.toISOString(),
     })),
   };
@@ -366,6 +373,10 @@ export async function PATCH(req: Request) {
   if (existing && !(await canAccessUser(admin, existing.userId))) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   if (!existing || existing.type !== "CHAT") {
     return NextResponse.json({ error: "Message not found" }, { status: 404 });
+  }
+
+  if (existing.workerId === SYSTEM_WORKER_ID) {
+    return NextResponse.json({ error: "Automatic messages cannot be edited" }, { status: 403 });
   }
 
   // Admins may edit any agent (worker) chat bubble; customer-origin notes stay read-only.

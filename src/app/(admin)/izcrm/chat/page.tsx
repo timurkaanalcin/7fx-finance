@@ -13,12 +13,15 @@ import { ChatStatusLine } from "@/components/chat/ChatStatusLine";
 import { CannedRepliesPanel, slashQueryAt, slug, useCannedReplies } from "@/components/chat/CannedReplies";
 import { messageReadByPeer, type ChatPresenceSnapshot } from "@/lib/chat-presence-shared";
 import { presenceState } from "@/lib/presence-shared";
+import { isSystemAutoReply } from "@/lib/support-autoreply";
 
 type Msg = {
   id: string;
   title: string | null;
   body: string;
   workerName: string | null;
+  workerId?: string | null;
+  automatic?: boolean;
   createdAt: string;
 };
 type Profilee = {
@@ -142,9 +145,13 @@ function dayKey(iso: string) {
 
 function isUnanswered(t: Thread): boolean {
   if (t.messages.length === 0) return true;
-  // Last message without workerName ≈ customer/system note; with workerName ≈ agent
-  const last = t.messages[t.messages.length - 1];
-  return !last.workerName;
+  // Automatic 7FX acknowledgements are not a staff reply.
+  for (let i = t.messages.length - 1; i >= 0; i--) {
+    const m = t.messages[i];
+    if (isSystemAutoReply(m)) continue;
+    return !m.workerName;
+  }
+  return true;
 }
 
 function isNew(t: Thread): boolean {
@@ -1001,6 +1008,7 @@ export default function ChatPage() {
                       </span>
                     </div>
                     {block.items.map((m) => {
+                      const automatic = isSystemAutoReply(m);
                       const agent = Boolean(m.workerName);
                       const isEditing = editingId === m.id;
                       return (
@@ -1017,10 +1025,15 @@ export default function ChatPage() {
                           >
                             {agent && (
                               <div className="mb-1 flex items-center justify-between gap-2">
-                                <p className="text-[10px] font-semibold text-[var(--accent)]">
-                                  {m.workerName || "7FX Support"}
+                                <p className="flex items-center gap-1.5 text-[10px] font-semibold text-[var(--accent)]">
+                                  <span>{automatic ? "7FX" : m.workerName || "7FX Support"}</span>
+                                  {automatic && (
+                                    <span className="rounded-full bg-neutral-900/80 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-white">
+                                      {i18n("crm.chat.automatic")}
+                                    </span>
+                                  )}
                                 </p>
-                                {!isEditing && (
+                                {!isEditing && !automatic && (
                                   <button
                                     type="button"
                                     onClick={() => beginEdit(m)}

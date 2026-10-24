@@ -968,6 +968,7 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.chat.pin", "Pin to top", "Üste sabitle", "Закрепить сверху", "Oben anheften", "تثبيت في الأعلى"],
   ["crm.chat.unpin", "Unpin", "Sabitlemeyi kaldır", "Открепить", "Lösen", "إلغاء التثبيت"],
   ["crm.chat.pinned", "Pinned", "Sabit", "Закреплено", "Angeheftet", "مثبت"],
+  ["crm.chat.automatic", "automatic · system", "otomatik · sistem", "авто · система", "automatisch · System", "تلقائي · النظام"],
   // CRM recently viewed customers (per browser)
   ["crm.recentClients.title", "Recently viewed", "Son görüntülenenler", "Недавно просмотренные", "Zuletzt angesehen", "شوهد مؤخرًا"],
   ["crm.recentClients.remove", "Remove from list", "Listeden kaldır", "Убрать из списка", "Aus Liste entfernen", "إزالة من القائمة"],

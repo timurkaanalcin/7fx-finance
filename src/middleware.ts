@@ -7,19 +7,29 @@ import {
 import { isAllowedApiOrigin } from "@/lib/security/origins";
 import { isIndexableHost, isMarketingPath, isPrivateHtmlPath, shouldNoindex } from "@/lib/seo-hosts";
 
-const STRICT_CSP = [
-  "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https:",
-  "font-src 'self' data:",
-  "connect-src 'self' https://query1.finance.yahoo.com https://query2.finance.yahoo.com",
-  "frame-ancestors 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-  "object-src 'none'",
-  "upgrade-insecure-requests",
-].join("; ");
+function contentSecurityPolicy(req: NextRequest): string {
+  const forwarded = (req.headers.get("x-forwarded-proto") || "").split(",")[0].trim().toLowerCase();
+  const proto = forwarded || req.nextUrl.protocol.replace(":", "");
+  const scriptSrc =
+    process.env.NODE_ENV === "production"
+      ? "script-src 'self' 'unsafe-inline'"
+      : "script-src 'self' 'unsafe-inline' 'unsafe-eval'";
+  const directives = [
+    "default-src 'self'",
+    scriptSrc,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob: https:",
+    "font-src 'self' data:",
+    "connect-src 'self' https://query1.finance.yahoo.com https://query2.finance.yahoo.com",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "object-src 'none'",
+  ];
+  // On plain HTTP (local dev) this directive rewrites script/fetch URLs to HTTPS and the app never hydrates.
+  if (proto === "https") directives.push("upgrade-insecure-requests");
+  return directives.join("; ");
+}
 
 export function middleware(req: NextRequest) {
   const token =
@@ -45,7 +55,7 @@ export function middleware(req: NextRequest) {
       "Permissions-Policy",
       "camera=(), microphone=(), geolocation=()"
     );
-    res.headers.set("Content-Security-Policy", STRICT_CSP);
+    res.headers.set("Content-Security-Policy", contentSecurityPolicy(req));
     if (shouldNoindex(host, pathname) || crmHost) {
       res.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
     }

@@ -186,7 +186,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
               <span className="hidden sm:inline">{t("crm.palette.search")}</span>
               <kbd className="hidden rounded bg-neutral-100 px-1 text-[9px] text-neutral-500 lg:inline">⌘K</kbd>
             </button>
-            <NotificationBell />
+            <NotificationBell enableButton liveAlerts pollMs={5000} />
             <LanguageSwitcher compact tone="crm" />
             <span className="hidden sm:inline">{name}{readOnly ? (
             <span className="ml-1 rounded bg-amber-50 px-1.5 py-0.5 text-[9px] font-semibold uppercase text-amber-700">{t("crm.ui.readOnly")}</span>
