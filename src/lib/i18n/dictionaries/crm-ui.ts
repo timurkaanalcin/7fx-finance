@@ -321,7 +321,7 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.dep.title", "Deposit requests", "Yatırım talepleri", "Заявки на депозит", "Einzahlungsanträge", "طلبات الإيداع"],
   ["crm.dep.approved", "Approved — balance updated", "Onaylandı — bakiye güncellendi", "Одобрено — баланс обновлён", "Genehmigt — Saldo aktualisiert", "تمت الموافقة — تم تحديث الرصيد"],
   ["crm.dep.rejected", "Rejected", "Reddedildi", "Отклонено", "Abgelehnt", "مرفوض"],
-  ["crm.dep.searchPh", "Name, email, method, note…", "Ad, e-posta, yöntem, not…", "Имя, эл. почта, метод, заметка…", "Name, E-Mail, Methode, Notiz…", "الاسم، البريد، الطريقة، الملاحظة…"],
+  ["crm.dep.searchPh", "Name, email, account ID, method, note…", "Ad, e-posta, hesap no, yöntem, not…", "Имя, эл. почта, номер счёта, метод, заметка…", "Name, E-Mail, Kontonummer, Methode, Notiz…", "الاسم، البريد، رقم الحساب، الطريقة، الملاحظة…"],
   ["crm.dep.confirmApprove", "Approve this deposit and credit the balance?", "Bu yatırım onaylansın ve bakiyeye eklensin mi?", "Одобрить депозит и зачислить на баланс?", "Diese Einzahlung genehmigen und dem Saldo gutschreiben?", "الموافقة على هذا الإيداع وإضافته إلى الرصيد؟"],
   ["crm.dep.confirmReject", "Reject this deposit request?", "Bu yatırım talebi reddedilsin mi?", "Отклонить эту заявку на депозит?", "Diesen Einzahlungsantrag ablehnen?", "رفض طلب الإيداع هذا؟"],
   ["crm.dep.count", "Requests", "Talep", "Заявки", "Anträge", "الطلبات"],
@@ -1045,6 +1045,7 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.traders.sortCreated", "Registered", "Kayıt", "Регистрация", "Registriert", "التسجيل"],
   ["crm.traders.sortLogin", "Last login", "Son giriş", "Последний вход", "Letzte Anmeldung", "آخر دخول"],
   ["crm.traders.sortSale", "Sale status", "Satış durumu", "Статус продажи", "Verkaufsstatus", "حالة البيع"],
+  ["crm.queue.csv", "Download this filter as CSV", "Bu filtreyi CSV indir", "Скачать этот фильтр как CSV", "Diesen Filter als CSV herunterladen", "تنزيل هذا المرشح كملف CSV"],
 ];
 
 function pack(index: 1|2|3|4|5): Dict {
