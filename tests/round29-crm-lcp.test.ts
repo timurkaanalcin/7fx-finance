@@ -35,8 +35,11 @@ function main() {
   const home = read("src/app/(public)/page.tsx");
   assert.equal(home.includes("landing.css"), false);
   const entry = read("src/app/fx-css/page.tsx");
-  assert.match(entry, /public\.css/);
+  assert.equal(entry.includes("public.css"), false);
   assert.equal(entry.includes("landing.css"), false);
+  const publish = read("scripts/publish-deferred-css.mjs");
+  assert.match(publish, /tailwind\.public\.config\.ts/);
+  assert.match(publish, /src\/app\/public\.css/);
   const landingEntry = read("src/app/fx-landing-css/page.tsx");
   assert.match(landingEntry, /landing\.css/);
 

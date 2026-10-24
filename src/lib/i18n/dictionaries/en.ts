@@ -697,6 +697,8 @@ export const en: Dict = {
   "landing.live.unavailable": "Live prices are temporarily unavailable.",
   "landing.live.delayed": "Showing the last prices received from the feed.",
   "landing.live.chartAria": "Live price chart",
+  "landing.live.terminal": "7FX Terminal",
+  "landing.live.badge": "Live",
   "landing.live.tapeAria": "Live market prices",
   "landing.markets.lead": "Forex, stocks including energy names, crypto and commodities. Figures appear only when the market feed responds.",
   "landing.markets.forex": "Forex",

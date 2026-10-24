@@ -461,7 +461,7 @@ function SummaryStat({
       <span className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">
         {label}
       </span>
-      <span className={`truncate text-[12px] font-bold tabular-nums ${className}`}>{children}</span>
+      <span className={`min-w-0 text-[12px] font-medium tabular-nums [overflow-wrap:anywhere] ${className}`}>{children}</span>
     </div>
   );
 }
@@ -930,13 +930,13 @@ function OpenCard({
   };
 
   return (
-    <div className="rounded-[14px] border border-desk-border/60 bg-desk-elev/40 p-3">
+    <div className="fx-pos-card rounded-[14px] border border-desk-border/60 bg-desk-elev/40 p-3">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <button
               type="button"
-              className="text-[13px] font-bold tracking-tight text-desk-text hover:underline"
+              className="text-[13px] font-medium tracking-tight text-desk-text hover:underline"
               onClick={() =>
                 onSelectSymbol?.((p.chartSymbol || p.symbol).trim().toUpperCase())
               }
@@ -968,8 +968,8 @@ function OpenCard({
             <HoldTime openedAt={p.openedAt} className="rounded-[5px] bg-desk-bg/60 px-1 py-px text-[9.5px]" />
           </div>
         </div>
-        <div className="text-right">
-          <div className={`text-[14px] font-bold tabular-nums ${moneyCls(shownProfit)}`}>
+        <div className="shrink-0 text-right">
+          <div className={`text-[14px] font-medium tabular-nums ${moneyCls(shownProfit)}`}>
             {fmtNum(shownProfit, 2)}
           </div>
           <div className={`text-[10px] tabular-nums ${moneyCls(pip)}`}>
@@ -977,22 +977,22 @@ function OpenCard({
           </div>
         </div>
       </div>
-      <div className="mt-2.5 grid grid-cols-3 gap-2 text-[11px]">
-        <div className="rounded-[8px] bg-desk-bg/60 px-2 py-1.5">
+      <div className="fx-pos-levels mt-2.5 text-[11px]">
+        <div className="fx-pos-level rounded-[8px] bg-desk-bg/60 px-2 py-1.5">
           <div className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">Open</div>
           <div className="mt-0.5 font-medium tabular-nums text-desk-text">
             {formatPrice(p.symbol, p.openPrice)}
           </div>
         </div>
-        <div className="rounded-[8px] bg-desk-bg/60 px-2 py-1.5">
+        <div className="fx-pos-level rounded-[8px] bg-desk-bg/60 px-2 py-1.5">
           <div className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">Current</div>
           <div className="mt-0.5 font-medium tabular-nums text-desk-text">
             {formatPrice(p.symbol, mark)}
           </div>
         </div>
-        <div className="rounded-[8px] bg-desk-bg/60 px-2 py-1.5">
+        <div className="fx-pos-level rounded-[8px] bg-desk-bg/60 px-2 py-1.5">
           <div className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">SL / TP</div>
-          <div className="mt-0.5 truncate font-medium tabular-nums text-desk-muted">
+          <div className="mt-0.5 font-medium tabular-nums text-desk-muted [overflow-wrap:anywhere]">
             {p.stopLoss != null ? formatPrice(p.symbol, p.stopLoss) : "—"}
             {" / "}
             {p.takeProfit != null ? formatPrice(p.symbol, p.takeProfit) : "—"}
@@ -1346,7 +1346,7 @@ function ClosedCard({
   const profit = p.closeProfit ?? p.profit;
   const side = p.side === "SELL" ? "SELL" : "BUY";
   return (
-    <div className="rounded-[14px] border border-desk-border/60 bg-desk-elev/40 p-3">
+    <div className="fx-pos-card rounded-[14px] border border-desk-border/60 bg-desk-elev/40 p-3">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
@@ -1428,7 +1428,7 @@ function PendingCard({
 }) {
   const { t } = useI18n();
   return (
-    <div className="rounded-[14px] border border-desk-border/60 bg-desk-elev/40 p-3">
+    <div className="fx-pos-card rounded-[14px] border border-desk-border/60 bg-desk-elev/40 p-3">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
@@ -2353,7 +2353,7 @@ export default function BottomPanels({
       </div>
 
       {/* Desktop tables — unchanged structure */}
-      <div className="hidden flex-1 overflow-auto md:block">
+      <div className="fx-blotter hidden flex-1 overflow-auto md:block">
         {tab === "open" && (
           <table className="min-w-full text-left text-[11px]">
             <thead className="sticky top-0 z-[1] bg-desk-bg/95 text-[9px] font-medium uppercase tracking-wider text-desk-muted backdrop-blur-sm">
