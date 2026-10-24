@@ -54,6 +54,7 @@ function main() {
   assert.match(css, /fx-doc-title/);
   assert.match(css, /min\(1280px/);
   assert.match(css, /fx-watchlist/);
+  assert.match(css, /\[data-fx-chart-quote\][\s\S]*overflow-x:\s*auto/);
   const lang = read("src/components/i18n/LanguageSwitcher.tsx");
   assert.equal(lang.includes("0.65"), false);
   assert.match(lang, /fx-lang-select/);

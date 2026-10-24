@@ -15,17 +15,16 @@ function read(rel: string): string {
 
 function main() {
   const fonts = read("src/lib/fonts.ts");
-  assert.match(fonts, /weight:\s*"600"/);
+  assert.equal(fonts.includes("Sora"), false);
   assert.match(fonts, /variable:\s*"--font-inter"/);
   assert.match(fonts, /variable:\s*"--font-inter-ext"/);
   const latinAt = fonts.indexOf('subsets: ["latin"]');
   const extAt = fonts.indexOf('subsets: ["latin-ext"]');
-  const soraAt = fonts.indexOf("export const sora");
-  assert.ok(latinAt > 0 && extAt > latinAt && soraAt > extAt);
+  assert.ok(latinAt > 0 && extAt > latinAt);
   assert.match(fonts.slice(latinAt, extAt), /preload:\s*true/);
-  assert.match(fonts.slice(extAt, soraAt), /preload:\s*false/);
-  assert.match(fonts.slice(soraAt), /preload:\s*true/);
+  assert.match(fonts.slice(extAt), /preload:\s*false/);
   assert.match(read("src/app/globals.css"), /var\(--font-inter\), var\(--font-inter-ext\)/);
+  assert.equal(read("src/app/globals.css").includes("--font-sora"), false);
 
   const ohlc = read("src/app/api/market/ohlc/route.ts");
   assert.match(ohlc, /maybeGzipJson/);

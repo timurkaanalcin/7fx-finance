@@ -1533,6 +1533,48 @@ body:has(.fx-crm) {
   }
 }
 
+/* Quote stays one line (reserved min-widths). If the line is wider than the
+   card it scrolls inside the card, never the page. */
+[data-fx-chart-quote] {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+[data-fx-chart-quote]::-webkit-scrollbar {
+  display: none;
+}
+
+/* Phone chart head: drop the live badge onto its own row so the quote
+   can use the full card width at 360px. */
+@media (max-width: 639px) {
+  [data-fx-chart-head] {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+  [data-fx-chart-head] > div {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+}
+
+/* Landscape phones are wide enough for the sm overlay, which pins the
+   quote beside the timeframe cluster. Stack the chrome so bid/ask stay
+   on one readable line and the chart keeps the short-height flex. */
+@media (max-height: 520px) {
+  .fx-desk .fx-chart-chrome {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    row-gap: 6px;
+  }
+  .fx-desk [data-fx-chart-head] {
+    max-width: none !important;
+  }
+  .fx-desk .fx-chart-tools {
+    margin-right: 0 !important;
+  }
+}
+
 .fx-landing .fx-btn-primary,
 .fx-landing .fx-btn-secondary,
 .fx-ios .fx-btn-primary,
