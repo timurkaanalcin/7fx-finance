@@ -268,7 +268,7 @@ export default function AccountStatement({ open, onClose, rows, currency }: Prop
                     <li
                       key={sym}
                       className="rounded-[8px] border border-desk-border/70 px-2 py-1 text-[11px]"
-                      title={`${sym}: ${s.n} · ${fmtNum(s.lots, 2)} lot · ${signed(s.pnl)}`}
+                      title={`${sym}: ${s.n} · ${fmtNum(s.lots, 2)} ${t("term.unit.lot")} · ${signed(s.pnl)}`}
                     >
                       <b className="text-desk-text">{sym}</b>{" "}
                       <span className="text-desk-muted">

@@ -1,10 +1,14 @@
+"use client";
+
 import Skeleton from "@/components/ui/Skeleton";
+import { useI18n } from "@/lib/i18n/context";
 
 /** Reserves the terminal chrome so quotes and the blotter do not jump in. */
 export default function TradeSkeleton() {
+  const { t } = useI18n();
   return (
     <div className="fx-desk flex h-[100dvh] flex-col bg-desk-bg" data-fx-trade-skeleton="" aria-busy="true" role="status">
-      <span className="sr-only">Loading terminal</span>
+      <span className="sr-only">{t("term.loadingTerminal")}</span>
       <div className="flex min-h-12 items-center gap-3 border-b border-desk-border px-3">
         <Skeleton className="h-7 w-7 rounded-[8px]" />
         <Skeleton className="h-3 w-16" />

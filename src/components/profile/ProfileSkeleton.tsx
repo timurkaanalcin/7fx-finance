@@ -1,10 +1,14 @@
+"use client";
+
 import Skeleton from "@/components/ui/Skeleton";
+import { useI18n } from "@/lib/i18n/context";
 
 /** Same header and card stack the profile page uses once the account arrives. */
 export default function ProfileSkeleton() {
+  const { t } = useI18n();
   return (
     <div className="fx-profile min-h-screen bg-[#000000]" data-fx-profile-skeleton="" aria-busy="true" role="status">
-      <span className="sr-only">Loading account</span>
+      <span className="sr-only">{t("term.profile.loading")}</span>
       <div className="sticky top-0 z-30 flex h-12 items-center gap-3 border-b border-[#2a2a2a] bg-[#0a0a0a] px-4">
         <Skeleton className="h-7 w-7 rounded-md" />
         <Skeleton className="h-3 w-36" />

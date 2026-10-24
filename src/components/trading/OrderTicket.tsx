@@ -751,7 +751,7 @@ export default function OrderTicket({
                       : t("term.col.distance")
                   }
                 >
-                  ≈ {fmtPips(slInfo.pips)} pip{slInfo.wrongSide ? " ⚠" : ""}
+                  ≈ {fmtPips(slInfo.pips)} {t("term.unit.pip")}{slInfo.wrongSide ? " ⚠" : ""}
                 </span>
               )}
             </div>
@@ -901,7 +901,7 @@ export default function OrderTicket({
                       : t("term.col.distance")
                   }
                 >
-                  ≈ {fmtPips(tpInfo.pips)} pip{tpInfo.wrongSide ? " ⚠" : ""}
+                  ≈ {fmtPips(tpInfo.pips)} {t("term.unit.pip")}{tpInfo.wrongSide ? " ⚠" : ""}
                 </span>
               )}
             </div>
@@ -947,7 +947,7 @@ export default function OrderTicket({
         )}
 
         {(showSl || showTp) && (
-          <div className="flex flex-wrap items-center gap-1" role="group" aria-label="R:R">
+          <div className="flex flex-wrap items-center gap-1" role="group" aria-label={t("term.ot.rr")}>
             <span className="mr-0.5 text-[10px] font-semibold uppercase tracking-wider text-desk-muted">
               R:R
             </span>
@@ -980,10 +980,10 @@ export default function OrderTicket({
         {preview.rr != null && (
           <div className="flex items-center justify-between rounded-[12px] border border-desk-border/60 bg-desk-bg/70 px-3 py-2 text-[11px] md:rounded-control md:px-2.5 md:py-1.5">
             <span className="font-semibold uppercase tracking-wider text-desk-muted">
-              Risk / Reward
+              {t("term.ot.riskReward")}
               {slInfo && tpInfo && slInfo.pips > 0 && tpInfo.pips > 0 && (
                 <span className="ml-1.5 font-medium normal-case tracking-normal text-desk-muted/80">
-                  ({fmtPips(slInfo.pips)} / {fmtPips(tpInfo.pips)} pip)
+                  ({fmtPips(slInfo.pips)} / {fmtPips(tpInfo.pips)} {t("term.unit.pip")})
                 </span>
               )}
             </span>
@@ -1046,7 +1046,7 @@ export default function OrderTicket({
             )}
             {preview.rr != null && (
               <div className="flex items-center justify-between">
-                <span className="text-desk-muted">R:R</span>
+                <span className="text-desk-muted">{t("term.ot.rr")}</span>
                 <span className={`font-semibold tabular-nums ${preview.rr >= 1 ? "text-desk-buy" : "text-desk-text"}`}>
                   1 : {preview.rr.toFixed(2)}
                 </span>

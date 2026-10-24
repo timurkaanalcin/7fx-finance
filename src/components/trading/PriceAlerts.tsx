@@ -382,7 +382,7 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
       {toast && (
         <div role="status" className="fixed left-1/2 top-16 z-[90] max-w-[92vw] -translate-x-1/2 rounded-[14px] border border-[#c8a96a]/50 bg-desk-panel px-4 py-3 text-sm font-semibold text-desk-text shadow-desk-panel">
           🔔 {toast}
-          <button type="button" onClick={() => setToast(null)} className="ml-3 text-desk-muted" aria-label="Dismiss">
+          <button type="button" onClick={() => setToast(null)} className="ml-3 text-desk-muted" aria-label={t("term.feed.dismiss")}>
             ✕
           </button>
         </div>

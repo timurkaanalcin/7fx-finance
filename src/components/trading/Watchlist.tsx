@@ -492,8 +492,8 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
           const agg = openBySymbol.get(s.symbol.toUpperCase());
           const openLots = agg
             ? [
-                agg.buyLots > 0 ? `${t("term.bid")} ${+agg.buyLots.toFixed(2)} lot` : "",
-                agg.sellLots > 0 ? `${t("term.ask")} ${+agg.sellLots.toFixed(2)} lot` : "",
+                agg.buyLots > 0 ? `${t("term.bid")} ${+agg.buyLots.toFixed(2)} ${t("term.unit.lot")}` : "",
+                agg.sellLots > 0 ? `${t("term.ask")} ${+agg.sellLots.toFixed(2)} ${t("term.unit.lot")}` : "",
               ]
                 .filter(Boolean)
                 .join(" · ")

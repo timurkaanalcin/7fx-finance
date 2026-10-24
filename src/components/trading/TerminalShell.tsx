@@ -962,8 +962,7 @@ export default function TerminalShell({
   if (symbolsError && symbols.length === 0) {
     return (
       <div className="fx-desk flex h-[100dvh] flex-col items-center justify-center gap-3 bg-desk-bg px-6 text-center text-desk-text" data-fx-symbols-error="" role="alert">
-        <p className="max-w-sm text-sm font-normal text-desk-text">We couldn&apos;t load the symbol list.</p>
-        <p className="max-w-sm text-xs font-normal text-desk-muted">{t("term.symbolsError")}</p>
+        <p className="max-w-sm text-sm font-normal text-desk-text">{t("term.symbolsError")}</p>
         <button type="button" className="min-h-10 rounded-full bg-desk-accent px-4 text-sm font-normal text-desk-accent-ink" onClick={() => { setReady(false); setBootNonce((n) => n + 1); }}>
           {t("term.retry")}
         </button>
