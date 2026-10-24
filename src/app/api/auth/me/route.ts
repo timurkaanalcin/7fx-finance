@@ -7,7 +7,7 @@ import {
 } from "@/lib/auth";
 import { hostnameFromRequest } from "@/lib/crm-host";
 import { prisma } from "@/lib/prisma";
-import { refreshAccountMetrics, processPendingOrders, checkSlTp } from "@/lib/trading";
+import { refreshAccountMetrics } from "@/lib/trading";
 import {
   LOGIN_DISABLED_CODE,
   flagsFromUser,
@@ -48,8 +48,6 @@ export async function GET(req: Request) {
 
   const user = await requireUser();
   if (!user) return NextResponse.json({ error: "No session" }, { status: 401 });
-  await processPendingOrders(user.id);
-  await checkSlTp(user.id);
   const metrics = await refreshAccountMetrics(user.id);
   const flags = flagsFromUser(user as Parameters<typeof flagsFromUser>[0]);
   return NextResponse.json({

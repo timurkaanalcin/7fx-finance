@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { refreshAccountMetrics, processPendingOrders, checkSlTp } from "@/lib/trading";
+import { refreshAccountMetrics } from "@/lib/trading";
 import { isMarginCall } from "@/lib/margin-call";
 import { stripStaff } from "@/lib/customer-sanitize";
 
@@ -51,8 +51,6 @@ export async function POST(req: Request) {
     );
   }
 
-  await processPendingOrders(user.id);
-  await checkSlTp(user.id);
   const metrics = await refreshAccountMetrics(user.id);
   if (!metrics) return NextResponse.json({ error: "Account yok" }, { status: 404 });
 
