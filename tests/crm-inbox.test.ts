@@ -57,7 +57,13 @@ function main() {
 
   const chat = require("node:fs").readFileSync(new URL("../src/app/(admin)/izcrm/chat/page.tsx", import.meta.url), "utf8");
   assert.match(chat, /m\.workerName \|\| "7FX Support"/);
-  assert.equal(chat.includes("isSystemAutoReply"), false);
+  // This branch does not import the live-support helper. Once #56 is merged the
+  // helper is present and the staff fallback stays inside its bubble.
+  if (chat.includes("isSystemAutoReply")) {
+    assert.match(chat, /automatic \? "7FX" : m\.workerName \|\| "7FX Support"/);
+  } else {
+    assert.equal(chat.includes('from "@/lib/support-autoreply"'), false);
+  }
   assert.match(chat, /compareByLatestCustomer/);
   assert.match(chat, /data-unread=/);
 
