@@ -6,7 +6,7 @@ import { touchLastContact } from "@/lib/last-contact";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { serializeChatPresence } from "@/lib/chat-presence";
 import type { Prisma } from "@prisma/client";
-import { chatThreadWindow } from "@/lib/trader-list";
+import { chatMessageWindow, chatThreadWindow } from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +21,10 @@ export async function GET(req: Request) {
 
   if (paged && !userId) {
     return NextResponse.json(await pagedThreads(admin, searchParams));
+  }
+
+  if (paged && userId) {
+    return NextResponse.json(await pagedThreadMessages(admin, userId, searchParams));
   }
 
   const baseWhere: Prisma.CommunicationWhereInput = userId ? { type: "CHAT", userId } : { type: "CHAT" };
@@ -185,6 +189,56 @@ const CHAT_USER_SELECT = {
 } satisfies Prisma.UserSelect;
 
 const CHAT_MSGS = 40;
+
+async function pagedThreadMessages(
+  admin: NonNullable<Awaited<ReturnType<typeof requireAdmin>>>,
+  userId: string,
+  searchParams: URLSearchParams
+) {
+  const { take, skip } = chatMessageWindow(searchParams.get("take"), searchParams.get("skip"));
+  const where: Prisma.CommunicationWhereInput = { ...chatWhere(admin, ""), userId };
+  const [total, user, found] = await Promise.all([
+    prisma.communication.count({ where }),
+    prisma.user.findFirst({
+      where: scopeUserWhere(admin, { id: userId }),
+      select: CHAT_USER_SELECT,
+    }),
+    prisma.communication.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: take + 1,
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        workerName: true,
+        createdAt: true,
+      },
+    }),
+  ]);
+  if (!user) return { threads: [], hasMore: false, nextSkip: skip, messageCount: 0 };
+  const hasMore = found.length > take;
+  const page = hasMore ? found.slice(0, take) : found;
+  const thread = threadFromMessages(
+    page.map((m) => ({
+      id: m.id,
+      userId,
+      title: m.title,
+      description: m.description,
+      workerName: m.workerName,
+      createdAt: m.createdAt,
+      user,
+    })),
+    total
+  );
+  return {
+    threads: thread ? [thread] : [],
+    hasMore,
+    nextSkip: skip + page.length,
+    messageCount: total,
+  };
+}
 
 async function pagedThreads(
   admin: NonNullable<Awaited<ReturnType<typeof requireAdmin>>>,

@@ -5,7 +5,7 @@ import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import Link from "next/link";
 import { FormEvent, KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CRM_IDLE_POLL_MS, useVisiblePoll } from "@/lib/use-visible-poll";
-import { CHAT_THREAD_CAP, CHAT_THREAD_PAGE } from "@/lib/trader-list";
+import { CHAT_MESSAGE_PAGE, CHAT_THREAD_CAP, CHAT_THREAD_PAGE, prependChatMessages } from "@/lib/trader-list";
 import { ChatFormattedBody } from "@/components/chat/ChatFormattedBody";
 import { ChatFormatToolbar } from "@/components/chat/ChatFormatToolbar";
 import { applyFormatAction, type FormatAction } from "@/components/chat/chatFormat";
@@ -241,6 +241,7 @@ export default function ChatPage() {
   const [qDebounced, setQDebounced] = useState("");
   const [hasMore, setHasMore] = useState(false);
   const [moreBusy, setMoreBusy] = useState(false);
+  const [olderBusy, setOlderBusy] = useState(false);
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState("");
   const [emojiOpen, setEmojiOpen] = useState(false);
@@ -250,6 +251,7 @@ export default function ChatPage() {
   const [newUserId, setNewUserId] = useState("");
   const [profileDraft, setProfileeDraft] = useState<Profilee | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const scrollerRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const messageRef = useRef<HTMLTextAreaElement>(null);
   const [livePresence, setLivePresence] = useState<ChatPresenceSnapshot | null>(null);
@@ -335,20 +337,19 @@ export default function ChatPage() {
 
   useEffect(() => {
     if (!selected) return;
-    const known = threadsRef.current.find((t) => t.traderId === selected);
-    if (known && (known.messageCount ?? known.messages.length) <= known.messages.length) return;
+    if (threadsRef.current.some((t) => t.traderId === selected)) return;
     let cancel = false;
     void (async () => {
-      const res = await fetch(`/api/admin/chat?userId=${encodeURIComponent(selected)}`);
+      const res = await fetch(
+        `/api/admin/chat?userId=${encodeURIComponent(selected)}&take=${CHAT_MESSAGE_PAGE}&skip=0`
+      );
       if (!res.ok || cancel) return;
       const data = await res.json();
       const full = (data.threads || [])[0] as Thread | undefined;
       if (!full || cancel) return;
       setThreads((prev) => {
-        const exists = prev.some((t) => t.traderId === full.traderId);
-        const next = exists
-          ? prev.map((t) => (t.traderId === full.traderId ? { ...t, ...full } : t))
-          : [full, ...prev];
+        if (prev.some((t) => t.traderId === full.traderId)) return prev;
+        const next = [full, ...prev];
         threadsRef.current = next;
         return next;
       });
@@ -357,6 +358,43 @@ export default function ChatPage() {
       cancel = true;
     };
   }, [selected]);
+
+  async function loadOlder(traderId: string) {
+    const known = threadsRef.current.find((t) => t.traderId === traderId);
+    if (!known) return;
+    const el = scrollerRef.current;
+    const prevHeight = el?.scrollHeight ?? 0;
+    setOlderBusy(true);
+    try {
+      const res = await fetch(
+        `/api/admin/chat?userId=${encodeURIComponent(traderId)}&take=${CHAT_MESSAGE_PAGE}&skip=${known.messages.length}`
+      );
+      if (!res.ok) return;
+      const data = await res.json();
+      const page = ((data.threads || [])[0] as Thread | undefined)?.messages || [];
+      const count = Number((data.threads || [])[0]?.messageCount ?? data.messageCount);
+      setThreads((prev) => {
+        const next = prev.map((t) => {
+          if (t.traderId !== traderId) return t;
+          const messages = prependChatMessages(t.messages, page);
+          const messageCount = Number.isFinite(count) ? count : t.messageCount;
+          return {
+            ...t,
+            messages,
+            messageCount: data.hasMore ? messageCount : messages.length,
+          };
+        });
+        threadsRef.current = next;
+        return next;
+      });
+      requestAnimationFrame(() => {
+        if (!el) return;
+        el.scrollTop += el.scrollHeight - prevHeight;
+      });
+    } finally {
+      setOlderBusy(false);
+    }
+  }
 
 
   const unanswered = useMemo(
@@ -410,9 +448,10 @@ export default function ChatPage() {
     } else setProfileeDraft(null);
   }, [active, selected]);
 
+  const tailId = active?.messages[active.messages.length - 1]?.id;
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [active?.traderId, active?.messages.length]);
+  }, [active?.traderId, tailId]);
 
   function flash(msg: string) {
     setToast(msg);
@@ -899,7 +938,19 @@ export default function ChatPage() {
                 </span>
               </div>
 
-              <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4">
+              <div ref={scrollerRef} className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4">
+                {active && (active.messageCount ?? active.messages.length) > active.messages.length && (
+                  <div className="flex justify-center">
+                    <button
+                      type="button"
+                      disabled={olderBusy}
+                      onClick={() => void loadOlder(active.traderId)}
+                      className="rounded-full border border-neutral-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-neutral-600 hover:bg-neutral-50 disabled:opacity-50"
+                    >
+                      {olderBusy ? i18n("crm.ui.loading") : i18n("crm.chat.loadOlder")}
+                    </button>
+                  </div>
+                )}
                 {messageBlocks.map((block, bi) => (
                   <div key={block.key} className="space-y-2.5">
                     {bi > 0 && (

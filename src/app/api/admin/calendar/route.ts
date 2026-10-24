@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin, requireAdminWrite } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
+import { crmPageWindow } from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
 
@@ -13,26 +14,39 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const workerId = (searchParams.get("workerId") || "").trim();
   const where = workerId ? { workerId } : undefined;
+  const paged = searchParams.has("take") || searchParams.has("skip");
+  const pageWindow = paged ? crmPageWindow(searchParams.get("take"), searchParams.get("skip")) : null;
+  const take = pageWindow ? pageWindow.take : 300;
+  const skip = pageWindow ? pageWindow.skip : 0;
+  const includeLookups = !pageWindow || skip === 0;
 
-  const rows = await prisma.reminder.findMany({
-    where,
-    orderBy: { remindAt: "asc" },
-    take: 300,
-    include: { user: { select: { id: true, name: true, email: true } } },
-  });
+  const [found, workers, traders] = await Promise.all([
+    prisma.reminder.findMany({
+      where,
+      orderBy: { remindAt: "asc" },
+      skip,
+      take: pageWindow ? take + 1 : take,
+      include: { user: { select: { id: true, name: true, email: true } } },
+    }),
+    includeLookups
+      ? prisma.user.findMany({
+          where: { role: "ADMIN" },
+          select: { id: true, name: true },
+          orderBy: { name: "asc" },
+        })
+      : Promise.resolve(undefined),
+    includeLookups
+      ? prisma.user.findMany({
+          where: { role: "TRADER" },
+          select: { id: true, name: true, email: true },
+          orderBy: { name: "asc" },
+          take: 200,
+        })
+      : Promise.resolve(undefined),
+  ]);
 
-  const workers = await prisma.user.findMany({
-    where: { role: "ADMIN" },
-    select: { id: true, name: true },
-    orderBy: { name: "asc" },
-  });
-
-  const traders = await prisma.user.findMany({
-    where: { role: "TRADER" },
-    select: { id: true, name: true, email: true },
-    orderBy: { name: "asc" },
-    take: 200,
-  });
+  const hasMore = Boolean(pageWindow) && found.length > take;
+  const rows = hasMore ? found.slice(0, take) : found;
 
   return NextResponse.json({
     reminders: rows.map((r) => ({
@@ -47,8 +61,10 @@ export async function GET(req: Request) {
       traderEmail: r.user?.email || null,
       createdAt: r.createdAt,
     })),
-    workers,
-    traders,
+    hasMore,
+    nextSkip: skip + rows.length,
+    ...(workers ? { workers } : {}),
+    ...(traders ? { traders } : {}),
   });
 }
 

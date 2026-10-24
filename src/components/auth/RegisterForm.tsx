@@ -21,6 +21,7 @@ export default function RegisterForm() {
   const jt = jobTitleUi(locale);
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [step, setStep] = useState<1 | 2>(1);
   const [referralCode, setReferralCode] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -50,10 +51,30 @@ export default function RegisterForm() {
     };
   }, []);
 
+  function emailOk(value: string) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+  }
+
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
-    setLoading(true);
     setError("");
+    if (step === 1) {
+      if (!emailOk(email)) {
+        setError(t("auth.emailInvalid"));
+        return;
+      }
+      if (password.length < 8) {
+        setError(t("auth.passwordMin"));
+        return;
+      }
+      if (password !== passwordConfirm) {
+        setError(t("auth.passwordMismatch"));
+        return;
+      }
+      setStep(2);
+      return;
+    }
+    setLoading(true);
     if (password.length < 8) {
       setError(t("auth.passwordMin"));
       setLoading(false);
@@ -165,10 +186,69 @@ export default function RegisterForm() {
           <h2 className="text-xl font-semibold tracking-tight text-[#111111]">{t("auth.registerTitle")}</h2>
           <LanguageSwitcher compact tone="light" />
         </div>
+        <p className="mt-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-[#8b93a7]">
+          {step}/2 · {step === 1 ? t("auth.stepCredentials") : t("auth.stepProfile")}
+        </p>
         <p className="mt-1 text-sm text-[#5c657a]">{t("auth.registerSubtitle")}</p>
       </div>
 
       <form onSubmit={onSubmit} className="space-y-3.5" noValidate>
+        {step === 1 ? (
+          <>
+            <div>
+              <label htmlFor="fx-reg-email" className={labelClass}>
+                {t("common.email")}
+              </label>
+              <input
+                id="fx-reg-email"
+                className={inputClass}
+                type="email"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={t("auth.emailPlaceholder")}
+                disabled={loading}
+                autoFocus
+              />
+            </div>
+            <div>
+              <label htmlFor="fx-reg-password" className={labelClass}>
+                {t("common.password")}
+              </label>
+              <input
+                id="fx-reg-password"
+                className={inputClass}
+                type="password"
+                autoComplete="new-password"
+                required
+                minLength={8}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={t("auth.passwordMin")}
+                disabled={loading}
+              />
+            </div>
+            <div>
+              <label htmlFor="fx-reg-password2" className={labelClass}>
+                {t("auth.repeatPassword")}
+              </label>
+              <input
+                id="fx-reg-password2"
+                className={inputClass}
+                type="password"
+                autoComplete="new-password"
+                required
+                minLength={8}
+                value={passwordConfirm}
+                onChange={(e) => setPasswordConfirm(e.target.value)}
+                placeholder={t("auth.repeatPassword")}
+                disabled={loading}
+              />
+            </div>
+          </>
+        ) : (
+          <>
         <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
           <div>
             <label htmlFor="fx-reg-first" className={labelClass}>
@@ -179,6 +259,7 @@ export default function RegisterForm() {
               className={inputClass}
               required
               autoComplete="given-name"
+              autoFocus
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               placeholder={t("auth.firstName")}
@@ -202,22 +283,6 @@ export default function RegisterForm() {
           </div>
         </div>
         <div>
-          <label htmlFor="fx-reg-email" className={labelClass}>
-            {t("common.email")}
-          </label>
-          <input
-            id="fx-reg-email"
-            className={inputClass}
-            type="email"
-            autoComplete="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="ornek@eposta.com"
-            disabled={loading}
-          />
-        </div>
-        <div>
           <label htmlFor="fx-reg-phone" className={labelClass}>
             {t("common.phone")} <span className="font-normal text-[#8b93a7]">({t("auth.optional")})</span>
           </label>
@@ -225,9 +290,10 @@ export default function RegisterForm() {
             id="fx-reg-phone"
             className={inputClass}
             type="tel"
+            autoComplete="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            placeholder="+90 …"
+            placeholder={t("auth.phonePlaceholder")}
             disabled={loading}
           />
         </div>
@@ -283,41 +349,8 @@ export default function RegisterForm() {
             <p className="mt-2 text-[12px] leading-relaxed text-[#5c657a]">{t("auth.referralHint")}</p>
           )}
         </div>
-
-        <div>
-          <label htmlFor="fx-reg-password" className={labelClass}>
-            {t("common.password")}
-          </label>
-          <input
-            id="fx-reg-password"
-            className={inputClass}
-            type="password"
-            autoComplete="new-password"
-            required
-            minLength={8}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder={t("auth.passwordMin")}
-            disabled={loading}
-          />
-        </div>
-        <div>
-          <label htmlFor="fx-reg-password2" className={labelClass}>
-            {t("auth.repeatPassword")}
-          </label>
-          <input
-            id="fx-reg-password2"
-            className={inputClass}
-            type="password"
-            autoComplete="new-password"
-            required
-            minLength={8}
-            value={passwordConfirm}
-            onChange={(e) => setPasswordConfirm(e.target.value)}
-            placeholder={t("auth.repeatPassword")}
-            disabled={loading}
-          />
-        </div>
+          </>
+        )}
 
         {error && (
           <div
@@ -328,13 +361,35 @@ export default function RegisterForm() {
           </div>
         )}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="mt-1 w-full rounded-xl bg-[#111111] py-3.5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(17,17,17,0.28)] transition hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {loading ? t("auth.creating") : t("common.signUp")}
-        </button>
+        {step === 1 ? (
+          <button
+            type="submit"
+            className="mt-1 w-full rounded-xl bg-[#111111] py-3.5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(17,17,17,0.28)] transition hover:brightness-110 active:scale-[0.99]"
+          >
+            {t("auth.continue")}
+          </button>
+        ) : (
+          <div className="mt-1 flex gap-2">
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => {
+                setError("");
+                setStep(1);
+              }}
+              className="rounded-xl border border-[rgba(16,20,37,0.15)] bg-white px-4 py-3.5 text-sm font-semibold text-[#111111] transition hover:bg-[#f0f1f4] disabled:opacity-60"
+            >
+              {t("common.back")}
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-1 rounded-xl bg-[#111111] py-3.5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(17,17,17,0.28)] transition hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {loading ? t("auth.creating") : t("common.signUp")}
+            </button>
+          </div>
+        )}
       </form>
 
       <div className="mt-7 border-t border-[rgba(16,20,37,0.08)] pt-5 text-center text-sm text-[#5c657a]">
