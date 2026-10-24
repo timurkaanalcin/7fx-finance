@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
+import { headers } from "next/headers";
+import { marketingMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Install 7FX on iPhone / iPad",
-  description: "Add 7FX to your Home Screen for an app-like experience on iOS.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const h = headers();
+  return marketingMetadata(h.get("x-forwarded-host") || h.get("host"), "/ios");
+}
 
 export default function IosInstallPage() {
   return (
@@ -14,10 +17,16 @@ export default function IosInstallPage() {
           ← Back to 7FX
         </Link>
         <div className="mt-8 flex items-center gap-3">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/icons/v3/apple-touch-icon.png" alt="" className="h-14 w-14 rounded-[14px] shadow" />
+          <Image
+            src="/icons/v3/apple-touch-icon.png"
+            alt="7FX"
+            width={56}
+            height={56}
+            priority
+            className="h-14 w-14 rounded-[14px] shadow"
+          />
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Install on iOS</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">iPhone ve iPad&apos;e kurun</h1>
             <p className="mt-1 text-[14px] text-[#5c657a]">iPhone &amp; iPad · Safari · Add to Home Screen</p>
           </div>
         </div>

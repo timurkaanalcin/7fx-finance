@@ -14,6 +14,11 @@ const nextConfig = {
     return [
       { source: "/apk", destination: "/downloads/7FX.apk", permanent: false },
       { source: "/download/apk", destination: "/downloads/7FX.apk", permanent: false },
+      {
+        source: "/landing/7fx-hero-custom-v1.png",
+        destination: "/landing/7fx-hero-custom-v1.webp",
+        permanent: true,
+      },
     ];
   },
   async headers() {
@@ -37,6 +42,18 @@ const nextConfig = {
           { key: "X-Robots-Tag", value: "noindex, nofollow" },
         ],
       },
+      ...["/icons/:path*", "/landing/:path*", "/logos/:path*", "/og/:path*"].map((source) => ({
+        source,
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" },
+        ],
+      })),
+      ...["/7fx-logo.png", "/7fx-mark.png", "/ing-logo.png"].map((source) => ({
+        source,
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" },
+        ],
+      })),
     ];
   },
 };

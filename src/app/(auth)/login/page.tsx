@@ -11,6 +11,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Sign In · 7FX",
   description: "Securely sign in to your 7FX account",
+  robots: { index: false, follow: false },
 };
 
 export default async function LoginPage() {

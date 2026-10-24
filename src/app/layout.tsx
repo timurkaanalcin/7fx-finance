@@ -3,6 +3,9 @@ import InstallBanner from "@/components/InstallBanner";
 import "./globals.css";
 import "./mobile-luxe.css";
 import PublicI18n from "@/components/i18n/PublicI18n";
+import { inter, sora } from "@/lib/fonts";
+import { DESCRIPTION, OG_ALT, OG_IMAGE, TITLE_TR } from "@/lib/seo";
+import { PRIMARY_ORIGIN } from "@/lib/seo-hosts";
 
 
 export const viewport: Viewport = {
@@ -12,23 +15,26 @@ export const viewport: Viewport = {
   themeColor: "#000000",
 };
 
-const appUrl = process.env.NEXT_PUBLIC_APP_URL
-  ? process.env.NEXT_PUBLIC_APP_URL
-  : process.env.RAILWAY_PUBLIC_DOMAIN
-    ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
-    : "https://7fx.customer.org.tr";
-
 export const metadata: Metadata = {
-  metadataBase: new URL(appUrl),
+  metadataBase: new URL(PRIMARY_ORIGIN),
   title: "7FX",
-  description:
-    "7FX — international multi-asset trading platform. Secure web access to stocks, crypto, forex and commodities.",
+  description: DESCRIPTION,
   manifest: "/site.webmanifest",
+  robots: { index: false, follow: false },
   openGraph: {
-    title: "7FX",
-    description:
-      "7FX international broker / trading platform: stocks, crypto, forex and commodities — secure session, 24/7 access.",
-    images: [{ url: "/7fx-logo.png", width: 1200, height: 630, alt: "7FX" }],
+    type: "website",
+    locale: "tr_TR",
+    alternateLocale: ["en_US", "de_DE", "ru_RU", "ar_AR"],
+    siteName: "7FX",
+    title: TITLE_TR,
+    description: DESCRIPTION,
+    images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: OG_ALT }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE_TR,
+    description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
   appleWebApp: {
     capable: true,
@@ -55,18 +61,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-fx-theme="light" suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${inter.variable} ${sora.variable}`}
+      data-fx-theme="light"
+      suppressHydrationWarning
+    >
       <head>
         <script
           dangerouslySetInnerHTML={{
             __html: `try{var t=localStorage.getItem("fx-theme");document.documentElement.setAttribute("data-fx-theme",t==="dark"?"dark":"light")}catch(e){}`,
           }}
-        />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
         />
       </head>
       <body className="antialiased">

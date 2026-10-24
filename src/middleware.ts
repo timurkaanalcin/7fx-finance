@@ -5,6 +5,7 @@ import {
   isCrmHostname,
 } from "@/lib/crm-host";
 import { isAllowedApiOrigin } from "@/lib/security/origins";
+import { isIndexableHost, isPrivateHtmlPath, shouldNoindex } from "@/lib/seo-hosts";
 
 const STRICT_CSP = [
   "default-src 'self'",
@@ -45,13 +46,16 @@ export function middleware(req: NextRequest) {
       "camera=(), microphone=(), geolocation=()"
     );
     res.headers.set("Content-Security-Policy", STRICT_CSP);
-    if (
-      pathname === "/izcrm" ||
-      pathname.startsWith("/izcrm/") ||
-      pathname.startsWith("/api/admin") ||
-      crmHost
-    ) {
+    if (shouldNoindex(host, pathname) || crmHost) {
       res.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+    }
+    if (pathname === "/") {
+      // Session redirect depends on the cookie, so this response cannot be shared-cached.
+      res.headers.set("Cache-Control", "private, no-store");
+    } else if (pathname === "/ios" && isIndexableHost(host)) {
+      res.headers.set("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400");
+    } else if (isPrivateHtmlPath(pathname)) {
+      res.headers.set("Cache-Control", "private, no-store");
     }
     return res;
   };

@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Register · 7FX",
   description: "Create your 7FX account",
+  robots: { index: false, follow: false },
 };
 
 export default async function RegisterPage() {

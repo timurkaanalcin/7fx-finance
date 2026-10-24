@@ -7,6 +7,8 @@ import ScreenshotGuard from "@/components/security/ScreenshotGuard";
 export default function TerminalGroupLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
+      <link rel="preconnect" href="https://query1.finance.yahoo.com" crossOrigin="anonymous" />
+      <link rel="preconnect" href="https://query2.finance.yahoo.com" crossOrigin="anonymous" />
       <PresenceHeartbeat />
       <SymbolCatalogSync />
       <ScreenshotGuard />
