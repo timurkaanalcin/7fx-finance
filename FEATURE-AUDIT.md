@@ -4,7 +4,7 @@
 **Live:** https://7fx.control.org.tr (also https://7fx-finance.vercel.app)  
 **Source:** `/workspace/7fx-finance` branch `work/restore-missing-features`  
 **Vercel:** `prj_A99RD3HWba8Sdf8IYnhTYYQq2rmo` / team `llvad-1323`  
-**Production deploy:** `dpl_3qWyuv24AYZLQeBsQtSsmgYuzcuL` (READY; CLI file deploy, no git meta)
+**Production deploy:** `dpl_6qu1NWhVAKvmakkH2SQtDtsybsRK (eyebrow fix; prior dpl_3qWyuv24…)` (READY; CLI file deploy, no git meta)
 
 Legend: **OK** present · **MISS** missing · **HIDDEN** code OK, empty data · **CANDIDATE** HRAM-era
 
@@ -12,7 +12,7 @@ Legend: **OK** present · **MISS** missing · **HIDDEN** code OK, empty data · 
 
 | Feature | Live now | Notes |
 |---|---|---|
-| MULTI-ASSET eyebrow + ING pill | OK | Restoring copy to **investment** (was trading after redesign) |
+| MULTI-ASSET eyebrow + ING pill | OK | OK — **MULTI-ASSET INVESTMENT PLATFORM** live |
 | 1cm gap eyebrow↔ING | OK | `gap-[1cm]` in HTML |
 | EN language selector 7.8px | OK | `text-[7.8px]` on compact switcher |
 | Güvenlik ve Lisans section | OK | `#guvenlik` — practices only, no fake licence claims |
