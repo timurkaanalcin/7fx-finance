@@ -90,7 +90,8 @@ function main() {
   assert.match(settings, /JSON\.stringify\(\{ code: totpCode \}\)/);
   assert.equal(settings.includes("Two-factor authentication"), false);
   assert.equal(settings.includes("Start setup"), false);
-  assert.match(settings, /\}, \[\]\);/);
+  assert.match(read("src/lib/i18n/crm-labels.tsx"), /const i18n = useCallback\(/);
+  assert.match(settings, /\}, \[i18n\]\);/);
 
   for (const rel of ["src/app/(admin)/izcrm/deposits/page.tsx", "src/app/(admin)/izcrm/withdrawals/page.tsx"]) {
     const src = read(rel);

@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback } from "react";
 import { useI18n } from "./context";
 
 const DESK_ALIAS: Record<string, string> = {
@@ -14,20 +15,20 @@ const DESK_ALIAS: Record<string, string> = {
 export function useCrmLabels() {
   const { t, locale } = useI18n();
 
-  function i18n(key: string, fallback?: string) {
+  const i18n = useCallback((key: string, fallback?: string) => {
     const v = t(key);
     if (v === key) return fallback ?? key;
     return v;
-  }
+  }, [t]);
 
-  function code(prefix: string, value: string | null | undefined) {
+  const code = useCallback((prefix: string, value: string | null | undefined) => {
     if (value == null || value === "") return "—";
     return i18n(`${prefix}.${value}`, value);
-  }
+  }, [i18n]);
 
-  function deskName(
+  const deskName = useCallback((
     input: { name?: string | null; code?: string | null } | string | null | undefined
-  ) {
+  ) => {
     if (!input) return "—";
     const name = typeof input === "string" ? input : input.name || "";
     const rawCode = typeof input === "string" ? input : input.code || "";
@@ -37,7 +38,7 @@ export function useCrmLabels() {
       if (labeled) return labeled;
     }
     return name || rawCode || "—";
-  }
+  }, [i18n]);
 
   return { i18n, code, deskName, t, locale };
 }

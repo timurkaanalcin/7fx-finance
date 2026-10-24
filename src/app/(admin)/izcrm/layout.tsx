@@ -5,7 +5,7 @@ import SignOutForm from "@/components/auth/SignOutForm";
 import NotificationBell from "@/components/notifications/NotificationBell";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CRM_NAV_GROUPS as ALL_NAV_GROUPS } from "@/lib/crm-nav";
 import { scopedPageAllowed } from "@/lib/crm-scope-pages";
 import CrmI18n from "@/components/i18n/CrmI18n";
@@ -26,9 +26,13 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
   const [adminId, setAdminId] = useState("");
   const [perms, setPerms] = useState<Record<string, boolean>>({});
   const readOnly = Boolean(perms.crmReadOnly);
-  const CRM_NAV_GROUPS = perms.scoped
-    ? ALL_NAV_GROUPS.map((g) => ({ ...g, items: g.items.filter((n) => scopedPageAllowed(n.href)) })).filter((g) => g.items.length)
-    : ALL_NAV_GROUPS;
+  const CRM_NAV_GROUPS = useMemo(
+    () =>
+      perms.scoped
+        ? ALL_NAV_GROUPS.map((g) => ({ ...g, items: g.items.filter((n) => scopedPageAllowed(n.href)) })).filter((g) => g.items.length)
+        : ALL_NAV_GROUPS,
+    [perms.scoped]
+  );
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
     main: true,
     ops: true,
@@ -73,7 +77,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
         setOpenGroups((prev) => ({ ...prev, [g.id]: true }));
       }
     }
-  }, [pathname]);
+  }, [pathname, CRM_NAV_GROUPS]);
 
   if (!ready) {
     return <CrmShellSkeleton label={t("crm.loading")} />;

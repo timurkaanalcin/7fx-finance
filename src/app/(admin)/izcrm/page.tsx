@@ -96,7 +96,7 @@ export default function AdminDashboard() {
       setErr(i18n("crm.ui.loadFailed"));
       setPhase("error");
     }
-  }, []);
+  }, [i18n]);
 
   useEffect(() => {
     load();
