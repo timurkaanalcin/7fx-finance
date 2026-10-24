@@ -89,7 +89,10 @@ export async function getPrice(symbol: string): Promise<Tick | undefined> {
  * One quote snapshot for many symbols. Same bid/ask rules as getPrice.
  * Callers that loop fills or SL/TP use this so Yahoo is hit per symbol, not per row.
  */
-export async function getPrices(symbols: string[]): Promise<Map<string, Tick>> {
+export async function getPrices(
+  symbols: string[],
+  opts?: { liveOnly?: boolean }
+): Promise<Map<string, Tick>> {
   await ensureSymbolCatalog();
   const wanted: string[] = [];
   const seen = new Set<string>();
@@ -122,6 +125,8 @@ export async function getPrices(symbols: string[]): Promise<Map<string, Tick>> {
       out.set(row.key, await tickFromQuote(row.key, quote.price, quote.change, quote.changePct, quote.ts));
       continue;
     }
+    // Catalog base prices are not a live feed. Callers that pass liveOnly leave the symbol out.
+    if (opts?.liveOnly) continue;
     const fallback = await fallbackTick(row.key);
     if (fallback) out.set(row.key, fallback);
   }
