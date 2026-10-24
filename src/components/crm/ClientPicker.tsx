@@ -34,6 +34,7 @@ export default function ClientPicker({
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const [results, setResults] = useState<ClientOption[]>([]);
+  const [partial, setPartial] = useState(false);
   const [label, setLabel] = useState(initialLabel || "");
   const [loading, setLoading] = useState(false);
   const box = useRef<HTMLDivElement>(null);
@@ -69,6 +70,7 @@ export default function ClientPicker({
         const res = await fetch(`/api/admin/clients?role=${role}&q=${encodeURIComponent(q.trim())}`);
         const d = res.ok ? await res.json() : { clients: [] };
         setResults(d.clients || []);
+        setPartial(Boolean(d.clientsPartial));
       } finally {
         setLoading(false);
       }
@@ -116,6 +118,9 @@ export default function ClientPicker({
           {loading && <div className="px-2 py-1.5 text-neutral-400">{i18n("crm.ui.loading")}</div>}
           {!loading && results.length === 0 && (
             <div className="px-2 py-1.5 text-neutral-400">{i18n("crm.ui.noRecords")}</div>
+          )}
+          {partial && (
+            <div className="px-2 py-1.5 text-[10px] text-amber-800">{i18n("crm.clients.partial")}</div>
           )}
           {results.map((c) => (
             <button

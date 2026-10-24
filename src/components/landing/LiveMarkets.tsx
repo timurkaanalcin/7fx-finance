@@ -105,10 +105,10 @@ async function refresh() {
   inflight = true;
   try {
     const wanted = Array.from(new Set<string>([...CHART_SYMS, ...Array.from(extraCharts)]));
-    const [symRes, quoteRes, candleRows] = await Promise.all([
+    const candleTask = Promise.all(wanted.map(async (symbol) => ({ symbol, row: await fetchCloses(symbol) })));
+    const [symRes, quoteRes] = await Promise.all([
       fetch("/api/symbols", { cache: "no-store" }),
       fetch(`/api/market/quote?live=1&symbols=${QUOTE_SYMS.join(",")}`, { cache: "no-store" }),
-      Promise.all(wanted.map(async (symbol) => ({ symbol, row: await fetchCloses(symbol) }))),
     ]);
     if (!symRes.ok || !quoteRes.ok) throw new Error("feed");
     const catalog = await symRes.json();
@@ -127,6 +127,11 @@ async function refresh() {
         changePct: Number(p.changePct),
       };
     }
+    // Paint quotes before the candle history finishes. The chart fills in on the second emit.
+    if (Object.keys(ticks).length > 0) {
+      emit({ status: "live", ticks, series: feed.series, chartStale: Object.keys(feed.series).length === 0 });
+    }
+    const candleRows = await candleTask;
     const series: Record<string, number[]> = {};
     let chartStale = false;
     for (const item of candleRows) {

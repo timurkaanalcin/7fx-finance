@@ -1192,7 +1192,6 @@ export default function TerminalShell() {
           onClick={() => openOrder("SELL")}
           disabled={user.tradingEnabled === false || !!user.mustChangePassword}
           className="flex flex-col items-center justify-center bg-desk-sell text-white disabled:opacity-40"
-          aria-label={`${t("term.sell")} ${prices[symbol] && Number.isFinite(prices[symbol].bid) ? formatPrice(symbol, prices[symbol].bid) : ""}`.trim()}
         >
           <span className="text-[10px] font-semibold uppercase leading-none tracking-[0.12em] opacity-90">{t("term.sell")}</span>
           <span className="mt-0.5 text-[15px] font-semibold leading-none tabular-nums tracking-normal">
@@ -1204,7 +1203,6 @@ export default function TerminalShell() {
           onClick={() => openOrder("BUY")}
           disabled={user.tradingEnabled === false || !!user.mustChangePassword}
           className="flex flex-col items-center justify-center bg-desk-buy text-white disabled:opacity-40"
-          aria-label={`${t("term.buy")} ${prices[symbol] && Number.isFinite(prices[symbol].ask) ? formatPrice(symbol, prices[symbol].ask) : ""}`.trim()}
         >
           <span className="text-[10px] font-semibold uppercase leading-none tracking-[0.12em] opacity-90">{t("term.buy")}</span>
           <span className="mt-0.5 text-[15px] font-semibold leading-none tabular-nums tracking-normal">

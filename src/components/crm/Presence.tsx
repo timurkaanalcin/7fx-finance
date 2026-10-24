@@ -161,6 +161,8 @@ type LoginEventRow = {
 type PresencePayload = {
   presence: PresenceInfo & { lastLoginAt: string | null; lastUserAgent: string | null };
   events: LoginEventRow[];
+  eventsHasMore?: boolean;
+  eventsNextSkip?: number;
   serverTime: string;
 };
 
@@ -254,7 +256,39 @@ export function TraderPresenceHeader({ userId }: { userId: string }) {
 export function LoginHistory({ userId }: { userId: string }) {
   const { i18n } = useCrmLabels();
   const { data } = useTraderPresence(userId, 30000);
-  const events = data?.events || [];
+  const [extra, setExtra] = useState<LoginEventRow[]>([]);
+  const [more, setMore] = useState(false);
+  const [nextSkip, setNextSkip] = useState(0);
+  const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    setExtra([]);
+    setMore(false);
+    setNextSkip(0);
+  }, [userId]);
+  useEffect(() => {
+    if (!data || extra.length > 0) return;
+    setMore(Boolean(data.eventsHasMore));
+    setNextSkip(data.eventsNextSkip || data.events.length || 0);
+  }, [data, extra.length]);
+  const events = (data?.events || []).concat(extra.filter((row) => !(data?.events || []).some((first) => first.id === row.id)));
+  async function loadMore() {
+    if (busy || !more) return;
+    setBusy(true);
+    try {
+      const r = await fetch(`/api/admin/users/${userId}/presence?skip=${nextSkip}`, { cache: "no-store" });
+      if (!r.ok) return;
+      const d = (await r.json()) as PresencePayload;
+      const incoming = d.events || [];
+      setExtra((prev) => {
+        const have = new Set((data?.events || []).concat(prev).map((row) => row.id));
+        return prev.concat(incoming.filter((row) => !have.has(row.id)));
+      });
+      setMore(Boolean(d.eventsHasMore));
+      setNextSkip(d.eventsNextSkip || nextSkip + incoming.length);
+    } finally {
+      setBusy(false);
+    }
+  }
   return (
     <section className="mb-4 rounded-lg border border-[#e5e5e5] bg-white">
       <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-[#e5e5e5] px-3 py-2">
@@ -321,6 +355,18 @@ export function LoginHistory({ userId }: { userId: string }) {
           </tbody>
         </table>
       </div>
+      {more && (
+        <div className="border-t border-[#f0f0f0] px-3 py-2 text-center">
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => void loadMore()}
+            className="rounded-full border border-neutral-300 px-3 py-1 text-xs font-semibold text-neutral-600 hover:bg-neutral-50 disabled:opacity-50"
+          >
+            {i18n("crm.ui.loadMore")}
+          </button>
+        </div>
+      )}
     </section>
   );
 }

@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import {
   PRIMARY_ORIGIN,
   isIndexableHost,
+  isMarketingPath,
   metadataOrigin,
   normalizeHost,
 } from "@/lib/seo-hosts";
+import { MARKETING_COPY } from "@/lib/public-pages";
 
 export const TITLE = "7FX — Global multi-asset trading platform";
 export const DESCRIPTION =
@@ -39,13 +41,18 @@ function card(title: string, description: string, url: string): Pick<Metadata, "
 }
 
 /** Per-host metadata for the public marketing routes. Other routes stay noindex. */
-export function marketingMetadata(hostHeader: string | null, path: "/" | "/ios"): Metadata {
+export function marketingMetadata(hostHeader: string | null, path: string): Metadata {
   const host = normalizeHost(hostHeader);
-  const indexable = isIndexableHost(host);
+  const indexable = isIndexableHost(host) && isMarketingPath(path);
   const origin = indexable ? metadataOrigin(host) : PRIMARY_ORIGIN;
   const url = path === "/" ? origin : `${origin}${path}`;
-  const title = path === "/ios" ? IOS_TITLE : TITLE;
-  const description = path === "/ios" ? IOS_DESCRIPTION : DESCRIPTION;
+  const copy =
+    MARKETING_COPY[path] ||
+    (path === "/ios"
+      ? { title: IOS_TITLE, description: IOS_DESCRIPTION }
+      : { title: TITLE, description: DESCRIPTION });
+  const title = copy.title;
+  const description = copy.description;
   return {
     metadataBase: new URL(origin),
     title: { absolute: title },

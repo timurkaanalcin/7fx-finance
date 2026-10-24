@@ -95,6 +95,7 @@ export default function WorkersPage() {
   const [wFilter, setWFilter] = useState<WFilter>("all");
   const [roleFilter, setRoleFilter] = useState("");
   const [hasMore, setHasMore] = useState(false);
+  const [desksPartial, setDesksPartial] = useState(false);
   const [moreBusy, setMoreBusy] = useState(false);
   const [serverCounts, setServerCounts] = useState<{ all: number; active: number; inactive: number; stale: number } | null>(null);
   const [roleChoices, setRoleChoices] = useState<{ jobTitle: string; count: number }[]>([]);
@@ -130,6 +131,7 @@ export default function WorkersPage() {
       setRows(next);
       setHasMore(Boolean(d.hasMore));
       if (d.desks) setDesks(d.desks);
+      if (mode === "replace") setDesksPartial(Boolean(d.desksPartial));
       if (d.me?.perms) setMyPerms(d.me.perms);
       if (d.counts) setServerCounts(d.counts);
       if (Array.isArray(d.roles)) setRoleChoices(d.roles);
@@ -584,6 +586,9 @@ export default function WorkersPage() {
           </tbody>
         </table>
       </div>
+      {desksPartial && (
+        <p className="mt-3 text-center text-[11px] text-amber-800">{i18n("crm.workers.desksPartial")}</p>
+      )}
       {hasMore && (
         <div className="mt-3 text-center">
           <button

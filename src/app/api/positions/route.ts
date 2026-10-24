@@ -195,10 +195,18 @@ export async function GET(req: Request) {
     });
   }
 
-  const positions = await prisma.position.findMany({
+  const skip = pageSkip(searchParams.get("skip"));
+  const rows = await prisma.position.findMany({
     where: { userId: user.id, status },
     orderBy: { openedAt: "desc" },
-    take: 200,
+    skip,
+    take: OPEN_PAGE + 1,
   });
-  return NextResponse.json(stripStaff(positions));
+  const hasMore = rows.length > OPEN_PAGE;
+  const positions = hasMore ? rows.slice(0, OPEN_PAGE) : rows;
+  return NextResponse.json({
+    positions: stripStaff(positions),
+    hasMore,
+    nextSkip: skip + positions.length,
+  });
 }

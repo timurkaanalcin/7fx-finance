@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
+const CLIENT_PICKER_CAP = 20;
+
 /**
  * Lightweight client picker search for CRM forms (tickets / ledger).
  * GET ?q=…&id=…&role=TRADER|ALL  → [{ id, name, email, accountLoginId, currency }]
@@ -32,7 +34,7 @@ export async function GET(req: Request) {
       ];
     }
   }
-  const users = await prisma.user.findMany({
+  const found = await prisma.user.findMany({
     where: scopeUserWhere(admin, where),
     select: {
       id: true,
@@ -43,8 +45,10 @@ export async function GET(req: Request) {
       account: { select: { currency: true, balance: true } },
     },
     orderBy: { createdAt: "desc" },
-    take: 20,
+    take: id ? 1 : CLIENT_PICKER_CAP + 1,
   });
+  const clientsPartial = !id && found.length > CLIENT_PICKER_CAP;
+  const users = clientsPartial ? found.slice(0, CLIENT_PICKER_CAP) : found;
   return NextResponse.json({
     clients: users.map((u) => ({
       id: u.id,
@@ -55,5 +59,6 @@ export async function GET(req: Request) {
       currency: u.account?.currency ?? null,
       balance: u.account?.balance ?? null,
     })),
+    clientsPartial,
   });
 }
