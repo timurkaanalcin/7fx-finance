@@ -10,6 +10,7 @@ export const DEFAULT_SITE = "7fx";
 export const KNOWN_SITES: { key: string; label: string }[] = [
   { key: "7fx", label: "7FX" },
   { key: "mfx", label: "MFX" },
+  { key: "hram", label: "HRAM" },
 ];
 
 const SITE_RE = /^[a-z0-9][a-z0-9-]{0,31}$/;
