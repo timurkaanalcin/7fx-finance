@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
+import { publicErrorText } from "@/lib/security/public-error";
 import { requireUser } from "@/lib/auth";
 import { modifyPositionSlTp } from "@/lib/trading";
 import { tradingDisabledMessage, mustChangePasswordMessage } from "@/lib/account-perms";
-import { publicErrorText } from "@/lib/security/public-error";
 
 export async function POST(req: Request) {
   const user = await requireUser();

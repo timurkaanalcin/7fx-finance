@@ -1,12 +1,12 @@
 import { ensureSymbolCatalog } from "@/lib/trading-settings";
 import { NextResponse } from "next/server";
+import { publicErrorText } from "@/lib/security/public-error";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { tradingDisabledMessage, mustChangePasswordMessage } from "@/lib/account-perms";
 import { placeOrder } from "@/lib/trading";
 import { getMarketStatus } from "@/lib/market-hours";
 import { stripStaff } from "@/lib/customer-sanitize";
-import { publicErrorText } from "@/lib/security/public-error";
 
 export async function GET(req: Request) {
   const user = await requireUser();
