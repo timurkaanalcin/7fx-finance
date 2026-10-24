@@ -18,17 +18,19 @@ export default function PublicDoc({
   lede,
   nav,
   children,
+  rootClass,
 }: {
   title: string;
   lede: string;
   nav: PublicNavCopy;
   children: ReactNode;
+  rootClass?: string;
 }) {
   const signedIn = Boolean(
     cookies().get("7fx_session")?.value || cookies().get("deskflow_session")?.value
   );
   return (
-    <div className="fx-doc min-h-screen bg-white text-[#15161a]">
+    <div className={`fx-doc min-h-screen bg-white text-[#15161a]${rootClass ? ` ${rootClass}` : ""}`}>
       <a href="#content" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-10 focus:bg-white focus:px-3 focus:py-2">
         {nav.skip}
       </a>

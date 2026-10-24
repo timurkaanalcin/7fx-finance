@@ -566,3 +566,98 @@ body:has(.fx-auth-page) {
   .fx-quote .fx-quote-name { max-width: none; }
 }
 
+/* Register + platform terminal window. Same chrome as the landing laptop. */
+.fx-auth-wide {
+  max-width: min(1080px, 100%);
+}
+.fx-auth-register {
+  max-width: 440px;
+}
+.fx-auth-register-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.fx-auth-register h1,
+.fx-auth-register h2,
+.fx-auth-register .fx-auth-step {
+  font-weight: 400;
+}
+@media (min-width: 1024px) {
+  .fx-auth-page .fx-auth-register {
+    max-width: min(1080px, 100%);
+  }
+  .fx-auth-register-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 440px) minmax(0, 1fr);
+    gap: 40px;
+    align-items: center;
+  }
+}
+.fx-terminal-window {
+  margin: 0;
+  min-width: 0;
+  max-width: 100%;
+  border-radius: 18px 18px 12px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #141922;
+  padding: 10px 10px 0;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+}
+.fx-terminal-bar {
+  display: flex;
+  gap: 6px;
+  padding: 2px 4px 8px;
+}
+.fx-terminal-bar span {
+  width: 8px;
+  height: 8px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.2);
+}
+.fx-terminal-window img {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+  border-radius: 8px 8px 0 0;
+  background: #0b0e13;
+}
+.fx-terminal-window figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 4px 12px;
+  color: #9aa3b5;
+  font-size: 12px;
+  font-weight: 400;
+}
+.fx-terminal-window figcaption span {
+  color: #d7ffe9;
+  font-weight: 400;
+}
+.fx-platform .fx-doc-shell {
+  width: min(1120px, calc(100% - 32px));
+}
+.fx-platform h1,
+.fx-platform h2 {
+  font-weight: 400;
+}
+.fx-platform .fx-terminal-window {
+  border-color: rgba(7, 9, 13, 0.16);
+}
+.fx-platform-hero {
+  display: grid;
+  gap: 28px;
+  align-items: center;
+}
+@media (min-width: 1024px) {
+  .fx-platform-hero {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 36px;
+  }
+}
+
