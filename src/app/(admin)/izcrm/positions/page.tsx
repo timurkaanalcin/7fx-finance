@@ -3,12 +3,11 @@
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useVisiblePoll } from "@/lib/use-visible-poll";
+import { CRM_IDLE_POLL_MS, useVisiblePoll } from "@/lib/use-visible-poll";
 import { fmtCrmDate, fmtCrmMoney } from "@/lib/crm-format";
 import EditableOrdersTable from "@/components/crm/EditableOrdersTable";
 import EditablePositionsTable from "@/components/crm/EditablePositionsTable";
 
-const POLL_MS = 4000;
 
 type PosRow = Record<string, unknown>;
 
@@ -113,7 +112,7 @@ export default function PositionsPage() {
     load();
   }, [load]);
 
-  useVisiblePoll(load, POLL_MS, live && !editing);
+  useVisiblePoll(load, CRM_IDLE_POLL_MS, live && !editing);
 
   return (
     <div>
@@ -133,7 +132,7 @@ export default function PositionsPage() {
             className="rounded border-neutral-300"
             disabled={editing}
           />
-          {i18n("crm.ui.live")} ({POLL_MS / 1000}s)
+          {i18n("crm.ui.live")} ({CRM_IDLE_POLL_MS / 1000}s)
         </label>
       </div>
       {err && <p className="mb-2 text-xs text-red-500">{err}</p>}

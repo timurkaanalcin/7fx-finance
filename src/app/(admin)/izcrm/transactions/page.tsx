@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import CrmRecordTable, { type CrmColumn } from "@/components/crm/CrmRecordTable";
 import ClientPicker from "@/components/crm/ClientPicker";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { fmtCrmMoney } from "@/lib/crm-format";
 import { ACCOUNT_CURRENCIES } from "@/lib/membership";
 import { crmJson, dayEndIso, dayStartIso } from "@/lib/crm-api";
+import { CRM_LIST_PAGE } from "@/lib/trader-list";
 
 type Row = Record<string, unknown>;
 type Result = { ok: boolean; error?: string };
@@ -45,18 +46,21 @@ export default function TransactionsPage() {
   const [traderId, setTraderId] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
-  const [limit, setLimit] = useState("400");
   const [loading, setLoading] = useState(false);
-  // Per-type counts captured from the last load WITHOUT a type filter, so chips stay
-  // stable while a type chip is active (the API filters by type server-side).
+  const [hasMore, setHasMore] = useState(false);
+  const [moreBusy, setMoreBusy] = useState(false);
+  // Server counts ignore the type chip so the chips stay stable while a type is selected.
   const [baseCounts, setBaseCounts] = useState<{ total: number; byType: [string, number][] } | null>(null);
+  const rowsRef = useRef<Row[]>([]);
+  const listGen = useRef(0);
 
   useEffect(() => {
     const t = setTimeout(() => setQDebounced(q.trim()), 300);
     return () => clearTimeout(t);
   }, [q]);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (mode: "replace" | "more" = "replace") => {
+    const gen = ++listGen.current;
     const p = new URLSearchParams();
     if (type) p.set("type", type);
     if (qDebounced) p.set("q", qDebounced);
@@ -65,26 +69,36 @@ export default function TransactionsPage() {
     const tt = dayEndIso(to);
     if (f) p.set("from", f);
     if (tt) p.set("to", tt);
-    p.set("limit", limit);
-    setLoading(true);
+    p.set("take", String(CRM_LIST_PAGE));
+    p.set("skip", mode === "more" ? String(rowsRef.current.length) : "0");
+    if (mode === "replace") p.set("counts", "1");
+    if (mode === "more") setMoreBusy(true);
+    else setLoading(true);
     try {
       const res = await fetch(`/api/admin/transactions?${p}`);
-      if (!res.ok) return;
+      if (!res.ok || gen !== listGen.current) return;
       const data = await res.json();
       const list: Row[] = data.transactions || [];
-      setRows(list);
-      if (!type) {
-        const m = new Map<string, number>();
-        for (const r of list) {
-          const t = String(r.type || "");
-          if (t) m.set(t, (m.get(t) || 0) + 1);
-        }
-        setBaseCounts({ total: list.length, byType: Array.from(m.entries()).sort((a, b) => b[1] - a[1]) });
+      const next =
+        mode === "more"
+          ? rowsRef.current.concat(list.filter((r) => !rowsRef.current.some((row) => row.id === r.id)))
+          : list;
+      rowsRef.current = next;
+      setRows(next);
+      setHasMore(Boolean(data.hasMore));
+      if (data.counts && mode === "replace") {
+        const byKey = (data.counts.byKey || {}) as Record<string, number>;
+        const byType = Object.entries(byKey)
+          .map(([k, n]) => [k, Number(n) || 0] as [string, number])
+          .sort((a, b) => b[1] - a[1]);
+        setBaseCounts({ total: Number(data.counts.total) || 0, byType });
       }
     } finally {
-      setLoading(false);
+      if (gen !== listGen.current) return;
+      if (mode === "more") setMoreBusy(false);
+      else setLoading(false);
     }
-  }, [type, qDebounced, traderId, from, to, limit]);
+  }, [type, qDebounced, traderId, from, to]);
 
   useEffect(() => {
     load();
@@ -102,11 +116,9 @@ export default function TransactionsPage() {
   const typeChips = useMemo(() => {
     const base = baseCounts || { total: rows.length, byType: [] as [string, number][] };
     const m = new Map(base.byType);
-    // Active type: trust the freshly loaded rows; keep it visible even if absent from base.
-    if (type) m.set(type, rows.length);
     const list = Array.from(m.entries());
     return { total: base.total, list };
-  }, [baseCounts, rows.length, type]);
+  }, [baseCounts, rows.length]);
 
   function downloadCsv() {
     const header = [
@@ -296,16 +308,6 @@ export default function TransactionsPage() {
           <span className="text-[10px] text-neutral-500">{i18n("crm.ui.to")}</span>
           <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className={ctl} />
         </label>
-        <label className="flex flex-col gap-1">
-          <span className="text-[10px] text-neutral-500">{i18n("crm.ui.limit")}</span>
-          <select value={limit} onChange={(e) => setLimit(e.target.value)} className={ctl}>
-            {["100", "400", "1000"].map((l) => (
-              <option key={l} value={l}>
-                {l}
-              </option>
-            ))}
-          </select>
-        </label>
         <button
           type="button"
           className={ctl + " hover:bg-neutral-50"}
@@ -319,7 +321,7 @@ export default function TransactionsPage() {
         >
           {i18n("crm.ui.clear")}
         </button>
-        <button type="button" className={ctl + " hover:bg-neutral-50"} onClick={load}>
+        <button type="button" className={ctl + " hover:bg-neutral-50"} onClick={() => void load()}>
           {loading ? i18n("crm.ui.loading") : i18n("crm.ui.refresh")}
         </button>
         <button
@@ -355,7 +357,7 @@ export default function TransactionsPage() {
       </div>
       <div className="mb-2 flex flex-wrap gap-3 text-[11px] text-neutral-600">
         <span>
-          {rows.length} {i18n("crm.ui.records")}
+          {rows.length}{hasMore ? "+" : ""} {i18n("crm.ui.records")}
         </span>
         {totals.map(([c, v]) => (
           <span key={c} className="tabular-nums">
@@ -373,6 +375,18 @@ export default function TransactionsPage() {
         onUpdate={onUpdate}
         onDelete={onDelete}
       />
+      {hasMore && (
+        <div className="mt-3 text-center">
+          <button
+            type="button"
+            disabled={moreBusy}
+            onClick={() => void load("more")}
+            className="rounded-full border border-neutral-300 px-3 py-1 text-xs font-semibold text-neutral-600 hover:bg-neutral-50 disabled:opacity-50"
+          >
+            {i18n("crm.ui.loadMore")}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

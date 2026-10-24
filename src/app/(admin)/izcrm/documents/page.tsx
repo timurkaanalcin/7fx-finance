@@ -3,14 +3,13 @@
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { StatusBadge } from "@/components/crm/StubPage";
 import TraderSearchPicker from "@/components/crm/TraderSearchPicker";
 import { fmtCrmDate } from "@/lib/crm-format";
+import { CRM_LIST_PAGE } from "@/lib/trader-list";
 
 const DOC_STATUSES = ["PENDING", "APPROVED", "REJECTED"] as const;
-/** API returns at most this many rows per request. */
-const DOC_CAP = 300;
 
 type Doc = {
   id: string;
@@ -34,44 +33,50 @@ export default function DocumentsPage() {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   const [query, setQuery] = useState("");
+  const [qDebounced, setQDebounced] = useState("");
   const [counts, setCounts] = useState<Record<string, number>>({});
-
-  const load = useCallback(async () => {
-    const q = status ? `?status=${status}` : "";
-    const [res, allRes] = await Promise.all([
-      fetch(`/api/admin/documents${q}`),
-      status ? fetch("/api/admin/documents") : Promise.resolve(null),
-    ]);
-    if (!res.ok) return;
-    const data = await res.json();
-    const list: Doc[] = data.documents || [];
-    setDocs(list);
-    let all = list;
-    if (allRes && allRes.ok) {
-      const allData = await allRes.json().catch(() => ({}));
-      all = allData.documents || [];
-    }
-    if (!status || (allRes && allRes.ok)) {
-      const c: Record<string, number> = { "": all.length };
-      for (const d of all) c[d.status] = (c[d.status] || 0) + 1;
-      setCounts(c);
-    }
-  }, [status]);
-
-  const shown = useMemo(() => {
-    const needle = query.trim().toLocaleLowerCase("tr");
-    if (!needle) return docs;
-    return docs.filter((d) =>
-      [d.name, d.docType, d.trader, d.traderEmail, d.note, d.desk]
-        .filter(Boolean)
-        .join(" ")
-        .toLocaleLowerCase("tr")
-        .includes(needle)
-    );
-  }, [docs, query]);
+  const [hasMore, setHasMore] = useState(false);
+  const [moreBusy, setMoreBusy] = useState(false);
+  const docsRef = useRef<Doc[]>([]);
+  const listGen = useRef(0);
 
   useEffect(() => {
-    load();
+    const t = setTimeout(() => setQDebounced(query.trim()), 300);
+    return () => clearTimeout(t);
+  }, [query]);
+
+  const load = useCallback(async (mode: "replace" | "more" = "replace") => {
+    const gen = ++listGen.current;
+    const p = new URLSearchParams();
+    if (status) p.set("status", status);
+    if (qDebounced) p.set("q", qDebounced);
+    p.set("take", String(CRM_LIST_PAGE));
+    p.set("skip", mode === "more" ? String(docsRef.current.length) : "0");
+    if (mode === "replace") p.set("counts", "1");
+    if (mode === "more") setMoreBusy(true);
+    try {
+      const res = await fetch(`/api/admin/documents?${p}`);
+      if (!res.ok || gen !== listGen.current) return;
+      const data = await res.json();
+      const list: Doc[] = data.documents || [];
+      const next =
+        mode === "more" ? docsRef.current.concat(list.filter((d) => !docsRef.current.some((row) => row.id === d.id))) : list;
+      docsRef.current = next;
+      setDocs(next);
+      setHasMore(Boolean(data.hasMore));
+      if (data.counts && mode === "replace") {
+        const c: Record<string, number> = { "": Number(data.counts.total) || 0 };
+        const byKey = (data.counts.byKey || {}) as Record<string, number>;
+        for (const [k, n] of Object.entries(byKey)) c[k] = Number(n) || 0;
+        setCounts(c);
+      }
+    } finally {
+      if (mode === "more" && gen === listGen.current) setMoreBusy(false);
+    }
+  }, [status, qDebounced]);
+
+  useEffect(() => {
+    void load();
   }, [load]);
 
   async function review(id: string, next: "APPROVED" | "REJECTED") {
@@ -128,7 +133,6 @@ export default function DocumentsPage() {
             {(["", ...DOC_STATUSES] as string[]).map((s) => {
               const n = counts[s] ?? 0;
               const active = status === s;
-              const capped = s === "" && n >= DOC_CAP;
               return (
                 <button
                   key={s || "ALL"}
@@ -144,7 +148,7 @@ export default function DocumentsPage() {
                   }`}
                 >
                   {s ? i18n(`crm.status.${s}`, s) : i18n("crm.ui.all")}
-                  <span className="ml-1 tabular-nums opacity-70">{capped ? `${DOC_CAP}+` : n}</span>
+                  <span className="ml-1 tabular-nums opacity-70">{n}</span>
                 </button>
               );
             })}
@@ -173,7 +177,7 @@ export default function DocumentsPage() {
             </div>
             {query && (
               <span className="w-full text-[10px] text-neutral-500">
-                {i18n("crm.docs.matches", "{n} sonuç").replace("{n}", String(shown.length))}
+                {i18n("crm.docs.matches", "{n} sonuç").replace("{n}", String(docs.length))}
               </span>
             )}
           </div>
@@ -189,7 +193,7 @@ export default function DocumentsPage() {
               </tr>
             </thead>
             <tbody>
-              {shown.map((d) => (
+              {docs.map((d) => (
                 <tr key={d.id} className="border-t border-neutral-200">
                   <td className="px-2 py-1.5">
                     <div className="font-medium">{d.name}</div>
@@ -231,15 +235,27 @@ export default function DocumentsPage() {
                   </td>
                 </tr>
               ))}
-              {shown.length === 0 && (
+              {docs.length === 0 && (
                 <tr>
                   <td colSpan={6} className="px-3 py-8 text-center text-neutral-500">
-                    {query && docs.length > 0 ? i18n("crm.docs.noMatch", "Aramayla eşleşen belge yok") : i18n("crm.docs.none")}
+                    {qDebounced ? i18n("crm.docs.noMatch", "Aramayla eşleşen belge yok") : i18n("crm.docs.none")}
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
+          {hasMore && (
+            <div className="border-t border-neutral-200 p-2 text-center">
+              <button
+                type="button"
+                disabled={moreBusy}
+                onClick={() => void load("more")}
+                className="rounded-full border border-neutral-300 px-3 py-1 text-xs font-semibold text-neutral-600 hover:bg-neutral-50 disabled:opacity-50"
+              >
+                {i18n("crm.ui.loadMore")}
+              </button>
+            </div>
+          )}
         </div>
         <div className="rounded-lg border border-neutral-200 bg-[#ffffff] p-3">
           <h2 className="mb-2 text-xs font-semibold text-neutral-600">{i18n("crm.docs.add")}</h2>

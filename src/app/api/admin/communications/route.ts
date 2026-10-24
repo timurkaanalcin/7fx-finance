@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
+import type { Prisma } from "@prisma/client";
 import { requireAdmin, requireAdminWrite } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { touchLastContact } from "@/lib/last-contact";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
+import { crmListWindow } from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
 
@@ -13,30 +15,88 @@ export async function GET(req: Request) {
 
   const { searchParams } = new URL(req.url);
   const type = (searchParams.get("type") || "").trim();
-  const where = type ? { type } : undefined;
+  const q = (searchParams.get("q") || "").trim();
+  const { take, skip, legacy } = crmListWindow(searchParams.get("take"), searchParams.get("skip"));
+  const where = commWhere(type, q, true);
+  const wantCounts = searchParams.get("counts") === "1";
 
-  const rows = await prisma.communication.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
-    take: 300,
-    include: { user: { select: { id: true, name: true, email: true, desk: true } } },
-  });
+  const [found, groups] = await Promise.all([
+    prisma.communication.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: legacy ? take : take + 1,
+      include: { user: { select: { id: true, name: true, email: true, desk: true } } },
+    }),
+    wantCounts
+      ? prisma.communication.groupBy({
+          by: ["type"],
+          where: commWhere(type, q, false),
+          _count: true,
+        })
+      : Promise.resolve(null),
+  ]);
 
+  const hasMore = !legacy && found.length > take;
+  const page = hasMore ? found.slice(0, take) : found;
   return NextResponse.json({
-    communications: rows.map((c) => ({
-      id: c.id,
-      type: c.type,
-      title: c.title,
-      description: c.description,
-      workerName: c.workerName,
-      workerId: c.workerId,
-      traderId: c.userId,
-      trader: c.user.name,
-      traderEmail: c.user.email,
-      desk: c.user.desk,
-      createdAt: c.createdAt,
-    })),
+    communications: page.map(mapComm),
+    hasMore,
+    nextSkip: skip + page.length,
+    ...(groups ? { counts: countMap(groups) } : {}),
   });
+}
+
+function commWhere(type: string, q: string, withType: boolean): Prisma.CommunicationWhereInput {
+  const where: Prisma.CommunicationWhereInput = {};
+  if (withType && type) where.type = type;
+  if (q) {
+    where.OR = [
+      { title: { contains: q } },
+      { description: { contains: q } },
+      { workerName: { contains: q } },
+      { user: { name: { contains: q } } },
+      { user: { email: { contains: q } } },
+      { user: { desk: { contains: q } } },
+    ];
+  }
+  return where;
+}
+
+function mapComm(c: {
+  id: string;
+  type: string;
+  title: string | null;
+  description: string;
+  workerName: string | null;
+  workerId: string | null;
+  userId: string;
+  createdAt: Date;
+  user: { name: string; email: string; desk: string | null };
+}) {
+  return {
+    id: c.id,
+    type: c.type,
+    title: c.title,
+    description: c.description,
+    workerName: c.workerName,
+    workerId: c.workerId,
+    traderId: c.userId,
+    trader: c.user.name,
+    traderEmail: c.user.email,
+    desk: c.user.desk,
+    createdAt: c.createdAt,
+  };
+}
+
+function countMap(groups: { type: string; _count: number }[]) {
+  const byKey: Record<string, number> = {};
+  let total = 0;
+  for (const g of groups) {
+    byKey[g.type] = g._count;
+    total += g._count;
+  }
+  return { total, byKey };
 }
 
 export async function POST(req: Request) {
