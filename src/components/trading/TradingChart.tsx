@@ -776,7 +776,7 @@ export default function TradingChart({
         data-fx-chart-head=""
       >
         <span
-          className={`mt-1 flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-[0.08em] ring-1 md:gap-1 md:px-2 md:py-0.5 md:tracking-wide ${
+          className={`mt-1 flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-normal tracking-[0.08em] ring-1 md:gap-1 md:px-2 md:py-0.5 md:tracking-wide ${
             liveFresh
               ? `bg-desk-accent/15 text-desk-accent ring-desk-accent/35 ${livePulse ? "ring-desk-accent/70 bg-desk-accent/25" : ""}`
               : "bg-desk-elev/80 text-desk-muted ring-desk-border/60"
@@ -796,25 +796,25 @@ export default function TradingChart({
           <SymbolIcon symbol={symbol} fallback={flag || "•"} size={28} className="mt-0.5 md:!h-6 md:!w-6" />
           <div className="min-w-0">
             <div className="flex min-w-0 items-baseline gap-1.5">
-              <span className="shrink-0 text-[15px] font-semibold tracking-tight text-desk-text md:text-sm">
+              <span className="shrink-0 text-[15px] font-normal tracking-tight text-desk-text md:text-sm">
                 {symbol}
               </span>
               {showName && (
-                <span className="min-w-0 truncate text-[11px] font-medium text-desk-muted md:text-[12px]" title={company}>
+                <span className="min-w-0 truncate text-[11px] font-normal text-desk-muted md:text-[12px]" title={company}>
                   {company}
                 </span>
               )}
             </div>
             <div
-              className="mt-0.5 flex min-h-[18px] flex-nowrap items-baseline gap-x-1 overflow-hidden text-[11px] font-semibold tabular-nums leading-tight sm:gap-x-1.5 md:text-[12px]"
+              className="mt-0.5 flex min-h-[18px] flex-nowrap items-baseline gap-x-1 overflow-hidden text-[11px] font-normal tabular-nums leading-tight sm:gap-x-1.5 md:text-[12px]"
               data-fx-chart-quote=""
               title={t("term.liveQuote")}
               aria-live="off"
             >
-              <span className="text-[9px] font-medium uppercase tracking-wide text-desk-muted">{t("term.bid")}</span>
+              <span className="text-[9px] font-normal uppercase tracking-wide text-desk-muted">{t("term.bid")}</span>
               <span className="min-w-[4.25rem] text-desk-sell">{hasQuote && price ? formatPrice(symbol, price.bid) : "—"}</span>
               <span className="text-desk-muted/40">/</span>
-              <span className="text-[9px] font-medium uppercase tracking-wide text-desk-muted">{t("term.ask")}</span>
+              <span className="text-[9px] font-normal uppercase tracking-wide text-desk-muted">{t("term.ask")}</span>
               <span className="min-w-[4.25rem] text-desk-buy">{hasQuote && price ? formatPrice(symbol, price.ask) : "—"}</span>
               <span className={`min-w-[3.5rem] ${hasQuote && price && Number.isFinite(price.changePct) ? (quoteUp ? "text-desk-buy" : "text-desk-sell") : "text-transparent"}`}>
                 {hasQuote && price && Number.isFinite(price.changePct)
@@ -872,7 +872,7 @@ export default function TradingChart({
               type="button"
               aria-pressed={timeframe === tf.id}
               onClick={() => onTimeframe(tf.id)}
-              className={`fx-tap-compact shrink-0 rounded-[9px] px-2.5 py-1.5 text-[11px] font-semibold transition-colors md:rounded-[8px] md:px-2 md:py-1 md:font-medium ${
+              className={`fx-tap-compact shrink-0 rounded-[9px] px-2.5 py-1.5 text-[11px] font-normal transition-colors md:rounded-[8px] md:px-2 md:py-1 ${
                 timeframe === tf.id
                   ? "bg-desk-accent text-desk-accent-ink shadow-accent-glow-sm"
                   : "text-desk-muted hover:bg-desk-hover hover:text-desk-text"
@@ -887,7 +887,7 @@ export default function TradingChart({
             type="button"
             aria-pressed={chartType === "candle"}
             onClick={() => setChartType("candle")}
-            className={`fx-tap-compact rounded-[8px] px-2 py-1 text-[11px] font-medium ${
+            className={`fx-tap-compact rounded-[8px] px-2 py-1 text-[11px] font-normal ${
               chartType === "candle" ? "bg-desk-elev text-desk-text" : "text-desk-muted hover:text-desk-text"
             }`}
           >
@@ -897,7 +897,7 @@ export default function TradingChart({
             type="button"
             aria-pressed={chartType === "line"}
             onClick={() => setChartType("line")}
-            className={`fx-tap-compact rounded-[8px] px-2 py-1 text-[11px] font-medium ${
+            className={`fx-tap-compact rounded-[8px] px-2 py-1 text-[11px] font-normal ${
               chartType === "line" ? "bg-desk-elev text-desk-text" : "text-desk-muted hover:text-desk-text"
             }`}
           >
@@ -927,7 +927,7 @@ export default function TradingChart({
               /* ignore */
             }
           }}
-          className="fx-tap-compact absolute bottom-10 right-[4.5rem] z-20 flex items-center gap-1 rounded-full border border-desk-border/70 bg-desk-panel/95 px-3 py-1.5 text-[11px] font-semibold text-desk-text shadow-desk-panel hover:bg-desk-hover"
+          className="fx-tap-compact absolute bottom-10 right-[4.5rem] z-20 flex items-center gap-1 rounded-full border border-desk-border/70 bg-desk-panel/95 px-3 py-1.5 text-[11px] font-normal text-desk-text shadow-desk-panel hover:bg-desk-hover"
           title={t("term.chart.live")}
           aria-label={t("term.chart.live")}
         >
