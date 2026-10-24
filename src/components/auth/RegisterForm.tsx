@@ -17,7 +17,7 @@ export default function RegisterForm() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [jobTitle, setJobTitle] = useState("");
-  const { locale } = useI18n();
+  const { t, locale } = useI18n();
   const jt = jobTitleUi(locale);
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
@@ -55,24 +55,24 @@ export default function RegisterForm() {
     setLoading(true);
     setError("");
     if (password.length < 8) {
-      setError("Password must be at least 8 characters");
+      setError(t("auth.passwordMin"));
       setLoading(false);
       return;
     }
     if (password !== passwordConfirm) {
-      setError("Passwords do not match");
+      setError(t("auth.passwordMismatch"));
       setLoading(false);
       return;
     }
     const code = referralCode.trim();
     if (referralRequired) {
       if (!code) {
-        setError("Referral code zorunludur. / Referral code is required.");
+        setError(t("auth.referralRequired"));
         setLoading(false);
         return;
       }
       if (expectedReferral && code !== expectedReferral) {
-        setError("Enter a valid referral code.");
+        setError(t("auth.referralInvalid"));
         setLoading(false);
         return;
       }
@@ -94,7 +94,7 @@ export default function RegisterForm() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Registration failed");
+        setError(data.error || t("auth.registerFailed"));
         return;
       }
       const id = data.user?.accountLoginId ? String(data.user.accountLoginId) : null;
@@ -104,7 +104,7 @@ export default function RegisterForm() {
         window.location.assign("/trade");
       }
     } catch {
-      setError("Connection error");
+      setError(t("auth.connectionError"));
     } finally {
       setLoading(false);
     }
@@ -125,34 +125,32 @@ export default function RegisterForm() {
     return (
       <>
         <div className="mb-6">
-          <div className="mb-2 flex items-start justify-between gap-3"><h2 className="text-xl font-semibold tracking-tight text-[#111111]">Registration complete</h2>
-        <LanguageSwitcher compact tone="light" /></div>
-          <p className="mt-1 text-sm text-[#5c657a]">
-            Your account was created. You can sign in with your email or the account ID below.
-          </p>
+          <div className="mb-2 flex items-start justify-between gap-3">
+            <h2 className="text-xl font-semibold tracking-tight text-[#111111]">{t("auth.registerDone")}</h2>
+            <LanguageSwitcher compact tone="light" />
+          </div>
+          <p className="mt-1 text-sm text-[#5c657a]">{t("auth.registerDoneBody")}</p>
         </div>
         <div className="rounded-xl border border-[rgba(16,20,37,0.1)] bg-[#f7f8fa] p-4">
-          <div className="text-[13px] font-medium text-[#5c657a]">Account ID</div>
+          <div className="text-[13px] font-medium text-[#5c657a]">{t("auth.accountId")}</div>
           <div className="mt-1 font-mono text-xl font-semibold tracking-wider text-[#111111]">
             {assignedAccountId}
           </div>
-          <p className="mt-2 text-[12px] leading-relaxed text-[#5c657a]">
-            Save this 16-digit number. You can sign in with it together with your password.
-          </p>
+          <p className="mt-2 text-[12px] leading-relaxed text-[#5c657a]">{t("auth.accountIdHint")}</p>
           <div className="mt-4 flex flex-col gap-2 sm:flex-row">
             <button
               type="button"
               onClick={copyAccountId}
               className="flex-1 rounded-xl border border-[rgba(16,20,37,0.15)] bg-white py-3 text-sm font-semibold text-[#111111] transition hover:bg-[#f0f1f4]"
             >
-              {copied ? "Copied" : "Copy ID"}
+              {copied ? t("auth.copied") : t("auth.copyId")}
             </button>
             <button
               type="button"
               onClick={() => window.location.assign("/trade")}
               className="flex-1 rounded-xl bg-[#111111] py-3 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(17,17,17,0.28)] transition hover:brightness-110"
             >
-              Terminale git
+              {t("auth.goTerminal")}
             </button>
           </div>
         </div>
@@ -163,46 +161,49 @@ export default function RegisterForm() {
   return (
     <>
       <div className="mb-6">
-        <h2 className="text-xl font-semibold tracking-tight text-[#111111]">Register</h2>
-        <p className="mt-1 text-sm text-[#5c657a]">
-          Create an account; after signing in you will be redirected to the trading terminal.
-        </p>
+        <div className="mb-2 flex items-start justify-between gap-3">
+          <h2 className="text-xl font-semibold tracking-tight text-[#111111]">{t("auth.registerTitle")}</h2>
+          <LanguageSwitcher compact tone="light" />
+        </div>
+        <p className="mt-1 text-sm text-[#5c657a]">{t("auth.registerSubtitle")}</p>
       </div>
 
       <form onSubmit={onSubmit} className="space-y-3.5" noValidate>
         <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
           <div>
             <label htmlFor="fx-reg-first" className={labelClass}>
-              First name
+              {t("auth.firstName")}
             </label>
             <input
               id="fx-reg-first"
               className={inputClass}
               required
+              autoComplete="given-name"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
-              placeholder="First name"
+              placeholder={t("auth.firstName")}
               disabled={loading}
             />
           </div>
           <div>
             <label htmlFor="fx-reg-last" className={labelClass}>
-              Last name
+              {t("auth.lastName")}
             </label>
             <input
               id="fx-reg-last"
               className={inputClass}
               required
+              autoComplete="family-name"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
-              placeholder="Last name"
+              placeholder={t("auth.lastName")}
               disabled={loading}
             />
           </div>
         </div>
         <div>
           <label htmlFor="fx-reg-email" className={labelClass}>
-            Email
+            {t("common.email")}
           </label>
           <input
             id="fx-reg-email"
@@ -218,7 +219,7 @@ export default function RegisterForm() {
         </div>
         <div>
           <label htmlFor="fx-reg-phone" className={labelClass}>
-            Phone <span className="font-normal text-[#8b93a7]">(optional)</span>
+            {t("common.phone")} <span className="font-normal text-[#8b93a7]">({t("auth.optional")})</span>
           </label>
           <input
             id="fx-reg-phone"
@@ -233,7 +234,7 @@ export default function RegisterForm() {
 
         <div>
           <label htmlFor="fx-reg-jobtitle" className={labelClass}>
-            {jt.register} <span className="font-normal text-[#8b93a7]">(optional)</span>
+            {jt.register} <span className="font-normal text-[#8b93a7]">({t("auth.optional")})</span>
           </label>
           <select
             id="fx-reg-jobtitle"
@@ -254,32 +255,38 @@ export default function RegisterForm() {
         {/* Prominent required referral — light charcoal, not red */}
         <div className="rounded-xl border border-[rgba(16,20,37,0.1)] bg-[#ffffff] p-3.5 sm:p-4">
           <label htmlFor="fx-reg-referral" className="mb-1.5 flex items-center gap-1.5 text-[13px] font-semibold text-[#111111]">
-            Referans Kodu
-            <span className="text-[#111111]" aria-hidden>
-              *
-            </span>
-            <span className="sr-only">(zorunlu)</span>
+            {t("auth.referralCode")}
+            {referralRequired ? (
+              <>
+                <span className="text-[#111111]" aria-hidden>
+                  *
+                </span>
+                <span className="sr-only">({t("auth.referralRequired")})</span>
+              </>
+            ) : (
+              <span className="font-normal text-[#8b93a7]">({t("auth.optional")})</span>
+            )}
           </label>
           <input
             id="fx-reg-referral"
             className={`${inputClass} border-[rgba(16,20,37,0.12)] bg-white focus:border-[#111111]`}
-            required
-            aria-required="true"
+            required={referralRequired}
+            aria-required={referralRequired}
             value={referralCode}
             onChange={(e) => setReferralCode(e.target.value.replace(/[^\d]/g, ""))}
-            placeholder="Referral codenuz (rakam)"
+            placeholder={t("auth.referralCode")}
             disabled={loading}
             inputMode="numeric"
             autoComplete="off"
           />
-          <p className="mt-2 text-[12px] leading-relaxed text-[#5c657a]">
-            Referral code is required (digits only). Registration cannot complete without a valid code.
-          </p>
+          {referralRequired && (
+            <p className="mt-2 text-[12px] leading-relaxed text-[#5c657a]">{t("auth.referralHint")}</p>
+          )}
         </div>
 
         <div>
           <label htmlFor="fx-reg-password" className={labelClass}>
-            Password
+            {t("common.password")}
           </label>
           <input
             id="fx-reg-password"
@@ -290,13 +297,13 @@ export default function RegisterForm() {
             minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="En az 8 karakter"
+            placeholder={t("auth.passwordMin")}
             disabled={loading}
           />
         </div>
         <div>
           <label htmlFor="fx-reg-password2" className={labelClass}>
-            Confirm password
+            {t("auth.repeatPassword")}
           </label>
           <input
             id="fx-reg-password2"
@@ -307,7 +314,7 @@ export default function RegisterForm() {
             minLength={8}
             value={passwordConfirm}
             onChange={(e) => setPasswordConfirm(e.target.value)}
-            placeholder="Re-enter your password"
+            placeholder={t("auth.repeatPassword")}
             disabled={loading}
           />
         </div>
@@ -326,14 +333,14 @@ export default function RegisterForm() {
           disabled={loading}
           className="mt-1 w-full rounded-xl bg-[#111111] py-3.5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(17,17,17,0.28)] transition hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {loading ? "Creating account…" : "Register"}
+          {loading ? t("auth.creating") : t("common.signUp")}
         </button>
       </form>
 
       <div className="mt-7 border-t border-[rgba(16,20,37,0.08)] pt-5 text-center text-sm text-[#5c657a]">
-        Already have an account?{" "}
+        {t("auth.hasAccount")}{" "}
         <Link href="/login" className="font-semibold text-[#111111] underline-offset-2 transition hover:underline">
-          Sign in
+          {t("common.signIn")}
         </Link>
       </div>
     </>

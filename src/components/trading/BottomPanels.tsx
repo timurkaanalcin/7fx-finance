@@ -380,21 +380,33 @@ function Chip({
   );
 }
 
+type TradeActionResult = { ok: boolean; error?: string };
+
+function failedAction(result: unknown): string | null {
+  if (!result || typeof result !== "object" || !("ok" in result)) return null;
+  const row = result as TradeActionResult;
+  if (row.ok !== false) return null;
+  return row.error || "Error";
+}
+
 type Props = {
   tab: Tab;
   onTab: (t: Tab) => void;
   openPositions: PositionRow[];
   closedPositions: PositionRow[];
   pendingOrders: OrderRow[];
-  onClosePosition: (id: string, volume?: number) => void;
+  onClosePosition: (
+    id: string,
+    volume?: number
+  ) => void | TradeActionResult | Promise<void | TradeActionResult>;
   /** Close several open positions (one refresh at end). */
   onClosePositions?: (ids: string[]) => Promise<void> | void;
   /** Edit SL/TP on an open position without closing. */
   onModifySlTp?: (
     id: string,
     levels: { stopLoss: number | null; takeProfit: number | null }
-  ) => void | Promise<void>;
-  onCancelOrder: (id: string) => void;
+  ) => void | TradeActionResult | Promise<void | TradeActionResult>;
+  onCancelOrder: (id: string) => void | TradeActionResult | Promise<void | TradeActionResult>;
   /** Cancel several pending orders (one refresh at end). */
   onCancelOrders?: (ids: string[]) => Promise<void> | void;
   /** Switch chart to position chartSymbol || symbol */
@@ -785,11 +797,14 @@ function OpenCard({
 }: {
   p: PositionRow;
   onSelectSymbol?: (symbol: string) => void;
-  onClose: (id: string, volume?: number) => void;
+  onClose: (
+    id: string,
+    volume?: number
+  ) => void | TradeActionResult | Promise<void | TradeActionResult>;
   onModifySlTp?: (
     id: string,
     levels: { stopLoss: number | null; takeProfit: number | null }
-  ) => void | Promise<void>;
+  ) => void | TradeActionResult | Promise<void | TradeActionResult>;
 }) {
   const [closeOpen, setCloseOpen] = useState(false);
   const [editSlTp, setEditSlTp] = useState(false);
@@ -797,17 +812,20 @@ function OpenCard({
   const [slInput, setSlInput] = useState(p.stopLoss != null ? String(p.stopLoss) : "");
   const [tpInput, setTpInput] = useState(p.takeProfit != null ? String(p.takeProfit) : "");
   const [busy, setBusy] = useState(false);
+  const [actionError, setActionError] = useState("");
   const pip =
     calcPipDistance(p.symbol, p.openPrice, p.currentPrice) *
     (p.side === "BUY" ? 1 : -1);
 
   const openClosePanel = () => {
+    setActionError("");
     setEditSlTp(false);
     setCloseVol(String(snapLot(p.volume)));
     setCloseOpen(true);
   };
 
   const openEditPanel = () => {
+    setActionError("");
     setCloseOpen(false);
     setSlInput(p.stopLoss != null ? String(p.stopLoss) : "");
     setTpInput(p.takeProfit != null ? String(p.takeProfit) : "");
@@ -819,9 +837,16 @@ function OpenCard({
     if (!Number.isFinite(v) || v <= 0) return;
     const vol = snapLot(Math.min(v, p.volume));
     setBusy(true);
+    setActionError("");
     try {
-      if (vol >= p.volume - 1e-9) onClose(p.id);
-      else onClose(p.id, vol);
+      const result = await Promise.resolve(
+        vol >= p.volume - 1e-9 ? onClose(p.id) : onClose(p.id, vol)
+      );
+      const err = failedAction(result);
+      if (err) {
+        setActionError(err);
+        return;
+      }
       setCloseOpen(false);
     } finally {
       setBusy(false);
@@ -837,8 +862,13 @@ function OpenCard({
     if (stopLoss != null && !Number.isFinite(stopLoss)) return;
     if (takeProfit != null && !Number.isFinite(takeProfit)) return;
     setBusy(true);
+    setActionError("");
     try {
-      await onModifySlTp(p.id, { stopLoss, takeProfit });
+      const err = failedAction(await Promise.resolve(onModifySlTp(p.id, { stopLoss, takeProfit })));
+      if (err) {
+        setActionError(err);
+        return;
+      }
       setEditSlTp(false);
     } finally {
       setBusy(false);
@@ -1040,6 +1070,11 @@ function OpenCard({
           </div>
         </div>
       )}
+      {actionError ? (
+        <p role="alert" className="mt-2 text-[11px] font-medium text-desk-sell">
+          {actionError}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -1051,17 +1086,21 @@ function OpenRowActions({
   onModifySlTp,
 }: {
   p: PositionRow;
-  onClose: (id: string, volume?: number) => void;
+  onClose: (
+    id: string,
+    volume?: number
+  ) => void | TradeActionResult | Promise<void | TradeActionResult>;
   onModifySlTp?: (
     id: string,
     levels: { stopLoss: number | null; takeProfit: number | null }
-  ) => void | Promise<void>;
+  ) => void | TradeActionResult | Promise<void | TradeActionResult>;
 }) {
   const [mode, setMode] = useState<"idle" | "close" | "edit">("idle");
   const [closeVol, setCloseVol] = useState(String(p.volume));
   const [slInput, setSlInput] = useState(p.stopLoss != null ? String(p.stopLoss) : "");
   const [tpInput, setTpInput] = useState(p.takeProfit != null ? String(p.takeProfit) : "");
   const [busy, setBusy] = useState(false);
+  const [actionError, setActionError] = useState("");
 
   if (mode === "close") {
     return (
@@ -1096,9 +1135,16 @@ function OpenRowActions({
               if (!Number.isFinite(v) || v <= 0) return;
               const vol = snapLot(Math.min(v, p.volume));
               setBusy(true);
+              setActionError("");
               try {
-                if (vol >= p.volume - 1e-9) onClose(p.id);
-                else onClose(p.id, vol);
+                const result = await Promise.resolve(
+                  vol >= p.volume - 1e-9 ? onClose(p.id) : onClose(p.id, vol)
+                );
+                const err = failedAction(result);
+                if (err) {
+                  setActionError(err);
+                  return;
+                }
                 setMode("idle");
               } finally {
                 setBusy(false);
@@ -1116,6 +1162,11 @@ function OpenRowActions({
             ✕
           </button>
         </div>
+        {actionError ? (
+          <p role="alert" className="mt-1 max-w-[200px] text-[9px] font-medium leading-tight text-desk-sell">
+            {actionError}
+          </p>
+        ) : null}
       </div>
     );
   }
@@ -1158,8 +1209,15 @@ function OpenRowActions({
               if (stopLoss != null && !Number.isFinite(stopLoss)) return;
               if (takeProfit != null && !Number.isFinite(takeProfit)) return;
               setBusy(true);
+              setActionError("");
               try {
-                await onModifySlTp(p.id, { stopLoss, takeProfit });
+                const err = failedAction(
+                  await Promise.resolve(onModifySlTp(p.id, { stopLoss, takeProfit }))
+                );
+                if (err) {
+                  setActionError(err);
+                  return;
+                }
                 setMode("idle");
               } finally {
                 setBusy(false);
@@ -1177,6 +1235,11 @@ function OpenRowActions({
             ✕
           </button>
         </div>
+        {actionError ? (
+          <p role="alert" className="mt-1 max-w-[220px] text-[9px] font-medium leading-tight text-desk-sell">
+            {actionError}
+          </p>
+        ) : null}
       </div>
     );
   }
