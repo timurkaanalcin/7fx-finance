@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { StatusBadge } from "@/components/crm/StubPage";
 import { ConfirmDialog, CrmFormGrid, ReflectBox, type CrmColumn } from "@/components/crm/CrmRecordTable";
 import ClientPicker, { type ClientOption } from "@/components/crm/ClientPicker";
@@ -151,13 +151,17 @@ export default function TicketsPage() {
   const [newErr, setNewErr] = useState("");
   // delete
   const [deleteTarget, setDeleteTarget] = useState<Ticket | null>(null);
+  const [hasMore, setHasMore] = useState(false);
+  const [moreBusy, setMoreBusy] = useState(false);
+  const ticketsRef = useRef<Ticket[]>([]);
+  const cursorsRef = useRef({ deposit: 0, margin: 0, withdraw: 0 });
 
   useEffect(() => {
     const t = setTimeout(() => setQDebounced(q.trim()), 300);
     return () => clearTimeout(t);
   }, [q]);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (mode: "replace" | "more" = "replace") => {
     const params = new URLSearchParams();
     if (status) params.set("status", status);
     if (kind !== "all") params.set("kind", kind);
@@ -166,21 +170,36 @@ export default function TicketsPage() {
     const tt = dayEndIso(to);
     if (f) params.set("from", f);
     if (tt) params.set("to", tt);
-    setLoading(true);
+    const cursors = mode === "more" ? cursorsRef.current : { deposit: 0, margin: 0, withdraw: 0 };
+    params.set("take", "50");
+    params.set("depSkip", String(cursors.deposit));
+    params.set("marginSkip", String(cursors.margin));
+    params.set("wdSkip", String(cursors.withdraw));
+    if (mode === "more") setMoreBusy(true);
+    else setLoading(true);
     try {
       const res = await fetch(`/api/admin/tickets?${params}`);
       if (!res.ok) return;
       const data = await res.json();
-      const list: Ticket[] = data.tickets || [];
+      const incoming: Ticket[] = data.tickets || [];
+      const seen = new Set(ticketsRef.current.map((row) => `${row.kind}:${row.id}`));
+      const list = mode === "more" ? ticketsRef.current.concat(incoming.filter((row) => !seen.has(`${row.kind}:${row.id}`))) : incoming;
+      ticketsRef.current = list;
       setTickets(list);
       setMethods(data.methods || []);
-      if (kind === "all") {
-        const byKind: Record<string, number> = {};
-        for (const t of list) byKind[t.kind] = (byKind[t.kind] || 0) + 1;
-        setBaseCounts({ total: list.length, byKind });
+      if (data.cursors) cursorsRef.current = data.cursors;
+      setHasMore(Boolean(data.hasMore));
+      if (mode === "replace" && data.counts) {
+        const byKind = {
+          DEPOSIT: Number(data.counts.DEPOSIT) || 0,
+          MARGIN: Number(data.counts.MARGIN) || 0,
+          WITHDRAW: Number(data.counts.WITHDRAW) || 0,
+        };
+        setBaseCounts({ total: byKind.DEPOSIT + byKind.MARGIN + byKind.WITHDRAW, byKind });
       }
     } finally {
-      setLoading(false);
+      if (mode === "more") setMoreBusy(false);
+      else setLoading(false);
     }
   }, [status, kind, qDebounced, from, to]);
 
@@ -190,11 +209,10 @@ export default function TicketsPage() {
       total: base.total,
       list: KIND_FILTERS.map((f) => ({
         ...f,
-        // Active chip: trust freshly loaded rows.
-        n: kind === f.value ? tickets.length : base.byKind[f.kind] || 0,
+        n: base.byKind[f.kind] || 0,
       })),
     };
-  }, [baseCounts, tickets.length, kind]);
+  }, [baseCounts, tickets.length]);
 
   /** Amount totals of the shown rows, per kind + currency (rows without amount skipped). */
   const totals = useMemo(() => {
@@ -627,7 +645,7 @@ export default function TicketsPage() {
         </button>
         <button
           type="button"
-          onClick={load}
+          onClick={() => void load()}
           className="rounded border border-neutral-300 bg-white px-2 py-1.5 hover:bg-neutral-50"
         >
           {loading ? i18n("crm.ui.loading") : i18n("crm.ui.refresh")}
@@ -925,6 +943,16 @@ export default function TicketsPage() {
           </tbody>
         </table>
       </div>
+      {hasMore && (
+        <button
+          type="button"
+          disabled={moreBusy}
+          onClick={() => void load("more")}
+          className="mt-3 w-full rounded-lg border border-[#e5e5e5] bg-white px-3 py-2 text-sm font-medium hover:bg-[#f7f7f7] disabled:opacity-50"
+        >
+          {moreBusy ? i18n("crm.ui.loading") : i18n("crm.ui.loadMore")}
+        </button>
+      )}
 
       <ConfirmDialog
         open={deleteTarget != null}

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { refreshAccountMetrics, processPendingOrders, checkSlTp } from "@/lib/trading";
 import { stripStaff } from "@/lib/customer-sanitize";
 import {
+  CLOSED_DAY_PAGE,
   CLOSED_PAGE,
   OPEN_PAGE,
   closedRefreshTake,
@@ -69,6 +70,7 @@ export async function GET(req: Request) {
     const bounds = localDayBounds(searchParams.get("day") || "", tzOffsetMinutes(searchParams.get("tzOffset")));
     if (bounds) {
       const padMs = 2 * 3_600_000;
+      const daySkip = pageSkip(searchParams.get("skip"));
       const positions = await prisma.position.findMany({
         where: {
           userId: user.id,
@@ -82,9 +84,16 @@ export async function GET(req: Request) {
           ],
         },
         orderBy: { closedAt: "desc" },
-        take: 500,
+        skip: daySkip,
+        take: CLOSED_DAY_PAGE + 1,
       });
-      return NextResponse.json({ positions: stripStaff(positions) });
+      const hasMore = positions.length > CLOSED_DAY_PAGE;
+      const page = hasMore ? positions.slice(0, CLOSED_DAY_PAGE) : positions;
+      return NextResponse.json({
+        positions: stripStaff(page),
+        hasMore,
+        nextSkip: daySkip + page.length,
+      });
     }
 
     const skip = pageSkip(searchParams.get("skip"));

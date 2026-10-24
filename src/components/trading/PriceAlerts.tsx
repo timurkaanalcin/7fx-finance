@@ -243,8 +243,8 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
             setOpen((o) => !o);
             if (soundRef.current) getAudio();
           }}
-          aria-label="Price alerts"
-          title="Price alerts"
+          aria-label={t("term.alert.title")}
+          title={t("term.alert.title")}
           className="relative flex h-9 w-9 items-center justify-center rounded-full border border-desk-border bg-desk-panel/90 text-desk-text shadow-desk-panel backdrop-blur"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">

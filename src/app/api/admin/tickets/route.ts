@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
+import { mergeTicketWindow, type TicketKind } from "@/lib/ticket-page";
+import { crmPageWindow } from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +38,19 @@ export async function GET(req: Request) {
   const depWhere = base;
   const balWhere = base;
   const wdWhere = base;
+  const paged =
+    searchParams.has("take") ||
+    searchParams.has("depSkip") ||
+    searchParams.has("marginSkip") ||
+    searchParams.has("wdSkip");
+  const pageSize = paged ? crmPageWindow(searchParams.get("take"), null).take : 200;
+  const cursors = {
+    deposit: paged ? clipSkip(searchParams.get("depSkip")) : 0,
+    margin: paged ? clipSkip(searchParams.get("marginSkip")) : 0,
+    withdraw: paged ? clipSkip(searchParams.get("wdSkip")) : 0,
+  };
+  const queryTake = paged ? pageSize + 1 : pageSize;
+  const countFirst = paged && cursors.deposit === 0 && cursors.margin === 0 && cursors.withdraw === 0;
   const userSelect = {
     select: {
       id: true,
@@ -47,8 +62,11 @@ export async function GET(req: Request) {
     },
   } as const;
 
-  const [deposits, balanceReqs, withdrawals] = await Promise.all([
-    kind === "margin" || kind === "withdraw"
+  const wantDeposit = kind !== "margin" && kind !== "withdraw";
+  const wantMargin = kind !== "deposit" && kind !== "withdraw";
+  const wantWithdraw = kind !== "deposit" && kind !== "margin";
+  const [deposits, balanceReqs, withdrawals, depCount, marginCount, wdCount] = await Promise.all([
+    !wantDeposit
       ? Promise.resolve([])
       : prisma.depositRequest.findMany({
           where: depWhere,
@@ -57,9 +75,10 @@ export async function GET(req: Request) {
             user: userSelect,
           },
           orderBy: { createdAt: "desc" },
-          take: 200,
+          skip: cursors.deposit,
+          take: queryTake,
         }),
-    kind === "deposit" || kind === "withdraw"
+    !wantMargin
       ? Promise.resolve([])
       : prisma.balanceRequest.findMany({
           where: balWhere,
@@ -67,9 +86,10 @@ export async function GET(req: Request) {
             user: userSelect,
           },
           orderBy: { createdAt: "desc" },
-          take: 200,
+          skip: cursors.margin,
+          take: queryTake,
         }),
-    kind === "deposit" || kind === "margin"
+    !wantWithdraw
       ? Promise.resolve([])
       : prisma.withdrawalRequest.findMany({
           where: wdWhere,
@@ -77,8 +97,12 @@ export async function GET(req: Request) {
             user: userSelect,
           },
           orderBy: { createdAt: "desc" },
-          take: 200,
+          skip: cursors.withdraw,
+          take: queryTake,
         }),
+    countFirst ? prisma.depositRequest.count({ where: depWhere }) : Promise.resolve(0),
+    countFirst ? prisma.balanceRequest.count({ where: balWhere }) : Promise.resolve(0),
+    countFirst ? prisma.withdrawalRequest.count({ where: wdWhere }) : Promise.resolve(0),
   ]);
 
   const tickets = [
@@ -147,11 +171,46 @@ export async function GET(req: Request) {
       approvalReason: w.approvalReason,
       eventScenario: w.eventScenario,
     })),
-  ].sort((a, b) => +new Date(b.openedAt) - +new Date(a.openedAt));
+  ];
 
   const methods = await prisma.depositMethod.findMany({
     orderBy: [{ active: "desc" }, { sortOrder: "asc" }],
     select: { id: true, label: true, type: true, active: true },
   });
-  return NextResponse.json({ tickets, methods });
+
+  if (!paged) {
+    tickets.sort((a, b) => +new Date(b.openedAt) - +new Date(a.openedAt));
+    return NextResponse.json({ tickets, methods });
+  }
+
+  const merged = mergeTicketWindow(
+    [
+      clipKind(tickets, "DEPOSIT", pageSize),
+      clipKind(tickets, "MARGIN", pageSize),
+      clipKind(tickets, "WITHDRAW", pageSize),
+    ],
+    cursors,
+    pageSize
+  );
+  return NextResponse.json({
+    tickets: merged.tickets,
+    methods,
+    hasMore: merged.hasMore,
+    cursors: merged.cursors,
+    counts: countFirst
+      ? { DEPOSIT: depCount, MARGIN: marginCount, WITHDRAW: wdCount }
+      : undefined,
+  });
+}
+
+function clipSkip(raw: string | null): number {
+  const n = Number(raw);
+  if (!Number.isFinite(n) || n <= 0) return 0;
+  return Math.min(100_000, Math.trunc(n));
+}
+
+function clipKind<T extends { kind: TicketKind }>(rows: T[], kind: TicketKind, take: number) {
+  const matched = rows.filter((row) => row.kind === kind);
+  const extra = matched.length > take;
+  return { kind, rows: extra ? matched.slice(0, take) : matched, extra };
 }

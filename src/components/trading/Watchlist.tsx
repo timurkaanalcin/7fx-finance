@@ -462,7 +462,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
                     </div>
                     <span
                       className="text-[10px] tabular-nums text-desk-muted/70 md:text-[9px]"
-                      title="Spread (ask − bid)"
+                      title={t("term.watch.spread")}
                     >
                       {p && Number.isFinite(p.bid) && Number.isFinite(p.ask)
                         ? formatPrice(s.symbol, Number(p.ask) - Number(p.bid))
@@ -476,7 +476,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
                             ? "bg-desk-buy/12 text-desk-buy"
                             : "bg-desk-sell/12 text-desk-sell"
                       }`}
-                      title="Daily change %"
+                      title={t("term.watch.day")}
                     >
                       {p ? `${up ? "+" : ""}${p.changePct.toFixed(2)}%` : "—"}
                     </span>

@@ -907,90 +907,299 @@ html:has(.fx-landing) {
 }
 .fx-landing .fx-reveal { animation: fx-reveal 0.7s ease both; }
 
+.fx-landing .fx-section {
+  scroll-margin-top: 76px;
+}
+.fx-landing .fx-section::before {
+  content: "";
+  display: block;
+  width: min(680px, 72%);
+  height: 1px;
+  margin: 0 auto 28px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+}
+.fx-landing .fx-trust-band {
+  border-bottom: 1px solid var(--fx-line);
+  background: #0a0e14;
+}
+.fx-landing .fx-trust-band ul {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 12px;
+  margin: 0;
+  padding: 14px 0;
+  list-style: none;
+}
+.fx-landing .fx-trust-band li {
+  color: #d5dce8;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.fx-landing .fx-trust-band li::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 8px;
+  border-radius: 99px;
+  background: #3ddc97;
+  box-shadow: 0 0 0 3px rgba(61, 220, 151, 0.15);
+}
+@media (min-width: 800px) {
+  .fx-landing .fx-trust-band ul {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    padding: 16px 0;
+  }
+}
+.fx-landing .fx-mid-cta {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 28px;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(61, 220, 151, 0.28);
+  background:
+    radial-gradient(420px 120px at 100% 0%, rgba(61, 220, 151, 0.14), transparent 70%),
+    rgba(255, 255, 255, 0.03);
+}
+.fx-landing .fx-mid-cta p {
+  margin: 6px 0 0;
+  color: var(--fx-muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.fx-landing .fx-mid-cta-title {
+  margin: 0;
+  color: #f4f7fb;
+  font-family: var(--font-sora), system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+}
+.fx-landing .fx-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+@media (min-width: 800px) {
+  .fx-landing .fx-mid-cta {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 24px;
+  }
+  .fx-landing .fx-mid-cta p { max-width: 46ch; }
+}
+@media (max-width: 640px) {
+  .fx-landing {
+    --fx-section-pad: 52px;
+    --fx-shell: min(1180px, calc(100% - 28px));
+  }
+  .fx-landing .fx-hero { padding-top: 16px; }
+  .fx-landing .fx-h1 { font-size: clamp(34px, 11vw, 46px); }
+  .fx-landing .fx-hero-body { font-size: 15px; }
+  .fx-landing .fx-chart-slot,
+  .fx-landing .fx-chart-card { min-height: 300px; }
+  .fx-landing .fx-cta-row { flex-direction: column; }
+  .fx-landing .fx-cta-row > a { width: 100%; }
+  .fx-landing .fx-section::before { margin-bottom: 18px; }
+  .fx-landing .fx-phone { width: min(168px, 42vw); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fx-landing .fx-section {
+    animation: fx-section-in 0.7s ease both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 28%;
+  }
+}
+@keyframes fx-section-in {
+  from { opacity: 0.45; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .fx-landing .fx-reveal,
-  .fx-landing .fx-ticker-track {
+  .fx-landing .fx-ticker-track,
+  .fx-landing .fx-section {
     animation: none;
   }
 }
 
-/* ——— 7FX Auth: Light (matches landing) ——— */
+/* ——— iOS install: same dark family as the landing ——— */
+.fx-ios {
+  background: #07090d;
+  color: #f4f7fb;
+  color-scheme: dark;
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+.fx-ios h1,
+.fx-ios h2 {
+  font-family: var(--font-sora), system-ui, sans-serif;
+  color: #f4f7fb;
+  letter-spacing: -0.03em;
+}
+html:has(.fx-ios),
+body:has(.fx-ios) {
+  background: #07090d;
+  color-scheme: dark;
+}
+.fx-ios-step,
+.fx-ios-note {
+  display: flex;
+  gap: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 14px;
+}
+.fx-ios-step > span {
+  display: flex;
+  height: 32px;
+  width: 32px;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #f4f7fb;
+  color: #0b0e13;
+  font-size: 13px;
+  font-weight: 700;
+}
+.fx-ios-step p:first-child,
+.fx-ios-note > p:first-child,
+.fx-ios-note > p:nth-of-type(3) {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 650;
+}
+.fx-ios-step p:last-child,
+.fx-ios-note p {
+  margin: 4px 0 0;
+  color: #9aa3b5;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.fx-ios-note {
+  display: block;
+  margin-top: 18px;
+}
+.fx-ios-note a {
+  font-weight: 700;
+  color: #f4f7fb;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.fx-ios .fx-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.fx-ios .fx-btn-primary,
+.fx-ios .fx-btn-secondary {
+  border-radius: 999px;
+}
+.fx-ios .fx-btn-primary {
+  background: #f4f7fb;
+  color: #0b0e13;
+}
+.fx-ios .fx-btn-secondary {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #f4f7fb;
+}
+@media (max-width: 640px) {
+  .fx-ios .fx-cta-row { flex-direction: column; }
+  .fx-ios .fx-cta-row > a { width: 100%; }
+}
+
+/* ——— 7FX Auth: dark, same family as the landing ——— */
 .fx-auth-page {
-  --fx-bg: #ffffff;
-  --fx-surface: #ffffff;
-  --fx-ink: #111111;
-  --fx-muted: #5c657a;
-  --fx-accent: #111111;
-  --fx-accent-ink: #ffffff;
-  --fx-line: rgba(16, 20, 37, 0.08);
-  background: #ffffff !important;
-  color: #111111 !important;
+  --fx-bg: #07090d;
+  --fx-surface: #10151d;
+  --fx-ink: #f4f7fb;
+  --fx-muted: #9aa3b5;
+  --fx-line: rgba(255, 255, 255, 0.1);
+  background: #07090d !important;
+  color: #f4f7fb !important;
   font-family: var(--font-sora), var(--font-inter), system-ui, sans-serif;
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 .fx-auth-page h1,
 .fx-auth-page h2,
-.fx-auth-page h3 {
+.fx-auth-page h3,
+.fx-auth-page .text-\[\#111111\] {
   font-family: var(--font-sora), system-ui, sans-serif;
-  letter-spacing: -0.02em;
-  font-weight: 600;
-  color: #111111 !important;
+  letter-spacing: -0.03em;
+  color: #f4f7fb !important;
 }
 
-.fx-auth-brand {
-  background:
-    radial-gradient(ellipse 80% 60% at 20% 20%, rgba(17, 17, 17, 0.1), transparent 55%),
-    linear-gradient(165deg, #ffffff 0%, #ffffff 55%, #f0f0f0 100%);
+.fx-auth-page .fx-nav-logo {
+  filter: brightness(0) invert(1);
+}
+
+.fx-auth-page .fx-auth-panel,
+.fx-auth-page .bg-white,
+.fx-auth-page .bg-\[\#ffffff\],
+.fx-auth-page .bg-\[\#f7f8fa\] {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #f4f7fb;
 }
 
 .fx-auth-page .fx-auth-panel {
-  background: #ffffff;
-  border-color: rgba(16, 20, 37, 0.08);
-  box-shadow:
-    0 0 0 1px rgba(17, 17, 17, 0.04) inset,
-    0 16px 48px rgba(16, 20, 37, 0.08);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
 }
 
 .fx-auth-page .fx-auth-grid {
   background-image:
-    linear-gradient(rgba(17, 17, 17, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(17, 17, 17, 0.05) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
   background-size: 48px 48px;
-  mask-image: radial-gradient(ellipse 70% 60% at 40% 40%, #000 20%, transparent 75%);
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 20%, #000 20%, transparent 75%);
 }
 
 .fx-auth-page .fx-auth-panel input,
 .fx-auth-page .fx-auth-input,
-.fx-auth-page .fx-landing-input {
-  color: #111111 !important;
-  background: #ffffff !important;
-  border-color: rgba(16, 20, 37, 0.12);
+.fx-auth-page .fx-landing-input,
+.fx-auth-page select {
+  color: #f4f7fb !important;
+  background: #0c1017 !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
 }
 
 .fx-auth-page input::placeholder {
-  color: rgba(11, 18, 32, 0.35);
+  color: rgba(244, 247, 251, 0.38);
 }
 
 .fx-auth-page .fx-auth-accent-text {
-  background: linear-gradient(120deg, #111111, #2a2a2a);
+  background: linear-gradient(120deg, #f4f7fb, #3ddc97);
   -webkit-background-clip: text;
   background-clip: text;
-  color: transparent;
+  color: transparent !important;
+}
+
+.fx-auth-page button[type="submit"],
+.fx-auth-page .bg-\[\#111111\] {
+  background: #f4f7fb !important;
+  color: #0b0e13 !important;
+  border-color: transparent !important;
 }
 
 .fx-auth-page a:focus-visible,
 .fx-auth-page button:focus-visible,
 .fx-auth-page input:focus-visible {
-  outline: 2px solid rgba(17, 17, 17, 0.65);
+  outline: 2px solid #f4f7fb;
   outline-offset: 2px;
 }
 
 html:has(.fx-auth-page),
 body:has(.fx-auth-page) {
-  background: #ffffff !important;
-  color: #111111 !important;
-  color-scheme: light;
+  background: #07090d !important;
+  color: #f4f7fb !important;
+  color-scheme: dark;
 }
 
 

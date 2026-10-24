@@ -108,7 +108,7 @@ export default function LoginForm() {
       <div className="mb-6">
         <div className="mb-2 flex items-start justify-between gap-3">
           <h2 className="text-xl font-semibold tracking-tight text-[#111111]">{t("auth.loginTitle")}</h2>
-          <LanguageSwitcher compact tone="light" />
+          <LanguageSwitcher compact tone="dark" />
         </div>
         <p className="mt-1 text-sm text-[#5c657a]">{t("auth.loginSubtitle")}</p>
       </div>

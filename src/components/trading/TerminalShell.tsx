@@ -464,17 +464,22 @@ export default function TerminalShell() {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return;
     try {
       const tz = new Date().getTimezoneOffset();
-      const res = await fetch(
-        `/api/positions?status=CLOSED&day=${day}&tzOffset=${tz}`,
-        { credentials: "include" }
-      );
-      if (res.status === 401) {
-        router.push("/login");
-        return;
+      let skip = 0;
+      for (let page = 0; page < 20; page++) {
+        const res = await fetch(
+          `/api/positions?status=CLOSED&day=${day}&tzOffset=${tz}&skip=${skip}`,
+          { credentials: "include" }
+        );
+        if (res.status === 401) {
+          router.push("/login");
+          return;
+        }
+        if (!res.ok) return;
+        const parsed = parseClosedPayload(await res.json());
+        setClosedPositions((prev) => mergeClosed(prev, parsed.positions));
+        if (!parsed.hasMore || parsed.nextSkip <= skip) return;
+        skip = parsed.nextSkip;
       }
-      if (!res.ok) return;
-      const parsed = parseClosedPayload(await res.json());
-      setClosedPositions((prev) => mergeClosed(prev, parsed.positions));
     } catch {
       /* keep the rows already loaded */
     }
