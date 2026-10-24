@@ -381,11 +381,11 @@ html[data-fx-theme="light"] {
   --lx-line-strong: rgba(28, 24, 16, 0.14);
   --lx-text: #15161a;
   --lx-text-2: #4a4c53;
-  --lx-text-3: #7d7f86;
+  --lx-text-3: #54565c;
   --lx-gold: #a8843f;
   --lx-gold-2: #8a6a2c;
-  --lx-buy: #0f9d76;
-  --lx-sell: #d63c34;
+  --lx-buy: #0a6b50;
+  --lx-sell: #b4231c;
 }
 html[data-fx-theme="light"] :is(.fx-desk, .fx-profile, .fx-lx-overlay) {
   color-scheme: light;

@@ -9,9 +9,17 @@ export const dynamic = "force-dynamic";
 
 type Ctx = { params: { id: string } };
 
+const NOTES_PAGE = 50;
+const REMINDERS_PAGE = 20;
 
-async function load(id: string, staff: StaffLike) {
-  return prisma.user.findFirst({
+function listSkip(raw: string | null): number {
+  const n = Number(raw);
+  if (!Number.isFinite(n) || n <= 0) return 0;
+  return Math.min(10_000, Math.trunc(n));
+}
+
+async function load(id: string, staff: StaffLike, notesSkip = 0, remindersSkip = 0) {
+  const user = await prisma.user.findFirst({
     where: { id, role: "TRADER" },
     select: {
       id: true,
@@ -21,20 +29,47 @@ async function load(id: string, staff: StaffLike) {
       retentionFollowUpAt: true,
       assigneeId: true,
       assigneeName: true,
-      notes: { where: noteVisibilityWhere(staff), orderBy: { createdAt: "desc" }, take: 50 },
-      reminders: { orderBy: { remindAt: "desc" }, take: 20 },
     },
   });
+  if (!user) return null;
+  const visibility = noteVisibilityWhere(staff);
+  const [noteRows, reminderRows] = await Promise.all([
+    prisma.userNote.findMany({
+      where: { userId: id, ...(visibility || {}) },
+      orderBy: { createdAt: "desc" },
+      skip: notesSkip,
+      take: NOTES_PAGE + 1,
+    }),
+    prisma.reminder.findMany({
+      where: { userId: id },
+      orderBy: { remindAt: "desc" },
+      skip: remindersSkip,
+      take: REMINDERS_PAGE + 1,
+    }),
+  ]);
+  const notesHasMore = noteRows.length > NOTES_PAGE;
+  const notes = notesHasMore ? noteRows.slice(0, NOTES_PAGE) : noteRows;
+  const remindersHasMore = reminderRows.length > REMINDERS_PAGE;
+  const reminders = remindersHasMore ? reminderRows.slice(0, REMINDERS_PAGE) : reminderRows;
+  return {
+    retention: { ...user, notes, reminders },
+    notesHasMore,
+    remindersHasMore,
+    notesNextSkip: notesSkip + notes.length,
+    remindersNextSkip: remindersSkip + reminders.length,
+    statuses: RETENTION_STATUSES,
+  };
 }
 
 /** GET retention card for one customer (scoped staff: only assigned). */
-export async function GET(_req: Request, ctx: Ctx) {
+export async function GET(req: Request, ctx: Ctx) {
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   if (!(await canAccessUser(admin, ctx.params.id))) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  const u = await load(ctx.params.id, admin);
-  if (!u) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  return NextResponse.json({ retention: u, statuses: RETENTION_STATUSES });
+  const { searchParams } = new URL(req.url);
+  const loaded = await load(ctx.params.id, admin, listSkip(searchParams.get("notesSkip")), listSkip(searchParams.get("remindersSkip")));
+  if (!loaded) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  return NextResponse.json(loaded);
 }
 
 /** PATCH { retentionStatus?, retentionNote?, retentionFollowUpAt?, addNote? } */
@@ -75,7 +110,8 @@ export async function PATCH(req: Request, ctx: Ctx) {
     await prisma.userNote.create({ data: { userId: id, authorId: admin.id, authorName: admin.name, body: addNote } });
   }
   await writeAudit({ adminId: admin.id, action: "RETENTION_UPDATE", targetId: id, note: JSON.stringify({ ...data, addNote: addNote ? addNote.slice(0, 120) : undefined }).slice(0, 400) });
-  return NextResponse.json({ ok: true, retention: await load(id, admin) });
+  const loaded = await load(id, admin);
+  return NextResponse.json({ ok: true, ...loaded });
 }
 
 export const POST = PATCH;

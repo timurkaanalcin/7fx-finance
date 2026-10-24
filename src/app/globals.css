@@ -264,7 +264,7 @@ html:has(.fx-landing) {
 .fx-landing .fx-eyebrow {
   margin: 0;
   color: #d7ffe9;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -902,8 +902,8 @@ html:has(.fx-landing) {
   to { transform: translateX(-50%); }
 }
 @keyframes fx-reveal {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: none; }
+  from { transform: translateY(12px); }
+  to { transform: none; }
 }
 .fx-landing .fx-reveal { animation: fx-reveal 0.7s ease both; }
 
@@ -1016,8 +1016,8 @@ html:has(.fx-landing) {
   }
 }
 @keyframes fx-section-in {
-  from { opacity: 0.45; transform: translateY(14px); }
-  to { opacity: 1; transform: none; }
+  from { transform: translateY(14px); }
+  to { transform: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

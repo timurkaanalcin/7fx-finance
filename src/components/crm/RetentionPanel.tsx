@@ -6,11 +6,14 @@ import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 const STATUSES: readonly string[] = RETENTION_STATUSES;
 
+type NoteRow = { id: string; body: string; authorName: string | null; createdAt: string };
+type ReminderRow = { id: string; body: string; workerName: string | null; remindAt: string };
 type R = {
   retentionStatus: string | null;
   retentionNote: string | null;
   retentionFollowUpAt: string | null;
-  notes: { id: string; body: string; authorName: string | null; createdAt: string }[];
+  notes: NoteRow[];
+  reminders: ReminderRow[];
 };
 
 /** ISO (UTC) → value for <input type="datetime-local"> in the browser's local time. */
@@ -44,20 +47,57 @@ export default function RetentionPanel({ userId }: { userId: string }) {
   const [follow, setFollow] = useState("");
   const [addNote, setAddNote] = useState("");
   const [msg, setMsg] = useState("");
+  const [notesHasMore, setNotesHasMore] = useState(false);
+  const [notesNext, setNotesNext] = useState(0);
+  const [remindersHasMore, setRemindersHasMore] = useState(false);
+  const [remindersNext, setRemindersNext] = useState(0);
 
-  const apply = (x: R) => {
-    setR(x);
+  const apply = (x: R, flags?: { notesHasMore?: boolean; notesNextSkip?: number; remindersHasMore?: boolean; remindersNextSkip?: number }) => {
+    setR({ ...x, notes: x.notes || [], reminders: x.reminders || [] });
     setStatus(x.retentionStatus || "");
     setNote(x.retentionNote || "");
     setFollow(toLocalInput(x.retentionFollowUpAt));
+    if (flags) {
+      setNotesHasMore(Boolean(flags.notesHasMore));
+      setNotesNext(flags.notesNextSkip || (x.notes || []).length);
+      setRemindersHasMore(Boolean(flags.remindersHasMore));
+      setRemindersNext(flags.remindersNextSkip || (x.reminders || []).length);
+    }
   };
 
   useEffect(() => {
     fetch(`/api/admin/retention/${userId}`)
       .then((res) => (res.ok ? res.json() : null))
-      .then((d) => d?.retention && apply(d.retention))
+      .then((d) => d?.retention && apply(d.retention, d))
       .catch(() => {});
   }, [userId]);
+
+  async function more(kind: "notes" | "reminders") {
+    const skip = kind === "notes" ? notesNext : remindersNext;
+    const key = kind === "notes" ? "notesSkip" : "remindersSkip";
+    const res = await fetch(`/api/admin/retention/${userId}?${key}=${skip}`);
+    const d = await res.json().catch(() => null);
+    if (!res.ok || !d?.retention) return;
+    if (kind === "notes") {
+      const incoming = (d.retention.notes || []) as NoteRow[];
+      setR((prev) => {
+        if (!prev) return prev;
+        const have = new Set(prev.notes.map((row) => row.id));
+        return { ...prev, notes: prev.notes.concat(incoming.filter((row) => !have.has(row.id))) };
+      });
+      setNotesHasMore(Boolean(d.notesHasMore));
+      setNotesNext(d.notesNextSkip || skip);
+      return;
+    }
+    const incoming = (d.retention.reminders || []) as ReminderRow[];
+    setR((prev) => {
+      if (!prev) return prev;
+      const have = new Set(prev.reminders.map((row) => row.id));
+      return { ...prev, reminders: prev.reminders.concat(incoming.filter((row) => !have.has(row.id))) };
+    });
+    setRemindersHasMore(Boolean(d.remindersHasMore));
+    setRemindersNext(d.remindersNextSkip || skip);
+  }
 
   async function save() {
     setMsg("");
@@ -73,7 +113,7 @@ export default function RetentionPanel({ userId }: { userId: string }) {
     });
     const d = await res.json().catch(() => ({}));
     if (res.ok && d.retention) {
-      apply(d.retention);
+      apply(d.retention, d);
       setAddNote("");
       setMsg(i18n("crm.ret.saved", "Kaydedildi"));
     } else setMsg(d.error || i18n("crm.ret.error", "Hata"));
@@ -143,13 +183,35 @@ export default function RetentionPanel({ userId }: { userId: string }) {
       </div>
       {r.notes?.length ? (
         <ul className="mt-2 max-h-40 space-y-1 overflow-auto">
-          {r.notes.slice(0, 10).map((n) => (
+          {r.notes.map((n) => (
             <li key={n.id} className="text-neutral-600">
               <span className="text-neutral-400">{new Date(n.createdAt).toLocaleString()} · {n.authorName || "—"}:</span> {n.body}
             </li>
           ))}
         </ul>
       ) : null}
+      {notesHasMore && (
+        <button type="button" onClick={() => void more("notes")} className="mt-1 text-[11px] font-semibold underline">
+          {i18n("crm.ret.notesMore")}
+        </button>
+      )}
+      {r.reminders?.length ? (
+        <div className="mt-3">
+          <div className="mb-1 font-semibold">{i18n("crm.ret.reminders")}</div>
+          <ul className="max-h-32 space-y-1 overflow-auto">
+            {r.reminders.map((n) => (
+              <li key={n.id} className="text-neutral-600">
+                <span className="text-neutral-400">{new Date(n.remindAt).toLocaleString()} · {n.workerName || "—"}:</span> {n.body}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+      {remindersHasMore && (
+        <button type="button" onClick={() => void more("reminders")} className="mt-1 text-[11px] font-semibold underline">
+          {i18n("crm.ret.remindersMore")}
+        </button>
+      )}
     </div>
   );
 }
@@ -158,12 +220,17 @@ export default function RetentionPanel({ userId }: { userId: string }) {
 export function AssigneePicker({ userId, current }: { userId: string; current: string | null }) {
   const { i18n } = useCrmLabels();
   const [workers, setWorkers] = useState<{ id: string; name: string; jobTitle?: string | null }[]>([]);
+  const [partial, setPartial] = useState(false);
   const [val, setVal] = useState(current || "");
   const [msg, setMsg] = useState("");
   useEffect(() => {
     fetch("/api/admin/workers")
       .then((r) => (r.ok ? r.json() : null))
-      .then((d) => setWorkers(Array.isArray(d?.workers) ? d.workers : []))
+      .then((d) => {
+        const list = Array.isArray(d?.workers) ? d.workers : [];
+        setWorkers(list);
+        setPartial(Boolean(d?.workersPartial || d?.hasMore));
+      })
       .catch(() => {});
   }, []);
   if (!workers.length) return null;
@@ -185,6 +252,7 @@ export function AssigneePicker({ userId, current }: { userId: string; current: s
           <option key={w.id} value={w.id}>{w.name}</option>
         ))}
       </select>
+      {partial ? <span className="text-amber-800">{i18n("crm.workers.listPartial")}</span> : null}
       {msg ? <span className="text-neutral-500">{msg}</span> : null}
     </label>
   );

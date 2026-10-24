@@ -135,6 +135,10 @@ const SELECT = {
 } as const;
 
 const WORKER_STALE_MS = 7 * 24 * 60 * 60 * 1000;
+/** Unpaged worker dropdowns stop here and set workersPartial when more exist. */
+const WORKER_UNPAGED_CAP = 500;
+/** Desk catalog attached to the worker list. */
+const WORKER_DESK_CAP = 300;
 
 export async function GET(req: Request) {
   await ensureDemoSeed();
@@ -147,7 +151,7 @@ export async function GET(req: Request) {
   const role = (searchParams.get("role") || "").trim();
   const paged = searchParams.has("take") || searchParams.has("skip");
   const pageWindow = paged ? crmPageWindow(searchParams.get("take"), searchParams.get("skip")) : null;
-  const take = pageWindow ? pageWindow.take : 500;
+  const take = pageWindow ? pageWindow.take : WORKER_UNPAGED_CAP;
   const skip = pageWindow ? pageWindow.skip : 0;
   const where = workerWhere(q, filter, role);
   const wantCounts = searchParams.get("counts") === "1";
@@ -159,12 +163,12 @@ export async function GET(req: Request) {
       select: SELECT,
       orderBy: { createdAt: "asc" },
       skip,
-      take: pageWindow ? take + 1 : take,
+      take: take + 1,
     }),
     prisma.desk.findMany({
       orderBy: [{ active: "desc" }, { name: "asc" }],
       select: { id: true, name: true, code: true, active: true },
-      take: 300,
+      take: WORKER_DESK_CAP + 1,
     }),
     wantCounts
       ? Promise.all([
@@ -185,8 +189,10 @@ export async function GET(req: Request) {
       : Promise.resolve(null),
   ]);
 
-  const hasMore = Boolean(pageWindow) && found.length > take;
+  const hasMore = found.length > take;
   const page = hasMore ? found.slice(0, take) : found;
+  const desksPartial = desks.length > WORKER_DESK_CAP;
+  const deskPage = desksPartial ? desks.slice(0, WORKER_DESK_CAP) : desks;
   return NextResponse.json({
     workers: page.map((w) => ({
       ...w,
@@ -194,7 +200,9 @@ export async function GET(req: Request) {
       isSelf: w.id === admin.id,
       lastLogin: workerLastLogin(w),
     })),
-    desks,
+    desks: deskPage,
+    desksPartial,
+    workersPartial: !pageWindow && hasMore,
     hasMore,
     nextSkip: skip + page.length,
     ...(counts

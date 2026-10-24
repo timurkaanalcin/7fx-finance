@@ -989,6 +989,12 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.desk.search", "Search desks", "Masa ara", "Поиск столов", "Desks suchen", "ابحث عن المكاتب"],
   ["crm.desk.partial", "Desk list is partial. Search to find another desk.", "Masa listesi eksik. Başka bir masa için arayın.", "Список столов неполный. Ищите другой стол.", "Desk-Liste ist unvollständig. Suchen Sie einen anderen Desk.", "قائمة المكاتب غير مكتملة. ابحث عن مكتب آخر."],
   ["crm.desk.searchPartial", "More desks match. Refine the search.", "Daha fazla masa eşleşiyor. Aramayı daraltın.", "Найдено больше столов. Уточните поиск.", "Weitere Desks passen. Suche eingrenzen.", "هناك مكاتب أكثر. ضيّق البحث."],
+  ["crm.clients.partial", "More names match. Refine the search.", "Daha fazla isim eşleşiyor. Aramayı daraltın.", "Найдено больше имён. Уточните поиск.", "Weitere Namen passen. Suche eingrenzen.", "هناك أسماء أكثر. ضيّق البحث."],
+  ["crm.workers.listPartial", "Worker list is partial. Older names are not in this menu.", "Çalışan listesi eksik. Daha eski isimler bu menüde yok.", "Список сотрудников неполный. Более старые имена отсутствуют в меню.", "Mitarbeiterliste ist unvollständig. Ältere Namen fehlen in diesem Menü.", "قائمة الموظفين غير مكتملة. الأسماء الأقدم غير موجودة في هذه القائمة."],
+  ["crm.workers.desksPartial", "Desk catalog is partial. Older desks are not in this list.", "Masa kataloğu eksik. Daha eski masalar bu listede yok.", "Каталог столов неполный. Более старые столы отсутствуют.", "Desk-Katalog ist unvollständig. Ältere Desks fehlen.", "دليل المكاتب غير مكتمل. المكاتب الأقدم غير موجودة."],
+  ["crm.ret.notesMore", "Load older notes", "Eski notları yükle", "Загрузить старые заметки", "Ältere Notizen laden", "تحميل الملاحظات الأقدم"],
+  ["crm.ret.reminders", "Reminders", "Hatırlatmalar", "Напоминания", "Erinnerungen", "تذكيرات"],
+  ["crm.ret.remindersMore", "Load older reminders", "Eski hatırlatmaları yükle", "Загрузить старые напоминания", "Ältere Erinnerungen laden", "تحميل التذكيرات الأقدم"],
 ];
 
 function pack(index: 1|2|3|4|5): Dict {

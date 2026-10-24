@@ -42,6 +42,7 @@ export const en: Dict = {
   "auth.meta.registerTitle": "Register · 7FX",
   "auth.meta.registerDesc": "Create your 7FX account",
   "landing.nav.markets": "Markets",
+  "landing.nav.faq": "FAQ",
   "landing.nav.platform": "Platform",
   "landing.nav.about": "About",
   "landing.nav.how": "How it works",

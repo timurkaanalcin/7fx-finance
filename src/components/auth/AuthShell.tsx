@@ -41,7 +41,7 @@ export default function AuthShell({ mode, children }: AuthShellProps) {
         <main className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-6 sm:px-6 sm:py-10">
           <div className="w-full max-w-[440px]">
             <div className="mb-6 text-center sm:mb-8">
-              <p className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#d7ffe9]">
+              <p className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-[#d7ffe9]">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#3ddc97] shadow-[0_0_8px_rgba(61,220,151,0.8)]" />
                 {isLogin ? t("auth.badge.login") : t("auth.badge.register")}
               </p>
@@ -71,12 +71,12 @@ export default function AuthShell({ mode, children }: AuthShellProps) {
               <div className="relative">{children}</div>
             </div>
 
-            <p className="mt-6 text-center text-[11px] leading-relaxed text-[#8ea0b8]">
+            <p className="mt-6 text-center text-xs leading-relaxed text-[#b7c0d0]">
               {t("auth.terms")}
               <br />
               {t("auth.sessionNote")}
             </p>
-            <p className="mt-4 text-center text-[11px] text-[#8ea0b8]">
+            <p className="mt-4 text-center text-xs text-[#b7c0d0]">
               © {new Date().getFullYear()} 7FX{host ? ` · ${host}` : ""}
             </p>
           </div>

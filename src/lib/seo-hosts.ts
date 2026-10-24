@@ -12,7 +12,18 @@ export const KNOWN_HOSTS = [
 export const PRIMARY_ORIGIN = "https://7fx.customer.org.tr";
 
 /** Paths a crawler may index on an indexable host. */
-export const MARKETING_PATHS = ["/", "/ios"] as const;
+export const MARKETING_PATHS = [
+  "/",
+  "/markets",
+  "/markets/crypto",
+  "/markets/forex",
+  "/markets/commodities",
+  "/markets/indices",
+  "/markets/stocks",
+  "/platform",
+  "/faq",
+  "/ios",
+] as const;
 
 export function normalizeHost(raw: string | null | undefined): string {
   return (raw || "").split(",")[0].trim().split(":")[0].toLowerCase();
@@ -29,7 +40,7 @@ export function metadataOrigin(host: string): string {
 
 export function isMarketingPath(pathname: string): boolean {
   const path = (pathname.split("?")[0] || "/").replace(/\/+$/, "") || "/";
-  return path === "/" || path === "/ios";
+  return (MARKETING_PATHS as readonly string[]).includes(path);
 }
 
 /** True when this host+path must not be indexed. */

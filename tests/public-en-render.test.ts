@@ -55,7 +55,12 @@ const PUBLIC_FILES = [
   "src/app/global-error.tsx",
   "src/app/(auth)",
   "src/app/ios",
+  "src/app/markets",
+  "src/app/platform",
+  "src/app/faq",
+  "src/components/public",
   "src/lib/seo.ts",
+  "src/lib/public-pages.ts",
   "public/site.webmanifest",
 ];
 

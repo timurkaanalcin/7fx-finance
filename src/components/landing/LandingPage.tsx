@@ -384,6 +384,9 @@ export default function LandingPage() {
               <span>{t("term.account")}</span>
               <Link href="/login">{t("common.signIn")}</Link>
               <Link href="/register">{t("landing.openAccount")}</Link>
+              <Link href="/markets">{t("landing.nav.markets")}</Link>
+              <Link href="/platform">{t("landing.nav.platform")}</Link>
+              <Link href="/faq">{t("landing.nav.faq")}</Link>
               <Link href="/ios">{t("landing.ios.pageTitle")}</Link>
               {siteHost ? <span className="fx-host">{siteHost}</span> : null}
             </div>
