@@ -1,5 +1,6 @@
 "use client";
 
+import SignOutForm from "@/components/auth/SignOutForm";
 import NotificationBell from "@/components/notifications/NotificationBell";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -197,15 +198,10 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
             >
               {t("crm.terminal")}
             </Link>
-            <button
-              onClick={async () => {
-                await fetch("/api/auth/logout", { method: "POST" });
-                router.push("/login");
-              }}
-              className="rounded px-2 py-1 hover:bg-neutral-100 hover:text-black"
-            >
-              {t("crm.signOut")}
-            </button>
+            <SignOutForm
+              label={t("crm.signOut")}
+              buttonClassName="rounded px-2 py-1 hover:bg-neutral-100 hover:text-black"
+            />
           </div>
         </header>
         <main className="flex-1 overflow-auto bg-white p-3 md:p-4">{children}</main>

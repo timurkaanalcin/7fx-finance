@@ -5,9 +5,11 @@ import { prisma } from "./prisma";
 import { ensureDemoSeed } from "./ensure-seed";
 import { touchPresenceInBackground } from "./presence";
 import { isScopedStaff, scopedRequestAllowed } from "./crm-scope";
+import { appendClearSessionCookies } from "./session-cookie";
 
 const COOKIE_NAME = "7fx_session";
 const LEGACY_COOKIE_NAME = "deskflow_session";
+const ADMIN_BACKUP_COOKIE = "7fx_admin_backup";
 
 function sessionCookieOptions(maxAge: number, _host?: string | null) {
   void _host;
@@ -133,13 +135,17 @@ export function attachSessionCookie(
   res.cookies.set(LEGACY_COOKIE_NAME, "", { ...opts, maxAge: 0 });
 }
 
+/**
+ * Expire every session-cookie variant for this host. Uses raw Set-Cookie
+ * lines — `res.cookies.set` keeps one cookie per name and would drop the
+ * Domain= variants. Do not call `res.cookies.set` after this on the same
+ * response; that rewrite deletes the appended lines.
+ */
 export function clearSessionCookie(
-  res: { cookies: { set: (name: string, value: string, opts: Record<string, unknown>) => void } },
+  res: { headers: { append: (name: string, value: string) => void } },
   host?: string | null
 ) {
-  const opts = sessionCookieOptions(0, host);
-  res.cookies.set(COOKIE_NAME, "", opts);
-  res.cookies.set(LEGACY_COOKIE_NAME, "", opts);
+  appendClearSessionCookies(res, host);
 }
 
 /** Legacy helper for Server Components / Server Actions. */
@@ -155,6 +161,7 @@ export async function destroySession() {
   const opts = sessionCookieOptions(0);
   cookies().set(COOKIE_NAME, "", opts);
   cookies().set(LEGACY_COOKIE_NAME, "", opts);
+  cookies().set(ADMIN_BACKUP_COOKIE, "", opts);
 }
 
 export async function getSession(): Promise<SessionPayload | null> {
@@ -334,8 +341,6 @@ export function permissionsOf(user: {
   };
 }
 
-
-const ADMIN_BACKUP_COOKIE = "7fx_admin_backup";
 
 /** Stash current admin session so impersonation can be reversed. */
 export function attachAdminBackupCookie(
