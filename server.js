@@ -5,6 +5,7 @@
 const { createServer } = require("http");
 const { parse } = require("url");
 const next = require("next");
+const { applyNodeSecurityHeaders, requestIsHttps } = require("./src/lib/security/response-headers.cjs");
 
 const port = parseInt(process.env.PORT || "3000", 10);
 const hostname = process.env.HOST || process.env.LISTEN_HOST || "0.0.0.0";
@@ -18,9 +19,10 @@ app
   .then(() => {
     createServer(async (req, res) => {
       try {
-        res.removeHeader("X-Powered-By");
-        res.setHeader("X-Content-Type-Options", "nosniff");
-        res.setHeader("X-Frame-Options", "SAMEORIGIN");
+        const forwarded = req.headers["x-forwarded-proto"];
+        const forwardedProto = Array.isArray(forwarded) ? forwarded[0] : forwarded;
+        const https = requestIsHttps(forwardedProto, req.socket && req.socket.encrypted ? "https" : "");
+        applyNodeSecurityHeaders(res, { https, dev });
         const parsedUrl = parse(req.url, true);
         await handle(req, res, parsedUrl);
       } catch (err) {

@@ -11,6 +11,7 @@ import {
   invalidateTradingSettingsCache,
 } from "@/lib/trading-settings";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
+import { publicErrorText } from "@/lib/security/public-error";
 
 export const dynamic = "force-dynamic";
 
@@ -113,7 +114,7 @@ function parseFields(body: Body, create: boolean) {
 }
 
 function fail(e: unknown) {
-  if (e instanceof BadRequest) return NextResponse.json({ error: e.message, ...(e.extra || {}) }, { status: e.status });
+  if (e instanceof BadRequest) return NextResponse.json({ error: publicErrorText(e, "Invalid request"), ...(e.extra || {}) }, { status: e.status });
   const code = (e as { code?: string })?.code;
   if (code === "P2002") return NextResponse.json({ error: "Symbol already exists" }, { status: 409 });
   console.error("[admin/assets]", e);

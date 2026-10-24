@@ -6,6 +6,7 @@ import { tradingDisabledMessage, mustChangePasswordMessage } from "@/lib/account
 import { placeOrder } from "@/lib/trading";
 import { getMarketStatus } from "@/lib/market-hours";
 import { stripStaff } from "@/lib/customer-sanitize";
+import { publicErrorText } from "@/lib/security/public-error";
 
 export async function GET(req: Request) {
   const user = await requireUser();
@@ -64,7 +65,6 @@ export async function POST(req: Request) {
     });
     return NextResponse.json({ ok: true, result });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "Order error";
-    return NextResponse.json({ error: msg }, { status: 400 });
+    return NextResponse.json({ error: publicErrorText(e, "Order error") }, { status: 400 });
   }
 }

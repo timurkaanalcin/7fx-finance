@@ -6,6 +6,7 @@ import { allocateUniqueAccountLoginId } from "@/lib/account-login-id";
 import { jobTitleSchema } from "@/lib/job-titles";
 import type { Prisma } from "@prisma/client";
 import { crmPageWindow, workerLastLogin } from "@/lib/trader-list";
+import { publicErrorText } from "@/lib/security/public-error";
 
 function jobTitle(v: unknown) {
   const r = jobTitleSchema.safeParse(v);
@@ -87,7 +88,7 @@ function permFields(body: Body, actor: Record<string, unknown>) {
 }
 
 function fail(e: unknown) {
-  if (e instanceof BadRequest) return NextResponse.json({ error: e.message, ...(e.extra || {}) }, { status: e.status });
+  if (e instanceof BadRequest) return NextResponse.json({ error: publicErrorText(e, "Invalid request"), ...(e.extra || {}) }, { status: e.status });
   const code = (e as { code?: string })?.code;
   if (code === "P2002") return NextResponse.json({ error: "Email already registered" }, { status: 409 });
   if (code === "P2025") return NextResponse.json({ error: "Worker not found" }, { status: 404 });

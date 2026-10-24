@@ -15,6 +15,7 @@ import {
   type AdminRef,
 } from "@/lib/crm-balance";
 import { FxError, appendFxNote, convertAmountToUsd } from "@/lib/fx-usd";
+import { publicErrorText } from "@/lib/security/public-error";
 
 export const dynamic = "force-dynamic";
 
@@ -377,8 +378,8 @@ function withWorker(userId: string, admin: AdminRef, d: Body) {
 }
 
 function fail(e: unknown) {
-  if (e instanceof BadRequest) return NextResponse.json({ error: e.message }, { status: 400 });
-  if (e instanceof FxError) return NextResponse.json({ error: e.message }, { status: 503 });
+  if (e instanceof BadRequest) return NextResponse.json({ error: publicErrorText(e, "Invalid request") }, { status: 400 });
+  if (e instanceof FxError) return NextResponse.json({ error: publicErrorText(e, "Rate unavailable") }, { status: 503 });
   if (e instanceof Error && e.message === "ACCOUNT_NOT_FOUND") {
     return NextResponse.json({ error: "Trader has no trading account" }, { status: 404 });
   }
