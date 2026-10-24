@@ -151,21 +151,32 @@ input, select, button { font: inherit; }
   padding-bottom: max(10px, env(safe-area-inset-bottom, 0px));
 }
 
+/* The type scale starts at 12px on every viewport, including desktop CRM and the desk. */
+.text-\[8px\],
+.text-\[9px\],
+.text-\[9\.5px\],
+.text-\[10px\],
+.text-\[11px\],
+.text-\[11\.5px\],
+.sm\:text-\[8px\],
+.sm\:text-\[9px\],
+.sm\:text-\[9\.5px\],
+.sm\:text-\[10px\],
+.sm\:text-\[11px\],
+.md\:text-\[8px\],
+.md\:text-\[9px\],
+.md\:text-\[9\.5px\],
+.md\:text-\[10px\],
+.md\:text-\[11px\] {
+  font-size: var(--fx-fs-12) !important;
+  line-height: 1.35 !important;
+}
+
 @media (max-width: 767px) {
   html,
   body {
     overflow-x: clip;
     max-width: 100%;
-  }
-  /* Phone copy stays on the 12px floor, including CRM and marketing utilities. */
-  .text-\[8px\],
-  .text-\[9px\],
-  .text-\[9\.5px\],
-  .text-\[10px\],
-  .text-\[11px\],
-  .text-\[11\.5px\] {
-    font-size: 12px !important;
-    line-height: 1.35 !important;
   }
   .fx-desk {
     /* Prefer app-like overflow containment on phone */
@@ -187,6 +198,11 @@ input, select, button { font: inherit; }
   .fx-desk select,
   .fx-desk input:not([type="checkbox"]):not([type="radio"]) {
     min-height: 44px;
+  }
+  .fx-desk > header button,
+  .fx-desk > header a,
+  .fx-desk > header select {
+    min-width: 44px;
   }
   .fx-desk .fx-tap-compact {
     min-height: 0;
@@ -232,7 +248,7 @@ input, select, button { font: inherit; }
   --fx-line: rgba(255, 255, 255, 0.08);
   --fx-buy: #3ddc97;
   --fx-sell: #ff5d73;
-  --fx-shell: min(1180px, calc(100% - 32px));
+  --fx-shell: min(1280px, calc(100% - 32px));
   --fx-section-pad: 72px;
   --fx-sticky-h: 64px;
   background: var(--fx-bg);
@@ -248,7 +264,7 @@ input, select, button { font: inherit; }
 @media (min-width: 768px) {
   .fx-landing {
     --fx-section-pad: 104px;
-    --fx-shell: min(1180px, calc(100% - 48px));
+    --fx-shell: min(1280px, calc(100% - 48px));
     --fx-sticky-h: 0px;
   }
 }
@@ -278,7 +294,7 @@ html:has(.fx-landing) {
 
 .fx-landing .fx-shell {
   width: var(--fx-shell);
-  max-width: 1180px;
+  max-width: 1280px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -369,8 +385,8 @@ html:has(.fx-landing) {
 }
 .fx-landing .fx-icon-btn {
   display: inline-flex;
-  height: 40px;
-  width: 40px;
+  height: 44px;
+  width: 44px;
   align-items: center;
   justify-content: center;
   border-radius: 999px;
@@ -566,7 +582,8 @@ html:has(.fx-landing) {
   font-size: var(--fx-fs-12);
   font-weight: 500;
   letter-spacing: 0.04em;
-  padding: 5px 8px;
+  padding: 8px 12px;
+  min-height: 36px;
 }
 .fx-landing .fx-chip.is-on {
   background: #f4f7fb;
@@ -714,7 +731,10 @@ html:has(.fx-landing) {
 .fx-landing .fx-film img,
 .fx-landing .fx-film video {
   width: 100%;
+  max-width: 100%;
   height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
   display: block;
   background: #0b0e13;
 }
@@ -1048,7 +1068,7 @@ html:has(.fx-landing) {
 @media (max-width: 640px) {
   .fx-landing {
     --fx-section-pad: 52px;
-    --fx-shell: min(1180px, calc(100% - 28px));
+    --fx-shell: min(1280px, calc(100% - 28px));
   }
   .fx-landing .fx-hero { padding-top: 16px; }
   .fx-landing .fx-h1 { font-size: clamp(var(--fx-fs-32), 10vw, var(--fx-fs-44)); }
@@ -1432,4 +1452,174 @@ body:has(.fx-crm) {
   animation: fx-px-flash-down 0.5s ease-out;
   border-radius: 3px;
   padding: 0 2px;
+}
+
+/* ——— Fluid sizing: headings, shells, touch, short landscape ——— */
+.fx-doc {
+  background: #fff;
+  color: #15161a;
+}
+.fx-doc-shell {
+  width: min(920px, calc(100% - 32px));
+  margin-inline: auto;
+}
+.fx-doc-title {
+  font-size: clamp(var(--fx-fs-32), 4vw, var(--fx-fs-44));
+  line-height: 1.12;
+  letter-spacing: var(--fx-track-display);
+}
+.fx-doc h2 {
+  font-size: clamp(var(--fx-fs-20), 2vw, var(--fx-fs-24));
+  line-height: 1.25;
+  letter-spacing: var(--fx-track-display);
+}
+.fx-doc img,
+.fx-doc video,
+.fx-ios img,
+.fx-ios video,
+.fx-auth-page img,
+.fx-profile img,
+.fx-crm img {
+  max-width: 100%;
+}
+
+.fx-ios-shell {
+  width: min(640px, calc(100% - 32px));
+  margin-inline: auto;
+}
+.fx-ios-title {
+  font-size: clamp(var(--fx-fs-24), 1.2rem + 1.5vw, var(--fx-fs-44));
+  line-height: 1.15;
+  letter-spacing: var(--fx-track-display);
+}
+.fx-auth-page h1 {
+  font-size: clamp(var(--fx-fs-24), 1.35rem + 1vw, var(--fx-fs-32)) !important;
+  line-height: 1.15;
+}
+.fx-crm h1 {
+  font-size: clamp(var(--fx-fs-20), 1.15rem + 0.8vw, var(--fx-fs-32));
+  line-height: 1.2;
+  letter-spacing: var(--fx-track-display);
+}
+.fx-crm h2 {
+  font-size: clamp(var(--fx-fs-16), 0.9rem + 0.4vw, var(--fx-fs-20));
+  line-height: 1.3;
+}
+.fx-crm aside {
+  width: clamp(200px, 16vw, 240px);
+}
+.fx-crm .overflow-x-auto {
+  max-width: 100%;
+}
+.fx-profile main {
+  width: min(840px, calc(100% - 32px));
+  max-width: 840px;
+}
+.fx-lang-select {
+  min-height: 36px;
+  font-size: var(--fx-fs-12);
+}
+.fx-profile h2 {
+  font-size: clamp(var(--fx-fs-14), 0.9rem + 0.3vw, var(--fx-fs-16));
+  letter-spacing: 0.08em;
+}
+@media (min-width: 768px) {
+  .fx-watchlist {
+    width: clamp(220px, 18vw, 300px);
+    max-width: 300px;
+  }
+  .fx-desk-history {
+    height: clamp(200px, 22vh, 280px);
+  }
+}
+
+.fx-landing .fx-btn-primary,
+.fx-landing .fx-btn-secondary,
+.fx-ios .fx-btn-primary,
+.fx-ios .fx-btn-secondary {
+  min-height: 44px;
+}
+
+@media (max-width: 767px), (max-height: 520px) {
+  .fx-landing .fx-chip { min-height: 40px; }
+  .fx-landing .fx-footer a,
+  .fx-landing .fx-mobile-menu button,
+  .fx-landing .fx-mobile-menu a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .fx-doc main a { padding-block: 8px; }
+  .fx-doc header a,
+  .fx-doc nav a,
+  .fx-ios a,
+  .fx-auth-page a,
+  .fx-auth-page select,
+  .fx-landing select,
+  .fx-profile > header a,
+  .fx-profile > header button,
+  .fx-profile input:not([type="checkbox"]):not([type="radio"]),
+  .fx-profile select,
+  .fx-profile textarea,
+  .fx-desk > header button,
+  .fx-desk > header a,
+  .fx-desk > header select,
+  .fx-desk .fx-desk-tradebar button,
+  .fx-desk .fx-desk-seg__btn {
+    min-height: 44px;
+  }
+  .fx-desk > header button,
+  .fx-desk > header a,
+  .fx-desk > header select {
+    min-width: 44px;
+  }
+  .fx-desk .fx-tap-compact {
+    min-height: 36px;
+    min-width: 36px;
+  }
+  .fx-crm button {
+    min-height: 40px;
+  }
+  .fx-doc header a,
+  .fx-doc nav a,
+  .fx-ios a,
+  .fx-auth-page header a,
+  .fx-auth-page .fx-auth-panel a {
+    display: inline-flex;
+    align-items: center;
+  }
+  .fx-crm header {
+    height: auto;
+    min-height: 48px;
+  }
+  .fx-crm header a,
+  .fx-crm header button,
+  .fx-crm header select {
+    min-height: 40px;
+  }
+}
+
+@media (max-height: 520px) {
+  .fx-desk .min-h-\[44vh\] {
+    min-height: 0 !important;
+  }
+  .fx-lx-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .fx-lx-overlay > div {
+    max-height: 100dvh;
+    width: min(480px, 100%);
+    border-radius: 16px 16px 0 0;
+  }
+  .fx-lx-overlay input,
+  .fx-lx-overlay select,
+  .fx-lx-overlay textarea {
+    min-height: 44px;
+    font-size: var(--fx-fs-16);
+  }
+  .fx-crm aside a,
+  .fx-crm aside button {
+    min-height: 40px;
+  }
 }

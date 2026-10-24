@@ -262,7 +262,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
 
   return (
     <aside
-      className={`flex w-full shrink-0 flex-col border-r border-desk-border bg-desk-panel md:w-[232px] ${className}`}
+      className={`fx-watchlist flex w-full shrink-0 flex-col border-r border-desk-border bg-desk-panel ${className}`}
     >
       <div className="border-b border-desk-border/80 px-3 py-2.5 md:px-2.5 md:py-2">
         <div className="relative">

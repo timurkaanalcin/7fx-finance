@@ -28,12 +28,12 @@ export default function PublicDoc({
     cookies().get("7fx_session")?.value || cookies().get("deskflow_session")?.value
   );
   return (
-    <div className="min-h-screen bg-white text-[#15161a]">
+    <div className="fx-doc min-h-screen bg-white text-[#15161a]">
       <a href="#content" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-10 focus:bg-white focus:px-3 focus:py-2">
         {nav.skip}
       </a>
       <header className="border-b border-black/10">
-        <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 px-5 py-4">
+        <div className="fx-doc-shell flex flex-wrap items-center justify-between gap-3 px-1 py-3">
           <Link href="/" aria-label={nav.home}>
             <BrandLogo height={32} />
           </Link>
@@ -57,11 +57,11 @@ export default function PublicDoc({
           </nav>
         </div>
       </header>
-      <main id="content" className="mx-auto max-w-3xl px-5 py-10">
+      <main id="content" className="fx-doc-shell px-1 py-8 sm:py-12">
         <article>
-          <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
+          <h1 className="fx-doc-title font-semibold">{title}</h1>
           <p className="mt-3 text-base leading-7 text-[#3f4248]">{lede}</p>
-          <div className="mt-8 space-y-6 text-[15px] leading-7 text-[#1c1e22]">{children}</div>
+          <div className="mt-8 space-y-6 text-base leading-7 text-[#1c1e22]">{children}</div>
         </article>
       </main>
     </div>

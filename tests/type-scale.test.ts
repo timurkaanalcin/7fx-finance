@@ -49,7 +49,14 @@ function main() {
   assert.equal(layout.includes("sora"), false);
   const shell = read("src/components/trading/TerminalShell.tsx");
   assert.match(shell, /min-width: 768px/);
+  assert.match(shell, /min-height: 560px/);
   assert.match(shell, /deskWide &&/);
+  assert.match(css, /fx-doc-title/);
+  assert.match(css, /min\(1280px/);
+  assert.match(css, /fx-watchlist/);
+  const lang = read("src/components/i18n/LanguageSwitcher.tsx");
+  assert.equal(lang.includes("0.65"), false);
+  assert.match(lang, /fx-lang-select/);
 
   console.log("type-scale tests passed");
 }
