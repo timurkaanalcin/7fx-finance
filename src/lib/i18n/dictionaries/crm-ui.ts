@@ -1,7 +1,7 @@
 import type { Locale } from "../locales";
 import type { Dict } from "../types";
 
-/** CRM/izcrm UI strings merged into each locale dictionary. */
+/** CRM/izcrm UI strings. Registered by the CRM layout so public pages do not download them. */
 const SPEC: readonly (readonly [string, string, string, string, string, string])[] = [
   ["crm.ui.all", "All", "Tümü", "Все", "Alle", "الكل"],
   ["crm.ui.allStatuses", "All statuses", "Tüm durumlar", "Все статусы", "Alle Status", "كل الحالات"],
@@ -975,16 +975,6 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.recentClients.min", "min", "dk", "мин", "Min.", "د"],
   ["crm.recentClients.hour", "h", "sa", "ч", "Std.", "س"],
   ["crm.recentClients.day", "d", "g", "д", "T.", "ي"],
-  // Customer terminal — price feed connection indicator
-  ["term.feed.live", "Live", "Canlı", "Онлайн", "Live", "مباشر"],
-  ["term.feed.short.stale", "Reconnecting…", "Yeniden bağlanıyor…", "Переподключение…", "Verbinde neu…", "إعادة الاتصال…"],
-  ["term.feed.short.offline", "Offline", "Çevrimdışı", "Офлайн", "Offline", "غير متصل"],
-  ["term.feed.stale", "Price feed delayed — reconnecting…", "Fiyat akışı gecikiyor — yeniden bağlanılıyor…", "Котировки задерживаются — переподключение…", "Kursdaten verzögert — verbinde neu…", "تأخر تدفق الأسعار — جارٍ إعادة الاتصال…"],
-  ["term.feed.offline", "No internet connection — prices are not updating (last known prices shown)", "İnternet bağlantısı yok — fiyatlar güncellenmiyor (son bilinen fiyatlar gösteriliyor)", "Нет подключения к интернету — котировки не обновляются (показаны последние)", "Keine Internetverbindung — Kurse werden nicht aktualisiert (letzte bekannte Kurse)", "لا يوجد اتصال بالإنترنت — الأسعار لا تتحدث (تُعرض آخر الأسعار المعروفة)"],
-  ["term.feed.lastUpdate", "last update {s}s ago", "son güncelleme {s} sn önce", "обновлено {s} с назад", "zuletzt vor {s} s", "آخر تحديث قبل {s} ث"],
-  ["term.feed.retry", "Retry", "Yeniden dene", "Повторить", "Erneut versuchen", "إعادة المحاولة"],
-  ["term.feed.recovered", "Connection restored — prices are live", "Bağlantı yeniden kuruldu — fiyatlar canlı", "Соединение восстановлено — котировки онлайн", "Verbindung wiederhergestellt — Kurse live", "تمت استعادة الاتصال — الأسعار مباشرة"],
-  ["term.feed.dismiss", "Dismiss", "Kapat", "Закрыть", "Schließen", "إغلاق"],
 ];
 
 function pack(index: 1|2|3|4|5): Dict {

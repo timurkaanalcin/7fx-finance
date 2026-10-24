@@ -1,14 +1,25 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
-import PhonePreview from "./PhonePreview";
+import Image from "next/image";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 import { useI18n } from "@/lib/i18n/context";
 import SymbolIcon from "@/components/ui/SymbolIcon";
-import InstallAppButtons from "@/components/landing/InstallAppButtons";
-import SponsorsSection from "@/components/landing/SponsorsSection";
-import LicensesSection from "@/components/landing/LicensesSection";
+import BrandLogo, { IngMark } from "@/components/landing/BrandLogo";
+
+const PhonePreview = dynamic(() => import("./PhonePreview"), {
+  loading: () => (
+    <div
+      className="mx-auto aspect-[9/16] w-full max-w-[min(100%,210px)] sm:max-w-[300px] lg:max-w-[340px]"
+      aria-hidden
+    />
+  ),
+});
+const InstallAppButtons = dynamic(() => import("@/components/landing/InstallAppButtons"));
+const SponsorsSection = dynamic(() => import("@/components/landing/SponsorsSection"));
+const LicensesSection = dynamic(() => import("@/components/landing/LicensesSection"));
 
 function scrollToId(id: string) {
   const el = document.getElementById(id);
@@ -310,7 +321,7 @@ export default function LandingPage() {
         <div className="fx-shell flex h-14 items-center justify-between gap-4 sm:h-[4.25rem]">
           <Link href="/" className="flex items-center no-underline" aria-label="7FX ana sayfa">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/7fx-logo.png" alt="7FX" className="fx-nav-logo h-9 w-auto object-contain sm:h-9" />
+            <BrandLogo priority className="fx-nav-logo h-9 w-auto" height={36} />
           </Link>
 
           <nav className="hidden items-center gap-0.5 lg:flex" aria-label={t("landing.mainMenu")}>
@@ -406,12 +417,7 @@ export default function LandingPage() {
                   className="inline-flex items-center gap-2.5 rounded-full border border-[rgba(16,20,37,0.10)] bg-white/90 px-3.5 py-1.5 text-[12.5px] font-semibold tracking-tight text-[#111111] shadow-[0_6px_18px_rgba(16,20,37,0.06)]"
                   aria-label="In partnership with ING Bank"
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/ing-logo.png"
-                    alt="ING"
-                    className="h-5 w-auto object-contain"
-                  />
+                  <IngMark className="h-5 w-auto object-contain" height={20} />
                   <span className="text-[#5c657a]">in partnership with</span>
                 </p>
               </div>
@@ -718,12 +724,7 @@ export default function LandingPage() {
             <div className="fx-app-panel relative mx-auto w-full max-w-[380px]">
               <div className="rounded-[20px] border border-[rgba(16,20,37,0.08)] bg-white p-8 shadow-[0_24px_64px_rgba(16,20,37,0.1)]">
                 <div className="mb-6 flex items-center justify-between">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/7fx-logo.png"
-                    alt="7FX"
-                    className="h-9 w-auto object-contain"
-                  />
+                  <BrandLogo className="h-9 w-auto object-contain" height={36} />
                   <span className="rounded-full bg-[#111111]/12 px-3 py-1 text-[11px] font-semibold text-[#111111]">
                     Web app
                   </span>
@@ -749,8 +750,13 @@ export default function LandingPage() {
                   ))}
                 </div>
                 <div className="mt-6 flex items-center gap-3 rounded-2xl bg-[#111111] px-4 py-3.5 text-white shadow-[0_10px_28px_rgba(0,0,0,0.22)]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/7fx-mark.png" alt="" className="h-8 w-8 rounded-lg object-contain" />
+                  <Image
+                    src="/7fx-mark.png"
+                    alt=""
+                    width={160}
+                    height={96}
+                    className="h-8 w-8 rounded-lg object-contain"
+                  />
                   <div>
                     <p className="text-[13px] font-semibold text-white">{t("landing.continue7fx")}</p>
                     <p className="text-[11px] text-white/70">{t("landing.signInOrCreate")}</p>
@@ -773,8 +779,7 @@ export default function LandingPage() {
                 The points below describe platform practices — not a claim of a specific regulator licence.
               </p>
               <div className="mt-8 inline-flex items-center rounded-[14px] border border-[rgba(16,20,37,0.08)] bg-white px-5 py-4 shadow-[0_8px_24px_rgba(16,20,37,0.04)]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/7fx-logo.png" alt="7FX" className="h-9 w-auto object-contain" />
+                <BrandLogo className="h-9 w-auto object-contain" height={36} />
               </div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -870,16 +875,14 @@ export default function LandingPage() {
         <div className="fx-shell flex flex-col gap-6 py-12 text-sm text-[#5c657a] sm:flex-row sm:items-start sm:justify-between">
           <div>
             <div className="flex items-center gap-3">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/7fx-logo.png" alt="7FX" className="h-7 w-auto object-contain" />
+              <BrandLogo className="h-7 w-auto" height={28} />
             </div>
             <p className="mt-3 max-w-sm text-[13px] leading-relaxed">
               7FX — international multi-asset trading platform. Secure web access to stocks, crypto, forex and
               commodity markets.
             </p>
             <p className="mt-3 inline-flex items-center gap-2 text-[12px] font-medium text-[#111111]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/ing-logo.png" alt="ING" className="h-4 w-auto object-contain" />
+              <IngMark className="h-4 w-auto object-contain" height={16} />
               <span>in partnership with</span>
             </p>
             <p className="mt-2 text-[12px]">© {new Date().getFullYear()} 7FX</p>

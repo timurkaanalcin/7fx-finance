@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ReactNode } from "react";
+import BrandLogo from "@/components/landing/BrandLogo";
 
 type AuthShellProps = {
   mode: "login" | "register";
@@ -23,12 +24,7 @@ export default function AuthShell({ mode, children }: AuthShellProps) {
 
         <header className="relative z-10 mx-auto flex w-full max-w-lg items-center justify-between px-4 pb-2 pt-6 sm:max-w-xl sm:px-6 sm:pt-8">
           <Link href="/" className="inline-flex items-center no-underline" aria-label="7FX ana sayfa">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/7fx-logo.png"
-              alt="7FX"
-              className="h-11 w-auto object-contain sm:h-12"
-            />
+            <BrandLogo priority className="h-11 w-auto sm:h-12" height={44} />
           </Link>
           <Link
             href="/"
