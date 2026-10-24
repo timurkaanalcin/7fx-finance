@@ -156,6 +156,8 @@ export default function TradingChart({
   const barsRef = useRef<OhlcBar[]>([]);
   /** True after the current symbol/timeframe history request settles (success or failure). */
   const historySettledRef = useRef(false);
+  /** True only after this symbol's history has been painted. Live mids wait so they cannot rewrite the previous symbol. */
+  const symbolReadyRef = useRef(false);
   /** Ask the history effect to refetch when bars are missing. No-op until that effect is mounted. */
   const requestHistoryRef = useRef<() => void>(() => {});
   const lastMidRef = useRef<number | null>(null);
@@ -237,6 +239,7 @@ export default function TradingChart({
 
   /** Drive forming candle from real mid only (no synthetic drift). */
   const pushRealMid = (mid: number) => {
+    if (!symbolReadyRef.current) return;
     if (!Number.isFinite(mid) || mid <= 0 || !seriesRef.current) return;
     lastMidRef.current = mid;
 
@@ -484,6 +487,7 @@ export default function TradingChart({
               : chartReconcilePlan(barsRef.current, plain);
           const paintLast = () => {
             const last = plain[plain.length - 1];
+            symbolReadyRef.current = true;
             lastBarTimeRef.current = last.time;
             liveBarRef.current = last;
             if (lastMidRef.current == null && mid != null) lastMidRef.current = mid;
@@ -536,6 +540,18 @@ export default function TradingChart({
               setFeedError({ k: "update" });
             }
           }
+        } else if (fit && !data.error) {
+          try {
+            seriesRef.current?.setData([]);
+            lineRef.current?.setData([]);
+          } catch {
+            /* chart not ready */
+          }
+          barsRef.current = [];
+          liveBarRef.current = null;
+          lastBarTimeRef.current = null;
+          symbolReadyRef.current = true;
+          setOhlc(null);
         }
 
         if (data.error) {
@@ -561,16 +577,13 @@ export default function TradingChart({
     };
     requestHistoryRef.current = requestHistory;
 
+    // Keep the previous symbol on screen until this history replaces it.
+    // Clearing the live-bar pointers (without setData([])) stops a new mid from updating those candles.
+    symbolReadyRef.current = false;
     liveBarRef.current = null;
     lastBarTimeRef.current = null;
+    lastMidRef.current = null;
     barsRef.current = [];
-    try {
-      seriesRef.current?.setData([]);
-      lineRef.current?.setData([]);
-    } catch {
-      /* chart not ready */
-    }
-    setOhlc(null);
     void load(true);
     const onVis = () => {
       if (!document.hidden) requestHistory();

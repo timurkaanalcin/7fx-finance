@@ -5,6 +5,7 @@ import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { StatusBadge } from "@/components/crm/StubPage";
+import TraderSearchPicker from "@/components/crm/TraderSearchPicker";
 import { fmtCrmDate } from "@/lib/crm-format";
 
 const DOC_STATUSES = ["PENDING", "APPROVED", "REJECTED"] as const;
@@ -25,13 +26,10 @@ type Doc = {
   reviewedAt: string | null;
 };
 
-type TraderOpt = { id: string; name: string; email: string };
-
 export default function DocumentsPage() {
   const { i18n } = useCrmLabels();
   const [docs, setDocs] = useState<Doc[]>([]);
   const [status, setStatus] = useState("");
-  const [traders, setTraders] = useState<TraderOpt[]>([]);
   const [form, setForm] = useState({ userId: "", name: "", docType: "ID", note: "" });
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
@@ -75,19 +73,6 @@ export default function DocumentsPage() {
   useEffect(() => {
     load();
   }, [load]);
-
-  useEffect(() => {
-    fetch("/api/admin/users")
-      .then((r) => r.json())
-      .then((d) =>
-        setTraders(
-          (d.users || [])
-            .filter((u: { role: string }) => u.role === "TRADER")
-            .map((u: TraderOpt) => ({ id: u.id, name: u.name, email: u.email }))
-        )
-      )
-      .catch(() => {});
-  }, []);
 
   async function review(id: string, next: "APPROVED" | "REJECTED") {
     setBusy(true);
@@ -259,18 +244,7 @@ export default function DocumentsPage() {
         <div className="rounded-lg border border-neutral-200 bg-[#ffffff] p-3">
           <h2 className="mb-2 text-xs font-semibold text-neutral-600">{i18n("crm.docs.add")}</h2>
           <div className="space-y-2 text-xs">
-            <select
-              value={form.userId}
-              onChange={(e) => setForm({ ...form, userId: e.target.value })}
-              className="w-full rounded border border-neutral-300 bg-white px-2 py-1.5"
-            >
-              <option value="">{i18n("crm.comms.selectTrader")}</option>
-              {traders.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name}
-                </option>
-              ))}
-            </select>
+            <TraderSearchPicker value={form.userId} onChange={(userId) => setForm({ ...form, userId })} />
             <input
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}

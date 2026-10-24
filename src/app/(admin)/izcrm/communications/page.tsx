@@ -7,6 +7,7 @@ import { fmtCrmDate } from "@/lib/crm-format";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { StatusBadge } from "@/components/crm/StubPage";
+import TraderSearchPicker from "@/components/crm/TraderSearchPicker";
 
 type Row = {
   id: string;
@@ -21,8 +22,6 @@ type Row = {
   createdAt: string;
 };
 
-type TraderOpt = { id: string; name: string; email: string };
-
 const COMM_TYPES = ["NOTE", "CALL", "CHAT"];
 
 function csvCell(v: unknown): string {
@@ -34,7 +33,6 @@ export default function CommunicationsPage() {
   const { i18n } = useCrmLabels();
   const [rows, setRows] = useState<Row[]>([]);
   const [type, setType] = useState("");
-  const [traders, setTraders] = useState<TraderOpt[]>([]);
   const [form, setForm] = useState({ userId: "", type: "NOTE", title: "", description: "" });
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
@@ -60,19 +58,6 @@ export default function CommunicationsPage() {
   useEffect(() => {
     load();
   }, [load]);
-
-  useEffect(() => {
-    fetch("/api/admin/users")
-      .then((r) => r.json())
-      .then((d) =>
-        setTraders(
-          (d.users || [])
-            .filter((u: { role: string }) => u.role === "TRADER")
-            .map((u: TraderOpt & { role: string }) => ({ id: u.id, name: u.name, email: u.email }))
-        )
-      )
-      .catch(() => {});
-  }, []);
 
   const typeChips = useMemo(() => {
     const base = baseCounts || { total: rows.length, byType: new Map<string, number>() };
@@ -261,18 +246,7 @@ export default function CommunicationsPage() {
         <div className="rounded-lg border border-neutral-200 bg-[#ffffff] p-3">
           <h2 className="mb-2 text-xs font-semibold text-neutral-600">{i18n("crm.comms.new")}</h2>
           <div className="space-y-2 text-xs">
-            <select
-              value={form.userId}
-              onChange={(e) => setForm({ ...form, userId: e.target.value })}
-              className="w-full rounded border border-neutral-300 bg-white px-2 py-1.5"
-            >
-              <option value="">{i18n("crm.comms.selectTrader")}</option>
-              {traders.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name} ({t.email})
-                </option>
-              ))}
-            </select>
+            <TraderSearchPicker value={form.userId} onChange={(userId) => setForm({ ...form, userId })} />
             <select
               value={form.type}
               onChange={(e) => setForm({ ...form, type: e.target.value })}

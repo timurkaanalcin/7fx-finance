@@ -1233,8 +1233,8 @@ export default function TerminalShell() {
       />
       <MarginCallModal
         open={marginModalOpen}
-        equity={account?.equity ?? 0}
-        marginLevel={account?.marginLevel ?? 0}
+        equity={headerChips?.equity ?? account?.equity ?? 0}
+        marginLevel={headerChips?.marginLevel ?? account?.marginLevel ?? 0}
         currency={account?.currency || "USD"}
         pendingRequest={pendingBalanceReq}
         onClose={() => setMarginModalOpen(false)}
