@@ -38,7 +38,7 @@ html, body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: var(--font-inter), var(--font-inter-ext), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -185,7 +185,7 @@ input, select, button { font: inherit; }
   --fx-sticky-h: 64px;
   background: var(--fx-bg);
   color: var(--fx-ink);
-  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-inter), var(--font-inter-ext), ui-sans-serif, system-ui, sans-serif;
   color-scheme: dark;
   overflow-x: clip;
   width: 100%;
@@ -1033,7 +1033,7 @@ html:has(.fx-landing) {
   background: #07090d;
   color: #f4f7fb;
   color-scheme: dark;
-  font-family: var(--font-inter), system-ui, sans-serif;
+  font-family: var(--font-inter), var(--font-inter-ext), system-ui, sans-serif;
 }
 .fx-ios h1,
 .fx-ios h2 {
@@ -1123,7 +1123,7 @@ body:has(.fx-ios) {
   --fx-line: rgba(255, 255, 255, 0.1);
   background: #07090d !important;
   color: #f4f7fb !important;
-  font-family: var(--font-sora), var(--font-inter), system-ui, sans-serif;
+  font-family: var(--font-sora), var(--font-inter), var(--font-inter-ext), system-ui, sans-serif;
   color-scheme: dark;
 }
 

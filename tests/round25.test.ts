@@ -68,7 +68,7 @@ function main() {
   const shell = read("src/components/trading/TerminalShell.tsx");
   assert.equal(shell.includes("if (!ready || !user)"), false);
   assert.match(shell, /initialUser/);
-  assert.match(shell, /terminal-desktop\.avif/);
+  assert.match(shell, /chart-poster\.avif/);
   assert.match(shell, /fetchPriority="high"/);
   assert.match(shell, /if \(!ready\) return/);
 
