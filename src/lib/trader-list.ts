@@ -199,6 +199,187 @@ export function serializeDeskWorker(u: { id: string; name: string; email: string
   return { id: u.id, name: u.name, email: u.email };
 }
 
+/** Chat thread list page. The idle poll refreshes the loaded window, capped here. */
+export const CHAT_THREAD_PAGE = 20;
+export const CHAT_THREAD_CAP = 40;
+
+export function chatThreadWindow(takeRaw: string | null, skipRaw: string | null): { take: number; skip: number } {
+  const skipNum = Number(skipRaw);
+  const skip = Number.isFinite(skipNum) && skipNum > 0 ? Math.min(100_000, Math.trunc(skipNum)) : 0;
+  if (takeRaw == null || takeRaw === "") return { take: CHAT_THREAD_PAGE, skip };
+  const takeNum = Math.trunc(Number(takeRaw));
+  const take = Number.isFinite(takeNum) && takeNum > 0 ? Math.min(CHAT_THREAD_CAP, takeNum) : CHAT_THREAD_PAGE;
+  return { take, skip };
+}
+
+/** Which trader-detail payload a record save should refresh. Unknown entities keep the full reload. */
+export function traderDetailScopeForEntity(entity: string): TraderDetailScope {
+  switch (entity) {
+    case "communication":
+      return "comms";
+    case "deposit":
+    case "withdrawal":
+    case "balanceRequest":
+      return "tickets";
+    case "ledger":
+      return "ledger";
+    case "document":
+      return "documents";
+    case "reminder":
+      return "reminders";
+    case "note":
+      return "profile";
+    case "position":
+    case "order":
+      return "positions";
+    default:
+      return "full";
+  }
+}
+
+export type ExposureBucket = { symbol: string; buy: number; sell: number; count: number; pnl: number };
+
+/** Fold open-position group totals into the exposure table. Display only; amounts are already stored. */
+export function exposureFromPositionGroups(
+  groups: { symbol: string; side: string; volume: number; profit: number; count: number }[]
+): ExposureBucket[] {
+  const map = new Map<string, ExposureBucket>();
+  for (const g of groups) {
+    const sym = (g.symbol || "—").toUpperCase();
+    const row = map.get(sym) ?? { symbol: sym, buy: 0, sell: 0, count: 0, pnl: 0 };
+    const volume = Number.isFinite(g.volume) ? g.volume : 0;
+    const profit = Number.isFinite(g.profit) ? g.profit : 0;
+    if (String(g.side || "").toUpperCase() === "SELL") row.sell += volume;
+    else row.buy += volume;
+    row.count += Number.isFinite(g.count) ? g.count : 0;
+    row.pnl += profit;
+    map.set(sym, row);
+  }
+  return Array.from(map.values()).sort((a, b) => b.buy + b.sell - (a.buy + a.sell));
+}
+
+type PositionListUser = {
+  id: string;
+  name: string;
+  email: string;
+  brokerName: string | null;
+  desk: string | null;
+  account: { id: string } | null;
+};
+
+/** Global positions row: table columns plus the trader name. Omits the trading account balances. */
+export function serializePositionListRow(p: {
+  id: string;
+  userId: string;
+  symbol: string;
+  chartSymbol: string | null;
+  side: string;
+  volume: number;
+  openPrice: number;
+  currentPrice: number;
+  stopLoss: number | null;
+  takeProfit: number | null;
+  profit: number;
+  margin: number;
+  status: string;
+  openedAt: Date | string;
+  closedAt: Date | string | null;
+  closePrice: number | null;
+  closeProfit: number | null;
+  user: PositionListUser;
+}) {
+  return {
+    id: p.id,
+    userId: p.userId,
+    symbol: p.symbol,
+    chartSymbol: p.chartSymbol,
+    side: p.side,
+    volume: p.volume,
+    openPrice: p.openPrice,
+    currentPrice: p.currentPrice,
+    stopLoss: p.stopLoss,
+    takeProfit: p.takeProfit,
+    profit: p.profit,
+    margin: p.margin,
+    status: p.status,
+    openedAt: p.openedAt,
+    closedAt: p.closedAt,
+    closePrice: p.closePrice,
+    closeProfit: p.closeProfit,
+    traderName: p.user.name,
+    traderEmail: p.user.email,
+    broker: p.user.brokerName,
+    desk: p.user.desk,
+    tradingAccountId: p.user.account?.id ?? null,
+    user: { id: p.user.id, name: p.user.name, email: p.user.email, brokerName: p.user.brokerName },
+  };
+}
+
+/** Global orders row: the editable order columns and the trader name. */
+export function serializeOrderListRow(o: {
+  id: string;
+  userId: string;
+  symbol: string;
+  side: string;
+  type: string;
+  volume: number;
+  price: number | null;
+  openPrice: number | null;
+  stopLoss: number | null;
+  takeProfit: number | null;
+  status: string;
+  filledAt: Date | string | null;
+  createdAt: Date | string;
+  positionId: string | null;
+  user: { id: string; name: string; email: string; brokerName: string | null };
+}) {
+  return {
+    id: o.id,
+    userId: o.userId,
+    symbol: o.symbol,
+    side: o.side,
+    type: o.type,
+    volume: o.volume,
+    price: o.price,
+    openPrice: o.openPrice,
+    stopLoss: o.stopLoss,
+    takeProfit: o.takeProfit,
+    status: o.status,
+    filledAt: o.filledAt,
+    createdAt: o.createdAt,
+    positionId: o.positionId,
+    traderName: o.user.name,
+    user: { id: o.user.id, name: o.user.name, email: o.user.email, brokerName: o.user.brokerName },
+  };
+}
+
+/** Latest login shown on the workers page, taken from the user row (no login-event scan). */
+export function workerLastLogin(u: {
+  lastLoginAt: Date | string | null;
+  lastIp: string | null;
+  lastCity: string | null;
+  lastRegion: string | null;
+  lastCountry: string | null;
+  lastCountryName: string | null;
+  lastDevice: string | null;
+  lastBrowser: string | null;
+  lastOs: string | null;
+}) {
+  if (!u.lastLoginAt && !u.lastIp && !u.lastCity && !u.lastCountryName) return null;
+  return {
+    at: u.lastLoginAt instanceof Date ? u.lastLoginAt.toISOString() : u.lastLoginAt,
+    ip: u.lastIp,
+    city: u.lastCity,
+    region: u.lastRegion,
+    country: u.lastCountry,
+    countryName: u.lastCountryName,
+    device: u.lastDevice,
+    browser: u.lastBrowser,
+    os: u.lastOs,
+    method: null as string | null,
+  };
+}
+
 function isoOrNull(value: unknown): string | null {
   if (value == null || value === "") return null;
   if (value instanceof Date) return value.toISOString();

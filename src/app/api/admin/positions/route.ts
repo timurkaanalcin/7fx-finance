@@ -14,6 +14,8 @@ import {
 } from "@/lib/trading-settings";
 import { normalizeSide } from "@/lib/pnl";
 import { getSymbol } from "@/lib/symbols";
+import type { Prisma } from "@prisma/client";
+import { crmListWindow, exposureFromPositionGroups, serializeOrderListRow, serializePositionListRow } from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
 
@@ -27,20 +29,33 @@ export async function GET(req: Request) {
   const status = (searchParams.get("status") || "OPEN").toUpperCase();
   const tab = (searchParams.get("tab") || "positions").toLowerCase();
   const userId = searchParams.get("userId");
+  const q = (searchParams.get("q") || "").trim();
+  const paged = searchParams.has("take") || searchParams.has("skip");
+  const listWindow = paged ? crmListWindow(searchParams.get("take"), searchParams.get("skip")) : null;
+  const take = listWindow && !listWindow.legacy ? listWindow.take : 300;
+  const skip = listWindow && !listWindow.legacy ? listWindow.skip : 0;
+  const legacy = !listWindow || listWindow.legacy;
 
   if (tab === "orders") {
     const orderStatus = searchParams.get("orderStatus");
-    const where: Record<string, unknown> = {};
+    const where: Prisma.OrderWhereInput = {};
     if (orderStatus) where.status = orderStatus.toUpperCase();
     if (userId) where.userId = userId;
-    const orders = await prisma.order.findMany({
+    const search = orderSearch(q);
+    if (search) where.AND = [search];
+    const found = await prisma.order.findMany({
       where,
-      include: { user: { select: { id: true, name: true, email: true, brokerName: true } } },
+      select: ORDER_LIST_SELECT,
       orderBy: { createdAt: "desc" },
-      take: 300,
+      skip,
+      take: legacy ? take : take + 1,
     });
+    const hasMore = !legacy && found.length > take;
+    const page = hasMore ? found.slice(0, take) : found;
     return NextResponse.json({
-      orders,
+      orders: page.map(serializeOrderListRow),
+      hasMore,
+      nextSkip: skip + page.length,
       generatedAt: new Date().toISOString(),
     });
   }
@@ -61,30 +76,129 @@ export async function GET(req: Request) {
     );
   }
 
-  const where: Record<string, unknown> = status === "ALL" ? {} : { status };
+  const where: Prisma.PositionWhereInput = status === "ALL" ? {} : { status };
   if (userId) where.userId = userId;
-  const positions = await prisma.position.findMany({
-    where,
-    include: {
-      user: {
-        select: { id: true, name: true, email: true, brokerName: true, desk: true, account: true },
-      },
-    },
-    orderBy: { openedAt: "desc" },
-    take: 300,
-  });
+  const search = positionSearch(q);
+  if (search) where.AND = [search];
 
+  const [found, groups] = await Promise.all([
+    prisma.position.findMany({
+      where,
+      select: POSITION_LIST_SELECT,
+      orderBy: { openedAt: "desc" },
+      skip,
+      take: legacy ? take : take + 1,
+    }),
+    status === "OPEN"
+      ? prisma.position.groupBy({
+          by: ["symbol", "side"],
+          where,
+          _sum: { volume: true, profit: true },
+          _count: true,
+        })
+      : Promise.resolve(null),
+  ]);
+
+  const hasMore = !legacy && found.length > take;
+  const page = hasMore ? found.slice(0, take) : found;
   return NextResponse.json({
-    positions: positions.map((p) => ({
-      ...p,
-      tradingAccountId: p.user.account?.id ?? null,
-      traderName: p.user.name,
-      traderEmail: p.user.email,
-      broker: p.user.brokerName,
-      desk: p.user.desk,
-    })),
+    positions: page.map(serializePositionListRow),
+    hasMore,
+    nextSkip: skip + page.length,
+    ...(groups
+      ? {
+          exposure: exposureFromPositionGroups(
+            groups.map((g) => ({
+              symbol: g.symbol,
+              side: g.side,
+              volume: g._sum.volume ?? 0,
+              profit: g._sum.profit ?? 0,
+              count: g._count,
+            }))
+          ),
+        }
+      : {}),
     generatedAt: new Date().toISOString(),
   });
+}
+
+const POSITION_LIST_SELECT = {
+  id: true,
+  userId: true,
+  symbol: true,
+  chartSymbol: true,
+  side: true,
+  volume: true,
+  openPrice: true,
+  currentPrice: true,
+  stopLoss: true,
+  takeProfit: true,
+  profit: true,
+  margin: true,
+  status: true,
+  openedAt: true,
+  closedAt: true,
+  closePrice: true,
+  closeProfit: true,
+  user: {
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      brokerName: true,
+      desk: true,
+      account: { select: { id: true } },
+    },
+  },
+} satisfies Prisma.PositionSelect;
+
+const ORDER_LIST_SELECT = {
+  id: true,
+  userId: true,
+  symbol: true,
+  side: true,
+  type: true,
+  volume: true,
+  price: true,
+  openPrice: true,
+  stopLoss: true,
+  takeProfit: true,
+  status: true,
+  filledAt: true,
+  createdAt: true,
+  positionId: true,
+  user: { select: { id: true, name: true, email: true, brokerName: true } },
+} satisfies Prisma.OrderSelect;
+
+function positionSearch(q: string): Prisma.PositionWhereInput | null {
+  if (!q) return null;
+  return {
+    OR: [
+      { symbol: { contains: q } },
+      { chartSymbol: { contains: q } },
+      { side: { contains: q } },
+      { id: { contains: q } },
+      { user: { name: { contains: q } } },
+      { user: { email: { contains: q } } },
+      { user: { brokerName: { contains: q } } },
+    ],
+  };
+}
+
+function orderSearch(q: string): Prisma.OrderWhereInput | null {
+  if (!q) return null;
+  return {
+    OR: [
+      { symbol: { contains: q } },
+      { side: { contains: q } },
+      { type: { contains: q } },
+      { status: { contains: q } },
+      { id: { contains: q } },
+      { user: { name: { contains: q } } },
+      { user: { email: { contains: q } } },
+      { user: { brokerName: { contains: q } } },
+    ],
+  };
 }
 
 /**

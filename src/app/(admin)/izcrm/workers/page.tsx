@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ConfirmDialog, CrmFormGrid, type CrmColumn } from "@/components/crm/CrmRecordTable";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { fmtCrmDate } from "@/lib/crm-format";
 import { countryFlag } from "@/lib/presence-shared";
 import { crmJson } from "@/lib/crm-api";
 import { jobTitleLabel, jobTitleOptions, jobTitleUi } from "@/lib/job-titles";
+import { CRM_LIST_PAGE } from "@/lib/trader-list";
 
 type LoginInfo = {
   at: string;
@@ -90,25 +91,56 @@ export default function WorkersPage() {
   const [deleteTarget, setDeleteTarget] = useState<Worker | null>(null);
   const [archiveTarget, setArchiveTarget] = useState<{ w: Worker; count: number } | null>(null);
   const [query, setQuery] = useState("");
+  const [qDebounced, setQDebounced] = useState("");
   const [wFilter, setWFilter] = useState<WFilter>("all");
   const [roleFilter, setRoleFilter] = useState("");
-
-  const load = useCallback(async () => {
-    const r = await fetch("/api/admin/workers");
-    if (!r.ok) {
-      setErr(r.status === 403 ? i18n("crm.workers.noPermission") : i18n("crm.ui.actionFailed"));
-      return;
-    }
-    const d = await r.json();
-    setRows(d.workers || []);
-    setDesks(d.desks || []);
-    setMyPerms(d.me?.perms || {});
-  }, [i18n]);
+  const [hasMore, setHasMore] = useState(false);
+  const [moreBusy, setMoreBusy] = useState(false);
+  const [serverCounts, setServerCounts] = useState<{ all: number; active: number; inactive: number; stale: number } | null>(null);
+  const [roleChoices, setRoleChoices] = useState<{ jobTitle: string; count: number }[]>([]);
+  const rowsRef = useRef<Worker[]>([]);
+  const listGen = useRef(0);
 
   useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const t = setTimeout(() => setQDebounced(query.trim()), 300);
+    return () => clearTimeout(t);
+  }, [query]);
+
+  const load = useCallback(async (mode: "replace" | "more" = "replace") => {
+    const gen = ++listGen.current;
+    const p = new URLSearchParams();
+    p.set("take", String(CRM_LIST_PAGE));
+    p.set("skip", mode === "more" ? String(rowsRef.current.length) : "0");
+    if (qDebounced) p.set("q", qDebounced);
+    if (wFilter !== "all") p.set("filter", wFilter);
+    if (roleFilter) p.set("role", roleFilter);
+    if (mode === "replace") p.set("counts", "1");
+    if (mode === "more") setMoreBusy(true);
+    try {
+      const r = await fetch(`/api/admin/workers?${p}`);
+      if (gen !== listGen.current) return;
+      if (!r.ok) {
+        setErr(r.status === 403 ? i18n("crm.workers.noPermission") : i18n("crm.ui.actionFailed"));
+        return;
+      }
+      const d = await r.json();
+      const list: Worker[] = d.workers || [];
+      const next = mode === "more" ? rowsRef.current.concat(list.filter((row) => !rowsRef.current.some((old) => old.id === row.id))) : list;
+      rowsRef.current = next;
+      setRows(next);
+      setHasMore(Boolean(d.hasMore));
+      if (d.desks) setDesks(d.desks);
+      if (d.me?.perms) setMyPerms(d.me.perms);
+      if (d.counts) setServerCounts(d.counts);
+      if (Array.isArray(d.roles)) setRoleChoices(d.roles);
+    } finally {
+      if (mode === "more" && gen === listGen.current) setMoreBusy(false);
+    }
+  }, [i18n, qDebounced, wFilter, roleFilter]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
 
   const deskOpts = useMemo(
     () => desks.map((d) => ({ value: d.id, label: `${deskName(d)}${d.active ? "" : " ✕"}` })),
@@ -122,37 +154,14 @@ export default function WorkersPage() {
     return !Number.isFinite(t) || Date.now() - t > STALE_MS;
   }, []);
 
-  const wCounts = useMemo(
-    () => ({
-      all: rows.length,
-      active: rows.filter((w) => w.active).length,
-      inactive: rows.filter((w) => !w.active).length,
-      stale: rows.filter((w) => w.active && isStale(w)).length,
-    }),
-    [rows, isStale]
-  );
+  const wCounts = serverCounts || {
+    all: rows.length,
+    active: rows.filter((w) => w.active).length,
+    inactive: rows.filter((w) => !w.active).length,
+    stale: rows.filter((w) => w.active && isStale(w)).length,
+  };
 
-  const roleChoices = useMemo(() => {
-    const seen = new Set<string>();
-    for (const w of rows) seen.add(w.jobTitle || "");
-    return Array.from(seen).sort((a, b) =>
-      (jobTitleLabel(a, locale) || "—").localeCompare(jobTitleLabel(b, locale) || "—", "tr")
-    );
-  }, [rows, locale]);
-
-  const shownRows = useMemo(() => {
-    const q = query.trim().toLocaleLowerCase("tr");
-    return rows.filter((w) => {
-      if (wFilter === "active" && !w.active) return false;
-      if (wFilter === "inactive" && w.active) return false;
-      if (wFilter === "stale" && !(w.active && isStale(w))) return false;
-      if (roleFilter && (w.jobTitle || "__none") !== roleFilter) return false;
-      if (!q) return true;
-      return [w.name, w.email, w.desk, jobTitleLabel(w.jobTitle, locale)].some((v) =>
-        String(v ?? "").toLocaleLowerCase("tr").includes(q)
-      );
-    });
-  }, [rows, query, wFilter, roleFilter, isStale, locale]);
+  const shownRows = rows;
 
   function columns(w: Worker | null, create: boolean): CrmColumn[] {
     const cols: CrmColumn[] = [
@@ -399,8 +408,8 @@ export default function WorkersPage() {
                   {jt.field}: {i18n("crm.ui.all")}
                 </option>
                 {roleChoices.map((r) => (
-                  <option key={r || "__none"} value={r || "__none"}>
-                    {jobTitleLabel(r, locale) || "—"} ({rows.filter((w) => (w.jobTitle || "") === r).length})
+                  <option key={r.jobTitle || "__none"} value={r.jobTitle || "__none"}>
+                    {jobTitleLabel(r.jobTitle, locale) || "—"} ({r.count})
                   </option>
                 ))}
               </select>
@@ -430,7 +439,7 @@ export default function WorkersPage() {
             </div>
           </div>
           <div className="w-full text-[10px] tabular-nums text-neutral-500">
-            {shownRows.length} / {rows.length}
+            {rows.length}{hasMore ? "+" : ""}
           </div>
         </div>
         <table className="w-full text-left text-xs">
@@ -575,6 +584,18 @@ export default function WorkersPage() {
           </tbody>
         </table>
       </div>
+      {hasMore && (
+        <div className="mt-3 text-center">
+          <button
+            type="button"
+            disabled={moreBusy}
+            onClick={() => void load("more")}
+            className="rounded-full border border-neutral-300 px-3 py-1 text-xs font-semibold text-neutral-600 hover:bg-neutral-50 disabled:opacity-50"
+          >
+            {i18n("crm.ui.loadMore")}
+          </button>
+        </div>
+      )}
 
       <ConfirmDialog
         open={deleteTarget != null}

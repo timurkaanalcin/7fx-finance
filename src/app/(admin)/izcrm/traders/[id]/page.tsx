@@ -15,7 +15,7 @@ import RetentionPanel, { AssigneePicker } from "@/components/crm/RetentionPanel"
 import TeamComments from "@/components/crm/TeamComments";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CRM_IDLE_POLL_MS, useVisiblePoll } from "@/lib/use-visible-poll";
-import { TRADER_LAZY_SCOPES, traderDetailScopeForTab, type TraderDetailScope } from "@/lib/trader-list";
+import { TRADER_LAZY_SCOPES, traderDetailScopeForEntity, traderDetailScopeForTab, type TraderDetailScope } from "@/lib/trader-list";
 import { LoginHistory, TraderPresenceHeader } from "@/components/crm/Presence";
 import AccountPermissionsPanel from "@/components/crm/AccountPermissionsPanel";
 import {
@@ -1221,7 +1221,7 @@ export default function AdminUserDetailPage() {
       }
       setMsg(i18n("crm.ui.profileSaved"));
       setEditingProfile(false);
-      await load();
+      await load("profile");
     } finally {
       setBusy(false);
     }
@@ -1232,7 +1232,7 @@ export default function AdminUserDetailPage() {
     (entity: string) => ({
       create: async (values: Row, applyToBalance: boolean): Promise<Result> => {
         const r = await jsonCall(`/api/admin/users/${id}/records`, "POST", { entity, ...values, applyToBalance });
-        if (r.ok) await load();
+        if (r.ok) await load(traderDetailScopeForEntity(entity));
         return r;
       },
       update: async (rid: string, values: Row, applyToBalance: boolean): Promise<Result> => {
@@ -1242,12 +1242,12 @@ export default function AdminUserDetailPage() {
           ...values,
           applyToBalance,
         });
-        if (r.ok) await load();
+        if (r.ok) await load(traderDetailScopeForEntity(entity));
         return r;
       },
       remove: async (rid: string, applyToBalance: boolean): Promise<Result> => {
         const r = await jsonCall(`/api/admin/users/${id}/records`, "DELETE", { entity, id: rid, applyToBalance });
-        if (r.ok) await load();
+        if (r.ok) await load(traderDetailScopeForEntity(entity));
         return r;
       },
     }),
@@ -1475,7 +1475,7 @@ export default function AdminUserDetailPage() {
       ...values,
       applyToBalance,
     });
-    if (r.ok) await load();
+    if (r.ok) await load("positions");
     return r;
   }
 
@@ -1767,7 +1767,7 @@ export default function AdminUserDetailPage() {
           </div>
           {canManageUsers ? <AssigneePicker userId={user.id} current={(user as { assigneeId?: string | null }).assigneeId ?? null} /> : null}
           <RetentionPanel userId={user.id} />
-          <TeamComments userId={user.id} readOnly={crmReadOnly} onChanged={() => { void load(); }} />
+          <TeamComments userId={user.id} readOnly={crmReadOnly} />
 
           <LoginHistory userId={user.id} />
 
@@ -1781,7 +1781,7 @@ export default function AdminUserDetailPage() {
           readOnly={crmReadOnly}
           onChanged={async (account) => {
             if (account) setUser((u) => (u ? ({ ...u, ...account } as Membership) : u));
-            await load();
+            await load("finance");
           }}
         />
       )}
@@ -1873,11 +1873,11 @@ export default function AdminUserDetailPage() {
               />
             </div>
             ) : null}
-            <EditablePositionsTable rows={positions} onSaved={() => load()} manage={canWrite} />
+            <EditablePositionsTable rows={positions} onSaved={() => load("positions")} manage={canWrite} />
           </div>
           <div>
             <h2 className="mb-2 text-sm font-medium">{i18n("crm.ui.ordersFull")}</h2>
-            <EditableOrdersTable rows={orders} onSaved={() => load()} userId={user.id} readOnly={crmReadOnly} />
+            <EditableOrdersTable rows={orders} onSaved={() => load("positions")} userId={user.id} readOnly={crmReadOnly} />
           </div>
         </div>
       )}
