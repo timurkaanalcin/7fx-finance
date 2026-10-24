@@ -70,10 +70,17 @@ function main() {
   assert.match(page, /data-fx-trader-pager/);
   assert.match(page, /e\.key !== "\/"/);
   assert.match(page, /history\.replaceState/);
-  assert.match(page, /fetch\("\/api\/auth\/me", \{ credentials: "include" \}\)/);
   assert.match(page, /href=\{`\/izcrm\/traders\/\$\{u\.id\}`\}/);
-  assert.equal(page.includes("OpenTerminalButton"), false);
   assert.match(page, /colSpan=\{13\}/);
+  // This branch does not add the impersonation control. Once that branch is merged,
+  // the admin session fetch carries scope=admin and the list shows the terminal button.
+  if (page.includes("OpenTerminalButton")) {
+    assert.match(page, /fetch\("\/api\/auth\/me\?scope=admin", \{ credentials: "include" \}\)/);
+    assert.match(page, /<OpenTerminalButton userId=\{u\.id\} returnTo="\/izcrm\/traders" \/>/);
+  } else {
+    assert.match(page, /fetch\("\/api\/auth\/me", \{ credentials: "include" \}\)/);
+    assert.equal(page.includes("?scope=admin"), false);
+  }
 
   const route = fs.readFileSync(new URL("../src/app/api/admin/users/route.ts", import.meta.url), "utf8");
   assert.match(route, /traderTextSearch\(q\)/);
