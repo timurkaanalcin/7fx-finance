@@ -2,13 +2,13 @@ import { NextResponse } from "next/server";
 import { requireAdmin, requireAdminPerm } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
-import { serializeDeskTrader, serializeDeskWorker } from "@/lib/trader-list";
+import { crmPageWindow, serializeDeskTrader, serializeDeskWorker } from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
 
 type Ctx = { params: { id: string } };
 
-export async function GET(_req: Request, ctx: Ctx) {
+export async function GET(req: Request, ctx: Ctx) {
   await ensureDemoSeed();
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
@@ -17,33 +17,58 @@ export async function GET(_req: Request, ctx: Ctx) {
   const desk = await prisma.desk.findUnique({ where: { id } });
   if (!desk) return NextResponse.json({ error: "Desk yok" }, { status: 404 });
 
+  const { searchParams } = new URL(req.url);
+  const part = searchParams.get("part");
+  const paged = searchParams.has("traderTake") || searchParams.has("traderSkip") || searchParams.has("workerTake") || searchParams.has("workerSkip") || part != null;
   const where = {
     OR: [{ deskId: desk.id }, ...(desk.code ? [{ deskId: desk.code }] : []), { desk: desk.name }],
   };
+  const traderWhere = { ...where, role: "TRADER" as const };
+  const workerWhere = { ...where, role: "ADMIN" as const };
+  const wantTraders = part !== "workers";
+  const wantWorkers = part !== "traders";
+  const traderWindow = paged ? crmPageWindow(searchParams.get("traderTake"), searchParams.get("traderSkip")) : { take: 200, skip: 0 };
+  const workerWindow = paged ? crmPageWindow(searchParams.get("workerTake"), searchParams.get("workerSkip")) : { take: 100, skip: 0 };
 
-  const [traders, workers] = await Promise.all([
-    prisma.user.findMany({
-      where: { ...where, role: "TRADER" },
-      select: { id: true, name: true, account: { select: { balance: true, currency: true } } },
-      take: 200,
-      orderBy: { createdAt: "desc" },
-    }),
-    prisma.user.findMany({
-      where: { ...where, role: "ADMIN" },
-      select: { id: true, name: true, email: true },
-      take: 100,
-      orderBy: { createdAt: "desc" },
-    }),
+  const [tradersFound, workersFound, tradersCount, workersCount, balance] = await Promise.all([
+    wantTraders
+      ? prisma.user.findMany({
+          where: traderWhere,
+          select: { id: true, name: true, account: { select: { balance: true, currency: true } } },
+          take: paged ? traderWindow.take + 1 : traderWindow.take,
+          skip: traderWindow.skip,
+          orderBy: { createdAt: "desc" },
+        })
+      : Promise.resolve([]),
+    wantWorkers
+      ? prisma.user.findMany({
+          where: workerWhere,
+          select: { id: true, name: true, email: true },
+          take: paged ? workerWindow.take + 1 : workerWindow.take,
+          skip: workerWindow.skip,
+          orderBy: { createdAt: "desc" },
+        })
+      : Promise.resolve([]),
+    prisma.user.count({ where: traderWhere }),
+    prisma.user.count({ where: workerWhere }),
+    prisma.account.aggregate({ where: { user: traderWhere }, _sum: { balance: true } }),
   ]);
+
+  const tradersHasMore = paged && wantTraders && tradersFound.length > traderWindow.take;
+  const workersHasMore = paged && wantWorkers && workersFound.length > workerWindow.take;
+  const traders = (tradersHasMore ? tradersFound.slice(0, traderWindow.take) : tradersFound).map(serializeDeskTrader);
+  const workers = (workersHasMore ? workersFound.slice(0, workerWindow.take) : workersFound).map(serializeDeskWorker);
 
   return NextResponse.json({
     desk,
-    traders: traders.map(serializeDeskTrader),
-    workers: workers.map(serializeDeskWorker),
+    traders,
+    workers,
+    tradersHasMore,
+    workersHasMore,
     analytics: {
-      tradersCount: traders.length,
-      workersCount: workers.length,
-      totalBalance: traders.reduce((s, u) => s + (u.account?.balance || 0), 0),
+      tradersCount,
+      workersCount,
+      totalBalance: balance._sum.balance || 0,
       note: "Analytics stub — finance / affiliation / scoreboard per desk in a later iteration",
     },
   });

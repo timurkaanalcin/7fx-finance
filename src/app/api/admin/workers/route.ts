@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { allocateUniqueAccountLoginId } from "@/lib/account-login-id";
 import { jobTitleSchema } from "@/lib/job-titles";
+import type { Prisma } from "@prisma/client";
+import { crmPageWindow, workerLastLogin } from "@/lib/trader-list";
 
 function jobTitle(v: unknown) {
   const r = jobTitleSchema.safeParse(v);
@@ -121,6 +123,9 @@ const SELECT = {
   lastRegion: true,
   lastCountry: true,
   lastCountryName: true,
+  lastDevice: true,
+  lastBrowser: true,
+  lastOs: true,
   createdAt: true,
   canManageUsers: true,
   canApproveDeposits: true,
@@ -129,60 +134,107 @@ const SELECT = {
   canAdjustBalance: true,
 } as const;
 
-export async function GET() {
+const WORKER_STALE_MS = 7 * 24 * 60 * 60 * 1000;
+
+export async function GET(req: Request) {
   await ensureDemoSeed();
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
-  const workers = await prisma.user.findMany({
-    where: { role: "ADMIN" },
-    select: SELECT,
-    orderBy: { createdAt: "asc" },
-    take: 500,
-  });
-  const ids = workers.map((w) => w.id);
-  const events = ids.length
-    ? await prisma.loginEvent.findMany({
-        where: { userId: { in: ids }, success: true },
-        orderBy: { at: "desc" },
-        take: 2000,
-        select: {
-          userId: true,
-          at: true,
-          ip: true,
-          city: true,
-          region: true,
-          country: true,
-          countryName: true,
-          device: true,
-          browser: true,
-          os: true,
-          method: true,
-        },
-      })
-    : [];
-  const lastEvent = new Map<string, (typeof events)[number]>();
-  for (const ev of events) if (!lastEvent.has(ev.userId)) lastEvent.set(ev.userId, ev);
-  const desks = await prisma.desk.findMany({
-    orderBy: [{ active: "desc" }, { name: "asc" }],
-    select: { id: true, name: true, code: true, active: true },
-    take: 300,
-  });
+  const { searchParams } = new URL(req.url);
+  const q = (searchParams.get("q") || "").trim();
+  const filter = searchParams.get("filter") || "all";
+  const role = (searchParams.get("role") || "").trim();
+  const paged = searchParams.has("take") || searchParams.has("skip");
+  const pageWindow = paged ? crmPageWindow(searchParams.get("take"), searchParams.get("skip")) : null;
+  const take = pageWindow ? pageWindow.take : 500;
+  const skip = pageWindow ? pageWindow.skip : 0;
+  const where = workerWhere(q, filter, role);
+  const wantCounts = searchParams.get("counts") === "1";
+  const staleBefore = new Date(Date.now() - WORKER_STALE_MS);
 
+  const [found, desks, counts, roles] = await Promise.all([
+    prisma.user.findMany({
+      where,
+      select: SELECT,
+      orderBy: { createdAt: "asc" },
+      skip,
+      take: pageWindow ? take + 1 : take,
+    }),
+    prisma.desk.findMany({
+      orderBy: [{ active: "desc" }, { name: "asc" }],
+      select: { id: true, name: true, code: true, active: true },
+      take: 300,
+    }),
+    wantCounts
+      ? Promise.all([
+          prisma.user.count({ where: { role: "ADMIN" } }),
+          prisma.user.count({ where: { role: "ADMIN", active: true } }),
+          prisma.user.count({ where: { role: "ADMIN", active: false } }),
+          prisma.user.count({
+            where: {
+              role: "ADMIN",
+              active: true,
+              OR: [{ lastLoginAt: null }, { lastLoginAt: { lt: staleBefore } }],
+            },
+          }),
+        ])
+      : Promise.resolve(null),
+    wantCounts
+      ? prisma.user.groupBy({ by: ["jobTitle"], where: { role: "ADMIN" }, _count: true })
+      : Promise.resolve(null),
+  ]);
+
+  const hasMore = Boolean(pageWindow) && found.length > take;
+  const page = hasMore ? found.slice(0, take) : found;
   return NextResponse.json({
-    workers: workers.map((w) => ({
+    workers: page.map((w) => ({
       ...w,
       isMain: isMain(w.email),
       isSelf: w.id === admin.id,
-      lastLogin: lastEvent.get(w.id) ?? null,
+      lastLogin: workerLastLogin(w),
     })),
     desks,
+    hasMore,
+    nextSkip: skip + page.length,
+    ...(counts
+      ? { counts: { all: counts[0], active: counts[1], inactive: counts[2], stale: counts[3] } }
+      : {}),
+    ...(roles
+      ? { roles: roles.map((r) => ({ jobTitle: r.jobTitle || "", count: r._count })) }
+      : {}),
     permissionDefs: ADMIN_PERMISSIONS,
     me: {
       id: admin.id,
       perms: Object.fromEntries(PERM_KEYS.map((k) => [k, (admin as Record<string, unknown>)[k] !== false])),
     },
   });
+}
+
+function workerWhere(q: string, filter: string, role: string): Prisma.UserWhereInput {
+  const where: Prisma.UserWhereInput = { role: "ADMIN" };
+  if (filter === "active") where.active = true;
+  else if (filter === "inactive") where.active = false;
+  else if (filter === "stale") {
+    where.active = true;
+    const staleBefore = new Date(Date.now() - WORKER_STALE_MS);
+    where.OR = [{ lastLoginAt: null }, { lastLoginAt: { lt: staleBefore } }];
+  }
+  if (role === "__none") where.jobTitle = null;
+  else if (role) where.jobTitle = role;
+  if (q) {
+    where.AND = [
+      {
+        OR: [
+          { name: { contains: q } },
+          { email: { contains: q } },
+          { desk: { contains: q } },
+          { jobTitle: { contains: q } },
+        ],
+      },
+    ];
+  }
+  return where;
 }
 
 export async function POST(req: Request) {

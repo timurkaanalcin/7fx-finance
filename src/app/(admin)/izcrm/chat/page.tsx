@@ -4,7 +4,8 @@ import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 import Link from "next/link";
 import { FormEvent, KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useVisiblePoll } from "@/lib/use-visible-poll";
+import { CRM_IDLE_POLL_MS, useVisiblePoll } from "@/lib/use-visible-poll";
+import { CHAT_THREAD_CAP, CHAT_THREAD_PAGE } from "@/lib/trader-list";
 import { ChatFormattedBody } from "@/components/chat/ChatFormattedBody";
 import { ChatFormatToolbar } from "@/components/chat/ChatFormatToolbar";
 import { applyFormatAction, type FormatAction } from "@/components/chat/chatFormat";
@@ -56,6 +57,7 @@ type Thread = {
   active: boolean;
   lastAt: string;
   messages: Msg[];
+  messageCount?: number;
   profile?: Profilee;
   presence?: ChatPresenceSnapshot;
 };
@@ -81,6 +83,29 @@ function relativeTimeTr(iso: string, locale: string): string {
   const day = Math.round(hr / 24);
   if (Math.abs(day) < 30) return rtf.format(-day, "day");
   return new Date(iso).toLocaleDateString(locale);
+}
+
+function mergeChatThreads(prev: Thread[], incoming: Thread[], mode: "replace" | "more", keepId?: string | null): Thread[] {
+  const prevById = new Map(prev.map((t) => [t.traderId, t]));
+  const merged = incoming.map((t) => {
+    const old = prevById.get(t.traderId);
+    if (!old || old.messages.length <= t.messages.length) return t;
+    const seen = new Set(old.messages.map((m) => m.id));
+    const extra = t.messages.filter((m) => !seen.has(m.id));
+    const messages = extra.length
+      ? [...old.messages, ...extra].sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+      : old.messages;
+    return { ...t, messages };
+  });
+  if (mode === "more") {
+    const seen = new Set(prev.map((t) => t.traderId));
+    return prev.concat(merged.filter((t) => !seen.has(t.traderId)));
+  }
+  if (keepId && !merged.some((t) => t.traderId === keepId)) {
+    const kept = prev.find((t) => t.traderId === keepId);
+    if (kept) return [kept, ...merged];
+  }
+  return merged;
 }
 
 function initials(name: string): string {
@@ -123,7 +148,7 @@ function isUnanswered(t: Thread): boolean {
 }
 
 function isNew(t: Thread): boolean {
-  return t.messages.length <= 1;
+  return (t.messageCount ?? t.messages.length) <= 1;
 }
 
 function ProfileeRow({
@@ -213,6 +238,9 @@ export default function ChatPage() {
   const [message, setMessage] = useState("");
   const [tab, setTab] = useState<Tab>("all");
   const [query, setQuery] = useState("");
+  const [qDebounced, setQDebounced] = useState("");
+  const [hasMore, setHasMore] = useState(false);
+  const [moreBusy, setMoreBusy] = useState(false);
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState("");
   const [emojiOpen, setEmojiOpen] = useState(false);
@@ -234,9 +262,19 @@ export default function ChatPage() {
   const [slashIdx, setSlashIdx] = useState(0);
   // Staff-only pinned threads (per browser, max 20, newest pin first)
   const [pins, setPins] = useState<string[]>([]);
+  const threadsRef = useRef<Thread[]>([]);
+  const selectedRef = useRef<string | null>(null);
+  selectedRef.current = selected;
+  const listGen = useRef(0);
+  const qRef = useRef("");
+  const pickerSeen = useRef(false);
   useEffect(() => {
     setPins(loadPins());
   }, []);
+  useEffect(() => {
+    const t = setTimeout(() => setQDebounced(query.trim()), 300);
+    return () => clearTimeout(t);
+  }, [query]);
   const togglePin = useCallback((traderId: string) => {
     setPins((prev) => {
       const next = prev.includes(traderId) ? prev.filter((x) => x !== traderId) : [traderId, ...prev].slice(0, PIN_MAX);
@@ -260,18 +298,65 @@ export default function ChatPage() {
     return rows.slice(0, 8);
   }, [slash, canned.items, i18n]);
 
-  const load = useCallback(async () => {
-    const res = await fetch("/api/admin/chat");
-    if (!res.ok) return;
-    const data = await res.json();
-    setThreads(data.threads || []);
-    setTraders(data.traders || []);
-  }, []);
+  const load = useCallback(async (mode: "replace" | "more" = "replace") => {
+    const gen = ++listGen.current;
+    const qChanged = mode === "replace" && qDebounced !== qRef.current;
+    if (qChanged) qRef.current = qDebounced;
+    const loaded = mode === "more" || !qChanged ? threadsRef.current.length : 0;
+    const p = new URLSearchParams();
+    p.set("take", String(mode === "more" ? CHAT_THREAD_PAGE : Math.min(CHAT_THREAD_CAP, Math.max(CHAT_THREAD_PAGE, loaded || CHAT_THREAD_PAGE))));
+    p.set("skip", mode === "more" ? String(threadsRef.current.length) : "0");
+    if (qDebounced) p.set("q", qDebounced);
+    if (pins.length) p.set("pins", pins.join(","));
+    if (!pickerSeen.current && mode === "replace") p.set("picker", "1");
+    if (mode === "more") setMoreBusy(true);
+    try {
+      const res = await fetch(`/api/admin/chat?${p}`);
+      if (!res.ok || gen !== listGen.current) return;
+      const data = await res.json();
+      const incoming: Thread[] = data.threads || [];
+      const next = mergeChatThreads(threadsRef.current, incoming, mode, selectedRef.current);
+      threadsRef.current = next;
+      setThreads(next);
+      setHasMore(Boolean(data.hasMore));
+      if (Array.isArray(data.traders)) {
+        setTraders(data.traders);
+        pickerSeen.current = true;
+      }
+    } finally {
+      if (mode === "more" && gen === listGen.current) setMoreBusy(false);
+    }
+  }, [qDebounced, pins]);
 
   useEffect(() => {
-    load();
+    void load();
   }, [load]);
-  useVisiblePoll(load, 8000);
+  useVisiblePoll(load, CRM_IDLE_POLL_MS);
+
+  useEffect(() => {
+    if (!selected) return;
+    const known = threadsRef.current.find((t) => t.traderId === selected);
+    if (known && (known.messageCount ?? known.messages.length) <= known.messages.length) return;
+    let cancel = false;
+    void (async () => {
+      const res = await fetch(`/api/admin/chat?userId=${encodeURIComponent(selected)}`);
+      if (!res.ok || cancel) return;
+      const data = await res.json();
+      const full = (data.threads || [])[0] as Thread | undefined;
+      if (!full || cancel) return;
+      setThreads((prev) => {
+        const exists = prev.some((t) => t.traderId === full.traderId);
+        const next = exists
+          ? prev.map((t) => (t.traderId === full.traderId ? { ...t, ...full } : t))
+          : [full, ...prev];
+        threadsRef.current = next;
+        return next;
+      });
+    })();
+    return () => {
+      cancel = true;
+    };
+  }, [selected]);
 
 
   const unanswered = useMemo(
@@ -283,22 +368,13 @@ export default function ChatPage() {
     let rows = threads;
     if (tab === "new") rows = rows.filter(isNew);
     else if (tab === "unanswered") rows = rows.filter(isUnanswered);
-    const q = query.trim().toLowerCase();
-    if (q) {
-      rows = rows.filter(
-        (t) =>
-          t.trader.toLowerCase().includes(q) ||
-          t.traderEmail.toLowerCase().includes(q) ||
-          t.messages.some((m) => m.body.toLowerCase().includes(q)),
-      );
-    }
     if (pins.length) {
       const rank = new Map(pins.map((id, i) => [id, i]));
       const pinned = rows.filter((t) => rank.has(t.traderId)).sort((a, b) => (rank.get(a.traderId) ?? 0) - (rank.get(b.traderId) ?? 0));
       if (pinned.length) rows = [...pinned, ...rows.filter((t) => !rank.has(t.traderId))];
     }
     return rows;
-  }, [threads, tab, query, pins]);
+  }, [threads, tab, pins]);
   const pinnedInList = useMemo(() => list.filter((t) => pins.includes(t.traderId)).length, [list, pins]);
 
   // Deep link from notifications: /izcrm/chat?user=<traderId>
@@ -593,7 +669,7 @@ export default function ChatPage() {
           <div>
             <p className="text-sm font-semibold text-neutral-900">{i18n("crm.chat.title")}</p>
             <p className="text-[11px] text-neutral-500">
-              7FX · {threads.length} {i18n("crm.chat.conversations")} · {unanswered} {i18n("crm.chat.awaiting")}
+              7FX · {threads.length}{hasMore ? "+" : ""} {i18n("crm.chat.conversations")} · {unanswered} {i18n("crm.chat.awaiting")}
             </p>
           </div>
         </div>
@@ -757,7 +833,18 @@ export default function ChatPage() {
             })}
           </ul>
           <p className="border-t border-neutral-200 px-3 py-2 text-center text-[10px] text-neutral-400">
-            {i18n("crm.chat.allLoaded")}
+            {hasMore ? (
+              <button
+                type="button"
+                disabled={moreBusy}
+                onClick={() => void load("more")}
+                className="rounded-full border border-neutral-300 px-3 py-1 text-xs font-semibold text-neutral-600 hover:bg-neutral-50 disabled:opacity-50"
+              >
+                {i18n("crm.ui.loadMore")}
+              </button>
+            ) : (
+              i18n("crm.chat.allLoaded")
+            )}
           </p>
         </aside>
 

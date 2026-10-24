@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { touchLastContact } from "@/lib/last-contact";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { serializeChatPresence } from "@/lib/chat-presence";
+import type { Prisma } from "@prisma/client";
+import { chatThreadWindow } from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
 
@@ -15,8 +17,13 @@ export async function GET(req: Request) {
 
   const { searchParams } = new URL(req.url);
   const userId = (searchParams.get("userId") || "").trim();
+  const paged = searchParams.has("take") || searchParams.has("skip");
 
-  const baseWhere: Record<string, unknown> = userId ? { type: "CHAT", userId } : { type: "CHAT" };
+  if (paged && !userId) {
+    return NextResponse.json(await pagedThreads(admin, searchParams));
+  }
+
+  const baseWhere: Prisma.CommunicationWhereInput = userId ? { type: "CHAT", userId } : { type: "CHAT" };
   const where = isScopedStaff(admin) ? { ...baseWhere, user: assignedWhere(admin) } : baseWhere;
   const rows = await prisma.communication.findMany({
     where,
@@ -138,14 +145,220 @@ export async function GET(req: Request) {
     messages: t.messages.reverse(),
   }));
 
-  const traders = await prisma.user.findMany({
-    where: scopeUserWhere(admin, { role: "TRADER" }),
-    select: { id: true, name: true, email: true },
-    orderBy: { name: "asc" },
-    take: 200,
-  });
+  const traders = userId
+    ? []
+    : await prisma.user.findMany({
+        where: scopeUserWhere(admin, { role: "TRADER" }),
+        select: { id: true, name: true, email: true },
+        orderBy: { name: "asc" },
+        take: 200,
+      });
 
   return NextResponse.json({ threads, traders });
+}
+
+const CHAT_USER_SELECT = {
+  id: true,
+  name: true,
+  email: true,
+  desk: true,
+  active: true,
+  firstName: true,
+  lastName: true,
+  phone: true,
+  language: true,
+  timezone: true,
+  country: true,
+  accountType: true,
+  registrationDate: true,
+  registrationCountry: true,
+  tradingServer: true,
+  ftd: true,
+  brokerName: true,
+  assigneeName: true,
+  affiliateA: true,
+  lastLoginAt: true,
+  lastSeenAt: true,
+  createdAt: true,
+  account: { select: { currency: true, balance: true } },
+  chatThreadState: true,
+} satisfies Prisma.UserSelect;
+
+const CHAT_MSGS = 40;
+
+async function pagedThreads(
+  admin: NonNullable<Awaited<ReturnType<typeof requireAdmin>>>,
+  searchParams: URLSearchParams
+) {
+  const q = (searchParams.get("q") || "").trim();
+  const { take, skip } = chatThreadWindow(searchParams.get("take"), searchParams.get("skip"));
+  const pins = (searchParams.get("pins") || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .slice(0, 20);
+  const where = chatWhere(admin, q);
+  const heads = await prisma.communication.findMany({
+    where,
+    orderBy: { createdAt: "desc" },
+    distinct: ["userId"],
+    skip,
+    take: take + 1,
+    select: { userId: true },
+  });
+  const hasMore = heads.length > take;
+  const pageIds = (hasMore ? heads.slice(0, take) : heads).map((h) => h.userId);
+  const extraPins = pins.filter((id) => !pageIds.includes(id));
+  const ids = pageIds.concat(extraPins);
+  const [groups, messageGroups, traders] = await Promise.all([
+    ids.length
+      ? prisma.communication.groupBy({
+          by: ["userId"],
+          where: { type: "CHAT", userId: { in: ids } },
+          _count: true,
+        })
+      : Promise.resolve([]),
+    Promise.all(
+      ids.map((id) =>
+        prisma.communication.findMany({
+          where: { ...chatWhere(admin, ""), userId: id, type: "CHAT" },
+          orderBy: { createdAt: "desc" },
+          take: CHAT_MSGS,
+          select: {
+            id: true,
+            userId: true,
+            title: true,
+            description: true,
+            workerName: true,
+            createdAt: true,
+            user: { select: CHAT_USER_SELECT },
+          },
+        })
+      )
+    ),
+    searchParams.get("picker") === "1"
+      ? prisma.user.findMany({
+          where: scopeUserWhere(admin, { role: "TRADER" }),
+          select: { id: true, name: true, email: true },
+          orderBy: { name: "asc" },
+          take: 200,
+        })
+      : Promise.resolve(undefined),
+  ]);
+  const counts = new Map(groups.map((g) => [g.userId, g._count]));
+  const threads = messageGroups
+    .map((msgs) => threadFromMessages(msgs, counts.get(msgs[0]?.userId || "") ?? msgs.length))
+    .filter((t): t is NonNullable<typeof t> => t != null);
+  const rank = new Map(pageIds.map((id, i) => [id, i]));
+  threads.sort((a, b) => (rank.get(a.traderId) ?? 1000) - (rank.get(b.traderId) ?? 1000));
+  return {
+    threads,
+    hasMore,
+    nextSkip: skip + pageIds.length,
+    ...(traders ? { traders } : {}),
+  };
+}
+
+function chatWhere(admin: NonNullable<Awaited<ReturnType<typeof requireAdmin>>>, q: string): Prisma.CommunicationWhereInput {
+  const where: Prisma.CommunicationWhereInput = { type: "CHAT" };
+  if (isScopedStaff(admin)) where.user = assignedWhere(admin);
+  if (q) {
+    const text: Prisma.CommunicationWhereInput[] = [
+      { description: { contains: q } },
+      { user: { name: { contains: q } } },
+      { user: { email: { contains: q } } },
+    ];
+    where.AND = [{ OR: text }];
+  }
+  return where;
+}
+
+function threadFromMessages(
+  msgs: {
+    id: string;
+    userId: string;
+    title: string | null;
+    description: string;
+    workerName: string | null;
+    createdAt: Date;
+    user: {
+      id: string;
+      name: string;
+      email: string;
+      desk: string | null;
+      active: boolean;
+      firstName: string | null;
+      lastName: string | null;
+      phone: string | null;
+      language: string | null;
+      timezone: string | null;
+      country: string | null;
+      accountType: string | null;
+      registrationDate: Date | null;
+      registrationCountry: string | null;
+      tradingServer: string | null;
+      ftd: boolean;
+      brokerName: string | null;
+      assigneeName: string | null;
+      affiliateA: string | null;
+      lastLoginAt: Date | null;
+      lastSeenAt: Date | null;
+      createdAt: Date;
+      account: { currency: string; balance: number } | null;
+      chatThreadState: Parameters<typeof serializeChatPresence>[0];
+    };
+  }[],
+  messageCount: number
+) {
+  const newest = msgs[0];
+  if (!newest) return null;
+  const user = newest.user;
+  const chronological = [...msgs].reverse();
+  return {
+    traderId: user.id,
+    trader: user.name,
+    traderEmail: user.email,
+    desk: user.desk,
+    active: user.active,
+    lastAt: newest.createdAt.toISOString(),
+    messageCount,
+    presence: serializeChatPresence(user.chatThreadState ?? null, user.lastSeenAt ?? null),
+    profile: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phone: user.phone,
+      language: user.language,
+      timezone: user.timezone,
+      country: user.country,
+      accountType: user.accountType,
+      currency: user.account?.currency || "USD",
+      balance: user.account?.balance ?? 0,
+      registrationDate: user.registrationDate?.toISOString() || user.createdAt.toISOString(),
+      registrationCountry: user.registrationCountry,
+      tradingServer: user.tradingServer || "Web Trading Server",
+      ftd: user.ftd,
+      brokerName: user.brokerName,
+      assigneeName: user.assigneeName,
+      affiliateA: user.affiliateA,
+      lastLoginAt: user.lastLoginAt?.toISOString() || null,
+      createdAt: user.createdAt.toISOString(),
+      desk: user.desk,
+      active: user.active,
+      isActiveTrading: user.active,
+      isActiveDeposit: true,
+      isActiveWithdrawal: true,
+    },
+    messages: chronological.map((m) => ({
+      id: m.id,
+      title: m.title,
+      body: m.description,
+      workerName: m.workerName,
+      createdAt: m.createdAt.toISOString(),
+    })),
+  };
 }
 
 export async function POST(req: Request) {
