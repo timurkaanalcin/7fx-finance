@@ -92,7 +92,7 @@ export default function InstallBanner() {
         <div className="flex items-center gap-3 pr-5">
           <span className="fx-install-icon relative shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/icons/v3/icon-192.png" alt="" width={24} height={24} loading="lazy" decoding="async" className="h-6 w-6 rounded-[8px] shadow-[0_6px_14px_rgba(0,0,0,0.25)] ring-1 ring-black/5" />
+            <img src="/icons/v3/icon-64.png" alt="" width={24} height={24} loading="lazy" decoding="async" className="h-6 w-6 rounded-[8px] shadow-[0_6px_14px_rgba(0,0,0,0.25)] ring-1 ring-black/5" />
           </span>
           <button type="button" onClick={onClick} className="min-w-0 flex-1 text-left">
             <span className="block text-[13px] font-bold leading-tight tracking-tight text-[#111111]">{t("install.title")}</span>

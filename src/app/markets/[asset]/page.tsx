@@ -1,13 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { notFound } from "next/navigation";
 import PublicDoc from "@/components/public/PublicDoc";
-import { marketingMetadata } from "@/lib/seo";
+import { publicLocaleFromCookie } from "@/lib/i18n/locales";
+import { localizeMarketingMeta, metaFor, publicBundle } from "@/lib/public-doc-copy";
 import { ASSET_PAGES, assetBySlug } from "@/lib/public-pages";
+import { marketingMetadata } from "@/lib/seo";
 import { BUILTIN_SYMBOLS } from "@/lib/symbols";
 
 type Params = { params: { asset: string } };
+
+function localeFromCookie() {
+  return publicLocaleFromCookie(cookies().get("fx_lang")?.value);
+}
 
 export function generateStaticParams() {
   return ASSET_PAGES.map((page) => ({ asset: page.slug }));
@@ -17,20 +23,30 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const page = assetBySlug(params.asset);
   const h = headers();
   if (!page) return { robots: { index: false, follow: false } };
-  return marketingMetadata(h.get("x-forwarded-host") || h.get("host"), page.path);
+  const locale = localeFromCookie();
+  const copy = metaFor(locale, page.path);
+  return localizeMarketingMeta(
+    marketingMetadata(h.get("x-forwarded-host") || h.get("host"), page.path),
+    locale,
+    copy.title,
+    copy.description
+  );
 }
 
 export default function AssetMarketPage({ params }: Params) {
   const page = assetBySlug(params.asset);
   if (!page) notFound();
+  const locale = localeFromCookie();
+  const bundle = publicBundle(locale);
+  const copy = bundle.assets[page.slug as keyof typeof bundle.assets];
   const symbols = BUILTIN_SYMBOLS.filter((row) => row.class === page.assetClass);
   return (
-    <PublicDoc title={page.title} lede={page.lede}>
-      {page.session.map((line) => (
+    <PublicDoc title={copy.title} lede={copy.lede} nav={bundle.nav}>
+      {copy.session.map((line) => (
         <p key={line}>{line}</p>
       ))}
-      <h2 className="text-xl font-semibold">Built-in symbols</h2>
-      <p>These names ship with 7FX. A desk can add more. This page does not publish live prices.</p>
+      <h2 className="text-xl font-semibold">{copy.symbolsHeading}</h2>
+      <p>{copy.symbolsNote}</p>
       <ul className="grid gap-1 sm:grid-cols-2">
         {symbols.map((row) => (
           <li key={row.symbol}>
@@ -41,7 +57,7 @@ export default function AssetMarketPage({ params }: Params) {
       </ul>
       <p>
         <Link href="/markets" className="font-semibold underline underline-offset-4">
-          All markets
+          {copy.allMarkets}
         </Link>
       </p>
     </PublicDoc>

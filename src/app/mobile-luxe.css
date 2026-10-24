@@ -95,7 +95,7 @@
     background: linear-gradient(90deg, rgba(200, 169, 106, 0.16), rgba(200, 169, 106, 0.08)) !important;
     color: var(--lx-gold-2) !important;
     border-bottom: 1px solid rgba(200, 169, 106, 0.22);
-    font-size: 11.5px !important;
+    font-size: 12px !important;
     letter-spacing: 0.01em;
     padding: 8px 14px !important;
   }
@@ -209,7 +209,17 @@
   .fx-desk .fx-tap-compact {
     min-height: 32px !important;
     border-radius: 9px !important;
-    font-size: 11.5px !important;
+    font-size: 12px !important;
+  }
+
+  /* Phone terminal copy stays at least 12px. Desktop rules above this media query are unchanged. */
+  .fx-desk .text-\[8px\],
+  .fx-desk .text-\[9px\],
+  .fx-desk .text-\[10px\],
+  .fx-desk .text-\[11px\],
+  .fx-desk .text-\[11\.5px\] {
+    font-size: 12px !important;
+    line-height: 1.2 !important;
   }
 
   /* ---------- sheets / modals (order ticket, deposit, support) ---------- */
