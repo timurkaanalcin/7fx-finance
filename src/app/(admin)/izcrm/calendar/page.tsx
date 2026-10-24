@@ -25,6 +25,7 @@ export default function CalendarPage() {
   const { i18n } = useCrmLabels();
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [traders, setTraders] = useState<Opt[]>([]);
+  const [tradersPartial, setTradersPartial] = useState(false);
   const [form, setForm] = useState({
     body: "",
     remindAt: "",
@@ -53,7 +54,10 @@ export default function CalendarPage() {
       remindersRef.current = next;
       setReminders(next);
       setHasMore(Boolean(data.hasMore));
-      if (Array.isArray(data.traders)) setTraders(data.traders);
+      if (Array.isArray(data.traders)) {
+        setTraders(data.traders);
+        setTradersPartial(Boolean(data.tradersPartial));
+      }
     } finally {
       if (mode === "more" && gen === loadGen.current) setMoreBusy(false);
     }
@@ -192,6 +196,7 @@ export default function CalendarPage() {
                 </option>
               ))}
             </select>
+            {tradersPartial && <p className="text-[11px] text-amber-700">{i18n("crm.cal.tradersPartial")}</p>}
             <div className="flex items-center gap-2">
               <label className="text-neutral-500">{i18n("crm.ui.color")}</label>
               <input

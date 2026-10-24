@@ -1,5 +1,7 @@
 "use client";
 
+import { useT } from "@/lib/i18n/context";
+
 /** Desktop rail: only actions that do something. Drawing tools were inert buttons. */
 export default function ToolRail({
   onHelp,
@@ -7,14 +9,17 @@ export default function ToolRail({
   onCalc,
   calcLabel,
 }: { onHelp?: () => void; helpLabel?: string; onCalc?: () => void; calcLabel?: string } = {}) {
+  const t = useT();
+  const calc = calcLabel || t("term.calc.button");
+  const help = helpLabel || t("term.kb.button");
   return (
     <div className="hidden w-9 shrink-0 flex-col items-center gap-0.5 border-l border-desk-border/80 bg-desk-bg py-2 md:flex">
       {onCalc && (
         <button
           type="button"
           onClick={onCalc}
-          title={calcLabel || "Trading calculator (C)"}
-          aria-label={calcLabel || "Trading calculator (C)"}
+          title={calc}
+          aria-label={calc}
           aria-keyshortcuts="C"
           className="flex h-7 w-7 items-center justify-center rounded-[7px] text-desk-muted/70 transition-colors hover:bg-desk-elev hover:text-desk-accent"
         >
@@ -28,8 +33,8 @@ export default function ToolRail({
         <button
           type="button"
           onClick={onHelp}
-          title={helpLabel || "Keyboard shortcuts (?)"}
-          aria-label={helpLabel || "Keyboard shortcuts (?)"}
+          title={help}
+          aria-label={help}
           aria-keyshortcuts="?"
           className="mt-auto flex h-7 w-7 items-center justify-center rounded-[7px] text-[12px] font-bold text-desk-muted/70 transition-colors hover:bg-desk-elev hover:text-desk-text"
         >

@@ -599,7 +599,7 @@ export default function TerminalShell() {
       const data = await res.json();
       const ticks = (data.prices || []) as PriceTick[];
       if (!res.ok && !ticks.length) {
-        if (!cancelled) setPriceError(data.error || "Could not fetch price");
+        if (!cancelled) setPriceError(data.error || t("term.err.priceFetch"));
         return;
       }
       applyTicks(ticks, data.error || null, res.ok);
@@ -636,7 +636,7 @@ export default function TerminalShell() {
         try {
           await pullBook();
         } catch {
-          if (!cancelled) setPriceError("Price connection error");
+          if (!cancelled) setPriceError(t("term.err.priceConn"));
         }
         return;
       }
@@ -655,7 +655,7 @@ export default function TerminalShell() {
       pullQuotesRef.current = () => {};
       clearInterval(id);
     };
-  }, [symbol, markFeedOk]);
+  }, [symbol, markFeedOk, t]);
 
   // Open positions stay on a 5s tick. Account, the closed page, orders, and balance
   // requests refresh every 30s. The full closed ledger is loaded on boot and when
@@ -1092,10 +1092,10 @@ export default function TerminalShell() {
                     type="button"
                     onClick={() => openOrder("BUY")}
                     disabled={user.tradingEnabled === false || !!user.mustChangePassword}
-                    aria-label="Open trade order"
+                    aria-label={t("term.trade.open")}
                     className="pointer-events-auto hidden min-h-[22px] min-w-[52px] rounded-full bg-desk-accent px-3.5 py-[5px] text-[10px] font-bold tracking-[0.12em] text-desk-accent-ink shadow-accent-glow-sm transition hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 md:inline-flex md:min-h-[26px] md:min-w-[60px] md:px-[18px] md:py-1.5 md:text-[11px]"
                   >
-                    TRADE
+                    {t("term.trade.button")}
                   </button>
                 </div>
               </div>

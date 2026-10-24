@@ -801,4 +801,11 @@ export const tr: Dict = {
   "term.blotter.showChart": "Grafiği göster",
   "term.deposit.loadFail": "Yatırma yöntemleri yüklenemedi",
   "term.cal.partial": "Ay toplamı eksik. Daha eski kapanan işlemler dahil değil.",
+  "term.err.priceFetch": "Fiyat alınamadı",
+  "term.err.priceConn": "Fiyat bağlantısı hatası",
+  "term.alert.offsets": "Ortadan hızlı yüzde sapmaları",
+  "term.chart.liveBadge": "CANLI",
+  "term.trade.open": "İşlem emri aç",
+  "term.trade.button": "İŞLEM",
+  "term.blotter.ticket": "Bilet {id}",
 };

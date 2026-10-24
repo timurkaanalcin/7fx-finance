@@ -5,6 +5,7 @@ export type I18nScope = "public" | "crm";
 /**
  * Public site / terminal / auth default.
  * English is the primary language. A stored fx_lang still wins after mount.
+ * The server reads the fx_lang cookie so that first paint matches. No cookie stays English.
  */
 export const PUBLIC_DEFAULT_LOCALE: Locale = "en";
 /** CRM / admin default */
@@ -47,4 +48,11 @@ export function normalizeLocale(v: unknown, scope: I18nScope = "public"): Locale
     if (isLocale(base)) return base;
   }
   return defaultLocaleFor(scope);
+}
+
+/** Public fx_lang cookie. Missing or unknown values stay English. CRM cookies are not read here. */
+export function publicLocaleFromCookie(raw: string | null | undefined): Locale {
+  if (raw == null || raw.trim() === "") return PUBLIC_DEFAULT_LOCALE;
+  const base = raw.trim().toLowerCase().split("-")[0];
+  return isLocale(base) ? base : PUBLIC_DEFAULT_LOCALE;
 }

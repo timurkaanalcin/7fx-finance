@@ -977,6 +977,7 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.recentClients.min", "min", "dk", "мин", "Min.", "د"],
   ["crm.recentClients.hour", "h", "sa", "ч", "Std.", "س"],
   ["crm.recentClients.day", "d", "g", "д", "T.", "ي"],
+  ["crm.cal.tradersPartial", "Trader list is partial. Older names are not included.", "Trader listesi eksik. Daha eski isimler dahil değil.", "Список трейдеров неполный. Более старые имена не включены.", "Traderliste ist unvollständig. Ältere Namen fehlen.", "قائمة المتداولين غير مكتملة. الأسماء الأقدم غير مشمولة."],
 ];
 
 function pack(index: 1|2|3|4|5): Dict {

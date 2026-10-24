@@ -3,7 +3,8 @@
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { CRM_LIST_PAGE } from "@/lib/trader-list";
 
 type Desk = {
   id: string;
@@ -24,12 +25,26 @@ export default function DesksPage() {
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
   const [msg, setMsg] = useState("");
+  const [hasMore, setHasMore] = useState(false);
+  const [moreBusy, setMoreBusy] = useState(false);
+  const desksRef = useRef<Desk[]>([]);
 
-  const load = useCallback(async () => {
-    const res = await fetch("/api/admin/desks");
-    if (!res.ok) return;
-    const data = await res.json();
-    setDesks(data.desks || []);
+  const load = useCallback(async (mode: "replace" | "more" = "replace") => {
+    const skip = mode === "more" ? desksRef.current.length : 0;
+    if (mode === "more") setMoreBusy(true);
+    try {
+      const res = await fetch(`/api/admin/desks?take=${CRM_LIST_PAGE}&skip=${skip}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      const incoming: Desk[] = data.desks || [];
+      const seen = new Set(desksRef.current.map((d) => d.id));
+      const next = mode === "more" ? desksRef.current.concat(incoming.filter((d) => !seen.has(d.id))) : incoming;
+      desksRef.current = next;
+      setDesks(next);
+      setHasMore(Boolean(data.hasMore));
+    } finally {
+      if (mode === "more") setMoreBusy(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -120,6 +135,16 @@ export default function DesksPage() {
           </tbody>
         </table>
       </div>
+      {hasMore && (
+        <button
+          type="button"
+          disabled={moreBusy}
+          onClick={() => void load("more")}
+          className="mt-3 w-full rounded-lg border border-neutral-200 bg-white px-3 py-2 text-xs font-medium text-neutral-600 hover:bg-neutral-50 disabled:opacity-50"
+        >
+          {moreBusy ? i18n("crm.ui.loading") : i18n("crm.ui.loadMore")}
+        </button>
+      )}
     </div>
   );
 }

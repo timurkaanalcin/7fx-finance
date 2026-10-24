@@ -1014,6 +1014,9 @@ export default function AdminUserDetailPage() {
   const [ledgerHasMore, setLedgerHasMore] = useState(false);
   const [ledgerMoreBusy, setLedgerMoreBusy] = useState(false);
   const ledgerRef = useRef<Row[]>([]);
+  const listRef = useRef<Record<string, Row[]>>({});
+  const [listMore, setListMore] = useState<Record<string, boolean>>({});
+  const [listBusy, setListBusy] = useState<string | null>(null);
   const [communications, setCommunications] = useState<Row[]>([]);
   const [activityEvents, setActivityEvents] = useState<
     { id: string; kind: string; path?: string | null; userAgent?: string | null; meta?: string | null; createdAt: string }[]
@@ -1029,16 +1032,60 @@ export default function AdminUserDetailPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    fetch("/api/admin/desks")
-      .then((r) => r.json())
-      .then((d) => setDesks(d.desks || []))
-      .catch(() => {});
+    let cancel = false;
+    void (async () => {
+      const all: { id: string; name: string; code: string | null }[] = [];
+      let skip = 0;
+      for (let page = 0; page < 20; page++) {
+        const res = await fetch(`/api/admin/desks?take=50&skip=${skip}`);
+        if (!res.ok || cancel) return;
+        const data = await res.json();
+        const incoming = (data.desks || []) as { id: string; name: string; code: string | null }[];
+        for (let i = 0; i < incoming.length; i++) {
+          if (!all.some((d) => d.id === incoming[i].id)) all.push(incoming[i]);
+        }
+        if (!data.hasMore || typeof data.nextSkip !== "number" || data.nextSkip <= skip) break;
+        skip = data.nextSkip;
+      }
+      if (!cancel) setDesks(all);
+    })();
+    return () => {
+      cancel = true;
+    };
   }, []);
 
   const activeId = useRef(id);
   activeId.current = id;
   const fetched = useRef<{ id: string; scopes: Set<string> }>({ id: "", scopes: new Set() });
   const scopeGen = useRef<Record<string, number>>({});
+
+  const applyList = useCallback((key: string, rows: Row[], hasMore: boolean, mode: "replace" | "merge") => {
+    const prev = listRef.current[key] || [];
+    let next = rows;
+    if (mode === "merge") {
+      const byId = new Map(rows.map((r) => [String(r.id), r]));
+      const seen = new Set<string>();
+      next = prev.map((r) => {
+        const rid = String(r.id);
+        seen.add(rid);
+        return byId.get(rid) || r;
+      });
+      for (let i = 0; i < rows.length; i++) {
+        if (!seen.has(String(rows[i].id))) next.push(rows[i]);
+      }
+    }
+    listRef.current[key] = next;
+    if (key === "positions") setPositions(next);
+    else if (key === "orders") setOrders(next);
+    else if (key === "communications") setCommunications(next);
+    else if (key === "deposits") setDeposits(next);
+    else if (key === "withdrawals") setWithdrawals(next);
+    else if (key === "balanceRequests") setBalanceRequests(next);
+    else if (key === "documents") setDocuments(next);
+    else if (key === "reminders") setReminders(next);
+    else if (key === "notes") setNotes(next);
+    setListMore((m) => ({ ...m, [key]: hasMore }));
+  }, []);
 
   const load = useCallback(async (scope: TraderDetailScope = "full"): Promise<boolean> => {
     if (!id) return false;
@@ -1050,7 +1097,16 @@ export default function AdminUserDetailPage() {
       for (const s of TRADER_LAZY_SCOPES) scopeGen.current[s] = (scopeGen.current[s] || 0) + 1;
     }
     const alive = () => scopeGen.current[scope] === gen && activeId.current === requestId;
-    const q = scope === "ledger" ? "?view=ledger&take=50&skip=0" : scope === "full" ? "" : `?view=${scope}`;
+    const posTake = Math.min(100, Math.max(50, listRef.current.positions?.length || 50));
+    const ordTake = Math.min(100, Math.max(50, listRef.current.orders?.length || 50));
+    const q =
+      scope === "ledger"
+        ? "?view=ledger&take=50&skip=0"
+        : scope === "positions"
+          ? `?view=positions&take=${posTake}&skip=0&orderTake=${ordTake}&orderSkip=0`
+          : scope === "full"
+            ? ""
+            : `?view=${scope}&take=50&skip=0`;
     const session = scope === "full" || scope === "profile";
     const [res, meRes] = await Promise.all([
       fetch(`/api/admin/users/${requestId}${q}`),
@@ -1071,19 +1127,25 @@ export default function AdminUserDetailPage() {
     setUser(data.user as Membership);
     setTradingAccountId(data.tradingAccountId || data.user?.tradingAccountId || null);
     if (scope === "positions") {
-      setPositions(data.positions || []);
-      setOrders(data.orders || []);
+      const posRows: Row[] = data.positions || [];
+      const ordRows: Row[] = data.orders || [];
+      const prevPos = listRef.current.positions?.length || 0;
+      const prevOrd = listRef.current.orders?.length || 0;
+      const posCapped = prevPos > 100 && posRows.length >= 100;
+      const ordCapped = prevOrd > 100 && ordRows.length >= 100;
+      applyList("positions", posRows, posCapped ? true : Boolean(data.positionsHasMore), posCapped ? "merge" : "replace");
+      applyList("orders", ordRows, ordCapped ? true : Boolean(data.ordersHasMore), ordCapped ? "merge" : "replace");
       return true;
     }
     if (scope === "finance") return true;
     if (scope === "comms") {
-      setCommunications(data.communications || []);
+      applyList("communications", data.communications || [], Boolean(data.communicationsHasMore), "replace");
       return true;
     }
     if (scope === "tickets") {
-      setDeposits(data.deposits || []);
-      setWithdrawals(data.withdrawals || []);
-      setBalanceRequests(data.balanceRequests || []);
+      applyList("deposits", data.deposits || [], Boolean(data.depositsHasMore), "replace");
+      applyList("withdrawals", data.withdrawals || [], Boolean(data.withdrawalsHasMore), "replace");
+      applyList("balanceRequests", data.balanceRequests || [], Boolean(data.balanceRequestsHasMore), "replace");
       setDepositMethods(data.depositMethods || []);
       return true;
     }
@@ -1095,11 +1157,11 @@ export default function AdminUserDetailPage() {
       return true;
     }
     if (scope === "documents") {
-      setDocuments(data.documents || []);
+      applyList("documents", data.documents || [], Boolean(data.documentsHasMore), "replace");
       return true;
     }
     if (scope === "reminders") {
-      setReminders(data.reminders || []);
+      applyList("reminders", data.reminders || [], Boolean(data.remindersHasMore), "replace");
       return true;
     }
     if (data.user?.id && (data.user.role || "TRADER") === "TRADER") {
@@ -1121,28 +1183,28 @@ export default function AdminUserDetailPage() {
     }
     if (!alive()) return false;
     if (scope === "profile") {
-      setNotes(data.notes || []);
+      applyList("notes", data.notes || [], Boolean(data.notesHasMore), "replace");
       setActivityEvents(data.activityEvents || []);
       return true;
     }
-    setNotes(data.notes || []);
-    setPositions(data.positions || []);
-    setOrders(data.orders || []);
-    setDeposits(data.deposits || []);
-    setWithdrawals(data.withdrawals || []);
-    setBalanceRequests(data.balanceRequests || []);
+    applyList("notes", data.notes || [], Boolean(data.notesHasMore), "replace");
+    applyList("positions", data.positions || [], Boolean(data.positionsHasMore), "replace");
+    applyList("orders", data.orders || [], Boolean(data.ordersHasMore), "replace");
+    applyList("deposits", data.deposits || [], Boolean(data.depositsHasMore), "replace");
+    applyList("withdrawals", data.withdrawals || [], Boolean(data.withdrawalsHasMore), "replace");
+    applyList("balanceRequests", data.balanceRequests || [], Boolean(data.balanceRequestsHasMore), "replace");
     const ledgerRows: Row[] = data.ledger || [];
     ledgerRef.current = ledgerRows;
     setLedger(ledgerRows);
     setLedgerHasMore(Boolean(data.ledgerHasMore));
-    setCommunications(data.communications || []);
+    applyList("communications", data.communications || [], Boolean(data.communicationsHasMore), "replace");
     setActivityEvents(data.activityEvents || []);
-    setDocuments(data.documents || []);
-    setReminders(data.reminders || []);
+    applyList("documents", data.documents || [], Boolean(data.documentsHasMore), "replace");
+    applyList("reminders", data.reminders || [], Boolean(data.remindersHasMore), "replace");
     setDepositMethods(data.depositMethods || []);
     fetched.current = { id: requestId, scopes: new Set(TRADER_LAZY_SCOPES) };
     return true;
-  }, [id]);
+  }, [id, applyList]);
 
   const loadMoreLedger = useCallback(async () => {
     if (!id || ledgerMoreBusy) return;
@@ -1163,9 +1225,50 @@ export default function AdminUserDetailPage() {
     }
   }, [id, ledgerMoreBusy]);
 
+  const loadMoreList = useCallback(
+    async (kind: string) => {
+      if (!id || listBusy) return;
+      setListBusy(kind);
+      try {
+        const skip = (listRef.current[kind] || []).length;
+        const q =
+          kind === "positions"
+            ? `?view=positions&part=positions&take=50&skip=${skip}`
+            : kind === "orders"
+              ? `?view=positions&part=orders&orderTake=50&orderSkip=${skip}`
+              : kind === "communications"
+                ? `?view=comms&take=50&skip=${skip}`
+                : kind === "deposits"
+                  ? `?view=tickets&part=deposits&take=50&skip=${skip}`
+                  : kind === "withdrawals"
+                    ? `?view=tickets&part=withdrawals&take=50&skip=${skip}`
+                    : kind === "balanceRequests"
+                      ? `?view=tickets&part=balance&take=50&skip=${skip}`
+                      : kind === "documents"
+                        ? `?view=documents&take=50&skip=${skip}`
+                        : kind === "reminders"
+                          ? `?view=reminders&take=50&skip=${skip}`
+                          : `?view=profile&part=notes&take=50&skip=${skip}`;
+        const res = await fetch(`/api/admin/users/${id}${q}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const incoming: Row[] = data[kind] || [];
+        const prev = listRef.current[kind] || [];
+        const seen = new Set(prev.map((row) => String(row.id)));
+        const next = prev.concat(incoming.filter((row) => !seen.has(String(row.id))));
+        applyList(kind, next, Boolean(data[`${kind}HasMore`]), "replace");
+      } finally {
+        setListBusy(null);
+      }
+    },
+    [id, listBusy, applyList]
+  );
+
   useEffect(() => {
     if (fetched.current.id !== id) {
       fetched.current = { id, scopes: new Set() };
+      listRef.current = {};
+      setListMore({});
       setUser(null);
       setNotes([]);
       setPositions([]);
@@ -1829,6 +1932,11 @@ export default function AdminUserDetailPage() {
             onDelete={rec("communication").remove}
             emptyText={i18n("crm.ui.noComms")}
           />
+          {listMore.communications && (
+            <button type="button" disabled={listBusy === "communications"} onClick={() => void loadMoreList("communications")} className="mt-3 w-full rounded-lg border border-[#e5e5e5] bg-white px-3 py-2 text-sm font-medium hover:bg-[#f7f7f7] disabled:opacity-50">
+              {listBusy === "communications" ? i18n("crm.ui.loading") : i18n("crm.ui.loadMore")}
+            </button>
+          )}
         </div>
       )}
 
@@ -1853,6 +1961,11 @@ export default function AdminUserDetailPage() {
               onUpdate={rec("deposit").update}
               onDelete={rec("deposit").remove}
             />
+            {listMore.deposits && (
+              <button type="button" disabled={listBusy === "deposits"} onClick={() => void loadMoreList("deposits")} className="mt-3 w-full rounded-lg border border-[#e5e5e5] bg-white px-3 py-2 text-sm font-medium hover:bg-[#f7f7f7] disabled:opacity-50">
+                {listBusy === "deposits" ? i18n("crm.ui.loading") : i18n("crm.ui.loadMore")}
+              </button>
+            )}
           </div>
           <div>
             <h2 className="mb-2 text-sm font-medium">{i18n("crm.edit.withdrawals")}</h2>
@@ -1866,6 +1979,11 @@ export default function AdminUserDetailPage() {
               onUpdate={rec("withdrawal").update}
               onDelete={rec("withdrawal").remove}
             />
+            {listMore.withdrawals && (
+              <button type="button" disabled={listBusy === "withdrawals"} onClick={() => void loadMoreList("withdrawals")} className="mt-3 w-full rounded-lg border border-[#e5e5e5] bg-white px-3 py-2 text-sm font-medium hover:bg-[#f7f7f7] disabled:opacity-50">
+                {listBusy === "withdrawals" ? i18n("crm.ui.loading") : i18n("crm.ui.loadMore")}
+              </button>
+            )}
           </div>
           <div>
             <h2 className="mb-2 text-sm font-medium">{i18n("crm.ui.marginRequests")}</h2>
@@ -1879,6 +1997,11 @@ export default function AdminUserDetailPage() {
               onUpdate={rec("balanceRequest").update}
               onDelete={rec("balanceRequest").remove}
             />
+            {listMore.balanceRequests && (
+              <button type="button" disabled={listBusy === "balanceRequests"} onClick={() => void loadMoreList("balanceRequests")} className="mt-3 w-full rounded-lg border border-[#e5e5e5] bg-white px-3 py-2 text-sm font-medium hover:bg-[#f7f7f7] disabled:opacity-50">
+                {listBusy === "balanceRequests" ? i18n("crm.ui.loading") : i18n("crm.ui.loadMore")}
+              </button>
+            )}
             <p className="mt-1 text-[10px] text-neutral-400">{i18n("crm.edit.resetNote")}</p>
           </div>
         </div>
@@ -1904,10 +2027,20 @@ export default function AdminUserDetailPage() {
             </div>
             ) : null}
             <EditablePositionsTable rows={positions} onSaved={() => load("positions")} manage={canWrite} />
+            {listMore.positions && (
+              <button type="button" disabled={listBusy === "positions"} onClick={() => void loadMoreList("positions")} className="mt-3 w-full rounded-lg border border-[#e5e5e5] bg-white px-3 py-2 text-sm font-medium hover:bg-[#f7f7f7] disabled:opacity-50">
+                {listBusy === "positions" ? i18n("crm.ui.loading") : i18n("crm.ui.loadMore")}
+              </button>
+            )}
           </div>
           <div>
             <h2 className="mb-2 text-sm font-medium">{i18n("crm.ui.ordersFull")}</h2>
             <EditableOrdersTable rows={orders} onSaved={() => load("positions")} userId={user.id} readOnly={crmReadOnly} />
+            {listMore.orders && (
+              <button type="button" disabled={listBusy === "orders"} onClick={() => void loadMoreList("orders")} className="mt-3 w-full rounded-lg border border-[#e5e5e5] bg-white px-3 py-2 text-sm font-medium hover:bg-[#f7f7f7] disabled:opacity-50">
+                {listBusy === "orders" ? i18n("crm.ui.loading") : i18n("crm.ui.loadMore")}
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -1989,10 +2122,16 @@ export default function AdminUserDetailPage() {
             onDelete={rec("document").remove}
             emptyText={i18n("crm.docs.none")}
           />
+          {listMore.documents && (
+            <button type="button" disabled={listBusy === "documents"} onClick={() => void loadMoreList("documents")} className="mt-3 w-full rounded-lg border border-[#e5e5e5] bg-white px-3 py-2 text-sm font-medium hover:bg-[#f7f7f7] disabled:opacity-50">
+              {listBusy === "documents" ? i18n("crm.ui.loading") : i18n("crm.ui.loadMore")}
+            </button>
+          )}
         </div>
       )}
 
       {tab === "takvim" && (
+        <div>
         <CrmRecordTable
             readOnly={crmReadOnly}
           rows={reminders}
@@ -2003,9 +2142,16 @@ export default function AdminUserDetailPage() {
           onDelete={rec("reminder").remove}
           emptyText={i18n("crm.cal.none")}
         />
+        {listMore.reminders && (
+          <button type="button" disabled={listBusy === "reminders"} onClick={() => void loadMoreList("reminders")} className="mt-3 w-full rounded-lg border border-[#e5e5e5] bg-white px-3 py-2 text-sm font-medium hover:bg-[#f7f7f7] disabled:opacity-50">
+            {listBusy === "reminders" ? i18n("crm.ui.loading") : i18n("crm.ui.loadMore")}
+          </button>
+        )}
+        </div>
       )}
 
       {tab === "notlar" && (
+        <div>
         <CrmRecordTable
             readOnly={crmReadOnly}
           rows={notes}
@@ -2015,6 +2161,12 @@ export default function AdminUserDetailPage() {
           onDelete={rec("note").remove}
           emptyText={i18n("crm.ui.noNotes")}
         />
+        {listMore.notes && (
+          <button type="button" disabled={listBusy === "notes"} onClick={() => void loadMoreList("notes")} className="mt-3 w-full rounded-lg border border-[#e5e5e5] bg-white px-3 py-2 text-sm font-medium hover:bg-[#f7f7f7] disabled:opacity-50">
+            {listBusy === "notes" ? i18n("crm.ui.loading") : i18n("crm.ui.loadMore")}
+          </button>
+        )}
+        </div>
       )}
 
       {tab === "izinler" && (canManageUsers || crmReadOnly) && (

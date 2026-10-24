@@ -14,11 +14,17 @@ import { recordLedger } from "@/lib/ledger";
 import { jobTitleSchema } from "@/lib/job-titles";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { noteVisibilityWhere } from "@/lib/comment-teams";
-import { pagedOrLegacy, traderDetailScope } from "@/lib/trader-list";
+import { crmPageWindow, pagedOrLegacy, traderDetailScope } from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
 
 type Ctx = { params: { id: string } };
+
+function slicePage<T>(found: T[], take: number, skip: number) {
+  const hasMore = found.length > take;
+  const rows = hasMore ? found.slice(0, take) : found;
+  return { rows, hasMore, nextSkip: skip + rows.length };
+}
 
 export async function GET(req: Request, ctx: Ctx) {
   await ensureDemoSeed();
@@ -27,25 +33,33 @@ export async function GET(req: Request, ctx: Ctx) {
 
   const id = ctx.params.id;
   if (!(await canAccessUser(admin, id))) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  const scope = traderDetailScope(new URL(req.url).searchParams.get("view"));
+  const search = new URL(req.url).searchParams;
+  const scope = traderDetailScope(search.get("view"));
   const withNotes = scope === "full" || scope === "profile";
   const user = await prisma.user.findUnique({
     where: { id },
-    include: withNotes
-      ? {
-          account: true,
-          notes: { where: noteVisibilityWhere(admin), orderBy: { createdAt: "desc" as const }, take: 100 },
-        }
-      : { account: true },
+    include: { account: true },
   });
   if (!user) return NextResponse.json({ error: "User yok" }, { status: 404 });
+  const notePage = crmPageWindow(search.get("take"), search.get("skip"));
+  const noteFound = withNotes
+    ? await prisma.userNote.findMany({
+        where: { userId: id, ...(noteVisibilityWhere(admin) || {}) },
+        orderBy: { createdAt: "desc" },
+        skip: notePage.skip,
+        take: notePage.take + 1,
+      })
+    : [];
+  const noteSlice = slicePage(noteFound, notePage.take, notePage.skip);
+  const notes = noteSlice.rows;
+  const notesHasMore = noteSlice.hasMore;
+  const notesNextSkip = noteSlice.nextSkip;
 
   const membership = serializeUserMembership(user as unknown as Record<string, unknown>);
   const roViewer = isCrmReadOnlyAdmin(admin);
   const userOut = roViewer
     ? maskTraderForRoViewer(membership as unknown as Record<string, unknown>)
     : membership;
-  const notes = "notes" in user ? user.notes : [];
   const pack = (extra: Record<string, unknown>) =>
     NextResponse.json({
       user: userOut,
@@ -58,55 +72,136 @@ export async function GET(req: Request, ctx: Ctx) {
   if (scope === "finance") return pack({});
 
   if (scope === "profile") {
+    if (search.get("part") === "notes") {
+      return pack({ notes, notesHasMore, notesNextSkip });
+    }
     const activityEvents = await prisma.clientActivityEvent.findMany({
       where: { userId: id },
       orderBy: { createdAt: "desc" },
       take: 50,
     });
-    return pack({ notes, activityEvents: mapActivity(activityEvents) });
+    return pack({ notes, notesHasMore, notesNextSkip, activityEvents: mapActivity(activityEvents) });
   }
 
   if (scope === "positions") {
-    const [positions, orders] = await Promise.all([
-      prisma.position.findMany({ where: { userId: id }, orderBy: { openedAt: "desc" }, take: 100 }),
-      prisma.order.findMany({ where: { userId: id }, orderBy: { createdAt: "desc" }, take: 100 }),
+    const part = search.get("part");
+    const pos = crmPageWindow(search.get("take"), part === "orders" ? null : search.get("skip"));
+    const ord = crmPageWindow(
+      search.get("orderTake") ?? (part === "orders" ? search.get("take") : null),
+      search.get("orderSkip") ?? (part === "orders" ? search.get("skip") : null)
+    );
+    const [positionsFound, ordersFound] = await Promise.all([
+      part === "orders"
+        ? Promise.resolve(null)
+        : prisma.position.findMany({
+            where: { userId: id },
+            orderBy: { openedAt: "desc" },
+            skip: pos.skip,
+            take: pos.take + 1,
+          }),
+      part === "positions"
+        ? Promise.resolve(null)
+        : prisma.order.findMany({
+            where: { userId: id },
+            orderBy: { createdAt: "desc" },
+            skip: ord.skip,
+            take: ord.take + 1,
+          }),
     ]);
-    return pack({ positions, orders });
+    const positionsPage = positionsFound ? slicePage(positionsFound, pos.take, pos.skip) : null;
+    const ordersPage = ordersFound ? slicePage(ordersFound, ord.take, ord.skip) : null;
+    return pack({
+      ...(positionsPage
+        ? {
+            positions: positionsPage.rows,
+            positionsHasMore: positionsPage.hasMore,
+            positionsNextSkip: positionsPage.nextSkip,
+          }
+        : {}),
+      ...(ordersPage
+        ? { orders: ordersPage.rows, ordersHasMore: ordersPage.hasMore, ordersNextSkip: ordersPage.nextSkip }
+        : {}),
+    });
   }
 
   if (scope === "comms") {
-    const communications = await prisma.communication.findMany({
+    const page = crmPageWindow(search.get("take"), search.get("skip"));
+    const found = await prisma.communication.findMany({
       where: { userId: id },
       orderBy: { createdAt: "desc" },
-      take: 100,
+      skip: page.skip,
+      take: page.take + 1,
     });
-    return pack({ communications });
+    const communications = slicePage(found, page.take, page.skip);
+    return pack({
+      communications: communications.rows,
+      communicationsHasMore: communications.hasMore,
+      communicationsNextSkip: communications.nextSkip,
+    });
   }
 
   if (scope === "tickets") {
-    const [deposits, withdrawals, balanceRequests, depositMethods] = await Promise.all([
-      prisma.depositRequest.findMany({
-        where: { userId: id },
-        include: { method: true },
-        orderBy: { createdAt: "desc" },
-        take: 100,
-      }),
-      prisma.withdrawalRequest.findMany({
-        where: { userId: id },
-        orderBy: { createdAt: "desc" },
-        take: 100,
-      }),
-      prisma.balanceRequest.findMany({
-        where: { userId: id },
-        orderBy: { createdAt: "desc" },
-        take: 100,
-      }),
-      prisma.depositMethod.findMany({
-        select: { id: true, label: true, type: true, active: true },
-        orderBy: [{ active: "desc" }, { sortOrder: "asc" }],
-      }),
+    const part = search.get("part");
+    const page = crmPageWindow(search.get("take"), search.get("skip"));
+    const wantDeposits = part == null || part === "deposits";
+    const wantWithdrawals = part == null || part === "withdrawals";
+    const wantBalance = part == null || part === "balance";
+    const [depositsFound, withdrawalsFound, balanceFound, depositMethods] = await Promise.all([
+      wantDeposits
+        ? prisma.depositRequest.findMany({
+            where: { userId: id },
+            include: { method: true },
+            orderBy: { createdAt: "desc" },
+            skip: page.skip,
+            take: page.take + 1,
+          })
+        : Promise.resolve(null),
+      wantWithdrawals
+        ? prisma.withdrawalRequest.findMany({
+            where: { userId: id },
+            orderBy: { createdAt: "desc" },
+            skip: page.skip,
+            take: page.take + 1,
+          })
+        : Promise.resolve(null),
+      wantBalance
+        ? prisma.balanceRequest.findMany({
+            where: { userId: id },
+            orderBy: { createdAt: "desc" },
+            skip: page.skip,
+            take: page.take + 1,
+          })
+        : Promise.resolve(null),
+      part == null
+        ? prisma.depositMethod.findMany({
+            select: { id: true, label: true, type: true, active: true },
+            orderBy: [{ active: "desc" }, { sortOrder: "asc" }],
+          })
+        : Promise.resolve(null),
     ]);
-    return pack({ deposits, withdrawals, balanceRequests, depositMethods });
+    const deposits = depositsFound ? slicePage(depositsFound, page.take, page.skip) : null;
+    const withdrawals = withdrawalsFound ? slicePage(withdrawalsFound, page.take, page.skip) : null;
+    const balanceRequests = balanceFound ? slicePage(balanceFound, page.take, page.skip) : null;
+    return pack({
+      ...(deposits
+        ? { deposits: deposits.rows, depositsHasMore: deposits.hasMore, depositsNextSkip: deposits.nextSkip }
+        : {}),
+      ...(withdrawals
+        ? {
+            withdrawals: withdrawals.rows,
+            withdrawalsHasMore: withdrawals.hasMore,
+            withdrawalsNextSkip: withdrawals.nextSkip,
+          }
+        : {}),
+      ...(balanceRequests
+        ? {
+            balanceRequests: balanceRequests.rows,
+            balanceRequestsHasMore: balanceRequests.hasMore,
+            balanceRequestsNextSkip: balanceRequests.nextSkip,
+          }
+        : {}),
+      ...(depositMethods ? { depositMethods } : {}),
+    });
   }
 
   if (scope === "ledger") {
@@ -125,59 +220,73 @@ export async function GET(req: Request, ctx: Ctx) {
   }
 
   if (scope === "documents") {
-    const documents = await prisma.documentRecord.findMany({
+    const page = crmPageWindow(search.get("take"), search.get("skip"));
+    const found = await prisma.documentRecord.findMany({
       where: { userId: id },
       orderBy: { createdAt: "desc" },
-      take: 100,
+      skip: page.skip,
+      take: page.take + 1,
     });
-    return pack({ documents });
+    const documents = slicePage(found, page.take, page.skip);
+    return pack({
+      documents: documents.rows,
+      documentsHasMore: documents.hasMore,
+      documentsNextSkip: documents.nextSkip,
+    });
   }
 
   if (scope === "reminders") {
-    const reminders = await prisma.reminder.findMany({
+    const page = crmPageWindow(search.get("take"), search.get("skip"));
+    const found = await prisma.reminder.findMany({
       where: { userId: id },
       orderBy: { remindAt: "asc" },
-      take: 100,
+      skip: page.skip,
+      take: page.take + 1,
     });
-    return pack({ reminders });
+    const reminders = slicePage(found, page.take, page.skip);
+    return pack({
+      reminders: reminders.rows,
+      remindersHasMore: reminders.hasMore,
+      remindersNextSkip: reminders.nextSkip,
+    });
   }
 
+  const first = { take: 50, skip: 0 };
   const [
-    positions,
-    orders,
-    deposits,
-    balanceRequests,
+    positionsFound,
+    ordersFound,
+    depositsFound,
+    balanceFound,
     ledgerPage,
-    communications,
-    documents,
-    reminders,
-    withdrawals,
+    communicationsFound,
+    documentsFound,
+    remindersFound,
+    withdrawalsFound,
     depositMethods,
     activityEvents,
   ] = await Promise.all([
     prisma.position.findMany({
       where: { userId: id },
       orderBy: { openedAt: "desc" },
-      take: 100,
+      take: first.take + 1,
     }),
     prisma.order.findMany({
       where: { userId: id },
       orderBy: { createdAt: "desc" },
-      take: 100,
+      take: first.take + 1,
     }),
     prisma.depositRequest.findMany({
       where: { userId: id },
       include: { method: true },
       orderBy: { createdAt: "desc" },
-      take: 100,
+      take: first.take + 1,
     }),
     prisma.balanceRequest.findMany({
       where: { userId: id },
       orderBy: { createdAt: "desc" },
-      take: 100,
+      take: first.take + 1,
     }),
     (async () => {
-      const search = new URL(req.url).searchParams;
       const page = pagedOrLegacy(search.get("take"), search.get("skip"), true, 50);
       const found = await prisma.balanceLedger.findMany({
         where: { userId: id },
@@ -192,22 +301,22 @@ export async function GET(req: Request, ctx: Ctx) {
     prisma.communication.findMany({
       where: { userId: id },
       orderBy: { createdAt: "desc" },
-      take: 100,
+      take: first.take + 1,
     }),
     prisma.documentRecord.findMany({
       where: { userId: id },
       orderBy: { createdAt: "desc" },
-      take: 100,
+      take: first.take + 1,
     }),
     prisma.reminder.findMany({
       where: { userId: id },
       orderBy: { remindAt: "asc" },
-      take: 100,
+      take: first.take + 1,
     }),
     prisma.withdrawalRequest.findMany({
       where: { userId: id },
       orderBy: { createdAt: "desc" },
-      take: 100,
+      take: first.take + 1,
     }),
     prisma.depositMethod.findMany({
       select: { id: true, label: true, type: true, active: true },
@@ -219,20 +328,46 @@ export async function GET(req: Request, ctx: Ctx) {
       take: 50,
     }),
   ]);
+  const positions = slicePage(positionsFound, first.take, first.skip);
+  const orders = slicePage(ordersFound, first.take, first.skip);
+  const deposits = slicePage(depositsFound, first.take, first.skip);
+  const balanceRequests = slicePage(balanceFound, first.take, first.skip);
+  const communications = slicePage(communicationsFound, first.take, first.skip);
+  const documents = slicePage(documentsFound, first.take, first.skip);
+  const reminders = slicePage(remindersFound, first.take, first.skip);
+  const withdrawals = slicePage(withdrawalsFound, first.take, first.skip);
 
   return pack({
     notes,
-    positions,
-    orders,
-    deposits,
-    balanceRequests,
+    notesHasMore,
+    notesNextSkip,
+    positions: positions.rows,
+    positionsHasMore: positions.hasMore,
+    positionsNextSkip: positions.nextSkip,
+    orders: orders.rows,
+    ordersHasMore: orders.hasMore,
+    ordersNextSkip: orders.nextSkip,
+    deposits: deposits.rows,
+    depositsHasMore: deposits.hasMore,
+    depositsNextSkip: deposits.nextSkip,
+    balanceRequests: balanceRequests.rows,
+    balanceRequestsHasMore: balanceRequests.hasMore,
+    balanceRequestsNextSkip: balanceRequests.nextSkip,
     ledger: ledgerPage.ledger,
     ledgerHasMore: ledgerPage.ledgerHasMore,
     ledgerNextSkip: ledgerPage.ledgerNextSkip,
-    communications,
-    documents,
-    reminders,
-    withdrawals,
+    communications: communications.rows,
+    communicationsHasMore: communications.hasMore,
+    communicationsNextSkip: communications.nextSkip,
+    documents: documents.rows,
+    documentsHasMore: documents.hasMore,
+    documentsNextSkip: documents.nextSkip,
+    reminders: reminders.rows,
+    remindersHasMore: reminders.hasMore,
+    remindersNextSkip: reminders.nextSkip,
+    withdrawals: withdrawals.rows,
+    withdrawalsHasMore: withdrawals.hasMore,
+    withdrawalsNextSkip: withdrawals.nextSkip,
     depositMethods,
     activityEvents: mapActivity(activityEvents),
   });

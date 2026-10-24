@@ -790,7 +790,7 @@ export default function TradingChart({
                 : "bg-desk-muted"
             }`}
           />
-          LIVE
+          {t("term.chart.liveBadge")}
         </span>
         <div className="flex min-w-0 items-start gap-1.5 rounded-[12px] bg-desk-bg/80 px-1.5 py-1 ring-1 ring-desk-border/40 backdrop-blur-[2px] md:gap-2 md:px-2">
           <SymbolIcon symbol={symbol} fallback={flag || "•"} size={28} className="mt-0.5 md:!h-6 md:!w-6" />

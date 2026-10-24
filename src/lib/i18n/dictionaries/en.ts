@@ -801,4 +801,11 @@ export const en: Dict = {
   "term.blotter.showChart": "Show chart",
   "term.deposit.loadFail": "Could not load deposit methods",
   "term.cal.partial": "Month total is partial. Older closed trades are not included.",
+  "term.err.priceFetch": "Could not fetch price",
+  "term.err.priceConn": "Price connection error",
+  "term.alert.offsets": "Quick percent offsets from mid",
+  "term.chart.liveBadge": "LIVE",
+  "term.trade.open": "Open trade order",
+  "term.trade.button": "TRADE",
+  "term.blotter.ticket": "Ticket {id}",
 };
