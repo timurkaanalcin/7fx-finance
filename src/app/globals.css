@@ -39,6 +39,48 @@ html, body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-inter), var(--font-inter-ext), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Type scale: 12 / 13 / 14 / 16 / 20 / 24 / 32 / 44 / 56.
+   Headings stay 500–600. Weight 300 is only for large high-contrast lines. */
+:root {
+  --fx-fs-12: 12px;
+  --fx-fs-13: 13px;
+  --fx-fs-14: 14px;
+  --fx-fs-16: 16px;
+  --fx-fs-20: 20px;
+  --fx-fs-24: 24px;
+  --fx-fs-32: 32px;
+  --fx-fs-44: 44px;
+  --fx-fs-56: 56px;
+  --fx-track-display: -0.02em;
+  --fx-lh-body: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+}
+h1, h2 {
+  letter-spacing: var(--fx-track-display);
+}
+h1 { font-weight: 500; }
+
+.fx-landing p,
+.fx-auth-page p,
+.fx-ios p,
+.fx-crm p {
+  line-height: var(--fx-lh-body);
+}
+
+.tabular-nums,
+.fx-desk-tradebar,
+.fx-crm .crm-kpi .value,
+.fx-crm .crm-dense-table td {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
 }
 
 ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -115,6 +157,16 @@ input, select, button { font: inherit; }
     overflow-x: clip;
     max-width: 100%;
   }
+  /* Phone copy stays on the 12px floor, including CRM and marketing utilities. */
+  .text-\[8px\],
+  .text-\[9px\],
+  .text-\[9\.5px\],
+  .text-\[10px\],
+  .text-\[11px\],
+  .text-\[11\.5px\] {
+    font-size: 12px !important;
+    line-height: 1.35 !important;
+  }
   .fx-desk {
     /* Prefer app-like overflow containment on phone */
     overscroll-behavior: none;
@@ -161,7 +213,7 @@ input, select, button { font: inherit; }
     min-height: 46px;
     border-radius: 12px;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: 0.08em;
   }
 
@@ -214,10 +266,10 @@ html:has(.fx-landing) {
 .fx-landing h1,
 .fx-landing h2,
 .fx-landing h3 {
-  font-family: var(--font-sora), system-ui, sans-serif;
+  font-family: var(--font-inter), var(--font-inter-ext), system-ui, sans-serif;
   font-weight: 600;
   color: #f4f7fb;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
 }
 .fx-landing [role="dialog"] h2,
 .fx-landing [role="dialog"] h3 {
@@ -242,30 +294,31 @@ html:has(.fx-landing) {
 }
 
 .fx-landing .fx-h1 {
-  font-size: clamp(40px, 8vw, 76px);
-  line-height: 0.98;
-  letter-spacing: -0.055em;
+  font-size: clamp(var(--fx-fs-32), 6.4vw, var(--fx-fs-56));
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
 }
 .fx-landing .fx-h2 {
-  font-size: clamp(30px, 4.4vw, 48px);
-  line-height: 1.05;
+  font-size: clamp(var(--fx-fs-24), 4vw, var(--fx-fs-44));
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
 }
 .fx-landing .fx-hero-body,
 .fx-landing .fx-section-body {
   color: var(--fx-muted);
-  font-size: 16px;
-  line-height: 1.65;
+  font-size: var(--fx-fs-16);
+  font-weight: 400;
+  line-height: 1.6;
   max-width: 58ch;
-}
-.fx-landing .fx-hero-body {
-  font-size: 17px;
 }
 
 .fx-landing .fx-eyebrow {
   margin: 0;
   color: #d7ffe9;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -359,7 +412,7 @@ html:has(.fx-landing) {
   border-radius: 8px;
   padding: 8px 12px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
 }
 .fx-landing .fx-skip:focus {
   transform: none;
@@ -408,7 +461,7 @@ html:has(.fx-landing) {
   color: #1a1a1a;
   padding: 4px 10px 4px 8px;
   font-size: 12px;
-  font-weight: 650;
+  font-weight: 500;
 }
 .fx-landing .fx-trust-row {
   display: flex;
@@ -455,22 +508,22 @@ html:has(.fx-landing) {
 .fx-landing .fx-kicker {
   margin: 0;
   color: #8ea0b8;
-  font-size: 11px;
+  font-size: var(--fx-fs-12);
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  font-weight: 700;
+  font-weight: 500;
 }
 .fx-landing .fx-chart-symbol {
   margin: 2px 0 0;
-  font-size: 18px;
-  font-weight: 700;
+  font-size: var(--fx-fs-20);
+  font-weight: 600;
 }
 .fx-landing .fx-chart-px {
   margin: 0;
-  font-size: 28px;
-  font-weight: 650;
+  font-size: var(--fx-fs-32);
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
 }
 .fx-landing .fx-chart-chg,
 .fx-landing .is-up { color: var(--fx-buy); }
@@ -478,7 +531,7 @@ html:has(.fx-landing) {
 .fx-landing .fx-chart-chg {
   margin: 0;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 .fx-landing .fx-chart-stage {
@@ -510,8 +563,8 @@ html:has(.fx-landing) {
   border: 1px solid var(--fx-line);
   background: transparent;
   color: #c5cedd;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: var(--fx-fs-12);
+  font-weight: 500;
   letter-spacing: 0.04em;
   padding: 5px 8px;
 }
@@ -552,7 +605,7 @@ html:has(.fx-landing) {
   gap: 8px;
   color: #d5dce8;
   font-size: 13px;
-  font-weight: 650;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 .fx-landing .fx-ticker-sym { color: #fff; }
@@ -623,7 +676,7 @@ html:has(.fx-landing) {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-weight: 700;
+  font-weight: 600;
 }
 .fx-landing .fx-market-miss { grid-column: 2 / -1; color: #8ea0b8; text-align: right; }
 
@@ -680,7 +733,7 @@ html:has(.fx-landing) {
 .fx-landing .fx-laptop figcaption span,
 .fx-landing .fx-phone figcaption span {
   color: #d7ffe9;
-  font-weight: 700;
+  font-weight: 600;
 }
 .fx-landing .fx-phone {
   width: min(210px, 46vw);
@@ -748,10 +801,10 @@ html:has(.fx-landing) {
   display: block;
   color: #3ddc97;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0.14em;
 }
-.fx-landing .fx-steps h3 { margin: 10px 0 0; font-size: 18px; }
+.fx-landing .fx-steps h3 { margin: 10px 0 0; font-size: var(--fx-fs-20); font-weight: 600; }
 .fx-landing .fx-steps p { margin: 8px 0 0; color: var(--fx-muted); font-size: 14px; line-height: 1.55; }
 
 .fx-landing .fx-infra {
@@ -844,7 +897,7 @@ html:has(.fx-landing) {
 .fx-landing .fx-footer-links span {
   color: #f4f7fb;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -887,7 +940,7 @@ html:has(.fx-landing) {
   justify-content: center;
   border-radius: 999px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .fx-landing a:focus-visible,
@@ -933,7 +986,7 @@ html:has(.fx-landing) {
 .fx-landing .fx-trust-band li {
   color: #d5dce8;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.02em;
 }
 .fx-landing .fx-trust-band li::before {
@@ -973,10 +1026,10 @@ html:has(.fx-landing) {
 .fx-landing .fx-mid-cta-title {
   margin: 0;
   color: #f4f7fb;
-  font-family: var(--font-sora), system-ui, sans-serif;
-  font-size: 22px;
-  font-weight: 650;
-  letter-spacing: -0.03em;
+  font-family: var(--font-inter), var(--font-inter-ext), system-ui, sans-serif;
+  font-size: var(--fx-fs-24);
+  font-weight: 300;
+  letter-spacing: -0.02em;
 }
 .fx-landing .fx-cta-row {
   display: flex;
@@ -998,8 +1051,8 @@ html:has(.fx-landing) {
     --fx-shell: min(1180px, calc(100% - 28px));
   }
   .fx-landing .fx-hero { padding-top: 16px; }
-  .fx-landing .fx-h1 { font-size: clamp(34px, 11vw, 46px); }
-  .fx-landing .fx-hero-body { font-size: 15px; }
+  .fx-landing .fx-h1 { font-size: clamp(var(--fx-fs-32), 10vw, var(--fx-fs-44)); }
+  .fx-landing .fx-hero-body { font-size: var(--fx-fs-16); }
   .fx-landing .fx-chart-slot,
   .fx-landing .fx-chart-card { min-height: 300px; }
   .fx-landing .fx-cta-row { flex-direction: column; }
@@ -1037,9 +1090,9 @@ html:has(.fx-landing) {
 }
 .fx-ios h1,
 .fx-ios h2 {
-  font-family: var(--font-sora), system-ui, sans-serif;
+  font-family: var(--font-inter), var(--font-inter-ext), system-ui, sans-serif;
   color: #f4f7fb;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
 }
 html:has(.fx-ios),
 body:has(.fx-ios) {
@@ -1066,14 +1119,14 @@ body:has(.fx-ios) {
   background: #f4f7fb;
   color: #0b0e13;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
 }
 .fx-ios-step p:first-child,
 .fx-ios-note > p:first-child,
 .fx-ios-note > p:nth-of-type(3) {
   margin: 0;
   font-size: 15px;
-  font-weight: 650;
+  font-weight: 500;
 }
 .fx-ios-step p:last-child,
 .fx-ios-note p {
@@ -1087,7 +1140,7 @@ body:has(.fx-ios) {
   margin-top: 18px;
 }
 .fx-ios-note a {
-  font-weight: 700;
+  font-weight: 600;
   color: #f4f7fb;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -1123,7 +1176,7 @@ body:has(.fx-ios) {
   --fx-line: rgba(255, 255, 255, 0.1);
   background: #07090d !important;
   color: #f4f7fb !important;
-  font-family: var(--font-sora), var(--font-inter), var(--font-inter-ext), system-ui, sans-serif;
+  font-family: var(--font-inter), var(--font-inter-ext), system-ui, sans-serif;
   color-scheme: dark;
 }
 
@@ -1131,8 +1184,8 @@ body:has(.fx-ios) {
 .fx-auth-page h2,
 .fx-auth-page h3,
 .fx-auth-page .text-\[\#111111\] {
-  font-family: var(--font-sora), system-ui, sans-serif;
-  letter-spacing: -0.03em;
+  font-family: var(--font-inter), var(--font-inter-ext), system-ui, sans-serif;
+  letter-spacing: -0.02em;
   color: #f4f7fb !important;
 }
 
@@ -1230,17 +1283,17 @@ body:has(.fx-auth-page) {
   padding: 10px 12px;
 }
 .fx-crm .crm-kpi .label {
-  font-size: 10px;
-  font-weight: 600;
+  font-size: var(--fx-fs-12);
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: #525252;
 }
 .fx-crm .crm-kpi .value {
   margin-top: 4px;
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1.1;
+  font-size: var(--fx-fs-20);
+  font-weight: 500;
+  line-height: 1.2;
   color: #111;
 }
 .fx-crm .crm-dense-table {
@@ -1251,8 +1304,8 @@ body:has(.fx-auth-page) {
 .fx-crm .crm-dense-table th {
   padding: 6px 8px;
   text-align: left;
-  font-size: 10px;
-  font-weight: 600;
+  font-size: var(--fx-fs-12);
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: #525252;

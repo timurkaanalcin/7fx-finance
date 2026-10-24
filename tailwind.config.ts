@@ -7,7 +7,46 @@ const config: Config = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+    fontSize: {
+      xs: ["12px", { lineHeight: "1.45" }],
+      sm: ["14px", { lineHeight: "1.5" }],
+      base: ["16px", { lineHeight: "1.6" }],
+      lg: ["20px", { lineHeight: "1.4", letterSpacing: "-0.01em" }],
+      xl: ["20px", { lineHeight: "1.35", letterSpacing: "-0.02em" }],
+      "2xl": ["24px", { lineHeight: "1.25", letterSpacing: "-0.02em" }],
+      "3xl": ["32px", { lineHeight: "1.15", letterSpacing: "-0.02em" }],
+      "4xl": ["44px", { lineHeight: "1.08", letterSpacing: "-0.02em" }],
+      "5xl": ["56px", { lineHeight: "1.05", letterSpacing: "-0.02em" }],
+      "6xl": ["56px", { lineHeight: "1.05", letterSpacing: "-0.02em" }],
+      "7xl": ["56px", { lineHeight: "1.05", letterSpacing: "-0.02em" }],
+      "8xl": ["56px", { lineHeight: "1.05", letterSpacing: "-0.02em" }],
+      "9xl": ["56px", { lineHeight: "1.05", letterSpacing: "-0.02em" }],
+      "fs-12": ["12px", { lineHeight: "1.45" }],
+      "fs-13": ["13px", { lineHeight: "1.45" }],
+      "fs-14": ["14px", { lineHeight: "1.5" }],
+      "fs-16": ["16px", { lineHeight: "1.6" }],
+      "fs-20": ["20px", { lineHeight: "1.4", letterSpacing: "-0.02em" }],
+      "fs-24": ["24px", { lineHeight: "1.25", letterSpacing: "-0.02em" }],
+      "fs-32": ["32px", { lineHeight: "1.15", letterSpacing: "-0.02em" }],
+      "fs-44": ["44px", { lineHeight: "1.08", letterSpacing: "-0.02em" }],
+      "fs-56": ["56px", { lineHeight: "1.05", letterSpacing: "-0.02em" }],
+    },
     extend: {
+      fontWeight: {
+        thin: "400",
+        extralight: "400",
+        light: "400",
+        normal: "400",
+        medium: "500",
+        semibold: "500",
+        bold: "600",
+        extrabold: "600",
+        black: "600",
+      },
+      letterSpacing: {
+        tight: "-0.02em",
+        tighter: "-0.02em",
+      },
       colors: {
         // HRAM-matched desk (dark trade) + light CRM via CSS vars
         desk: {
