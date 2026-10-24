@@ -26,7 +26,12 @@ function writeTermPrefs(patch: TermPrefs) {
 
 type TradeActionResult = { ok: true } | { ok: false; error: string };
 
-async function postTrade(url: string, body: unknown, fallback: string): Promise<TradeActionResult> {
+async function postTrade(
+  url: string,
+  body: unknown,
+  fallback: string,
+  t: (key: string) => string
+): Promise<TradeActionResult> {
   try {
     const res = await fetch(url, {
       method: "POST",
@@ -36,9 +41,9 @@ async function postTrade(url: string, body: unknown, fallback: string): Promise<
     });
     if (res.ok) return { ok: true };
     const data = await res.json().catch(() => ({}));
-    const error =
+    const raw =
       data && typeof data.error === "string" && data.error.trim() ? data.error.trim() : fallback;
-    return { ok: false, error };
+    return { ok: false, error: localizeTradeError(raw, t) };
   } catch {
     return { ok: false, error: fallback };
   }
@@ -62,6 +67,7 @@ import ShortcutsHelp from "./ShortcutsHelp";
 import TradingCalculator from "./TradingCalculator";
 import { FeedBanner, FeedRecoveredToast, useFeedHealth } from "./FeedStatus";
 import { useI18n } from "@/lib/i18n/context";
+import { localizeTradeError } from "@/lib/trade-errors";
 import BrandLoader from "@/components/ui/BrandLoader";
 import { normalizeLocale } from "@/lib/i18n/locales";
 import type {
@@ -101,7 +107,10 @@ export default function TerminalShell() {
     const t = readTermPrefs().tab;
     return t === "open" || t === "closed" || t === "pending" ? t : "open";
   });
-  const [mobileTab, setMobileTab] = useState<"markets" | "order" | "positions">("markets");
+  const [mobileTab, setMobileTab] = useState<"chart" | "markets" | "positions">("chart");
+  const [symbolsError, setSymbolsError] = useState(false);
+  const [positionsError, setPositionsError] = useState(false);
+  const [bootNonce, setBootNonce] = useState(0);
   const [openPositions, setOpenPositions] = useState<PositionRow[]>([]);
   const [closedPositions, setClosedPositions] = useState<PositionRow[]>([]);
   const [pendingOrders, setPendingOrders] = useState<OrderRow[]>([]);
@@ -178,16 +187,23 @@ export default function TerminalShell() {
   }, [router]);
 
   const refreshPositions = useCallback(async () => {
-    const [openRes, closedRes, ordersRes] = await Promise.all([
-      fetch("/api/positions?status=OPEN", { credentials: "include" }),
-      fetch("/api/positions?status=CLOSED", { credentials: "include" }),
-      fetch("/api/orders", { credentials: "include" }),
-    ]);
-    if (openRes.ok) setOpenPositions(await openRes.json());
-    if (closedRes.ok) setClosedPositions(await closedRes.json());
-    if (ordersRes.ok) {
+    try {
+      const [openRes, closedRes, ordersRes] = await Promise.all([
+        fetch("/api/positions?status=OPEN", { credentials: "include" }),
+        fetch("/api/positions?status=CLOSED", { credentials: "include" }),
+        fetch("/api/orders", { credentials: "include" }),
+      ]);
+      if (!openRes.ok || !closedRes.ok || !ordersRes.ok) {
+        setPositionsError(true);
+        return;
+      }
+      setOpenPositions(await openRes.json());
+      setClosedPositions(await closedRes.json());
       const orders: OrderRow[] = await ordersRes.json();
       setPendingOrders(orders.filter((o) => o.status === "PENDING"));
+      setPositionsError(false);
+    } catch {
+      setPositionsError(true);
     }
   }, []);
 
@@ -196,10 +212,14 @@ export default function TerminalShell() {
   }, [refreshAccount, refreshPositions, refreshBalanceRequests]);
 
   useEffect(() => {
+    let cancelled = false;
     async function boot() {
-      const symRes = await fetch("/api/symbols");
-      if (symRes.ok) {
+      try {
+        const symRes = await fetch("/api/symbols");
+        if (!symRes.ok) throw new Error("symbols");
         const list: SymbolDef[] = await symRes.json();
+        if (cancelled) return;
+        if (!Array.isArray(list)) throw new Error("symbols");
         setSymbols(list);
         setSymbol((prev) => {
           if (list.some((s) => s.symbol === prev)) return prev;
@@ -207,12 +227,22 @@ export default function TerminalShell() {
           if (typeof saved === "string" && list.some((s) => s.symbol === saved)) return saved;
           return list[0]?.symbol || prev || "AAPL";
         });
+        setSymbolsError(false);
+      } catch {
+        if (!cancelled) setSymbolsError(true);
       }
-      await refreshAll();
-      setReady(true);
+      try {
+        await refreshAll();
+      } catch {
+        if (!cancelled) setPositionsError(true);
+      }
+      if (!cancelled) setReady(true);
     }
-    boot();
-  }, [refreshAll]);
+    void boot();
+    return () => {
+      cancelled = true;
+    };
+  }, [refreshAll, bootNonce]);
 
   useEffect(() => {
     writeTermPrefs({ symbol, timeframe, tab });
@@ -369,7 +399,7 @@ export default function TerminalShell() {
           : "0.10";
       setOrderPrefill({ volume, side: draft.side, nonce: Date.now() });
       setOrderOpen(true);
-      setMobileTab("order");
+      setMobileTab("chart");
     },
     [user]
   );
@@ -464,7 +494,7 @@ export default function TerminalShell() {
   async function onClosePosition(id: string, volume?: number): Promise<TradeActionResult> {
     const body: { id: string; volume?: number } = { id };
     if (volume != null && Number.isFinite(volume)) body.volume = volume;
-    const result = await postTrade("/api/positions/close", body, t("common.error"));
+    const result = await postTrade("/api/positions/close", body, t("common.error"), t);
     if (result.ok) {
       setActionError(null);
       await refreshAll();
@@ -476,7 +506,7 @@ export default function TerminalShell() {
     id: string,
     levels: { stopLoss: number | null; takeProfit: number | null }
   ): Promise<TradeActionResult> {
-    const result = await postTrade("/api/positions/modify", { id, ...levels }, t("common.error"));
+    const result = await postTrade("/api/positions/modify", { id, ...levels }, t("common.error"), t);
     if (result.ok) {
       setActionError(null);
       await refreshAll();
@@ -487,7 +517,7 @@ export default function TerminalShell() {
   async function onClosePositions(ids: string[]) {
     let firstError = "";
     for (const id of ids) {
-      const result = await postTrade("/api/positions/close", { id }, t("common.error"));
+      const result = await postTrade("/api/positions/close", { id }, t("common.error"), t);
       if (!result.ok && !firstError) firstError = result.error;
     }
     await refreshAll();
@@ -495,7 +525,7 @@ export default function TerminalShell() {
   }
 
   async function onCancelOrder(id: string): Promise<TradeActionResult> {
-    const result = await postTrade("/api/orders/cancel", { id }, t("common.error"));
+    const result = await postTrade("/api/orders/cancel", { id }, t("common.error"), t);
     if (result.ok) {
       setActionError(null);
       await refreshAll();
@@ -508,7 +538,7 @@ export default function TerminalShell() {
   async function onCancelOrders(ids: string[]) {
     let firstError = "";
     for (const id of ids) {
-      const result = await postTrade("/api/orders/cancel", { id }, t("common.error"));
+      const result = await postTrade("/api/orders/cancel", { id }, t("common.error"), t);
       if (!result.ok && !firstError) firstError = result.error;
     }
     await refreshAll();
@@ -517,6 +547,17 @@ export default function TerminalShell() {
 
   if (!ready || !user) {
     return <BrandLoader variant="desk" label={t("common.loading") || "Loading…"} />;
+  }
+
+  if (symbolsError && symbols.length === 0) {
+    return (
+      <div className="fx-desk flex h-[100dvh] flex-col items-center justify-center gap-3 bg-desk-bg px-6 text-center text-desk-text">
+        <p className="text-sm text-desk-muted">{t("term.symbolsError")}</p>
+        <button type="button" className="rounded-full bg-desk-accent px-4 py-2 text-sm font-semibold text-desk-accent-ink" onClick={() => { setReady(false); setBootNonce((n) => n + 1); }}>
+          {t("term.retry")}
+        </button>
+      </div>
+    );
   }
 
   const chartSymbol = symbols.find((s) => s.symbol === symbol);
@@ -564,6 +605,12 @@ export default function TerminalShell() {
       {priceError && feed.state === "live" && (
         <div className="border-b border-desk-warn/30 bg-desk-warn/90 px-3 py-1.5 text-center text-[11px] font-medium text-black">
           Market data warning: {priceError} (showing last known prices)
+        </div>
+      )}
+      {positionsError && (
+        <div role="alert" className="flex items-center justify-center gap-3 border-b border-desk-sell/40 bg-desk-sell/90 px-3 py-1.5 text-center text-[11px] font-medium text-white">
+          <span>{t("term.positionsError")}</span>
+          <button type="button" className="rounded bg-white/20 px-2 py-0.5 hover:bg-white/30" onClick={() => void refreshPositions()}>{t("term.retry")}</button>
         </div>
       )}
       {actionError && (
@@ -643,13 +690,24 @@ export default function TerminalShell() {
                   levels={chartLevels}
                 />
                 <PriceAlerts symbol={symbol} prices={prices} />
-                <div className="pointer-events-none absolute bottom-[calc(0.75rem+0.50cm)] right-[1.85cm] z-20 hidden md:block md:bottom-[calc(1rem+0.50cm)] md:right-[1.85cm]">
+                <div className="pointer-events-none absolute bottom-[calc(0.75rem+0.50cm)] right-[1.85cm] z-20 md:bottom-[calc(1rem+0.50cm)] md:right-[1.85cm]">
+                  <button
+                    type="button"
+                    onClick={() => setCalcOpen(true)}
+                    aria-label={t("term.calc.button")}
+                    className="pointer-events-auto flex h-9 w-9 items-center justify-center rounded-full border border-desk-border/80 bg-desk-panel/95 text-desk-muted md:hidden"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                      <rect x="5" y="3" width="14" height="18" rx="2" />
+                      <path d="M8 7h8M8 11h2M12 11h2M8 15h2M12 15h2M16 14v4" />
+                    </svg>
+                  </button>
                   <button
                     type="button"
                     onClick={() => openOrder("BUY")}
                     disabled={user.tradingEnabled === false || !!user.mustChangePassword}
                     aria-label="Open trade order"
-                    className="pointer-events-auto min-h-[22px] min-w-[52px] rounded-full bg-desk-accent px-3.5 py-[5px] text-[10px] font-bold tracking-[0.12em] text-desk-accent-ink shadow-accent-glow-sm transition hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 md:min-h-[26px] md:min-w-[60px] md:px-[18px] md:py-1.5 md:text-[11px]"
+                    className="pointer-events-auto hidden min-h-[22px] min-w-[52px] rounded-full bg-desk-accent px-3.5 py-[5px] text-[10px] font-bold tracking-[0.12em] text-desk-accent-ink shadow-accent-glow-sm transition hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 md:inline-flex md:min-h-[26px] md:min-w-[60px] md:px-[18px] md:py-1.5 md:text-[11px]"
                   >
                     TRADE
                   </button>
@@ -683,7 +741,8 @@ export default function TerminalShell() {
               />
             </div>
 
-            {/* Mobile tab panel */}
+            {/* Mobile markets / positions. Chart tab keeps this panel unmounted so the chart uses the height. */}
+            {mobileTab !== "chart" && (
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden border-t border-desk-border/70 bg-desk-panel md:hidden">
             {mobileTab === "markets" && (
               <Watchlist
@@ -692,34 +751,8 @@ export default function TerminalShell() {
                 prices={prices}
                 openPositions={openPositions}
                 selected={symbol}
-                onSelect={(s) => {
-                  setSymbol(s);
-                }}
+                onSelect={setSymbol}
               />
-            )}
-            {mobileTab === "order" && (
-              <div className="flex h-full flex-col items-center justify-center gap-3 bg-desk-panel px-6 text-center">
-                <p className="text-sm text-desk-muted">Tap TRADE to place an order.</p>
-                <button
-                  type="button"
-                  onClick={() => openOrder("BUY")}
-                  disabled={user.tradingEnabled === false || !!user.mustChangePassword}
-                  className="min-h-[26px] min-w-[60px] rounded-full bg-desk-accent px-4 py-1.5 text-[11px] font-bold tracking-[0.12em] text-desk-accent-ink shadow-accent-glow-sm disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  TRADE
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCalcOpen(true)}
-                  className="mt-1 inline-flex min-h-[40px] items-center gap-2 rounded-full border border-desk-border px-4 text-[12px] font-semibold text-desk-muted transition hover:text-desk-text"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-                    <rect x="5" y="3" width="14" height="18" rx="2" />
-                    <path d="M8 7h8M8 11h2M12 11h2M8 15h2M12 15h2M16 14v4" />
-                  </svg>
-                  {t("term.calc.title")}
-                </button>
-              </div>
             )}
             {mobileTab === "positions" && (
               <BottomPanels
@@ -741,6 +774,7 @@ export default function TerminalShell() {
               />
             )}
             </div>
+            )}
           </div>
 
           {/* Right Al/Sat panel removed — orders via TRADE modal */}
@@ -771,28 +805,25 @@ export default function TerminalShell() {
         <div className="fx-desk-seg">
           {(
             [
-              { id: "markets" as const, label: "Markets" },
-              { id: "order" as const, label: "Order" },
-              { id: "positions" as const, label: "Positions" },
+              { id: "chart" as const, label: t("term.chart") },
+              { id: "markets" as const, label: t("term.markets") },
+              { id: "positions" as const, label: t("term.positions") },
             ] as const
-          ).map((t) => (
+          ).map((item) => (
             <button
-              key={t.id}
+              key={item.id}
               type="button"
-              onClick={() => {
-                setMobileTab(t.id);
-                if (t.id === "order") openOrder("BUY");
-              }}
-              aria-current={mobileTab === t.id ? "page" : undefined}
+              onClick={() => setMobileTab(item.id)}
+              aria-current={mobileTab === item.id ? "page" : undefined}
               className={`fx-desk-seg__btn ${
-                mobileTab === t.id ? "fx-desk-seg__btn--active" : ""
+                mobileTab === item.id ? "fx-desk-seg__btn--active" : ""
               }`}
             >
-              {t.label}
+              {item.label}
             </button>
           ))}
           <a href="/profile" className="fx-desk-seg__btn flex items-center justify-center">
-            Account
+            {t("term.account")}
           </a>
         </div>
       </nav>

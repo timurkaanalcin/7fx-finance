@@ -3,6 +3,7 @@
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useVisiblePoll } from "@/lib/use-visible-poll";
 import { fmtCrmDate, fmtCrmMoney } from "@/lib/crm-format";
 import EditableOrdersTable from "@/components/crm/EditableOrdersTable";
 import EditablePositionsTable from "@/components/crm/EditablePositionsTable";
@@ -112,13 +113,7 @@ export default function PositionsPage() {
     load();
   }, [load]);
 
-  useEffect(() => {
-    if (!live || editing) return;
-    const id = window.setInterval(() => {
-      load();
-    }, POLL_MS);
-    return () => window.clearInterval(id);
-  }, [live, load, editing]);
+  useVisiblePoll(load, POLL_MS, live && !editing);
 
   return (
     <div>

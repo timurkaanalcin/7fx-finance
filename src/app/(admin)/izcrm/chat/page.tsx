@@ -4,6 +4,7 @@ import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 import Link from "next/link";
 import { FormEvent, KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useVisiblePoll } from "@/lib/use-visible-poll";
 import { ChatFormattedBody } from "@/components/chat/ChatFormattedBody";
 import { ChatFormatToolbar } from "@/components/chat/ChatFormatToolbar";
 import { applyFormatAction, type FormatAction } from "@/components/chat/chatFormat";
@@ -269,9 +270,8 @@ export default function ChatPage() {
 
   useEffect(() => {
     load();
-    const iv = window.setInterval(load, 8000);
-    return () => window.clearInterval(iv);
   }, [load]);
+  useVisiblePoll(load, 8000);
 
 
   const unanswered = useMemo(
@@ -387,12 +387,16 @@ export default function ChatPage() {
     setLivePresence(active.presence || null);
     void pingPresence(uid, { inChat: true, markRead: true });
     void pullPresence(uid);
-    const iv = window.setInterval(() => {
+    const tick = () => {
+      if (document.hidden) return;
       void pingPresence(uid, { inChat: true, markRead: true });
       void pullPresence(uid);
-    }, 3000);
+    };
+    const iv = window.setInterval(tick, 3000);
+    document.addEventListener("visibilitychange", tick);
     return () => {
       window.clearInterval(iv);
+      document.removeEventListener("visibilitychange", tick);
       void pingPresence(uid, { inChat: false, typing: false });
       lastTypingSent.current = false;
     };
