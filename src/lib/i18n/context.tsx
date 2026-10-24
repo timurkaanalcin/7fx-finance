@@ -63,12 +63,18 @@ export function I18nProvider({
   children,
   initialLocale,
   initialDict,
+  hasLocaleCookie,
 }: {
   scope: I18nScope;
   children: ReactNode;
   initialLocale?: Locale;
   /** Server-loaded public dictionary so the first paint matches the fx_lang cookie. */
   initialDict?: Dict;
+  /**
+   * Public pages pass false when fx_lang is missing. Undefined keeps the previous
+   * hydration (CRM): a stored language applies on this visit.
+   */
+  hasLocaleCookie?: boolean;
 }) {
   if (initialLocale && initialLocale !== "en" && initialDict) {
     installDict(initialLocale, initialDict);
@@ -80,7 +86,17 @@ export function I18nProvider({
   useEffect(() => {
     let cancel = false;
     const stored = readStored(scope);
-    const next = stored ?? initialLocale ?? fallback;
+    const ssr = initialLocale ?? fallback;
+    // No fx_lang cookie: keep this paint (English unless the server sent another locale).
+    // Persist the saved language so the next response can paint it. A real cookie, including "en", still wins via storage.
+    if (scope === "public" && hasLocaleCookie === false && stored && stored !== ssr) {
+      writeStored(scope, stored);
+      setLocaleState(ssr);
+      applyDocumentLocale(ssr, scope);
+      setHydrated(true);
+      return;
+    }
+    const next = stored ?? ssr;
     const apply = () => {
       if (cancel) return;
       setLocaleState(next);
@@ -95,7 +111,7 @@ export function I18nProvider({
     return () => {
       cancel = true;
     };
-  }, [scope, initialLocale, fallback]);
+  }, [scope, initialLocale, fallback, hasLocaleCookie]);
 
   const setLocale = useCallback(
     (next: Locale) => {

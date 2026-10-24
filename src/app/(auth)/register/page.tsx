@@ -1,16 +1,14 @@
-import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import AuthShell from "@/components/auth/AuthShell";
 import RegisterForm from "@/components/auth/RegisterForm";
+import { publicAuthMetadata } from "@/lib/i18n/public-meta";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Register · 7FX",
-  description: "Create your 7FX account",
-  robots: { index: false, follow: false },
-};
+export function generateMetadata() {
+  return publicAuthMetadata("auth.meta.registerTitle", "auth.meta.registerDesc");
+}
 
 export default async function RegisterPage() {
   const session = await getSession();

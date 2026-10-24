@@ -978,6 +978,9 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.recentClients.hour", "h", "sa", "ч", "Std.", "س"],
   ["crm.recentClients.day", "d", "g", "д", "T.", "ي"],
   ["crm.cal.tradersPartial", "Trader list is partial. Older names are not included.", "Trader listesi eksik. Daha eski isimler dahil değil.", "Список трейдеров неполный. Более старые имена не включены.", "Traderliste ist unvollständig. Ältere Namen fehlen.", "قائمة المتداولين غير مكتملة. الأسماء الأقدم غير مشمولة."],
+  ["crm.cal.traderSearch", "Search trader by name, email, or account ID", "Trader ara: ad, e-posta veya hesap ID", "Поиск трейдера: имя, email или ID счёта", "Trader suchen: Name, E-Mail oder Konto-ID", "ابحث عن متداول بالاسم أو البريد أو معرّف الحساب"],
+  ["crm.cal.traderSearchPartial", "More traders match. Refine the search.", "Daha fazla trader eşleşiyor. Aramayı daraltın.", "Найдено больше трейдеров. Уточните поиск.", "Weitere Trader passen. Suche eingrenzen.", "هناك متداولون أكثر. ضيّق البحث."],
+  ["crm.cal.workersPartial", "Worker list is partial. Older names are not included.", "Çalışan listesi eksik. Daha eski isimler dahil değil.", "Список сотрудников неполный. Более старые имена не включены.", "Mitarbeiterliste ist unvollständig. Ältere Namen fehlen.", "قائمة الموظفين غير مكتملة. الأسماء الأقدم غير مشمولة."],
 ];
 
 function pack(index: 1|2|3|4|5): Dict {

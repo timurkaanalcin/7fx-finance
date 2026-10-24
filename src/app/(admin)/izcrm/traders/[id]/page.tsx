@@ -1021,6 +1021,11 @@ export default function AdminUserDetailPage() {
   const [activityEvents, setActivityEvents] = useState<
     { id: string; kind: string; path?: string | null; userAgent?: string | null; meta?: string | null; createdAt: string }[]
   >([]);
+  const [activityHasMore, setActivityHasMore] = useState(false);
+  const [activityBusy, setActivityBusy] = useState(false);
+  const activityRef = useRef<
+    { id: string; kind: string; path?: string | null; userAgent?: string | null; meta?: string | null; createdAt: string }[]
+  >([]);
   const [documents, setDocuments] = useState<Row[]>([]);
   const [reminders, setReminders] = useState<Row[]>([]);
   const [depositMethods, setDepositMethods] = useState<{ id: string; label: string; type: string; active: boolean }[]>(
@@ -1184,7 +1189,10 @@ export default function AdminUserDetailPage() {
     if (!alive()) return false;
     if (scope === "profile") {
       applyList("notes", data.notes || [], Boolean(data.notesHasMore), "replace");
-      setActivityEvents(data.activityEvents || []);
+      const events = data.activityEvents || [];
+      activityRef.current = events;
+      setActivityEvents(events);
+      setActivityHasMore(Boolean(data.activityHasMore));
       return true;
     }
     applyList("notes", data.notes || [], Boolean(data.notesHasMore), "replace");
@@ -1198,13 +1206,35 @@ export default function AdminUserDetailPage() {
     setLedger(ledgerRows);
     setLedgerHasMore(Boolean(data.ledgerHasMore));
     applyList("communications", data.communications || [], Boolean(data.communicationsHasMore), "replace");
-    setActivityEvents(data.activityEvents || []);
+    const events = data.activityEvents || [];
+    activityRef.current = events;
+    setActivityEvents(events);
+    setActivityHasMore(Boolean(data.activityHasMore));
     applyList("documents", data.documents || [], Boolean(data.documentsHasMore), "replace");
     applyList("reminders", data.reminders || [], Boolean(data.remindersHasMore), "replace");
     setDepositMethods(data.depositMethods || []);
     fetched.current = { id: requestId, scopes: new Set(TRADER_LAZY_SCOPES) };
     return true;
   }, [id, applyList]);
+
+  const loadMoreActivity = useCallback(async () => {
+    if (!id || activityBusy) return;
+    setActivityBusy(true);
+    try {
+      const skip = activityRef.current.length;
+      const res = await fetch(`/api/admin/users/${id}?view=profile&part=activity&take=50&skip=${skip}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      const incoming = (data.activityEvents || []) as typeof activityRef.current;
+      const seen = new Set(activityRef.current.map((row) => row.id));
+      const next = activityRef.current.concat(incoming.filter((row) => !seen.has(row.id)));
+      activityRef.current = next;
+      setActivityEvents(next);
+      setActivityHasMore(Boolean(data.activityHasMore));
+    } finally {
+      setActivityBusy(false);
+    }
+  }, [id, activityBusy]);
 
   const loadMoreLedger = useCallback(async () => {
     if (!id || ledgerMoreBusy) return;
@@ -1281,6 +1311,8 @@ export default function AdminUserDetailPage() {
       setLedgerHasMore(false);
       setCommunications([]);
       setActivityEvents([]);
+      activityRef.current = [];
+      setActivityHasMore(false);
       setDocuments([]);
       setReminders([]);
       setDepositMethods([]);
@@ -1708,6 +1740,16 @@ export default function AdminUserDetailPage() {
               })}
           </ul>
         </div>
+      )}
+      {activityHasMore && (
+        <button
+          type="button"
+          disabled={activityBusy}
+          onClick={() => void loadMoreActivity()}
+          className="mb-3 w-full rounded-lg border border-[#e5e5e5] bg-white px-3 py-2 text-xs font-medium hover:bg-[#f7f7f7] disabled:opacity-50"
+        >
+          {activityBusy ? i18n("crm.ui.loading") : i18n("crm.ui.loadMore")}
+        </button>
       )}
 
       {(msg || err) && <p className={`mb-3 text-xs ${err ? "text-red-600" : "text-emerald-600"}`}>{err || msg}</p>}
