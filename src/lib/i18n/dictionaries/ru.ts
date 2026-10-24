@@ -672,4 +672,11 @@ export const ru: Dict = {
   "term.blotter.showChart": "Показать график",
   "term.deposit.loadFail": "Не удалось загрузить способы пополнения",
   "term.cal.partial": "Итог месяца неполный. Более старые закрытые сделки не включены.",
+  "term.err.priceFetch": "Не удалось получить цену",
+  "term.err.priceConn": "Ошибка соединения с ценой",
+  "term.alert.offsets": "Быстрые процентные отступы от середины",
+  "term.chart.liveBadge": "LIVE",
+  "term.trade.open": "Открыть ордер",
+  "term.trade.button": "СДЕЛКА",
+  "term.blotter.ticket": "Тикет {id}",
 };

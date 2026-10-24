@@ -692,4 +692,11 @@ export const de: Dict = {
   "term.blotter.showChart": "Chart anzeigen",
   "term.deposit.loadFail": "Einzahlungsmethoden konnten nicht geladen werden",
   "term.cal.partial": "Monatssumme ist unvollständig. Ältere geschlossene Trades fehlen.",
+  "term.err.priceFetch": "Kurs konnte nicht geladen werden",
+  "term.err.priceConn": "Preisverbindung fehlgeschlagen",
+  "term.alert.offsets": "Schnelle Prozentabstände von der Mitte",
+  "term.chart.liveBadge": "LIVE",
+  "term.trade.open": "Order eröffnen",
+  "term.trade.button": "HANDEL",
+  "term.blotter.ticket": "Ticket {id}",
 };

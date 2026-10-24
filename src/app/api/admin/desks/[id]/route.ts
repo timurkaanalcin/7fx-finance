@@ -35,7 +35,7 @@ export async function GET(req: Request, ctx: Ctx) {
       ? prisma.user.findMany({
           where: traderWhere,
           select: { id: true, name: true, account: { select: { balance: true, currency: true } } },
-          take: paged ? traderWindow.take + 1 : traderWindow.take,
+          take: traderWindow.take + 1,
           skip: traderWindow.skip,
           orderBy: { createdAt: "desc" },
         })
@@ -44,7 +44,7 @@ export async function GET(req: Request, ctx: Ctx) {
       ? prisma.user.findMany({
           where: workerWhere,
           select: { id: true, name: true, email: true },
-          take: paged ? workerWindow.take + 1 : workerWindow.take,
+          take: workerWindow.take + 1,
           skip: workerWindow.skip,
           orderBy: { createdAt: "desc" },
         })
@@ -54,8 +54,8 @@ export async function GET(req: Request, ctx: Ctx) {
     prisma.account.aggregate({ where: { user: traderWhere }, _sum: { balance: true } }),
   ]);
 
-  const tradersHasMore = paged && wantTraders && tradersFound.length > traderWindow.take;
-  const workersHasMore = paged && wantWorkers && workersFound.length > workerWindow.take;
+  const tradersHasMore = wantTraders && tradersFound.length > traderWindow.take;
+  const workersHasMore = wantWorkers && workersFound.length > workerWindow.take;
   const traders = (tradersHasMore ? tradersFound.slice(0, traderWindow.take) : tradersFound).map(serializeDeskTrader);
   const workers = (workersHasMore ? workersFound.slice(0, workerWindow.take) : workersFound).map(serializeDeskWorker);
 

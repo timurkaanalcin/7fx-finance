@@ -672,4 +672,11 @@ export const ar: Dict = {
   "term.blotter.showChart": "إظهار الرسم",
   "term.deposit.loadFail": "تعذر تحميل طرق الإيداع",
   "term.cal.partial": "إجمالي الشهر غير مكتمل. الصفقات المغلقة الأقدم غير مشمولة.",
+  "term.err.priceFetch": "تعذر جلب السعر",
+  "term.err.priceConn": "خطأ في اتصال السعر",
+  "term.alert.offsets": "إزاحات مئوية سريعة من المنتصف",
+  "term.chart.liveBadge": "مباشر",
+  "term.trade.open": "فتح أمر تداول",
+  "term.trade.button": "تداول",
+  "term.blotter.ticket": "تذكرة {id}",
 };

@@ -1,11 +1,22 @@
 import type { Metadata, Viewport } from "next";
+import { cookies } from "next/headers";
 import InstallBanner from "@/components/InstallBanner";
 import "./globals.css";
 import "./mobile-luxe.css";
 import PublicI18n from "@/components/i18n/PublicI18n";
 import { inter, sora } from "@/lib/fonts";
+import { LOCALE_META, publicLocaleFromCookie, type Locale } from "@/lib/i18n/locales";
+import type { Dict } from "@/lib/i18n/types";
 import { DESCRIPTION, OG_ALT, OG_IMAGE, TITLE } from "@/lib/seo";
 import { PRIMARY_ORIGIN } from "@/lib/seo-hosts";
+
+async function publicDict(locale: Locale): Promise<Dict | undefined> {
+  if (locale === "ru") return (await import("@/lib/i18n/dictionaries/ru")).ru;
+  if (locale === "ar") return (await import("@/lib/i18n/dictionaries/ar")).ar;
+  if (locale === "tr") return (await import("@/lib/i18n/dictionaries/tr")).tr;
+  if (locale === "de") return (await import("@/lib/i18n/dictionaries/de")).de;
+  return undefined;
+}
 
 
 export const viewport: Viewport = {
@@ -59,10 +70,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = publicLocaleFromCookie(cookies().get("fx_lang")?.value);
+  const initialDict = await publicDict(locale);
+  const meta = LOCALE_META[locale];
   return (
     <html
-      lang="en"
+      lang={meta.htmlLang}
+      dir={meta.dir}
       className={`${inter.variable} ${sora.variable}`}
       data-fx-theme="light"
       suppressHydrationWarning
@@ -75,7 +90,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="antialiased">
-        <PublicI18n>
+        <PublicI18n initialLocale={locale} initialDict={initialDict}>
           {children}
         </PublicI18n>
         <InstallBanner />

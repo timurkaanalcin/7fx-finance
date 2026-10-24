@@ -2,15 +2,25 @@ import { NextResponse } from "next/server";
 import { writeAudit, requireAdmin, requireAdminPerm } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
+import { crmPageWindow } from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(req: Request) {
   await ensureDemoSeed();
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
-  const desks = await prisma.desk.findMany({ orderBy: { name: "asc" }, take: 200 });
+  const { searchParams } = new URL(req.url);
+  const paged = searchParams.has("take") || searchParams.has("skip");
+  const page = paged ? crmPageWindow(searchParams.get("take"), searchParams.get("skip")) : { take: 200, skip: 0 };
+  const found = await prisma.desk.findMany({
+    orderBy: { name: "asc" },
+    skip: page.skip,
+    take: page.take + 1,
+  });
+  const hasMore = found.length > page.take;
+  const desks = hasMore ? found.slice(0, page.take) : found;
   const enriched = await Promise.all(
     desks.map(async (d) => {
       const or = [
@@ -27,7 +37,7 @@ export async function GET() {
       return { ...d, tradersCount, workersCount };
     })
   );
-  return NextResponse.json({ desks: enriched });
+  return NextResponse.json({ desks: enriched, hasMore, nextSkip: page.skip + desks.length });
 }
 
 export async function POST(req: Request) {

@@ -327,7 +327,7 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
               <span className="text-[10px] text-desk-muted">{repeatNew ? t("term.alert.repeating") : t("term.alert.once")}</span>
             </div>
             {Number.isFinite(cur) && (
-              <div className="mt-2 flex flex-wrap gap-1" role="group" aria-label="Quick percent offsets from mid">
+              <div className="mt-2 flex flex-wrap gap-1" role="group" aria-label={t("term.alert.offsets")}>
                 {PCT_CHIPS.map((pct) => (
                   <button
                     key={pct}

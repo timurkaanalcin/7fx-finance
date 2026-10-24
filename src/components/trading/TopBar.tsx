@@ -247,7 +247,7 @@ export default function TopBar({
         {/* Mobile: avatar is a direct link to /profile (tap target must not be swallowed) */}
         <Link
           href="/profile"
-          aria-label="Membership details"
+          aria-label={t("term.profile.membership")}
           title={t("common.profile")}
           className="flex touch-manipulation items-center rounded-full border border-desk-border/80 bg-desk-bg/50 p-0.5 hover:border-desk-accent/50 md:hidden"
         >
@@ -279,7 +279,7 @@ export default function TopBar({
                 onClick={() => setMenuOpen(false)}
                 className="block px-3 py-2.5 text-xs text-desk-text hover:bg-desk-hover"
               >
-                Membership details
+                {t("term.profile.membership")}
               </Link>
               {user.role === "ADMIN" && (
                 <Link

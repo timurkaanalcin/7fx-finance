@@ -9,7 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { hasDict, loadLocaleDict, translate } from "./dictionaries";
+import { hasDict, installDict, loadLocaleDict, translate } from "./dictionaries";
 import {
   LOCALE_META,
   LOCALE_STORAGE,
@@ -18,6 +18,7 @@ import {
   type I18nScope,
   type Locale,
 } from "./locales";
+import type { Dict } from "./types";
 
 type I18nContextValue = {
   locale: Locale;
@@ -61,11 +62,17 @@ export function I18nProvider({
   scope,
   children,
   initialLocale,
+  initialDict,
 }: {
   scope: I18nScope;
   children: ReactNode;
   initialLocale?: Locale;
+  /** Server-loaded public dictionary so the first paint matches the fx_lang cookie. */
+  initialDict?: Dict;
 }) {
+  if (initialLocale && initialLocale !== "en" && initialDict) {
+    installDict(initialLocale, initialDict);
+  }
   const fallback = defaultLocaleFor(scope);
   const [locale, setLocaleState] = useState<Locale>(initialLocale ?? fallback);
   const [hydrated, setHydrated] = useState(false);

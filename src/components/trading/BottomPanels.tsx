@@ -2402,7 +2402,7 @@ export default function BottomPanels({
                     key={p.id}
                     className="border-t border-desk-border/50 transition-colors hover:bg-desk-hover/50"
                   >
-                    <td className="px-2 py-1.5 text-desk-muted" title={`Ticket ${p.id}`}>
+                    <td className="px-2 py-1.5 text-desk-muted" title={t("term.blotter.ticket").replace("{id}", p.id)}>
                       <div>{i + 1}</div>
                       <div className="opacity-90"><CopyTicket id={p.id} variant="table" /></div>
                     </td>
@@ -2415,7 +2415,7 @@ export default function BottomPanels({
                         p.side === "BUY" ? "text-desk-buy" : "text-desk-sell"
                       }`}
                     >
-                      {p.side === "BUY" ? "Buy" : "Sell"}
+                      {p.side === "BUY" ? t("term.buy") : t("term.sell")}
                     </td>
                     <td className="px-2 py-1.5 font-medium text-desk-text">{p.symbol}</td>
                     <td className="px-2 py-1.5 tabular-nums">{fmtNum(p.volume, 2)}</td>
@@ -2513,7 +2513,7 @@ export default function BottomPanels({
                   key={p.id}
                   className="border-t border-desk-border/50 transition-colors hover:bg-desk-hover/40"
                 >
-                  <td className="px-2 py-1.5 text-desk-muted" title={`Ticket ${p.id}`}>
+                  <td className="px-2 py-1.5 text-desk-muted" title={t("term.blotter.ticket").replace("{id}", p.id)}>
                     <div>{i + 1}</div>
                     <div className="opacity-90"><CopyTicket id={p.id} variant="table" /></div>
                   </td>
@@ -2526,7 +2526,7 @@ export default function BottomPanels({
                       p.side === "BUY" ? "text-desk-buy" : "text-desk-sell"
                     }`}
                   >
-                    {p.side === "BUY" ? "Buy" : "Sell"}
+                    {p.side === "BUY" ? t("term.buy") : t("term.sell")}
                   </td>
                   <td className="px-2 py-1.5 font-medium">{p.symbol}</td>
                   <td className="px-2 py-1.5 tabular-nums">{fmtNum(p.volume, 2)}</td>
@@ -2604,7 +2604,7 @@ export default function BottomPanels({
                 <th className="px-2 py-2">#</th>
                 <SortTh label={t("term.col.time")} col="time" sort={pendingSort} onSort={onPendingSort} />
                 <SortTh label={t("term.col.type")} col="side" sort={pendingSort} onSort={onPendingSort} />
-                <SortTh label="Order" col="type" sort={pendingSort} onSort={onPendingSort} />
+                <SortTh label={t("term.order")} col="type" sort={pendingSort} onSort={onPendingSort} />
                 <SortTh label={t("term.col.asset")} col="symbol" sort={pendingSort} onSort={onPendingSort} />
                 <th className="px-2 py-2">{t("term.col.volume")}</th>
                 <th className="px-2 py-2">{t("term.col.price")}</th>
@@ -2634,7 +2634,7 @@ export default function BottomPanels({
                   key={o.id}
                   className="border-t border-desk-border/50 transition-colors hover:bg-desk-hover/40"
                 >
-                  <td className="px-2 py-1.5 text-desk-muted" title={`Ticket ${o.id}`}>
+                  <td className="px-2 py-1.5 text-desk-muted" title={t("term.blotter.ticket").replace("{id}", o.id)}>
                     <div>{i + 1}</div>
                     <div className="opacity-90"><CopyTicket id={o.id} variant="table" /></div>
                   </td>
@@ -2646,7 +2646,7 @@ export default function BottomPanels({
                       o.side === "BUY" ? "text-desk-buy" : "text-desk-sell"
                     }`}
                   >
-                    {o.side === "BUY" ? "Buy" : "Sell"}
+                    {o.side === "BUY" ? t("term.buy") : t("term.sell")}
                   </td>
                   <td className="px-2 py-1.5">{o.type}</td>
                   <td className="px-2 py-1.5 font-medium">{o.symbol}</td>

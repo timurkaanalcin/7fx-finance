@@ -40,7 +40,7 @@ export async function GET(req: Request) {
           where: { role: "TRADER" },
           select: { id: true, name: true, email: true },
           orderBy: { name: "asc" },
-          take: 200,
+          take: 201,
         })
       : Promise.resolve(undefined),
   ]);
@@ -64,7 +64,9 @@ export async function GET(req: Request) {
     hasMore,
     nextSkip: skip + rows.length,
     ...(workers ? { workers } : {}),
-    ...(traders ? { traders } : {}),
+    ...(traders
+      ? { traders: traders.length > 200 ? traders.slice(0, 200) : traders, tradersPartial: traders.length > 200 }
+      : {}),
   });
 }
 
