@@ -12,8 +12,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useVisiblePoll } from "@/lib/use-visible-poll";
 import { LocationLabel, PresenceCell } from "@/components/crm/Presence";
 import CopyButton from "@/components/crm/CopyButton";
-import { CrmNotice } from "@/components/crm/CrmStates";
-import Skeleton from "@/components/ui/Skeleton";
 import MultiSelect, { csvList, toggleCsv } from "@/components/crm/MultiSelect";
 import {
   clearRecentClients,
@@ -24,6 +22,8 @@ import {
   removeRecentClient,
   type RecentClient,
 } from "@/lib/crm-recent-clients";
+import { CrmNotice } from "@/components/crm/CrmStates";
+import Skeleton from "@/components/ui/Skeleton";
 
 type DeskOpt = { id: string; name: string; code: string | null };
 
@@ -1045,7 +1045,14 @@ export default function AdminUsersPage() {
         />
       )}
 
-      <div className="overflow-x-auto rounded-xl border border-[#e5e5e5]">
+      {listPhase === "loading" && rows.length === 0 && (
+        <div className="mb-3 space-y-2 rounded-xl border border-[#e5e5e5] p-3" data-fx-traders-skeleton="" aria-busy="true">
+          {Array.from({ length: 8 }, (_, i) => (
+            <Skeleton key={i} light className="h-8 w-full" />
+          ))}
+        </div>
+      )}
+      <div className={`overflow-x-auto rounded-xl border border-[#e5e5e5] ${listPhase === "loading" && rows.length === 0 ? "hidden" : ""}`}>
         <table className="w-full text-left text-xs">
           <thead className="bg-[#ffffff] text-neutral-500">
             <tr>
@@ -1233,21 +1240,10 @@ export default function AdminUsersPage() {
                 </td>
               </tr>
             ))}
-            {listPhase === "loading" && rows.length === 0 && (
+            {rows.length === 0 && (
               <tr>
-                <td colSpan={13} className="px-3 py-3" data-fx-traders-skeleton="">
-                  <div className="space-y-2">
-                    {Array.from({ length: 8 }, (_, i) => (
-                      <Skeleton key={i} light className="h-8 w-full" />
-                    ))}
-                  </div>
-                </td>
-              </tr>
-            )}
-            {listPhase === "ready" && rows.length === 0 && (
-              <tr>
-                <td colSpan={13} className="fx-empty-cell px-3 py-10 text-center text-neutral-500">
-                  {i18n("crm.ui.noTraderMatch")}
+                <td colSpan={13} className="px-3 py-10 text-center text-neutral-500">
+                  {i18n("crm.ui.noRecords")}
                 </td>
               </tr>
             )}

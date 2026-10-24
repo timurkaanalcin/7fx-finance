@@ -1115,19 +1115,10 @@ export default function AdminUserDetailPage() {
             ? ""
             : `?view=${scope}&take=50&skip=0`;
     const session = scope === "full" || scope === "profile";
-    let res: Response;
-    let meRes: Response | null = null;
-    try {
-      const pair = await Promise.all([
-        fetch(`/api/admin/users/${requestId}${q}`),
-        session ? fetch("/api/auth/me", { credentials: "include" }) : Promise.resolve(null),
-      ]);
-      res = pair[0];
-      meRes = pair[1];
-    } catch {
-      if (alive() && (scope === "profile" || scope === "full")) setBoot("error");
-      return false;
-    }
+    const [res, meRes] = await Promise.all([
+      fetch(`/api/admin/users/${requestId}${q}`),
+      session ? fetch("/api/auth/me", { credentials: "include" }) : Promise.resolve(null),
+    ]);
     if (!alive()) return false;
     if (meRes?.ok) {
       const me = await meRes.json().catch(() => ({}));
@@ -1333,7 +1324,7 @@ export default function AdminUserDetailPage() {
       setReminders([]);
       setDepositMethods([]);
     }
-    void load("profile");
+    void load("profile").catch(() => setBoot("error"));
   }, [id, load]);
 
   useEffect(() => {
@@ -1668,7 +1659,7 @@ export default function AdminUserDetailPage() {
         action={i18n("crm.ui.tryAgain")}
         onAction={() => {
           setBoot("loading");
-          void load("profile");
+          void load("profile").catch(() => setBoot("error"));
         }}
       />
     );
