@@ -30,7 +30,8 @@ function main() {
 
   const shell = read("src/components/trading/TerminalShell.tsx");
   for (const panel of ["BottomPanels", "OrderTicket", "Watchlist", "DepositModal", "PriceAlerts"]) {
-    assert.equal(shell.includes(`dynamic(() => import("./${panel}"))`), true, panel);
+    // dynamic() may take a second argument (loading skeleton). The panel must not be a static import.
+    assert.match(shell, new RegExp(`const ${panel} = dynamic\\(\\(\\) => import\\("\\./${panel}"\\)`), panel);
     assert.equal(shell.includes(`import ${panel} from`), false, panel);
   }
   assert.equal(shell.includes("setCalendarPartial"), true);

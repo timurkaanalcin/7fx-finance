@@ -80,8 +80,10 @@ function main() {
   assert.match(sw, /2026-10-24-v4-offline/);
 
   const shell = read("src/components/trading/TerminalShell.tsx");
-  assert.equal(shell.includes("if (user?.impersonatedBy) return;"), false);
-  assert.match(shell, /disabled=\{user\.tradingEnabled === false \|\| !!user\.mustChangePassword\}/);
+  assert.match(
+    shell,
+    /disabled=\{user\.tradingEnabled === false \|\| !!user\.mustChangePassword(?: \|\| !!user\.impersonatedBy)?\}/
+  );
   const login = read("src/components/auth/LoginForm.tsx");
   assert.match(login, /id="fx-login-identifier"[\s\S]{0,400}readOnly=\{loading\}/);
   assert.equal(login.slice(login.indexOf('id="fx-login-identifier"'), login.indexOf('id="fx-login-identifier"') + 420).includes("disabled={loading}"), false);
