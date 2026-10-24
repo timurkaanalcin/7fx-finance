@@ -157,7 +157,7 @@ import { localizeTradeError } from "@/lib/trade-errors";
 import { displayAccountChips, displayBookDelta } from "@/lib/display-profit";
 import { positionMark } from "@/lib/mark-price";
 import { concatUniqueById } from "@/lib/position-pages";
-import { getSymbol } from "@/lib/symbols";
+import { formatPrice, getSymbol } from "@/lib/symbols";
 import BrandLoader from "@/components/ui/BrandLoader";
 import { normalizeLocale } from "@/lib/i18n/locales";
 import type {
@@ -1155,17 +1155,25 @@ export default function TerminalShell() {
           type="button"
           onClick={() => openOrder("SELL")}
           disabled={user.tradingEnabled === false || !!user.mustChangePassword}
-          className="bg-desk-sell text-white disabled:opacity-40"
+          className="flex flex-col items-center justify-center bg-desk-sell text-white disabled:opacity-40"
+          aria-label={`${t("term.sell")} ${prices[symbol] && Number.isFinite(prices[symbol].bid) ? formatPrice(symbol, prices[symbol].bid) : ""}`.trim()}
         >
-          SELL
+          <span className="text-[10px] font-semibold uppercase leading-none tracking-[0.12em] opacity-90">{t("term.sell")}</span>
+          <span className="mt-0.5 text-[15px] font-semibold leading-none tabular-nums tracking-normal">
+            {prices[symbol] && Number.isFinite(prices[symbol].bid) ? formatPrice(symbol, prices[symbol].bid) : "—"}
+          </span>
         </button>
         <button
           type="button"
           onClick={() => openOrder("BUY")}
           disabled={user.tradingEnabled === false || !!user.mustChangePassword}
-          className="bg-desk-buy text-white disabled:opacity-40"
+          className="flex flex-col items-center justify-center bg-desk-buy text-white disabled:opacity-40"
+          aria-label={`${t("term.buy")} ${prices[symbol] && Number.isFinite(prices[symbol].ask) ? formatPrice(symbol, prices[symbol].ask) : ""}`.trim()}
         >
-          BUY
+          <span className="text-[10px] font-semibold uppercase leading-none tracking-[0.12em] opacity-90">{t("term.buy")}</span>
+          <span className="mt-0.5 text-[15px] font-semibold leading-none tabular-nums tracking-normal">
+            {prices[symbol] && Number.isFinite(prices[symbol].ask) ? formatPrice(symbol, prices[symbol].ask) : "—"}
+          </span>
         </button>
       </div>
       {/* Mobile bottom tab bar — elite segmented control + safe-area */}

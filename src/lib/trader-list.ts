@@ -212,6 +212,27 @@ export function chatThreadWindow(takeRaw: string | null, skipRaw: string | null)
   return { take, skip };
 }
 
+/** One page of an open chat thread. Omitting `take` on `?userId=` keeps the old 400-row read. */
+export const CHAT_MESSAGE_PAGE = 40;
+export const CHAT_MESSAGE_CAP = 80;
+
+export function chatMessageWindow(takeRaw: string | null, skipRaw: string | null): { take: number; skip: number } {
+  const skipNum = Number(skipRaw);
+  const skip = Number.isFinite(skipNum) && skipNum > 0 ? Math.min(100_000, Math.trunc(skipNum)) : 0;
+  if (takeRaw == null || takeRaw === "") return { take: CHAT_MESSAGE_PAGE, skip };
+  const takeNum = Math.trunc(Number(takeRaw));
+  const take = Number.isFinite(takeNum) && takeNum > 0 ? Math.min(CHAT_MESSAGE_CAP, takeNum) : CHAT_MESSAGE_PAGE;
+  return { take, skip };
+}
+
+/** Older history is prepended. Messages already on screen stay in place. */
+export function prependChatMessages<T extends { id: string }>(existing: T[], older: T[]): T[] {
+  if (older.length === 0) return existing;
+  const seen = new Set(existing.map((m) => m.id));
+  const head = older.filter((m) => !seen.has(m.id));
+  return head.length ? head.concat(existing) : existing;
+}
+
 /** Which trader-detail payload a record save should refresh. Unknown entities keep the full reload. */
 export function traderDetailScopeForEntity(entity: string): TraderDetailScope {
   switch (entity) {

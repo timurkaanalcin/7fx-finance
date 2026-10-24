@@ -208,7 +208,12 @@ export default function LandingPage() {
   ];
   const [menuOpen, setMenuOpen] = useState(false);
   const [showStickyCta, setShowStickyCta] = useState(false);
+  const [siteHost, setSiteHost] = useState("");
   const heroRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    setSiteHost(window.location.host);
+  }, []);
 
   useEffect(() => {
     const el = heroRef.current;
@@ -415,10 +420,10 @@ export default function LandingPage() {
                 <Eyebrow>Multi-asset investment platform</Eyebrow>
                 <p
                   className="inline-flex items-center gap-2.5 rounded-full border border-[rgba(16,20,37,0.10)] bg-white/90 px-3.5 py-1.5 text-[12.5px] font-semibold tracking-tight text-[#111111] shadow-[0_6px_18px_rgba(16,20,37,0.06)]"
-                  aria-label="In partnership with ING Bank"
+                  aria-label={t("landing.trust.ing")}
                 >
                   <IngMark className="h-5 w-auto object-contain" height={20} />
-                  <span className="text-[#5c657a]">in partnership with</span>
+                  <span className="text-[#5c657a]">{t("landing.partnership")}</span>
                 </p>
               </div>
 
@@ -883,32 +888,32 @@ export default function LandingPage() {
             </p>
             <p className="mt-3 inline-flex items-center gap-2 text-[12px] font-medium text-[#111111]">
               <IngMark className="h-4 w-auto object-contain" height={16} />
-              <span>in partnership with</span>
+              <span>{t("landing.partnership")}</span>
             </p>
             <p className="mt-2 text-[12px]">© {new Date().getFullYear()} 7FX</p>
           </div>
           <div className="flex flex-wrap gap-x-10 gap-y-4 text-[13px]">
             <div className="flex flex-col gap-2">
               <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#111111]">
-                Platform
+                {t("landing.nav.platform")}
               </span>
               <button type="button" className="text-left hover:text-[#111111]" onClick={() => scrollToId("piyasalar")}>
                 {t("landing.marketsTitle")}
               </button>
               <button type="button" className="text-left hover:text-[#111111]" onClick={() => scrollToId("platform")}>
-                Features
+                {t("landing.footer.features")}
               </button>
               <button type="button" className="text-left hover:text-[#111111]" onClick={() => scrollToId("hakkinda")}>
-                About
+                {t("landing.nav.about")}
               </button>
             </div>
             <div className="flex flex-col gap-2">
               <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#111111]">
-                Account
+                {t("term.account")}
               </span>
               <Link href="/login" className="hover:text-[#111111]">{t("common.signIn")}</Link>
               <Link href="/register" className="hover:text-[#111111]">{t("landing.openAccount")}</Link>
-              <span>7fx.customer.org.tr</span>
+              {siteHost ? <span>{siteHost}</span> : null}
             </div>
           </div>
         </div>

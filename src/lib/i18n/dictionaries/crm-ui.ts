@@ -581,6 +581,7 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.ui.chartHint", "Chart / live price catalog symbol", "Grafik / canlı fiyat katalog sembolü", "Символ графика / живой цены", "Chart- / Live-Preis-Katalogsymbol", "رمز الرسم / السعر المباشر"],
   ["crm.ui.tradeSymbol", "Trade symbol (P/L / rates)", "İşlem sembolü (K/Z / oranlar)", "Торговый символ (П/У / ставки)", "Handelssymbol (G/V / Sätze)", "رمز الصفقة (ربح/أسعار)"],
   ["crm.chat.allLoaded", "All chats loaded", "Tüm sohbetler yüklendi", "Все чаты загружены", "Alle Chats geladen", "تم تحميل كل الدردشات"],
+  ["crm.chat.loadOlder", "Load earlier messages", "Önceki mesajlar", "Более ранние сообщения", "Ältere Nachrichten", "رسائل أقدم"],
   ["crm.cal.overdue", "overdue", "gecikti", "просрочено", "überfällig", "متأخر"],
   ["crm.cal.none", "No reminders", "Hatırlatma yok", "Нет напоминаний", "Keine Erinnerungen", "لا تذكيرات"],
   ["crm.mail.intro", "CRM email templates — {{name}} placeholder is supported", "CRM e-posta şablonları — {{name}} yer tutucusu desteklenir", "Шаблоны писем CRM — поддерживается плейсхолдер {{name}}", "CRM-E-Mail-Vorlagen — Platzhalter {{name}} wird unterstützt", "قوالب بريد CRM — العنصر النائب {{name}} مدعوم"],
