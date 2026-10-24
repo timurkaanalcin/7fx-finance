@@ -4,9 +4,9 @@ export type I18nScope = "public" | "crm";
 
 /**
  * Public site / terminal / auth default.
- * Turkish matches CRM and the public-host metadata. A stored fx_lang still wins after mount.
+ * English is the primary language. A stored fx_lang still wins after mount.
  */
-export const PUBLIC_DEFAULT_LOCALE: Locale = "tr";
+export const PUBLIC_DEFAULT_LOCALE: Locale = "en";
 /** CRM / admin default */
 export const CRM_DEFAULT_LOCALE: Locale = "tr";
 

@@ -13,7 +13,7 @@ import {
 } from "../src/lib/position-pages";
 
 function main() {
-  assert.equal(PUBLIC_DEFAULT_LOCALE, "tr");
+  assert.equal(PUBLIC_DEFAULT_LOCALE, "en");
   assert.equal(engineOnOpenPage(0), true);
   assert.equal(engineOnOpenPage(200), false);
   assert.equal(pageSkip(null), 0);

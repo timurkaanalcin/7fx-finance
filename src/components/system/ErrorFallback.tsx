@@ -25,11 +25,11 @@ export default function ErrorFallback({ error, reset, where }: { error: Error & 
   return (
     <div style={{ minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, fontFamily: "system-ui, sans-serif" }}>
       <div style={{ maxWidth: 420, textAlign: "center", border: "1px solid rgba(128,128,128,.3)", borderRadius: 16, padding: 24 }}>
-        <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>Bir sorun oluştu</div>
-        <div style={{ fontSize: 13, opacity: 0.7, marginBottom: 16 }}>Sayfanın bir bölümü yüklenemedi. Tekrar deneyebilir veya sayfayı yenileyebilirsiniz.</div>
+        <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>Something went wrong</div>
+        <div style={{ fontSize: 13, opacity: 0.7, marginBottom: 16 }}>Part of the page failed to load. You can try again or refresh the page.</div>
         <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
-          <button onClick={() => reset()} style={{ padding: "8px 16px", borderRadius: 10, border: "1px solid #888", background: "transparent", color: "inherit", cursor: "pointer" }}>Tekrar dene</button>
-          <button onClick={() => location.reload()} style={{ padding: "8px 16px", borderRadius: 10, border: 0, background: "#c9a227", color: "#000", cursor: "pointer" }}>Sayfayı yenile</button>
+          <button onClick={() => reset()} style={{ padding: "8px 16px", borderRadius: 10, border: "1px solid #888", background: "transparent", color: "inherit", cursor: "pointer" }}>Try again</button>
+          <button onClick={() => location.reload()} style={{ padding: "8px 16px", borderRadius: 10, border: 0, background: "#c9a227", color: "#000", cursor: "pointer" }}>Refresh page</button>
         </div>
       </div>
     </div>
