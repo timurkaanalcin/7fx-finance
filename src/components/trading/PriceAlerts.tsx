@@ -260,15 +260,15 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
         {open && (
           <div className="absolute bottom-11 left-0 w-[260px] rounded-[14px] border border-desk-border bg-desk-panel p-3 shadow-desk-panel">
             <div className="mb-2 flex items-center justify-between">
-              <span className="text-xs font-semibold text-desk-text">{symbol} · alert</span>
+              <span className="text-xs font-semibold text-desk-text">{t("term.alert.symbol").replace("{symbol}", symbol)}</span>
               <span className="flex items-center gap-1.5">
                 <span className="text-[11px] tabular-nums text-desk-muted">{Number.isFinite(cur) ? formatPrice(symbol, cur) : "—"}</span>
                 <button
                   type="button"
                   onClick={toggleSound}
-                  aria-label={sound ? "Mute alert sound" : "Unmute alert sound"}
+                  aria-label={sound ? t("term.alert.mute") : t("term.alert.unmute")}
                   aria-pressed={!sound}
-                  title={sound ? "Sound on" : "Sound off"}
+                  title={sound ? t("term.alert.soundOn") : t("term.alert.soundOff")}
                   className={`flex h-6 w-6 items-center justify-center rounded-full ${sound ? "text-desk-text" : "text-desk-muted/60"} hover:bg-desk-elev`}
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">

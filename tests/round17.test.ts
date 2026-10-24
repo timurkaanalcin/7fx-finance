@@ -2,6 +2,7 @@
  * Round 17: English terminal copy and paged customer/CRM lists.
  * Run: npx tsx tests/round17.test.ts
  */
+import "./preload-dicts";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";

@@ -2,6 +2,7 @@
  * Public English labels, bid/ask display copy, and admin document paging.
  * Run: npx tsx tests/round16.test.ts
  */
+import "./preload-dicts";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";

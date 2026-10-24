@@ -429,6 +429,8 @@ type Props = {
   prices?: Record<string, PriceTick>;
   /** Compact closed-trade ledger used for calendar and summary totals. */
   closedCalendar?: PositionRow[];
+  /** Month totals omit closed trades past the follow cap. */
+  calendarPartial?: boolean;
   closedHasMore?: boolean;
   closedLoading?: boolean;
   onLoadMoreClosed?: () => void;
@@ -938,7 +940,7 @@ function OpenCard({
               onClick={() =>
                 onSelectSymbol?.((p.chartSymbol || p.symbol).trim().toUpperCase())
               }
-              title="Show chart"
+              title={t("term.blotter.showChart")}
             >
               {p.symbol}
               {p.chartSymbol && p.chartSymbol !== p.symbol ? (
@@ -1492,6 +1494,7 @@ export default function BottomPanels({
   currency,
   prices,
   closedCalendar,
+  calendarPartial = false,
   closedHasMore = false,
   closedLoading = false,
   onLoadMoreClosed,
@@ -2276,7 +2279,7 @@ export default function BottomPanels({
 
       {/* Daily realised P&L calendar (closed tab) — click a day to filter the list */}
       {tab === "closed" && showPnlCal && closedLedger.length > 0 && (
-        <PnlCalendar rows={calendarClosed} selectedDay={closedDay} onSelectDay={setClosedDay} />
+        <PnlCalendar rows={calendarClosed} partial={calendarPartial} selectedDay={closedDay} onSelectDay={setClosedDay} />
       )}
 
       <AccountStatement

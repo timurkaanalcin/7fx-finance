@@ -3,6 +3,7 @@
  * until the CRM layout registers it.
  * Run: npx tsx tests/public-dict.test.ts
  */
+import "./preload-dicts";
 import assert from "node:assert/strict";
 import { translate } from "../src/lib/i18n/dictionaries";
 import { registerCrmDicts } from "../src/lib/i18n/dictionaries/crm-registry";

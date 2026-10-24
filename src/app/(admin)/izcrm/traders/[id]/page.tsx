@@ -1131,7 +1131,10 @@ export default function AdminUserDetailPage() {
     setDeposits(data.deposits || []);
     setWithdrawals(data.withdrawals || []);
     setBalanceRequests(data.balanceRequests || []);
-    setLedger(data.ledger || []);
+    const ledgerRows: Row[] = data.ledger || [];
+    ledgerRef.current = ledgerRows;
+    setLedger(ledgerRows);
+    setLedgerHasMore(Boolean(data.ledgerHasMore));
     setCommunications(data.communications || []);
     setActivityEvents(data.activityEvents || []);
     setDocuments(data.documents || []);

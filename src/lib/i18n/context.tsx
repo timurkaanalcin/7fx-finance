@@ -9,7 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { translate } from "./dictionaries";
+import { hasDict, loadLocaleDict, translate } from "./dictionaries";
 import {
   LOCALE_META,
   LOCALE_STORAGE,
@@ -71,18 +71,34 @@ export function I18nProvider({
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    let cancel = false;
     const stored = readStored(scope);
     const next = stored ?? initialLocale ?? fallback;
-    setLocaleState(next);
-    applyDocumentLocale(next, scope);
-    setHydrated(true);
+    const apply = () => {
+      if (cancel) return;
+      setLocaleState(next);
+      applyDocumentLocale(next, scope);
+      setHydrated(true);
+    };
+    if (!hasDict(next)) {
+      void loadLocaleDict(next).then(apply);
+    } else {
+      apply();
+    }
+    return () => {
+      cancel = true;
+    };
   }, [scope, initialLocale, fallback]);
 
   const setLocale = useCallback(
     (next: Locale) => {
-      setLocaleState(next);
-      writeStored(scope, next);
-      applyDocumentLocale(next, scope);
+      const commit = () => {
+        setLocaleState(next);
+        writeStored(scope, next);
+        applyDocumentLocale(next, scope);
+      };
+      if (!hasDict(next)) void loadLocaleDict(next).then(commit);
+      else commit();
     },
     [scope]
   );

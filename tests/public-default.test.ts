@@ -2,6 +2,7 @@
  * Public default is English. A stored locale code still resolves.
  * Run: npx tsx tests/public-default.test.ts
  */
+import "./preload-dicts";
 import assert from "node:assert/strict";
 import { translate } from "../src/lib/i18n/dictionaries";
 import { PUBLIC_DEFAULT_LOCALE, defaultLocaleFor, normalizeLocale } from "../src/lib/i18n/locales";

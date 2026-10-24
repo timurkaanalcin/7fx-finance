@@ -61,9 +61,9 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
         const first = list.find((m) => m.type === initialTab);
         setMethodId(first?.id || "");
       })
-      .catch(() => setError("Could not load methods"))
+      .catch(() => setError(t("term.deposit.loadFail")))
       .finally(() => setLoading(false));
-  }, [open]);
+  }, [open, t]);
 
   const availableTypes = useMemo(() => {
     const types: ("IBAN" | "CRYPTO")[] = [];
@@ -94,7 +94,7 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
     setError("");
     setSuccess("");
     if (!selected) {
-      setError("No active methods");
+      setError(t("term.deposit.none"));
       return;
     }
     const amt = Number(amount);

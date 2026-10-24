@@ -781,7 +781,7 @@ export default function TradingChart({
               ? `bg-desk-accent/15 text-desk-accent ring-desk-accent/35 ${livePulse ? "ring-desk-accent/70 bg-desk-accent/25" : ""}`
               : "bg-desk-elev/80 text-desk-muted ring-desk-border/60"
           }`}
-          title={liveFresh ? "Live Yahoo quote" : "Waiting…"}
+          title={liveFresh ? t("term.chart.liveQuote") : t("term.chart.waiting")}
         >
           <span
             className={`h-1.5 w-1.5 rounded-full ${
@@ -865,7 +865,7 @@ export default function TradingChart({
         <div
           className="flex min-w-0 max-w-full flex-1 overflow-x-auto rounded-[12px] border border-desk-border/70 bg-desk-panel/95 p-0.5 shadow-desk-panel [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-none md:rounded-control"
           role="group"
-          aria-label="Timeframe"
+          aria-label={t("term.chart.timeframe")}
         >
           {TIMEFRAMES.map((tf) => (
             <button
@@ -883,7 +883,7 @@ export default function TradingChart({
             </button>
           ))}
         </div>
-        <div className="flex shrink-0 overflow-hidden rounded-control border border-desk-border bg-desk-panel/90 p-0.5" role="group" aria-label="Chart type">
+        <div className="flex shrink-0 overflow-hidden rounded-control border border-desk-border bg-desk-panel/90 p-0.5" role="group" aria-label={t("term.chart.type")}>
           <button
             type="button"
             aria-pressed={chartType === "candle"}

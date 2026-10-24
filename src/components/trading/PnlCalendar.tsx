@@ -74,10 +74,13 @@ type DayAgg = { pnl: number; n: number; wins: number };
  */
 export default function PnlCalendar({
   rows,
+  partial = false,
   selectedDay,
   onSelectDay,
 }: {
   rows: PositionRow[];
+  /** Loaded window does not include every closed trade. */
+  partial?: boolean;
   selectedDay: string;
   onSelectDay: (day: string) => void;
 }) {
@@ -204,6 +207,7 @@ export default function PnlCalendar({
         <span className="text-[10px] text-desk-muted">
           {t("term.cal.monthPnl")}{" "}
           <b className={`tabular-nums ${moneyCls(grid.total)}`}>{full(grid.total, tag)}</b>
+          {partial ? ` · ${t("term.cal.partial")}` : ""}
         </span>
         <span className="text-[10px] text-desk-muted">
           {t("term.cal.trades")} <b className="tabular-nums text-desk-text">{grid.trades}</b>
