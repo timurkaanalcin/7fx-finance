@@ -27,11 +27,16 @@ function localDayBounds(day: string, tzOffsetMin: number): { start: Date; end: D
 export async function GET(req: Request) {
   const user = await requireUser();
   if (!user) return NextResponse.json({ error: "No session" }, { status: 401 });
-  await processPendingOrders(user.id);
-  await checkSlTp(user.id);
-  const metrics = await refreshAccountMetrics(user.id);
   const { searchParams } = new URL(req.url);
   const status = searchParams.get("status") || "OPEN";
+
+  // Pending fills and SL/TP run only on the open-position tick. Closed-history
+  // and other status reads still reprice the account, but they must not close or fill.
+  if (status === "OPEN") {
+    await processPendingOrders(user.id);
+    await checkSlTp(user.id);
+  }
+  const metrics = await refreshAccountMetrics(user.id);
 
   if (status === "OPEN") {
     const positions = await prisma.position.findMany({

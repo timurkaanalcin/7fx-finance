@@ -17,6 +17,43 @@ function priceFeedSymbol(pos: { symbol: string; chartSymbol?: string | null }): 
   return chart ? chart.toUpperCase() : pos.symbol;
 }
 
+/** Thrown when a close loses the race or the position is no longer OPEN. */
+export const POSITION_NOT_FOUND = "Position not found";
+
+export function isPositionNotFound(err: unknown): boolean {
+  return err instanceof Error && err.message === POSITION_NOT_FOUND;
+}
+
+/**
+ * Pending limit/stop fills require the full margin. Market fills keep the
+ * looser check in placeOrder (`freeMargin < margin * 0.5`).
+ * Equality is allowed: only a strict shortfall blocks.
+ */
+export function pendingFillBlockedByMargin(
+  freeMargin: number,
+  requiredMargin: number,
+  orderType: string
+): boolean {
+  return orderType !== "MARKET" && freeMargin < requiredMargin;
+}
+
+/** Same comparisons checkSlTp uses to decide a full close. */
+export function positionLevelHit(
+  side: string,
+  current: number,
+  stopLoss: number | null,
+  takeProfit: number | null
+): boolean {
+  if (side === "BUY") {
+    if (stopLoss != null && current <= stopLoss) return true;
+    if (takeProfit != null && current >= takeProfit) return true;
+    return false;
+  }
+  if (stopLoss != null && current >= stopLoss) return true;
+  if (takeProfit != null && current <= takeProfit) return true;
+  return false;
+}
+
 export async function refreshAccountMetrics(userId: string) {
   await ensureTicked();
   const account = await prisma.account.findUnique({ where: { userId } });
@@ -109,54 +146,71 @@ export async function processPendingOrders(userId: string) {
 }
 
 export async function fillOrder(orderId: string, fillPrice: number) {
-  const order = await prisma.order.findUnique({ where: { id: orderId } });
-  if (!order || order.status !== "PENDING") return null;
+  const existing = await prisma.order.findUnique({ where: { id: orderId } });
+  if (!existing || existing.status !== "PENDING") return null;
 
-  const account = await prisma.account.findUnique({ where: { userId: order.userId } });
-  if (!account) return null;
-
-  const rates = await getEffectiveRates(order.symbol);
+  const rates = await getEffectiveRates(existing.symbol);
   if (!rates || !rates.enabled) return null;
-  const margin = calcMarginWithRates(rates, order.volume, fillPrice, account.leverage);
-  const commission = calcCommission(rates, order.volume);
-  if (account.freeMargin < margin && order.type !== "MARKET") {
-    // still allow if close enough for demo
-  }
 
-  const position = await prisma.position.create({
-    data: {
-      userId: order.userId,
-      symbol: order.symbol,
-      side: order.side,
-      volume: order.volume,
-      openPrice: fillPrice,
-      currentPrice: fillPrice,
-      stopLoss: order.stopLoss,
-      takeProfit: order.takeProfit,
-      profit: 0,
-      margin,
-      status: "OPEN",
-    },
-  });
+  const position = await prisma.$transaction(async (tx) => {
+    const order = await tx.order.findUnique({ where: { id: orderId } });
+    if (!order || order.status !== "PENDING") return null;
 
-  await prisma.order.update({
-    where: { id: orderId },
-    data: {
-      status: "FILLED",
-      openPrice: fillPrice,
-      filledAt: new Date(),
-      positionId: position.id,
-    },
-  });
+    const account = await tx.account.findUnique({ where: { userId: order.userId } });
+    if (!account) return null;
 
-  if (commission > 0) {
-    await prisma.account.update({
-      where: { userId: order.userId },
-      data: { balance: account.balance - commission },
+    const margin = calcMarginWithRates(rates, order.volume, fillPrice, account.leverage);
+    const commission = calcCommission(rates, order.volume);
+    // Leave the working order PENDING. There is no reason column to explain a
+    // REJECTED row, and CANCELLED is the user/reset cancel. The next open-position
+    // tick retries; the trader can still cancel while margin is short.
+    if (pendingFillBlockedByMargin(account.freeMargin, margin, order.type)) {
+      return null;
+    }
+
+    const claimed = await tx.order.updateMany({
+      where: { id: orderId, status: "PENDING" },
+      data: {
+        status: "FILLED",
+        openPrice: fillPrice,
+        filledAt: new Date(),
+      },
     });
-  }
+    if (claimed.count !== 1) return null;
 
-  await refreshAccountMetrics(order.userId);
+    const created = await tx.position.create({
+      data: {
+        userId: order.userId,
+        symbol: order.symbol,
+        side: order.side,
+        volume: order.volume,
+        openPrice: fillPrice,
+        currentPrice: fillPrice,
+        stopLoss: order.stopLoss,
+        takeProfit: order.takeProfit,
+        profit: 0,
+        margin,
+        status: "OPEN",
+      },
+    });
+
+    await tx.order.update({
+      where: { id: orderId },
+      data: { positionId: created.id },
+    });
+
+    if (commission > 0) {
+      await tx.account.update({
+        where: { userId: order.userId },
+        data: { balance: account.balance - commission },
+      });
+    }
+
+    return created;
+  });
+
+  if (!position) return null;
+  await refreshAccountMetrics(existing.userId);
   return position;
 }
 
@@ -263,7 +317,7 @@ export async function closePosition(
   const pos = await prisma.position.findFirst({
     where: { id: positionId, userId, status: "OPEN" },
   });
-  if (!pos) throw new Error("Position not found");
+  if (!pos) throw new Error(POSITION_NOT_FOUND);
 
   const tick = await getPrice(priceFeedSymbol(pos));
   if (!tick) throw new Error("Price yok");
@@ -294,28 +348,6 @@ export async function closePosition(
     const account = await prisma.account.findUnique({ where: { userId } });
     if (!account) throw new Error("Account not found");
 
-    // History row for the closed slice (keeps parent OPEN with reduced volume)
-    await prisma.position.create({
-      data: {
-        userId,
-        symbol: pos.symbol,
-        chartSymbol: pos.chartSymbol,
-        side: pos.side,
-        volume: closedVol,
-        openPrice: pos.openPrice,
-        currentPrice: closePrice,
-        stopLoss: pos.stopLoss,
-        takeProfit: pos.takeProfit,
-        profit,
-        margin: 0,
-        status: "CLOSED",
-        openedAt: pos.openedAt,
-        closedAt: new Date(),
-        closePrice,
-        closeProfit: profit,
-      },
-    });
-
     const remainMargin = calcMarginWithRates(
       rates,
       remaining,
@@ -330,19 +362,46 @@ export async function closePosition(
       closePrice
     );
 
-    await prisma.position.update({
-      where: { id: pos.id },
-      data: {
-        volume: remaining,
-        margin: remainMargin,
-        currentPrice: closePrice,
-        profit: remainProfit,
-      },
-    });
+    await prisma.$transaction(async (tx) => {
+      // Claim the open size first. A lost race rolls back before any ledger row or balance credit.
+      const claimed = await tx.position.updateMany({
+        where: { id: pos.id, userId, status: "OPEN", volume: pos.volume },
+        data: {
+          volume: remaining,
+          margin: remainMargin,
+          currentPrice: closePrice,
+          profit: remainProfit,
+        },
+      });
+      if (claimed.count !== 1) throw new Error(POSITION_NOT_FOUND);
 
-    await prisma.account.update({
-      where: { userId },
-      data: { balance: account.balance + profit },
+      await tx.position.create({
+        data: {
+          userId,
+          symbol: pos.symbol,
+          chartSymbol: pos.chartSymbol,
+          side: pos.side,
+          volume: closedVol,
+          openPrice: pos.openPrice,
+          currentPrice: closePrice,
+          stopLoss: pos.stopLoss,
+          takeProfit: pos.takeProfit,
+          profit,
+          margin: 0,
+          status: "CLOSED",
+          openedAt: pos.openedAt,
+          closedAt: new Date(),
+          closePrice,
+          closeProfit: profit,
+        },
+      });
+
+      const latest = await tx.account.findUnique({ where: { userId } });
+      if (!latest) throw new Error("Account not found");
+      await tx.account.update({
+        where: { userId },
+        data: { balance: latest.balance + profit },
+      });
     });
 
     return refreshAccountMetrics(userId);
@@ -361,25 +420,30 @@ export async function closePosition(
     closePrice
   );
 
-  await prisma.position.update({
-    where: { id: pos.id },
-    data: {
-      status: "CLOSED",
-      closedAt: new Date(),
-      closePrice,
-      closeProfit: profit,
-      currentPrice: closePrice,
-      profit,
-    },
-  });
-
-  const account = await prisma.account.findUnique({ where: { userId } });
-  if (account) {
-    await prisma.account.update({
-      where: { userId },
-      data: { balance: account.balance + profit },
+  await prisma.$transaction(async (tx) => {
+    // status OPEN plus the volume we priced. A partial that already reduced size wins;
+    // this full close must not credit profit computed on the old volume.
+    const claimed = await tx.position.updateMany({
+      where: { id: pos.id, userId, status: "OPEN", volume: pos.volume },
+      data: {
+        status: "CLOSED",
+        closedAt: new Date(),
+        closePrice,
+        closeProfit: profit,
+        currentPrice: closePrice,
+        profit,
+      },
     });
-  }
+    if (claimed.count !== 1) throw new Error(POSITION_NOT_FOUND);
+
+    const account = await tx.account.findUnique({ where: { userId } });
+    if (account) {
+      await tx.account.update({
+        where: { userId },
+        data: { balance: account.balance + profit },
+      });
+    }
+  });
 
   return refreshAccountMetrics(userId);
 }
@@ -397,7 +461,7 @@ export async function modifyPositionSlTp(
   const pos = await prisma.position.findFirst({
     where: { id: positionId, userId, status: "OPEN" },
   });
-  if (!pos) throw new Error("Position not found");
+  if (!pos) throw new Error(POSITION_NOT_FOUND);
 
   const tick = await getPrice(priceFeedSymbol(pos));
   const current =
@@ -466,16 +530,14 @@ export async function checkSlTp(userId: string) {
     const tick = await getPrice(priceFeedSymbol(pos));
     if (!tick) continue;
     const current = pos.side === "BUY" ? tick.bid : tick.ask;
-    let hit = false;
-    if (pos.side === "BUY") {
-      if (pos.stopLoss != null && current <= pos.stopLoss) hit = true;
-      if (pos.takeProfit != null && current >= pos.takeProfit) hit = true;
-    } else {
-      if (pos.stopLoss != null && current >= pos.stopLoss) hit = true;
-      if (pos.takeProfit != null && current <= pos.takeProfit) hit = true;
-    }
-    if (hit) {
-      await closePosition(userId, pos.id);
+    if (positionLevelHit(pos.side, current, pos.stopLoss, pos.takeProfit)) {
+      try {
+        await closePosition(userId, pos.id);
+      } catch (err) {
+        // A parallel open tick already closed it. Keep checking the rest of the book.
+        if (isPositionNotFound(err)) continue;
+        throw err;
+      }
     }
   }
 }

@@ -3,15 +3,13 @@ import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { tradingDisabledMessage, mustChangePasswordMessage } from "@/lib/account-perms";
-import { placeOrder, processPendingOrders, checkSlTp } from "@/lib/trading";
+import { placeOrder } from "@/lib/trading";
 import { getMarketStatus } from "@/lib/market-hours";
 import { stripStaff } from "@/lib/customer-sanitize";
 
 export async function GET(req: Request) {
   const user = await requireUser();
   if (!user) return NextResponse.json({ error: "No session" }, { status: 401 });
-  await processPendingOrders(user.id);
-  await checkSlTp(user.id);
   const status = new URL(req.url).searchParams.get("status");
   const pendingOnly = status === "PENDING";
   const orders = await prisma.order.findMany({
