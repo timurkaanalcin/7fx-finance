@@ -2,8 +2,11 @@ export const LOCALES = ["en", "ru", "ar", "tr", "de"] as const;
 export type Locale = (typeof LOCALES)[number];
 export type I18nScope = "public" | "crm";
 
-/** Public site / terminal / auth default */
-export const PUBLIC_DEFAULT_LOCALE: Locale = "en";
+/**
+ * Public site / terminal / auth default.
+ * Turkish matches CRM and the public-host metadata. A stored fx_lang still wins after mount.
+ */
+export const PUBLIC_DEFAULT_LOCALE: Locale = "tr";
 /** CRM / admin default */
 export const CRM_DEFAULT_LOCALE: Locale = "tr";
 

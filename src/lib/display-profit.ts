@@ -37,3 +37,32 @@ export function displayOpenProfit(
   }
   return safeStored;
 }
+
+/**
+ * Header Equity and P/L adjustment so those two chips match the blotter's
+ * live marks. Margin, free margin, and the stored account snapshot stay put.
+ */
+export function displayBookDelta<
+  T extends {
+    symbol: string;
+    side: string;
+    volume: number;
+    openPrice: number;
+    currentPrice: number;
+    profit: number;
+  },
+>(
+  positions: readonly T[],
+  markFor: (position: T) => number,
+  contractSizeFor?: (symbol: string) => number | undefined
+): number {
+  let delta = 0;
+  for (const position of positions) {
+    const stored = Number(position.profit);
+    const safeStored = Number.isFinite(stored) ? stored : 0;
+    const shown = displayOpenProfit(position, markFor(position), contractSizeFor?.(position.symbol));
+    const part = shown - safeStored;
+    if (Number.isFinite(part)) delta += part;
+  }
+  return delta;
+}

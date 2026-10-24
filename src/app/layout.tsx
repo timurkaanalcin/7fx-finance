@@ -62,7 +62,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
-      lang="en"
+      lang="tr"
       className={`${inter.variable} ${sora.variable}`}
       data-fx-theme="light"
       suppressHydrationWarning

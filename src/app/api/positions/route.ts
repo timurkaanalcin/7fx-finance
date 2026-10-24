@@ -3,8 +3,13 @@ import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { refreshAccountMetrics, processPendingOrders, checkSlTp } from "@/lib/trading";
 import { stripStaff } from "@/lib/customer-sanitize";
-
-const CLOSED_PAGE = 50;
+import {
+  CLOSED_PAGE,
+  OPEN_PAGE,
+  closedRefreshTake,
+  engineOnOpenPage,
+  pageSkip,
+} from "@/lib/position-pages";
 
 function tzOffsetMinutes(raw: string | null): number {
   const n = Number(raw);
@@ -30,26 +35,35 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const status = searchParams.get("status") || "OPEN";
 
-  // Pending fills and SL/TP also run from the engine cron. This open tick stays
-  // so the visible terminal does not wait for the next cron. Closed-history and
-  // other status reads still reprice the account, but they must not close or fill.
+  // Pending fills and SL/TP also run from the engine cron. The first open page
+  // still runs them so the visible terminal does not wait for the next cron.
+  // Later pages are a read. Closed-history and other status reads still reprice
+  // the account, but they must not close or fill.
   if (status === "OPEN") {
-    await processPendingOrders(user.id);
-    await checkSlTp(user.id);
-  }
-  const metrics = await refreshAccountMetrics(user.id);
-
-  if (status === "OPEN") {
-    const positions = await prisma.position.findMany({
+    const skip = pageSkip(searchParams.get("skip"));
+    let metrics: Awaited<ReturnType<typeof refreshAccountMetrics>> = null;
+    if (engineOnOpenPage(skip)) {
+      await processPendingOrders(user.id);
+      await checkSlTp(user.id);
+      metrics = await refreshAccountMetrics(user.id);
+    }
+    const rows = await prisma.position.findMany({
       where: { userId: user.id, status: "OPEN" },
       orderBy: { openedAt: "desc" },
-      take: 200,
+      skip,
+      take: OPEN_PAGE + 1,
     });
+    const hasMore = rows.length > OPEN_PAGE;
+    const positions = hasMore ? rows.slice(0, OPEN_PAGE) : rows;
     return NextResponse.json({
       positions: stripStaff(positions),
       account: metrics,
+      hasMore,
+      nextSkip: skip + positions.length,
     });
   }
+
+  await refreshAccountMetrics(user.id);
 
   if (status === "CLOSED") {
     const bounds = localDayBounds(searchParams.get("day") || "", tzOffsetMinutes(searchParams.get("tzOffset")));
@@ -73,15 +87,21 @@ export async function GET(req: Request) {
       return NextResponse.json({ positions: stripStaff(positions) });
     }
 
-    const skip = Math.max(0, Math.min(100_000, Math.trunc(Number(searchParams.get("skip")) || 0)));
+    const skip = pageSkip(searchParams.get("skip"));
+    // calendar=0 is the 30s blotter refresh. Reload the rows already on screen
+    // (capped) so a CRM edit in that window shows up without the full ledger.
+    const take =
+      skip === 0 && searchParams.get("calendar") === "0"
+        ? closedRefreshTake(searchParams.get("loaded"))
+        : CLOSED_PAGE;
     const rows = await prisma.position.findMany({
       where: { userId: user.id, status: "CLOSED" },
       orderBy: [{ closedAt: "desc" }, { id: "desc" }],
       skip,
-      take: CLOSED_PAGE + 1,
+      take: take + 1,
     });
-    const hasMore = rows.length > CLOSED_PAGE;
-    const positions = hasMore ? rows.slice(0, CLOSED_PAGE) : rows;
+    const hasMore = rows.length > take;
+    const positions = hasMore ? rows.slice(0, take) : rows;
     let calendar: unknown[] | undefined;
     // The 30s blotter refresh passes calendar=0. The full ledger is for the
     // first load and when the terminal tab becomes visible again.

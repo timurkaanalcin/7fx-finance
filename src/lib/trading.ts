@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "./prisma";
 import { getSymbol } from "./symbols";
-import { getPrice, ensureTicked } from "./price-engine";
+import { getPrice, getPrices, ensureTicked } from "./price-engine";
 import { DEFAULT_RESET_BALANCE, isMarginCall } from "./margin-call";
 import {
   getEffectiveRates,
@@ -100,9 +100,10 @@ export async function refreshAccountMetrics(userId: string) {
 
   let floatingPnL = 0;
   let usedMargin = 0;
+  const ticks = await getPrices(positions.map((pos) => priceFeedSymbol(pos)));
 
   for (const pos of positions) {
-    const tick = await getPrice(priceFeedSymbol(pos));
+    const tick = ticks.get(priceFeedSymbol(pos));
     if (!tick) continue;
     const current = pos.side === "BUY" ? tick.bid : tick.ask;
     const rates = await getEffectiveRates(pos.symbol);
@@ -160,9 +161,10 @@ export async function processPendingOrders(userId: string) {
   const pending = await prisma.order.findMany({
     where: { userId, status: "PENDING" },
   });
+  const ticks = await getPrices(pending.map((order) => order.symbol));
 
   for (const order of pending) {
-    const tick = await getPrice(order.symbol);
+    const tick = ticks.get(order.symbol);
     if (!tick || order.price == null) continue;
     const bid = tick.bid;
     const ask = tick.ask;
@@ -568,8 +570,9 @@ export async function checkSlTp(userId: string) {
   const positions = await prisma.position.findMany({
     where: { userId, status: "OPEN" },
   });
+  const ticks = await getPrices(positions.map((pos) => priceFeedSymbol(pos)));
   for (const pos of positions) {
-    const tick = await getPrice(priceFeedSymbol(pos));
+    const tick = ticks.get(priceFeedSymbol(pos));
     if (!tick) continue;
     const current = pos.side === "BUY" ? tick.bid : tick.ask;
     if (positionLevelHit(pos.side, current, pos.stopLoss, pos.takeProfit)) {

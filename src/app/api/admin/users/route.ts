@@ -75,11 +75,12 @@ export async function GET(req: Request) {
   if (statusOrs.length) and.push({ OR: statusOrs });
   const desks = multi("desk");
   if (desks.length) {
+    const matches = await prisma.desk.findMany({
+      where: { OR: [{ id: { in: desks } }, { code: { in: desks } }, { name: { in: desks } }] },
+    });
     const ors: Record<string, string>[] = [];
     for (const dk of desks) {
-      const match = await prisma.desk.findFirst({
-        where: { OR: [{ id: dk }, { code: dk }, { name: dk }] },
-      });
+      const match = matches.find((row) => row.id === dk || row.code === dk || row.name === dk);
       ors.push({ desk: dk }, { deskId: dk });
       if (match) {
         ors.push({ desk: match.name }, { deskId: match.id });

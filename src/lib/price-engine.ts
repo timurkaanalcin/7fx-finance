@@ -3,7 +3,7 @@
  * Bid/ask use admin-configurable effective spreads.
  */
 import { SYMBOLS, getSymbol } from "./symbols";
-import { fetchOhlc, fetchQuoteFromChart, fetchQuotesBatch } from "./yahoo";
+import { fetchOhlc, fetchQuotesBatch } from "./yahoo";
 import { applySpread, ensureSymbolCatalog, getEffectiveRates } from "./trading-settings";
 
 export type Tick = {
@@ -81,16 +81,51 @@ export async function getTicks(): Promise<Tick[]> {
 }
 
 export async function getPrice(symbol: string): Promise<Tick | undefined> {
+  const ticks = await getPrices([symbol]);
+  return ticks.get(symbol);
+}
+
+/**
+ * One quote snapshot for many symbols. Same bid/ask rules as getPrice.
+ * Callers that loop fills or SL/TP use this so Yahoo is hit per symbol, not per row.
+ */
+export async function getPrices(symbols: string[]): Promise<Map<string, Tick>> {
   await ensureSymbolCatalog();
-  const def = getSymbol(symbol);
-  if (!def) return undefined;
-  const rates = await getEffectiveRates(symbol);
-  if (rates && !rates.enabled) return undefined;
-  const { quote } = await fetchQuoteFromChart(def.symbol, def.yahoo);
-  if (quote) {
-    return tickFromQuote(symbol, quote.price, quote.change, quote.changePct, quote.ts);
+  const wanted: string[] = [];
+  const seen = new Set<string>();
+  for (const symbol of symbols) {
+    if (!symbol || seen.has(symbol)) continue;
+    seen.add(symbol);
+    wanted.push(symbol);
   }
-  return fallbackTick(symbol);
+
+  const pairs: { symbol: string; yahoo: string }[] = [];
+  const queued = new Set<string>();
+  const ready: { key: string; catalog: string }[] = [];
+  for (const symbol of wanted) {
+    const def = getSymbol(symbol);
+    if (!def) continue;
+    const rates = await getEffectiveRates(symbol);
+    if (rates && !rates.enabled) continue;
+    ready.push({ key: symbol, catalog: def.symbol });
+    if (queued.has(def.symbol)) continue;
+    queued.add(def.symbol);
+    pairs.push({ symbol: def.symbol, yahoo: def.yahoo });
+  }
+
+  const { quotes } = await fetchQuotesBatch(pairs);
+  const byCatalog = new Map(quotes.map((q) => [q.symbol, q]));
+  const out = new Map<string, Tick>();
+  for (const row of ready) {
+    const quote = byCatalog.get(row.catalog);
+    if (quote) {
+      out.set(row.key, await tickFromQuote(row.key, quote.price, quote.change, quote.changePct, quote.ts));
+      continue;
+    }
+    const fallback = await fallbackTick(row.key);
+    if (fallback) out.set(row.key, fallback);
+  }
+  return out;
 }
 
 export async function getCandles(symbol: string, timeframe: string): Promise<{

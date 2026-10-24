@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, useCallback, type ReactNode, type ReactElement, type MouseEvent as ReactMouseEvent } from "react";
 import { calcPipDistance, formatPrice, getSymbol } from "@/lib/symbols";
 import { displayOpenProfit } from "@/lib/display-profit";
+import { positionMark } from "@/lib/mark-price";
 import { fmtDateTime, fmtNum } from "@/lib/format";
 import type { OrderRow, PositionRow, PriceTick } from "./types";
 import PnlCalendar, { closedDayKey } from "./PnlCalendar";
@@ -431,6 +432,9 @@ type Props = {
   closedHasMore?: boolean;
   closedLoading?: boolean;
   onLoadMoreClosed?: () => void;
+  openHasMore?: boolean;
+  openLoading?: boolean;
+  onLoadMoreOpen?: () => void;
   onLoadClosedDay?: (day: string) => void;
   className?: string;
 };
@@ -596,16 +600,7 @@ const PIP_PRESETS = [10, 20, 50] as const;
 
 /** Live position mark: bid for a buy, ask for a sell. Falls back to the server snapshot. */
 function markPrice(p: PositionRow, prices?: Record<string, PriceTick>): number {
-  const keys = [p.symbol, p.chartSymbol || ""];
-  for (const key of keys) {
-    if (!key || !prices) continue;
-    const t = prices[key] || prices[key.toUpperCase()];
-    if (!t) continue;
-    const q = String(p.side).toUpperCase() === "SELL" ? t.ask : t.bid;
-    if (Number.isFinite(q) && q > 0) return q;
-    if (Number.isFinite(t.mid) && t.mid > 0) return t.mid;
-  }
-  return Number.isFinite(p.currentPrice) && p.currentPrice > 0 ? p.currentPrice : p.openPrice;
+  return positionMark(p, prices);
 }
 
 /** Absolute distance (pips) from the live mark to an SL/TP level; null if unset/invalid. */
@@ -1497,6 +1492,9 @@ export default function BottomPanels({
   closedHasMore = false,
   closedLoading = false,
   onLoadMoreClosed,
+  openHasMore = false,
+  openLoading = false,
+  onLoadMoreOpen,
   onLoadClosedDay,
   className = "",
 }: Props) {
@@ -2296,6 +2294,18 @@ export default function BottomPanels({
             {sortedOpen.map((p) => (
               <OpenCard key={p.id} p={p} prices={prices} onClose={onClosePosition} onModifySlTp={onModifySlTp} onSelectSymbol={onSelectSymbol} />
             ))}
+            {openHasMore && (
+              <div className="pt-1 text-center">
+                <button
+                  type="button"
+                  disabled={openLoading}
+                  onClick={() => onLoadMoreOpen?.()}
+                  className="rounded-full border border-desk-border px-3 py-1 text-[11px] font-semibold text-desk-muted hover:bg-desk-hover hover:text-desk-text disabled:opacity-50"
+                >
+                  {t("term.loadMore")}
+                </button>
+              </div>
+            )}
           </>
         )}
         {tab === "closed" && (
@@ -2440,6 +2450,20 @@ export default function BottomPanels({
                   </tr>
                 );
               })}
+              {openHasMore && (
+                <tr>
+                  <td colSpan={16} className="px-3 py-2 text-center">
+                    <button
+                      type="button"
+                      disabled={openLoading}
+                      onClick={() => onLoadMoreOpen?.()}
+                      className="rounded-full border border-desk-border px-3 py-1 text-[11px] font-semibold text-desk-muted hover:bg-desk-hover hover:text-desk-text disabled:opacity-50"
+                    >
+                      {t("term.loadMore")}
+                    </button>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         )}
