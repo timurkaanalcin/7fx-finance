@@ -188,7 +188,7 @@ export default function LoginForm() {
             value={identifier}
             onChange={(e) => setIdentifier(e.target.value)}
             placeholder={t("auth.identifierPh")}
-            disabled={loading}
+            readOnly={loading}
             inputMode="email"
           />
         </div>
@@ -206,7 +206,7 @@ export default function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
-            disabled={loading}
+            readOnly={loading}
           />
         </div>
 
