@@ -152,6 +152,10 @@ export default function AdminUsersPage() {
   const countsSeen = useRef(false);
   const metaSeen = useRef(false);
   const [deskOptions, setDeskOptions] = useState<DeskOpt[]>([]);
+  const [desksPartial, setDesksPartial] = useState(false);
+  const [deskQ, setDeskQ] = useState("");
+  const [deskHits, setDeskHits] = useState<DeskOpt[] | null>(null);
+  const [deskSearchPartial, setDeskSearchPartial] = useState(false);
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("all");
   const [desk, setDesk] = useState("");
@@ -322,6 +326,7 @@ export default function AdminUsersPage() {
       setHasMore(Boolean(data.hasMore));
       if (data.deskOptions) {
         setDeskOptions(data.deskOptions);
+        setDesksPartial(Boolean(data.desksPartial));
         metaSeen.current = true;
       }
       if (data.followUpDue) {
@@ -343,6 +348,32 @@ export default function AdminUsersPage() {
   useEffect(() => {
     load();
   }, [load]);
+
+  useEffect(() => {
+    const query = deskQ.trim();
+    if (!query) {
+      setDeskHits(null);
+      setDeskSearchPartial(false);
+      return;
+    }
+    const ac = new AbortController();
+    const timer = setTimeout(() => {
+      void fetch(`/api/admin/users?lookup=desks&deskQ=${encodeURIComponent(query)}`, { signal: ac.signal })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (!data) return;
+          setDeskHits(Array.isArray(data.deskOptions) ? data.deskOptions : []);
+          setDeskSearchPartial(Boolean(data.desksPartial));
+        })
+        .catch(() => {
+          /* aborted or offline */
+        });
+    }, 250);
+    return () => {
+      clearTimeout(timer);
+      ac.abort();
+    };
+  }, [deskQ]);
 
   useEffect(() => {
     fetch("/api/auth/me", { credentials: "include" })
@@ -528,6 +559,13 @@ export default function AdminUsersPage() {
     }
   }
 
+  const deskPool = deskHits ?? deskOptions;
+  const selectedDeskIds = desk ? desk.split(",").filter(Boolean) : [];
+  const pinnedDesks = deskOptions.filter(
+    (d) => selectedDeskIds.includes(d.code || d.id) && !deskPool.some((row) => row.id === d.id)
+  );
+  const deskShown = pinnedDesks.concat(deskPool);
+
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center gap-3">
@@ -571,13 +609,19 @@ export default function AdminUsersPage() {
           <option value="recent">{i18n("crm.presence.filterRecent")}</option>
           <option value="offline">{i18n("crm.presence.filterOffline")}</option>
         </select>
+        <input
+          value={deskQ}
+          onChange={(e) => setDeskQ(e.target.value)}
+          placeholder={i18n("crm.desk.search")}
+          className="w-36 rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
+        />
         <MultiSelect
           dataAttr="desk"
           placeholder={i18n("crm.ui.allDesks")}
           clearLabel={i18n("crm.fu.clear")}
           value={desk}
           onChange={setDesk}
-          options={deskOptions.map((d) => ({ value: d.code || d.id, label: deskName(d) }))}
+          options={deskShown.map((d) => ({ value: d.code || d.id, label: deskName(d) }))}
         />
         <input
           value={country}
@@ -677,6 +721,11 @@ export default function AdminUsersPage() {
           FTD
         </label>
       </div>
+      {(deskHits ? deskSearchPartial : desksPartial) && (
+        <p className="mb-2 text-[11px] text-amber-700">
+          {i18n(deskHits ? "crm.desk.searchPartial" : "crm.desk.partial")}
+        </p>
+      )}
 
       {(followUpDue.overdue > 0 || followUpDue.today > 0 || followUp) && (
         <div className="mb-3 flex flex-wrap items-center gap-2 text-xs" data-fx-followup-due aria-label={i18n("crm.fu.title")}>
@@ -903,7 +952,7 @@ export default function AdminUsersPage() {
             className="rounded border border-[#111111] bg-white px-2 py-1 text-sm text-[#111111]"
           >
             <option value="">{i18n("crm.ui.assignDesk")}</option>
-            {deskOptions.map((d) => (
+            {deskShown.map((d) => (
               <option key={d.id} value={d.id}>
                 {deskName(d)}
               </option>
@@ -912,7 +961,7 @@ export default function AdminUsersPage() {
           <button
             disabled={busy || !bulkDesk}
             onClick={() => {
-              const picked = deskOptions.find((d) => d.id === bulkDesk);
+              const picked = deskShown.find((d) => d.id === bulkDesk);
               bulk("assignDesk", {
                 desk: picked?.name || bulkDesk,
                 deskId: picked?.id || bulkDesk,

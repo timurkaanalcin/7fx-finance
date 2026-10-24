@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
 
 export type DepositMethod = {
@@ -38,6 +38,10 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
   const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState<"IBAN" | "CRYPTO">("IBAN");
   const [methodId, setMethodId] = useState("");
+  const [history, setHistory] = useState<{ id: string; amount: number; currency?: string; status: string; createdAt: string }[]>([]);
+  const [histMore, setHistMore] = useState(false);
+  const [histBusy, setHistBusy] = useState(false);
+  const histRef = useRef<{ id: string; amount: number; currency?: string; status: string; createdAt: string }[]>([]);
   const [amount, setAmount] = useState("1000");
   const [note, setNote] = useState("");
   const [error, setError] = useState("");
@@ -81,6 +85,33 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
     }
   }, [tab, filtered, methodId]);
 
+  const loadHistory = useCallback(async (mode: "replace" | "more" = "replace") => {
+    const skip = mode === "more" ? histRef.current.length : 0;
+    if (mode === "more") setHistBusy(true);
+    try {
+      const res = await fetch(`/api/deposit?take=50&skip=${skip}`, { credentials: "include" });
+      if (!res.ok) return;
+      const data = await res.json();
+      const incoming = (data.requests || []) as typeof histRef.current;
+      const next =
+        mode === "more"
+          ? histRef.current.concat(incoming.filter((row) => !histRef.current.some((old) => old.id === row.id)))
+          : incoming;
+      histRef.current = next;
+      setHistory(next);
+      setHistMore(Boolean(data.hasMore));
+    } catch {
+      /* ignore */
+    } finally {
+      if (mode === "more") setHistBusy(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    void loadHistory();
+  }, [open, loadHistory]);
+
   if (!open) return null;
 
   async function onCopy(label: string, value: string) {
@@ -116,6 +147,7 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
       }
       setSuccess(t("term.deposit.sent"));
       onSubmitted?.();
+      void loadHistory();
     } catch {
       setError(t("auth.connectionError"));
     } finally {
@@ -276,6 +308,29 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
                   {loading ? t("term.deposit.submitting") : t("term.deposit.send")}
                 </button>
               </form>
+              {history.length > 0 && (
+                <div className="mt-3 border-t border-desk-border pt-3">
+                  <div className="mb-2 text-[10px] font-medium uppercase tracking-wide text-desk-muted">{t("term.wd.recent")}</div>
+                  <ul className="max-h-36 space-y-1 overflow-auto text-xs">
+                    {history.map((row) => (
+                      <li key={row.id} className="flex items-center justify-between gap-2">
+                        <span className="tabular-nums">{row.amount} {row.currency || "USD"}</span>
+                        <span className="text-desk-muted">{row.status}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  {histMore && (
+                    <button
+                      type="button"
+                      disabled={histBusy}
+                      onClick={() => void loadHistory("more")}
+                      className="mt-2 w-full rounded-[10px] border border-desk-border px-3 py-1.5 text-[11px] font-medium text-desk-muted hover:bg-desk-bg disabled:opacity-50"
+                    >
+                      {histBusy ? t("common.loading") : t("term.loadMore")}
+                    </button>
+                  )}
+                </div>
+              )}
             </>
           )}
         </div>

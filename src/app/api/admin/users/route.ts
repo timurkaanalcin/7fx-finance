@@ -30,6 +30,49 @@ import {
 
 export const dynamic = "force-dynamic";
 
+const DESK_CATALOG_CAP = 200;
+const DESK_NAME_CAP = 100;
+const DESK_SEARCH_CAP = 50;
+
+async function deskLookup(q: string) {
+  const catalogCap = q ? DESK_SEARCH_CAP : DESK_CATALOG_CAP;
+  const nameCap = q ? DESK_SEARCH_CAP : DESK_NAME_CAP;
+  const [catalog, names] = await Promise.all([
+    prisma.desk.findMany({
+      where: {
+        active: true,
+        ...(q ? { OR: [{ name: { contains: q } }, { code: { contains: q } }] } : {}),
+      },
+      orderBy: { name: "asc" },
+      select: { id: true, name: true, code: true },
+      take: catalogCap + 1,
+    }),
+    prisma.user.findMany({
+      where: { desk: q ? { contains: q } : { not: null } },
+      select: { desk: true },
+      distinct: ["desk"],
+      take: nameCap + 1,
+    }),
+  ]);
+  const catalogPartial = catalog.length > catalogCap;
+  const namesPartial = names.length > nameCap;
+  const options = (catalogPartial ? catalog.slice(0, catalogCap) : catalog).map((d) => ({
+    id: d.id,
+    name: d.name,
+    code: d.code,
+  }));
+  const known = new Set(options.map((d) => d.name));
+  const nameRows = namesPartial ? names.slice(0, nameCap) : names;
+  for (let i = 0; i < nameRows.length; i++) {
+    const name = nameRows[i].desk;
+    if (name && !known.has(name)) {
+      options.push({ id: name, name, code: null });
+      known.add(name);
+    }
+  }
+  return { deskOptions: options, desksPartial: catalogPartial || namesPartial };
+}
+
 export async function GET(req: Request) {
   await ensureDemoSeed();
   const admin = await requireAdmin();
@@ -37,6 +80,10 @@ export async function GET(req: Request) {
   const roViewer = isCrmReadOnlyAdmin(admin);
 
   const { searchParams } = new URL(req.url);
+  if (searchParams.get("lookup") === "desks") {
+    const q = (searchParams.get("deskQ") || "").trim().slice(0, 80);
+    return NextResponse.json(await deskLookup(q));
+  }
   await ensureLastContactBackfill();
   /** Multi-select filters arrive comma-separated (also accepts repeated params). */
   const multi = (k: string): string[] => {
@@ -210,30 +257,7 @@ export async function GET(req: Request) {
     }
   }
 
-  let deskOptions: { id: string; name: string; code: string | null }[] | undefined;
-  if (searchParams.get("meta") !== "0") {
-    const deskRows = await prisma.user.findMany({
-      where: { desk: { not: null } },
-      select: { desk: true },
-      distinct: ["desk"],
-      take: 100,
-    });
-    const catalog = await prisma.desk.findMany({
-      where: { active: true },
-      orderBy: { name: "asc" },
-      select: { id: true, name: true, code: true },
-      take: 200,
-    });
-    deskOptions = catalog.map((d) => ({ id: d.id, name: d.name, code: d.code }));
-    const knownNames = new Set(catalog.map((d) => d.name));
-    for (const row of deskRows) {
-      const name = row.desk;
-      if (name && !knownNames.has(name)) {
-        deskOptions.push({ id: name, name, code: null });
-        knownNames.add(name);
-      }
-    }
-  }
+  const deskPage = searchParams.get("meta") !== "0" ? await deskLookup("") : null;
 
   return NextResponse.json({
     users: page.map((u) => {
@@ -252,7 +276,9 @@ export async function GET(req: Request) {
     serverTime: new Date().toISOString(),
     ...(followUpDue ? { followUpDue } : {}),
     ...(retentionCounts ? { retentionCounts } : {}),
-    ...(deskOptions ? { desks: deskOptions.map((d) => d.name), deskOptions } : {}),
+    ...(deskPage
+      ? { desks: deskPage.deskOptions.map((d) => d.name), deskOptions: deskPage.deskOptions, desksPartial: deskPage.desksPartial }
+      : {}),
     permissionDefs: ADMIN_PERMISSIONS,
     dataMasked: roViewer,
   });

@@ -4,19 +4,37 @@ import { prisma } from "@/lib/prisma";
 import { refreshAccountMetrics } from "@/lib/trading";
 import { isMarginCall } from "@/lib/margin-call";
 import { stripStaff } from "@/lib/customer-sanitize";
+import { crmPageWindow } from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
 
 /** List current user's balance / margin-call requests */
-export async function GET() {
+export async function GET(req: Request) {
   const user = await requireUser();
   if (!user) return NextResponse.json({ error: "No session" }, { status: 401 });
-  const requests = await prisma.balanceRequest.findMany({
+  const search = new URL(req.url).searchParams;
+  const page = crmPageWindow(search.get("take"), search.get("skip"));
+  const found = await prisma.balanceRequest.findMany({
     where: { userId: user.id },
     orderBy: { createdAt: "desc" },
-    take: 50,
+    skip: page.skip,
+    take: page.take + 1,
   });
-  return NextResponse.json({ requests: stripStaff(requests) });
+  const hasMore = found.length > page.take;
+  const requests = hasMore ? found.slice(0, page.take) : found;
+  const pending =
+    page.skip === 0
+      ? await prisma.balanceRequest.findFirst({
+          where: { userId: user.id, status: "PENDING" },
+          orderBy: { createdAt: "desc" },
+        })
+      : null;
+  return NextResponse.json({
+    requests: stripStaff(requests),
+    hasMore,
+    nextSkip: page.skip + requests.length,
+    pending: pending ? stripStaff(pending) : null,
+  });
 }
 
 /**

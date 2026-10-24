@@ -1,18 +1,28 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
+import { headlineFromAggregate } from "@/lib/account-totals";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
+
+const SUMMARY_ROWS = 100;
 
 export async function GET() {
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
-  const accounts = await prisma.account.findMany({
-    include: { user: { select: { id: true, email: true, name: true, role: true, active: true } } },
-    orderBy: { balance: "desc" },
-    take: 100,
-  });
+  const [found, headline] = await Promise.all([
+    prisma.account.findMany({
+      include: { user: { select: { id: true, email: true, name: true, role: true, active: true } } },
+      orderBy: { balance: "desc" },
+      take: SUMMARY_ROWS + 1,
+    }),
+    prisma.account.aggregate({
+      _sum: { balance: true, equity: true, margin: true },
+    }),
+  ]);
+  const accountsPartial = found.length > SUMMARY_ROWS;
+  const accounts = accountsPartial ? found.slice(0, SUMMARY_ROWS) : found;
 
   const openByUser = await prisma.position.groupBy({
     by: ["userId"],
@@ -22,14 +32,11 @@ export async function GET() {
   });
   const openMap = new Map(openByUser.map((r) => [r.userId, r]));
 
-  const totals = {
-    balance: accounts.reduce((s, a) => s + a.balance, 0),
-    equity: accounts.reduce((s, a) => s + a.equity, 0),
-    margin: accounts.reduce((s, a) => s + a.margin, 0),
-  };
+  const totals = headlineFromAggregate(headline._sum);
 
   return NextResponse.json({
     totals,
+    accountsPartial,
     accounts: accounts.map((a) => {
       const o = openMap.get(a.userId);
       return {

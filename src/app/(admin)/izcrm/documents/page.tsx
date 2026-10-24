@@ -36,6 +36,11 @@ export default function DocumentsPage() {
   const [qDebounced, setQDebounced] = useState("");
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [hasMore, setHasMore] = useState(false);
+  const [pendingUsers, setPendingUsers] = useState<{ id: string; name: string; email: string }[]>([]);
+  const [pendingPartial, setPendingPartial] = useState(false);
+  const [pendingQ, setPendingQ] = useState("");
+  const [pendingHits, setPendingHits] = useState<{ id: string; name: string; email: string }[] | null>(null);
+  const [pendingSearchPartial, setPendingSearchPartial] = useState(false);
   const [moreBusy, setMoreBusy] = useState(false);
   const docsRef = useRef<Doc[]>([]);
   const listGen = useRef(0);
@@ -64,6 +69,10 @@ export default function DocumentsPage() {
       docsRef.current = next;
       setDocs(next);
       setHasMore(Boolean(data.hasMore));
+      if (Array.isArray(data.pendingUsers)) {
+        setPendingUsers(data.pendingUsers);
+        setPendingPartial(Boolean(data.pendingUsersPartial));
+      }
       if (data.counts && mode === "replace") {
         const c: Record<string, number> = { "": Number(data.counts.total) || 0 };
         const byKey = (data.counts.byKey || {}) as Record<string, number>;
@@ -78,6 +87,32 @@ export default function DocumentsPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    const q = pendingQ.trim();
+    if (!q) {
+      setPendingHits(null);
+      setPendingSearchPartial(false);
+      return;
+    }
+    const ac = new AbortController();
+    const timer = setTimeout(() => {
+      void fetch(`/api/admin/documents?lookup=pending&pendingQ=${encodeURIComponent(q)}`, { signal: ac.signal })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (!data) return;
+          setPendingHits(Array.isArray(data.pendingUsers) ? data.pendingUsers : []);
+          setPendingSearchPartial(Boolean(data.pendingUsersPartial));
+        })
+        .catch(() => {
+          /* aborted or offline */
+        });
+    }, 250);
+    return () => {
+      clearTimeout(timer);
+      ac.abort();
+    };
+  }, [pendingQ]);
 
   async function review(id: string, next: "APPROVED" | "REJECTED") {
     setBusy(true);
@@ -121,6 +156,8 @@ export default function DocumentsPage() {
       setBusy(false);
     }
   }
+
+  const pendingShown = pendingHits ?? pendingUsers;
 
   return (
     <div>
@@ -260,6 +297,29 @@ export default function DocumentsPage() {
         <div className="rounded-lg border border-neutral-200 bg-[#ffffff] p-3">
           <h2 className="mb-2 text-xs font-semibold text-neutral-600">{i18n("crm.docs.add")}</h2>
           <div className="space-y-2 text-xs">
+            <input
+              value={pendingQ}
+              onChange={(e) => setPendingQ(e.target.value)}
+              placeholder={i18n("crm.docs.pendingSearch")}
+              className="w-full rounded border border-neutral-300 bg-white px-2 py-1.5"
+            />
+            <select
+              value={pendingShown.some((t) => t.id === form.userId) ? form.userId : ""}
+              onChange={(e) => setForm({ ...form, userId: e.target.value })}
+              className="w-full rounded border border-neutral-300 bg-white px-2 py-1.5"
+            >
+              <option value="">{i18n("crm.docs.pendingLabel")}</option>
+              {pendingShown.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name} ({t.email})
+                </option>
+              ))}
+            </select>
+            {(pendingHits ? pendingSearchPartial : pendingPartial) && (
+              <p className="text-[11px] text-amber-700">
+                {i18n(pendingHits ? "crm.docs.pendingSearchPartial" : "crm.docs.pendingPartial")}
+              </p>
+            )}
             <TraderSearchPicker value={form.userId} onChange={(userId) => setForm({ ...form, userId })} />
             <input
               value={form.name}

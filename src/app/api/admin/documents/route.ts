@@ -7,6 +7,33 @@ import { crmListWindow } from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
 
+const PENDING_CAP = 100;
+
+async function pendingTraders(q: string) {
+  const found = await prisma.user.findMany({
+    where: {
+      role: "TRADER",
+      documentsStatus: { in: ["PENDING", "REJECTED"] },
+      ...(q
+        ? {
+            OR: [
+              { name: { contains: q } },
+              { email: { contains: q } },
+              { accountLoginId: { contains: q } },
+            ],
+          }
+        : {}),
+    },
+    select: { id: true, name: true, email: true, documentsStatus: true, desk: true },
+    orderBy: { name: "asc" },
+    take: PENDING_CAP + 1,
+  });
+  return {
+    pendingUsers: found.length > PENDING_CAP ? found.slice(0, PENDING_CAP) : found,
+    pendingUsersPartial: found.length > PENDING_CAP,
+  };
+}
+
 export async function GET(req: Request) {
   await ensureDemoSeed();
   const admin = await requireAdmin();
@@ -18,8 +45,12 @@ export async function GET(req: Request) {
   const { take, skip, legacy } = crmListWindow(searchParams.get("take"), searchParams.get("skip"));
   const where = docWhere(status, q, true);
   const wantCounts = searchParams.get("counts") === "1";
+  const pendingQ = (searchParams.get("pendingQ") || "").trim().slice(0, 80);
+  if (searchParams.get("lookup") === "pending") {
+    return NextResponse.json(await pendingTraders(pendingQ));
+  }
 
-  const [found, groups, pendingUsers] = await Promise.all([
+  const [found, groups, pending] = await Promise.all([
     prisma.documentRecord.findMany({
       where,
       orderBy: { createdAt: "desc" },
@@ -34,13 +65,7 @@ export async function GET(req: Request) {
           _count: true,
         })
       : Promise.resolve(null),
-    skip === 0
-      ? prisma.user.findMany({
-          where: { role: "TRADER", documentsStatus: { in: ["PENDING", "REJECTED"] } },
-          select: { id: true, name: true, email: true, documentsStatus: true, desk: true },
-          take: 100,
-        })
-      : Promise.resolve([]),
+    skip === 0 ? pendingTraders(pendingQ) : Promise.resolve(null),
   ]);
 
   const hasMore = !legacy && found.length > take;
@@ -60,7 +85,9 @@ export async function GET(req: Request) {
       createdAt: d.createdAt,
       reviewedAt: d.reviewedAt,
     })),
-    pendingUsers,
+    ...(pending
+      ? { pendingUsers: pending.pendingUsers, pendingUsersPartial: pending.pendingUsersPartial }
+      : {}),
     hasMore,
     nextSkip: skip + page.length,
     ...(groups
