@@ -4,7 +4,7 @@ import "./globals.css";
 import "./mobile-luxe.css";
 import PublicI18n from "@/components/i18n/PublicI18n";
 import { inter, sora } from "@/lib/fonts";
-import { DESCRIPTION, OG_ALT, OG_IMAGE, TITLE_TR } from "@/lib/seo";
+import { DESCRIPTION, OG_ALT, OG_IMAGE, TITLE } from "@/lib/seo";
 import { PRIMARY_ORIGIN } from "@/lib/seo-hosts";
 
 
@@ -23,16 +23,16 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
   openGraph: {
     type: "website",
-    locale: "tr_TR",
-    alternateLocale: ["en_US", "de_DE", "ru_RU", "ar_AR"],
+    locale: "en_US",
+    alternateLocale: ["tr_TR", "de_DE", "ru_RU", "ar_AR"],
     siteName: "7FX",
-    title: TITLE_TR,
+    title: TITLE,
     description: DESCRIPTION,
     images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: OG_ALT }],
   },
   twitter: {
     card: "summary_large_image",
-    title: TITLE_TR,
+    title: TITLE,
     description: DESCRIPTION,
     images: [OG_IMAGE],
   },
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
-      lang="tr"
+      lang="en"
       className={`${inter.variable} ${sora.variable}`}
       data-fx-theme="light"
       suppressHydrationWarning

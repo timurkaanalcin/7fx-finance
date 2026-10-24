@@ -2,7 +2,7 @@
   "id": "/",
   "name": "7FX",
   "short_name": "7FX",
-  "description": "7FX — hisse, kripto, forex ve emtia için uluslararası işlem platformu. International multi-asset trading platform.",
+  "description": "7FX is an international multi-asset trading platform for stocks, crypto, forex and commodities.",
   "start_url": "/trade",
   "scope": "/",
   "display": "standalone",
@@ -18,6 +18,6 @@
     { "src": "/icons/v3/apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }
   ],
   "categories": ["finance", "business"],
-  "lang": "tr",
+  "lang": "en",
   "dir": "ltr"
 }

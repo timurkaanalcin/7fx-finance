@@ -6,22 +6,22 @@ import {
   normalizeHost,
 } from "@/lib/seo-hosts";
 
-export const TITLE_TR = "7FX — Küresel çok varlıklı işlem platformu";
+export const TITLE = "7FX — Global multi-asset trading platform";
 export const DESCRIPTION =
-  "7FX; hisse senetleri, kripto, forex ve emtia piyasalarına güvenli web erişimi sunan uluslararası bir işlem platformudur. 7FX is an international multi-asset trading platform for stocks, crypto, forex and commodities.";
-export const IOS_TITLE = "iPhone ve iPad'e 7FX kurun";
+  "7FX is an international multi-asset trading platform for stocks, crypto, forex and commodities.";
+export const IOS_TITLE = "Install 7FX on iPhone and iPad";
 export const IOS_DESCRIPTION =
-  "7FX'i iPhone veya iPad ana ekranına ekleyin. Add 7FX to your Home Screen for an app-like experience on iOS.";
+  "Add 7FX to your iPhone or iPad Home Screen for an app-like experience.";
 export const OG_IMAGE = "/og/7fx-og.png";
-export const OG_ALT = "7FX — küresel çok varlıklı işlem platformu";
+export const OG_ALT = "7FX — global multi-asset trading platform";
 
-const OG_LOCALES = ["en_US", "de_DE", "ru_RU", "ar_AR"];
+const OG_LOCALES = ["tr_TR", "de_DE", "ru_RU", "ar_AR"];
 
 function card(title: string, description: string, url: string): Pick<Metadata, "openGraph" | "twitter"> {
   return {
     openGraph: {
       type: "website",
-      locale: "tr_TR",
+      locale: "en_US",
       alternateLocale: OG_LOCALES,
       url,
       siteName: "7FX",
@@ -44,7 +44,7 @@ export function marketingMetadata(hostHeader: string | null, path: "/" | "/ios")
   const indexable = isIndexableHost(host);
   const origin = indexable ? metadataOrigin(host) : PRIMARY_ORIGIN;
   const url = path === "/" ? origin : `${origin}${path}`;
-  const title = path === "/ios" ? IOS_TITLE : TITLE_TR;
+  const title = path === "/ios" ? IOS_TITLE : TITLE;
   const description = path === "/ios" ? IOS_DESCRIPTION : DESCRIPTION;
   return {
     metadataBase: new URL(origin),
@@ -72,7 +72,7 @@ export function organizationJsonLd(origin: string): string {
         "@type": "WebSite",
         name: "7FX",
         url: origin,
-        inLanguage: ["tr", "en", "de", "ru", "ar"],
+        inLanguage: "en",
         description: DESCRIPTION,
         publisher: { "@type": "Organization", name: "7FX", url: PRIMARY_ORIGIN },
       },
