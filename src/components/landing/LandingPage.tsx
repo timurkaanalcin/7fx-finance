@@ -38,9 +38,9 @@ function Eyebrow({ children }: { children: ReactNode }) {
 function MarketMiniRows() {
   const rows = [
     { s: "EURUSD", p: "1.0842", d: "+0.14%", up: true },
-    { s: "XAUUSD", p: "2.341", d: "+0.32%", up: true },
-    { s: "US100", p: "19.840", d: "+0.41%", up: true },
-    { s: "BTCUSD", p: "67.420", d: "−0.81%", up: false },
+    { s: "XAUUSD", p: "2,341", d: "+0.32%", up: true },
+    { s: "US100", p: "19,840", d: "+0.41%", up: true },
+    { s: "BTCUSD", p: "67,420", d: "−0.81%", up: false },
     { s: "GBPUSD", p: "1.2634", d: "+0.09%", up: true },
   ];
   return (
@@ -63,6 +63,7 @@ function MarketMiniRows() {
 }
 
 function OrderTicketVisual() {
+  const { t } = useI18n();
   return (
     <div className="fx-viz-order mt-auto rounded-[14px] border border-[#2a2a2a] bg-[#0a0a0a] p-3.5">
       <div className="mb-3 flex items-center justify-between">
@@ -71,15 +72,15 @@ function OrderTicketVisual() {
           <p className="text-[15px] font-semibold tabular-nums text-[#e8eef8]">1.0842</p>
         </div>
         <span className="rounded-full bg-[#111111]/15 px-2 py-0.5 text-[10px] font-semibold text-[#2a2a2a]">
-          Market
+          {t("landing.viz.market")}
         </span>
       </div>
       <div className="mb-3 grid grid-cols-2 gap-2">
         <div className="rounded-[10px] bg-[#26a69a] py-2.5 text-center text-[12px] font-bold text-white shadow-[0_6px_16px_rgba(22,199,132,0.28)]">
-          AL
+          {t("term.buy")}
         </div>
         <div className="rounded-[10px] bg-[#ef5350] py-2.5 text-center text-[12px] font-bold text-white shadow-[0_6px_16px_rgba(234,57,67,0.28)]">
-          SAT
+          {t("term.sell")}
         </div>
       </div>
       <div className="space-y-1.5">
@@ -100,6 +101,7 @@ function OrderTicketVisual() {
 }
 
 function SecurityBadgeVisual() {
+  const { t } = useI18n();
   return (
     <div className="fx-viz-security mt-auto flex flex-col items-center justify-center py-2">
       <div className="relative flex h-[120px] w-[120px] items-center justify-center">
@@ -126,13 +128,14 @@ function SecurityBadgeVisual() {
         <span className="fx-orbit-dot fx-orbit-dot--2 absolute bottom-4 right-3 h-1.5 w-1.5 rounded-full bg-[#2a2a2a]" />
       </div>
       <p className="mt-3 text-center text-[12px] font-medium text-[#5c657a]">
-        Session protected · SSL
+        {t("landing.viz.session")}
       </p>
     </div>
   );
 }
 
 function PortfolioBoard() {
+  const { t, locale } = useI18n();
   const bars = [
     { h: 42, c: "#2a3a6a" },
     { h: 58, c: "#3a5288" },
@@ -154,14 +157,14 @@ function PortfolioBoard() {
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-[#8b97b0]">
-            Portfolio summary
+            {t("landing.portfolio.summary")}
           </p>
           <p className="mt-1 text-2xl font-semibold tracking-tight text-[#e8eef8] tabular-nums">
-            ₺128.450
+            $128,450
           </p>
         </div>
         <span className="rounded-full bg-[#26a69a]/15 px-3 py-1 text-[12px] font-semibold text-[#26a69a]">
-          +1,8%
+          +1.8%
         </span>
       </div>
 
@@ -180,7 +183,7 @@ function PortfolioBoard() {
           <div key={a.name}>
             <div className="mb-1 flex justify-between text-[12px]">
               <span className="font-medium text-[#e8eef8]">{a.name}</span>
-              <span className="tabular-nums text-[#8b97b0]">%{a.pct}</span>
+              <span className="tabular-nums text-[#8b97b0]">{locale === "tr" ? `%${a.pct}` : `${a.pct}%`}</span>
             </div>
             <div className="h-1.5 overflow-hidden rounded-full bg-[#1f1f1f]">
               <div
@@ -203,8 +206,8 @@ export default function LandingPage() {
     { id: "hakkinda", label: t("landing.nav.about") },
     { id: "nasil", label: t("landing.nav.how") },
     { id: "mobil", label: t("landing.nav.mobile") },
-    { id: "guvenlik", label: "Güvenlik" },
-    { id: "altyapi", label: "Altyapı" },
+    { id: "guvenlik", label: t("landing.nav.security") },
+    { id: "altyapi", label: t("landing.nav.infra") },
   ];
   const [menuOpen, setMenuOpen] = useState(false);
   const [showStickyCta, setShowStickyCta] = useState(false);
@@ -231,12 +234,12 @@ export default function LandingPage() {
   const markets = useMemo(
     () => [
       { s: "EURUSD", name: t("landing.m.eurusd"), p: "1.0842", d: "+0.14%", up: true },
-      { s: "XAUUSD", name: t("landing.m.xauusd"), p: "2.341,20", d: "+0.32%", up: true },
-      { s: "US100", name: "NASDAQ 100", p: "19.840", d: "+0.41%", up: true },
-      { s: "BTCUSD", name: t("landing.m.btcusd"), p: "67.420", d: "−0.81%", up: false },
+      { s: "XAUUSD", name: t("landing.m.xauusd"), p: "2,341.20", d: "+0.32%", up: true },
+      { s: "US100", name: t("landing.m.us100"), p: "19,840", d: "+0.41%", up: true },
+      { s: "BTCUSD", name: t("landing.m.btcusd"), p: "67,420", d: "−0.81%", up: false },
       { s: "GBPUSD", name: t("landing.m.gbpusd"), p: "1.2634", d: "+0.09%", up: true },
-      { s: "USDTRY", name: t("landing.m.usdtry"), p: "34,12", d: "+0.05%", up: true },
-      { s: "UKOIL", name: t("landing.m.ukoil"), p: "82,40", d: "−0.22%", up: false },
+      { s: "USDTRY", name: t("landing.m.usdtry"), p: "34.12", d: "+0.05%", up: true },
+      { s: "UKOIL", name: t("landing.m.ukoil"), p: "82.40", d: "−0.22%", up: false },
       { s: "ETHUSD", name: t("landing.m.ethusd"), p: "3.420", d: "+1.12%", up: true },
     ],
     [t]
@@ -284,8 +287,8 @@ export default function LandingPage() {
 
   const stats = useMemo(
     () => [
-      { k: "7/24", v: t("landing.stat.access.v"), d: t("landing.stat.access.d") },
-      { k: t("landing.stat.terminal.k"), v: t("landing.stat.terminal.v"), d: "Price, emir ve bakiye birlikte" },
+      { k: "24/7", v: t("landing.stat.access.v"), d: t("landing.stat.access.d") },
+      { k: t("landing.stat.terminal.k"), v: t("landing.stat.terminal.v"), d: t("landing.stat.terminal.d") },
       { k: "Multi-asset", v: t("landing.stat.multi.v"), d: t("landing.stat.multi.d") },
       { k: "PWA", v: t("landing.stat.pwa.v"), d: t("landing.stat.pwa.d") },
     ],
@@ -324,7 +327,7 @@ export default function LandingPage() {
       {/* ——— Header ——— */}
       <header className="fx-nav sticky top-0 z-50">
         <div className="fx-shell flex h-14 items-center justify-between gap-4 sm:h-[4.25rem]">
-          <Link href="/" className="flex items-center no-underline" aria-label="7FX ana sayfa">
+          <Link href="/" className="flex items-center no-underline" aria-label={t("landing.homeAria")}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <BrandLogo priority className="fx-nav-logo h-9 w-auto" height={36} />
           </Link>
@@ -360,7 +363,7 @@ export default function LandingPage() {
               type="button"
               className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(16,20,37,0.12)] bg-white text-[#111111] lg:hidden"
               aria-expanded={menuOpen}
-              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-label={menuOpen ? t("landing.menu.close") : t("landing.menu.open")}
               onClick={() => setMenuOpen((v) => !v)}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -417,7 +420,7 @@ export default function LandingPage() {
           <div className="fx-shell relative z-10 grid gap-7 pb-10 pt-8 sm:gap-12 sm:pb-20 sm:pt-16 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:gap-12 lg:pb-28 lg:pt-20">
             <div className="fx-reveal max-w-[640px]">
               <div className="flex flex-wrap items-center gap-[1cm]">
-                <Eyebrow>Multi-asset investment platform</Eyebrow>
+                <Eyebrow>{t("landing.eyebrow.hero")}</Eyebrow>
                 <p
                   className="inline-flex items-center gap-2.5 rounded-full border border-[rgba(16,20,37,0.10)] bg-white/90 px-3.5 py-1.5 text-[12.5px] font-semibold tracking-tight text-[#111111] shadow-[0_6px_18px_rgba(16,20,37,0.06)]"
                   aria-label={t("landing.trust.ing")}
@@ -519,9 +522,7 @@ export default function LandingPage() {
                 {t("landing.platformTitle")}
               </h2>
               <p className="fx-section-body mt-4 max-w-[560px]">
-                7FX delivers a clear multi-asset experience for retail and
-                institutional investors with live prices, a simple order panel and secure sessions. Watch forex, stocks, crypto and
-                commodity instruments in one terminal; manage balance and positions from the same screen.
+                {t("landing.platformLead")}
               </p>
             </div>
 
@@ -556,35 +557,18 @@ export default function LandingPage() {
               <h2 id="about-title" className="fx-h2 mt-4">{t("landing.aboutTitle")}
               </h2>
               <p className="fx-section-body mt-5 max-w-[540px]">
-                7FX is an international broker / trading platform providing web access to global markets.
-                Our goal is for investors to follow stocks, crypto, forex and
-                commodity markets under one account in a transparent, controlled
-                environment.
+                {t("landing.aboutP1")}
               </p>
               <p className="fx-section-body mt-4 max-w-[540px]">
-                The platform is built with secure session infrastructure, SSL-protected connections and role-based access.
-                Our support team is with you for account, deposit / withdrawal and trading processes
-                — 24/7 platform access is available via the web.
+                {t("landing.aboutP2")}
               </p>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               {[
-                {
-                  t: "Markets",
-                  d: "Forex pairs, stocks and indices, crypto assets, and commodities such as gold / oil.",
-                },
-                {
-                  t: "Security",
-                  d: "Session-cookie authentication, protected admin areas and SSL connection.",
-                },
-                {
-                  t: "Support",
-                  d: "In-platform support for account opening, balance operations and terminal use.",
-                },
-                {
-                  t: "Access",
-                  d: "Multi-asset web terminal that works in desktop and mobile browsers, PWA-ready.",
-                },
+                { t: t("landing.about.markets.t"), d: t("landing.about.markets.d") },
+                { t: t("landing.about.security.t"), d: t("landing.about.security.d") },
+                { t: t("landing.about.support.t"), d: t("landing.about.support.d") },
+                { t: t("landing.about.access.t"), d: t("landing.about.access.d") },
               ].map((c) => (
                 <div
                   key={c.t}
@@ -599,7 +583,7 @@ export default function LandingPage() {
         </section>
 
         {/* ——— Detail band: 4 stats ——— */}
-        <section className="border-y border-[rgba(16,20,37,0.08)] bg-[#ffffff]" aria-label="Highlights">
+        <section className="border-y border-[rgba(16,20,37,0.08)] bg-[#ffffff]" aria-label={t("landing.highlights")}>
           <div className="fx-shell grid grid-cols-2 gap-x-5 gap-y-8 py-12 sm:gap-8 sm:py-14 lg:grid-cols-4 lg:py-16">
             {stats.map((s) => (
               <div key={s.k} className="fx-stat">
@@ -618,9 +602,9 @@ export default function LandingPage() {
           <div className="fx-shell">
             <div className="mb-12 max-w-2xl sm:mb-14">
               <Eyebrow>{t("landing.howEyebrow")}</Eyebrow>
-              <h2 className="fx-h2 mt-4">To the terminal in three steps</h2>
+              <h2 className="fx-h2 mt-4">{t("landing.howTitle")}</h2>
               <p className="fx-section-body mt-4 max-w-[520px]">
-                From registration to live prices and the order panel, the flow stays simple.
+                {t("landing.howLead")}
               </p>
             </div>
 
@@ -653,20 +637,16 @@ export default function LandingPage() {
         <section className="fx-section fx-section--soft border-y border-[rgba(16,20,37,0.08)]">
           <div className="fx-shell grid gap-12 lg:grid-cols-[1fr_1.05fr] lg:items-center lg:gap-16">
             <div>
-              <Eyebrow>Portfolio view</Eyebrow>
-              <h2 className="fx-h2 mt-4">
-                See allocation and
-                <br className="hidden sm:block" /> trend in one place
-              </h2>
+              <Eyebrow>{t("landing.portfolio.eyebrow")}</Eyebrow>
+              <h2 className="fx-h2 mt-4">{t("landing.portfolio.title")}</h2>
               <p className="fx-section-body mt-4 max-w-[480px]">
-                See your portfolio clearly with balance, asset allocation and performance bars
-                panelde takip edin.
+                {t("landing.portfolio.body")}
               </p>
               <ul className="mt-8 space-y-3">
                 {[
-                  "Allocation bars by asset class",
-                  "Weekly performance chart",
-                  "Consistent layout on mobile and desktop",
+                  t("landing.portfolio.b1"),
+                  t("landing.portfolio.b2"),
+                  t("landing.portfolio.b3"),
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-3 text-[14px] text-[#5c657a]">
                     <span
@@ -691,20 +671,20 @@ export default function LandingPage() {
             <div>
               <p className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#111111]">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#111111] shadow-[0_0_8px_rgba(17,17,17,0.45)]" aria-hidden />
-                Mobile experience
+                {t("landing.mobile.band")}
               </p>
               <h2 className="mt-4 text-[clamp(30px,8vw,48px)] font-semibold leading-[1.08] tracking-[-0.05em] text-[#111111]">
-                Her yerden takip edin
+                {t("landing.mobileTitle")}
               </h2>
               <p className="mt-4 max-w-[480px] text-[14px] leading-relaxed text-[#5c657a]">
                 {t("landing.mobileBody")}
               </p>
               <ul className="mt-7 space-y-3">
                 {[
-                  "Responsive header and hamburger menu",
-                  "Portfolio view with phone preview",
-                  "Login / register CTAs reachable on every screen",
-                  "Android APK download · iOS Home Screen install",
+                  t("landing.mobile.b1"),
+                  t("landing.mobile.b2"),
+                  t("landing.mobile.b3"),
+                  t("landing.mobile.b4"),
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-3 text-[14px] text-[#5c657a]">
                     <span
@@ -731,7 +711,7 @@ export default function LandingPage() {
                 <div className="mb-6 flex items-center justify-between">
                   <BrandLogo className="h-9 w-auto object-contain" height={36} />
                   <span className="rounded-full bg-[#111111]/12 px-3 py-1 text-[11px] font-semibold text-[#111111]">
-                    Web app
+                    {t("landing.webApp")}
                   </span>
                 </div>
                 <div className="space-y-3">
@@ -773,15 +753,13 @@ export default function LandingPage() {
         </section>
 
 
-        {/* ——— Güvenlik ve Lisans ——— */}
         <section id="guvenlik" className="fx-section fx-section--soft border-y border-[rgba(16,20,37,0.08)]" aria-labelledby="security-title">
           <div className="fx-shell grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:gap-16">
             <div>
-              <Eyebrow>Security</Eyebrow>
-              <h2 id="security-title" className="fx-h2 mt-4">Güvenlik ve Lisans</h2>
+              <Eyebrow>{t("landing.security.eyebrow")}</Eyebrow>
+              <h2 id="security-title" className="fx-h2 mt-4">{t("landing.securityTitle")}</h2>
               <p className="fx-section-body mt-5 max-w-[520px]">
-                7FX applies practical safeguards around account access, data in transit, and operational controls.
-                The points below describe platform practices — not a claim of a specific regulator licence.
+                {t("landing.securityBody")}
               </p>
               <div className="mt-8 inline-flex items-center rounded-[14px] border border-[rgba(16,20,37,0.08)] bg-white px-5 py-4 shadow-[0_8px_24px_rgba(16,20,37,0.04)]">
                 <BrandLogo className="h-9 w-auto object-contain" height={36} />
@@ -789,22 +767,10 @@ export default function LandingPage() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               {[
-                {
-                  t: "SSL encryption",
-                  d: "Client connections use TLS so session and account traffic is encrypted in transit.",
-                },
-                {
-                  t: "Segregated account practices",
-                  d: "Client balances are tracked in dedicated ledger records, separate from day-to-day operating notes.",
-                },
-                {
-                  t: "KYC / AML process",
-                  d: "Identity and compliance checks can be required before higher limits or withdrawals are enabled.",
-                },
-                {
-                  t: "Access controls",
-                  d: "Session-cookie auth, protected admin areas, and role-based permissions for staff tools.",
-                },
+                { t: t("landing.sec.ssl.t"), d: t("landing.sec.ssl.d") },
+                { t: t("landing.sec.seg.t"), d: t("landing.sec.seg.d") },
+                { t: t("landing.sec.kyc.t"), d: t("landing.sec.kyc.d") },
+                { t: t("landing.sec.access.t"), d: t("landing.sec.access.d") },
               ].map((c) => (
                 <div
                   key={c.t}
@@ -818,24 +784,23 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ——— Altyapı ve Sağlayıcılar ——— */}
         <section id="altyapi" className="fx-section" aria-labelledby="infra-title">
           <div className="fx-shell">
             <div className="mb-10 max-w-2xl sm:mb-12">
-              <Eyebrow>Infrastructure</Eyebrow>
-              <h2 id="infra-title" className="fx-h2 mt-4">Altyapı ve Sağlayıcılar</h2>
+              <Eyebrow>{t("landing.infra.eyebrow")}</Eyebrow>
+              <h2 id="infra-title" className="fx-h2 mt-4">{t("landing.infraTitle")}</h2>
               <p className="fx-section-body mt-4 max-w-[560px]">
-                Tools and services the live 7FX stack actually uses. Names only — no partnership endorsement.
+                {t("landing.infraBody")}
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
               {[
-                { name: "Railway", role: "Hosting" },
-                { name: "Yahoo Finance", role: "Market data" },
-                { name: "TradingView Lightweight Charts", role: "Charting" },
-                { name: "MySQL", role: "Database" },
-                { name: "Prisma", role: "ORM" },
-                { name: "Next.js", role: "Web app" },
+                { name: "Railway", role: t("landing.role.hosting") },
+                { name: "Yahoo Finance", role: t("landing.role.data") },
+                { name: "TradingView Lightweight Charts", role: t("landing.role.charts") },
+                { name: "MySQL", role: t("landing.role.db") },
+                { name: "Prisma", role: t("landing.role.orm") },
+                { name: "Next.js", role: t("landing.webApp") },
               ].map((p) => (
                 <div
                   key={p.name}
@@ -856,10 +821,9 @@ export default function LandingPage() {
         <section className="border-t border-[rgba(16,20,37,0.08)] bg-white">
           <div className="fx-shell flex flex-col items-start justify-between gap-8 py-16 md:flex-row md:items-center md:py-20">
             <div>
-              <h2 className="fx-h2">Start when you are ready</h2>
+              <h2 className="fx-h2">{t("landing.ctaTitle")}</h2>
               <p className="fx-section-body mt-3 max-w-lg">
-                Create an account or sign in with your existing one. Use in-platform
-                channels for support.
+                {t("landing.ctaBody")}
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
@@ -883,8 +847,7 @@ export default function LandingPage() {
               <BrandLogo className="h-7 w-auto" height={28} />
             </div>
             <p className="mt-3 max-w-sm text-[13px] leading-relaxed">
-              7FX — international multi-asset trading platform. Secure web access to stocks, crypto, forex and
-              commodity markets.
+              {t("landing.footer.blurb")}
             </p>
             <p className="mt-3 inline-flex items-center gap-2 text-[12px] font-medium text-[#111111]">
               <IngMark className="h-4 w-auto object-contain" height={16} />

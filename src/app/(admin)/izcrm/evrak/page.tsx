@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
 
 type PickUser = { id: string; name: string; firstName?: string | null; lastName?: string | null; email: string; accountLoginId?: string | null; phone?: string | null };
@@ -16,11 +16,11 @@ type Doc = {
 };
 
 const T: Record<string, Record<string, string>> = {
-  tr: { title: "Evrak Ekle", customer: "Müşteri", search: "Ad, e-posta, hesap no veya telefon yazın", noMatch: "Eşleşen müşteri yok", searching: "…", change: "Değiştir", pick: "Müşteri seçin", global: "Tüm müşterilere (genel)", docTitle: "Evrak başlığı", file: "Dosya (PNG, JPG, WEBP, GIF, PDF · en fazla 8 MB)", save: "Kaydet", list: "Mevcut evraklar", filter: "Sadece seçili müşteri", del: "Sil", dl: "İndir", none: "Evrak yok", saved: "Evrak eklendi", confirm: "Bu evrak silinsin mi?", all: "Genel" },
-  en: { title: "Add document", customer: "Customer", search: "Type name, email, account ID or phone", noMatch: "No matching customers", searching: "…", change: "Change", pick: "Select customer", global: "All customers (global)", docTitle: "Document title", file: "File (PNG, JPG, WEBP, GIF, PDF · max 8 MB)", save: "Save", list: "Existing documents", filter: "Selected customer only", del: "Delete", dl: "Download", none: "No documents", saved: "Document added", confirm: "Delete this document?", all: "Global" },
-  ru: { title: "Добавить документ", customer: "Клиент", search: "Имя, e-mail, номер счёта или телефон", noMatch: "Клиенты не найдены", searching: "…", change: "Изменить", pick: "Выберите клиента", global: "Всем клиентам (общий)", docTitle: "Название документа", file: "Файл (PNG, JPG, WEBP, GIF, PDF · до 8 МБ)", save: "Сохранить", list: "Документы", filter: "Только выбранный клиент", del: "Удалить", dl: "Скачать", none: "Документов нет", saved: "Документ добавлен", confirm: "Удалить документ?", all: "Общий" },
-  ar: { title: "إضافة مستند", customer: "العميل", search: "اكتب الاسم أو البريد أو رقم الحساب أو الهاتف", noMatch: "لا يوجد عملاء مطابقون", searching: "…", change: "تغيير", pick: "اختر العميل", global: "لكل العملاء (عام)", docTitle: "عنوان المستند", file: "ملف (PNG, JPG, WEBP, GIF, PDF · حتى 8 ميغابايت)", save: "حفظ", list: "المستندات الحالية", filter: "العميل المحدد فقط", del: "حذف", dl: "تنزيل", none: "لا توجد مستندات", saved: "تمت إضافة المستند", confirm: "حذف هذا المستند؟", all: "عام" },
-  de: { title: "Dokument hinzufügen", customer: "Kunde", search: "Name, E-Mail, Kontonr. oder Telefon eingeben", noMatch: "Keine passenden Kunden", searching: "…", change: "Ändern", pick: "Kunde auswählen", global: "Alle Kunden (global)", docTitle: "Dokumenttitel", file: "Datei (PNG, JPG, WEBP, GIF, PDF · max. 8 MB)", save: "Speichern", list: "Vorhandene Dokumente", filter: "Nur ausgewählter Kunde", del: "Löschen", dl: "Herunterladen", none: "Keine Dokumente", saved: "Dokument hinzugefügt", confirm: "Dokument löschen?", all: "Global" },
+  tr: { title: "Evrak Ekle", customer: "Müşteri", search: "Ad, e-posta, hesap no veya telefon yazın", noMatch: "Eşleşen müşteri yok", searching: "…", change: "Değiştir", pick: "Müşteri seçin", global: "Tüm müşterilere (genel)", docTitle: "Evrak başlığı", file: "Dosya (PNG, JPG, WEBP, GIF, PDF · en fazla 8 MB)", save: "Kaydet", list: "Mevcut evraklar", filter: "Sadece seçili müşteri", del: "Sil", dl: "İndir", none: "Evrak yok", saved: "Evrak eklendi", confirm: "Bu evrak silinsin mi?", all: "Genel", loadMore: "Daha fazla yükle" },
+  en: { title: "Add document", customer: "Customer", search: "Type name, email, account ID or phone", noMatch: "No matching customers", searching: "…", change: "Change", pick: "Select customer", global: "All customers (global)", docTitle: "Document title", file: "File (PNG, JPG, WEBP, GIF, PDF · max 8 MB)", save: "Save", list: "Existing documents", filter: "Selected customer only", del: "Delete", dl: "Download", none: "No documents", saved: "Document added", confirm: "Delete this document?", all: "Global", loadMore: "Load more" },
+  ru: { title: "Добавить документ", customer: "Клиент", search: "Имя, e-mail, номер счёта или телефон", noMatch: "Клиенты не найдены", searching: "…", change: "Изменить", pick: "Выберите клиента", global: "Всем клиентам (общий)", docTitle: "Название документа", file: "Файл (PNG, JPG, WEBP, GIF, PDF · до 8 МБ)", save: "Сохранить", list: "Документы", filter: "Только выбранный клиент", del: "Удалить", dl: "Скачать", none: "Документов нет", saved: "Документ добавлен", confirm: "Удалить документ?", all: "Общий", loadMore: "Загрузить ещё" },
+  ar: { title: "إضافة مستند", customer: "العميل", search: "اكتب الاسم أو البريد أو رقم الحساب أو الهاتف", noMatch: "لا يوجد عملاء مطابقون", searching: "…", change: "تغيير", pick: "اختر العميل", global: "لكل العملاء (عام)", docTitle: "عنوان المستند", file: "ملف (PNG, JPG, WEBP, GIF, PDF · حتى 8 ميغابايت)", save: "حفظ", list: "المستندات الحالية", filter: "العميل المحدد فقط", del: "حذف", dl: "تنزيل", none: "لا توجد مستندات", saved: "تمت إضافة المستند", confirm: "حذف هذا المستند؟", all: "عام", loadMore: "تحميل المزيد" },
+  de: { title: "Dokument hinzufügen", customer: "Kunde", search: "Name, E-Mail, Kontonr. oder Telefon eingeben", noMatch: "Keine passenden Kunden", searching: "…", change: "Ändern", pick: "Kunde auswählen", global: "Alle Kunden (global)", docTitle: "Dokumenttitel", file: "Datei (PNG, JPG, WEBP, GIF, PDF · max. 8 MB)", save: "Speichern", list: "Vorhandene Dokumente", filter: "Nur ausgewählter Kunde", del: "Löschen", dl: "Herunterladen", none: "Keine Dokumente", saved: "Dokument hinzugefügt", confirm: "Dokument löschen?", all: "Global", loadMore: "Mehr laden" },
 };
 
 const cls = "w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm text-[#111] outline-none focus:border-black/30";
@@ -41,6 +41,10 @@ export default function EvrakPage() {
   const [msg, setMsg] = useState("");
   const [docs, setDocs] = useState<Doc[]>([]);
   const [onlySel, setOnlySel] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [moreBusy, setMoreBusy] = useState(false);
+  const docsRef = useRef<Doc[]>([]);
+  const loadGen = useRef(0);
 
   useEffect(() => {
     const term = q.trim();
@@ -69,10 +73,25 @@ export default function EvrakPage() {
 
   const label = (u: PickUser) => u.name || [u.firstName, u.lastName].filter(Boolean).join(" ") || u.email;
 
-  const load = useCallback(async () => {
-    const qs = onlySel && userId ? `?userId=${encodeURIComponent(userId)}` : "";
-    const r = await fetch(`/api/admin/customer-documents${qs}`, { cache: "no-store" });
-    if (r.ok) setDocs((await r.json()).documents || []);
+  const load = useCallback(async (mode: "replace" | "more" = "replace") => {
+    const gen = ++loadGen.current;
+    const skip = mode === "more" ? docsRef.current.length : 0;
+    if (mode === "more") setMoreBusy(true);
+    try {
+      const params = new URLSearchParams({ take: "50", skip: String(skip) });
+      if (onlySel && userId) params.set("userId", userId);
+      const r = await fetch(`/api/admin/customer-documents?${params}`, { cache: "no-store" });
+      if (!r.ok || gen !== loadGen.current) return;
+      const data = await r.json();
+      const incoming: Doc[] = data.documents || [];
+      const seen = new Set(docsRef.current.map((d) => d.id));
+      const next = mode === "more" ? docsRef.current.concat(incoming.filter((d) => !seen.has(d.id))) : incoming;
+      docsRef.current = next;
+      setDocs(next);
+      setHasMore(Boolean(data.hasMore));
+    } finally {
+      if (mode === "more" && gen === loadGen.current) setMoreBusy(false);
+    }
   }, [onlySel, userId]);
   useEffect(() => {
     load();
@@ -270,6 +289,16 @@ export default function EvrakPage() {
           </tbody>
         </table>
       </div>
+      {hasMore && (
+        <button
+          type="button"
+          disabled={moreBusy}
+          onClick={() => void load("more")}
+          className="mt-3 w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm font-medium text-[#111] hover:bg-[#f7f7f7] disabled:opacity-50"
+        >
+          {moreBusy ? L.searching : L.loadMore}
+        </button>
+      )}
     </div>
   );
 }

@@ -448,13 +448,13 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
                   <div className="flex shrink-0 flex-col items-end gap-0.5 tabular-nums">
                     <div className="flex items-baseline gap-1.5 text-[11px] font-medium text-desk-text/80 md:gap-1 md:text-[10px]">
                       <FlashPrice
-                        title="Bid"
+                        title={t("term.bid")}
                         value={p?.bid}
                         text={p ? formatPrice(s.symbol, p.bid) : "—"}
                       />
                       <span className="text-desk-muted/50">/</span>
                       <FlashPrice
-                        title="Ask"
+                        title={t("term.ask")}
                         value={p?.ask}
                         text={p ? formatPrice(s.symbol, p.ask) : "—"}
                       />

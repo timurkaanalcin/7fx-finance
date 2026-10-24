@@ -156,7 +156,7 @@ export default function TradingCalculator({ open, onClose, symbol, symbols, pric
             </select>
             {tick && (
               <p className="mt-1 font-mono text-[11px] text-desk-muted">
-                Bid {tick.bid.toFixed(digits)} · Ask {tick.ask.toFixed(digits)}
+                {t("term.bid")} {tick.bid.toFixed(digits)} · {t("term.ask")} {tick.ask.toFixed(digits)}
               </p>
             )}
           </div>

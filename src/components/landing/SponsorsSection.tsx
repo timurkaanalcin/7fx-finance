@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useI18n } from "@/lib/i18n/context";
 
 type S = { id: string; name: string; url: string | null; logo: string };
 
 export default function SponsorsSection() {
+  const { t } = useI18n();
   const [list, setList] = useState<S[]>([]);
   useEffect(() => {
     fetch("/api/sponsors")
@@ -14,13 +16,13 @@ export default function SponsorsSection() {
   }, []);
   if (list.length === 0) return null;
   return (
-    <section id="sponsorlar" className="fx-section border-t border-[rgba(16,20,37,0.08)] bg-white" aria-labelledby="sponsors-title">
+    <section id="sponsors" className="fx-section border-t border-[rgba(16,20,37,0.08)] bg-white" aria-labelledby="sponsors-title">
       <div className="fx-shell">
         <p className="fx-eyebrow inline-flex items-center gap-2">
           <span className="fx-eyebrow-dot" aria-hidden />
-          Sponsors
+          {t("landing.sponsors.eyebrow")}
         </p>
-        <h2 id="sponsors-title" className="fx-h2 mt-4">Sponsorlar</h2>
+        <h2 id="sponsors-title" className="fx-h2 mt-4">{t("landing.sponsors.title")}</h2>
         <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {list.map((s) => {
             const inner = (

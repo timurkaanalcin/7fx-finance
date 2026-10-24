@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin, requireAdminWrite, writeAudit } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ATT_MAX_BYTES, ATT_VIEWABLE } from "@/lib/chat/attachments";
+import { customerDocsWindow } from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
 
@@ -9,20 +10,28 @@ export const dynamic = "force-dynamic";
 export async function GET(req: Request) {
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-  const userId = new URL(req.url).searchParams.get("userId") || "";
+  const searchParams = new URL(req.url).searchParams;
+  const userId = searchParams.get("userId") || "";
+  const paged = searchParams.has("take") || searchParams.has("skip");
+  const page = customerDocsWindow(searchParams.get("take"), searchParams.get("skip"), paged);
   const docs = await prisma.customerDocument.findMany({
     where: userId ? { OR: [{ userId }, { userId: null }] } : {},
     orderBy: { createdAt: "desc" },
-    take: 500,
+    skip: page.skip,
+    take: page.paged ? page.take + 1 : page.take,
     select: { id: true, userId: true, title: true, fileName: true, mime: true, size: true, createdAt: true, uploadedById: true },
   });
-  const ids = Array.from(new Set(docs.map((d) => d.userId).filter(Boolean) as string[]));
+  const hasMore = page.paged && docs.length > page.take;
+  const rows = hasMore ? docs.slice(0, page.take) : docs;
+  const ids = Array.from(new Set(rows.map((d) => d.userId).filter(Boolean) as string[]));
   const users = ids.length
     ? await prisma.user.findMany({ where: { id: { in: ids } }, select: { id: true, name: true, email: true, accountLoginId: true } })
     : [];
   const byId = new Map(users.map((u) => [u.id, u]));
   return NextResponse.json({
-    documents: docs.map((d) => ({ ...d, user: d.userId ? byId.get(d.userId) ?? null : null })),
+    documents: rows.map((d) => ({ ...d, user: d.userId ? byId.get(d.userId) ?? null : null })),
+    hasMore,
+    nextSkip: page.skip + rows.length,
   });
 }
 

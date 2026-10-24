@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import BrandLogo from "@/components/landing/BrandLogo";
+import { useI18n } from "@/lib/i18n/context";
 
 type AuthShellProps = {
   mode: "login" | "register";
@@ -10,7 +11,12 @@ type AuthShellProps = {
 };
 
 export default function AuthShell({ mode, children }: AuthShellProps) {
+  const { t } = useI18n();
   const isLogin = mode === "login";
+  const [host, setHost] = useState("");
+  useEffect(() => {
+    setHost(window.location.host);
+  }, []);
 
   return (
     <div className="fx-auth-page min-h-screen" data-fx-ui="auth-light">
@@ -23,14 +29,14 @@ export default function AuthShell({ mode, children }: AuthShellProps) {
         </div>
 
         <header className="relative z-10 mx-auto flex w-full max-w-lg items-center justify-between px-4 pb-2 pt-6 sm:max-w-xl sm:px-6 sm:pt-8">
-          <Link href="/" className="inline-flex items-center no-underline" aria-label="7FX ana sayfa">
+          <Link href="/" className="inline-flex items-center no-underline" aria-label={t("landing.homeAria")}>
             <BrandLogo priority className="h-11 w-auto sm:h-12" height={44} />
           </Link>
           <Link
             href="/"
             className="rounded-lg px-2.5 py-1.5 text-sm font-medium text-[#5c657a] transition hover:bg-[#f0f0f0] hover:text-[#111111]"
           >
-            ← Main sayfa
+            ← {t("common.home")}
           </Link>
         </header>
 
@@ -39,25 +45,23 @@ export default function AuthShell({ mode, children }: AuthShellProps) {
             <div className="mb-7 text-center sm:mb-8">
               <p className="inline-flex items-center gap-2 rounded-full border border-[rgba(16,20,37,0.08)] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#111111] shadow-sm">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#111111] shadow-[0_0_8px_rgba(17,17,17,0.45)]" />
-                {isLogin ? "Secure sign-in" : "New account"}
+                {isLogin ? t("auth.badge.login") : t("auth.badge.register")}
               </p>
               <h1 className="mt-4 text-[1.65rem] font-semibold leading-tight tracking-tight text-[#111111] sm:text-[1.85rem]">
                 {isLogin ? (
                   <>
-                    Return to your account{" "}
-                    <span className="fx-auth-accent-text">safely</span>
+                    {t("auth.loginLead")}{" "}
+                    <span className="fx-auth-accent-text">{t("auth.loginAccent")}</span>
                   </>
                 ) : (
                   <>
-                    A professional start{" "}
-                    <span className="fx-auth-accent-text">to investing</span>
+                    {t("auth.registerLead")}{" "}
+                    <span className="fx-auth-accent-text">{t("auth.registerAccent")}</span>
                   </>
                 )}
               </h1>
               <p className="mx-auto mt-2.5 max-w-sm text-sm leading-relaxed text-[#5c657a]">
-                {isLogin
-                  ? "After authentication the trading terminal opens."
-                  : "Enter your details; terminal access opens automatically after registration. Referral code is required."}
+                {isLogin ? t("auth.loginBody") : t("auth.registerBody")}
               </p>
             </div>
 
@@ -70,12 +74,12 @@ export default function AuthShell({ mode, children }: AuthShellProps) {
             </div>
 
             <p className="mt-6 text-center text-[11px] leading-relaxed text-[#8b93a7]">
-              By continuing you accept the 7FX terms of use.
+              {t("auth.terms")}
               <br className="hidden sm:block" />
-              Sensitive trading areas are protected with a session cookie.
+              {t("auth.sessionNote")}
             </p>
             <p className="mt-4 text-center text-[11px] text-[#8b93a7]">
-              © {new Date().getFullYear()} 7FX · 7fx.customer.org.tr
+              © {new Date().getFullYear()} 7FX{host ? ` · ${host}` : ""}
             </p>
           </div>
         </main>

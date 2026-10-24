@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { headers } from "next/headers";
 import { marketingMetadata } from "@/lib/seo";
+import IosPageTitle from "@/components/landing/IosPageTitle";
 
 export async function generateMetadata(): Promise<Metadata> {
   const h = headers();
@@ -26,7 +27,7 @@ export default function IosInstallPage() {
             className="h-14 w-14 rounded-[14px] shadow"
           />
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">iPhone ve iPad&apos;e kurun</h1>
+            <IosPageTitle />
             <p className="mt-1 text-[14px] text-[#5c657a]">iPhone &amp; iPad · Safari · Add to Home Screen</p>
           </div>
         </div>
@@ -42,7 +43,7 @@ export default function IosInstallPage() {
             {
               n: "1",
               t: "Open in Safari",
-              d: "Use Safari (not Chrome/in-app browsers). Open https://7fx.customer.org.tr",
+              d: "Use Safari (not Chrome or an in-app browser). Open this site, then follow the steps below.",
             },
             {
               n: "2",

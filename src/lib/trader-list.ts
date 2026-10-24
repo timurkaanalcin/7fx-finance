@@ -122,6 +122,19 @@ export function crmPageWindow(takeRaw: string | null, skipRaw: string | null): {
   return { take, skip };
 }
 
+/** Unpaged admin customer-document list. Paged requests use the shared CRM page window. */
+export const CRM_DOCS_LEGACY = 500;
+
+export function customerDocsWindow(
+  takeRaw: string | null,
+  skipRaw: string | null,
+  paged: boolean
+): { take: number; skip: number; paged: boolean } {
+  if (!paged) return { take: CRM_DOCS_LEGACY, skip: 0, paged: false };
+  const page = crmPageWindow(takeRaw, skipRaw);
+  return { take: page.take, skip: page.skip, paged: true };
+}
+
 /**
  * Trader detail views. `full` is the existing payload (post-save refresh).
  * The others load one tab and skip the rest of the related tables.
