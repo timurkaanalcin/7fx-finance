@@ -62,12 +62,19 @@ export default function LiveSupportPanel() {
     if (!open) return;
     void load();
     void ping({ inChat: true, markRead: true });
-    const iv = window.setInterval(() => {
+    const tick = () => {
+      if (document.hidden) return;
       void load();
       void ping({ inChat: true, markRead: true });
-    }, 3000);
+    };
+    const iv = window.setInterval(tick, 3000);
+    const onVis = () => {
+      if (!document.hidden) tick();
+    };
+    document.addEventListener("visibilitychange", onVis);
     return () => {
       window.clearInterval(iv);
+      document.removeEventListener("visibilitychange", onVis);
       void ping({ inChat: false, typing: false });
       lastTypingSent.current = false;
     };

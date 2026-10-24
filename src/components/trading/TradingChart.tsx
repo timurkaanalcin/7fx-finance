@@ -151,6 +151,10 @@ export default function TradingChart({
   const priceLinesRef = useRef<IPriceLine[]>([]);
   const liveBarRef = useRef<LiveBar | null>(null);
   const lastBarTimeRef = useRef<number | null>(null);
+  /** True after the current symbol/timeframe history request settles (success or failure). */
+  const historySettledRef = useRef(false);
+  /** Ask the history effect to refetch when bars are missing. No-op until that effect is mounted. */
+  const requestHistoryRef = useRef<() => void>(() => {});
   const lastMidRef = useRef<number | null>(null);
   const priceRef = useRef<PriceTick | undefined>(price);
   const lastTickAtRef = useRef<number>(0);
@@ -176,6 +180,16 @@ export default function TradingChart({
 
   timeframeRef.current = timeframe;
   priceRef.current = price;
+
+  /** True when the last bar is more than one timeframe behind the clock (a hidden-tab gap). */
+  const candleGap = () => {
+    const lastT = lastBarTimeRef.current;
+    if (lastT == null) return false;
+    const nowSec = Math.floor(Date.now() / 1000);
+    const tf = timeframeRef.current;
+    const next = formingBarTime(nowSec, tf, lastT);
+    return next > lastT && next - lastT > timeframeSeconds(tf);
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -394,9 +408,12 @@ export default function TradingChart({
     };
   }, [mounted]);
 
-  // Historical backbone; re-sync periodically. Live mid overlays forming candle.
+  // Historical backbone on symbol/timeframe change. Live mid updates the forming bar.
+  // Refetch only when a bar is missing (gap larger than one timeframe, or history never landed).
   useEffect(() => {
     let cancelled = false;
+    let gapAt = 0;
+    historySettledRef.current = false;
 
     async function load(fit = false) {
       try {
@@ -494,23 +511,40 @@ export default function TradingChart({
         }
       } catch {
         if (!cancelled) setFeedError({ k: "load" });
+      } finally {
+        if (!cancelled) historySettledRef.current = true;
       }
     }
 
+    const requestHistory = () => {
+      if (cancelled) return;
+      const now = Date.now();
+      if (now - gapAt < 10_000) return;
+      const missing = lastBarTimeRef.current == null ? historySettledRef.current : candleGap();
+      if (!missing) return;
+      gapAt = now;
+      void load(false);
+    };
+    requestHistoryRef.current = requestHistory;
+
     liveBarRef.current = null;
     lastBarTimeRef.current = null;
-    load(true);
-    const id = setInterval(() => {
-      if (typeof document !== "undefined" && document.hidden) return;
-      void load(false);
-    }, 30000);
+    try {
+      seriesRef.current?.setData([]);
+      lineRef.current?.setData([]);
+    } catch {
+      /* chart not ready */
+    }
+    setOhlc(null);
+    void load(true);
     const onVis = () => {
-      if (!document.hidden) void load(false);
+      if (!document.hidden) requestHistory();
     };
     document.addEventListener("visibilitychange", onVis);
     return () => {
       cancelled = true;
-      clearInterval(id);
+      historySettledRef.current = false;
+      requestHistoryRef.current = () => {};
       document.removeEventListener("visibilitychange", onVis);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -521,6 +555,8 @@ export default function TradingChart({
     let lastApplied: number | null = null;
     const tick = () => {
       if (typeof document !== "undefined" && document.hidden) return;
+      requestHistoryRef.current();
+      if (candleGap()) return;
       const mid = priceRef.current?.mid;
       if (mid == null || !Number.isFinite(mid) || mid <= 0) {
         const next = Date.now() - lastTickAtRef.current < 2500;

@@ -23,11 +23,20 @@ export default function SymbolCatalogSync() {
         /* keep built-ins */
       }
     }
-    sync();
-    const t = setInterval(sync, REFRESH_MS);
+    void sync();
+    const tick = () => {
+      if (document.hidden) return;
+      void sync();
+    };
+    const t = setInterval(tick, REFRESH_MS);
+    const onVis = () => {
+      if (!document.hidden) void sync();
+    };
+    document.addEventListener("visibilitychange", onVis);
     return () => {
       stop = true;
       clearInterval(t);
+      document.removeEventListener("visibilitychange", onVis);
     };
   }, []);
   return null;

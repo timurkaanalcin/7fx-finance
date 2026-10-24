@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { formatPrice } from "@/lib/symbols";
+import { fmtMoney } from "@/lib/format";
 import { useI18n } from "@/lib/i18n/context";
 import { localizeTradeError } from "@/lib/trade-errors";
 import { calcTradeProfit, calcVolumeForRisk } from "@/lib/pnl";
@@ -62,16 +63,15 @@ function fmtPips(n: number): string {
   return n >= 100 ? n.toFixed(0) : n.toFixed(1);
 }
 
-function fmtSignedUsd(n: number): string {
+function fmtSignedMoney(n: number, currency: string): string {
   if (!Number.isFinite(n)) return "—";
-  const abs = Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  return `${n < 0 ? "−" : "+"}$${abs}`;
+  const body = fmtMoney(Math.abs(n), 2, currency);
+  return `${n < 0 ? "−" : "+"}${body}`;
 }
 
-function fmtUsd(n: number): string {
+function fmtTicketMoney(n: number, currency: string, digits = 2): string {
   if (!Number.isFinite(n) || n <= 0) return "—";
-  // Full amount — never abbreviate as K / M
-  return `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return fmtMoney(n, digits, currency);
 }
 
 // Per-device memory of the last lot size, keyed by symbol (client-only, invisible)
@@ -606,7 +606,7 @@ export default function OrderTicket({
               className="text-[10px] font-semibold tabular-nums text-desk-muted"
               title="Approx. trade size (lot × contract × price)"
             >
-              ≈ {fmtUsd(notional)}
+              ≈ {fmtTicketMoney(notional, currency)}
             </span>
           </div>
           <div className="relative flex items-center gap-2 md:gap-1.5">
@@ -680,7 +680,7 @@ export default function OrderTicket({
               </button>
             </div>
             <span className="text-[10px] tabular-nums text-desk-muted/80">
-              Notional {fmtUsd(notional)}
+              Notional {fmtTicketMoney(notional, currency)}
             </span>
           </div>
         </div>
@@ -778,7 +778,7 @@ export default function OrderTicket({
                 }`}
                 title="Estimated P&L if Stop Loss is hit"
               >
-                ≈ {fmtSignedUsd(preview.sl)}
+                ≈ {fmtSignedMoney(preview.sl, currency)}
               </div>
             )}
           </div>
@@ -800,9 +800,8 @@ export default function OrderTicket({
                 >
                   Risk{" "}
                   {preview.sl != null
-                    ? fmtUsd(Math.abs(preview.sl))
+                    ? fmtTicketMoney(Math.abs(preview.sl), currency)
                     : "—"}
-                  {currency && currency !== "USD" ? ` ${currency}` : ""}
                 </span>
               </div>
               <input
@@ -814,7 +813,7 @@ export default function OrderTicket({
                   setRiskAmount(e.target.value);
                   setRiskError("");
                 }}
-                placeholder={currency === "USD" || !currency ? "Max risk $" : `Max risk (${currency})`}
+                placeholder={`Max risk (${(currency || "USD").trim().toUpperCase() || "USD"})`}
                 className={inputCls + " tabular-nums"}
               />
               <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Risk presets">
@@ -828,7 +827,7 @@ export default function OrderTicket({
                     }}
                     className="rounded-full border border-desk-border/70 bg-desk-elev px-2 py-0.5 text-[10px] font-semibold tabular-nums text-desk-muted hover:bg-desk-hover hover:text-desk-text"
                   >
-                    ${amt}
+                    {fmtTicketMoney(amt, currency, 0)}
                   </button>
                 ))}
                 {typeof equity === "number" && equity > 0 && (
@@ -840,7 +839,7 @@ export default function OrderTicket({
                         setRiskError("");
                       }}
                       className="rounded-full border border-desk-border/70 bg-desk-elev px-2 py-0.5 text-[10px] font-semibold tabular-nums text-desk-muted hover:bg-desk-hover hover:text-desk-text"
-                      title={`1% of equity (${fmtUsd(equity)})`}
+                      title={`1% of equity (${fmtTicketMoney(equity, currency)})`}
                     >
                       1%
                     </button>
@@ -851,7 +850,7 @@ export default function OrderTicket({
                         setRiskError("");
                       }}
                       className="rounded-full border border-desk-border/70 bg-desk-elev px-2 py-0.5 text-[10px] font-semibold tabular-nums text-desk-muted hover:bg-desk-hover hover:text-desk-text"
-                      title={`2% of equity (${fmtUsd(equity)})`}
+                      title={`2% of equity (${fmtTicketMoney(equity, currency)})`}
                     >
                       2%
                     </button>
@@ -925,7 +924,7 @@ export default function OrderTicket({
                 }`}
                 title="Estimated P&L if Take Profit is hit"
               >
-                ≈ {fmtSignedUsd(preview.tp)}
+                ≈ {fmtSignedMoney(preview.tp, currency)}
               </div>
             )}
           </div>
@@ -1013,7 +1012,7 @@ export default function OrderTicket({
                 <span className="font-semibold tabular-nums text-desk-text">
                   {sl}
                   {preview.sl != null && (
-                    <span className="ml-1 text-desk-sell">({fmtSignedUsd(preview.sl)})</span>
+                    <span className="ml-1 text-desk-sell">({fmtSignedMoney(preview.sl, currency)})</span>
                   )}
                 </span>
               </div>
@@ -1024,7 +1023,7 @@ export default function OrderTicket({
                 <span className="font-semibold tabular-nums text-desk-text">
                   {tp}
                   {preview.tp != null && (
-                    <span className="ml-1 text-desk-buy">({fmtSignedUsd(preview.tp)})</span>
+                    <span className="ml-1 text-desk-buy">({fmtSignedMoney(preview.tp, currency)})</span>
                   )}
                 </span>
               </div>
@@ -1040,7 +1039,7 @@ export default function OrderTicket({
             {notional > 0 && (
               <div className="flex items-center justify-between">
                 <span className="text-desk-muted">{t("term.ot.posValue")}</span>
-                <span className="font-semibold tabular-nums text-desk-text">{fmtUsd(notional)}</span>
+                <span className="font-semibold tabular-nums text-desk-text">{fmtTicketMoney(notional, currency)}</span>
               </div>
             )}
             {type === "MARKET" && (

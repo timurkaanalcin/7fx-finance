@@ -131,12 +131,17 @@ export default function TerminalShell() {
   /** Once per margin-call episode: suppress re-open until call clears */
   const episodeShownRef = useRef(false);
   const wasInCallRef = useRef(false);
-  /** Price-feed health: re-pull hooks registered by the polling effects below. */
-  const pullBatchRef = useRef<() => void>(() => {});
-  const pullActiveRef = useRef<() => void>(() => {});
+  /** Price-feed health: re-pull hook registered by the quote effect below. */
+  const pullQuotesRef = useRef<() => void>(() => {});
+  const mobileTabRef = useRef(mobileTab);
+  mobileTabRef.current = mobileTab;
+  const openPositionsRef = useRef(openPositions);
+  openPositionsRef.current = openPositions;
+  const pendingOrdersRef = useRef(pendingOrders);
+  pendingOrdersRef.current = pendingOrders;
+  const bookAtRef = useRef(0);
   const feed = useFeedHealth(() => {
-    pullBatchRef.current();
-    pullActiveRef.current();
+    pullQuotesRef.current();
   });
   const markFeedOk = feed.markOk;
 
@@ -186,30 +191,66 @@ export default function TerminalShell() {
     setAccount(data.account);
   }, [router]);
 
-  const refreshPositions = useCallback(async () => {
+  const posErrRef = useRef({ open: false, history: false });
+  const publishPosErr = useCallback((part: "open" | "history", failed: boolean) => {
+    posErrRef.current[part] = failed;
+    const next = posErrRef.current.open || posErrRef.current.history;
+    setPositionsError((prev) => (prev === next ? prev : next));
+  }, []);
+
+  const refreshOpenPositions = useCallback(async () => {
     try {
-      const [openRes, closedRes, ordersRes] = await Promise.all([
-        fetch("/api/positions?status=OPEN", { credentials: "include" }),
-        fetch("/api/positions?status=CLOSED", { credentials: "include" }),
-        fetch("/api/orders", { credentials: "include" }),
-      ]);
-      if (!openRes.ok || !closedRes.ok || !ordersRes.ok) {
-        setPositionsError(true);
+      const openRes = await fetch("/api/positions?status=OPEN", { credentials: "include" });
+      if (openRes.status === 401) {
+        router.push("/login");
+        return;
+      }
+      if (!openRes.ok) {
+        publishPosErr("open", true);
         return;
       }
       setOpenPositions(await openRes.json());
+      publishPosErr("open", false);
+    } catch {
+      publishPosErr("open", true);
+    }
+  }, [publishPosErr, router]);
+
+  const refreshHistory = useCallback(async () => {
+    try {
+      const [closedRes, ordersRes] = await Promise.all([
+        fetch("/api/positions?status=CLOSED", { credentials: "include" }),
+        fetch("/api/orders", { credentials: "include" }),
+      ]);
+      if (closedRes.status === 401 || ordersRes.status === 401) {
+        router.push("/login");
+        return;
+      }
+      if (!closedRes.ok || !ordersRes.ok) {
+        publishPosErr("history", true);
+        return;
+      }
       setClosedPositions(await closedRes.json());
       const orders: OrderRow[] = await ordersRes.json();
       setPendingOrders(orders.filter((o) => o.status === "PENDING"));
-      setPositionsError(false);
+      publishPosErr("history", false);
     } catch {
-      setPositionsError(true);
+      publishPosErr("history", true);
     }
-  }, []);
+  }, [publishPosErr, router]);
+
+  const refreshPositions = useCallback(async () => {
+    await Promise.all([refreshOpenPositions(), refreshHistory()]);
+  }, [refreshOpenPositions, refreshHistory]);
 
   const refreshAll = useCallback(async () => {
-    await Promise.all([refreshAccount(), refreshPositions(), refreshBalanceRequests()]);
-  }, [refreshAccount, refreshPositions, refreshBalanceRequests]);
+    await Promise.all([
+      refreshAccount(),
+      refreshOpenPositions(),
+      refreshHistory(),
+      refreshBalanceRequests(),
+    ]);
+  }, [refreshAccount, refreshOpenPositions, refreshHistory, refreshBalanceRequests]);
 
   useEffect(() => {
     let cancelled = false;
@@ -248,93 +289,146 @@ export default function TerminalShell() {
     writeTermPrefs({ symbol, timeframe, tab });
   }, [symbol, timeframe, tab]);
 
-  // Watchlist batch (~3s) + active symbol fast path (≤1s) so forming candle tracks mid.
+  // One quote scheduler: active symbol every 800ms. Full book every 3s only while the
+  // watchlist is mounted (desktop, or the phone Markets tab). The book tick already
+  // includes the active symbol, so that tick does not fire a second quote.
   useEffect(() => {
     let cancelled = false;
-    async function pullBatch() {
-      try {
-        const res = await fetch("/api/market/quote", { cache: "no-store" });
-        const data = await res.json();
-        if (cancelled) return;
-        if (res.ok || (data.prices || []).length) markFeedOk();
-        if (!res.ok && !(data.prices || []).length) {
-          setPriceError(data.error || "Could not fetch price");
-          return;
-        }
-        const map: Record<string, PriceTick> = {};
-        for (const t of data.prices as PriceTick[]) map[t.symbol] = t;
-        if (Object.keys(map).length) {
-          setPrices((prev) => ({ ...prev, ...map }));
-          setPriceError(data.error || null);
-        } else if (data.error) {
-          setPriceError(data.error);
-        }
-      } catch {
-        if (!cancelled) setPriceError("Price connection error");
-      }
-    }
-    async function pullIfVisible() {
-      if (pageHidden()) return;
-      await pullBatch();
-    }
-    pullBatchRef.current = () => void pullIfVisible();
-    void pullIfVisible();
-    const id = setInterval(() => void pullIfVisible(), 3000);
-    return () => {
-      cancelled = true;
-      clearInterval(id);
-    };
-  }, [markFeedOk]);
+    const BOOK_MS = 3000;
 
-  useEffect(() => {
-    let cancelled = false;
-    async function pullActive() {
+    const watchlistMounted = () => {
+      if (typeof window === "undefined") return true;
+      if (window.matchMedia("(min-width: 768px)").matches) return true;
+      return mobileTabRef.current === "markets";
+    };
+
+    const applyTicks = (ticks: PriceTick[], error: string | null, ok: boolean) => {
+      if (cancelled) return;
+      if (ok || ticks.length) markFeedOk();
+      if (!ticks.length) {
+        if (error) setPriceError(error);
+        return;
+      }
+      const now = Date.now();
+      const active = symbol.toUpperCase();
+      const map: Record<string, PriceTick> = {};
+      for (const t of ticks) {
+        map[t.symbol] = t.symbol.toUpperCase() === active ? { ...t, ts: now } : t;
+      }
+      setPrices((prev) => ({ ...prev, ...map }));
+      setPriceError(error);
+    };
+
+    async function pullBook() {
+      const res = await fetch("/api/market/quote", { cache: "no-store" });
+      const data = await res.json();
+      const ticks = (data.prices || []) as PriceTick[];
+      if (!res.ok && !ticks.length) {
+        if (!cancelled) setPriceError(data.error || "Could not fetch price");
+        return;
+      }
+      applyTicks(ticks, data.error || null, res.ok);
+    }
+
+    async function pullFast() {
+      const wanted = new Set<string>();
+      if (symbol) wanted.add(symbol.toUpperCase());
+      if (!watchlistMounted()) {
+        for (const p of openPositionsRef.current) {
+          if (p.symbol) wanted.add(p.symbol.toUpperCase());
+        }
+        for (const o of pendingOrdersRef.current) {
+          if (o.symbol) wanted.add(o.symbol.toUpperCase());
+        }
+      }
+      const list = Array.from(wanted);
+      if (!list.length) return;
+      const res = await fetch(
+        `/api/market/quote?symbols=${encodeURIComponent(list.join(","))}`,
+        { cache: "no-store" }
+      );
+      const data = await res.json();
+      const ticks = (data.prices || []) as PriceTick[];
+      if (!ticks.length) return;
+      applyTicks(ticks, data.error || null, res.ok);
+    }
+
+    async function tick() {
+      if (pageHidden() || cancelled) return;
+      const now = Date.now();
+      if (watchlistMounted() && now - bookAtRef.current >= BOOK_MS) {
+        bookAtRef.current = now;
+        try {
+          await pullBook();
+        } catch {
+          if (!cancelled) setPriceError("Price connection error");
+        }
+        return;
+      }
       try {
-        const res = await fetch(
-          `/api/market/quote?symbols=${encodeURIComponent(symbol)}`,
-          { cache: "no-store" }
-        );
-        const data = await res.json();
-        if (cancelled) return;
-        const ticks = (data.prices || []) as PriceTick[];
-        if (res.ok || ticks.length) markFeedOk();
-        if (!ticks.length) return;
-        const tick = { ...ticks[0], ts: Date.now() };
-        setPrices((prev) => ({ ...prev, [tick.symbol]: tick }));
-        if (data.error) setPriceError(data.error);
-        else setPriceError(null);
+        await pullFast();
       } catch {
         /* keep last good */
       }
     }
-    async function pullIfVisible() {
-      if (pageHidden()) return;
-      await pullActive();
-    }
-    pullActiveRef.current = () => void pullIfVisible();
-    void pullIfVisible();
-    const id = setInterval(() => void pullIfVisible(), 800);
+
+    pullQuotesRef.current = () => void tick();
+    void tick();
+    const id = setInterval(() => void tick(), 800);
     return () => {
       cancelled = true;
+      pullQuotesRef.current = () => {};
       clearInterval(id);
     };
   }, [symbol, markFeedOk]);
 
+  // Open positions stay on a 5s tick. Account, closed trades, orders, and balance
+  // requests refresh every 30s, and once immediately when the tab becomes visible.
   useEffect(() => {
+    const SLOW_MS = 30_000;
+    let slowAt = Date.now();
+    const slow = () => {
+      slowAt = Date.now();
+      void refreshAccount();
+      void refreshHistory();
+      void refreshBalanceRequests();
+    };
     const tick = () => {
       if (pageHidden()) return;
-      void refreshAll();
+      void refreshOpenPositions();
+      if (Date.now() - slowAt >= SLOW_MS) slow();
     };
     const id = setInterval(tick, 5000);
     const onVis = () => {
-      if (!pageHidden()) void refreshAll();
+      if (pageHidden()) return;
+      void refreshOpenPositions();
+      slow();
     };
     document.addEventListener("visibilitychange", onVis);
     return () => {
       clearInterval(id);
       document.removeEventListener("visibilitychange", onVis);
     };
-  }, [refreshAll]);
+  }, [refreshAccount, refreshOpenPositions, refreshHistory, refreshBalanceRequests]);
+
+  // A fill or close changes the open-position set. Pull closed trades and working
+  // orders then, so a filled pending order does not sit in the blotter until the slow poll.
+  const openSigRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!ready) return;
+    const sig = openPositions
+      .map((p) => p.id)
+      .sort()
+      .join(",");
+    if (openSigRef.current === null) {
+      openSigRef.current = sig;
+      return;
+    }
+    if (openSigRef.current === sig) return;
+    openSigRef.current = sig;
+    void refreshAccount();
+    void refreshHistory();
+  }, [openPositions, ready, refreshAccount, refreshHistory]);
 
   // Margin-call episode detection (once per episode)
   useEffect(() => {
