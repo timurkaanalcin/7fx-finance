@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { requireAdmin, requireAdminPerm } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { serializeUserMembership } from "@/lib/membership";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
+import { serializeDeskTrader, serializeDeskWorker } from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
 
@@ -24,13 +24,13 @@ export async function GET(_req: Request, ctx: Ctx) {
   const [traders, workers] = await Promise.all([
     prisma.user.findMany({
       where: { ...where, role: "TRADER" },
-      include: { account: true },
+      select: { id: true, name: true, account: { select: { balance: true, currency: true } } },
       take: 200,
       orderBy: { createdAt: "desc" },
     }),
     prisma.user.findMany({
       where: { ...where, role: "ADMIN" },
-      include: { account: true },
+      select: { id: true, name: true, email: true },
       take: 100,
       orderBy: { createdAt: "desc" },
     }),
@@ -38,8 +38,8 @@ export async function GET(_req: Request, ctx: Ctx) {
 
   return NextResponse.json({
     desk,
-    traders: traders.map((u) => serializeUserMembership(u as unknown as Record<string, unknown>)),
-    workers: workers.map((u) => serializeUserMembership(u as unknown as Record<string, unknown>)),
+    traders: traders.map(serializeDeskTrader),
+    workers: workers.map(serializeDeskWorker),
     analytics: {
       tradersCount: traders.length,
       workersCount: workers.length,

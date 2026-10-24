@@ -5,9 +5,10 @@ import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { fmtCrmDate } from "@/lib/crm-format";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { StatusBadge } from "@/components/crm/StubPage";
 import TraderSearchPicker from "@/components/crm/TraderSearchPicker";
+import { CRM_LIST_PAGE } from "@/lib/trader-list";
 
 type Row = {
   id: string;
@@ -37,50 +38,64 @@ export default function CommunicationsPage() {
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
   const [search, setSearch] = useState("");
-  // Per-type counts captured from the last load WITHOUT a type filter, so chips stay
-  // stable while a type chip is active (the API filters by type server-side).
+  const [qDebounced, setQDebounced] = useState("");
+  const [hasMore, setHasMore] = useState(false);
+  const [moreBusy, setMoreBusy] = useState(false);
+  // Server counts ignore the type chip so the chips stay stable while a type is selected.
   const [baseCounts, setBaseCounts] = useState<{ total: number; byType: Map<string, number> } | null>(null);
-
-  const load = useCallback(async () => {
-    const q = type ? `?type=${encodeURIComponent(type)}` : "";
-    const res = await fetch(`/api/admin/communications${q}`);
-    if (!res.ok) return;
-    const data = await res.json();
-    const list: Row[] = data.communications || [];
-    setRows(list);
-    if (!type) {
-      const m = new Map<string, number>();
-      for (const r of list) if (r.type) m.set(r.type, (m.get(r.type) || 0) + 1);
-      setBaseCounts({ total: list.length, byType: m });
-    }
-  }, [type]);
+  const rowsRef = useRef<Row[]>([]);
+  const listGen = useRef(0);
 
   useEffect(() => {
-    load();
+    const t = setTimeout(() => setQDebounced(search.trim()), 300);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  const load = useCallback(async (mode: "replace" | "more" = "replace") => {
+    const gen = ++listGen.current;
+    const p = new URLSearchParams();
+    if (type) p.set("type", type);
+    if (qDebounced) p.set("q", qDebounced);
+    p.set("take", String(CRM_LIST_PAGE));
+    p.set("skip", mode === "more" ? String(rowsRef.current.length) : "0");
+    if (mode === "replace") p.set("counts", "1");
+    if (mode === "more") setMoreBusy(true);
+    try {
+      const res = await fetch(`/api/admin/communications?${p}`);
+      if (!res.ok || gen !== listGen.current) return;
+      const data = await res.json();
+      const list: Row[] = data.communications || [];
+      const next = mode === "more" ? rowsRef.current.concat(list.filter((r) => !rowsRef.current.some((p) => p.id === r.id))) : list;
+      rowsRef.current = next;
+      setRows(next);
+      setHasMore(Boolean(data.hasMore));
+      if (data.counts && mode === "replace") {
+        const byType = new Map<string, number>();
+        const byKey = (data.counts.byKey || {}) as Record<string, number>;
+        for (const [k, n] of Object.entries(byKey)) byType.set(k, Number(n) || 0);
+        setBaseCounts({ total: Number(data.counts.total) || 0, byType });
+      }
+    } finally {
+      if (mode === "more" && gen === listGen.current) setMoreBusy(false);
+    }
+  }, [type, qDebounced]);
+
+  useEffect(() => {
+    void load();
   }, [load]);
 
   const typeChips = useMemo(() => {
     const base = baseCounts || { total: rows.length, byType: new Map<string, number>() };
     const m = new Map(base.byType);
-    // Active type: trust the freshly loaded rows.
-    if (type) m.set(type, rows.length);
     const list: [string, number][] = COMM_TYPES.map((t) => [t, m.get(t) || 0]);
     // Any unexpected types from the API are appended so nothing is hidden.
     m.forEach((n, t) => {
       if (!COMM_TYPES.includes(t)) list.push([t, n]);
     });
     return { total: base.total, list };
-  }, [baseCounts, rows.length, type]);
+  }, [baseCounts, rows.length]);
 
-  const shown = useMemo(() => {
-    const q = search.trim().toLocaleLowerCase("tr");
-    if (!q) return rows;
-    return rows.filter((r) =>
-      [r.title, r.description, r.trader, r.traderEmail, r.workerName, r.desk, r.type].some(
-        (v) => v != null && String(v).toLocaleLowerCase("tr").includes(q),
-      ),
-    );
-  }, [rows, search]);
+  const shown = rows;
 
   function downloadCsv() {
     const header = [
@@ -166,7 +181,7 @@ export default function CommunicationsPage() {
                 )}
               </div>
               <span className="text-[11px] tabular-nums text-neutral-600">
-                {shown.length === rows.length ? rows.length : `${shown.length} / ${rows.length}`} {i18n("crm.ui.records")}
+                {rows.length}{hasMore ? "+" : ""} {i18n("crm.ui.records")}
               </span>
               <button
                 type="button"
@@ -242,6 +257,18 @@ export default function CommunicationsPage() {
               )}
             </tbody>
           </table>
+          {hasMore && (
+            <div className="border-t border-neutral-200 p-2 text-center">
+              <button
+                type="button"
+                disabled={moreBusy}
+                onClick={() => void load("more")}
+                className="rounded-full border border-neutral-300 px-3 py-1 text-xs font-semibold text-neutral-600 hover:bg-neutral-50 disabled:opacity-50"
+              >
+                {i18n("crm.ui.loadMore")}
+              </button>
+            </div>
+          )}
         </div>
         <div className="rounded-lg border border-neutral-200 bg-[#ffffff] p-3">
           <h2 className="mb-2 text-xs font-semibold text-neutral-600">{i18n("crm.comms.new")}</h2>

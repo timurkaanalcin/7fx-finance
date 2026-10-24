@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
+import type { Prisma } from "@prisma/client";
 import { requireAdmin, requireAdminWrite } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
+import { crmListWindow } from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
 
@@ -12,24 +14,39 @@ export async function GET(req: Request) {
 
   const { searchParams } = new URL(req.url);
   const status = (searchParams.get("status") || "").trim();
-  const where = status ? { status } : undefined;
+  const q = (searchParams.get("q") || "").trim();
+  const { take, skip, legacy } = crmListWindow(searchParams.get("take"), searchParams.get("skip"));
+  const where = docWhere(status, q, true);
+  const wantCounts = searchParams.get("counts") === "1";
 
-  const rows = await prisma.documentRecord.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
-    take: 300,
-    include: { user: { select: { id: true, name: true, email: true, documentsStatus: true, desk: true } } },
-  });
+  const [found, groups, pendingUsers] = await Promise.all([
+    prisma.documentRecord.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: legacy ? take : take + 1,
+      include: { user: { select: { id: true, name: true, email: true, documentsStatus: true, desk: true } } },
+    }),
+    wantCounts
+      ? prisma.documentRecord.groupBy({
+          by: ["status"],
+          where: docWhere(status, q, false),
+          _count: true,
+        })
+      : Promise.resolve(null),
+    skip === 0
+      ? prisma.user.findMany({
+          where: { role: "TRADER", documentsStatus: { in: ["PENDING", "REJECTED"] } },
+          select: { id: true, name: true, email: true, documentsStatus: true, desk: true },
+          take: 100,
+        })
+      : Promise.resolve([]),
+  ]);
 
-  // Also surface traders with documentsStatus != NONE who may have no DocumentRecord yet
-  const pendingUsers = await prisma.user.findMany({
-    where: { role: "TRADER", documentsStatus: { in: ["PENDING", "REJECTED"] } },
-    select: { id: true, name: true, email: true, documentsStatus: true, desk: true },
-    take: 100,
-  });
-
+  const hasMore = !legacy && found.length > take;
+  const page = hasMore ? found.slice(0, take) : found;
   return NextResponse.json({
-    documents: rows.map((d) => ({
+    documents: page.map((d) => ({
       id: d.id,
       name: d.name,
       docType: d.docType,
@@ -44,7 +61,37 @@ export async function GET(req: Request) {
       reviewedAt: d.reviewedAt,
     })),
     pendingUsers,
+    hasMore,
+    nextSkip: skip + page.length,
+    ...(groups
+      ? {
+          counts: groups.reduce(
+            (acc, g) => {
+              acc.byKey[g.status] = g._count;
+              acc.total += g._count;
+              return acc;
+            },
+            { total: 0, byKey: {} as Record<string, number> }
+          ),
+        }
+      : {}),
   });
+}
+
+function docWhere(status: string, q: string, withStatus: boolean): Prisma.DocumentRecordWhereInput {
+  const where: Prisma.DocumentRecordWhereInput = {};
+  if (withStatus && status) where.status = status;
+  if (q) {
+    where.OR = [
+      { name: { contains: q } },
+      { note: { contains: q } },
+      { docType: { contains: q } },
+      { user: { name: { contains: q } } },
+      { user: { email: { contains: q } } },
+      { user: { desk: { contains: q } } },
+    ];
+  }
+  return where;
 }
 
 export async function POST(req: Request) {

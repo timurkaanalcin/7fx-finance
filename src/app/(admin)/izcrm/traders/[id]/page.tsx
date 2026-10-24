@@ -13,8 +13,9 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import RetentionPanel, { AssigneePicker } from "@/components/crm/RetentionPanel";
 import TeamComments from "@/components/crm/TeamComments";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { CRM_IDLE_POLL_MS, useVisiblePoll } from "@/lib/use-visible-poll";
+import { TRADER_LAZY_SCOPES, traderDetailScopeForTab, type TraderDetailScope } from "@/lib/trader-list";
 import { LoginHistory, TraderPresenceHeader } from "@/components/crm/Presence";
 import AccountPermissionsPanel from "@/components/crm/AccountPermissionsPanel";
 import {
@@ -1031,31 +1032,70 @@ export default function AdminUserDetailPage() {
       .catch(() => {});
   }, []);
 
-  const load = useCallback(async (scope: "full" | "positions" | "finance" = "full") => {
-    if (!id) return;
+  const activeId = useRef(id);
+  activeId.current = id;
+  const fetched = useRef<{ id: string; scopes: Set<string> }>({ id: "", scopes: new Set() });
+  const scopeGen = useRef<Record<string, number>>({});
+
+  const load = useCallback(async (scope: TraderDetailScope = "full"): Promise<boolean> => {
+    if (!id) return false;
+    const requestId = id;
+    scopeGen.current[scope] = (scopeGen.current[scope] || 0) + 1;
+    const gen = scopeGen.current[scope];
+    if (scope === "full") {
+      scopeGen.current.profile = (scopeGen.current.profile || 0) + 1;
+      for (const s of TRADER_LAZY_SCOPES) scopeGen.current[s] = (scopeGen.current[s] || 0) + 1;
+    }
+    const alive = () => scopeGen.current[scope] === gen && activeId.current === requestId;
     const q = scope === "full" ? "" : `?view=${scope}`;
+    const session = scope === "full" || scope === "profile";
     const [res, meRes] = await Promise.all([
-      fetch(`/api/admin/users/${id}${q}`),
-      scope === "full" ? fetch("/api/auth/me", { credentials: "include" }) : Promise.resolve(null),
+      fetch(`/api/admin/users/${requestId}${q}`),
+      session ? fetch("/api/auth/me", { credentials: "include" }) : Promise.resolve(null),
     ]);
+    if (!alive()) return false;
     if (meRes?.ok) {
       const me = await meRes.json().catch(() => ({}));
+      if (!alive()) return false;
       setCanManageUsers(Boolean(me.permissions?.canManageUsers));
       setCrmReadOnly(Boolean(me.permissions?.crmReadOnly));
-    } else if (scope === "full") {
+    } else if (session) {
       setCanManageUsers(false);
     }
-    if (!res.ok) return;
+    if (!res.ok) return false;
     const data = await res.json();
+    if (!alive()) return false;
     setUser(data.user as Membership);
     setTradingAccountId(data.tradingAccountId || data.user?.tradingAccountId || null);
     if (scope === "positions") {
       setPositions(data.positions || []);
       setOrders(data.orders || []);
-      return;
+      return true;
     }
-    if (scope === "finance") return;
-    // Recently viewed customers (per browser; name + login id only).
+    if (scope === "finance") return true;
+    if (scope === "comms") {
+      setCommunications(data.communications || []);
+      return true;
+    }
+    if (scope === "tickets") {
+      setDeposits(data.deposits || []);
+      setWithdrawals(data.withdrawals || []);
+      setBalanceRequests(data.balanceRequests || []);
+      setDepositMethods(data.depositMethods || []);
+      return true;
+    }
+    if (scope === "ledger") {
+      setLedger(data.ledger || []);
+      return true;
+    }
+    if (scope === "documents") {
+      setDocuments(data.documents || []);
+      return true;
+    }
+    if (scope === "reminders") {
+      setReminders(data.reminders || []);
+      return true;
+    }
     if (data.user?.id && (data.user.role || "TRADER") === "TRADER") {
       try {
         pushRecentClient({ id: data.user.id, name: data.user.name, accountLoginId: data.user.accountLoginId });
@@ -1064,15 +1104,20 @@ export default function AdminUserDetailPage() {
       }
     }
     setIsMainAdminTarget(false);
-    // Detect main admin via permissions endpoint (does not expose ADMIN_EMAIL to client)
     try {
-      const pr = await fetch(`/api/admin/users/${id}/permissions`);
-      if (pr.ok) {
+      const pr = await fetch(`/api/admin/users/${requestId}/permissions`);
+      if (alive() && pr.ok) {
         const pd = await pr.json();
         setIsMainAdminTarget(Boolean(pd.isMainAdmin));
       }
     } catch {
       /* ignore */
+    }
+    if (!alive()) return false;
+    if (scope === "profile") {
+      setNotes(data.notes || []);
+      setActivityEvents(data.activityEvents || []);
+      return true;
     }
     setNotes(data.notes || []);
     setPositions(data.positions || []);
@@ -1086,11 +1131,45 @@ export default function AdminUserDetailPage() {
     setDocuments(data.documents || []);
     setReminders(data.reminders || []);
     setDepositMethods(data.depositMethods || []);
+    fetched.current = { id: requestId, scopes: new Set(TRADER_LAZY_SCOPES) };
+    return true;
   }, [id]);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    if (fetched.current.id !== id) {
+      fetched.current = { id, scopes: new Set() };
+      setUser(null);
+      setNotes([]);
+      setPositions([]);
+      setOrders([]);
+      setDeposits([]);
+      setWithdrawals([]);
+      setBalanceRequests([]);
+      setLedger([]);
+      setCommunications([]);
+      setActivityEvents([]);
+      setDocuments([]);
+      setReminders([]);
+      setDepositMethods([]);
+    }
+    void load("profile");
+  }, [id, load]);
+
+  useEffect(() => {
+    const scope = traderDetailScopeForTab(tab);
+    if (!scope || !id) return;
+    if (fetched.current.id === id && fetched.current.scopes.has(scope)) return;
+    let cancel = false;
+    void (async () => {
+      const ok = await load(scope);
+      if (cancel || !ok) return;
+      if (fetched.current.id !== id) fetched.current = { id, scopes: new Set() };
+      fetched.current.scopes.add(scope);
+    })();
+    return () => {
+      cancel = true;
+    };
+  }, [tab, id, load]);
 
   // Positions refreshes open trades and orders. Finance refreshes the account chips.
   // Neither poll reloads notes, documents, permissions, or /api/auth/me.
@@ -1688,7 +1767,7 @@ export default function AdminUserDetailPage() {
           </div>
           {canManageUsers ? <AssigneePicker userId={user.id} current={(user as { assigneeId?: string | null }).assigneeId ?? null} /> : null}
           <RetentionPanel userId={user.id} />
-          <TeamComments userId={user.id} readOnly={crmReadOnly} onChanged={load} />
+          <TeamComments userId={user.id} readOnly={crmReadOnly} onChanged={() => { void load(); }} />
 
           <LoginHistory userId={user.id} />
 

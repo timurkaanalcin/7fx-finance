@@ -28,15 +28,15 @@ export async function GET(req: Request, ctx: Ctx) {
   const id = ctx.params.id;
   if (!(await canAccessUser(admin, id))) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const scope = traderDetailScope(new URL(req.url).searchParams.get("view"));
+  const withNotes = scope === "full" || scope === "profile";
   const user = await prisma.user.findUnique({
     where: { id },
-    include:
-      scope === "full"
-        ? {
-            account: true,
-            notes: { where: noteVisibilityWhere(admin), orderBy: { createdAt: "desc" as const }, take: 100 },
-          }
-        : { account: true },
+    include: withNotes
+      ? {
+          account: true,
+          notes: { where: noteVisibilityWhere(admin), orderBy: { createdAt: "desc" as const }, take: 100 },
+        }
+      : { account: true },
   });
   if (!user) return NextResponse.json({ error: "User yok" }, { status: 404 });
 
@@ -45,37 +45,95 @@ export async function GET(req: Request, ctx: Ctx) {
   const userOut = roViewer
     ? maskTraderForRoViewer(membership as unknown as Record<string, unknown>)
     : membership;
-
-  if (scope === "finance") {
-    return NextResponse.json({
+  const notes = "notes" in user ? user.notes : [];
+  const pack = (extra: Record<string, unknown>) =>
+    NextResponse.json({
       user: userOut,
       dataMasked: roViewer,
       tradingAccountId: membership.tradingAccountId,
-      view: "finance",
+      view: scope,
+      ...extra,
     });
+
+  if (scope === "finance") return pack({});
+
+  if (scope === "profile") {
+    const activityEvents = await prisma.clientActivityEvent.findMany({
+      where: { userId: id },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+    });
+    return pack({ notes, activityEvents: mapActivity(activityEvents) });
   }
 
   if (scope === "positions") {
     const [positions, orders] = await Promise.all([
-      prisma.position.findMany({
+      prisma.position.findMany({ where: { userId: id }, orderBy: { openedAt: "desc" }, take: 100 }),
+      prisma.order.findMany({ where: { userId: id }, orderBy: { createdAt: "desc" }, take: 100 }),
+    ]);
+    return pack({ positions, orders });
+  }
+
+  if (scope === "comms") {
+    const communications = await prisma.communication.findMany({
+      where: { userId: id },
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    });
+    return pack({ communications });
+  }
+
+  if (scope === "tickets") {
+    const [deposits, withdrawals, balanceRequests, depositMethods] = await Promise.all([
+      prisma.depositRequest.findMany({
         where: { userId: id },
-        orderBy: { openedAt: "desc" },
+        include: { method: true },
+        orderBy: { createdAt: "desc" },
         take: 100,
       }),
-      prisma.order.findMany({
+      prisma.withdrawalRequest.findMany({
         where: { userId: id },
         orderBy: { createdAt: "desc" },
         take: 100,
       }),
+      prisma.balanceRequest.findMany({
+        where: { userId: id },
+        orderBy: { createdAt: "desc" },
+        take: 100,
+      }),
+      prisma.depositMethod.findMany({
+        select: { id: true, label: true, type: true, active: true },
+        orderBy: [{ active: "desc" }, { sortOrder: "asc" }],
+      }),
     ]);
-    return NextResponse.json({
-      user: userOut,
-      dataMasked: roViewer,
-      tradingAccountId: membership.tradingAccountId,
-      positions,
-      orders,
-      view: "positions",
+    return pack({ deposits, withdrawals, balanceRequests, depositMethods });
+  }
+
+  if (scope === "ledger") {
+    const ledger = await prisma.balanceLedger.findMany({
+      where: { userId: id },
+      orderBy: { createdAt: "desc" },
+      take: 200,
     });
+    return pack({ ledger });
+  }
+
+  if (scope === "documents") {
+    const documents = await prisma.documentRecord.findMany({
+      where: { userId: id },
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    });
+    return pack({ documents });
+  }
+
+  if (scope === "reminders") {
+    const reminders = await prisma.reminder.findMany({
+      where: { userId: id },
+      orderBy: { remindAt: "asc" },
+      take: 100,
+    });
+    return pack({ reminders });
   }
 
   const [
@@ -148,11 +206,8 @@ export async function GET(req: Request, ctx: Ctx) {
     }),
   ]);
 
-  return NextResponse.json({
-    user: userOut,
-    dataMasked: roViewer,
-    tradingAccountId: membership.tradingAccountId,
-    notes: "notes" in user ? user.notes : [],
+  return pack({
+    notes,
     positions,
     orders,
     deposits,
@@ -163,15 +218,28 @@ export async function GET(req: Request, ctx: Ctx) {
     reminders,
     withdrawals,
     depositMethods,
-    activityEvents: activityEvents.map((e) => ({
-      id: e.id,
-      kind: e.kind,
-      path: e.path,
-      userAgent: e.userAgent,
-      meta: e.meta,
-      createdAt: e.createdAt.toISOString(),
-    })),
+    activityEvents: mapActivity(activityEvents),
   });
+}
+
+function mapActivity(
+  events: {
+    id: string;
+    kind: string;
+    path: string | null;
+    userAgent: string | null;
+    meta: string | null;
+    createdAt: Date;
+  }[]
+) {
+  return events.map((e) => ({
+    id: e.id,
+    kind: e.kind,
+    path: e.path,
+    userAgent: e.userAgent,
+    meta: e.meta,
+    createdAt: e.createdAt.toISOString(),
+  }));
 }
 
 export async function PATCH(req: Request, ctx: Ctx) {

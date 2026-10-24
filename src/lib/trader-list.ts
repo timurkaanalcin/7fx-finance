@@ -95,12 +95,108 @@ export const TRADER_PICKER_SELECT = {
   },
 } satisfies Prisma.UserSelect;
 
-/** Trader detail poll. `full` is the existing payload. The other two skip unrelated tables. */
-export type TraderDetailScope = "full" | "positions" | "finance";
+/** CRM list page size. Callers that omit `take` keep the old 300-row window. */
+export const CRM_LIST_PAGE = 50;
+export const CRM_LIST_TAKE_CAP = 100;
+export const CRM_LIST_LEGACY = 300;
+
+export function crmListWindow(
+  takeRaw: string | null,
+  skipRaw: string | null
+): { take: number; skip: number; legacy: boolean } {
+  const skipNum = Number(skipRaw);
+  const skip = Number.isFinite(skipNum) && skipNum > 0 ? Math.min(100_000, Math.trunc(skipNum)) : 0;
+  if (takeRaw == null || takeRaw === "") return { take: CRM_LIST_LEGACY, skip, legacy: true };
+  const takeNum = Math.trunc(Number(takeRaw));
+  const take = Number.isFinite(takeNum) && takeNum > 0 ? Math.min(CRM_LIST_TAKE_CAP, takeNum) : CRM_LIST_PAGE;
+  return { take, skip, legacy: false };
+}
+
+/** Paged ledger window. Used only when the request sends `skip` or `take`. */
+export function crmPageWindow(takeRaw: string | null, skipRaw: string | null): { take: number; skip: number } {
+  const skipNum = Number(skipRaw);
+  const skip = Number.isFinite(skipNum) && skipNum > 0 ? Math.min(100_000, Math.trunc(skipNum)) : 0;
+  if (takeRaw == null || takeRaw === "") return { take: CRM_LIST_PAGE, skip };
+  const takeNum = Math.trunc(Number(takeRaw));
+  const take = Number.isFinite(takeNum) && takeNum > 0 ? Math.min(CRM_LIST_TAKE_CAP, takeNum) : CRM_LIST_PAGE;
+  return { take, skip };
+}
+
+/**
+ * Trader detail views. `full` is the existing payload (post-save refresh).
+ * The others load one tab and skip the rest of the related tables.
+ */
+const TRADER_DETAIL_SCOPES = [
+  "full",
+  "profile",
+  "positions",
+  "finance",
+  "comms",
+  "tickets",
+  "ledger",
+  "documents",
+  "reminders",
+] as const;
+
+export type TraderDetailScope = (typeof TRADER_DETAIL_SCOPES)[number];
+
+/** Tabs that fetch their own payload the first time they open. Profile covers notes and permissions. */
+export const TRADER_LAZY_SCOPES: readonly Exclude<TraderDetailScope, "full" | "profile">[] = [
+  "comms",
+  "tickets",
+  "positions",
+  "ledger",
+  "documents",
+  "reminders",
+  "finance",
+];
 
 export function traderDetailScope(raw: string | null): TraderDetailScope {
-  if (raw === "positions" || raw === "finance") return raw;
+  if (raw && (TRADER_DETAIL_SCOPES as readonly string[]).includes(raw)) return raw as TraderDetailScope;
   return "full";
+}
+
+/** Map a trader-detail tab id to the payload it needs. Profile, notes, and permissions stay on the first load. */
+export function traderDetailScopeForTab(tab: string): TraderDetailScope | null {
+  switch (tab) {
+    case "iletisim":
+      return "comms";
+    case "biletler":
+      return "tickets";
+    case "pozisyonlar":
+      return "positions";
+    case "ledger":
+    case "bonus":
+      return "ledger";
+    case "belgeler":
+      return "documents";
+    case "takvim":
+      return "reminders";
+    case "finans":
+      return "finance";
+    default:
+      return null;
+  }
+}
+
+/** Desk trader row: the desk page renders name, balance, and currency. */
+export function serializeDeskTrader(u: {
+  id: string;
+  name: string;
+  account?: { balance?: number | null; currency?: string | null } | null;
+}) {
+  const balance = Number(u.account?.balance);
+  return {
+    id: u.id,
+    name: u.name,
+    balance: Number.isFinite(balance) ? balance : 0,
+    currency: u.account?.currency || "USD",
+  };
+}
+
+/** Desk worker row: the desk page renders name and email. */
+export function serializeDeskWorker(u: { id: string; name: string; email: string }) {
+  return { id: u.id, name: u.name, email: u.email };
 }
 
 function isoOrNull(value: unknown): string | null {

@@ -3,7 +3,7 @@
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 import { useCallback, useEffect, useState } from "react";
-import { useVisiblePoll } from "@/lib/use-visible-poll";
+import { CRM_IDLE_POLL_MS, useVisiblePoll } from "@/lib/use-visible-poll";
 import Link from "next/link";
 import LeadDashboard from "@/components/crm/LeadDashboard";
 
@@ -42,7 +42,6 @@ type ActivityOrder = {
   traderName: string;
 };
 
-const POLL_MS = 5000;
 
 function Card({
   label,
@@ -100,7 +99,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     load();
   }, [load]);
-  useVisiblePoll(load, POLL_MS);
+  useVisiblePoll(load, CRM_IDLE_POLL_MS);
 
   return (
     <div>
