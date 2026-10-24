@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getSession, postLoginPath } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import LandingPage from "@/components/landing/LandingPage";
+import "@/components/landing/landing.css";
 import { marketingMetadata, organizationJsonLd } from "@/lib/seo";
 import { isIndexableHost, metadataOrigin, normalizeHost } from "@/lib/seo-hosts";
 

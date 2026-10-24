@@ -207,8 +207,8 @@
 
   /* chart timeframe pill */
   .fx-desk .fx-tap-compact {
-    min-height: 36px !important;
-    min-width: 36px;
+    min-height: 40px !important;
+    min-width: 40px !important;
     border-radius: 9px !important;
     font-size: 12px !important;
   }
