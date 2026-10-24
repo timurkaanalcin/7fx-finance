@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { CRM_IDLE_POLL_MS, useVisiblePoll } from "@/lib/use-visible-poll";
 import Link from "next/link";
 import LeadDashboard from "@/components/crm/LeadDashboard";
+import { CrmNotice, DashSkeleton } from "@/components/crm/CrmStates";
 
 type Kpis = {
   users: number;
@@ -78,6 +79,7 @@ export default function AdminDashboard() {
   const [orders, setOrders] = useState<ActivityOrder[]>([]);
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
   const [err, setErr] = useState("");
+  const [phase, setPhase] = useState<"loading" | "ready" | "error">("loading");
 
   const load = useCallback(async () => {
     try {
@@ -89,8 +91,10 @@ export default function AdminDashboard() {
       setOrders(d.recentActivity?.orders || []);
       setUpdatedAt(d.generatedAt || new Date().toISOString());
       setErr("");
+      setPhase("ready");
     } catch {
-      setErr(i18n("crm.dash.kpiError"));
+      setErr(i18n("crm.ui.loadFailed"));
+      setPhase("error");
     }
   }, []);
 
@@ -118,13 +122,18 @@ export default function AdminDashboard() {
       </div>
 
       <LeadDashboard />
-      {err && <p className="mb-3 text-sm text-red-400">{err}</p>}
-      {!kpis && !err && (
-        <div className="flex items-center gap-2 text-sm text-neutral-500">
-          <div className="h-4 w-4 animate-spin rounded-full border-2 border-sky-500 border-t-transparent" />
-          {i18n("crm.ui.loading")}
-        </div>
+      {err && (
+        <CrmNotice
+          title={i18n("crm.ui.loadFailed")}
+          body={i18n("crm.dash.kpiError")}
+          action={i18n("crm.ui.tryAgain")}
+          onAction={() => {
+            setPhase("loading");
+            void load();
+          }}
+        />
       )}
+      {phase === "loading" && !kpis && <DashSkeleton />}
       {kpis && (
         <div className="fx-dash-kpis">
           <Card
@@ -196,7 +205,7 @@ export default function AdminDashboard() {
                     <td className="px-2 py-1.5">{code("crm.status", p.status)}</td>
                   </tr>
                 ))}
-                {positions.length === 0 && (
+                {phase === "ready" && positions.length === 0 && (
                   <tr>
                     <td colSpan={6} className="px-2 py-4 text-center text-neutral-400">
                       {i18n("crm.ui.noPositions")}
@@ -247,7 +256,7 @@ export default function AdminDashboard() {
                     <td className="px-2 py-1.5">{code("crm.status", o.status)}</td>
                   </tr>
                 ))}
-                {orders.length === 0 && (
+                {phase === "ready" && orders.length === 0 && (
                   <tr>
                     <td colSpan={6} className="px-2 py-4 text-center text-neutral-400">
                       {i18n("crm.ui.noOrders")}

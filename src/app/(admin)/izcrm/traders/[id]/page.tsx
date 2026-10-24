@@ -28,6 +28,7 @@ import {
   VALIDATION_STATUSES,
 } from "@/lib/membership";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
+import { CrmNotice, TraderSkeleton } from "@/components/crm/CrmStates";
 import { JOB_TITLE_KEYS, jobTitleLabel, jobTitleUi } from "@/lib/job-titles";
 
 type Tab =
@@ -994,6 +995,7 @@ export default function AdminUserDetailPage() {
   const [desks, setDesks] = useState<{ id: string; name: string; code: string | null }[]>([]);
   const [tab, setTab] = useState<Tab>("profil");
   const [user, setUser] = useState<Membership | null>(null);
+  const [boot, setBoot] = useState<"loading" | "ready" | "error" | "missing">("loading");
   const [form, setForm] = useState<Record<string, string | boolean>>({});
   const [editingProfile, setEditingProfile] = useState(false);
   const [canManageUsers, setCanManageUsers] = useState(false);
@@ -1113,10 +1115,19 @@ export default function AdminUserDetailPage() {
             ? ""
             : `?view=${scope}&take=50&skip=0`;
     const session = scope === "full" || scope === "profile";
-    const [res, meRes] = await Promise.all([
-      fetch(`/api/admin/users/${requestId}${q}`),
-      session ? fetch("/api/auth/me", { credentials: "include" }) : Promise.resolve(null),
-    ]);
+    let res: Response;
+    let meRes: Response | null = null;
+    try {
+      const pair = await Promise.all([
+        fetch(`/api/admin/users/${requestId}${q}`),
+        session ? fetch("/api/auth/me", { credentials: "include" }) : Promise.resolve(null),
+      ]);
+      res = pair[0];
+      meRes = pair[1];
+    } catch {
+      if (alive() && (scope === "profile" || scope === "full")) setBoot("error");
+      return false;
+    }
     if (!alive()) return false;
     if (meRes?.ok) {
       const me = await meRes.json().catch(() => ({}));
@@ -1126,10 +1137,14 @@ export default function AdminUserDetailPage() {
     } else if (session) {
       setCanManageUsers(false);
     }
-    if (!res.ok) return false;
+    if (!res.ok) {
+      if (alive() && (scope === "profile" || scope === "full")) setBoot(res.status === 404 ? "missing" : "error");
+      return false;
+    }
     const data = await res.json();
     if (!alive()) return false;
     setUser(data.user as Membership);
+    if (scope === "profile" || scope === "full") setBoot("ready");
     setTradingAccountId(data.tradingAccountId || data.user?.tradingAccountId || null);
     if (scope === "positions") {
       const posRows: Row[] = data.positions || [];
@@ -1300,6 +1315,7 @@ export default function AdminUserDetailPage() {
       listRef.current = {};
       setListMore({});
       setUser(null);
+      setBoot("loading");
       setNotes([]);
       setPositions([]);
       setOrders([]);
@@ -1644,8 +1660,22 @@ export default function AdminUserDetailPage() {
     return r;
   }
 
+  if (!user && (boot === "error" || boot === "missing")) {
+    return (
+      <CrmNotice
+        title={boot === "missing" ? i18n("crm.ui.traderMissing") : i18n("crm.ui.loadFailed")}
+        body={i18n("crm.ui.loadFailedBody", "Check your connection and try again.")}
+        action={i18n("crm.ui.tryAgain")}
+        onAction={() => {
+          setBoot("loading");
+          void load("profile");
+        }}
+      />
+    );
+  }
+
   if (!user) {
-    return <div className="text-sm text-neutral-500">{i18n("crm.ui.loading")}</div>;
+    return <TraderSkeleton />;
   }
 
   const canWrite = !crmReadOnly;

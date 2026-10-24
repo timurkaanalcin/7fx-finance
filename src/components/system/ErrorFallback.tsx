@@ -1,5 +1,6 @@
 "use client";
 import { useEffect } from "react";
+import PlatformStatus from "@/components/system/PlatformStatus";
 
 export function reportClientError(error: unknown, where: string) {
   try {
@@ -22,16 +23,14 @@ export default function ErrorFallback({ error, reset, where }: { error: Error & 
     console.error("[7fx] render error in", where, error);
     reportClientError(error, where);
   }, [error, where]);
+  const reference = error.digest ? ` Reference ${error.digest}.` : "";
   return (
-    <div style={{ minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, fontFamily: "system-ui, sans-serif" }}>
-      <div style={{ maxWidth: 420, textAlign: "center", border: "1px solid rgba(128,128,128,.3)", borderRadius: 16, padding: 24 }}>
-        <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>Something went wrong</div>
-        <div style={{ fontSize: 13, opacity: 0.7, marginBottom: 16 }}>Part of the page failed to load. You can try again or refresh the page.</div>
-        <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
-          <button onClick={() => reset()} style={{ padding: "8px 16px", borderRadius: 10, border: "1px solid #888", background: "transparent", color: "inherit", cursor: "pointer" }}>Try again</button>
-          <button onClick={() => location.reload()} style={{ padding: "8px 16px", borderRadius: 10, border: 0, background: "#c9a227", color: "#000", cursor: "pointer" }}>Refresh page</button>
-        </div>
-      </div>
-    </div>
+    <PlatformStatus
+      code="500"
+      title="This screen did not load"
+      body={`Something on this page failed. Your account and orders are unchanged.${reference} Try again, or go back to the terminal.`}
+      primary={{ label: "Try again", onClick: () => reset() }}
+      secondary={{ href: "/trade", label: "Open terminal" }}
+    />
   );
 }

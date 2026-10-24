@@ -13,7 +13,7 @@ import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 import SymbolCatalogSync from "@/components/trading/SymbolCatalogSync";
 import { useI18n } from "@/lib/i18n/context";
 import CrmSecurityShell from "@/components/crm/CrmSecurityShell";
-import BrandLoader from "@/components/ui/BrandLoader";
+import { CrmShellSkeleton } from "@/components/crm/CrmStates";
 import CrmCommandPalette from "@/components/crm/CrmCommandPalette";
 
 function AdminChrome({ children }: { children: React.ReactNode }) {
@@ -76,7 +76,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
   }, [pathname]);
 
   if (!ready) {
-    return <BrandLoader variant="crm" label={t("crm.loading")} />;
+    return <CrmShellSkeleton label={t("crm.loading")} />;
   }
 
   function isActive(href: string, exact?: boolean) {
