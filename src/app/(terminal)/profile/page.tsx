@@ -6,7 +6,7 @@ import { useI18n } from "@/lib/i18n/context";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { LOCALES, LOCALE_META, type Locale } from "@/lib/i18n/locales";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 import LiveSupportPanel from "@/components/profile/LiveSupportPanel";
@@ -105,15 +105,29 @@ export default function ProfileePage() {
   const [wdErr, setWdErr] = useState("");
   const [wdBusy, setWdBusy] = useState(false);
   const [withdrawals, setWithdrawals] = useState<WithdrawalRow[]>([]);
+  const [wdHasMore, setWdHasMore] = useState(false);
+  const [wdMoreBusy, setWdMoreBusy] = useState(false);
+  const wdRef = useRef<WithdrawalRow[]>([]);
 
-  const loadWithdrawals = useCallback(async () => {
+  const loadWithdrawals = useCallback(async (mode: "replace" | "more" = "replace") => {
     try {
-      const res = await fetch("/api/withdraw");
+      const skip = mode === "more" ? wdRef.current.length : 0;
+      if (mode === "more") setWdMoreBusy(true);
+      const res = await fetch(`/api/withdraw?take=50&skip=${skip}`);
       if (!res.ok) return;
       const data = await res.json();
-      setWithdrawals(data.requests || []);
+      const incoming: WithdrawalRow[] = data.requests || [];
+      const next =
+        mode === "more"
+          ? wdRef.current.concat(incoming.filter((row) => !wdRef.current.some((old) => old.id === row.id)))
+          : incoming;
+      wdRef.current = next;
+      setWithdrawals(next);
+      setWdHasMore(Boolean(data.hasMore));
     } catch {
       /* ignore */
+    } finally {
+      if (mode === "more") setWdMoreBusy(false);
     }
   }, []);
 
@@ -621,6 +635,16 @@ export default function ProfileePage() {
                   </li>
                 ))}
               </ul>
+              {wdHasMore && (
+                <button
+                  type="button"
+                  disabled={wdMoreBusy}
+                  onClick={() => void loadWithdrawals("more")}
+                  className="mt-2 w-full rounded-lg border border-[#2a2a2a] px-3 py-2 text-xs font-medium text-slate-300 hover:bg-white/5 disabled:opacity-50"
+                >
+                  {wdMoreBusy ? t("common.loading") : t("term.loadMore")}
+                </button>
+              )}
             </div>
           )}
         </section>

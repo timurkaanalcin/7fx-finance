@@ -58,6 +58,7 @@ export default function AdminSummaryPage() {
   const { i18n } = useCrmLabels();
   const [rows, setRows] = useState<Row[]>([]);
   const [totals, setTotals] = useState<Totals | null>(null);
+  const [accountsPartial, setAccountsPartial] = useState(false);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [sortKey, setSortKey] = useState<SortKey | null>(null);
@@ -69,6 +70,7 @@ export default function AdminSummaryPage() {
       .then((d) => {
         setRows(d.accounts || []);
         setTotals(d.totals || null);
+        setAccountsPartial(Boolean(d.accountsPartial));
       });
   }, []);
 
@@ -188,6 +190,9 @@ export default function AdminSummaryPage() {
             <div className="mt-1 text-lg font-semibold tabular-nums">{fmt(totals.margin)}</div>
           </div>
         </div>
+      )}
+      {accountsPartial && (
+        <p className="mb-3 text-[11px] text-amber-700">{i18n("crm.sum.accountsPartial")}</p>
       )}
       <div className="overflow-x-auto rounded-xl border border-[#e5e5e5]">
         <div className="flex flex-wrap items-center gap-1.5 border-b border-[#e5e5e5] bg-[#ffffff] px-3 py-2">

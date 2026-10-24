@@ -33,21 +33,39 @@ export default function NotificationBell({ tone = "light" }: { tone?: "light" | 
   const router = useRouter();
   const { t, locale } = useI18n();
   const [items, setItems] = useState<N[]>([]);
+  const [hasMore, setHasMore] = useState(false);
+  const [moreBusy, setMoreBusy] = useState(false);
   const [unread, setUnread] = useState(0);
   const [open, setOpen] = useState(false);
+  const itemsRef = useRef<N[]>([]);
   const [vapid, setVapid] = useState<string | null>(null);
   const [pushState, setPushState] = useState<"unsupported" | "default" | "granted" | "denied">("default");
   const ref = useRef<HTMLDivElement>(null);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (mode: "replace" | "more" = "replace") => {
     try {
-      const r = await fetch("/api/notifications", { cache: "no-store" });
+      const loaded = itemsRef.current.length;
+      const skip = mode === "more" ? loaded : 0;
+      const take = mode === "more" ? 30 : Math.min(100, Math.max(30, loaded));
+      if (mode === "more") setMoreBusy(true);
+      const r = await fetch(`/api/notifications?take=${take}&skip=${skip}`, { cache: "no-store" });
       if (!r.ok) return;
       const d = await r.json();
-      setItems(d.items || []);
+      const incoming: N[] = d.items || [];
+      const next =
+        mode === "more"
+          ? itemsRef.current.concat(incoming.filter((row) => !itemsRef.current.some((old) => old.id === row.id)))
+          : incoming;
+      itemsRef.current = next;
+      setItems(next);
+      setHasMore(Boolean(d.hasMore));
       setUnread(d.unread || 0);
-      setVapid(d.vapidPublicKey || null);
-    } catch {}
+      if (mode === "replace") setVapid(d.vapidPublicKey || null);
+    } catch {
+      /* ignore */
+    } finally {
+      if (mode === "more") setMoreBusy(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -94,7 +112,11 @@ export default function NotificationBell({ tone = "light" }: { tone?: "light" | 
   async function openItem(n: N) {
     setOpen(false);
     if (!n.readAt) {
-      setItems((l) => l.map((x) => (x.id === n.id ? { ...x, readAt: new Date().toISOString() } : x)));
+      setItems((l) => {
+        const next = l.map((x) => (x.id === n.id ? { ...x, readAt: new Date().toISOString() } : x));
+        itemsRef.current = next;
+        return next;
+      });
       setUnread((u) => Math.max(0, u - 1));
       fetch("/api/notifications", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: n.id }) }).catch(() => {});
     }
@@ -108,7 +130,11 @@ export default function NotificationBell({ tone = "light" }: { tone?: "light" | 
   }
 
   async function markAll() {
-    setItems((l) => l.map((x) => ({ ...x, readAt: x.readAt || new Date().toISOString() })));
+    setItems((l) => {
+      const next = l.map((x) => ({ ...x, readAt: x.readAt || new Date().toISOString() }));
+      itemsRef.current = next;
+      return next;
+    });
     setUnread(0);
     await fetch("/api/notifications", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ all: true }) }).catch(() => {});
   }
@@ -161,6 +187,16 @@ export default function NotificationBell({ tone = "light" }: { tone?: "light" | 
               </li>
             ))}
           </ul>
+          {hasMore && (
+            <button
+              type="button"
+              disabled={moreBusy}
+              onClick={() => void load("more")}
+              className="block w-full border-t border-black/5 px-3 py-2 text-center text-[11px] font-medium text-neutral-600 hover:bg-neutral-50 disabled:opacity-50"
+            >
+              {moreBusy ? t("common.loading") : t("term.loadMore")}
+            </button>
+          )}
         </div>
       )}
     </div>

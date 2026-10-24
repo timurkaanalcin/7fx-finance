@@ -271,7 +271,7 @@ export default function TerminalShell() {
       if (!res.ok) return;
       const data = await res.json();
       const list: BalanceRequestRow[] = data.requests || [];
-      const pending = list.find((r) => r.status === "PENDING") || null;
+      const pending = (data.pending as BalanceRequestRow | null) || list.find((r) => r.status === "PENDING") || null;
       setPendingBalanceReq(pending);
       const latest = list[0] || null;
       setBalanceReqBanner(latest && latest.status !== "APPROVED" ? latest : pending);

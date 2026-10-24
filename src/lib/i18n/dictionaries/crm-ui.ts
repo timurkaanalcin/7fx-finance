@@ -981,6 +981,14 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.cal.traderSearch", "Search trader by name, email, or account ID", "Trader ara: ad, e-posta veya hesap ID", "Поиск трейдера: имя, email или ID счёта", "Trader suchen: Name, E-Mail oder Konto-ID", "ابحث عن متداول بالاسم أو البريد أو معرّف الحساب"],
   ["crm.cal.traderSearchPartial", "More traders match. Refine the search.", "Daha fazla trader eşleşiyor. Aramayı daraltın.", "Найдено больше трейдеров. Уточните поиск.", "Weitere Trader passen. Suche eingrenzen.", "هناك متداولون أكثر. ضيّق البحث."],
   ["crm.cal.workersPartial", "Worker list is partial. Older names are not included.", "Çalışan listesi eksik. Daha eski isimler dahil değil.", "Список сотрудников неполный. Более старые имена не включены.", "Mitarbeiterliste ist unvollständig. Ältere Namen fehlen.", "قائمة الموظفين غير مكتملة. الأسماء الأقدم غير مشمولة."],
+  ["crm.sum.accountsPartial", "Totals include every account. This table shows the 100 largest balances.", "Toplamlar tüm hesapları kapsar. Bu tablo en yüksek 100 bakiyeyi gösterir.", "Итоги включают все счета. В таблице 100 самых больших балансов.", "Summen umfassen alle Konten. Diese Tabelle zeigt die 100 höchsten Salden.", "الإجماليات تشمل كل الحسابات. هذا الجدول يعرض أكبر 100 رصيد."],
+  ["crm.docs.pendingLabel", "Pending or rejected trader", "Bekleyen veya reddedilen trader", "Трейдер в ожидании или отклонённый", "Trader ausstehend oder abgelehnt", "متداول قيد الانتظار أو مرفوض"],
+  ["crm.docs.pendingSearch", "Search pending traders", "Bekleyen trader ara", "Поиск трейдеров в ожидании", "Ausstehende Trader suchen", "ابحث عن المتداولين قيد الانتظار"],
+  ["crm.docs.pendingPartial", "Pending trader list is partial. Search to find another name.", "Bekleyen trader listesi eksik. Başka bir isim için arayın.", "Список ожидающих неполный. Ищите другое имя.", "Liste ausstehender Trader ist unvollständig. Suchen Sie einen anderen Namen.", "قائمة المتداولين قيد الانتظار غير مكتملة. ابحث عن اسم آخر."],
+  ["crm.docs.pendingSearchPartial", "More traders match. Refine the search.", "Daha fazla trader eşleşiyor. Aramayı daraltın.", "Найдено больше трейдеров. Уточните поиск.", "Weitere Trader passen. Suche eingrenzen.", "هناك متداولون أكثر. ضيّق البحث."],
+  ["crm.desk.search", "Search desks", "Masa ara", "Поиск столов", "Desks suchen", "ابحث عن المكاتب"],
+  ["crm.desk.partial", "Desk list is partial. Search to find another desk.", "Masa listesi eksik. Başka bir masa için arayın.", "Список столов неполный. Ищите другой стол.", "Desk-Liste ist unvollständig. Suchen Sie einen anderen Desk.", "قائمة المكاتب غير مكتملة. ابحث عن مكتب آخر."],
+  ["crm.desk.searchPartial", "More desks match. Refine the search.", "Daha fazla masa eşleşiyor. Aramayı daraltın.", "Найдено больше столов. Уточните поиск.", "Weitere Desks passen. Suche eingrenzen.", "هناك مكاتب أكثر. ضيّق البحث."],
 ];
 
 function pack(index: 1|2|3|4|5): Dict {
