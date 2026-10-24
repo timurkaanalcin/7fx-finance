@@ -434,9 +434,17 @@ async function reflect(
  * Internal transfer between two traders' accounts. Writes a ledger row on BOTH accounts
  * (source: −amount "transfer out", target: +amount "transfer in") in one DB transaction.
  * With applyToBalance the two Account balances move too; otherwise only history is written.
+ * Call only when a source account id was actually supplied. A blank source is not a
+ * transfer between accounts — the ledger create path stores one row and leaves the
+ * missing source unset (BalanceLedger has no source column).
  */
-async function internalTransfer(body: Body, targetUserId: string, admin: AdminRef, apply: boolean) {
-  const sourceUserId = reqStr(body.sourceUserId, "sourceUserId", 64);
+async function internalTransfer(
+  body: Body,
+  targetUserId: string,
+  sourceUserId: string,
+  admin: AdminRef,
+  apply: boolean
+) {
   if (sourceUserId === targetUserId) throw new BadRequest("Source and target account must differ");
   const amount = num(body.amount, "amount");
   if (!(amount > 0)) throw new BadRequest("Amount must be greater than 0");
@@ -625,8 +633,15 @@ export async function POST(req: Request, ctx: Ctx) {
         break;
       }
       case "ledger": {
-        if (String(body.type || "").toUpperCase() === "TRANSFER") {
-          const t = await internalTransfer(body, userId, admin, apply);
+        // Source account is optional. When it is set, keep the existing two-sided
+        // transfer (both ledger legs, same balance math). When it is omitted there
+        // is no source column to fill and no house account to substitute, so this
+        // writes a single ledger row on the destination trader. A missing source is
+        // stored as null: no counterpart leg, and comment stays null when blank.
+        // Balances move only if applyToBalance is set, through applyLedgerRowDelta.
+        const sourceUserId = str(body.sourceUserId, 64);
+        if (String(body.type || "").toUpperCase() === "TRANSFER" && sourceUserId) {
+          const t = await internalTransfer(body, userId, sourceUserId, admin, apply);
           row = t.row;
           balance = t.balance;
           break;
