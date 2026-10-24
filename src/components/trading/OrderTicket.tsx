@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { formatPrice } from "@/lib/symbols";
+import { useI18n } from "@/lib/i18n/context";
+import { localizeTradeError } from "@/lib/trade-errors";
 import { calcTradeProfit, calcVolumeForRisk } from "@/lib/pnl";
 import SymbolIcon from "@/components/ui/SymbolIcon";
 import type { PriceTick, SymbolDef } from "./types";
@@ -171,6 +173,7 @@ export default function OrderTicket({
   currency = "USD",
   prefill = null,
 }: Props) {
+  const { t } = useI18n();
   const rootRef = useRef<HTMLDivElement | null>(null);
   const [side, setSide] = useState<"BUY" | "SELL">(initialSide);
   const [type, setType] = useState<"MARKET" | "LIMIT" | "STOP">("MARKET");
@@ -310,12 +313,12 @@ export default function OrderTicket({
   // R:R chips are usable only with a valid SL on the correct side of a known entry
   const rrSlOk = showSl && slInfo != null && !slInfo.wrongSide && slInfo.pips > 0;
   const rrDisabledTitle = !showSl
-    ? "Önce SL girin · Set a Stop Loss first"
+    ? t("term.ot.slFirst")
     : !entryOk
-      ? "Giriş fiyatı bilinmiyor · Entry price unknown"
+      ? t("term.ot.noEntry")
       : slInfo?.wrongSide
-        ? "SL girişin ters tarafında · SL is on the wrong side of entry"
-        : "Geçerli SL girin · Enter a valid Stop Loss";
+        ? t("term.ot.slWrong")
+        : t("term.ot.badSl");
 
   /** TP price giving reward/risk ≈ ratio (same pip math as the SL/TP pip chips). */
   function rrTpLevel(ratio: number): string | null {
@@ -428,19 +431,19 @@ export default function OrderTicket({
     setMsg("");
     const vol = Number(volume);
     if (!Number.isFinite(vol) || vol < LOT_MIN || vol > LOT_MAX) {
-      setMsg("Geçersiz lot · Invalid volume");
+      setMsg(t("term.err.badVolume"));
       return;
     }
     if (type !== "MARKET" && !(Number(limitPrice) > 0)) {
-      setMsg("Geçersiz fiyat · Invalid price");
+      setMsg(t("term.ot.badPrice"));
       return;
     }
     if (showSl && !(sl.trim() !== "" && Number.isFinite(Number(sl)))) {
-      setMsg("Enter Stop Loss price");
+      setMsg(t("term.ot.needSl"));
       return;
     }
     if (showTp && !(tp.trim() !== "" && Number.isFinite(Number(tp)))) {
-      setMsg("Enter Take Profit price");
+      setMsg(t("term.ot.needTp"));
       return;
     }
     confirmOpenedAtRef.current = Date.now();
@@ -465,12 +468,12 @@ export default function OrderTicket({
         showTp && tp.trim() !== "" && Number.isFinite(Number(tp)) ? Number(tp) : undefined;
 
       if (showSl && stopLoss == null) {
-        setMsg("Enter Stop Loss price");
+        setMsg(t("term.ot.needSl"));
         setBusy(false);
         return;
       }
       if (showTp && takeProfit == null) {
-        setMsg("Enter Take Profit price");
+        setMsg(t("term.ot.needTp"));
         setBusy(false);
         return;
       }
@@ -489,21 +492,19 @@ export default function OrderTicket({
           takeProfit,
         }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setMsg(data.error || "Error");
-        if (res.status === 401) {
-          setMsg("No session — please sign in again");
-        }
+        const raw = data && typeof data.error === "string" ? data.error : "";
+        setMsg(res.status === 401 ? t("term.ot.noSession") : raw ? localizeTradeError(raw, t) : t("common.error"));
         return;
       }
-      setMsg(type === "MARKET" ? "Position opened" : "Pending order created");
+      setMsg(type === "MARKET" ? t("term.ot.opened") : t("term.ot.pendingOk"));
       onPlaced();
       if (onClose) {
         window.setTimeout(() => onClose(), 650);
       }
     } catch {
-      setMsg("Connection error");
+      setMsg(t("term.ot.conn"));
     } finally {
       setBusy(false);
     }
@@ -516,7 +517,7 @@ export default function OrderTicket({
     <>
       <div className="flex items-center justify-between border-b border-desk-border/80 px-3.5 py-3 md:px-3 md:py-2.5">
         <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-desk-muted">
-          Order Ticket
+          {t("term.order")}
         </span>
         <div className="flex items-center gap-2">
           <span className="inline-flex max-w-[min(68vw,280px)] items-center gap-1.5 rounded-full border border-desk-border/60 bg-desk-elev/80 px-2.5 py-0.5 text-[10px] font-semibold text-desk-text">
@@ -532,7 +533,7 @@ export default function OrderTicket({
             <button
               type="button"
               onClick={onClose}
-              aria-label="Close"
+              aria-label={t("common.close")}
               className="flex h-8 w-8 items-center justify-center rounded-full border border-desk-border/60 text-desk-muted hover:bg-desk-hover hover:text-desk-text"
             >
               ×
@@ -599,7 +600,7 @@ export default function OrderTicket({
         <div>
           <div className="mb-1.5 flex items-end justify-between gap-2">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-desk-muted">
-              Volume (Lot)
+              {t("term.col.volume")}
             </span>
             <span
               className="text-[10px] font-semibold tabular-nums text-desk-muted"
@@ -662,8 +663,8 @@ export default function OrderTicket({
               <button
                 type="button"
                 onClick={() => setVolume((v) => scaleLot(v, 0.5, (def as { volumeStep?: number } | undefined)?.volumeStep))}
-                aria-label="Lot yarıya · Halve lot"
-                title="Lot yarıya · Halve lot"
+                aria-label={t("term.ot.halve")}
+                title={t("term.ot.halve")}
                 className="rounded-full border border-desk-border/70 bg-desk-elev px-2 py-0.5 text-[10px] font-semibold tabular-nums text-desk-muted transition hover:bg-desk-hover hover:text-desk-text"
               >
                 ÷2
@@ -671,8 +672,8 @@ export default function OrderTicket({
               <button
                 type="button"
                 onClick={() => setVolume((v) => scaleLot(v, 2, (def as { volumeStep?: number } | undefined)?.volumeStep))}
-                aria-label="Lot iki kat · Double lot"
-                title="Lot iki kat · Double lot"
+                aria-label={t("term.ot.double")}
+                title={t("term.ot.double")}
                 className="rounded-full border border-desk-border/70 bg-desk-elev px-2 py-0.5 text-[10px] font-semibold tabular-nums text-desk-muted transition hover:bg-desk-hover hover:text-desk-text"
               >
                 ×2
@@ -687,7 +688,7 @@ export default function OrderTicket({
         {type !== "MARKET" && (
           <div>
             <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-desk-muted">
-              Price
+              {t("term.col.price")}
             </div>
             <input
               value={limitPrice}
@@ -735,8 +736,8 @@ export default function OrderTicket({
                   }`}
                   title={
                     slInfo.wrongSide
-                      ? "Seviye girişin ters tarafında · Level is on the wrong side of entry"
-                      : "Girişe uzaklık (pip) · Distance from entry (pips)"
+                      ? t("term.ot.wrongSide")
+                      : t("term.col.distance")
                   }
                 >
                   ≈ {fmtPips(slInfo.pips)} pip{slInfo.wrongSide ? " ⚠" : ""}
@@ -750,11 +751,9 @@ export default function OrderTicket({
               autoFocus
               className="w-full rounded-[12px] border border-desk-sell/40 bg-desk-bg px-3 py-2.5 text-sm tabular-nums text-desk-text outline-none focus:border-desk-sell md:rounded-control md:px-2.5 md:py-2"
             />
-            <div className="mt-1.5 flex flex-wrap items-center gap-1" role="group" aria-label="SL pip mesafesi · SL pip distance">
+            <div className="mt-1.5 flex flex-wrap items-center gap-1" role="group" aria-label={t("term.col.distance")}>
               {SLTP_PIP_PRESETS.map((pips) => {
                 const lvl = pipLevel("sl", pips);
-                const dirTr = side === "BUY" ? "aşağı" : "yukarı";
-                const dirEn = side === "BUY" ? "below" : "above";
                 return (
                   <button
                     key={pips}
@@ -763,8 +762,8 @@ export default function OrderTicket({
                     onClick={() => {
                       if (lvl != null) setSl(lvl);
                     }}
-                    title={`SL ${pips} pip ${dirTr} · ${pips} pips ${dirEn} entry${lvl ? ` (${lvl})` : ""}`}
-                    aria-label={`SL ${pips} pip ${dirTr}`}
+                    title={t("term.col.distance")}
+                    aria-label={t("term.col.distance")}
                     className="rounded-full border border-desk-border/70 bg-desk-elev px-2 py-0.5 text-[10px] font-semibold tabular-nums text-desk-muted hover:bg-desk-hover hover:text-desk-text disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-desk-elev disabled:hover:text-desk-muted"
                   >
                     {pips}p
@@ -863,7 +862,7 @@ export default function OrderTicket({
                   onClick={applyRiskLot}
                   className="ml-auto rounded-full border border-desk-accent/50 bg-desk-accent/15 px-2.5 py-0.5 text-[10px] font-semibold text-desk-accent hover:bg-desk-accent/25"
                 >
-                  Lot uygula
+                  {t("term.ot.applyLot")}
                 </button>
               </div>
               {riskError && (
@@ -885,8 +884,8 @@ export default function OrderTicket({
                   }`}
                   title={
                     tpInfo.wrongSide
-                      ? "Seviye girişin ters tarafında · Level is on the wrong side of entry"
-                      : "Girişe uzaklık (pip) · Distance from entry (pips)"
+                      ? t("term.ot.wrongSide")
+                      : t("term.col.distance")
                   }
                 >
                   ≈ {fmtPips(tpInfo.pips)} pip{tpInfo.wrongSide ? " ⚠" : ""}
@@ -899,11 +898,9 @@ export default function OrderTicket({
               placeholder="Price"
               className="w-full rounded-[12px] border border-desk-buy/40 bg-desk-bg px-3 py-2.5 text-sm tabular-nums text-desk-text outline-none focus:border-desk-buy md:rounded-control md:px-2.5 md:py-2"
             />
-            <div className="mt-1.5 flex flex-wrap items-center gap-1" role="group" aria-label="TP pip mesafesi · TP pip distance">
+            <div className="mt-1.5 flex flex-wrap items-center gap-1" role="group" aria-label={t("term.col.distance")}>
               {SLTP_PIP_PRESETS.map((pips) => {
                 const lvl = pipLevel("tp", pips);
-                const dirTr = side === "BUY" ? "yukarı" : "aşağı";
-                const dirEn = side === "BUY" ? "above" : "below";
                 return (
                   <button
                     key={pips}
@@ -912,8 +909,8 @@ export default function OrderTicket({
                     onClick={() => {
                       if (lvl != null) setTp(lvl);
                     }}
-                    title={`TP ${pips} pip ${dirTr} · ${pips} pips ${dirEn} entry${lvl ? ` (${lvl})` : ""}`}
-                    aria-label={`TP ${pips} pip ${dirTr}`}
+                    title={t("term.col.distance")}
+                    aria-label={t("term.col.distance")}
                     className="rounded-full border border-desk-border/70 bg-desk-elev px-2 py-0.5 text-[10px] font-semibold tabular-nums text-desk-muted hover:bg-desk-hover hover:text-desk-text disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-desk-elev disabled:hover:text-desk-muted"
                   >
                     {pips}p
@@ -935,7 +932,7 @@ export default function OrderTicket({
         )}
 
         {(showSl || showTp) && (
-          <div className="flex flex-wrap items-center gap-1" role="group" aria-label="R:R hedefi · Reward/risk target">
+          <div className="flex flex-wrap items-center gap-1" role="group" aria-label="R:R">
             <span className="mr-0.5 text-[10px] font-semibold uppercase tracking-wider text-desk-muted">
               R:R
             </span>
@@ -950,12 +947,8 @@ export default function OrderTicket({
                   disabled={lvl == null}
                   onClick={() => applyRr(ratio)}
                   aria-pressed={active}
-                  title={
-                    lvl != null
-                      ? `TP'yi ${label} risk/ödül oranına ayarla · Set TP for ${label} reward/risk (${lvl})`
-                      : rrDisabledTitle
-                  }
-                  aria-label={`TP ${label} risk/ödül · TP ${label} reward/risk`}
+                  title={lvl != null ? `${label} (${lvl})` : rrDisabledTitle}
+                  aria-label={label}
                   className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold tabular-nums transition disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-desk-elev disabled:hover:text-desk-muted ${
                     active
                       ? "border-desk-buy/60 bg-desk-buy/15 text-desk-buy"
@@ -990,26 +983,26 @@ export default function OrderTicket({
         {confirming && (
           <div
             role="alertdialog"
-            aria-label="Emir onayı"
+            aria-label={t("term.ot.review")}
             className="space-y-1.5 rounded-[12px] border border-desk-accent/50 bg-desk-accent/10 px-3 py-2.5 text-[11px] md:rounded-control md:px-2.5 md:py-2"
           >
             <div className="text-[10px] font-semibold uppercase tracking-wider text-desk-accent">
-              Emir onayı · Review order
+              {t("term.ot.review")}
             </div>
             <div className="flex items-center justify-between">
               <span className="text-desk-muted">İşlem</span>
               <span className={`font-bold ${side === "BUY" ? "text-desk-buy" : "text-desk-sell"}`}>
-                {side === "BUY" ? "AL · BUY" : "SAT · SELL"} {symbol}
+                {side === "BUY" ? t("term.buy") : t("term.sell")} {symbol}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-desk-muted">Tür / Lot</span>
               <span className="font-semibold tabular-nums text-desk-text">
-                {type === "MARKET" ? "Piyasa" : type === "LIMIT" ? "Limit" : "Stop"} · {Number(volume).toFixed(2)}
+                {type === "MARKET" ? t("term.ot.market") : type === "LIMIT" ? t("term.ot.limit") : t("term.ot.stop")} · {Number(volume).toFixed(2)}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-desk-muted">{type === "MARKET" ? "Tahmini giriş" : "Emir fiyatı"}</span>
+              <span className="text-desk-muted">{type === "MARKET" ? t("term.ot.estEntry") : t("term.ot.orderPrice")}</span>
               <span className="font-semibold tabular-nums text-desk-text">
                 {entry ? formatPrice(symbol, entry) : "—"}
               </span>
@@ -1038,7 +1031,7 @@ export default function OrderTicket({
             )}
             {preview.rr != null && (
               <div className="flex items-center justify-between">
-                <span className="text-desk-muted">Risk / Ödül · R:R</span>
+                <span className="text-desk-muted">R:R</span>
                 <span className={`font-semibold tabular-nums ${preview.rr >= 1 ? "text-desk-buy" : "text-desk-text"}`}>
                   1 : {preview.rr.toFixed(2)}
                 </span>
@@ -1046,13 +1039,13 @@ export default function OrderTicket({
             )}
             {notional > 0 && (
               <div className="flex items-center justify-between">
-                <span className="text-desk-muted">Pozisyon değeri</span>
+                <span className="text-desk-muted">{t("term.ot.posValue")}</span>
                 <span className="font-semibold tabular-nums text-desk-text">{fmtUsd(notional)}</span>
               </div>
             )}
             {type === "MARKET" && (
               <div className="text-[10px] text-desk-muted">
-                Piyasa emri anlık fiyattan gerçekleşir; fiyat değişebilir.
+                {t("term.ot.marketNote")}
               </div>
             )}
             <button
@@ -1060,7 +1053,7 @@ export default function OrderTicket({
               onClick={() => setConfirming(false)}
               className="w-full rounded-full border border-desk-border/70 bg-desk-elev py-1.5 text-[11px] font-semibold text-desk-muted hover:bg-desk-hover hover:text-desk-text"
             >
-              Vazgeç · Cancel (Esc)
+              {t("common.cancel")} (Esc)
             </button>
           </div>
         )}
@@ -1076,14 +1069,14 @@ export default function OrderTicket({
           }`}
         >
           {busy
-            ? "Submitting…"
+            ? t("term.ot.submitting")
             : confirming
               ? side === "BUY"
-                ? "Onayla · Confirm Buy"
-                : "Onayla · Confirm Sell"
+                ? t("term.ot.confirmBuy")
+                : t("term.ot.confirmSell")
               : side === "BUY"
-                ? "Submit Buy Order"
-                : "Submit Sell Order"}
+                ? t("term.ot.submitBuy")
+                : t("term.ot.submitSell")}
         </button>
         <label className="flex cursor-pointer select-none items-center justify-center gap-1.5 text-[10px] font-medium text-desk-muted">
           <input
@@ -1092,7 +1085,7 @@ export default function OrderTicket({
             onChange={toggleConfirmPref}
             className="h-3 w-3 accent-current"
           />
-          Göndermeden önce onay iste
+          {t("term.ot.askConfirm")}
         </label>
         {msg && (
           <div className="rounded-[12px] bg-desk-accent/10 px-2.5 py-2 text-center text-xs font-medium text-desk-accent md:rounded-control md:px-2 md:py-1.5">

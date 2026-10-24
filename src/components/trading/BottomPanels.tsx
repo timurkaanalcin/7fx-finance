@@ -108,6 +108,7 @@ function CopyTicket({
   id: string;
   variant?: "card" | "table";
 }) {
+  const { t } = useI18n();
   const [copied, setCopied] = useState(false);
   useEffect(() => {
     if (!copied) return;
@@ -147,7 +148,7 @@ function CopyTicket({
     },
     [id]
   );
-  const title = copied ? "Kopyalandı · Copied" : `Bileti kopyala · Copy ticket (${id})`;
+  const title = copied ? t("term.copied") : `${t("term.copyTicket")} (${id})`;
   const sizeCls =
     variant === "table"
       ? "text-[9px] px-0.5 -mx-0.5 py-px"
@@ -169,13 +170,13 @@ function CopyTicket({
           <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" aria-hidden>
             <path d="M5 12l5 5L20 7" />
           </svg>
-          <span>Kopyalandı</span>
+          <span>{t("term.copied")}</span>
         </>
       ) : (
         <span>{ticketLabel(id)}</span>
       )}
       <span aria-live="polite" className="sr-only">
-        {copied ? "Kopyalandı · Copied" : ""}
+        {copied ? t("term.copied") : ""}
       </span>
     </button>
   );
@@ -903,7 +904,7 @@ function OpenCard({
                   : "bg-desk-sell/15 text-desk-sell"
               }`}
             >
-              {p.side === "BUY" ? "AL" : "SAT"}
+              {p.side === "BUY" ? t("term.buy") : t("term.sell")}
             </span>
             <span className="text-[11px] tabular-nums text-desk-muted">
               {fmtNum(p.volume, 2)} lot
@@ -1287,6 +1288,7 @@ function ClosedCard({
   reopenLabel: string;
   reopenTitle: string;
 }) {
+  const { t } = useI18n();
   const profit = p.closeProfit ?? p.profit;
   const side = p.side === "SELL" ? "SELL" : "BUY";
   return (
@@ -1304,7 +1306,7 @@ function ClosedCard({
                   : "bg-desk-sell/15 text-desk-sell"
               }`}
             >
-              {p.side === "BUY" ? "AL" : "SAT"}
+              {p.side === "BUY" ? t("term.buy") : t("term.sell")}
             </span>
             <span className="text-[11px] tabular-nums text-desk-muted">
               {fmtNum(p.volume, 2)} lot
@@ -1386,7 +1388,7 @@ function PendingCard({
                   : "bg-desk-sell/15 text-desk-sell"
               }`}
             >
-              {o.side === "BUY" ? "AL" : "SAT"}
+              {o.side === "BUY" ? t("term.buy") : t("term.sell")}
             </span>
             <span className="rounded-[6px] bg-desk-bg px-1.5 py-0.5 text-[10px] font-medium text-desk-muted">
               {o.type}
@@ -1915,15 +1917,15 @@ export default function BottomPanels({
               type="button"
               onClick={togglePnlCal}
               aria-pressed={showPnlCal}
-              aria-label="Günlük K/Z takvimi"
-              title="Günlük K/Z takvimi · Daily P&L calendar"
+              aria-label={t("term.calendar")}
+              title={t("term.calendar")}
               className={`rounded-control border px-2.5 py-1 text-[11px] transition-colors ${
                 showPnlCal || closedDay
                   ? "border-desk-accent/50 bg-desk-accent/10 text-desk-text"
                   : "border-desk-border text-desk-muted hover:bg-desk-hover hover:text-desk-text"
               }`}
             >
-              Takvim
+              {t("term.calendar")}
             </button>
           ) : null}
           {tab === "closed" && closedPositions.length > 0 ? (
@@ -1941,8 +1943,8 @@ export default function BottomPanels({
             type="button"
             onClick={handleExportCsv}
             disabled={!canExport}
-            title={canExport ? "Filtrelenmiş işlemleri CSV indir" : "İndirilecek işlem yok"}
-            aria-label="Filtrelenmiş işlemleri CSV indir"
+            title={canExport ? t("term.csvDown") : t("term.csvNone")}
+            aria-label={canExport ? t("term.csvDown") : t("term.csvNone")}
             className="rounded-control border border-desk-border px-2.5 py-1 text-[11px] text-desk-muted transition-colors hover:bg-desk-hover hover:text-desk-text disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-desk-muted"
           >
             CSV
@@ -1955,7 +1957,7 @@ export default function BottomPanels({
               aria-label={t("term.clearFilters")}
               className="rounded-control border border-desk-border px-2 py-1 text-[11px] text-desk-muted transition-colors hover:bg-desk-hover hover:text-desk-text"
             >
-              ✕<span className="ml-1 hidden sm:inline">Temizle</span>
+              ✕<span className="ml-1 hidden sm:inline">{t("term.clearFilters")}</span>
             </button>
           ) : null}
           <button
@@ -1967,7 +1969,7 @@ export default function BottomPanels({
                 : "border-desk-border text-desk-muted hover:bg-desk-hover hover:text-desk-text"
             }`}
           >
-            Filtre
+            {t("term.filter")}
             {filtersActive ? (
               <span className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-desk-accent align-middle" />
             ) : null}
@@ -1979,7 +1981,7 @@ export default function BottomPanels({
         <div className="flex flex-wrap items-center gap-2 border-b border-desk-border/60 bg-desk-elev/30 px-2.5 py-2">
           <div className="flex items-center gap-1">
             <span className="mr-0.5 text-[9px] font-medium uppercase tracking-wider text-desk-muted">
-              Side
+              {t("term.side")}
             </span>
             <Chip active={sideFilter === "ALL"} onClick={() => setSideFilter("ALL")}>
               {t("term.all")}
@@ -1989,19 +1991,19 @@ export default function BottomPanels({
               onClick={() => setSideFilter("BUY")}
               tone="buy"
             >
-              AL
+              {t("term.buy")}
             </Chip>
             <Chip
               active={sideFilter === "SELL"}
               onClick={() => setSideFilter("SELL")}
               tone="sell"
             >
-              SAT
+              {t("term.sell")}
             </Chip>
           </div>
           <div className="flex min-w-[120px] flex-1 items-center gap-1 sm:max-w-[180px]">
             <span className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">
-              Symbol
+              {t("term.col.symbol")}
             </span>
             <input
               type="text"
@@ -2014,9 +2016,9 @@ export default function BottomPanels({
           <div className="flex min-w-[140px] flex-1 items-center gap-1 sm:max-w-[220px]">
             <span
               className="text-[9px] font-medium uppercase tracking-wider text-desk-muted"
-              title="Bilet / yorum ara · Search ticket / comment"
+              title={t("term.ticketSearch")}
             >
-              Ara
+              {t("term.ticketSearch")}
             </span>
             <div className="relative min-w-0 flex-1">
               <input
@@ -2032,8 +2034,8 @@ export default function BottomPanels({
                     setTextFilter("");
                   }
                 }}
-                placeholder="Bilet # / yorum · Ticket / comment"
-                aria-label="Bilet veya yorum ara · Search ticket or comment"
+                placeholder={t("term.ticketPh")}
+                aria-label={t("term.ticketPh")}
                 className="w-full min-w-0 rounded-[7px] border border-desk-border bg-desk-bg py-1 pl-2 pr-6 text-[11px] text-desk-text outline-none placeholder:text-desk-muted/60 focus:border-desk-accent/50 [&::-webkit-search-cancel-button]:hidden"
               />
               {textFilter ? (
@@ -2051,7 +2053,7 @@ export default function BottomPanels({
           {tab === "closed" && (
             <div className="flex items-center gap-1">
               <span className="mr-0.5 text-[9px] font-medium uppercase tracking-wider text-desk-muted">
-                Sonuç
+                {t("term.result")}
               </span>
               <Chip active={resultFilter === "ALL"} onClick={() => setResultFilter("ALL")}>
                 {t("term.all")}
@@ -2061,39 +2063,39 @@ export default function BottomPanels({
                 onClick={() => setResultFilter("PROFIT")}
                 tone="buy"
               >
-                Kâr
+                {t("term.win")}
               </Chip>
               <Chip
                 active={resultFilter === "LOSS"}
                 onClick={() => setResultFilter("LOSS")}
                 tone="sell"
               >
-                Zarar
+                {t("term.loss")}
               </Chip>
             </div>
           )}
           <div className="flex items-center gap-1">
             <span className="mr-0.5 text-[9px] font-medium uppercase tracking-wider text-desk-muted">
-              Period
+              {t("term.period")}
             </span>
             <Chip active={periodFilter === "ALL"} onClick={() => setPeriodFilter("ALL")}>
               {t("term.all")}
             </Chip>
             <Chip active={periodFilter === "TODAY"} onClick={() => setPeriodFilter("TODAY")}>
-              Bugün
+              {t("term.today")}
             </Chip>
             <Chip
               active={periodFilter === "YESTERDAY"}
               onClick={() => setPeriodFilter("YESTERDAY")}
-              title="Dün · Yesterday"
+              title={t("term.yesterday")}
             >
-              Dün
+              {t("term.yesterday")}
             </Chip>
             <Chip active={periodFilter === "7D"} onClick={() => setPeriodFilter("7D")}>
-              7 gün
+              {t("term.d7")}
             </Chip>
             <Chip active={periodFilter === "30D"} onClick={() => setPeriodFilter("30D")}>
-              30 gün
+              {t("term.d30")}
             </Chip>
           </div>
           {filtersActive && (
@@ -2114,10 +2116,10 @@ export default function BottomPanels({
         <div
           className="flex items-center gap-1 overflow-x-auto border-b border-desk-border/60 px-2.5 py-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           role="group"
-          aria-label="Sembole göre filtrele · Filter by symbol"
+          aria-label={t("term.filterSymbol")}
         >
           <span className="mr-0.5 shrink-0 text-[9px] font-medium uppercase tracking-wider text-desk-muted">
-            Sembol
+            {t("term.col.symbol")}
           </span>
           <span className="shrink-0">
             <Chip active={openSymbolChip === ""} onClick={() => setOpenSymbolChip("")}>
@@ -2141,10 +2143,10 @@ export default function BottomPanels({
         <div
           className="flex items-center gap-1 overflow-x-auto border-b border-desk-border/60 px-2.5 py-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           role="group"
-          aria-label="Sembole göre filtrele · Filter by symbol"
+          aria-label={t("term.filterSymbol")}
         >
           <span className="mr-0.5 shrink-0 text-[9px] font-medium uppercase tracking-wider text-desk-muted">
-            Sembol
+            {t("term.col.symbol")}
           </span>
           <span className="shrink-0">
             <Chip active={closedSymbolChip === ""} onClick={() => setClosedSymbolChip("")}>
@@ -2168,10 +2170,10 @@ export default function BottomPanels({
         <div
           className="flex items-center gap-1 overflow-x-auto border-b border-desk-border/60 px-2.5 py-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           role="group"
-          aria-label="Sembole göre filtrele · Filter by symbol"
+          aria-label={t("term.filterSymbol")}
         >
           <span className="mr-0.5 shrink-0 text-[9px] font-medium uppercase tracking-wider text-desk-muted">
-            Sembol
+            {t("term.col.symbol")}
           </span>
           <span className="shrink-0">
             <Chip active={pendingSymbolChip === ""} onClick={() => setPendingSymbolChip("")}>
@@ -2252,20 +2254,20 @@ export default function BottomPanels({
             <thead className="sticky top-0 z-[1] bg-desk-bg/95 text-[9px] font-medium uppercase tracking-wider text-desk-muted backdrop-blur-sm">
               <tr>
                 <th className="px-2 py-2">#</th>
-                <SortTh label="Zaman" col="time" sort={openSort} onSort={onOpenSort} />
-                <SortTh label="Type" col="side" sort={openSort} onSort={onOpenSort} />
-                <SortTh label="Asset" col="symbol" sort={openSort} onSort={onOpenSort} />
-                <th className="px-2 py-2">Volume</th>
+                <SortTh label={t("term.col.time")} col="time" sort={openSort} onSort={onOpenSort} />
+                <SortTh label={t("term.col.type")} col="side" sort={openSort} onSort={onOpenSort} />
+                <SortTh label={t("term.col.asset")} col="symbol" sort={openSort} onSort={onOpenSort} />
+                <th className="px-2 py-2">{t("term.col.volume")}</th>
                 <th className="px-2 py-2">Pip</th>
-                <th className="px-2 py-2">Open</th>
-                <th className="px-2 py-2">Current</th>
+                <th className="px-2 py-2">{t("term.col.open")}</th>
+                <th className="px-2 py-2">{t("term.col.current")}</th>
                 <th className="px-2 py-2">SL</th>
                 <th className="px-2 py-2">TP</th>
                 <th className="px-2 py-2">{t("term.col.swap")}</th>
                 <th className="px-2 py-2">{t("term.col.commission")}</th>
                 <th className="px-2 py-2">{t("term.col.ticketComm")}</th>
-                <SortTh label="Profit" col="profit" sort={openSort} onSort={onOpenSort} />
-                <th className="px-2 py-2">Net Profit</th>
+                <SortTh label={t("term.col.profit")} col="profit" sort={openSort} onSort={onOpenSort} />
+                <th className="px-2 py-2">{t("term.col.net")}</th>
                 <th className="px-2 py-2">{t("common.close")}</th>
               </tr>
             </thead>
@@ -2355,16 +2357,16 @@ export default function BottomPanels({
             <thead className="sticky top-0 z-[1] bg-desk-bg/95 text-[9px] font-medium uppercase tracking-wider text-desk-muted backdrop-blur-sm">
               <tr>
                 <th className="px-2 py-2">#</th>
-                <SortTh label="Zaman" col="time" sort={closedSort} onSort={onClosedSort} />
-                <SortTh label="Type" col="side" sort={closedSort} onSort={onClosedSort} />
-                <SortTh label="Asset" col="symbol" sort={closedSort} onSort={onClosedSort} />
-                <th className="px-2 py-2">Volume</th>
-                <th className="px-2 py-2">Open</th>
+                <SortTh label={t("term.col.time")} col="time" sort={closedSort} onSort={onClosedSort} />
+                <SortTh label={t("term.col.type")} col="side" sort={closedSort} onSort={onClosedSort} />
+                <SortTh label={t("term.col.asset")} col="symbol" sort={closedSort} onSort={onClosedSort} />
+                <th className="px-2 py-2">{t("term.col.volume")}</th>
+                <th className="px-2 py-2">{t("term.col.open")}</th>
                 <th className="px-2 py-2">{t("common.close")}</th>
                 <th className="px-2 py-2">SL</th>
                 <th className="px-2 py-2">TP</th>
-                <SortTh label="Profit" col="profit" sort={closedSort} onSort={onClosedSort} />
-                <th className="px-2 py-2">Net Profit</th>
+                <SortTh label={t("term.col.profit")} col="profit" sort={closedSort} onSort={onClosedSort} />
+                <th className="px-2 py-2">{t("term.col.net")}</th>
                 <th className="px-2 py-2">{reopenLabel}</th>
                 <th className="px-2 py-2">{t("term.note.title")}</th>
               </tr>
@@ -2464,13 +2466,13 @@ export default function BottomPanels({
             <thead className="sticky top-0 z-[1] bg-desk-bg/95 text-[9px] font-medium uppercase tracking-wider text-desk-muted backdrop-blur-sm">
               <tr>
                 <th className="px-2 py-2">#</th>
-                <SortTh label="Zaman" col="time" sort={pendingSort} onSort={onPendingSort} />
-                <SortTh label="Type" col="side" sort={pendingSort} onSort={onPendingSort} />
+                <SortTh label={t("term.col.time")} col="time" sort={pendingSort} onSort={onPendingSort} />
+                <SortTh label={t("term.col.type")} col="side" sort={pendingSort} onSort={onPendingSort} />
                 <SortTh label="Order" col="type" sort={pendingSort} onSort={onPendingSort} />
-                <SortTh label="Asset" col="symbol" sort={pendingSort} onSort={onPendingSort} />
-                <th className="px-2 py-2">Volume</th>
-                <th className="px-2 py-2">Price</th>
-                <th className="px-2 py-2" title="Tetik fiyatına uzaklık (pip)">Uzaklık</th>
+                <SortTh label={t("term.col.asset")} col="symbol" sort={pendingSort} onSort={onPendingSort} />
+                <th className="px-2 py-2">{t("term.col.volume")}</th>
+                <th className="px-2 py-2">{t("term.col.price")}</th>
+                <th className="px-2 py-2" title={t("term.col.distance")}>{t("term.col.distance")}</th>
                 <th className="px-2 py-2">SL</th>
                 <th className="px-2 py-2">TP</th>
                 <th className="px-2 py-2">{t("common.cancel")}</th>

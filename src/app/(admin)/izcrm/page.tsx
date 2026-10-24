@@ -3,6 +3,7 @@
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 import { useCallback, useEffect, useState } from "react";
+import { useVisiblePoll } from "@/lib/use-visible-poll";
 import Link from "next/link";
 import LeadDashboard from "@/components/crm/LeadDashboard";
 
@@ -98,9 +99,8 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     load();
-    const id = window.setInterval(load, POLL_MS);
-    return () => window.clearInterval(id);
   }, [load]);
+  useVisiblePoll(load, POLL_MS);
 
   return (
     <div>

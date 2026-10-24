@@ -41,7 +41,9 @@ export default function NotificationBell({ tone = "light" }: { tone?: "light" | 
 
   useEffect(() => {
     load();
-    const iv = window.setInterval(load, 20_000);
+    const iv = window.setInterval(() => {
+      if (!document.hidden) load();
+    }, 20_000);
     const onVis = () => document.visibilityState === "visible" && load();
     document.addEventListener("visibilitychange", onVis);
     if (!("Notification" in window) || !("serviceWorker" in navigator) || !("PushManager" in window)) setPushState("unsupported");

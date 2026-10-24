@@ -346,7 +346,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
             sortMode !== "DEFAULT" ? "text-desk-accent" : ""
           }`}
         >
-          <span>Symbol</span>
+          <span>{t("term.col.symbol")}</span>
           <span className="normal-case tracking-normal" aria-hidden>
             {SORT_ICON[sortMode]}
           </span>
@@ -354,7 +354,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
             <span className="normal-case tracking-normal text-desk-muted/80">· {sortLabel(sortMode, t)}</span>
           )}
         </button>
-        <span>BID / ASK · SPR · %</span>
+        <span>{t("term.watch.quote")}</span>
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto">
         {list.map((s) => {
