@@ -42,7 +42,8 @@ export async function GET(req: Request, ctx: Ctx) {
   });
   if (!user) return NextResponse.json({ error: "User yok" }, { status: 404 });
   const notePage = crmPageWindow(search.get("take"), search.get("skip"));
-  const noteFound = withNotes
+  const profilePart = search.get("part");
+  const noteFound = withNotes && profilePart !== "activity"
     ? await prisma.userNote.findMany({
         where: { userId: id, ...(noteVisibilityWhere(admin) || {}) },
         orderBy: { createdAt: "desc" },
@@ -72,15 +73,18 @@ export async function GET(req: Request, ctx: Ctx) {
   if (scope === "finance") return pack({});
 
   if (scope === "profile") {
-    if (search.get("part") === "notes") {
+    if (profilePart === "notes") {
       return pack({ notes, notesHasMore, notesNextSkip });
     }
-    const activityEvents = await prisma.clientActivityEvent.findMany({
-      where: { userId: id },
-      orderBy: { createdAt: "desc" },
-      take: 50,
+    if (profilePart === "activity") {
+      return pack(await activityPage(id, search.get("take"), search.get("skip")));
+    }
+    return pack({
+      notes,
+      notesHasMore,
+      notesNextSkip,
+      ...(await activityPage(id, null, null)),
     });
-    return pack({ notes, notesHasMore, notesNextSkip, activityEvents: mapActivity(activityEvents) });
   }
 
   if (scope === "positions") {
@@ -325,7 +329,7 @@ export async function GET(req: Request, ctx: Ctx) {
     prisma.clientActivityEvent.findMany({
       where: { userId: id },
       orderBy: { createdAt: "desc" },
-      take: 50,
+      take: first.take + 1,
     }),
   ]);
   const positions = slicePage(positionsFound, first.take, first.skip);
@@ -336,6 +340,7 @@ export async function GET(req: Request, ctx: Ctx) {
   const documents = slicePage(documentsFound, first.take, first.skip);
   const reminders = slicePage(remindersFound, first.take, first.skip);
   const withdrawals = slicePage(withdrawalsFound, first.take, first.skip);
+  const activity = slicePage(activityEvents, first.take, first.skip);
 
   return pack({
     notes,
@@ -369,8 +374,26 @@ export async function GET(req: Request, ctx: Ctx) {
     withdrawalsHasMore: withdrawals.hasMore,
     withdrawalsNextSkip: withdrawals.nextSkip,
     depositMethods,
-    activityEvents: mapActivity(activityEvents),
+    activityEvents: mapActivity(activity.rows),
+    activityHasMore: activity.hasMore,
+    activityNextSkip: activity.nextSkip,
   });
+}
+
+async function activityPage(userId: string, takeRaw: string | null, skipRaw: string | null) {
+  const page = crmPageWindow(takeRaw, skipRaw);
+  const found = await prisma.clientActivityEvent.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+    skip: page.skip,
+    take: page.take + 1,
+  });
+  const sliced = slicePage(found, page.take, page.skip);
+  return {
+    activityEvents: mapActivity(sliced.rows),
+    activityHasMore: sliced.hasMore,
+    activityNextSkip: sliced.nextSkip,
+  };
 }
 
 function mapActivity(

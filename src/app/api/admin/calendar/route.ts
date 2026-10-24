@@ -6,6 +6,34 @@ import { crmPageWindow } from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
 
+const TRADER_LOOKUP_CAP = 200;
+const TRADER_SEARCH_CAP = 50;
+const WORKER_LOOKUP_CAP = 200;
+
+async function traderLookup(q: string, cap: number) {
+  const found = await prisma.user.findMany({
+    where: {
+      role: "TRADER",
+      ...(q
+        ? {
+            OR: [
+              { name: { contains: q } },
+              { email: { contains: q } },
+              { accountLoginId: { contains: q } },
+            ],
+          }
+        : {}),
+    },
+    select: { id: true, name: true, email: true },
+    orderBy: { name: "asc" },
+    take: cap + 1,
+  });
+  return {
+    traders: found.length > cap ? found.slice(0, cap) : found,
+    tradersPartial: found.length > cap,
+  };
+}
+
 export async function GET(req: Request) {
   await ensureDemoSeed();
   const admin = await requireAdmin();
@@ -19,6 +47,11 @@ export async function GET(req: Request) {
   const take = pageWindow ? pageWindow.take : 300;
   const skip = pageWindow ? pageWindow.skip : 0;
   const includeLookups = !pageWindow || skip === 0;
+  const traderQ = (searchParams.get("traderQ") || "").trim().slice(0, 80);
+  if (searchParams.get("lookup") === "traders") {
+    const cap = traderQ ? TRADER_SEARCH_CAP : TRADER_LOOKUP_CAP;
+    return NextResponse.json(await traderLookup(traderQ, cap));
+  }
 
   const [found, workers, traders] = await Promise.all([
     prisma.reminder.findMany({
@@ -33,16 +66,10 @@ export async function GET(req: Request) {
           where: { role: "ADMIN" },
           select: { id: true, name: true },
           orderBy: { name: "asc" },
+          take: WORKER_LOOKUP_CAP + 1,
         })
       : Promise.resolve(undefined),
-    includeLookups
-      ? prisma.user.findMany({
-          where: { role: "TRADER" },
-          select: { id: true, name: true, email: true },
-          orderBy: { name: "asc" },
-          take: 201,
-        })
-      : Promise.resolve(undefined),
+    includeLookups ? traderLookup("", TRADER_LOOKUP_CAP) : Promise.resolve(undefined),
   ]);
 
   const hasMore = Boolean(pageWindow) && found.length > take;
@@ -63,10 +90,13 @@ export async function GET(req: Request) {
     })),
     hasMore,
     nextSkip: skip + rows.length,
-    ...(workers ? { workers } : {}),
-    ...(traders
-      ? { traders: traders.length > 200 ? traders.slice(0, 200) : traders, tradersPartial: traders.length > 200 }
+    ...(workers
+      ? {
+          workers: workers.length > WORKER_LOOKUP_CAP ? workers.slice(0, WORKER_LOOKUP_CAP) : workers,
+          workersPartial: workers.length > WORKER_LOOKUP_CAP,
+        }
       : {}),
+    ...(traders ? { traders: traders.traders, tradersPartial: traders.tradersPartial } : {}),
   });
 }
 

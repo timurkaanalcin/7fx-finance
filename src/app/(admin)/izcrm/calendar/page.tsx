@@ -26,6 +26,10 @@ export default function CalendarPage() {
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [traders, setTraders] = useState<Opt[]>([]);
   const [tradersPartial, setTradersPartial] = useState(false);
+  const [traderQ, setTraderQ] = useState("");
+  const [traderHits, setTraderHits] = useState<Opt[] | null>(null);
+  const [searchPartial, setSearchPartial] = useState(false);
+  const [pinnedTrader, setPinnedTrader] = useState<Opt | null>(null);
   const [form, setForm] = useState({
     body: "",
     remindAt: "",
@@ -66,6 +70,32 @@ export default function CalendarPage() {
   useEffect(() => {
     load();
   }, [load]);
+
+  useEffect(() => {
+    const q = traderQ.trim();
+    if (!q) {
+      setTraderHits(null);
+      setSearchPartial(false);
+      return;
+    }
+    const ac = new AbortController();
+    const timer = setTimeout(() => {
+      void fetch(`/api/admin/calendar?lookup=traders&traderQ=${encodeURIComponent(q)}`, { signal: ac.signal })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (!data) return;
+          setTraderHits(Array.isArray(data.traders) ? data.traders : []);
+          setSearchPartial(Boolean(data.tradersPartial));
+        })
+        .catch(() => {
+          /* aborted or offline */
+        });
+    }, 250);
+    return () => {
+      clearTimeout(timer);
+      ac.abort();
+    };
+  }, [traderQ]);
 
   async function create() {
     setBusy(true);
@@ -109,6 +139,9 @@ export default function CalendarPage() {
   }
 
   const now = Date.now();
+  const traderPool = traderHits ?? traders;
+  const traderOptions =
+    pinnedTrader && !traderPool.some((t) => t.id === pinnedTrader.id) ? [pinnedTrader, ...traderPool] : traderPool;
 
   return (
     <div>
@@ -184,19 +217,35 @@ export default function CalendarPage() {
               onChange={(e) => setForm({ ...form, remindAt: e.target.value })}
               className="w-full rounded border border-neutral-300 bg-white px-2 py-1.5"
             />
+            <input
+              value={traderQ}
+              onChange={(e) => setTraderQ(e.target.value)}
+              placeholder={i18n("crm.cal.traderSearch")}
+              className="w-full rounded border border-neutral-300 bg-white px-2 py-1.5"
+            />
             <select
               value={form.userId}
-              onChange={(e) => setForm({ ...form, userId: e.target.value })}
+              onChange={(e) => {
+                const userId = e.target.value;
+                const pool = traderPool;
+                const found = pool.find((t) => t.id === userId) || (pinnedTrader?.id === userId ? pinnedTrader : null);
+                setPinnedTrader(found);
+                setForm({ ...form, userId });
+              }}
               className="w-full rounded border border-neutral-300 bg-white px-2 py-1.5"
             >
               <option value="">{i18n("crm.cal.traderOpt")}</option>
-              {traders.map((t) => (
+              {traderOptions.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.name}
                 </option>
               ))}
             </select>
-            {tradersPartial && <p className="text-[11px] text-amber-700">{i18n("crm.cal.tradersPartial")}</p>}
+            {(traderHits ? searchPartial : tradersPartial) && (
+              <p className="text-[11px] text-amber-700">
+                {i18n(traderHits ? "crm.cal.traderSearchPartial" : "crm.cal.tradersPartial")}
+              </p>
+            )}
             <div className="flex items-center gap-2">
               <label className="text-neutral-500">{i18n("crm.ui.color")}</label>
               <input

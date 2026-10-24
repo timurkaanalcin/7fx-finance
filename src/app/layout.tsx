@@ -71,7 +71,9 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const locale = publicLocaleFromCookie(cookies().get("fx_lang")?.value);
+  const rawLang = cookies().get("fx_lang")?.value;
+  const hasLocaleCookie = typeof rawLang === "string" && rawLang.trim() !== "";
+  const locale = publicLocaleFromCookie(rawLang);
   const initialDict = await publicDict(locale);
   const meta = LOCALE_META[locale];
   return (
@@ -90,7 +92,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
       </head>
       <body className="antialiased">
-        <PublicI18n initialLocale={locale} initialDict={initialDict}>
+        <PublicI18n initialLocale={locale} initialDict={initialDict} hasLocaleCookie={hasLocaleCookie}>
           {children}
         </PublicI18n>
         <InstallBanner />
