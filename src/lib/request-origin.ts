@@ -1,3 +1,5 @@
+import { CRM_HOSTNAMES } from "@/lib/crm-host";
+
 /**
  * Public site origin for redirects and shareable links.
  * Prefer the host the browser actually used (customer / financeunit / control / login)
@@ -68,12 +70,37 @@ function isBindHost(hostname: string): boolean {
   return !h || h === "0.0.0.0" || h === "::" || h === "[::]";
 }
 
+/** Trading sites. CRM hosts come from CRM_HOSTNAMES. */
+const PRODUCTION_REDIRECT_HOSTS = new Set([
+  "7fx.customer.org.tr",
+  "7fx.financeunit.co",
+  "7fx.control.org.tr",
+  "7fx.login.org.tr",
+]);
+
+/** This project's Vercel host and its preview deployments, not every *.vercel.app site. */
+const VERCEL_PROJECT_HOST = "7fx-finance.vercel.app";
+const VERCEL_PREVIEW_HOST = /^7fx-finance-[a-z0-9-]+\.vercel\.app$/;
+
+/**
+ * Hosts we will copy into a Location header. Anything else is ignored so a
+ * forged X-Forwarded-Host cannot turn a login redirect into an open redirect.
+ */
+export function isTrustedRedirectHost(hostname: string): boolean {
+  const h = hostname.trim().toLowerCase().replace(/\.$/, "");
+  if (!h || h.includes("..") || !/^[a-z0-9.-]+$/.test(h)) return false;
+  if (h === "localhost" || h === "127.0.0.1") return true;
+  if (PRODUCTION_REDIRECT_HOSTS.has(h) || CRM_HOSTNAMES.has(h)) return true;
+  if (h === "crm7fx.localhost" || h.endsWith(".crm7fx.localhost")) return true;
+  if (h === VERCEL_PROJECT_HOST || VERCEL_PREVIEW_HOST.test(h)) return true;
+  return false;
+}
+
 /**
  * Absolute Location for a same-site path.
- * X-Forwarded-Host wins over Host, and both win over req.url, so Next's
- * internal URL (127.0.0.1 rewritten to localhost) cannot pick the domain.
- * localhost and 127.0.0.1 stay when they are the forwarded host: they are real
- * browser hosts in local runs.
+ * A trusted X-Forwarded-Host wins over a trusted Host, and both win over req.url,
+ * so Next's internal URL (127.0.0.1 rewritten to localhost) cannot pick the domain.
+ * An untrusted header is dropped and the origin falls back to req.url.
  */
 export function locationForRequest(req: { url: string; headers: HeaderSource }, path: string): string {
   if (path.startsWith("https://") || path.startsWith("http://")) return path;
@@ -86,7 +113,9 @@ export function locationForRequest(req: { url: string; headers: HeaderSource }, 
   } catch {
     /* req.url is only a last resort */
   }
-  const chosen = !isBindHost(xf.hostname) ? xf : !isBindHost(host.hostname) ? host : null;
+  const xfOk = isTrustedRedirectHost(xf.hostname);
+  const hostOk = isTrustedRedirectHost(host.hostname);
+  const chosen = xfOk ? xf : hostOk ? host : null;
   let origin = "";
   if (chosen) {
     const hostname = chosen.hostname.toLowerCase();
