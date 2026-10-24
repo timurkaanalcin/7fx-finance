@@ -52,6 +52,62 @@ async function postTrade(
 function pageHidden(): boolean {
   return typeof document !== "undefined" && document.hidden;
 }
+
+type ClosedPayload = {
+  positions: PositionRow[];
+  hasMore: boolean;
+  nextSkip: number;
+  calendar: PositionRow[] | null;
+};
+
+function asClosedRow(row: PositionRow): PositionRow {
+  return {
+    id: row.id,
+    symbol: row.symbol,
+    chartSymbol: row.chartSymbol ?? null,
+    side: row.side,
+    volume: Number(row.volume) || 0,
+    openPrice: Number(row.openPrice) || 0,
+    currentPrice: Number(row.currentPrice) || Number(row.closePrice) || 0,
+    stopLoss: row.stopLoss ?? null,
+    takeProfit: row.takeProfit ?? null,
+    profit: Number(row.profit) || 0,
+    margin: Number(row.margin) || 0,
+    status: row.status || "CLOSED",
+    openedAt: row.openedAt,
+    closedAt: row.closedAt ?? null,
+    closePrice: row.closePrice ?? null,
+    closeProfit: row.closeProfit ?? null,
+  };
+}
+
+function parseClosedPayload(data: unknown): ClosedPayload {
+  if (Array.isArray(data)) {
+    const positions = (data as PositionRow[]).map(asClosedRow);
+    return { positions, hasMore: false, nextSkip: positions.length, calendar: null };
+  }
+  const body = data && typeof data === "object" ? (data as Record<string, unknown>) : {};
+  const positions = Array.isArray(body.positions) ? (body.positions as PositionRow[]).map(asClosedRow) : [];
+  const calendar = Array.isArray(body.calendar) ? (body.calendar as PositionRow[]).map(asClosedRow) : null;
+  return {
+    positions,
+    hasMore: Boolean(body.hasMore),
+    nextSkip: typeof body.nextSkip === "number" ? body.nextSkip : positions.length,
+    calendar,
+  };
+}
+
+function mergeClosed(prev: PositionRow[], page: PositionRow[]): PositionRow[] {
+  const map = new Map<string, PositionRow>();
+  for (const p of prev) map.set(p.id, p);
+  for (const p of page) map.set(p.id, p);
+  return Array.from(map.values()).sort((a, b) => {
+    const ta = new Date(a.closedAt ?? a.openedAt).getTime() || 0;
+    const tb = new Date(b.closedAt ?? b.openedAt).getTime() || 0;
+    if (tb !== ta) return tb - ta;
+    return a.id < b.id ? 1 : a.id > b.id ? -1 : 0;
+  });
+}
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import TopBar from "./TopBar";
@@ -113,6 +169,13 @@ export default function TerminalShell() {
   const [bootNonce, setBootNonce] = useState(0);
   const [openPositions, setOpenPositions] = useState<PositionRow[]>([]);
   const [closedPositions, setClosedPositions] = useState<PositionRow[]>([]);
+  const [closedCalendar, setClosedCalendar] = useState<PositionRow[]>([]);
+  const [closedHasMore, setClosedHasMore] = useState(false);
+  const [closedLoading, setClosedLoading] = useState(false);
+  const closedSkipRef = useRef(0);
+  const closedHasMoreRef = useRef(false);
+  const closedBusyRef = useRef(false);
+  closedHasMoreRef.current = closedHasMore;
   const [pendingOrders, setPendingOrders] = useState<OrderRow[]>([]);
   const [ready, setReady] = useState(false);
   const [depositOpen, setDepositOpen] = useState(false);
@@ -209,18 +272,37 @@ export default function TerminalShell() {
         publishPosErr("open", true);
         return;
       }
-      setOpenPositions(await openRes.json());
+      const data = await openRes.json();
+      const rows = Array.isArray(data) ? data : Array.isArray(data?.positions) ? data.positions : null;
+      if (!rows) {
+        publishPosErr("open", true);
+        return;
+      }
+      setOpenPositions(rows);
+      if (data && typeof data === "object" && data.account && typeof data.account === "object") {
+        setAccount(data.account as AccountMetrics);
+      }
       publishPosErr("open", false);
     } catch {
       publishPosErr("open", true);
     }
   }, [publishPosErr, router]);
 
+  const applyClosedPage = useCallback((parsed: ClosedPayload, mode: "refresh" | "append") => {
+    setClosedPositions((prev) => mergeClosed(prev, parsed.positions));
+    if (parsed.calendar) setClosedCalendar(parsed.calendar);
+    if (mode === "append" || closedSkipRef.current <= parsed.nextSkip) {
+      closedSkipRef.current = parsed.nextSkip;
+      setClosedHasMore(parsed.hasMore);
+    }
+  }, []);
+
   const refreshHistory = useCallback(async () => {
     try {
+      const tz = new Date().getTimezoneOffset();
       const [closedRes, ordersRes] = await Promise.all([
-        fetch("/api/positions?status=CLOSED", { credentials: "include" }),
-        fetch("/api/orders", { credentials: "include" }),
+        fetch(`/api/positions?status=CLOSED&skip=0&tzOffset=${tz}`, { credentials: "include" }),
+        fetch("/api/orders?status=PENDING", { credentials: "include" }),
       ]);
       if (closedRes.status === 401 || ordersRes.status === 401) {
         router.push("/login");
@@ -230,14 +312,62 @@ export default function TerminalShell() {
         publishPosErr("history", true);
         return;
       }
-      setClosedPositions(await closedRes.json());
+      applyClosedPage(parseClosedPayload(await closedRes.json()), "refresh");
       const orders: OrderRow[] = await ordersRes.json();
-      setPendingOrders(orders.filter((o) => o.status === "PENDING"));
+      setPendingOrders(Array.isArray(orders) ? orders.filter((o) => o.status === "PENDING") : []);
       publishPosErr("history", false);
     } catch {
       publishPosErr("history", true);
     }
-  }, [publishPosErr, router]);
+  }, [applyClosedPage, publishPosErr, router]);
+
+  const loadMoreClosed = useCallback(async () => {
+    if (!closedHasMoreRef.current || closedBusyRef.current) return;
+    closedBusyRef.current = true;
+    setClosedLoading(true);
+    try {
+      const tz = new Date().getTimezoneOffset();
+      const res = await fetch(
+        `/api/positions?status=CLOSED&skip=${closedSkipRef.current}&tzOffset=${tz}`,
+        { credentials: "include" }
+      );
+      if (res.status === 401) {
+        router.push("/login");
+        return;
+      }
+      if (!res.ok) {
+        publishPosErr("history", true);
+        return;
+      }
+      applyClosedPage(parseClosedPayload(await res.json()), "append");
+      publishPosErr("history", false);
+    } catch {
+      publishPosErr("history", true);
+    } finally {
+      closedBusyRef.current = false;
+      setClosedLoading(false);
+    }
+  }, [applyClosedPage, publishPosErr, router]);
+
+  const loadClosedDay = useCallback(async (day: string) => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return;
+    try {
+      const tz = new Date().getTimezoneOffset();
+      const res = await fetch(
+        `/api/positions?status=CLOSED&day=${day}&tzOffset=${tz}`,
+        { credentials: "include" }
+      );
+      if (res.status === 401) {
+        router.push("/login");
+        return;
+      }
+      if (!res.ok) return;
+      const parsed = parseClosedPayload(await res.json());
+      setClosedPositions((prev) => mergeClosed(prev, parsed.positions));
+    } catch {
+      /* keep the rows already loaded */
+    }
+  }, [router]);
 
   const refreshPositions = useCallback(async () => {
     await Promise.all([refreshOpenPositions(), refreshHistory()]);
@@ -822,6 +952,11 @@ export default function TerminalShell() {
                 onTab={setTab}
                 openPositions={openPositions}
                 closedPositions={closedPositions}
+                closedCalendar={closedCalendar}
+                closedHasMore={closedHasMore}
+                closedLoading={closedLoading}
+                onLoadMoreClosed={() => void loadMoreClosed()}
+                onLoadClosedDay={(day) => void loadClosedDay(day)}
                 currency={account?.currency || "USD"}
                 prices={prices}
                 pendingOrders={pendingOrders}
@@ -855,6 +990,11 @@ export default function TerminalShell() {
                 onTab={setTab}
                 openPositions={openPositions}
                 closedPositions={closedPositions}
+                closedCalendar={closedCalendar}
+                closedHasMore={closedHasMore}
+                closedLoading={closedLoading}
+                onLoadMoreClosed={() => void loadMoreClosed()}
+                onLoadClosedDay={(day) => void loadClosedDay(day)}
                 currency={account?.currency || "USD"}
                 prices={prices}
                 pendingOrders={pendingOrders}
