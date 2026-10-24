@@ -7,6 +7,7 @@ import { ACCOUNT_CURRENCIES, RETENTION_STATUSES, SALE_STATUSES } from "@/lib/mem
 import { dayEndIso, dayStartIso } from "@/lib/crm-api";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useVisiblePoll } from "@/lib/use-visible-poll";
 import { LocationLabel, PresenceCell } from "@/components/crm/Presence";
 import CopyButton from "@/components/crm/CopyButton";
 import MultiSelect, { csvList, toggleCsv } from "@/components/crm/MultiSelect";
@@ -310,12 +311,7 @@ export default function AdminUsersPage() {
 
   // Auto-refresh presence/balances. Only row data is replaced — filters, selection and the
   // create form live in separate state, so typed input is never overwritten.
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      if (document.visibilityState === "visible") load();
-    }, REFRESH_MS);
-    return () => window.clearInterval(timer);
-  }, [load]);
+  useVisiblePoll(load, REFRESH_MS);
 
   function toggle(id: string) {
     setSelected((prev) => {

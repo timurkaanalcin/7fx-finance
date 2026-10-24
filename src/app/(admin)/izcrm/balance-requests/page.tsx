@@ -6,6 +6,7 @@ import { fmtCrmDate } from "@/lib/crm-format";
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useVisiblePoll } from "@/lib/use-visible-poll";
 import { DEFAULT_RESET_BALANCE } from "@/lib/margin-call";
 
 type Row = {
@@ -64,13 +65,7 @@ export default function AdminBalanceRequestsPage() {
   }, [load]);
 
   // Pending queue refreshes itself so new requests show up without a manual reload.
-  useEffect(() => {
-    if (filter !== "PENDING") return;
-    const t = window.setInterval(() => {
-      if (document.visibilityState === "visible") load();
-    }, 30_000);
-    return () => window.clearInterval(t);
-  }, [filter, load]);
+  useVisiblePoll(load, 30_000, filter === "PENDING");
 
   // Stable base counts per type from the loaded set (independent of the type chip / search)
   const typeCounts = useMemo(() => {

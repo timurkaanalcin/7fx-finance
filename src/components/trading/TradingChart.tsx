@@ -18,15 +18,16 @@ import {
 import type { PriceTick } from "./types";
 import { formatPrice, getSymbol } from "@/lib/symbols";
 import SymbolIcon from "@/components/ui/SymbolIcon";
+import { useI18n } from "@/lib/i18n/context";
 
 const TIMEFRAMES = [
   { id: "1m", label: "1′" },
   { id: "5m", label: "5′" },
   { id: "15m", label: "15′" },
-  { id: "1h", label: "1s" },
-  { id: "4h", label: "4s" },
-  { id: "1D", label: "1G" },
-  { id: "1W", label: "W" },
+  { id: "1h", label: "term.tf.1h" },
+  { id: "4h", label: "term.tf.4h" },
+  { id: "1D", label: "term.tf.1D" },
+  { id: "1W", label: "term.tf.1W" },
 ];
 
 function timeframeSeconds(tf: string): number {
@@ -142,6 +143,7 @@ export default function TradingChart({
   price,
   levels,
 }: Props) {
+  const { t } = useI18n();
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
@@ -167,7 +169,7 @@ export default function TradingChart({
     }
   });
   const [utcClock, setUtcClock] = useState("");
-  const [feedError, setFeedError] = useState<string | null>(null);
+  const [feedError, setFeedError] = useState<{ k: "load" | "update" | "stale" | "feed"; d?: string } | null>(null);
   const [livePulse, setLivePulse] = useState(false);
   const [liveFresh, setLiveFresh] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -481,17 +483,17 @@ export default function TradingChart({
             else if (restore) ts?.setVisibleLogicalRange(restore);
             else ts?.scrollToPosition(0, false);
           } catch {
-            setFeedError("Could not update chart");
+            setFeedError({ k: "update" });
           }
         }
 
         if (data.error) {
-          setFeedError(data.stale ? `Veri gecikmeli: ${data.error}` : `Market verisi: ${data.error}`);
+          setFeedError({ k: data.stale ? "stale" : "feed", d: String(data.error || "") });
         } else {
           setFeedError(null);
         }
       } catch {
-        if (!cancelled) setFeedError("Could not load chart data");
+        if (!cancelled) setFeedError({ k: "load" });
       }
     }
 
@@ -793,7 +795,7 @@ export default function TradingChart({
                   : "text-desk-muted hover:bg-desk-hover hover:text-desk-text"
               }`}
             >
-              {tf.label}
+              {tf.label.includes(".") ? t(tf.label) : tf.label}
             </button>
           ))}
         </div>
@@ -806,7 +808,7 @@ export default function TradingChart({
               chartType === "candle" ? "bg-desk-elev text-desk-text" : "text-desk-muted hover:text-desk-text"
             }`}
           >
-            Mum
+            {t("term.chart.candle")}
           </button>
           <button
             type="button"
@@ -816,7 +818,7 @@ export default function TradingChart({
               chartType === "line" ? "bg-desk-elev text-desk-text" : "text-desk-muted hover:text-desk-text"
             }`}
           >
-            Line
+            {t("term.chart.line")}
           </button>
         </div>
       </div>
@@ -824,7 +826,11 @@ export default function TradingChart({
 
       {feedError && (
         <div className="absolute bottom-3 left-1/2 z-20 -translate-x-1/2 rounded-control bg-desk-warn/95 px-3 py-1.5 text-[11px] font-medium text-black shadow-lg">
-          {feedError}
+          {feedError.k === "load"
+            ? t("term.chart.loadFail")
+            : feedError.k === "update"
+              ? t("term.chart.updateFail")
+              : t(feedError.k === "stale" ? "term.chart.stale" : "term.chart.feed").replace("{error}", feedError.d || "")}
         </div>
       )}
 
@@ -839,10 +845,10 @@ export default function TradingChart({
             }
           }}
           className="fx-tap-compact absolute bottom-10 right-[4.5rem] z-20 flex items-center gap-1 rounded-full border border-desk-border/70 bg-desk-panel/95 px-3 py-1.5 text-[11px] font-semibold text-desk-text shadow-desk-panel hover:bg-desk-hover"
-          title="Canlı fiyata dön · Back to live"
-          aria-label="Canlı fiyata dön · Back to live"
+          title={t("term.chart.live")}
+          aria-label={t("term.chart.live")}
         >
-          Canlı
+          {t("term.chart.live")}
           <span aria-hidden="true">⇥</span>
         </button>
       )}

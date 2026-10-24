@@ -190,10 +190,15 @@ export function useTraderPresence(userId: string, intervalMs = 20000) {
     const poll = window.setInterval(() => {
       if (document.visibilityState === "visible") load();
     }, intervalMs);
+    const onVis = () => {
+      if (document.visibilityState === "visible") load();
+    };
+    document.addEventListener("visibilitychange", onVis);
     const tick = window.setInterval(() => setNow(Date.now() + skew.current), 15000);
     return () => {
       window.clearInterval(poll);
       window.clearInterval(tick);
+      document.removeEventListener("visibilitychange", onVis);
     };
   }, [load, intervalMs]);
 
