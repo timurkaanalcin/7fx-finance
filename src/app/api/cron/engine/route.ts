@@ -8,11 +8,9 @@ export const maxDuration = 30;
 
 /**
  * Vercel Cron entry for pending fills and SL/TP.
- * Schedule is every minute in vercel.json. Hobby rejects that expression
- * (once per day only). Pro and Enterprise run it once a minute, which is
- * the fastest interval those plans allow.
- * If CRON_SECRET is unset this fails closed. The owner must add it; Vercel
- * then sends Authorization: Bearer <CRON_SECRET>.
+ * vercel.json schedules this once a day (Hobby allows only a daily cron).
+ * GitHub Actions calls the same route every five minutes. If CRON_SECRET is
+ * unset this fails closed. The owner must set it on Vercel and as a repo secret.
  */
 export async function GET(req: Request) {
   const decision = cronAuthorization(process.env.CRON_SECRET, req.headers.get("authorization"));

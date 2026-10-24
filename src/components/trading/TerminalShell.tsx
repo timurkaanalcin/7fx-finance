@@ -291,17 +291,21 @@ export default function TerminalShell() {
   const applyClosedPage = useCallback((parsed: ClosedPayload, mode: "refresh" | "append") => {
     setClosedPositions((prev) => mergeClosed(prev, parsed.positions));
     if (parsed.calendar) setClosedCalendar(parsed.calendar);
+    else if (mode === "refresh") {
+      setClosedCalendar((prev) => (prev.length ? mergeClosed(prev, parsed.positions) : prev));
+    }
     if (mode === "append" || closedSkipRef.current <= parsed.nextSkip) {
       closedSkipRef.current = parsed.nextSkip;
       setClosedHasMore(parsed.hasMore);
     }
   }, []);
 
-  const refreshHistory = useCallback(async () => {
+  const refreshHistory = useCallback(async (withCalendar = true) => {
     try {
       const tz = new Date().getTimezoneOffset();
+      const calendar = withCalendar ? "1" : "0";
       const [closedRes, ordersRes] = await Promise.all([
-        fetch(`/api/positions?status=CLOSED&skip=0&tzOffset=${tz}`, { credentials: "include" }),
+        fetch(`/api/positions?status=CLOSED&skip=0&tzOffset=${tz}&calendar=${calendar}`, { credentials: "include" }),
         fetch("/api/orders?status=PENDING", { credentials: "include" }),
       ]);
       if (closedRes.status === 401 || ordersRes.status === 401) {
@@ -512,27 +516,28 @@ export default function TerminalShell() {
     };
   }, [symbol, markFeedOk]);
 
-  // Open positions stay on a 5s tick. Account, closed trades, orders, and balance
-  // requests refresh every 30s, and once immediately when the tab becomes visible.
+  // Open positions stay on a 5s tick. Account, the closed page, orders, and balance
+  // requests refresh every 30s. The full closed ledger is loaded on boot and when
+  // the tab becomes visible, not on that 30s tick.
   useEffect(() => {
     const SLOW_MS = 30_000;
     let slowAt = Date.now();
-    const slow = () => {
+    const slow = (withCalendar: boolean) => {
       slowAt = Date.now();
       void refreshAccount();
-      void refreshHistory();
+      void refreshHistory(withCalendar);
       void refreshBalanceRequests();
     };
     const tick = () => {
       if (pageHidden()) return;
       void refreshOpenPositions();
-      if (Date.now() - slowAt >= SLOW_MS) slow();
+      if (Date.now() - slowAt >= SLOW_MS) slow(false);
     };
     const id = setInterval(tick, 5000);
     const onVis = () => {
       if (pageHidden()) return;
       void refreshOpenPositions();
-      slow();
+      slow(true);
     };
     document.addEventListener("visibilitychange", onVis);
     return () => {
@@ -557,7 +562,7 @@ export default function TerminalShell() {
     if (openSigRef.current === sig) return;
     openSigRef.current = sig;
     void refreshAccount();
-    void refreshHistory();
+    void refreshHistory(false);
   }, [openPositions, ready, refreshAccount, refreshHistory]);
 
   // Margin-call episode detection (once per episode)

@@ -100,10 +100,23 @@ async function main() {
   };
   assert.equal(vercel.crons.length, 1);
   assert.equal(vercel.crons[0].path, "/api/cron/engine");
-  assert.equal(vercel.crons[0].schedule, "* * * * *");
+  assert.equal(vercel.crons[0].schedule, "0 3 * * *");
+  assert.equal((vercel.crons[0].schedule.match(/\*/g) || []).length, 3);
+
+  const workflow = readSrc(".github/workflows/engine-cron.yml");
+  assert.match(workflow, /cron: "\*\/5 \* \* \* \*"/);
+  assert.match(workflow, /workflow_dispatch:/);
+  assert.match(workflow, /https:\/\/7fx\.customer\.org\.tr\/api\/cron\/engine/);
+  assert.match(workflow, /Authorization: Bearer \$\{CRON_SECRET\}/);
+  assert.match(workflow, /secrets\.CRON_SECRET/);
+  assert.match(workflow, /--max-time 35/);
+  assert.match(workflow, /non-2xx/);
+  assert.equal(workflow.includes("echo \"${CRON_SECRET"), false);
+  assert.equal(workflow.includes("set -x"), false);
 
   const example = readSrc(".env.example");
   assert.match(example, /CRON_SECRET/);
+  assert.match(example, /repository secret CRON_SECRET/);
 
   console.log("engine-cron tests passed");
 }

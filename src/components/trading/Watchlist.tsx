@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
 import { formatPrice } from "@/lib/symbols";
+import { displayOpenProfit } from "@/lib/display-profit";
 import type { PositionRow, PriceTick, SymbolDef } from "./types";
 import SymbolIcon from "@/components/ui/SymbolIcon";
 
@@ -119,15 +120,19 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
       if (!key) continue;
       const cur = m.get(key) || { count: 0, profit: 0, buyLots: 0, sellLots: 0 };
       cur.count += 1;
-      const pr = Number(p.profit);
-      if (Number.isFinite(pr)) cur.profit += pr;
+      const tick = prices[key] || prices[a] || prices[b];
+      const quoted = tick ? (p.side === "SELL" ? tick.ask : tick.bid) : Number.NaN;
+      const live = Number.isFinite(quoted) && quoted > 0 ? quoted : tick?.mid;
+      const mark = Number.isFinite(live) && live > 0 ? live : Number(p.currentPrice) || Number(p.openPrice);
+      const size = symbols.find((s) => s.symbol.toUpperCase() === key)?.contractSize;
+      cur.profit += displayOpenProfit(p, mark, size);
       const vol = Number(p.volume) || 0;
       if (p.side === "SELL") cur.sellLots += vol;
       else cur.buyLots += vol;
       m.set(key, cur);
     }
     return m;
-  }, [openPositions, symbols]);
+  }, [openPositions, symbols, prices]);
   const hasOpen = openBySymbol.size > 0;
   useEffect(() => {
     if (filter === "OPEN" && !hasOpen) setFilter("ALL");
