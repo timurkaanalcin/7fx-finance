@@ -111,10 +111,10 @@ export default function LandingPage() {
 
           <div className="flex items-center gap-2">
             <LanguageSwitcher compact tone="dark" />
-            <Link href="/login" className="fx-btn-secondary hidden rounded-full px-4 py-2 text-[13px] font-semibold sm:inline-flex">
-              {t("common.signIn")}
+            <Link href="/login" data-fx-cta="sign-in" className="fx-btn-secondary hidden min-h-10 items-center rounded-full px-4 py-2 text-[13px] font-medium sm:inline-flex">
+              {t("landing.signIn")}
             </Link>
-            <Link href="/register" className="fx-btn-primary rounded-full px-4 py-2 text-[13px] font-semibold">
+            <Link href="/register" data-fx-cta="open" className="fx-btn-primary inline-flex min-h-10 items-center rounded-full px-4 py-2 text-[13px] font-medium">
               {t("landing.openAccount")}
             </Link>
             <button
@@ -150,8 +150,8 @@ export default function LandingPage() {
                 {item.label}
               </button>
             ))}
-            <Link href="/login" onClick={() => setMenuOpen(false)}>
-              {t("common.signIn")}
+            <Link href="/login" data-fx-cta="sign-in" onClick={() => setMenuOpen(false)}>
+              {t("landing.signIn")}
             </Link>
           </div>
         ) : null}
@@ -173,14 +173,15 @@ export default function LandingPage() {
                 {t("landing.heroTitle")}
               </h1>
               <p className="fx-hero-body mt-5">{t("landing.heroBody")}</p>
-              <div className="fx-cta-row mt-8">
-                <Link href="/register" className="fx-btn-primary inline-flex min-h-12 items-center justify-center rounded-full px-6 text-[15px] font-semibold">
+              <div className="fx-cta-row mt-8" data-fx-hero-cta="">
+                <Link href="/register" data-fx-cta="open" className="fx-btn-primary inline-flex min-h-12 items-center justify-center rounded-full px-6 text-[15px] font-medium">
                   {t("landing.openAccount")}
                 </Link>
-                <Link href="/login" className="fx-btn-secondary inline-flex min-h-12 items-center justify-center rounded-full px-6 text-[15px] font-semibold">
-                  {t("common.signIn")}
+                <Link href="/login" data-fx-cta="sign-in" className="fx-btn-secondary inline-flex min-h-12 items-center justify-center rounded-full px-6 text-[15px] font-medium">
+                  {t("landing.signIn")}
                 </Link>
               </div>
+              <p className="fx-cta-hint">{t("landing.cta.hint")}</p>
             </div>
             <LiveHeroChart />
           </div>
@@ -188,7 +189,7 @@ export default function LandingPage() {
 
         <LiveTape />
 
-        <section className="fx-trust-band" aria-label={t("landing.trust.ssl")}>
+        <section className="fx-trust-band" aria-label={t("landing.trust.label")} data-fx-trust="">
           <ul className="fx-shell">
             {[
               t("landing.trust.symbols"),
@@ -217,11 +218,11 @@ export default function LandingPage() {
                 <p>{t("landing.ctaBody")}</p>
               </div>
               <div className="fx-cta-row">
-                <Link href="/register" className="fx-btn-primary inline-flex min-h-12 items-center justify-center rounded-full px-6 text-sm font-semibold">
+                <Link href="/register" data-fx-cta="open" className="fx-btn-primary inline-flex min-h-12 items-center justify-center rounded-full px-6 text-sm font-medium">
                   {t("landing.openAccount")}
                 </Link>
-                <Link href="/login" className="fx-btn-secondary inline-flex min-h-12 items-center justify-center rounded-full px-6 text-sm font-semibold">
-                  {t("common.signIn")}
+                <Link href="/login" data-fx-cta="sign-in" className="fx-btn-secondary inline-flex min-h-12 items-center justify-center rounded-full px-6 text-sm font-medium">
+                  {t("landing.signIn")}
                 </Link>
               </div>
             </div>
@@ -239,8 +240,8 @@ export default function LandingPage() {
             <p className="fx-section-body mt-4 max-w-[680px]">{t("landing.aboutP1")}</p>
             <div className="fx-feature-grid">
               {features.map((card) => (
-                <article key={card.title} className="fx-feature-card">
-                  <h3>{card.title}</h3>
+                <article key={card.title} className="fx-feature-card" data-fx-feature="">
+                  <h3 className="font-medium">{card.title}</h3>
                   <p>{card.body}</p>
                 </article>
               ))}
@@ -264,7 +265,7 @@ export default function LandingPage() {
               </ul>
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <InstallAppButtons size="mobile" />
-                <Link href="/ios" className="fx-btn-secondary inline-flex min-h-12 items-center rounded-full px-5 text-sm font-semibold">
+                <Link href="/ios" className="fx-btn-secondary inline-flex min-h-12 items-center rounded-full px-5 text-sm font-medium">
                   {t("landing.ios.pageTitle")}
                 </Link>
               </div>
@@ -286,8 +287,8 @@ export default function LandingPage() {
                 { title: t("landing.sec.kyc.t"), body: t("landing.sec.kyc.d") },
                 { title: t("landing.sec.access.t"), body: t("landing.sec.access.d") },
               ].map((card) => (
-                <article key={card.title} className="fx-feature-card">
-                  <h3>{card.title}</h3>
+                <article key={card.title} className="fx-feature-card" data-fx-feature="">
+                  <h3 className="font-medium">{card.title}</h3>
                   <p>{card.body}</p>
                 </article>
               ))}
@@ -350,11 +351,11 @@ export default function LandingPage() {
               <p className="fx-section-body mt-3 max-w-lg">{t("landing.ctaBody")}</p>
             </div>
             <div className="fx-cta-row">
-              <Link href="/register" className="fx-btn-primary inline-flex min-h-12 items-center justify-center rounded-full px-7 text-sm font-semibold">
+              <Link href="/register" data-fx-cta="open" className="fx-btn-primary inline-flex min-h-12 items-center justify-center rounded-full px-7 text-sm font-medium">
                 {t("landing.openAccount")}
               </Link>
-              <Link href="/login" className="fx-btn-secondary inline-flex min-h-12 items-center justify-center rounded-full px-7 text-sm font-semibold">
-                {t("common.signIn")}
+              <Link href="/login" data-fx-cta="sign-in" className="fx-btn-secondary inline-flex min-h-12 items-center justify-center rounded-full px-7 text-sm font-medium">
+                {t("landing.signIn")}
               </Link>
             </div>
           </div>
@@ -387,8 +388,8 @@ export default function LandingPage() {
             </div>
             <div>
               <span>{t("term.account")}</span>
-              <Link href="/login">{t("common.signIn")}</Link>
-              <Link href="/register">{t("landing.openAccount")}</Link>
+              <Link href="/login" data-fx-cta="sign-in">{t("landing.signIn")}</Link>
+              <Link href="/register" data-fx-cta="open">{t("landing.openAccount")}</Link>
               <Link href="/markets">{t("landing.nav.markets")}</Link>
               <Link href="/platform">{t("landing.nav.platform")}</Link>
               <Link href="/faq">{t("landing.nav.faq")}</Link>
@@ -397,17 +398,22 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
+        <div className="fx-shell">
+          <p className="fx-risk" data-fx-risk="">
+            {t("landing.footer.risk")}
+          </p>
+        </div>
       </footer>
 
       <div
         className={`fx-sticky-cta md:hidden ${showStickyCta ? "is-on" : ""}`}
         aria-hidden={!showStickyCta}
       >
-        <Link href="/login" tabIndex={showStickyCta ? 0 : -1} className="fx-btn-secondary">
-          {t("common.signIn")}
-        </Link>
-        <Link href="/register" tabIndex={showStickyCta ? 0 : -1} className="fx-btn-primary">
+        <Link href="/register" data-fx-cta="open" tabIndex={showStickyCta ? 0 : -1} className="fx-btn-primary">
           {t("landing.openAccount")}
+        </Link>
+        <Link href="/login" data-fx-cta="sign-in" tabIndex={showStickyCta ? 0 : -1} className="fx-btn-secondary">
+          {t("landing.signIn")}
         </Link>
       </div>
     </div>

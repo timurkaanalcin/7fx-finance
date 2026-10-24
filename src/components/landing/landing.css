@@ -159,6 +159,7 @@ html:has(.fx-landing) {
 .fx-landing .fx-btn-primary {
   background: #f4f7fb;
   color: #0b0e13;
+  font-weight: 500;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
 }
 .fx-landing .fx-btn-primary:hover {
@@ -167,6 +168,7 @@ html:has(.fx-landing) {
 .fx-landing .fx-btn-secondary {
   background: transparent;
   color: #f4f7fb;
+  font-weight: 400;
   border: 1px solid rgba(255, 255, 255, 0.18);
 }
 .fx-landing .fx-btn-secondary:hover {
@@ -504,6 +506,7 @@ html:has(.fx-landing) {
 .fx-landing .fx-feature-card h3 {
   margin: 0;
   font-size: 16px;
+  font-weight: 500;
 }
 .fx-landing .fx-feature-card p,
 .fx-landing .fx-market-card p {
@@ -822,12 +825,16 @@ html:has(.fx-landing) {
 }
 .fx-landing .fx-sticky-cta a {
   flex: 1;
-  min-height: 40px;
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 999px;
   font-size: 13px;
+  font-weight: 400;
+}
+.fx-landing .fx-sticky-cta .fx-btn-primary {
+  flex: 1.35;
   font-weight: 500;
 }
 
@@ -920,13 +927,31 @@ html:has(.fx-landing) {
   color: #f4f7fb;
   font-family: var(--font-inter), var(--font-inter-ext), system-ui, sans-serif;
   font-size: var(--fx-fs-24);
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: -0.02em;
 }
 .fx-landing .fx-cta-row {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+}
+.fx-landing .fx-cta-hint {
+  margin: 12px 0 0;
+  max-width: 46ch;
+  color: var(--fx-muted);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+}
+.fx-landing .fx-risk {
+  margin: 22px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--fx-line);
+  max-width: 78ch;
+  color: #9aa3b5;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.55;
 }
 @media (min-width: 800px) {
   .fx-landing .fx-mid-cta {
