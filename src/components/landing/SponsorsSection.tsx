@@ -16,7 +16,7 @@ export default function SponsorsSection() {
   }, []);
   if (list.length === 0) return null;
   return (
-    <section id="sponsors" className="fx-section border-t border-[rgba(16,20,37,0.08)] bg-white" aria-labelledby="sponsors-title">
+    <section id="sponsors" className="fx-section" aria-labelledby="sponsors-title">
       <div className="fx-shell">
         <p className="fx-eyebrow inline-flex items-center gap-2">
           <span className="fx-eyebrow-dot" aria-hidden />
@@ -29,7 +29,7 @@ export default function SponsorsSection() {
               // eslint-disable-next-line @next/next/no-img-element
               <img src={s.logo} alt={s.name} className="h-12 w-full object-contain" loading="lazy" />
             );
-            const cls = "flex h-24 items-center justify-center rounded-[14px] border border-[rgba(16,20,37,0.08)] bg-[#fafafa] px-5 transition hover:bg-white hover:shadow-[0_8px_24px_rgba(16,20,37,0.06)]";
+            const cls = "fx-sponsor-card";
             return s.url ? (
               <a key={s.id} href={s.url} target="_blank" rel="noopener noreferrer sponsored" title={s.name} className={cls}>{inner}</a>
             ) : (

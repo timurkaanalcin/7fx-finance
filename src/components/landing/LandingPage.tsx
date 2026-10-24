@@ -3,23 +3,25 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import Image from "next/image";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 import { useI18n } from "@/lib/i18n/context";
-import SymbolIcon from "@/components/ui/SymbolIcon";
 import BrandLogo, { IngMark } from "@/components/landing/BrandLogo";
 
-const PhonePreview = dynamic(() => import("./PhonePreview"), {
-  loading: () => (
-    <div
-      className="mx-auto aspect-[9/16] w-full max-w-[min(100%,210px)] sm:max-w-[300px] lg:max-w-[340px]"
-      aria-hidden
-    />
-  ),
-});
 const InstallAppButtons = dynamic(() => import("@/components/landing/InstallAppButtons"));
 const SponsorsSection = dynamic(() => import("@/components/landing/SponsorsSection"));
 const LicensesSection = dynamic(() => import("@/components/landing/LicensesSection"));
+const LiveHeroChart = dynamic(() => import("@/components/landing/LiveMarkets").then((m) => m.LiveHeroChart), {
+  loading: () => <div className="fx-chart-slot" aria-hidden />,
+});
+const LiveTape = dynamic(() => import("@/components/landing/LiveMarkets").then((m) => m.LiveTape), {
+  loading: () => <div className="fx-ticker fx-ticker--slot" aria-hidden />,
+});
+const MarketBoard = dynamic(() => import("@/components/landing/LiveMarkets").then((m) => m.MarketBoard), {
+  loading: () => <div className="fx-market-slot" aria-hidden />,
+});
+const ProductStage = dynamic(() => import("@/components/landing/ProductStage"), {
+  loading: () => <div className="fx-stage-slot" aria-hidden />,
+});
 
 function scrollToId(id: string) {
   const el = document.getElementById(id);
@@ -35,179 +37,14 @@ function Eyebrow({ children }: { children: ReactNode }) {
   );
 }
 
-function MarketMiniRows() {
-  const rows = [
-    { s: "EURUSD", p: "1.0842", d: "+0.14%", up: true },
-    { s: "XAUUSD", p: "2,341", d: "+0.32%", up: true },
-    { s: "US100", p: "19,840", d: "+0.41%", up: true },
-    { s: "BTCUSD", p: "67,420", d: "−0.81%", up: false },
-    { s: "GBPUSD", p: "1.2634", d: "+0.09%", up: true },
-  ];
-  return (
-    <div className="fx-viz-market mt-auto space-y-2">
-      {rows.map((r) => (
-        <div key={r.s} className="fx-viz-market-row flex items-center justify-between gap-2">
-          <span className="flex items-center gap-1.5 text-[12px] font-semibold tracking-wide text-[#111111]"><SymbolIcon symbol={r.s} size={16} />{r.s}</span>
-          <span className="text-[12px] tabular-nums text-[#5c657a]">{r.p}</span>
-          <span
-            className={`min-w-[52px] rounded-md px-1.5 py-0.5 text-right text-[11px] font-semibold tabular-nums ${
-              r.up ? "bg-[#26a69a]/15 text-[#26a69a]" : "bg-[#ef5350]/15 text-[#ef5350]"
-            }`}
-          >
-            {r.d}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function OrderTicketVisual() {
-  const { t } = useI18n();
-  return (
-    <div className="fx-viz-order mt-auto rounded-[14px] border border-[#2a2a2a] bg-[#0a0a0a] p-3.5">
-      <div className="mb-3 flex items-center justify-between">
-        <div>
-          <p className="text-[11px] font-medium text-[#8b97b0]">EURUSD</p>
-          <p className="text-[15px] font-semibold tabular-nums text-[#e8eef8]">1.0842</p>
-        </div>
-        <span className="rounded-full bg-[#111111]/15 px-2 py-0.5 text-[10px] font-semibold text-[#2a2a2a]">
-          {t("landing.viz.market")}
-        </span>
-      </div>
-      <div className="mb-3 grid grid-cols-2 gap-2">
-        <div className="rounded-[10px] bg-[#26a69a] py-2.5 text-center text-[12px] font-bold text-white shadow-[0_6px_16px_rgba(22,199,132,0.28)]">
-          {t("term.buy")}
-        </div>
-        <div className="rounded-[10px] bg-[#ef5350] py-2.5 text-center text-[12px] font-bold text-white shadow-[0_6px_16px_rgba(234,57,67,0.28)]">
-          {t("term.sell")}
-        </div>
-      </div>
-      <div className="space-y-1.5">
-        <div className="flex justify-between text-[10px] text-[#8b97b0]">
-          <span>Lot</span>
-          <span className="font-semibold text-[#e8eef8]">0.10</span>
-        </div>
-        <div className="h-1.5 overflow-hidden rounded-full bg-[#1f1f1f]">
-          <div className="h-full w-[42%] rounded-full bg-[#111111]" />
-        </div>
-        <div className="flex justify-between text-[10px] text-[#8b97b0]">
-          <span>Leverage</span>
-          <span className="font-semibold text-[#e8eef8]">1:100</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function SecurityBadgeVisual() {
-  const { t } = useI18n();
-  return (
-    <div className="fx-viz-security mt-auto flex flex-col items-center justify-center py-2">
-      <div className="relative flex h-[120px] w-[120px] items-center justify-center">
-        <div className="fx-orbit absolute inset-0 rounded-full border border-dashed border-[#111111]/30" />
-        <div className="fx-orbit fx-orbit--slow absolute inset-3 rounded-full border border-[#111111]/15" />
-        <div className="relative z-10 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#111111] shadow-[0_12px_32px_rgba(17,17,17,0.4)]">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden>
-            <path
-              d="M12 3l7 3v5c0 4.5-2.8 8.4-7 10-4.2-1.6-7-5.5-7-10V6l7-3z"
-              stroke="white"
-              strokeWidth="1.8"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M9.5 12.2l1.8 1.8 3.4-3.6"
-              stroke="white"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </div>
-        <span className="fx-orbit-dot absolute left-2 top-8 h-2 w-2 rounded-full bg-[#111111]" />
-        <span className="fx-orbit-dot fx-orbit-dot--2 absolute bottom-4 right-3 h-1.5 w-1.5 rounded-full bg-[#2a2a2a]" />
-      </div>
-      <p className="mt-3 text-center text-[12px] font-medium text-[#5c657a]">
-        {t("landing.viz.session")}
-      </p>
-    </div>
-  );
-}
-
-function PortfolioBoard() {
-  const { t, locale } = useI18n();
-  const bars = [
-    { h: 42, c: "#2a3a6a" },
-    { h: 58, c: "#3a5288" },
-    { h: 48, c: "#4a6ab0" },
-    { h: 72, c: "#111111" },
-    { h: 64, c: "#6a92ff" },
-    { h: 88, c: "#111111" },
-    { h: 76, c: "#5a86f5" },
-    { h: 94, c: "#111111" },
-  ];
-  const alloc = [
-    { name: "FX", pct: 34, color: "#111111" },
-    { name: "Commodities", pct: 22, color: "#2a2a2a" },
-    { name: "Indices", pct: 28, color: "#26a69a" },
-    { name: "Crypto", pct: 16, color: "#8b97b0" },
-  ];
-  return (
-    <div className="fx-portfolio-board rounded-[16px] border border-[#2a2a2a] bg-[#0a0a0a] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.35)] sm:p-8">
-      <div className="mb-6 flex items-start justify-between gap-4">
-        <div>
-          <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-[#8b97b0]">
-            {t("landing.portfolio.summary")}
-          </p>
-          <p className="mt-1 text-2xl font-semibold tracking-tight text-[#e8eef8] tabular-nums">
-            $128,450
-          </p>
-        </div>
-        <span className="rounded-full bg-[#26a69a]/15 px-3 py-1 text-[12px] font-semibold text-[#26a69a]">
-          +1.8%
-        </span>
-      </div>
-
-      <div className="mb-7 flex h-[110px] items-end gap-2 sm:gap-2.5">
-        {bars.map((b, i) => (
-          <div
-            key={i}
-            className="fx-bar flex-1 rounded-t-md"
-            style={{ height: `${b.h}%`, background: b.c }}
-          />
-        ))}
-      </div>
-
-      <div className="space-y-3">
-        {alloc.map((a) => (
-          <div key={a.name}>
-            <div className="mb-1 flex justify-between text-[12px]">
-              <span className="font-medium text-[#e8eef8]">{a.name}</span>
-              <span className="tabular-nums text-[#8b97b0]">{locale === "tr" ? `%${a.pct}` : `${a.pct}%`}</span>
-            </div>
-            <div className="h-1.5 overflow-hidden rounded-full bg-[#1f1f1f]">
-              <div
-                className="h-full rounded-full transition-all"
-                style={{ width: `${a.pct}%`, background: a.color }}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 export default function LandingPage() {
   const { t } = useI18n();
   const NAV = [
-    { id: "piyasalar", label: t("landing.nav.markets") },
+    { id: "markets", label: t("landing.nav.markets") },
     { id: "platform", label: t("landing.nav.platform") },
-    { id: "hakkinda", label: t("landing.nav.about") },
-    { id: "nasil", label: t("landing.nav.how") },
-    { id: "mobil", label: t("landing.nav.mobile") },
-    { id: "guvenlik", label: t("landing.nav.security") },
-    { id: "altyapi", label: t("landing.nav.infra") },
+    { id: "mobile", label: t("landing.nav.mobile") },
+    { id: "security", label: t("landing.nav.security") },
+    { id: "how", label: t("landing.nav.how") },
   ];
   const [menuOpen, setMenuOpen] = useState(false);
   const [showStickyCta, setShowStickyCta] = useState(false);
@@ -231,137 +68,55 @@ export default function LandingPage() {
     return () => io.disconnect();
   }, []);
 
-  const markets = useMemo(
-    () => [
-      { s: "EURUSD", name: t("landing.m.eurusd"), p: "1.0842", d: "+0.14%", up: true },
-      { s: "XAUUSD", name: t("landing.m.xauusd"), p: "2,341.20", d: "+0.32%", up: true },
-      { s: "US100", name: t("landing.m.us100"), p: "19,840", d: "+0.41%", up: true },
-      { s: "BTCUSD", name: t("landing.m.btcusd"), p: "67,420", d: "−0.81%", up: false },
-      { s: "GBPUSD", name: t("landing.m.gbpusd"), p: "1.2634", d: "+0.09%", up: true },
-      { s: "USDTRY", name: t("landing.m.usdtry"), p: "34.12", d: "+0.05%", up: true },
-      { s: "UKOIL", name: t("landing.m.ukoil"), p: "82.40", d: "−0.22%", up: false },
-      { s: "ETHUSD", name: t("landing.m.ethusd"), p: "3.420", d: "+1.12%", up: true },
-    ],
-    [t]
-  );
-
-  const platformCards = useMemo(
-    () => [
-      {
-        key: "markets",
-        title: t("landing.card.markets.title"),
-        body: t("landing.card.markets.body"),
-        visual: <MarketMiniRows />,
-        icon: (
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-            <path d="M4 19V5M4 19h16" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-            <path d="M8 15l3-4 3 2 4-6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        ),
-      },
-      {
-        key: "orders",
-        title: t("landing.card.orders.title"),
-        body: t("landing.card.orders.body"),
-        visual: <OrderTicketVisual />,
-        icon: (
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-            <path d="M12 3v18M8 8l4-4 4 4M8 16l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        ),
-      },
-      {
-        key: "security",
-        title: t("landing.card.security.title"),
-        body: t("landing.card.security.body"),
-        visual: <SecurityBadgeVisual />,
-        icon: (
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-            <path d="M12 3l7 3v5c0 4.5-2.8 8.4-7 10-4.2-1.6-7-5.5-7-10V6l7-3z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-          </svg>
-        ),
-      },
-    ],
-    [t]
-  );
-
-  const stats = useMemo(
-    () => [
-      { k: "24/7", v: t("landing.stat.access.v"), d: t("landing.stat.access.d") },
-      { k: t("landing.stat.terminal.k"), v: t("landing.stat.terminal.v"), d: t("landing.stat.terminal.d") },
-      { k: "Multi-asset", v: t("landing.stat.multi.v"), d: t("landing.stat.multi.d") },
-      { k: "PWA", v: t("landing.stat.pwa.v"), d: t("landing.stat.pwa.d") },
-    ],
-    [t]
-  );
-
   const steps = useMemo(
     () => [
-      {
-        n: "01",
-        t: t("landing.step1.t"),
-        d: t("landing.step1.d"),
-      },
-      {
-        n: "02",
-        t: t("landing.step2.t"),
-        d: t("landing.step2.d"),
-      },
-      {
-        n: "03",
-        t: t("landing.step3.t"),
-        d: t("landing.step3.d"),
-      },
+      { n: "01", title: t("landing.step1.t"), body: t("landing.step1.d") },
+      { n: "02", title: t("landing.step2.t"), body: t("landing.step2.d") },
+      { n: "03", title: t("landing.step3.t"), body: t("landing.step3.d") },
     ],
     [t]
   );
 
+  const features = useMemo(
+    () => [
+      { title: t("landing.card.markets.title"), body: t("landing.card.markets.body") },
+      { title: t("landing.card.orders.title"), body: t("landing.card.orders.body") },
+      { title: t("landing.card.security.title"), body: t("landing.card.security.body") },
+    ],
+    [t]
+  );
 
   return (
-    <div className="fx-landing min-h-screen" data-fx-ui="landing-light">
-      <a
-        href="/login"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-[#111111] focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
-      >{t("landing.skipLogin")}</a>
+    <div className="fx-landing min-h-screen" data-fx-ui="landing-dark">
+      <a href="/login" className="fx-skip">
+        {t("landing.skipLogin")}
+      </a>
 
-      {/* ——— Header ——— */}
       <header className="fx-nav sticky top-0 z-50">
-        <div className="fx-shell flex h-14 items-center justify-between gap-4 sm:h-[4.25rem]">
-          <Link href="/" className="flex items-center no-underline" aria-label={t("landing.homeAria")}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <BrandLogo priority className="fx-nav-logo h-9 w-auto" height={36} />
+        <div className="fx-shell flex h-14 items-center justify-between gap-3 sm:h-16">
+          <Link href="/" className="fx-logo-lockup flex items-center no-underline" aria-label={t("landing.homeAria")}>
+            <BrandLogo priority className="fx-nav-logo h-8 w-auto sm:h-9" height={36} />
           </Link>
 
           <nav className="hidden items-center gap-0.5 lg:flex" aria-label={t("landing.mainMenu")}>
             {NAV.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                className="rounded-lg px-3 py-2 text-[13px] font-medium text-[#5c657a] transition hover:bg-[#f0f0f0] hover:text-[#111111]"
-                onClick={() => scrollToId(item.id)}
-              >
+              <button key={item.id} type="button" className="fx-nav-link" onClick={() => scrollToId(item.id)}>
                 {item.label}
               </button>
             ))}
           </nav>
 
           <div className="flex items-center gap-2">
-            <LanguageSwitcher compact tone="light" />
-            <Link
-              href="/login"
-              className="fx-btn-secondary hidden rounded-full px-4 py-2 text-[13px] font-semibold sm:inline-flex"
-            >
+            <LanguageSwitcher compact tone="dark" />
+            <Link href="/login" className="fx-btn-secondary hidden rounded-full px-4 py-2 text-[13px] font-semibold sm:inline-flex">
               {t("common.signIn")}
             </Link>
-            <Link
-              href="/register"
-              className="fx-btn-primary rounded-full px-4 py-2 text-[13px] font-semibold"
-            >
+            <Link href="/register" className="fx-btn-primary rounded-full px-4 py-2 text-[13px] font-semibold">
               {t("landing.openAccount")}
             </Link>
             <button
               type="button"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(16,20,37,0.12)] bg-white text-[#111111] lg:hidden"
+              className="fx-icon-btn lg:hidden"
               aria-expanded={menuOpen}
               aria-label={menuOpen ? t("landing.menu.close") : t("landing.menu.open")}
               onClick={() => setMenuOpen((v) => !v)}
@@ -378,422 +133,167 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {menuOpen && (
-          <div className="border-t border-[rgba(16,20,37,0.08)] bg-white/98 px-4 py-3 backdrop-blur-xl lg:hidden">
-            <div className="fx-shell flex flex-col gap-0.5 !px-0">
-              {NAV.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  className="rounded-lg px-3 py-2.5 text-left text-sm text-[#111111] hover:bg-[#f0f0f0]"
-                  onClick={() => {
-                    setMenuOpen(false);
-                    scrollToId(item.id);
-                  }}
-                >
-                  {item.label}
-                </button>
-              ))}
-              <Link
-                href="/login"
-                className="mt-1 rounded-lg px-3 py-2.5 text-sm font-semibold text-[#111111]"
-                onClick={() => setMenuOpen(false)}
-              >{t("common.signIn")}</Link>
-              <Link
-                href="/register"
-                className="rounded-lg px-3 py-2.5 text-sm font-semibold text-[#5c657a]"
-                onClick={() => setMenuOpen(false)}
-              >{t("landing.openAccount")}</Link>
-            </div>
+        {menuOpen ? (
+          <div className="fx-mobile-menu lg:hidden">
+            {NAV.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  scrollToId(item.id);
+                }}
+              >
+                {item.label}
+              </button>
+            ))}
+            <Link href="/login" onClick={() => setMenuOpen(false)}>
+              {t("common.signIn")}
+            </Link>
           </div>
-        )}
+        ) : null}
       </header>
 
-      <main className="fx-main-pad pb-[calc(108px+env(safe-area-inset-bottom,0px))] md:pb-0">
-        {/* ——— Hero ——— */}
-        <section ref={heroRef} className="fx-hero relative overflow-hidden" aria-labelledby="hero-title">
-          <div className="pointer-events-none absolute inset-0" aria-hidden>
-            <div className="fx-hero-veil absolute inset-0" />
-            <div className="fx-hero-mesh absolute inset-0" />
-          </div>
-
-          <div className="fx-shell relative z-10 grid gap-7 pb-10 pt-8 sm:gap-12 sm:pb-20 sm:pt-16 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:gap-12 lg:pb-28 lg:pt-20">
+      <main>
+        <section ref={heroRef} className="fx-hero" aria-labelledby="hero-title">
+          <div className="fx-hero-glow" aria-hidden />
+          <div className="fx-shell fx-hero-grid">
             <div className="fx-reveal max-w-[640px]">
-              <div className="flex flex-wrap items-center gap-[1cm]">
+              <div className="flex flex-wrap items-center gap-3">
                 <Eyebrow>{t("landing.eyebrow.hero")}</Eyebrow>
-                <p
-                  className="inline-flex items-center gap-2.5 rounded-full border border-[rgba(16,20,37,0.10)] bg-white/90 px-3.5 py-1.5 text-[12.5px] font-semibold tracking-tight text-[#111111] shadow-[0_6px_18px_rgba(16,20,37,0.06)]"
-                  aria-label={t("landing.trust.ing")}
-                >
-                  <IngMark className="h-5 w-auto object-contain" height={20} />
-                  <span className="text-[#5c657a]">{t("landing.partnership")}</span>
+                <p className="fx-ing-pill" aria-label={t("landing.trust.ing")}>
+                  <IngMark className="h-4 w-auto object-contain" height={16} />
+                  <span>{t("landing.partnership")}</span>
                 </p>
               </div>
-
               <h1 id="hero-title" className="fx-h1 mt-5">
                 {t("landing.heroTitle")}
-              
               </h1>
-
-              <p className="fx-hero-body mt-6">
-                {t("landing.heroBody")}
-              </p>
-
-              <div className="mt-9 flex flex-wrap items-center gap-3">
-                <Link
-                  href="/register"
-                  className="fx-btn-primary inline-flex min-h-[48px] items-center justify-center rounded-full px-6 text-[14px] font-semibold sm:min-h-[52px] sm:px-8 sm:text-[15px]"
-                >{t("landing.openAccount")}</Link>
-                <Link
-                  href="/login"
-                  className="fx-btn-secondary inline-flex min-h-[48px] items-center justify-center rounded-full px-6 text-[14px] font-semibold sm:min-h-[52px] sm:px-8 sm:text-[15px]"
-                >{t("common.signIn")}</Link>
-                                <InstallAppButtons size="hero" />
+              <p className="fx-hero-body mt-5">{t("landing.heroBody")}</p>
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Link href="/register" className="fx-btn-primary inline-flex min-h-12 items-center justify-center rounded-full px-6 text-[15px] font-semibold">
+                  {t("landing.openAccount")}
+                </Link>
+                <Link href="/login" className="fx-btn-secondary inline-flex min-h-12 items-center justify-center rounded-full px-6 text-[15px] font-semibold">
+                  {t("common.signIn")}
+                </Link>
               </div>
-
-              <div className="fx-trust-row mt-10 flex flex-wrap items-center gap-x-6 gap-y-3">
-                {[
-                  { label: t("landing.trust.ing"), icon: "★" },
-                  { label: t("landing.trust.symbols"), icon: "◆" },
-                  { label: t("landing.trust.access"), icon: "●" },
-                  { label: t("landing.trust.ssl"), icon: "▣" },
-                  { label: t("landing.trust.pwa"), icon: "◈" },
-                ].map((t) => (
-                  <div key={t.label} className="flex items-center gap-2 text-[13px] text-[#5c657a]">
-                    <span className="text-[10px] text-[#111111]" aria-hidden>
-                      {t.icon}
-                    </span>
-                    <span className="font-medium">{t.label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="fx-reveal fx-fade-up--delay flex w-full justify-center overflow-x-clip px-1 lg:justify-end">
-              <PhonePreview />
-            </div>
-          </div>
-        </section>
-
-        {/* ——— Market strip ——— */}
-        <section
-          id="piyasalar"
-          className="border-y border-[rgba(16,20,37,0.08)] bg-[#ffffff]"
-          aria-label="Sample markets"
-        >
-          <div className="fx-shell flex items-center justify-between gap-4 pt-3.5">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#5c657a]">
-              {t("landing.marketsTitle")}
-            </p>
-          </div>
-          <div className="fx-ticker relative overflow-hidden py-3.5 sm:py-4">
-            <div className="fx-ticker-fade fx-ticker-fade--l" aria-hidden />
-            <div className="fx-ticker-fade fx-ticker-fade--r" aria-hidden />
-            <div className="fx-ticker-track flex w-max gap-3 px-4 sm:gap-4">
-              {[...markets, ...markets].map((m, i) => (
-                <div
-                  key={`${m.s}-${i}`}
-                  className="fx-ticker-item flex items-center gap-2.5 whitespace-nowrap rounded-full border border-[rgba(16,20,37,0.08)] bg-white px-3 py-1.5 text-sm shadow-[0_4px_12px_rgba(16,20,37,0.04)] sm:gap-3"
-                >
-                  <span className="inline-flex items-center gap-1.5 font-semibold text-[#111111]"><SymbolIcon symbol={m.s} size={18} />{m.s}</span>
-                  <span className="fx-ticker-name text-[12px] text-[#5c657a]">{m.name}</span>
-                  <span className="tabular-nums text-[#5c657a]">{m.p}</span>
-                  <span
-                    className={`rounded-md px-1.5 py-0.5 text-xs font-semibold tabular-nums ${
-                      m.up
-                        ? "bg-[#26a69a]/15 text-[#26a69a]"
-                        : "bg-[#ef5350]/15 text-[#ef5350]"
-                    }`}
-                  >
-                    {m.d}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ——— Platform: 3 feature cards ——— */}
-        <section id="platform" className="fx-section">
-          <div className="fx-shell">
-            <div className="mb-9 max-w-2xl sm:mb-14">
-              <Eyebrow>{t("landing.platformEyebrow")}</Eyebrow>
-              <h2 className="fx-h2 mt-4">
-                {t("landing.platformTitle")}
-              </h2>
-              <p className="fx-section-body mt-4 max-w-[560px]">
-                {t("landing.platformLead")}
-              </p>
-            </div>
-
-            <div className="grid gap-5 lg:grid-cols-3">
-              {platformCards.map((card) => (
-                <article
-                  key={card.key}
-                  className="fx-feature-card flex min-h-[320px] flex-col rounded-[16px] p-5 sm:min-h-[380px] sm:p-7"
-                >
-                  <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-[10px] bg-[#111111]/12 text-[#111111]">
-                    {card.icon}
-                  </div>
-                  <h3 className="text-[20px] font-semibold tracking-tight text-[#111111]">
-                    {card.title}
-                  </h3>
-                  <p className="mt-2.5 text-[14px] leading-relaxed text-[#5c657a]">
-                    {card.body}
-                  </p>
-                  <div className="mt-8 flex flex-1 flex-col">{card.visual}</div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-
-        {/* ——— About / corporate blurb ——— */}
-        <section id="hakkinda" className="fx-section fx-section--soft border-y border-[rgba(16,20,37,0.08)]" aria-labelledby="about-title">
-          <div className="fx-shell grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start lg:gap-16">
-            <div>
-              <Eyebrow>{t("landing.aboutEyebrow")}</Eyebrow>
-              <h2 id="about-title" className="fx-h2 mt-4">{t("landing.aboutTitle")}
-              </h2>
-              <p className="fx-section-body mt-5 max-w-[540px]">
-                {t("landing.aboutP1")}
-              </p>
-              <p className="fx-section-body mt-4 max-w-[540px]">
-                {t("landing.aboutP2")}
-              </p>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {[
-                { t: t("landing.about.markets.t"), d: t("landing.about.markets.d") },
-                { t: t("landing.about.security.t"), d: t("landing.about.security.d") },
-                { t: t("landing.about.support.t"), d: t("landing.about.support.d") },
-                { t: t("landing.about.access.t"), d: t("landing.about.access.d") },
-              ].map((c) => (
-                <div
-                  key={c.t}
-                  className="rounded-[14px] border border-[rgba(16,20,37,0.08)] bg-white p-5 shadow-[0_8px_24px_rgba(16,20,37,0.04)]"
-                >
-                  <p className="text-[13px] font-semibold tracking-tight text-[#111111]">{c.t}</p>
-                  <p className="mt-2 text-[13px] leading-relaxed text-[#5c657a]">{c.d}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ——— Detail band: 4 stats ——— */}
-        <section className="border-y border-[rgba(16,20,37,0.08)] bg-[#ffffff]" aria-label={t("landing.highlights")}>
-          <div className="fx-shell grid grid-cols-2 gap-x-5 gap-y-8 py-12 sm:gap-8 sm:py-14 lg:grid-cols-4 lg:py-16">
-            {stats.map((s) => (
-              <div key={s.k} className="fx-stat">
-                <p className="text-[22px] font-semibold tracking-tight text-[#111111] sm:text-[26px]">
-                  {s.k}
-                </p>
-                <p className="mt-1 text-[14px] font-semibold text-[#111111]">{s.v}</p>
-                <p className="mt-1 text-[13px] leading-relaxed text-[#5c657a]">{s.d}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ——— How it works ——— */}
-        <section id="nasil" className="fx-section">
-          <div className="fx-shell">
-            <div className="mb-12 max-w-2xl sm:mb-14">
-              <Eyebrow>{t("landing.howEyebrow")}</Eyebrow>
-              <h2 className="fx-h2 mt-4">{t("landing.howTitle")}</h2>
-              <p className="fx-section-body mt-4 max-w-[520px]">
-                {t("landing.howLead")}
-              </p>
-            </div>
-
-            <div className="grid gap-5 md:grid-cols-3">
-              {steps.map((step, i) => (
-                <article
-                  key={step.n}
-                  className="fx-step relative rounded-[16px] border border-[rgba(16,20,37,0.08)] bg-white p-6 shadow-[0_12px_32px_rgba(16,20,37,0.06)] sm:p-7"
-                >
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#111111]/12 text-[13px] font-bold text-[#111111]">
-                    {step.n}
-                  </span>
-                  {i < steps.length - 1 && (
-                    <span
-                      className="absolute right-[-12px] top-12 z-10 hidden h-px w-6 bg-[rgba(16,20,37,0.12)] md:block"
-                      aria-hidden
-                    />
-                  )}
-                  <h3 className="mt-5 text-[18px] font-semibold tracking-tight text-[#111111]">
-                    {step.t}
-                  </h3>
-                  <p className="mt-2 text-[14px] leading-relaxed text-[#5c657a]">{step.d}</p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ——— Insight + portfolio board ——— */}
-        <section className="fx-section fx-section--soft border-y border-[rgba(16,20,37,0.08)]">
-          <div className="fx-shell grid gap-12 lg:grid-cols-[1fr_1.05fr] lg:items-center lg:gap-16">
-            <div>
-              <Eyebrow>{t("landing.portfolio.eyebrow")}</Eyebrow>
-              <h2 className="fx-h2 mt-4">{t("landing.portfolio.title")}</h2>
-              <p className="fx-section-body mt-4 max-w-[480px]">
-                {t("landing.portfolio.body")}
-              </p>
-              <ul className="mt-8 space-y-3">
-                {[
-                  t("landing.portfolio.b1"),
-                  t("landing.portfolio.b2"),
-                  t("landing.portfolio.b3"),
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-3 text-[14px] text-[#5c657a]">
-                    <span
-                      className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#111111]/12 text-[10px] font-bold text-[#111111]"
-                      aria-hidden
-                    >
-                      ✓
-                    </span>
-                    {item}
-                  </li>
+              <ul className="fx-trust-row">
+                {[t("landing.trust.symbols"), t("landing.trust.access"), t("landing.trust.ssl"), t("landing.trust.pwa")].map((label) => (
+                  <li key={label}>{label}</li>
                 ))}
               </ul>
             </div>
-            <PortfolioBoard />
+            <LiveHeroChart />
           </div>
         </section>
 
+        <LiveTape />
 
-        {/* ——— Mobile band ——— */}
-        <section id="mobil" className="fx-mobile-band border-y border-[rgba(16,20,37,0.08)] bg-[#ffffff]">
-          <div className="fx-shell grid gap-8 py-16 sm:gap-12 sm:py-[85px] lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-14 lg:py-[110px]">
+        <section id="markets" className="fx-section" aria-labelledby="markets-title">
+          <div className="fx-shell">
+            <Eyebrow>{t("landing.marketsTitle")}</Eyebrow>
+            <h2 id="markets-title" className="fx-h2 mt-4">
+              {t("landing.marketsTitle")}
+            </h2>
+            <p className="fx-section-body mt-4 max-w-[640px]">{t("landing.markets.lead")}</p>
+            <div className="mt-8">
+              <MarketBoard />
+            </div>
+          </div>
+        </section>
+
+        <section id="platform" className="fx-section fx-section--soft" aria-labelledby="platform-title">
+          <div className="fx-shell">
+            <Eyebrow>{t("landing.nav.platform")}</Eyebrow>
+            <h2 id="platform-title" className="fx-h2 mt-4">
+              {t("landing.aboutTitle")}
+            </h2>
+            <p className="fx-section-body mt-4 max-w-[680px]">{t("landing.aboutP1")}</p>
+            <div className="fx-feature-grid">
+              {features.map((card) => (
+                <article key={card.title} className="fx-feature-card">
+                  <h3>{card.title}</h3>
+                  <p>{card.body}</p>
+                </article>
+              ))}
+            </div>
+            <ProductStage />
+          </div>
+        </section>
+
+        <section id="mobile" className="fx-section" aria-labelledby="mobile-title">
+          <div className="fx-shell fx-split">
             <div>
-              <p className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#111111]">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#111111] shadow-[0_0_8px_rgba(17,17,17,0.45)]" aria-hidden />
-                {t("landing.mobile.band")}
-              </p>
-              <h2 className="mt-4 text-[clamp(30px,8vw,48px)] font-semibold leading-[1.08] tracking-[-0.05em] text-[#111111]">
+              <Eyebrow>{t("landing.mobileEyebrow")}</Eyebrow>
+              <h2 id="mobile-title" className="fx-h2 mt-4">
                 {t("landing.mobileTitle")}
               </h2>
-              <p className="mt-4 max-w-[480px] text-[14px] leading-relaxed text-[#5c657a]">
-                {t("landing.mobileBody")}
-              </p>
-              <ul className="mt-7 space-y-3">
-                {[
-                  t("landing.mobile.b1"),
-                  t("landing.mobile.b2"),
-                  t("landing.mobile.b3"),
-                  t("landing.mobile.b4"),
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-3 text-[14px] text-[#5c657a]">
-                    <span
-                      className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#111111]/12 text-[10px] font-bold text-[#111111]"
-                      aria-hidden
-                    >
-                      ✓
-                    </span>
-                    {item}
-                  </li>
+              <p className="fx-section-body mt-4">{t("landing.mobileBody")}</p>
+              <ul className="fx-check-list">
+                {[t("landing.mobile.b1"), t("landing.mobile.b2"), t("landing.mobile.b3"), t("landing.mobile.b4")].map((item) => (
+                  <li key={item}>{item}</li>
                 ))}
               </ul>
-              <div className="mt-9 flex flex-wrap gap-3">
-                <Link
-                  href="/register"
-                  className="fx-btn-primary inline-flex min-h-[48px] items-center rounded-full px-7 text-sm font-semibold"
-                >{t("landing.openAccount")}</Link>
-                                <InstallAppButtons size="mobile" />
-              </div>
-            </div>
-
-            <div className="fx-app-panel relative mx-auto w-full max-w-[380px]">
-              <div className="rounded-[20px] border border-[rgba(16,20,37,0.08)] bg-white p-8 shadow-[0_24px_64px_rgba(16,20,37,0.1)]">
-                <div className="mb-6 flex items-center justify-between">
-                  <BrandLogo className="h-9 w-auto object-contain" height={36} />
-                  <span className="rounded-full bg-[#111111]/12 px-3 py-1 text-[11px] font-semibold text-[#111111]">
-                    {t("landing.webApp")}
-                  </span>
-                </div>
-                <div className="space-y-3">
-                  {[
-                    { t: t("landing.livePrices"), d: t("landing.watchlist") },
-                    { t: t("landing.orderPanel"), d: t("landing.buySell") },
-                    { t: t("landing.portfolio"), d: t("landing.balancePnl") },
-                  ].map((row) => (
-                    <div
-                      key={row.t}
-                      className="flex items-center justify-between rounded-2xl border border-[rgba(16,20,37,0.08)] bg-[#ffffff] px-4 py-3.5"
-                    >
-                      <div>
-                        <p className="text-[14px] font-semibold text-[#111111]">{row.t}</p>
-                        <p className="text-[12px] text-[#5c657a]">{row.d}</p>
-                      </div>
-                      <span className="text-[#111111]" aria-hidden>
-                        →
-                      </span>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-6 flex items-center gap-3 rounded-2xl bg-[#111111] px-4 py-3.5 text-white shadow-[0_10px_28px_rgba(0,0,0,0.22)]">
-                  <Image
-                    src="/7fx-mark.png"
-                    alt=""
-                    width={160}
-                    height={96}
-                    className="h-8 w-8 rounded-lg object-contain"
-                  />
-                  <div>
-                    <p className="text-[13px] font-semibold text-white">{t("landing.continue7fx")}</p>
-                    <p className="text-[11px] text-white/70">{t("landing.signInOrCreate")}</p>
-                  </div>
-                </div>
+              <div className="mt-6 flex flex-wrap items-center gap-3">
+                <InstallAppButtons size="mobile" />
+                <Link href="/ios" className="fx-btn-secondary inline-flex min-h-12 items-center rounded-full px-5 text-sm font-semibold">
+                  {t("landing.ios.pageTitle")}
+                </Link>
               </div>
             </div>
           </div>
         </section>
 
-
-        <section id="guvenlik" className="fx-section fx-section--soft border-y border-[rgba(16,20,37,0.08)]" aria-labelledby="security-title">
-          <div className="fx-shell grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:gap-16">
-            <div>
-              <Eyebrow>{t("landing.security.eyebrow")}</Eyebrow>
-              <h2 id="security-title" className="fx-h2 mt-4">{t("landing.securityTitle")}</h2>
-              <p className="fx-section-body mt-5 max-w-[520px]">
-                {t("landing.securityBody")}
-              </p>
-              <div className="mt-8 inline-flex items-center rounded-[14px] border border-[rgba(16,20,37,0.08)] bg-white px-5 py-4 shadow-[0_8px_24px_rgba(16,20,37,0.04)]">
-                <BrandLogo className="h-9 w-auto object-contain" height={36} />
-              </div>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
+        <section id="security" className="fx-section fx-section--soft" aria-labelledby="security-title">
+          <div className="fx-shell">
+            <Eyebrow>{t("landing.security.eyebrow")}</Eyebrow>
+            <h2 id="security-title" className="fx-h2 mt-4">
+              {t("landing.securityTitle")}
+            </h2>
+            <p className="fx-section-body mt-4 max-w-[640px]">{t("landing.securityBody")}</p>
+            <div className="fx-feature-grid">
               {[
-                { t: t("landing.sec.ssl.t"), d: t("landing.sec.ssl.d") },
-                { t: t("landing.sec.seg.t"), d: t("landing.sec.seg.d") },
-                { t: t("landing.sec.kyc.t"), d: t("landing.sec.kyc.d") },
-                { t: t("landing.sec.access.t"), d: t("landing.sec.access.d") },
-              ].map((c) => (
-                <div
-                  key={c.t}
-                  className="rounded-[14px] border border-[rgba(16,20,37,0.08)] bg-white p-5 shadow-[0_8px_24px_rgba(16,20,37,0.04)]"
-                >
-                  <p className="text-[13px] font-semibold tracking-tight text-[#111111]">{c.t}</p>
-                  <p className="mt-2 text-[13px] leading-relaxed text-[#5c657a]">{c.d}</p>
-                </div>
+                { title: t("landing.sec.ssl.t"), body: t("landing.sec.ssl.d") },
+                { title: t("landing.sec.seg.t"), body: t("landing.sec.seg.d") },
+                { title: t("landing.sec.kyc.t"), body: t("landing.sec.kyc.d") },
+                { title: t("landing.sec.access.t"), body: t("landing.sec.access.d") },
+              ].map((card) => (
+                <article key={card.title} className="fx-feature-card">
+                  <h3>{card.title}</h3>
+                  <p>{card.body}</p>
+                </article>
               ))}
             </div>
           </div>
         </section>
 
-        <section id="altyapi" className="fx-section" aria-labelledby="infra-title">
+        <section id="how" className="fx-section" aria-labelledby="how-title">
           <div className="fx-shell">
-            <div className="mb-10 max-w-2xl sm:mb-12">
-              <Eyebrow>{t("landing.infra.eyebrow")}</Eyebrow>
-              <h2 id="infra-title" className="fx-h2 mt-4">{t("landing.infraTitle")}</h2>
-              <p className="fx-section-body mt-4 max-w-[560px]">
-                {t("landing.infraBody")}
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3">
+            <Eyebrow>{t("landing.nav.how")}</Eyebrow>
+            <h2 id="how-title" className="fx-h2 mt-4">
+              {t("landing.howTitle")}
+            </h2>
+            <ol className="fx-steps">
+              {steps.map((step) => (
+                <li key={step.n}>
+                  <span>{step.n}</span>
+                  <h3>{step.title}</h3>
+                  <p>{step.body}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        <section id="infrastructure" className="fx-section fx-section--soft" aria-labelledby="infra-title">
+          <div className="fx-shell">
+            <Eyebrow>{t("landing.infra.eyebrow")}</Eyebrow>
+            <h2 id="infra-title" className="fx-h2 mt-4">
+              {t("landing.infraTitle")}
+            </h2>
+            <p className="fx-section-body mt-4 max-w-[640px]">{t("landing.infraBody")}</p>
+            <ul className="fx-infra">
               {[
                 { name: "Railway", role: t("landing.role.hosting") },
                 { name: "Yahoo Finance", role: t("landing.role.data") },
@@ -801,106 +301,84 @@ export default function LandingPage() {
                 { name: "MySQL", role: t("landing.role.db") },
                 { name: "Prisma", role: t("landing.role.orm") },
                 { name: "Next.js", role: t("landing.webApp") },
-              ].map((p) => (
-                <div
-                  key={p.name}
-                  className="inline-flex min-w-[160px] flex-col rounded-full border border-[rgba(16,20,37,0.10)] bg-white px-5 py-3 shadow-[0_6px_18px_rgba(16,20,37,0.05)] sm:min-w-[200px] sm:rounded-[14px]"
-                >
-                  <span className="text-[13px] font-semibold tracking-tight text-[#111111]">{p.name}</span>
-                  <span className="mt-0.5 text-[11px] font-medium uppercase tracking-[0.08em] text-[#5c657a]">{p.role}</span>
-                </div>
+              ].map((item) => (
+                <li key={item.name}>
+                  <strong>{item.name}</strong>
+                  <span>{item.role}</span>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         </section>
 
         <LicensesSection />
         <SponsorsSection />
 
-        {/* ——— Final CTA ——— */}
-        <section className="border-t border-[rgba(16,20,37,0.08)] bg-white">
-          <div className="fx-shell flex flex-col items-start justify-between gap-8 py-16 md:flex-row md:items-center md:py-20">
+        <section className="fx-final" aria-labelledby="cta-title">
+          <div className="fx-shell fx-final-inner">
             <div>
-              <h2 className="fx-h2">{t("landing.ctaTitle")}</h2>
-              <p className="fx-section-body mt-3 max-w-lg">
-                {t("landing.ctaBody")}
-              </p>
+              <h2 id="cta-title" className="fx-h2">
+                {t("landing.ctaTitle")}
+              </h2>
+              <p className="fx-section-body mt-3 max-w-lg">{t("landing.ctaBody")}</p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Link
-                href="/register"
-                className="fx-btn-primary inline-flex min-h-[48px] items-center rounded-full px-7 text-sm font-semibold"
-              >{t("landing.openAccount")}</Link>
-              <Link
-                href="/login"
-                className="fx-btn-secondary inline-flex min-h-[48px] items-center rounded-full px-7 text-sm font-semibold"
-              >{t("common.signIn")}</Link>
+              <Link href="/register" className="fx-btn-primary inline-flex min-h-12 items-center rounded-full px-7 text-sm font-semibold">
+                {t("landing.openAccount")}
+              </Link>
+              <Link href="/login" className="fx-btn-secondary inline-flex min-h-12 items-center rounded-full px-7 text-sm font-semibold">
+                {t("common.signIn")}
+              </Link>
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="fx-footer-pad border-t border-[rgba(16,20,37,0.08)] bg-[#ffffff] pb-[calc(116px+env(safe-area-inset-bottom,0px))] md:pb-0">
-        <div className="fx-shell flex flex-col gap-6 py-12 text-sm text-[#5c657a] sm:flex-row sm:items-start sm:justify-between">
+      <footer className="fx-footer">
+        <div className="fx-shell fx-footer-grid">
           <div>
-            <div className="flex items-center gap-3">
-              <BrandLogo className="h-7 w-auto" height={28} />
-            </div>
-            <p className="mt-3 max-w-sm text-[13px] leading-relaxed">
-              {t("landing.footer.blurb")}
-            </p>
-            <p className="mt-3 inline-flex items-center gap-2 text-[12px] font-medium text-[#111111]">
+            <BrandLogo className="fx-nav-logo h-7 w-auto" height={28} />
+            <p className="mt-3 max-w-sm text-[13px] leading-relaxed">{t("landing.footer.blurb")}</p>
+            <p className="fx-ing-pill mt-4">
               <IngMark className="h-4 w-auto object-contain" height={16} />
               <span>{t("landing.partnership")}</span>
             </p>
-            <p className="mt-2 text-[12px]">© {new Date().getFullYear()} 7FX</p>
+            <p className="mt-3 text-[12px]">© {new Date().getFullYear()} 7FX</p>
           </div>
-          <div className="flex flex-wrap gap-x-10 gap-y-4 text-[13px]">
-            <div className="flex flex-col gap-2">
-              <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#111111]">
-                {t("landing.nav.platform")}
-              </span>
-              <button type="button" className="text-left hover:text-[#111111]" onClick={() => scrollToId("piyasalar")}>
+          <div className="fx-footer-links">
+            <div>
+              <span>{t("landing.nav.platform")}</span>
+              <button type="button" onClick={() => scrollToId("markets")}>
                 {t("landing.marketsTitle")}
               </button>
-              <button type="button" className="text-left hover:text-[#111111]" onClick={() => scrollToId("platform")}>
+              <button type="button" onClick={() => scrollToId("platform")}>
                 {t("landing.footer.features")}
               </button>
-              <button type="button" className="text-left hover:text-[#111111]" onClick={() => scrollToId("hakkinda")}>
-                {t("landing.nav.about")}
+              <button type="button" onClick={() => scrollToId("security")}>
+                {t("landing.nav.security")}
               </button>
             </div>
-            <div className="flex flex-col gap-2">
-              <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#111111]">
-                {t("term.account")}
-              </span>
-              <Link href="/login" className="hover:text-[#111111]">{t("common.signIn")}</Link>
-              <Link href="/register" className="hover:text-[#111111]">{t("landing.openAccount")}</Link>
-              {siteHost ? <span>{siteHost}</span> : null}
+            <div>
+              <span>{t("term.account")}</span>
+              <Link href="/login">{t("common.signIn")}</Link>
+              <Link href="/register">{t("landing.openAccount")}</Link>
+              <Link href="/ios">{t("landing.ios.pageTitle")}</Link>
+              {siteHost ? <span className="fx-host">{siteHost}</span> : null}
             </div>
           </div>
         </div>
       </footer>
 
-      {/* Sticky mobile CTA — hidden while hero is on screen */}
       <div
-        className={`fx-sticky-cta fixed inset-x-0 bottom-0 z-50 border-t border-[rgba(16,20,37,0.08)] bg-white/95 px-3 pt-2 backdrop-blur-xl transition-transform duration-200 md:hidden ${
-          showStickyCta ? "translate-y-0" : "pointer-events-none translate-y-full"
-        }`}
+        className={`fx-sticky-cta md:hidden ${showStickyCta ? "is-on" : ""}`}
         aria-hidden={!showStickyCta}
       >
-        <div className="mx-auto flex max-w-lg items-center gap-2">
-          <Link
-            href="/login"
-            tabIndex={showStickyCta ? 0 : -1}
-            className="fx-btn-secondary inline-flex h-9 flex-1 items-center justify-center rounded-full text-[12.5px] font-semibold"
-          >{t("common.signIn")}</Link>
-          <Link
-            href="/register"
-            tabIndex={showStickyCta ? 0 : -1}
-            className="fx-btn-primary inline-flex h-9 flex-[1.2] items-center justify-center rounded-full text-[12.5px] font-semibold"
-          >{t("landing.openAccount")}</Link>
-        </div>
+        <Link href="/login" tabIndex={showStickyCta ? 0 : -1} className="fx-btn-secondary">
+          {t("common.signIn")}
+        </Link>
+        <Link href="/register" tabIndex={showStickyCta ? 0 : -1} className="fx-btn-primary">
+          {t("landing.openAccount")}
+        </Link>
       </div>
     </div>
   );
