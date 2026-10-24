@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { useI18n } from "@/lib/i18n/context";
 
 export type DepositMethod = {
   id: string;
@@ -32,6 +33,7 @@ async function copyText(text: string) {
 }
 
 export default function DepositModal({ open, onClose, onSubmitted }: Props) {
+  const { t } = useI18n();
   const [methods, setMethods] = useState<DepositMethod[]>([]);
   const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState<"IBAN" | "CRYPTO">("IBAN");
@@ -260,7 +262,7 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
                   <input
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
-                    placeholder="Transaction reference / tx hash"
+                    placeholder={t("term.deposit.ref")}
                     className="w-full rounded-[10px] border border-desk-border bg-desk-bg px-3 py-2 text-sm text-desk-text outline-none focus:border-desk-accent"
                   />
                 </div>

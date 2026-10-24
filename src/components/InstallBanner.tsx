@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { useI18n } from "@/lib/i18n/context";
 
 type BIP = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: "accepted" | "dismissed" }> };
 
@@ -28,6 +29,7 @@ function ls(k: string, v?: string) {
 }
 
 export default function InstallBanner() {
+  const { t } = useI18n();
   const pathname = usePathname() || "/";
   const [bip, setBip] = useState<BIP | null>(null);
   const [ios, setIos] = useState(false);
@@ -72,19 +74,19 @@ export default function InstallBanner() {
   const lift = pathname === "/" ? "bottom-[calc(80px+env(safe-area-inset-bottom,0px))] md:bottom-5" : "bottom-[calc(14px+env(safe-area-inset-bottom,0px))]";
 
   return (
-    <div className={`fx-install-in fixed inset-x-3 z-[90] mx-auto max-w-[380px] ${lift}`} role="region" aria-label="Uygulamayı yükle">
+    <div className={`fx-install-in fixed inset-x-3 z-[90] mx-auto max-w-[380px] ${lift}`} role="region" aria-label={t("install.aria")}>
       {steps && (
         <div className="fx-install-steps mb-2 rounded-2xl border border-black/[0.06] bg-white px-4 py-3 text-[12px] leading-relaxed text-[#111111] shadow-[0_18px_40px_-12px_rgba(0,0,0,0.25)]">
-          <p className="text-[12.5px] font-semibold">Ana ekrana ekleyin</p>
+          <p className="text-[12.5px] font-semibold">{t("install.iosTitle")}</p>
           <ol className="mt-1.5 space-y-1 text-[#5c657a]">
-            <li className="flex gap-2"><span className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#111111] text-[9px] font-bold text-white">1</span><span>Safari&apos;de <b className="text-[#111111]">Paylaş</b> <span aria-hidden>⬆︎</span> simgesine dokunun</span></li>
-            <li className="flex gap-2"><span className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#111111] text-[9px] font-bold text-white">2</span><span><b className="text-[#111111]">Ana Ekrana Ekle</b> → <b className="text-[#111111]">Ekle</b></span></li>
+            <li className="flex gap-2"><span className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#111111] text-[9px] font-bold text-white">1</span><span>{t("install.ios1")}</span></li>
+            <li className="flex gap-2"><span className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#111111] text-[9px] font-bold text-white">2</span><span>{t("install.ios2")}</span></li>
           </ol>
         </div>
       )}
       <div className="fx-install-card relative overflow-hidden rounded-[20px] border border-black/[0.06] bg-white p-3 shadow-[0_20px_45px_-15px_rgba(0,0,0,0.35),0_2px_6px_rgba(0,0,0,0.06)]">
         <span className="fx-install-shine pointer-events-none absolute inset-y-0 -left-1/2 w-1/2" aria-hidden />
-        <button type="button" onClick={close} aria-label="Kapat" className="absolute right-1.5 top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-full text-[14px] leading-none text-neutral-400 transition hover:bg-neutral-100 hover:text-black">
+        <button type="button" onClick={close} aria-label={t("install.close")} className="absolute right-1.5 top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-full text-[14px] leading-none text-neutral-400 transition hover:bg-neutral-100 hover:text-black">
           ×
         </button>
         <div className="flex items-center gap-3 pr-5">
@@ -93,15 +95,15 @@ export default function InstallBanner() {
             <img src="/icons/v3/icon-192.png" alt="" className="h-11 w-11 rounded-[12px] shadow-[0_6px_14px_rgba(0,0,0,0.25)] ring-1 ring-black/5" />
           </span>
           <button type="button" onClick={onClick} className="min-w-0 flex-1 text-left">
-            <span className="block text-[13px] font-bold leading-tight tracking-tight text-[#111111]">Uygulamayı indirmek için tıklayınız</span>
-            <span className="mt-0.5 block text-[11.5px] text-neutral-500">Daha hızlı erişim, anında bildirimler</span>
+            <span className="block text-[13px] font-bold leading-tight tracking-tight text-[#111111]">{t("install.title")}</span>
+            <span className="mt-0.5 block text-[11.5px] text-neutral-500">{t("install.subtitle")}</span>
           </button>
           <button
             type="button"
             onClick={onClick}
             className="fx-install-cta shrink-0 rounded-full bg-[#111111] px-4 py-2 text-[12.5px] font-semibold text-white shadow-[0_6px_16px_rgba(0,0,0,0.3)] transition active:scale-95 hover:bg-black"
           >
-            Yükle
+            {t("install.action")}
           </button>
         </div>
       </div>

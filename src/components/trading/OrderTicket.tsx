@@ -747,7 +747,7 @@ export default function OrderTicket({
             <input
               value={sl}
               onChange={(e) => setSl(e.target.value)}
-              placeholder="Price"
+              placeholder={t("term.pricePh")}
               autoFocus
               className="w-full rounded-[12px] border border-desk-sell/40 bg-desk-bg px-3 py-2.5 text-sm tabular-nums text-desk-text outline-none focus:border-desk-sell md:rounded-control md:px-2.5 md:py-2"
             />
@@ -894,7 +894,7 @@ export default function OrderTicket({
             <input
               value={tp}
               onChange={(e) => setTp(e.target.value)}
-              placeholder="Price"
+              placeholder={t("term.pricePh")}
               className="w-full rounded-[12px] border border-desk-buy/40 bg-desk-bg px-3 py-2.5 text-sm tabular-nums text-desk-text outline-none focus:border-desk-buy md:rounded-control md:px-2.5 md:py-2"
             />
             <div className="mt-1.5 flex flex-wrap items-center gap-1" role="group" aria-label={t("term.col.distance")}>

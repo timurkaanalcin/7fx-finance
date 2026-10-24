@@ -808,13 +808,13 @@ export default function TradingChart({
             <div
               className="mt-0.5 flex flex-wrap items-baseline gap-x-1.5 gap-y-0 text-[11px] font-semibold tabular-nums leading-tight md:text-[12px]"
               data-fx-chart-quote=""
-              title="Live bid / ask"
+              title={t("term.liveQuote")}
               aria-live="off"
             >
-              <span className="text-[9px] font-medium uppercase tracking-wide text-desk-muted">Bid</span>
+              <span className="text-[9px] font-medium uppercase tracking-wide text-desk-muted">{t("term.bid")}</span>
               <span className="text-desk-sell">{hasQuote && price ? formatPrice(symbol, price.bid) : "—"}</span>
               <span className="text-desk-muted/40">/</span>
-              <span className="text-[9px] font-medium uppercase tracking-wide text-desk-muted">Ask</span>
+              <span className="text-[9px] font-medium uppercase tracking-wide text-desk-muted">{t("term.ask")}</span>
               <span className="text-desk-buy">{hasQuote && price ? formatPrice(symbol, price.ask) : "—"}</span>
               {hasQuote && price && Number.isFinite(price.changePct) && (
                 <span className={quoteUp ? "text-desk-buy" : "text-desk-sell"}>

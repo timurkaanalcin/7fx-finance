@@ -28,7 +28,7 @@ export async function subscribePush(vapid: string) {
 /** One-time in-app banner asking the customer to enable phone push (live-support replies). */
 export default function PushPromptBanner() {
   const { locale } = useI18n();
-  const L = T[locale] ?? T.tr;
+  const L = T[locale] ?? T.en;
   const [mode, setMode] = useState<"" | "ask" | "ios">("");
   const [vapid, setVapid] = useState("");
 
