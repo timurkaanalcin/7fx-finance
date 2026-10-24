@@ -18,15 +18,19 @@ type Msg = {
 };
 
 export default function LiveSupportPanel() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
+  const [hasOlder, setHasOlder] = useState(false);
+  const [olderBusy, setOlderBusy] = useState(false);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [presence, setPresence] = useState<ChatPresenceSnapshot | null>(null);
   const [viewAtt, setViewAtt] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const olderSkipRef = useRef(0);
+  const stickRef = useRef(true);
   const typingIdleRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTypingSent = useRef(false);
 
@@ -46,15 +50,35 @@ export default function LiveSupportPanel() {
     }
   }, []);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (mode: "refresh" | "older" = "refresh") => {
+    const skip = mode === "older" ? olderSkipRef.current : 0;
+    if (mode === "older") setOlderBusy(true);
     try {
-      const res = await fetch("/api/support", { credentials: "include" });
+      const res = await fetch(`/api/support?take=50&skip=${skip}`, { credentials: "include" });
       if (!res.ok) return;
       const data = await res.json();
-      setMessages(data.messages || []);
+      const incoming: Msg[] = data.messages || [];
+      setMessages((prev) => {
+        const map = new Map<string, Msg>();
+        for (const row of prev) map.set(row.id, row);
+        for (const row of incoming) map.set(row.id, row);
+        return Array.from(map.values()).sort(
+          (a, b) => +new Date(a.createdAt) - +new Date(b.createdAt)
+        );
+      });
       if (data.presence) setPresence(data.presence);
+      if (mode === "older") {
+        stickRef.current = false;
+        setHasOlder(Boolean(data.hasMore));
+        olderSkipRef.current = typeof data.nextSkip === "number" ? data.nextSkip : skip;
+      } else if (olderSkipRef.current <= 50) {
+        setHasOlder(Boolean(data.hasMore));
+        olderSkipRef.current = typeof data.nextSkip === "number" ? data.nextSkip : incoming.length;
+      }
     } catch {
       /* ignore */
+    } finally {
+      if (mode === "older") setOlderBusy(false);
     }
   }, []);
 
@@ -81,7 +105,7 @@ export default function LiveSupportPanel() {
   }, [open, load, ping]);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (stickRef.current) bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, open, presence?.adminTyping]);
 
   async function onSend(e: FormEvent) {
@@ -103,6 +127,7 @@ export default function LiveSupportPanel() {
         return;
       }
       setText("");
+      stickRef.current = true;
       lastTypingSent.current = false;
       if (typingIdleRef.current) clearTimeout(typingIdleRef.current);
       await load();
@@ -185,6 +210,16 @@ export default function LiveSupportPanel() {
             </div>
 
             <div className="min-h-0 flex-1 space-y-2 overflow-y-auto px-3 py-3">
+              {hasOlder && (
+                <button
+                  type="button"
+                  disabled={olderBusy}
+                  onClick={() => void load("older")}
+                  className="w-full rounded-lg border border-[#2a2a2a] px-3 py-2 text-xs font-medium text-slate-300 hover:bg-[#1a1a1a] disabled:opacity-50"
+                >
+                  {olderBusy ? t("common.loading") : t("profile.support.older")}
+                </button>
+              )}
               {messages.length === 0 && (
                 <p className="px-2 py-6 text-center text-xs text-slate-500">{t("profile.support.empty")}</p>
               )}
@@ -219,7 +254,7 @@ export default function LiveSupportPanel() {
                       />
                       <p className={`mt-1 flex items-center justify-end gap-2 text-[10px] ${mine ? "text-white/70" : "text-slate-500"}`}>
                         {read && <span className="font-medium">{t("profile.support.read")}</span>}
-                        <span>{new Date(m.createdAt).toLocaleString()}</span>
+                        <span>{new Date(m.createdAt).toLocaleString(locale)}</span>
                       </p>
                     </div>
                   </div>

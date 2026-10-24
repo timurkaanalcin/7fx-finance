@@ -295,7 +295,8 @@ async function pagedThreads(
           where: scopeUserWhere(admin, { role: "TRADER" }),
           select: { id: true, name: true, email: true },
           orderBy: { name: "asc" },
-          take: 200,
+          skip: pickerSkip(searchParams),
+          take: pickerQueryTake(searchParams),
         })
       : Promise.resolve(undefined),
   ]);
@@ -305,12 +306,44 @@ async function pagedThreads(
     .filter((t): t is NonNullable<typeof t> => t != null);
   const rank = new Map(pageIds.map((id, i) => [id, i]));
   threads.sort((a, b) => (rank.get(a.traderId) ?? 1000) - (rank.get(b.traderId) ?? 1000));
+  const picker = pageTraders(traders, searchParams);
   return {
     threads,
     hasMore,
     nextSkip: skip + pageIds.length,
-    ...(traders ? { traders } : {}),
+    ...(picker ? picker : {}),
   };
+}
+
+function pickerPaged(searchParams: URLSearchParams): boolean {
+  return searchParams.get("picker") === "1" && (searchParams.has("pickerTake") || searchParams.has("pickerSkip"));
+}
+
+function pickerSkip(searchParams: URLSearchParams): number {
+  if (!pickerPaged(searchParams)) return 0;
+  const n = Number(searchParams.get("pickerSkip"));
+  if (!Number.isFinite(n) || n <= 0) return 0;
+  return Math.min(100_000, Math.trunc(n));
+}
+
+function pickerQueryTake(searchParams: URLSearchParams): number {
+  if (!pickerPaged(searchParams)) return 200;
+  const n = Math.trunc(Number(searchParams.get("pickerTake")));
+  const take = Number.isFinite(n) && n > 0 ? Math.min(100, n) : 50;
+  return take + 1;
+}
+
+function pageTraders(
+  traders: { id: string; name: string; email: string }[] | undefined,
+  searchParams: URLSearchParams
+): { traders: { id: string; name: string; email: string }[]; pickerHasMore: boolean; pickerNextSkip: number } | null {
+  if (!traders) return null;
+  if (!pickerPaged(searchParams)) return { traders, pickerHasMore: false, pickerNextSkip: traders.length };
+  const take = pickerQueryTake(searchParams) - 1;
+  const skip = pickerSkip(searchParams);
+  const pickerHasMore = traders.length > take;
+  const page = pickerHasMore ? traders.slice(0, take) : traders;
+  return { traders: page, pickerHasMore, pickerNextSkip: skip + page.length };
 }
 
 function chatWhere(admin: NonNullable<Awaited<ReturnType<typeof requireAdmin>>>, q: string): Prisma.CommunicationWhereInput {

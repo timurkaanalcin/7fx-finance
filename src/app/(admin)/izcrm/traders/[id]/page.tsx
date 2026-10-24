@@ -1011,6 +1011,9 @@ export default function AdminUserDetailPage() {
   const [withdrawals, setWithdrawals] = useState<Row[]>([]);
   const [balanceRequests, setBalanceRequests] = useState<Row[]>([]);
   const [ledger, setLedger] = useState<Row[]>([]);
+  const [ledgerHasMore, setLedgerHasMore] = useState(false);
+  const [ledgerMoreBusy, setLedgerMoreBusy] = useState(false);
+  const ledgerRef = useRef<Row[]>([]);
   const [communications, setCommunications] = useState<Row[]>([]);
   const [activityEvents, setActivityEvents] = useState<
     { id: string; kind: string; path?: string | null; userAgent?: string | null; meta?: string | null; createdAt: string }[]
@@ -1047,7 +1050,7 @@ export default function AdminUserDetailPage() {
       for (const s of TRADER_LAZY_SCOPES) scopeGen.current[s] = (scopeGen.current[s] || 0) + 1;
     }
     const alive = () => scopeGen.current[scope] === gen && activeId.current === requestId;
-    const q = scope === "full" ? "" : `?view=${scope}`;
+    const q = scope === "ledger" ? "?view=ledger&take=50&skip=0" : scope === "full" ? "" : `?view=${scope}`;
     const session = scope === "full" || scope === "profile";
     const [res, meRes] = await Promise.all([
       fetch(`/api/admin/users/${requestId}${q}`),
@@ -1085,7 +1088,10 @@ export default function AdminUserDetailPage() {
       return true;
     }
     if (scope === "ledger") {
-      setLedger(data.ledger || []);
+      const rows: Row[] = data.ledger || [];
+      ledgerRef.current = rows;
+      setLedger(rows);
+      setLedgerHasMore(Boolean(data.hasMore));
       return true;
     }
     if (scope === "documents") {
@@ -1135,6 +1141,25 @@ export default function AdminUserDetailPage() {
     return true;
   }, [id]);
 
+  const loadMoreLedger = useCallback(async () => {
+    if (!id || ledgerMoreBusy) return;
+    setLedgerMoreBusy(true);
+    try {
+      const skip = ledgerRef.current.length;
+      const res = await fetch(`/api/admin/users/${id}?view=ledger&take=50&skip=${skip}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      const incoming: Row[] = data.ledger || [];
+      const seen = new Set(ledgerRef.current.map((row) => String(row.id)));
+      const next = ledgerRef.current.concat(incoming.filter((row) => !seen.has(String(row.id))));
+      ledgerRef.current = next;
+      setLedger(next);
+      setLedgerHasMore(Boolean(data.hasMore));
+    } finally {
+      setLedgerMoreBusy(false);
+    }
+  }, [id, ledgerMoreBusy]);
+
   useEffect(() => {
     if (fetched.current.id !== id) {
       fetched.current = { id, scopes: new Set() };
@@ -1146,6 +1171,8 @@ export default function AdminUserDetailPage() {
       setWithdrawals([]);
       setBalanceRequests([]);
       setLedger([]);
+      ledgerRef.current = [];
+      setLedgerHasMore(false);
       setCommunications([]);
       setActivityEvents([]);
       setDocuments([]);
@@ -1909,6 +1936,16 @@ export default function AdminUserDetailPage() {
             onUpdate={rec("ledger").update}
             onDelete={rec("ledger").remove}
           />
+          {ledgerHasMore && (
+            <button
+              type="button"
+              disabled={ledgerMoreBusy}
+              onClick={() => void loadMoreLedger()}
+              className="mt-3 w-full rounded-lg border border-[#e5e5e5] bg-white px-3 py-2 text-sm font-medium hover:bg-[#f7f7f7] disabled:opacity-50"
+            >
+              {ledgerMoreBusy ? i18n("crm.ui.loading") : i18n("crm.ui.loadMore")}
+            </button>
+          )}
         </div>
       )}
 

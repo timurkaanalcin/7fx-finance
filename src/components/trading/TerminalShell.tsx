@@ -58,6 +58,8 @@ type ClosedPayload = {
   hasMore: boolean;
   nextSkip: number;
   calendar: PositionRow[] | null;
+  calendarHasMore: boolean;
+  calendarNextSkip: number;
 };
 
 function asClosedRow(row: PositionRow): PositionRow {
@@ -84,7 +86,7 @@ function asClosedRow(row: PositionRow): PositionRow {
 function parseClosedPayload(data: unknown): ClosedPayload {
   if (Array.isArray(data)) {
     const positions = (data as PositionRow[]).map(asClosedRow);
-    return { positions, hasMore: false, nextSkip: positions.length, calendar: null };
+    return { positions, hasMore: false, nextSkip: positions.length, calendar: null, calendarHasMore: false, calendarNextSkip: 0 };
   }
   const body = data && typeof data === "object" ? (data as Record<string, unknown>) : {};
   const positions = Array.isArray(body.positions) ? (body.positions as PositionRow[]).map(asClosedRow) : [];
@@ -94,6 +96,8 @@ function parseClosedPayload(data: unknown): ClosedPayload {
     hasMore: Boolean(body.hasMore),
     nextSkip: typeof body.nextSkip === "number" ? body.nextSkip : positions.length,
     calendar,
+    calendarHasMore: Boolean(body.calendarHasMore),
+    calendarNextSkip: typeof body.calendarNextSkip === "number" ? body.calendarNextSkip : 0,
   };
 }
 
@@ -156,7 +160,7 @@ import { useI18n } from "@/lib/i18n/context";
 import { localizeTradeError } from "@/lib/trade-errors";
 import { displayAccountChips, displayBookDelta } from "@/lib/display-profit";
 import { positionMark } from "@/lib/mark-price";
-import { concatUniqueById } from "@/lib/position-pages";
+import { CALENDAR_FOLLOW_CAP, concatUniqueById } from "@/lib/position-pages";
 import { formatPrice, getSymbol } from "@/lib/symbols";
 import BrandLoader from "@/components/ui/BrandLoader";
 import { normalizeLocale } from "@/lib/i18n/locales";
@@ -396,8 +400,9 @@ export default function TerminalShell() {
 
   const applyClosedPage = useCallback((parsed: ClosedPayload, mode: "refresh" | "append") => {
     setClosedPositions((prev) => mergeClosed(prev, parsed.positions));
-    if (parsed.calendar) setClosedCalendar(parsed.calendar);
-    else if (mode === "refresh") {
+    if (parsed.calendar) {
+      setClosedCalendar((prev) => (mode === "append" ? mergeClosed(prev, parsed.calendar || []) : parsed.calendar || []));
+    } else if (mode === "refresh") {
       setClosedCalendar((prev) => (prev.length ? mergeClosed(prev, parsed.positions) : prev));
     }
     if (mode === "append" || closedSkipRef.current <= parsed.nextSkip) {
@@ -423,7 +428,22 @@ export default function TerminalShell() {
         publishPosErr("history", true);
         return;
       }
-      applyClosedPage(parseClosedPayload(await closedRes.json()), "refresh");
+      const firstClosed = parseClosedPayload(await closedRes.json());
+      applyClosedPage(firstClosed, "refresh");
+      if (withCalendar && firstClosed.calendarHasMore) {
+        let calendarSkip = firstClosed.calendarNextSkip;
+        for (let page = 0; page < CALENDAR_FOLLOW_CAP && firstClosed.calendarHasMore; page++) {
+          const moreRes = await fetch(
+            `/api/positions?status=CLOSED&skip=0&tzOffset=${tz}&calendar=1&calendarSkip=${calendarSkip}`,
+            { credentials: "include" }
+          );
+          if (!moreRes.ok) break;
+          const more = parseClosedPayload(await moreRes.json());
+          if (more.calendar) setClosedCalendar((prev) => mergeClosed(prev, more.calendar || []));
+          if (!more.calendarHasMore || more.calendarNextSkip <= calendarSkip) break;
+          calendarSkip = more.calendarNextSkip;
+        }
+      }
       const orders: OrderRow[] = await ordersRes.json();
       setPendingOrders(Array.isArray(orders) ? orders.filter((o) => o.status === "PENDING") : []);
       publishPosErr("history", false);

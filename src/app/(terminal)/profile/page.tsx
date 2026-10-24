@@ -152,10 +152,10 @@ export default function ProfileePage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || "Registration failed");
+        setMsg(data.error || t("term.profile.saveFailed"));
         return;
       }
-      setMsg("Kaydedildi");
+      setMsg(t("term.profile.saved"));
       setProfilee((p) => (p ? { ...p, phone, language, timezone, address } : p));
       setLocale(normalizeLocale(language, "public"));
     } finally {
@@ -170,15 +170,15 @@ export default function ProfileePage() {
     setPwErr("");
     try {
       if (!currentPassword || !newPassword || !confirmPassword) {
-        setPwErr("Fill in all password fields");
+        setPwErr(t("term.profile.pwFill"));
         return;
       }
       if (newPassword.length < 8) {
-        setPwErr("New password must be at least 8 characters");
+        setPwErr(t("term.profile.pwMin"));
         return;
       }
       if (newPassword !== confirmPassword) {
-        setPwErr("New passwords do not match");
+        setPwErr(t("term.profile.pwMatch"));
         return;
       }
       const res = await fetch("/api/profile", {
@@ -193,15 +193,15 @@ export default function ProfileePage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setPwErr(data.error || "Could not change password");
+        setPwErr(data.error || t("term.profile.pwFail"));
         return;
       }
-      setPwMsg("Your password was updated");
+      setPwMsg(t("term.profile.pwOk"));
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch {
-      setPwErr("Connection error");
+      setPwErr(t("term.profile.conn"));
     } finally {
       setPwBusy(false);
     }
@@ -229,15 +229,15 @@ export default function ProfileePage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setWdErr(data.error || "Could not submit request");
+        setWdErr(data.error || t("term.profile.wdFail"));
         return;
       }
-      setWdMsg("Withdrawal request submitted. Balance will be deducted after approval.");
+      setWdMsg(t("term.profile.wdOk"));
       setWdDetails("");
       setWdNote("");
       await loadWithdrawals();
     } catch {
-      setWdErr("Connection error");
+      setWdErr(t("term.profile.conn"));
     } finally {
       setWdBusy(false);
     }
@@ -261,12 +261,12 @@ export default function ProfileePage() {
       <header className="sticky top-0 z-30 flex h-12 items-center gap-3 border-b border-[#2a2a2a] bg-[#0a0a0a] px-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/icons/v3/icon-192.png" alt="" className="h-7 w-7 rounded-md object-cover ring-1 ring-[#2a2a2a]" />
-        <span className="text-sm font-semibold">Membership Details</span>
+        <span className="text-sm font-semibold">{t("term.profile.membership")}</span>
         <Link
           href="/trade"
           className="ml-auto rounded-md bg-[#2a2a2a] px-2.5 py-1.5 text-xs hover:bg-[#1f1f1f]"
         >
-          ← Terminal
+          ← {t("common.terminal")}
         </Link>
         <NotificationBell tone="dark" />
         <ThemeToggle />
@@ -275,7 +275,7 @@ export default function ProfileePage() {
           onClick={onLogout}
           className="rounded-md border border-[#2a2a2a] px-2.5 py-1.5 text-xs text-slate-400 hover:bg-[#1f1f1f] hover:text-slate-200"
         >
-          Sign out
+          {t("common.signOut")}
         </button>
       </header>
 
@@ -329,63 +329,63 @@ export default function ProfileePage() {
                 profile.active ? "bg-emerald-500/20 text-emerald-300" : "bg-red-500/20 text-red-300"
               }`}
             >
-              {profile.active ? "Active" : "Freezeuldu"}
+              {profile.active ? t("term.profile.active") : t("term.profile.frozen")}
             </span>
             {profile.documentsStatus && profile.documentsStatus !== "NONE" && (
               <span className="rounded bg-blue-500/20 px-1.5 py-0.5 text-blue-300">
-                Documents: {profile.documentsStatus}
+                {t("term.profile.documents")}: {profile.documentsStatus}
               </span>
             )}
           </div>
         </div>
 
         <section className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
-          <h2 className="mb-2 text-sm font-medium text-slate-300">ID / Account</h2>
-          <Row label="Account ID" value={profile.accountLoginId || "—"} />
-          <Row label="First name" value={profile.firstName} />
-          <Row label="Last name" value={profile.lastName} />
-          <Row label="Country" value={profile.country} />
+          <h2 className="mb-2 text-sm font-medium text-slate-300">{t("term.profile.idAccount")}</h2>
+          <Row label={t("term.profile.accountId")} value={profile.accountLoginId || "—"} />
+          <Row label={t("term.profile.firstName")} value={profile.firstName} />
+          <Row label={t("term.profile.lastName")} value={profile.lastName} />
+          <Row label={t("term.profile.country")} value={profile.country} />
           <Row
-            label="Date of birth"
+            label={t("term.profile.birth")}
             value={
-              profile.birthDate ? new Date(profile.birthDate).toLocaleDateString("en-US") : "—"
+              profile.birthDate ? new Date(profile.birthDate).toLocaleDateString(locale) : "—"
             }
           />
           <Row
-            label="Registered"
+            label={t("term.profile.registered")}
             value={
               profile.registrationDate
-                ? new Date(profile.registrationDate).toLocaleDateString("en-US")
+                ? new Date(profile.registrationDate).toLocaleDateString(locale)
                 : "—"
             }
           />
-          <Row label="Registration country" value={profile.registrationCountry} />
-          <Row label="Resident" value={profile.isResident ? "Yes" : "No"} />
+          <Row label={t("term.profile.regCountry")} value={profile.registrationCountry} />
+          <Row label={t("term.profile.resident")} value={profile.isResident ? t("common.yes") : t("common.no")} />
           <Row
-            label="Last login"
+            label={t("term.profile.lastLogin")}
             value={
-              profile.lastLoginAt ? new Date(profile.lastLoginAt).toLocaleString("en-US") : "—"
+              profile.lastLoginAt ? new Date(profile.lastLoginAt).toLocaleString(locale) : "—"
             }
           />
-          <Row label="Server" value={profile.tradingServer || "—"} />
+          <Row label={t("term.profile.server")} value={profile.tradingServer || "—"} />
         </section>
 
         <section className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
-          <h2 className="mb-2 text-sm font-medium text-slate-300">Finance summary</h2>
-          <Row label="Balance" value={money(profile.balance)} />
-          <Row label="Equity" value={money(profile.equity)} />
-          <Row label="Credit" value={money(profile.credit)} />
-          <Row label="Bonus" value={money(profile.bonus)} />
-          <Row label="Para birimi" value={profile.currency} />
+          <h2 className="mb-2 text-sm font-medium text-slate-300">{t("term.profile.finance")}</h2>
+          <Row label={t("term.top.balance")} value={money(profile.balance)} />
+          <Row label={t("term.top.equity")} value={money(profile.equity)} />
+          <Row label={t("term.top.credit")} value={money(profile.credit)} />
+          <Row label={t("term.profile.bonus")} value={money(profile.bonus)} />
+          <Row label={t("term.profile.currency")} value={profile.currency} />
         </section>
 
 
         <form onSubmit={save} className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
-          <h2 className="mb-3 text-sm font-medium text-slate-300">Editable fields</h2>
+          <h2 className="mb-3 text-sm font-medium text-slate-300">{t("term.profile.editable")}</h2>
           {msg && <p className="mb-2 text-xs text-emerald-400">{msg}</p>}
           <div className="grid gap-3 text-xs sm:grid-cols-2">
             <label className="flex flex-col gap-1">
-              <span className="text-slate-500">Phone</span>
+              <span className="text-slate-500">{t("common.phone")}</span>
               <input
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
@@ -393,7 +393,7 @@ export default function ProfileePage() {
               />
             </label>
             <label className="flex flex-col gap-1">
-              <span className="text-slate-500">Language</span>
+              <span className="text-slate-500">{t("common.language")}</span>
               <select
                 value={language}
                 onChange={(e) => {
@@ -415,7 +415,7 @@ export default function ProfileePage() {
               </span>
             </label>
             <label className="flex flex-col gap-1">
-              <span className="text-slate-500">Timezone</span>
+              <span className="text-slate-500">{t("common.timezone")}</span>
               <input
                 value={timezone}
                 onChange={(e) => setTimezone(e.target.value)}
@@ -423,7 +423,7 @@ export default function ProfileePage() {
               />
             </label>
             <label className="flex flex-col gap-1 sm:col-span-2">
-              <span className="text-slate-500">Address</span>
+              <span className="text-slate-500">{t("common.address")}</span>
               <input
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
@@ -436,7 +436,7 @@ export default function ProfileePage() {
             disabled={busy}
             className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium hover:bg-blue-500 disabled:opacity-50"
           >
-            Save
+            {t("common.save")}
           </button>
         </form>
 
@@ -444,15 +444,15 @@ export default function ProfileePage() {
           onSubmit={changePassword}
           className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4"
         >
-          <h2 className="mb-1 text-sm font-medium text-slate-300">Change Password</h2>
+          <h2 className="mb-1 text-sm font-medium text-slate-300">{t("term.profile.password")}</h2>
           <p className="mb-3 text-[11px] text-slate-500">
-            For your security, enter your current password, then the new password twice.
+            {t("term.profile.pwHint")}
           </p>
           {pwMsg && <p className="mb-2 text-xs text-emerald-400">{pwMsg}</p>}
           {pwErr && <p className="mb-2 text-xs text-red-400">{pwErr}</p>}
           <div className="grid gap-3 text-xs sm:grid-cols-1">
             <label className="flex flex-col gap-1">
-              <span className="text-slate-500">Current password</span>
+              <span className="text-slate-500">{t("term.profile.pwCurrent")}</span>
               <input
                 type="password"
                 autoComplete="current-password"
@@ -462,7 +462,7 @@ export default function ProfileePage() {
               />
             </label>
             <label className="flex flex-col gap-1">
-              <span className="text-slate-500">New password</span>
+              <span className="text-slate-500">{t("term.profile.pwNew")}</span>
               <input
                 type="password"
                 autoComplete="new-password"
@@ -473,7 +473,7 @@ export default function ProfileePage() {
               />
             </label>
             <label className="flex flex-col gap-1">
-              <span className="text-slate-500">New password (confirm)</span>
+              <span className="text-slate-500">{t("term.profile.pwConfirm")}</span>
               <input
                 type="password"
                 autoComplete="new-password"
@@ -489,7 +489,7 @@ export default function ProfileePage() {
             disabled={pwBusy}
             className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium hover:bg-blue-500 disabled:opacity-50"
           >
-            Update password
+            {t("term.profile.pwUpdate")}
           </button>
         </form>
 
@@ -498,10 +498,9 @@ export default function ProfileePage() {
           id="para-cekme"
           className="rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4"
         >
-          <h2 className="mb-1 text-sm font-medium text-slate-300">Withdraw funds</h2>
+          <h2 className="mb-1 text-sm font-medium text-slate-300">{t("term.profile.withdraw")}</h2>
           <p className="mb-3 text-[11px] text-slate-500">
-            The request is deducted from your balance once approved. Withdrawable amount is limited by your balance and free
-            margin ({money(profile.balance)}).
+            {t("term.profile.wdLead").replace("{amount}", money(profile.balance))}
           </p>
           {profile.withdrawalsEnabled === false && (
             <div className="mb-3 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-300">
@@ -522,13 +521,13 @@ export default function ProfileePage() {
                       : "text-slate-400 hover:bg-[#1f1f1f]"
                   }`}
                 >
-                  {m === "BANK" ? "IBAN / Wire" : "Crypto"}
+                  {m === "BANK" ? t("term.profile.wdBank") : t("term.profile.wdCrypto")}
                 </button>
               ))}
             </div>
 
             <label className="flex flex-col gap-1 text-xs">
-              <span className="text-slate-500">Amount ({profile.currency || "USD"})</span>
+              <span className="text-slate-500">{t("term.profile.amount").replace("{currency}", profile.currency || "USD")}</span>
               <input
                 type="number"
                 min={1}
@@ -542,25 +541,25 @@ export default function ProfileePage() {
 
             <label className="flex flex-col gap-1 text-xs">
               <span className="text-slate-500">
-                {wdMethod === "BANK" ? "IBAN / Account details" : "Wallet address"}
+                {wdMethod === "BANK" ? t("term.profile.wdIban") : t("term.profile.wdWallet")}
               </span>
               <input
                 required
                 value={wdDetails}
                 onChange={(e) => setWdDetails(e.target.value)}
                 placeholder={
-                  wdMethod === "BANK" ? "TR00 0000 0000 0000 0000 0000 00" : "0x… / T… "
+                  wdMethod === "BANK" ? t("term.profile.ibanPh") : t("term.profile.walletPh")
                 }
                 className="rounded border border-[#2a2a2a] bg-[#000000] px-3 py-2 text-sm"
               />
             </label>
 
             <label className="flex flex-col gap-1 text-xs">
-              <span className="text-slate-500">Note (optional)</span>
+              <span className="text-slate-500">{t("term.profile.wdNote")}</span>
               <input
                 value={wdNote}
                 onChange={(e) => setWdNote(e.target.value)}
-                placeholder="Bank name / network (TRC20) etc."
+                placeholder={t("term.profile.wdNotePh")}
                 className="rounded border border-[#2a2a2a] bg-[#000000] px-3 py-2 text-sm"
               />
             </label>
@@ -579,7 +578,7 @@ export default function ProfileePage() {
               disabled={wdBusy || profile.withdrawalsEnabled === false}
               className="w-full rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-50"
             >
-              {wdBusy ? "Submitting…" : "Submit Withdrawal Request"}
+              {wdBusy ? t("term.profile.wdBusy") : t("term.profile.wdSubmit")}
             </button>
           </form>
 

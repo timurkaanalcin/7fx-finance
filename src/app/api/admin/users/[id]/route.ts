@@ -14,7 +14,7 @@ import { recordLedger } from "@/lib/ledger";
 import { jobTitleSchema } from "@/lib/job-titles";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { noteVisibilityWhere } from "@/lib/comment-teams";
-import { traderDetailScope } from "@/lib/trader-list";
+import { pagedOrLegacy, traderDetailScope } from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
 
@@ -110,12 +110,18 @@ export async function GET(req: Request, ctx: Ctx) {
   }
 
   if (scope === "ledger") {
-    const ledger = await prisma.balanceLedger.findMany({
+    const params = new URL(req.url).searchParams;
+    const paged = params.has("take") || params.has("skip");
+    const page = pagedOrLegacy(params.get("take"), params.get("skip"), paged, 200);
+    const found = await prisma.balanceLedger.findMany({
       where: { userId: id },
       orderBy: { createdAt: "desc" },
-      take: 200,
+      skip: page.skip,
+      take: page.paged ? page.take + 1 : page.take,
     });
-    return pack({ ledger });
+    const hasMore = page.paged && found.length > page.take;
+    const ledger = hasMore ? found.slice(0, page.take) : found;
+    return pack({ ledger, hasMore, nextSkip: page.skip + ledger.length });
   }
 
   if (scope === "documents") {
