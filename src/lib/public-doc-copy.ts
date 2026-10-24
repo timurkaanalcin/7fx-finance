@@ -18,6 +18,7 @@ export type PublicNavCopy = {
   platform: string;
   faq: string;
   signIn: string;
+  signOut: string;
   language: string;
 };
 
@@ -68,6 +69,7 @@ const EN: PublicBundle = {
     platform: "Platform",
     faq: "FAQ",
     signIn: "Sign in",
+    signOut: "Sign out",
     language: "Language",
   },
   markets: {
@@ -369,6 +371,7 @@ const TR: PublicBundle = {
     platform: "Platform",
     faq: "SSS",
     signIn: "Giriş yap",
+    signOut: "Çıkış",
     language: "Dil",
   },
   markets: {
@@ -506,6 +509,7 @@ const DE: PublicBundle = {
     platform: "Plattform",
     faq: "FAQ",
     signIn: "Anmelden",
+    signOut: "Abmelden",
     language: "Sprache",
   },
   markets: {
@@ -643,6 +647,7 @@ const RU: PublicBundle = {
     platform: "Платформа",
     faq: "Вопросы",
     signIn: "Войти",
+    signOut: "Выйти",
     language: "Язык",
   },
   markets: {
@@ -780,6 +785,7 @@ const AR: PublicBundle = {
     platform: "المنصة",
     faq: "الأسئلة",
     signIn: "تسجيل الدخول",
+    signOut: "تسجيل الخروج",
     language: "اللغة",
   },
   markets: {

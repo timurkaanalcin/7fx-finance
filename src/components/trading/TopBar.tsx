@@ -1,8 +1,8 @@
 "use client";
 
+import SignOutForm from "@/components/auth/SignOutForm";
 import ThemeToggle from "@/components/theme/ThemeToggle";
 import Link from "next/link";
-import { useState, useRef, useEffect } from "react";
 import { fmtMoney, fmtPct } from "@/lib/format";
 import type { AccountMetrics, UserInfo } from "./types";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
@@ -13,7 +13,6 @@ type Props = {
   user: UserInfo;
   account: AccountMetrics | null;
   onDeposit: () => void;
-  onLogout: () => void;
   /**
    * Blotter-matched Equity and P/L. Margin, free margin, and margin level
    * stay on the server snapshot in `account`.
@@ -129,7 +128,6 @@ export default function TopBar({
   user,
   account,
   onDeposit,
-  onLogout,
   displayEquity,
   displayProfitLoss,
   displayFreeMargin,
@@ -147,20 +145,6 @@ export default function TopBar({
       ? `(${pnlPctRaw > 0 ? "+" : ""}${pnlPctRaw.toFixed(Math.abs(pnlPctRaw) < 10 ? 2 : 1)}%)`
       : undefined;
   const shortId = `#${user.id.slice(-10)}`;
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function onDoc(e: MouseEvent | TouchEvent) {
-      if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false);
-    }
-    document.addEventListener("mousedown", onDoc);
-    document.addEventListener("touchstart", onDoc);
-    return () => {
-      document.removeEventListener("mousedown", onDoc);
-      document.removeEventListener("touchstart", onDoc);
-    };
-  }, []);
 
   const avatar = (
     <div className="flex h-7 w-7 items-center justify-center fx-avatar rounded-full bg-gradient-to-br from-desk-elev to-desk-hover text-[11px] font-bold text-desk-text ring-1 ring-desk-border/80 md:text-xs">
@@ -256,53 +240,40 @@ export default function TopBar({
 
         <NotificationBell tone="dark" />
         <LanguageSwitcher compact tone="dark" />
-        {/* Desktop: dropdown menu */}
-        <div className="relative hidden md:block" ref={menuRef}>
-          <button
-            type="button"
-            onClick={() => setMenuOpen((o) => !o)}
+        {/* Native disclosure so the menu opens without a React click handler. */}
+        <details className="relative hidden md:block">
+          <summary
             aria-label={user.name}
-            aria-expanded={menuOpen}
-            aria-haspopup="menu"
-            className="flex items-center gap-1.5 rounded-full border border-desk-border/80 bg-desk-bg/50 p-0.5 hover:border-desk-accent/50 md:gap-2 md:py-1 md:pl-1 md:pr-2.5"
+            className="flex cursor-pointer list-none items-center gap-1.5 rounded-full border border-desk-border/80 bg-desk-bg/50 p-0.5 hover:border-desk-accent/50 md:gap-2 md:py-1 md:pl-1 md:pr-2.5 [&::-webkit-details-marker]:hidden"
           >
             {avatar}
             <div className="hidden text-left leading-tight sm:block">
               <div className="text-xs font-medium text-desk-text">{user.name}</div>
               <div className="text-[10px] text-desk-muted">{shortId}</div>
             </div>
-          </button>
-          {menuOpen && (
-            <div className="absolute right-0 z-50 mt-1.5 w-48 overflow-hidden rounded-modal border border-desk-border bg-desk-panel shadow-desk-panel">
+          </summary>
+          <div className="absolute right-0 z-50 mt-1.5 w-48 overflow-hidden rounded-modal border border-desk-border bg-desk-panel shadow-desk-panel">
+            <Link
+              href="/profile"
+              className="block px-3 py-2.5 text-xs text-desk-text hover:bg-desk-hover"
+            >
+              {t("term.profile.membership")}
+            </Link>
+            {user.role === "ADMIN" && (
               <Link
-                href="/profile"
-                onClick={() => setMenuOpen(false)}
-                className="block px-3 py-2.5 text-xs text-desk-text hover:bg-desk-hover"
+                href="/izcrm"
+                className="block px-3 py-2.5 text-xs text-desk-warn hover:bg-desk-hover"
               >
-                {t("term.profile.membership")}
+                Admin panel
               </Link>
-              {user.role === "ADMIN" && (
-                <Link
-                  href="/izcrm"
-                  onClick={() => setMenuOpen(false)}
-                  className="block px-3 py-2.5 text-xs text-desk-warn hover:bg-desk-hover"
-                >
-                  Admin panel
-                </Link>
-              )}
-              <button
-                type="button"
-                onClick={() => {
-                  setMenuOpen(false);
-                  onLogout();
-                }}
-                className="block w-full border-t border-desk-border px-3 py-2.5 text-left text-xs text-desk-muted hover:bg-desk-hover hover:text-desk-text"
-              >
-                Sign out
-              </button>
-            </div>
-          )}
-        </div>
+            )}
+            <SignOutForm
+              label={t("common.signOut")}
+              className="border-t border-desk-border"
+              buttonClassName="block w-full px-3 py-2.5 text-left text-xs text-desk-muted hover:bg-desk-hover hover:text-desk-text"
+            />
+          </div>
+        </details>
       </div>
     </header>
   );

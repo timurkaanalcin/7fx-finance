@@ -1,5 +1,6 @@
 "use client";
 
+import SignOutForm from "@/components/auth/SignOutForm";
 import type { BalanceRequestRow } from "./MarginCallModal";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -741,11 +742,6 @@ export default function TerminalShell({
     }
   }, [account]);
 
-  async function onLogout() {
-    await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
-    window.location.assign("/login");
-  }
-
   function openOrder(side: "BUY" | "SELL" = "BUY") {
     if (user && user.tradingEnabled === false) return;
     if (user && user.mustChangePassword) return;
@@ -968,7 +964,6 @@ export default function TerminalShell({
         displayFreeMargin={headerChips?.freeMargin}
         displayMarginLevel={headerChips?.marginLevel}
         onDeposit={() => setDepositOpen(true)}
-        onLogout={onLogout}
       />
       {user.impersonatedBy && (
         <div className="flex items-center justify-center gap-3 border-b border-sky-500/40 bg-sky-600/90 px-3 py-1.5 text-center text-[11px] font-medium text-white">
@@ -1242,7 +1237,7 @@ export default function TerminalShell({
         </button>
       </div>
       {/* Mobile bottom tab bar — elite segmented control + safe-area */}
-      <nav className="fx-desk-mobile-nav shrink-0 bg-desk-panel px-3 pt-2 md:hidden">
+      <nav className="fx-desk-mobile-nav relative shrink-0 bg-desk-panel px-3 pt-2 md:hidden">
         <div className="fx-desk-seg">
           {(
             [
@@ -1263,9 +1258,21 @@ export default function TerminalShell({
               {item.label}
             </button>
           ))}
-          <a href="/profile" className="fx-desk-seg__btn flex items-center justify-center">
-            {t("term.account")}
-          </a>
+          <details className="relative flex min-w-0 flex-1">
+            <summary className="fx-desk-seg__btn flex w-full cursor-pointer list-none items-center justify-center [&::-webkit-details-marker]:hidden">
+              {t("term.account")}
+            </summary>
+            <div className="absolute bottom-full right-0 z-50 mb-2 w-44 overflow-hidden rounded-modal border border-desk-border bg-desk-panel shadow-desk-panel">
+              <a href="/profile" className="block px-3 py-3 text-xs text-desk-text hover:bg-desk-hover">
+                {t("term.profile.membership")}
+              </a>
+              <SignOutForm
+                label={t("common.signOut")}
+                className="border-t border-desk-border"
+                buttonClassName="block w-full px-3 py-3 text-left text-xs text-desk-muted hover:bg-desk-hover hover:text-desk-text"
+              />
+            </div>
+          </details>
         </div>
       </nav>
 

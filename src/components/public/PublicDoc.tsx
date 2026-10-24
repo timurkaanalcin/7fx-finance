@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import type { ReactNode } from "react";
+import SignOutForm from "@/components/auth/SignOutForm";
 import BrandLogo from "@/components/landing/BrandLogo";
 import PublicLanguageMenu from "@/components/public/PublicLanguageMenu";
 import type { PublicNavCopy } from "@/lib/public-doc-copy";
@@ -8,7 +10,6 @@ const NAV_HREFS = [
   { href: "/markets", key: "markets" },
   { href: "/platform", key: "platform" },
   { href: "/faq", key: "faq" },
-  { href: "/login", key: "signIn" },
 ] as const;
 
 /** Light public document. Server-rendered. Copy follows fx_lang; missing cookie stays English. */
@@ -23,6 +24,9 @@ export default function PublicDoc({
   nav: PublicNavCopy;
   children: ReactNode;
 }) {
+  const signedIn = Boolean(
+    cookies().get("7fx_session")?.value || cookies().get("deskflow_session")?.value
+  );
   return (
     <div className="min-h-screen bg-white text-[#15161a]">
       <a href="#content" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-10 focus:bg-white focus:px-3 focus:py-2">
@@ -39,6 +43,16 @@ export default function PublicDoc({
                 {nav[item.key]}
               </Link>
             ))}
+            {signedIn ? (
+              <SignOutForm
+                label={nav.signOut}
+                buttonClassName="text-sm font-semibold underline-offset-4 hover:underline"
+              />
+            ) : (
+              <Link href="/login" className="underline-offset-4 hover:underline">
+                {nav.signIn}
+              </Link>
+            )}
             <PublicLanguageMenu label={nav.language} />
           </nav>
         </div>

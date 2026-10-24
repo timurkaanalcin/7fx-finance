@@ -1,5 +1,6 @@
 "use client";
 
+import SignOutForm from "@/components/auth/SignOutForm";
 import ThemeToggle from "@/components/theme/ThemeToggle";
 import ForcePasswordModal from "@/components/trading/ForcePasswordModal";
 import { useI18n } from "@/lib/i18n/context";
@@ -257,12 +258,6 @@ export default function ProfileePage() {
     }
   }
 
-  async function onLogout() {
-    await fetch("/api/auth/logout", { method: "POST" });
-    router.push("/login");
-    router.refresh();
-  }
-
   if (!profile) {
     return <BrandLoader variant="desk" label={t("common.loading") || "Loading…"} />;
   }
@@ -284,13 +279,10 @@ export default function ProfileePage() {
         </Link>
         <NotificationBell tone="dark" />
         <ThemeToggle />
-        <button
-          type="button"
-          onClick={onLogout}
-          className="rounded-md border border-[#2a2a2a] px-2.5 py-1.5 text-xs text-slate-400 hover:bg-[#1f1f1f] hover:text-slate-200"
-        >
-          {t("common.signOut")}
-        </button>
+        <SignOutForm
+          label={t("common.signOut")}
+          buttonClassName="rounded-md border border-[#2a2a2a] px-2.5 py-1.5 text-xs text-slate-400 hover:bg-[#1f1f1f] hover:text-slate-200"
+        />
       </header>
 
       <main className="mx-auto max-w-2xl p-4 pb-10 md:p-6">
