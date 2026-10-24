@@ -43,6 +43,14 @@ export default function IosInstallPage() {
               <div>
                 <p>{s.title}</p>
                 <p>{s.body}</p>
+                {s.n === "2" && (
+                  <div className="fx-ios-share" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 16V4M12 4l-4.5 4.5M12 4l4.5 4.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M6 11v7.5A1.5 1.5 0 0 0 7.5 20h9a1.5 1.5 0 0 0 1.5-1.5V11" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+                    </svg>
+                  </div>
+                )}
               </div>
             </li>
           ))}

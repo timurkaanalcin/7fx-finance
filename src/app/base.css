@@ -148,9 +148,11 @@ input, select, button { font: inherit; }
   content: none;
 }
 
-/* Mobile bottom nav — safe-area padding only (< md) */
+/* Mobile bottom nav — home-indicator and side insets */
 .fx-desk-mobile-nav {
-  padding-bottom: max(10px, env(safe-area-inset-bottom, 0px));
+  padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+  padding-left: max(12px, env(safe-area-inset-left, 0px));
+  padding-right: max(12px, env(safe-area-inset-right, 0px));
 }
 
 /* The type scale starts at 12px on every viewport, including desktop CRM and the desk. */
@@ -225,7 +227,18 @@ input, select, button { font: inherit; }
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
-    padding: 8px 12px 0;
+    padding-top: 8px;
+    padding-bottom: 0;
+    padding-left: max(12px, env(safe-area-inset-left, 0px));
+    padding-right: max(12px, env(safe-area-inset-right, 0px));
+  }
+  .fx-landing input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]),
+  .fx-landing select,
+  .fx-landing textarea,
+  .fx-auth-page input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]),
+  .fx-auth-page select,
+  .fx-auth-page textarea {
+    font-size: 16px !important;
   }
   .fx-desk-tradebar button {
     min-height: 46px;
@@ -246,6 +259,8 @@ input, select, button { font: inherit; }
   color: #f4f7fb;
   color-scheme: dark;
   font-family: var(--font-inter), var(--font-inter-ext), system-ui, sans-serif;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 .fx-ios h1,
 .fx-ios h2 {
@@ -278,7 +293,21 @@ body:has(.fx-ios) {
   background: #f4f7fb;
   color: #0b0e13;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
+}
+.fx-ios-share {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  color: #f4f7fb;
+  font-size: 13px;
+  font-weight: 500;
 }
 .fx-ios-step p:first-child,
 .fx-ios-note > p:first-child,
@@ -287,7 +316,7 @@ body:has(.fx-ios) {
   font-size: 15px;
   font-weight: 500;
 }
-.fx-ios-step p:last-child,
+.fx-ios-step p + p,
 .fx-ios-note p {
   margin: 4px 0 0;
   color: #9aa3b5;
@@ -299,7 +328,7 @@ body:has(.fx-ios) {
   margin-top: 18px;
 }
 .fx-ios-note a {
-  font-weight: 600;
+  font-weight: 500;
   color: #f4f7fb;
   text-decoration: underline;
   text-underline-offset: 3px;

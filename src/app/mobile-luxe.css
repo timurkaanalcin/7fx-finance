@@ -114,6 +114,7 @@
   /* inputs */
   .fx-desk input:not([type="checkbox"]):not([type="radio"]),
   .fx-desk select,
+  .fx-desk textarea,
   .fx-profile input:not([type="checkbox"]):not([type="radio"]),
   .fx-profile select,
   .fx-profile textarea {
@@ -137,7 +138,10 @@
   /* ---------- sticky BUY / SELL ---------- */
   .fx-desk-tradebar {
     gap: 10px !important;
-    padding: 10px 14px 4px !important;
+    padding-top: 10px !important;
+    padding-bottom: 4px !important;
+    padding-left: max(14px, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(14px, env(safe-area-inset-right, 0px)) !important;
     background: linear-gradient(180deg, rgba(5, 5, 6, 0) 0%, rgba(5, 5, 6, 0.96) 35%) !important;
     border-top: 0 !important;
   }
@@ -161,7 +165,10 @@
 
   /* ---------- bottom nav ---------- */
   .fx-desk-mobile-nav {
-    padding: 6px 12px max(10px, var(--lx-safe-b)) !important;
+    padding-top: 6px !important;
+    padding-bottom: max(12px, env(safe-area-inset-bottom, 0px)) !important;
+    padding-left: max(12px, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(12px, env(safe-area-inset-right, 0px)) !important;
     background: rgba(5, 5, 6, 0.96) !important;
   }
   .fx-desk-seg {

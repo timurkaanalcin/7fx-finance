@@ -1,5 +1,5 @@
 /*
- * 7FX service worker — v3 (icon cache bust: black corners)
+ * 7FX service worker — v4 (offline fallback; icons stay network-cached only)
  *
  * v1 served "/", "/login" and "/trade" cache-first forever. After every deploy the
  * cached HTML pointed at /_next/static/* chunk hashes that no longer exist (404
@@ -10,12 +10,16 @@
  * static icons are cached for installability. On upgrade it deletes old caches
  * and reloads open tabs that were showing stale v1 HTML.
  */
-const VERSION = "2026-10-06-v3-icons";
+const VERSION = "2026-10-24-v4-offline";
 const CACHE = `7fx-static-${VERSION}`;
+const OFFLINE_URL = "/offline.html";
 const PRECACHE = [
+  OFFLINE_URL,
   "/site.webmanifest",
   "/icons/v3/icon-192.png",
   "/icons/v3/icon-512.png",
+  "/icons/v3/icon-maskable-192.png",
+  "/icons/v3/icon-maskable-512.png",
   "/icons/v3/apple-touch-icon.png",
   "/icons/v3/favicon.ico",
 ];
@@ -70,8 +74,17 @@ self.addEventListener("fetch", (event) => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
-  // Never touch documents, Next.js assets/data or API calls: network only.
-  if (req.mode === "navigate" || req.destination === "document") return;
+  // Documents stay network-only. A failed navigation (offline) falls back to the
+  // precached offline page. Successful HTML is never written into the cache.
+  if (req.mode === "navigate" || req.destination === "document") {
+    event.respondWith(
+      fetch(req).catch(async () => {
+        const cached = await caches.match(OFFLINE_URL);
+        return cached || new Response("Offline", { status: 503, headers: { "Content-Type": "text/plain; charset=utf-8" } });
+      })
+    );
+    return;
+  }
   if (url.pathname.startsWith("/_next/") || url.pathname.startsWith("/api/")) return;
   if (!PRECACHE.includes(url.pathname)) return;
   event.respondWith(

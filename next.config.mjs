@@ -31,6 +31,13 @@ const nextConfig = {
         ],
       },
       {
+        source: "/offline.html",
+        headers: [
+          { key: "Cache-Control", value: "no-cache" },
+          { key: "Content-Type", value: "text/html; charset=utf-8" },
+        ],
+      },
+      {
         source: "/izcrm/:path*",
         headers: [
           { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" },
