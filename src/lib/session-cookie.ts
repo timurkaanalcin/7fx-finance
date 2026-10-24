@@ -79,7 +79,7 @@ export function cookieDomainsForHost(host: string | null | undefined): string[] 
   }
   const env = (process.env.COOKIE_DOMAIN || "").trim().replace(/^\./, "").toLowerCase();
   if (env) domains.add(env);
-  return [...domains];
+  return Array.from(domains);
 }
 
 /**
