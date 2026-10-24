@@ -42,7 +42,7 @@ const tr: Dict = {
   "lp.nav.faq": "SSS",
   "lp.menuOpen": "Menüyü aç",
   "lp.menuClose": "Menüyü kapat",
-  "lp.hero.eyebrow": "Çoklu varlık işlem platformu",
+  "lp.hero.eyebrow": "Çoklu varlık yatırım platformu",
   "lp.hero.title1": "Küresel piyasalarda",
   "lp.hero.title2": "tek hesapla işlem yapın",
   "lp.hero.sub":
@@ -235,7 +235,7 @@ const en: Dict = {
   "lp.nav.faq": "FAQ",
   "lp.menuOpen": "Open menu",
   "lp.menuClose": "Close menu",
-  "lp.hero.eyebrow": "Multi-asset trading platform",
+  "lp.hero.eyebrow": "Multi-asset investment platform",
   "lp.hero.title1": "Trade global markets",
   "lp.hero.title2": "from a single account",
   "lp.hero.sub":
@@ -426,7 +426,7 @@ const de: Dict = {
   "lp.nav.faq": "FAQ",
   "lp.menuOpen": "Menü öffnen",
   "lp.menuClose": "Menü schließen",
-  "lp.hero.eyebrow": "Multi-Asset-Handelsplattform",
+  "lp.hero.eyebrow": "Multi-Asset-Investmentplattform",
   "lp.hero.title1": "Globale Märkte handeln",
   "lp.hero.title2": "mit nur einem Konto",
   "lp.hero.sub":
@@ -611,7 +611,7 @@ const ru: Dict = {
   "lp.nav.faq": "Вопросы",
   "lp.menuOpen": "Открыть меню",
   "lp.menuClose": "Закрыть меню",
-  "lp.hero.eyebrow": "Мультиактивная торговая платформа",
+  "lp.hero.eyebrow": "Мультиактивная инвестиционная платформа",
   "lp.hero.title1": "Торгуйте на мировых рынках",
   "lp.hero.title2": "с одного счёта",
   "lp.hero.sub":
@@ -795,7 +795,7 @@ const ar: Dict = {
   "lp.nav.faq": "الأسئلة الشائعة",
   "lp.menuOpen": "فتح القائمة",
   "lp.menuClose": "إغلاق القائمة",
-  "lp.hero.eyebrow": "منصة تداول متعددة الأصول",
+  "lp.hero.eyebrow": "منصة استثمار متعددة الأصول",
   "lp.hero.title1": "تداول في الأسواق العالمية",
   "lp.hero.title2": "من حساب واحد",
   "lp.hero.sub":

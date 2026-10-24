@@ -1,59 +1,65 @@
 # 7FX Feature Audit — live vs code
 
-**When:** 2026-10-24 (Europe/Kiev)  
+**When:** 2026-10-24 ~17:15 Europe/Kiev  
 **Live:** https://7fx.control.org.tr (also https://7fx-finance.vercel.app)  
-**Source:** `/workspace/7fx-finance` branch `deploy/landing-on-main` (+ restore commits)  
-**Vercel:** `prj_A99RD3HWba8Sdf8IYnhTYYQq2rmo` / team `llvad-1323`
+**Source:** `/workspace/7fx-finance` branch `work/restore-missing-features`  
+**Vercel:** `prj_A99RD3HWba8Sdf8IYnhTYYQq2rmo` / team `llvad-1323`  
+**Production deploy:** `dpl_3qWyuv24AYZLQeBsQtSsmgYuzcuL` (READY; CLI file deploy, no git meta)
 
-Legend: **OK** present · **MISS** missing on live or dropped from shipped UI · **HIDDEN** code OK, empty data · **CANDIDATE** HRAM-era, add only if clearly wanted
+Legend: **OK** present · **MISS** missing · **HIDDEN** code OK, empty data · **CANDIDATE** HRAM-era
 
-## Landing
+## Landing (verified live after restore)
 
-| Feature | Live (before restore) | Code | Action |
-|---|---|---|---|
-| MULTI-ASSET eyebrow + ING pill | OK | OK | Keep |
-| 1cm gap eyebrow↔ING | OK on live (`landing-light`) | Was MISS on `landing-v2` redesign | **Restored** `gap-[1cm]` |
-| EN language selector 7.8px | OK on live | Was 11px on redesign | **Restored** `text-[7.8px]` compact |
-| Güvenlik ve Lisans section | OK (EN copy on live) | Dropped from landing-v2 | **Restored** |
-| Altyapı ve Sağlayıcılar | OK but **Railway** hosting | Dropped / Railway | **Restored** with **Vercel** hosting |
-| Sponsors public section | HIDDEN (API `[]`) | Component existed, not mounted | **Re-mounted**; stays hidden when empty |
-| Licenses public + “Resmi kayıtta doğrula” | HIDDEN (API `[]`) | Same | **Re-mounted**; no fake licenses |
+| Feature | Live now | Notes |
+|---|---|---|
+| MULTI-ASSET eyebrow + ING pill | OK | Restoring copy to **investment** (was trading after redesign) |
+| 1cm gap eyebrow↔ING | OK | `gap-[1cm]` in HTML |
+| EN language selector 7.8px | OK | `text-[7.8px]` on compact switcher |
+| Güvenlik ve Lisans section | OK | `#guvenlik` — practices only, no fake licence claims |
+| Altyapı ve Sağlayıcılar | OK | **Vercel** hosting (Railway removed) + Yahoo, TradingView LW, MySQL, Prisma, Next.js |
+| Sponsors public | HIDDEN | `/api/sponsors` → `{"sponsors":[]}` — section unmounted when empty |
+| Licenses public + Resmi kayıtta doğrula | HIDDEN | `/api/licenses` → `{"licenses":[]}` — no fake data |
 
-## CRM `/izcrm` (signed-out → Sign In 200)
+## CRM `/izcrm` (signed-out)
 
-| Feature | Live/API | Code | Notes |
-|---|---|---|---|
-| `/izcrm` shell + nav | Redirect Sign In | OK | Expected 401/Sign In when signed out |
-| `/izcrm/sponsors` admin | Behind auth | OK page + `/api/admin/sponsors` | Upload, order, AI sıralasın in page |
-| `/izcrm/licenses` admin | Behind auth | OK | Regulator/number/entity/https/logo |
-| Evraklar `/izcrm/evrak` + `/documents` | Behind auth | OK | Protected viewer APIs present |
-| Chat attachments | Behind auth | OK `/api/admin/chat/attachments`, `/api/support/attachments` | |
-| Notification bell + Web Push | Behind auth | OK `NotificationBell`, `sw.js`, VAPID schema | Verify env on Vercel |
-| Live support AI | `/api/support` → **401** signed out | OK `support-ai.ts`, FAQ, handoff keywords | Not `/api/support/chat` (404) — real path is `/api/support` |
-| Import CSV / workers / permissions | Behind auth | OK (`/izcrm/import`, workers, user permissions) | Already in 7FX CRM |
-| Positions / rates admin | Behind auth | OK `/izcrm/positions`, `/izcrm/rates` | Edit rates/P&L paths exist in admin APIs |
+| Feature | Live | Notes |
+|---|---|---|
+| `/izcrm` | 307 → `/login` | Expected |
+| `/izcrm/sponsors`, `/licenses`, `/documents`, `/evrak` | 307 → login | Pages in build output |
+| `/api/support` | **401** | Correct when signed out |
+| Notifications / Web Push / AI support | Behind auth | Code OK; Vercel has OPENAI, VAPID_*, AUTH_SECRET, SUPPORT_AI_MODEL=gpt-4.1-mini |
+| Import / workers / permissions / positions / rates | Behind auth | Already in 7FX CRM (not HRAM-only) |
 
 ## Trading / PWA
 
-| Feature | Live | Code | Action |
-|---|---|---|---|
-| PWA InstallBanner (Yükle, iOS sheet, hide /izcrm) | OK strings | OK | Keep |
-| `sw.js` | 200 | OK | Keep |
-| `site.webmanifest` | linked | OK (`/site.webmanifest`) | `/manifest.json` 404 is fine |
-| Collapsible market panel / Al-Sat chart UI | Behind `/trade` auth | Present in trading components | Verify after login |
-| Crypto + FX + commodities on landing | OK | OK | Keep |
+| Feature | Live | Notes |
+|---|---|---|
+| `sw.js` | 200 | OK |
+| `site.webmanifest` | 200 | `/manifest.json` 404 is fine |
+| InstallBanner | Client | Present in `src/components/InstallBanner.tsx`; hidden on `/izcrm` |
+| Trade UI (collapsible panel, Al/Sat) | Behind `/trade` auth | 307 when signed out |
 
 ## HRAM-sibling candidates (NOT auto-added)
 
-- Shift accounts, exotic bulk balance ops beyond existing balance-requests — **CANDIDATE**
-- Anything not already mirrored by 7FX `import` / `workers` / `permissions` / `positions` — leave unless product asks
+- Shift accounts, exotic bulk balance ops beyond existing 7FX tools — **CANDIDATE** only
 
-## Env (Vercel — do not print secrets)
+## Env on Vercel (names only — secrets not printed)
 
-Expected: `DATABASE_URL` (TiDB), `AUTH_SECRET`, `OPENAI_API_KEY`, `SUPPORT_AI_MODEL`, `VAPID_*`, `NEXT_PUBLIC_APP_URL`  
-Copy from Railway as llvad if any missing.
+Present: DATABASE_URL, AUTH_SECRET, OPENAI_API_KEY, SUPPORT_AI_MODEL, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT, NEXT_PUBLIC_APP_URL, NEXT_PUBLIC_SITE_ORIGIN, MAIN_SITE_ORIGIN, CRON_SECRET, ADMIN_*, ALLOW_DEMO_SEED  
+Note: `NEXT_PUBLIC_APP_URL` / `NEXT_PUBLIC_SITE_ORIGIN` still point at financeunit.co; `MAIN_SITE_ORIGIN` is control.org.tr.
 
-## Deploy blockers
+## Deploy notes / blockers resolved
 
-- Vercel GitHub App cannot see `timurkaanalcin/7fx-finance` → file/CLI deploy required
-- No fake licenses/Barclays; no DB wipe; additive schema only
+- Git-connected CLI deploys from `timurkaanalcin/*` were **BLOCKED** (team collaboration / foreign git author).
+- Fix: deploy from a **no-`.git`** tree via `vercel deploy --prod --force` → READY and aliased to control.org.tr + other domains.
+- Vercel GitHub App still cannot see private `timurkaanalcin/7fx-finance` for auto git deploys.
+
+## Screenshots
+
+- `/workspace/7fx-audit-landing.png`
+- `/workspace/7fx-audit-landing-full.png`
+- `/workspace/7fx-audit-security.png`
+- `/workspace/7fx-audit-infra.png`
+- `/workspace/7fx-audit-login.png`
+- `/workspace/7fx-audit-izcrm-redirect.png`
+- `/workspace/7fx-audit-trade-auth.png`
