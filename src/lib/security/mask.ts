@@ -18,6 +18,17 @@ export function maskMoney(_n?: number | null): string {
   return "••••";
 }
 
+/** Grid money. Masked or missing amounts stay as the mask instead of throwing. */
+export function displayCrmMoney(n: unknown, currency = "USD"): string {
+  if (typeof n !== "number" || !Number.isFinite(n)) return maskMoney();
+  const code = /^[A-Z]{3}$/.test(currency) ? currency : "USD";
+  try {
+    return n.toLocaleString("en-US", { style: "currency", currency: code });
+  } catch {
+    return maskMoney();
+  }
+}
+
 /** Apply RO masking to a membership / user JSON object (returns shallow copy). */
 export function maskTraderForRoViewer<T extends Record<string, unknown>>(row: T): T {
   const o: Record<string, unknown> = { ...row };

@@ -447,7 +447,10 @@ function SourceAccountPicker({ value, onChange, excludeId }: { value: string; on
     let live = true;
     const h = window.setTimeout(async () => {
       try {
-        const r = await fetch(`/api/admin/users?q=${encodeURIComponent(q.trim())}&take=50`, { cache: "no-store" });
+        const r = await fetch(
+          `/api/admin/users?q=${encodeURIComponent(q.trim())}&take=50&meta=0&view=picker`,
+          { cache: "no-store" }
+        );
         if (!r.ok) return;
         const d = await r.json();
         const list: PickUser[] = (d.users || []).filter((u: PickUser) => u.id !== excludeId && (u.role ?? "TRADER") !== "ADMIN");
@@ -1028,22 +1031,30 @@ export default function AdminUserDetailPage() {
       .catch(() => {});
   }, []);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (scope: "full" | "positions" | "finance" = "full") => {
     if (!id) return;
+    const q = scope === "full" ? "" : `?view=${scope}`;
     const [res, meRes] = await Promise.all([
-      fetch(`/api/admin/users/${id}`),
-      fetch("/api/auth/me", { credentials: "include" }),
+      fetch(`/api/admin/users/${id}${q}`),
+      scope === "full" ? fetch("/api/auth/me", { credentials: "include" }) : Promise.resolve(null),
     ]);
-    if (meRes.ok) {
+    if (meRes?.ok) {
       const me = await meRes.json().catch(() => ({}));
       setCanManageUsers(Boolean(me.permissions?.canManageUsers));
       setCrmReadOnly(Boolean(me.permissions?.crmReadOnly));
-    } else {
+    } else if (scope === "full") {
       setCanManageUsers(false);
     }
     if (!res.ok) return;
     const data = await res.json();
     setUser(data.user as Membership);
+    setTradingAccountId(data.tradingAccountId || data.user?.tradingAccountId || null);
+    if (scope === "positions") {
+      setPositions(data.positions || []);
+      setOrders(data.orders || []);
+      return;
+    }
+    if (scope === "finance") return;
     // Recently viewed customers (per browser; name + login id only).
     if (data.user?.id && (data.user.role || "TRADER") === "TRADER") {
       try {
@@ -1075,16 +1086,18 @@ export default function AdminUserDetailPage() {
     setDocuments(data.documents || []);
     setReminders(data.reminders || []);
     setDepositMethods(data.depositMethods || []);
-    setTradingAccountId(data.tradingAccountId || data.user?.tradingAccountId || null);
   }, [id]);
 
   useEffect(() => {
     load();
   }, [load]);
 
-  // Refresh trading tabs while they stay visible so CRM still mirrors terminal open/close.
-  // The interval is idle-paced; a hidden tab stays paused. Edit drafts live in their own state.
-  useVisiblePoll(load, CRM_IDLE_POLL_MS, Boolean(id) && (tab === "pozisyonlar" || tab === "finans"));
+  // Positions refreshes open trades and orders. Finance refreshes the account chips.
+  // Neither poll reloads notes, documents, permissions, or /api/auth/me.
+  const refreshLive = useCallback(() => {
+    void load(tab === "finans" ? "finance" : "positions");
+  }, [load, tab]);
+  useVisiblePoll(refreshLive, CRM_IDLE_POLL_MS, Boolean(id) && (tab === "pozisyonlar" || tab === "finans"));
 
   function startProfileEdit() {
     if (!user) return;

@@ -18,10 +18,13 @@ import { FxError, appendFxNote, convertAmountToUsd, type UsdConversion } from "@
 import { ensureLastContactBackfill } from "@/lib/last-contact";
 import { ONLINE_MS, RECENT_MS, serializePresence } from "@/lib/presence-shared";
 import {
+  serializeTraderPickerRow,
   serializeTraderTableRow,
+  TRADER_PICKER_SELECT,
   TRADER_TABLE_SELECT,
   traderListWindow,
   wantTraderCounts,
+  wantTraderPicker,
   wantTraderTable,
 } from "@/lib/trader-list";
 
@@ -138,6 +141,7 @@ export async function GET(req: Request) {
   if (role === "TRADER" || role === "ADMIN") and.push({ role });
   const followUpActive = fuOrs.length > 0;
   const tableView = wantTraderTable(searchParams.get("view"));
+  const pickerView = wantTraderPicker(searchParams.get("view"));
   const sort = (searchParams.get("sort") || "").trim(); // lastContact_desc | lastContact_asc
   if (and.length) where.AND = and;
 
@@ -158,13 +162,21 @@ export async function GET(req: Request) {
         skip,
         take: take + 1,
       })
-    : await prisma.user.findMany({
-        where: listWhere,
-        include: { account: true },
-        orderBy,
-        skip,
-        take: take + 1,
-      });
+    : pickerView
+      ? await prisma.user.findMany({
+          where: listWhere,
+          select: TRADER_PICKER_SELECT,
+          orderBy,
+          skip,
+          take: take + 1,
+        })
+      : await prisma.user.findMany({
+          where: listWhere,
+          include: { account: true },
+          orderBy,
+          skip,
+          take: take + 1,
+        });
   const hasMore = users.length > take;
   const page = hasMore ? users.slice(0, take) : users;
 
@@ -227,10 +239,12 @@ export async function GET(req: Request) {
     users: page.map((u) => {
       const row = tableView
         ? serializeTraderTableRow(u as unknown as Record<string, unknown>)
-        : {
-            ...serializeUserMembership(u as unknown as Record<string, unknown>),
-            ...serializePresence(u as unknown as Record<string, unknown>),
-          };
+        : pickerView
+          ? serializeTraderPickerRow(u as unknown as Record<string, unknown>)
+          : {
+              ...serializeUserMembership(u as unknown as Record<string, unknown>),
+              ...serializePresence(u as unknown as Record<string, unknown>),
+            };
       return roViewer ? maskTraderForRoViewer(row as Record<string, unknown>) : row;
     }),
     hasMore,
