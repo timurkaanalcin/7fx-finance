@@ -30,8 +30,9 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const status = searchParams.get("status") || "OPEN";
 
-  // Pending fills and SL/TP run only on the open-position tick. Closed-history
-  // and other status reads still reprice the account, but they must not close or fill.
+  // Pending fills and SL/TP also run from the engine cron. This open tick stays
+  // so the visible terminal does not wait for the next cron. Closed-history and
+  // other status reads still reprice the account, but they must not close or fill.
   if (status === "OPEN") {
     await processPendingOrders(user.id);
     await checkSlTp(user.id);

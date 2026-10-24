@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "./prisma";
 import { getSymbol } from "./symbols";
 import { getPrice, ensureTicked } from "./price-engine";
@@ -35,6 +36,40 @@ export function pendingFillBlockedByMargin(
   orderType: string
 ): boolean {
   return orderType !== "MARKET" && freeMargin < requiredMargin;
+}
+
+/**
+ * Same free-margin definition refreshAccountMetrics persists:
+ * balance + open profit − open margin. Used under the account row lock so a
+ * second fill sees the first fill's position and commission.
+ */
+export function bookedFreeMargin(
+  balance: number,
+  positions: ReadonlyArray<{ margin: number; profit: number }>
+): number {
+  let usedMargin = 0;
+  let floatingPnL = 0;
+  for (const pos of positions) {
+    usedMargin += pos.margin;
+    floatingPnL += pos.profit;
+  }
+  return balance + floatingPnL - usedMargin;
+}
+
+/** Latest account balance. Locking read, so it sees the other fill's commission. */
+async function lockAccountForUpdate(
+  tx: Prisma.TransactionClient,
+  userId: string
+): Promise<{ balance: number; leverage: number } | null> {
+  const rows = await tx.$queryRaw<Array<{ balance: unknown; leverage: unknown }>>`
+    SELECT balance, leverage FROM \`Account\` WHERE userId = ${userId} FOR UPDATE
+  `;
+  const row = rows[0];
+  if (!row) return null;
+  const balance = typeof row.balance === "number" ? row.balance : Number(row.balance);
+  const leverage = typeof row.leverage === "number" ? row.leverage : Number(row.leverage);
+  if (!Number.isFinite(balance) || !Number.isFinite(leverage)) return null;
+  return { balance, leverage };
 }
 
 /** Same comparisons checkSlTp uses to decide a full close. */
@@ -153,18 +188,25 @@ export async function fillOrder(orderId: string, fillPrice: number) {
   if (!rates || !rates.enabled) return null;
 
   const position = await prisma.$transaction(async (tx) => {
-    const order = await tx.order.findUnique({ where: { id: orderId } });
-    if (!order || order.status !== "PENDING") return null;
-
-    const account = await tx.account.findUnique({ where: { userId: order.userId } });
+    // Lock the account before any plain read so this transaction's snapshot
+    // starts after the previous fill has committed.
+    const account = await lockAccountForUpdate(tx, existing.userId);
     if (!account) return null;
+
+    const order = await tx.order.findUnique({ where: { id: orderId } });
+    if (!order || order.status !== "PENDING" || order.userId !== existing.userId) return null;
 
     const margin = calcMarginWithRates(rates, order.volume, fillPrice, account.leverage);
     const commission = calcCommission(rates, order.volume);
+    const openBook = await tx.position.findMany({
+      where: { userId: order.userId, status: "OPEN" },
+      select: { margin: true, profit: true },
+    });
+    const freeMargin = bookedFreeMargin(account.balance, openBook);
     // Leave the working order PENDING. There is no reason column to explain a
     // REJECTED row, and CANCELLED is the user/reset cancel. The next open-position
-    // tick retries; the trader can still cancel while margin is short.
-    if (pendingFillBlockedByMargin(account.freeMargin, margin, order.type)) {
+    // tick or engine cron retries; the trader can still cancel while margin is short.
+    if (pendingFillBlockedByMargin(freeMargin, margin, order.type)) {
       return null;
     }
 
@@ -396,7 +438,7 @@ export async function closePosition(
         },
       });
 
-      const latest = await tx.account.findUnique({ where: { userId } });
+      const latest = await lockAccountForUpdate(tx, userId);
       if (!latest) throw new Error("Account not found");
       await tx.account.update({
         where: { userId },
@@ -436,7 +478,7 @@ export async function closePosition(
     });
     if (claimed.count !== 1) throw new Error(POSITION_NOT_FOUND);
 
-    const account = await tx.account.findUnique({ where: { userId } });
+    const account = await lockAccountForUpdate(tx, userId);
     if (account) {
       await tx.account.update({
         where: { userId },
