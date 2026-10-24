@@ -188,9 +188,9 @@ export default function TopBar({
 
       <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto py-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:gap-1.5">
         {/* Desktop order preserved; mobile shows Balance + P/L only */}
-        <Metric label="Balance" value={a ? fmtMoney(a.balance, 2, a.currency) : "—"} />
+        <Metric label={t("term.top.balance")} value={a ? fmtMoney(a.balance, 2, a.currency) : "—"} />
         <Metric
-          label="Equity"
+          label={t("term.top.equity")}
           value={a ? fmtMoney(eq, 2, a.currency) : "—"}
           className="hidden md:flex"
         />
@@ -212,7 +212,7 @@ export default function TopBar({
         />
         <MarginUsageBar account={a} equity={eq} freeMargin={free} marginLevel={ml} />
         <Metric
-          label="P/L"
+          label={t("term.top.pl")}
           value={a ? fmtMoney(pnl, 2, a.currency) : "—"}
           danger={pnl < 0}
           positive={pnl > 0}
@@ -221,7 +221,7 @@ export default function TopBar({
         />
         {(a?.credit ?? 0) > 0 && (
           <Metric
-            label="Credit"
+            label={t("term.top.credit")}
             value={fmtMoney(a!.credit ?? 0, 2, a!.currency)}
             className="hidden md:flex"
           />

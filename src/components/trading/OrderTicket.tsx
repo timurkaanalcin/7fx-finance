@@ -604,7 +604,7 @@ export default function OrderTicket({
             </span>
             <span
               className="text-[10px] font-semibold tabular-nums text-desk-muted"
-              title="Approx. trade size (lot × contract × price)"
+              title={t("term.ticket.size")}
             >
               ≈ {fmtTicketMoney(notional, currency)}
             </span>
@@ -776,7 +776,7 @@ export default function OrderTicket({
                 className={`mt-1 text-right text-[10px] font-semibold tabular-nums ${
                   preview.sl < 0 ? "text-desk-sell" : "text-desk-buy"
                 }`}
-                title="Estimated P&L if Stop Loss is hit"
+                title={t("term.ticket.slPnl")}
               >
                 ≈ {fmtSignedMoney(preview.sl, currency)}
               </div>

@@ -170,7 +170,7 @@ export default function LandingPage() {
                 {t("landing.heroTitle")}
               </h1>
               <p className="fx-hero-body mt-5">{t("landing.heroBody")}</p>
-              <div className="mt-8 flex flex-wrap items-center gap-3">
+              <div className="fx-cta-row mt-8">
                 <Link href="/register" className="fx-btn-primary inline-flex min-h-12 items-center justify-center rounded-full px-6 text-[15px] font-semibold">
                   {t("landing.openAccount")}
                 </Link>
@@ -178,17 +178,25 @@ export default function LandingPage() {
                   {t("common.signIn")}
                 </Link>
               </div>
-              <ul className="fx-trust-row">
-                {[t("landing.trust.symbols"), t("landing.trust.access"), t("landing.trust.ssl"), t("landing.trust.pwa")].map((label) => (
-                  <li key={label}>{label}</li>
-                ))}
-              </ul>
             </div>
             <LiveHeroChart />
           </div>
         </section>
 
         <LiveTape />
+
+        <section className="fx-trust-band" aria-label={t("landing.trust.ssl")}>
+          <ul className="fx-shell">
+            {[
+              t("landing.trust.symbols"),
+              t("landing.trust.access"),
+              t("landing.trust.ssl"),
+              t("landing.trust.pwa"),
+            ].map((label) => (
+              <li key={label}>{label}</li>
+            ))}
+          </ul>
+        </section>
 
         <section id="markets" className="fx-section" aria-labelledby="markets-title">
           <div className="fx-shell">
@@ -199,6 +207,20 @@ export default function LandingPage() {
             <p className="fx-section-body mt-4 max-w-[640px]">{t("landing.markets.lead")}</p>
             <div className="mt-8">
               <MarketBoard />
+            </div>
+            <div className="fx-mid-cta">
+              <div>
+                <p className="fx-mid-cta-title">{t("landing.ctaTitle")}</p>
+                <p>{t("landing.ctaBody")}</p>
+              </div>
+              <div className="fx-cta-row">
+                <Link href="/register" className="fx-btn-primary inline-flex min-h-12 items-center justify-center rounded-full px-6 text-sm font-semibold">
+                  {t("landing.openAccount")}
+                </Link>
+                <Link href="/login" className="fx-btn-secondary inline-flex min-h-12 items-center justify-center rounded-full px-6 text-sm font-semibold">
+                  {t("common.signIn")}
+                </Link>
+              </div>
             </div>
           </div>
         </section>
@@ -322,11 +344,11 @@ export default function LandingPage() {
               </h2>
               <p className="fx-section-body mt-3 max-w-lg">{t("landing.ctaBody")}</p>
             </div>
-            <div className="flex flex-wrap gap-3">
-              <Link href="/register" className="fx-btn-primary inline-flex min-h-12 items-center rounded-full px-7 text-sm font-semibold">
+            <div className="fx-cta-row">
+              <Link href="/register" className="fx-btn-primary inline-flex min-h-12 items-center justify-center rounded-full px-7 text-sm font-semibold">
                 {t("landing.openAccount")}
               </Link>
-              <Link href="/login" className="fx-btn-secondary inline-flex min-h-12 items-center rounded-full px-7 text-sm font-semibold">
+              <Link href="/login" className="fx-btn-secondary inline-flex min-h-12 items-center justify-center rounded-full px-7 text-sm font-semibold">
                 {t("common.signIn")}
               </Link>
             </div>

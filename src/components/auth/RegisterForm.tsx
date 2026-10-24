@@ -148,7 +148,7 @@ export default function RegisterForm() {
         <div className="mb-6">
           <div className="mb-2 flex items-start justify-between gap-3">
             <h2 className="text-xl font-semibold tracking-tight text-[#111111]">{t("auth.registerDone")}</h2>
-            <LanguageSwitcher compact tone="light" />
+            <LanguageSwitcher compact tone="dark" />
           </div>
           <p className="mt-1 text-sm text-[#5c657a]">{t("auth.registerDoneBody")}</p>
         </div>
@@ -184,7 +184,7 @@ export default function RegisterForm() {
       <div className="mb-6">
         <div className="mb-2 flex items-start justify-between gap-3">
           <h2 className="text-xl font-semibold tracking-tight text-[#111111]">{t("auth.registerTitle")}</h2>
-          <LanguageSwitcher compact tone="light" />
+          <LanguageSwitcher compact tone="dark" />
         </div>
         <p className="mt-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-[#8b93a7]">
           {step}/2 · {step === 1 ? t("auth.stepCredentials") : t("auth.stepProfile")}

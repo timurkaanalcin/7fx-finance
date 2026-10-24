@@ -2,6 +2,8 @@
 export const OPEN_PAGE = 200;
 /** Closed-history page size for load-more and the first paint. */
 export const CLOSED_PAGE = 50;
+/** One local-day closed blotter read. The client follows `hasMore` for the rest of that day. */
+export const CLOSED_DAY_PAGE = 100;
 /**
  * 30s closed refresh reloads already shown rows up to this cap.
  * The full ledger stays on the first load and when the tab becomes visible.

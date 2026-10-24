@@ -71,7 +71,7 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
 
 export default function ProfileePage() {
   const router = useRouter();
-  const { t, setLocale } = useI18n();
+  const { t, locale, setLocale } = useI18n();
   const [profile, setProfilee] = useState<Profilee | null>(null);
   const [phone, setPhone] = useState("");
   const [newDocs, setNewDocs] = useState(0);
@@ -586,10 +586,10 @@ export default function ProfileePage() {
           {withdrawals.length > 0 && (
             <div className="mt-4 border-t border-[#2a2a2a] pt-3">
               <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-500">
-                Son talepler
+                {t("term.wd.recent")}
               </h3>
               <ul className="space-y-2 text-xs">
-                {withdrawals.slice(0, 8).map((w) => (
+                {withdrawals.map((w) => (
                   <li
                     key={w.id}
                     className="flex items-center justify-between gap-2 rounded-lg border border-[#2a2a2a] bg-[#000000] px-3 py-2"
@@ -599,7 +599,7 @@ export default function ProfileePage() {
                         {money(w.amount)} · {w.method}
                       </div>
                       <div className="text-[10px] text-slate-500">
-                        {new Date(w.createdAt).toLocaleString("en-US")}
+                        {new Date(w.createdAt).toLocaleString(locale)}
                       </div>
                     </div>
                     <span
