@@ -1022,6 +1022,17 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.set.totpDisable", "Disable 2FA", "2FA kapat", "Отключить 2FA", "2FA deaktivieren", "تعطيل 2FA"],
   ["crm.set.totpOff", "2FA disabled", "2FA kapatıldı", "2FA выключена", "2FA deaktiviert", "تم تعطيل 2FA"],
   ["crm.set.totpFail", "Could not update 2FA", "2FA güncellenemedi", "Не удалось обновить 2FA", "2FA konnte nicht aktualisiert werden", "تعذر تحديث 2FA"],
+  ["crm.chat.back", "Back", "Geri", "Назад", "Zurück", "رجوع"],
+  ["crm.chat.unread", "unread", "okunmamış", "непрочитано", "ungelesen", "غير مقروء"],
+  ["crm.chat.quickReplies", "Quick replies", "Hızlı yanıtlar", "Быстрые ответы", "Schnellantworten", "ردود سريعة"],
+  ["crm.chat.quickLooking", "Looking into it", "İnceliyorum", "Смотрю", "Prüfe ich", "أراجع ذلك"],
+  ["crm.chat.quickLookingBody", "I'm looking into this now and will update you shortly.", "Şimdi inceliyorum, kısa süre içinde size döneceğim.", "Сейчас разбираюсь и скоро отвечу.", "Ich prüfe das gerade und melde mich in Kürze.", "أراجع الأمر الآن وسأعود إليك قريبًا."],
+  ["crm.chat.quickWait", "Please wait", "Lütfen bekleyin", "Подождите", "Bitte warten", "يرجى الانتظار"],
+  ["crm.chat.quickWaitBody", "Thank you for waiting. A representative will reply as soon as possible.", "Beklediğiniz için teşekkürler. Temsilcimiz en kısa sürede yanıt verecek.", "Спасибо за ожидание. Представитель ответит как можно скорее.", "Danke fürs Warten. Ein Mitarbeiter antwortet so bald wie möglich.", "شكرًا لانتظارك. سيرد أحد الممثلين في أقرب وقت."],
+  ["crm.chat.quickDetails", "Need details", "Bilgi rica", "Нужны данные", "Details nötig", "نحتاج تفاصيل"],
+  ["crm.chat.quickDetailsBody", "Could you send the account ID and the approximate time of the request?", "Hesap numaranızı ve talebin yaklaşık saatini paylaşır mısınız?", "Пришлите номер счёта и примерное время запроса.", "Bitte Kontonummer und ungefähre Uhrzeit der Anfrage senden.", "هل يمكنك إرسال رقم الحساب والوقت التقريبي للطلب؟"],
+  ["crm.chat.quickHours", "Market hours", "Seans saatleri", "Часы рынка", "Handelszeiten", "ساعات السوق"],
+  ["crm.chat.quickHoursBody", "Stock orders are accepted only during that symbol's session. Crypto trades continuously.", "Hisse emirleri yalnızca o sembolün seansında kabul edilir. Kripto sürekli işlem görür.", "Заявки по акциям принимаются только в сессию этого символа. Крипто торгуется непрерывно.", "Aktienorders nur während der Sitzung dieses Symbols. Krypto handelt durchgehend.", "تُقبل أوامر الأسهم فقط خلال جلسة ذلك الرمز. يتداول التشفير باستمرار."],
 ];
 
 function pack(index: 1|2|3|4|5): Dict {
