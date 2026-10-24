@@ -13,7 +13,7 @@ type Props = {
   selected: string;
   onSelect: (symbol: string) => void;
   className?: string;
-  /** Optional open positions — shows a per-symbol count + floating P&L badge and an "Açık" filter. */
+  /** Optional open positions — shows a per-symbol count + floating P&L badge and an open-only filter. */
   openPositions?: PositionRow[];
 };
 
@@ -395,8 +395,8 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
                       <span
                         role="button"
                         tabIndex={0}
-                        title={favs.includes(s.symbol) ? "Favorilerden çıkar" : "Favori"}
-                        aria-label={favs.includes(s.symbol) ? "Favorilerden çıkar" : "Favori"}
+                        title={favs.includes(s.symbol) ? t("term.watch.unfav") : t("term.watch.fav")}
+                        aria-label={favs.includes(s.symbol) ? t("term.watch.unfav") : t("term.watch.fav")}
                         aria-pressed={favs.includes(s.symbol)}
                         onClick={(e) => {
                           e.stopPropagation();
@@ -425,15 +425,16 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
                       const agg = openBySymbol.get(s.symbol.toUpperCase());
                       if (!agg) return null;
                       const lots = [
-                        agg.buyLots > 0 ? `Alış ${+agg.buyLots.toFixed(2)} lot` : "",
-                        agg.sellLots > 0 ? `Satış ${+agg.sellLots.toFixed(2)} lot` : "",
+                        agg.buyLots > 0 ? `${t("term.bid")} ${+agg.buyLots.toFixed(2)} lot` : "",
+                        agg.sellLots > 0 ? `${t("term.ask")} ${+agg.sellLots.toFixed(2)} lot` : "",
                       ]
                         .filter(Boolean)
                         .join(" · ");
+                      const openTitle = `${t("term.watch.openPos").replace("{n}", String(agg.count))}${lots ? ` (${lots})` : ""} · ${t("term.watch.livePnl")} ${fmtSignedMoney(agg.profit)}`;
                       return (
                         <span
                           data-fx-watch-open={agg.count}
-                          title={`${agg.count} açık pozisyon${lots ? ` (${lots})` : ""} · Anlık K/Z ${fmtSignedMoney(agg.profit)}`}
+                          title={openTitle}
                           className={`mt-0.5 inline-flex max-w-full items-center gap-1 rounded-[6px] px-1 py-px text-[9.5px] font-semibold tabular-nums leading-tight ${
                             agg.profit >= 0 ? "bg-desk-buy/10 text-desk-buy" : "bg-desk-sell/10 text-desk-sell"
                           }`}
@@ -487,7 +488,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
         })}
         {list.length === 0 && !(filter === "RECENT" && recent.length === 0) && (
           <div className="px-3 py-8 text-center text-xs text-desk-muted">
-            <div>Symbol not found</div>
+            <div>{t("term.watch.notFound")}</div>
             {(q || filter !== "ALL") && (
               <div className="mt-2 flex flex-wrap items-center justify-center gap-1.5">
                 {filter !== "ALL" && q && (
@@ -496,7 +497,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
                     onClick={() => setFilter("ALL")}
                     className="rounded-[8px] bg-desk-elev/80 px-2 py-1 text-[10px] font-semibold text-desk-text hover:bg-desk-hover"
                   >
-                    Tüm piyasalarda ara
+                    {t("term.watch.searchAll")}
                   </button>
                 )}
                 {q && (
@@ -505,7 +506,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
                     onClick={() => setQ("")}
                     className="rounded-[8px] bg-desk-elev/80 px-2 py-1 text-[10px] font-semibold text-desk-muted hover:bg-desk-hover hover:text-desk-text"
                   >
-                    Aramayı temizle
+                    {t("term.watch.clear")}
                   </button>
                 )}
               </div>

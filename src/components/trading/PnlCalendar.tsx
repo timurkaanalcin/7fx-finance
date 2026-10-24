@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useI18n } from "@/lib/i18n/context";
 import type { PositionRow } from "./types";
 
 /** Local-time YYYY-MM-DD key for an ISO timestamp ("" when unparseable). */
@@ -22,11 +23,21 @@ function closedValue(p: PositionRow): number {
   return Number(p.closeProfit ?? p.profit) || 0;
 }
 
-const MONTHS_TR = [
-  "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
-  "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık",
-];
-const WEEKDAYS_TR = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
+const INTL_TAG: Record<string, string> = {
+  en: "en-US",
+  tr: "tr-TR",
+  de: "de-DE",
+  ru: "ru-RU",
+  ar: "ar",
+};
+
+function intlTag(locale: string): string {
+  return INTL_TAG[locale] || "en-US";
+}
+
+function fill(template: string, vars: Record<string, string>): string {
+  return template.replace(/\{(\w+)\}/g, (_, key: string) => vars[key] ?? "");
+}
 
 function compact(v: number): string {
   const a = Math.abs(v);
@@ -38,8 +49,8 @@ function compact(v: number): string {
   return `${sign}${a.toFixed(a >= 10 ? 1 : 2)}`;
 }
 
-function full(v: number): string {
-  return `${v > 0 ? "+" : ""}${v.toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+function full(v: number, tag: string): string {
+  return `${v > 0 ? "+" : ""}${v.toLocaleString(tag, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 function tint(v: number, maxAbs: number): string {
@@ -70,6 +81,16 @@ export default function PnlCalendar({
   selectedDay: string;
   onSelectDay: (day: string) => void;
 }) {
+  const { t, locale } = useI18n();
+  const tag = intlTag(locale);
+  const monthName = useMemo(
+    () => new Intl.DateTimeFormat(tag, { month: "long" }),
+    [tag]
+  );
+  const weekdays = useMemo(() => {
+    const fmt = new Intl.DateTimeFormat(tag, { weekday: "short" });
+    return Array.from({ length: 7 }, (_, i) => fmt.format(new Date(2024, 0, 1 + i)));
+  }, [tag]);
   const byDay = useMemo(() => {
     const m = new Map<string, DayAgg>();
     for (const p of rows) {
@@ -156,39 +177,39 @@ export default function PnlCalendar({
   return (
     <div
       className="fx-pnlcal max-h-[260px] shrink-0 overflow-auto border-b border-desk-border/60 bg-desk-elev/10 px-2.5 py-2"
-      aria-label="Günlük K/Z takvimi"
+      aria-label={t("term.cal.aria")}
     >
       <div className="mb-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
         <div className="flex items-center gap-1">
           <button
             type="button"
             onClick={() => shift(-1)}
-            aria-label="Önceki ay"
+            aria-label={t("term.cal.prev")}
             className="rounded-control border border-desk-border px-1.5 py-0.5 text-[11px] text-desk-muted hover:bg-desk-hover hover:text-desk-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-desk-accent"
           >
             ‹
           </button>
           <span className="min-w-[96px] text-center text-[11px] font-semibold text-desk-text" aria-live="polite">
-            {MONTHS_TR[ym.m]} {ym.y}
+            {monthName.format(new Date(ym.y, ym.m, 1))} {ym.y}
           </span>
           <button
             type="button"
             onClick={() => shift(1)}
-            aria-label="Sonraki ay"
+            aria-label={t("term.cal.next")}
             className="rounded-control border border-desk-border px-1.5 py-0.5 text-[11px] text-desk-muted hover:bg-desk-hover hover:text-desk-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-desk-accent"
           >
             ›
           </button>
         </div>
         <span className="text-[10px] text-desk-muted">
-          Ay K/Z{" "}
-          <b className={`tabular-nums ${moneyCls(grid.total)}`}>{full(grid.total)}</b>
+          {t("term.cal.monthPnl")}{" "}
+          <b className={`tabular-nums ${moneyCls(grid.total)}`}>{full(grid.total, tag)}</b>
         </span>
         <span className="text-[10px] text-desk-muted">
-          İşlem <b className="tabular-nums text-desk-text">{grid.trades}</b>
+          {t("term.cal.trades")} <b className="tabular-nums text-desk-text">{grid.trades}</b>
         </span>
         <span className="text-[10px] text-desk-muted">
-          Gün <b className="tabular-nums text-desk-buy">{grid.green}</b>
+          {t("term.cal.days")} <b className="tabular-nums text-desk-buy">{grid.green}</b>
           {" / "}
           <b className="tabular-nums text-desk-sell">{grid.red}</b>
         </span>
@@ -206,13 +227,13 @@ export default function PnlCalendar({
       <table className="w-full table-fixed border-separate border-spacing-[3px] text-[10px]">
         <thead>
           <tr>
-            {WEEKDAYS_TR.map((w) => (
-              <th key={w} scope="col" className="font-medium text-desk-muted">
+            {weekdays.map((w, i) => (
+              <th key={i} scope="col" className="font-medium text-desk-muted">
                 {w}
               </th>
             ))}
             <th scope="col" className="hidden font-medium text-desk-muted sm:table-cell">
-              Hafta
+              {t("term.cal.week")}
             </th>
           </tr>
         </thead>
@@ -232,9 +253,15 @@ export default function PnlCalendar({
                   if (!c) return <td key={ci} />;
                   const a = c.agg;
                   const sel = selectedDay === c.key;
+                  const dateLabel = c.key.split("-").reverse().join(".");
                   const label = a
-                    ? `${c.key.split("-").reverse().join(".")}: ${full(a.pnl)} · ${a.n} işlem · ${a.wins} kârlı`
-                    : `${c.key.split("-").reverse().join(".")}: işlem yok`;
+                    ? fill(t("term.cal.dayTitle"), {
+                        date: dateLabel,
+                        pnl: full(a.pnl, tag),
+                        n: String(a.n),
+                        wins: String(a.wins),
+                      })
+                    : fill(t("term.cal.emptyDay"), { date: dateLabel });
                   return (
                     <td key={ci} className="p-0">
                       <button
@@ -269,9 +296,12 @@ export default function PnlCalendar({
                 })}
                 <td className="hidden p-0 align-middle sm:table-cell">
                   {wn > 0 ? (
-                    <div className="text-center leading-tight" title={`Hafta: ${full(wk)} · ${wn} işlem`}>
+                    <div
+                      className="text-center leading-tight"
+                      title={fill(t("term.cal.weekTitle"), { pnl: full(wk, tag), n: String(wn) })}
+                    >
                       <div className={`font-bold tabular-nums ${moneyCls(wk)}`}>{compact(wk)}</div>
-                      <div className="text-[8px] text-desk-muted">{wn} işlem</div>
+                      <div className="text-[8px] text-desk-muted">{fill(t("term.cal.weekCount"), { n: String(wn) })}</div>
                     </div>
                   ) : (
                     <div className="text-center text-desk-muted/60">—</div>
@@ -283,7 +313,7 @@ export default function PnlCalendar({
         </tbody>
       </table>
       <p className="mt-1 text-[9px] text-desk-muted">
-        Kapanış gününe göre gerçekleşen K/Z (yerel saat). Güne tıklayın → liste o güne filtrelenir.
+        {t("term.cal.note")}
       </p>
     </div>
   );

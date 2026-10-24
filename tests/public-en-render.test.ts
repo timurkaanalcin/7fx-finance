@@ -32,6 +32,14 @@ const PHRASES = [
   "2.341,20",
   "34,12",
   "82,40",
+  "favori",
+  "bildirim",
+  "marj",
+  "serbest",
+  "kullanım",
+  "tekrar",
+  "bekliyor",
+  "al / sat",
 ];
 
 const PUBLIC_FILES = [
@@ -50,6 +58,12 @@ const PUBLIC_FILES = [
   "public/site.webmanifest",
 ];
 
+const TERMINAL_FILES = [
+  "src/components/trading",
+  "src/components/notifications/NotificationBell.tsx",
+  "src/app/(terminal)",
+];
+
 function hits(text: string): string[] {
   const found: string[] = [];
   const chars = text.match(TR_CHARS);
@@ -60,8 +74,8 @@ function hits(text: string): string[] {
   }
   if (/>\s*AL\s*</.test(text) || /["'`]AL["'`]/.test(text)) found.push("AL");
   if (/>\s*SAT\s*</.test(text) || /["'`]SAT["'`]/.test(text)) found.push("SAT");
-  if (/>\s*Al\s*</.test(text) || /["'`]Al["'`]/.test(text)) found.push("Al");
-  if (/>\s*Sat\s*</.test(text) || /["'`]Sat["'`]/.test(text)) found.push("Sat");
+  if (/>\s*Al\s*</.test(text)) found.push("Al");
+  if (/>\s*Sat\s*</.test(text)) found.push("Sat");
   return found;
 }
 
@@ -69,7 +83,10 @@ function stripForEnglishRender(src: string): string {
   const noComments = src
     .replace(/\/\*[\s\S]*?\*\//g, "")
     .replace(/(^|[^:])\/\/.*$/gm, "$1");
-  return noComments.replace(/\b(?:tr|de|ru|ar)\s*:\s*\{[^{}]*\}/g, "");
+  return noComments
+    .replace(/\b(?:tr|de|ru|ar)\s*:\s*\{[^{}]*\}/g, "")
+    .replace(/\b(?:tr|de|ru|ar)\s*:\s*"(?:\\.|[^"\\])*"/g, "")
+    .replace(/\b(?:tr|de|ru|ar)\s*:\s*'(?:\\.|[^'\\])*'/g, "");
 }
 
 function walk(rel: string): string[] {
@@ -91,6 +108,8 @@ function main() {
   assert.ok(hits("Main sayfa").includes("main sayfa"));
   assert.ok(hits(">AL<").includes("AL"));
   assert.deepEqual(hits(stripForEnglishRender('tr: { t: "Güvenlik ve ana sayfa" }, en: { t: "Security" }')), []);
+  assert.deepEqual(hits(stripForEnglishRender('({tr:"İndir",en:"Download"})')), []);
+  assert.ok(hits('?? "İndir"').length > 0);
 
   const dictHits: string[] = [];
   for (const [key, value] of Object.entries(en)) {
@@ -101,7 +120,7 @@ function main() {
 
   const fileHits: string[] = [];
   const usedKeys = new Set<string>();
-  for (const rel of PUBLIC_FILES) {
+  for (const rel of PUBLIC_FILES.concat(TERMINAL_FILES)) {
     for (const file of walk(rel)) {
       if (!/\.(tsx|ts|json|webmanifest)$/.test(file)) continue;
       const raw = fs.readFileSync(file, "utf8");

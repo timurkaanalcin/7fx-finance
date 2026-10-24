@@ -135,6 +135,25 @@ export function customerDocsWindow(
   return { take: page.take, skip: page.skip, paged: true };
 }
 
+/** Customer document list when the client omits take and skip. */
+export const CUSTOMER_DOCS_LEGACY = 200;
+/** AI membership list when the client omits take and skip. */
+export const CRM_MEMBERSHIP_LEGACY = 500;
+/** Deposit and withdrawal queues when the client omits take and skip. */
+export const CRM_MONEY_LIST_LEGACY = 200;
+
+/** Shared page window. Omit both params to keep `legacy`. */
+export function pagedOrLegacy(
+  takeRaw: string | null,
+  skipRaw: string | null,
+  paged: boolean,
+  legacy: number
+): { take: number; skip: number; paged: boolean } {
+  if (!paged) return { take: legacy, skip: 0, paged: false };
+  const page = crmPageWindow(takeRaw, skipRaw);
+  return { take: page.take, skip: page.skip, paged: true };
+}
+
 /**
  * Trader detail views. `full` is the existing payload (post-save refresh).
  * The others load one tab and skip the rest of the related tables.

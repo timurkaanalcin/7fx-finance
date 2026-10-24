@@ -99,7 +99,7 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
     }
     const amt = Number(amount);
     if (!Number.isFinite(amt) || amt <= 0) {
-      setError("Enter a valid amount");
+      setError(t("term.deposit.invalid"));
       return;
     }
     setLoading(true);
@@ -111,13 +111,13 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Could not submit request");
+        setError(data.error || t("term.deposit.failed"));
         return;
       }
-      setSuccess("Notification sent. It will reflect in your balance after approval.");
+      setSuccess(t("term.deposit.sent"));
       onSubmitted?.();
     } catch {
-      setError("Connection error");
+      setError(t("auth.connectionError"));
     } finally {
       setLoading(false);
     }
@@ -130,30 +130,30 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-desk-border px-4 py-3">
-          <h2 className="text-sm font-semibold tracking-wide">Deposit</h2>
-          <button onClick={onClose} className="rounded-[8px] px-2 py-1 text-desk-muted hover:bg-desk-hover hover:text-desk-text">
+          <h2 className="text-sm font-semibold tracking-wide">{t("term.deposit")}</h2>
+          <button type="button" onClick={onClose} aria-label={t("common.close")} className="rounded-[8px] px-2 py-1 text-desk-muted hover:bg-desk-hover hover:text-desk-text">
             ✕
           </button>
         </div>
 
         <div className="p-4">
           {availableTypes.length === 0 && !loading && (
-            <p className="text-sm text-desk-muted">No active deposit methods right now. Please try again later.</p>
+            <p className="text-sm text-desk-muted">{t("term.deposit.none")}</p>
           )}
 
           {availableTypes.length > 0 && (
             <>
               <div className="mb-3 flex gap-1 rounded-control border border-desk-border bg-desk-bg p-1">
-                {availableTypes.map((t) => (
+                {availableTypes.map((kind) => (
                   <button
-                    key={t}
+                    key={kind}
                     type="button"
-                    onClick={() => setTab(t)}
+                    onClick={() => setTab(kind)}
                     className={`flex-1 rounded-md py-1.5 text-xs font-medium ${
-                      tab === t ? "bg-desk-accent text-desk-accent-ink" : "text-desk-muted hover:bg-desk-hover"
+                      tab === kind ? "bg-desk-accent text-desk-accent-ink" : "text-desk-muted hover:bg-desk-hover"
                     }`}
                   >
-                    {t === "IBAN" ? "IBAN / Wire" : "Crypto"}
+                    {kind === "IBAN" ? t("term.deposit.wire") : t("term.deposit.crypto")}
                   </button>
                 ))}
               </div>
@@ -179,13 +179,13 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
                     <>
                       {selected.bankName && (
                         <div className="flex justify-between gap-2">
-                          <span className="text-desk-muted">Bank</span>
+                          <span className="text-desk-muted">{t("term.deposit.bank")}</span>
                           <span>{selected.bankName}</span>
                         </div>
                       )}
                       {selected.accountHolder && (
                         <div className="flex justify-between gap-2">
-                          <span className="text-desk-muted">Recipient</span>
+                          <span className="text-desk-muted">{t("term.deposit.recipient")}</span>
                           <span className="text-right">{selected.accountHolder}</span>
                         </div>
                       )}
@@ -199,7 +199,7 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
                               onClick={() => onCopy("iban", selected.iban!)}
                               className="shrink-0 rounded-[8px] bg-desk-accent/90 px-2 py-0.5 text-[10px] text-desk-accent-ink hover:bg-desk-accent"
                             >
-                              {copied === "iban" ? "Copied" : "Copy"}
+                              {copied === "iban" ? t("term.deposit.copied") : t("term.deposit.copy")}
                             </button>
                           </div>
                         </div>
@@ -209,29 +209,29 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
                   {selected.type === "CRYPTO" && (
                     <>
                       <div className="flex justify-between gap-2">
-                        <span className="text-desk-muted">Asset</span>
+                        <span className="text-desk-muted">{t("term.deposit.asset")}</span>
                         <span>{selected.asset}</span>
                       </div>
                       <div className="flex justify-between gap-2">
-                        <span className="text-desk-muted">Network</span>
+                        <span className="text-desk-muted">{t("term.deposit.network")}</span>
                         <span>{selected.network}</span>
                       </div>
                       {selected.address && (
                         <div className="space-y-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-desk-muted">Wallet</span>
+                            <span className="text-desk-muted">{t("term.deposit.wallet")}</span>
                             <button
                               type="button"
                               onClick={() => onCopy("addr", selected.address!)}
                               className="rounded-[8px] bg-desk-accent/90 px-2 py-0.5 text-[10px] text-desk-accent-ink hover:bg-desk-accent"
                             >
-                              {copied === "addr" ? "Copied" : "Copy"}
+                              {copied === "addr" ? t("term.deposit.copied") : t("term.deposit.copy")}
                             </button>
                           </div>
                           <code className="block break-all rounded-[8px] bg-desk-bg p-2 text-[11px]">{selected.address}</code>
                           <div className="mt-2 flex justify-center">
                             <div className="flex h-24 w-24 items-center justify-center rounded-[10px] border border-dashed border-desk-border bg-desk-bg text-[10px] text-desk-muted">
-                              QR stub
+                              {t("term.deposit.qr")}
                             </div>
                           </div>
                         </div>
@@ -246,7 +246,7 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
 
               <form onSubmit={onSubmit} className="space-y-3">
                 <div>
-                  <label className="mb-1 block text-[10px] uppercase tracking-wide text-desk-muted">Amount (USD)</label>
+                  <label className="mb-1 block text-[10px] uppercase tracking-wide text-desk-muted">{t("term.deposit.amount")}</label>
                   <input
                     type="number"
                     min={1}
@@ -258,7 +258,7 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-[10px] uppercase tracking-wide text-desk-muted">Note (optional)</label>
+                  <label className="mb-1 block text-[10px] uppercase tracking-wide text-desk-muted">{t("term.deposit.note")}</label>
                   <input
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
@@ -273,7 +273,7 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
                   disabled={loading || !selected}
                   className="w-full rounded-control bg-desk-accent py-2.5 text-sm font-semibold text-desk-accent-ink shadow-accent-glow-sm hover:brightness-110 disabled:opacity-60"
                 >
-                  {loading ? "Submitting…" : "Send notification"}
+                  {loading ? t("term.deposit.submitting") : t("term.deposit.send")}
                 </button>
               </form>
             </>

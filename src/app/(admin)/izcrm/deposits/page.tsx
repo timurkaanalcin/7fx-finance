@@ -5,7 +5,7 @@ import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { fmtCrmDate } from "@/lib/crm-format";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useVisiblePoll } from "@/lib/use-visible-poll";
 
 type Row = {
@@ -30,18 +30,30 @@ export default function AdminDepositsPage() {
   const [query, setQuery] = useState("");
   const [loadedAt, setLoadedAt] = useState<Date | null>(null);
   const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [moreBusy, setMoreBusy] = useState(false);
+  const rowsRef = useRef<Row[]>([]);
 
-  const load = useCallback(async () => {
-    const q = filter ? `?status=${filter}` : "";
-    setLoading(true);
+  const load = useCallback(async (mode: "replace" | "more" = "replace") => {
+    const skip = mode === "more" ? rowsRef.current.length : 0;
+    if (mode === "more") setMoreBusy(true);
+    else setLoading(true);
     try {
-      const res = await fetch(`/api/admin/deposits${q}`);
+      const params = new URLSearchParams({ take: "50", skip: String(skip) });
+      if (filter) params.set("status", filter);
+      const res = await fetch(`/api/admin/deposits?${params}`);
       if (!res.ok) return;
       const data = await res.json();
-      setRows(data.requests || []);
+      const incoming: Row[] = data.requests || [];
+      const seen = new Set(rowsRef.current.map((r) => r.id));
+      const next = mode === "more" ? rowsRef.current.concat(incoming.filter((r) => !seen.has(r.id))) : incoming;
+      rowsRef.current = next;
+      setRows(next);
+      setHasMore(Boolean(data.hasMore));
       setLoadedAt(new Date());
     } finally {
-      setLoading(false);
+      if (mode === "more") setMoreBusy(false);
+      else setLoading(false);
     }
   }, [filter]);
 
@@ -234,6 +246,16 @@ export default function AdminDepositsPage() {
           </tbody>
         </table>
       </div>
+      {hasMore && (
+        <button
+          type="button"
+          disabled={moreBusy}
+          onClick={() => void load("more")}
+          className="mt-3 w-full rounded-lg border border-[#e5e5e5] bg-white px-3 py-2 text-sm font-medium hover:bg-[#f7f7f7] disabled:opacity-50"
+        >
+          {moreBusy ? i18n("crm.ui.loading") : i18n("crm.ui.loadMore")}
+        </button>
+      )}
     </div>
   );
 }

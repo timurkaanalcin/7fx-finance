@@ -1,16 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
 
 type Row = { id: string; userId: string; plan: string; status: string; priceUsd: number; expiresAt: string | null; createdAt: string; user: { name: string; email: string; accountLoginId: string | null } | null };
 
 const T: Record<string, Record<string, string>> = {
-  tr: { title: "Üyelikler (AI)", all: "Tümü", PENDING: "Bekliyor", ACTIVE: "Aktif", CANCELLED: "İptal", EXPIRED: "Süresi doldu", customer: "Müşteri", plan: "Plan", status: "Durum", exp: "Bitiş", created: "Talep", activate: "Aktifleştir", extend: "Uzat", cancel: "İptal et", days: "Gün", none: "Kayıt yok", note: "Yöneticiler her zaman sınırsız üyeliğe sahiptir.", confirm: "Üyelik iptal edilsin mi?", search: "Ara: ad, e-posta, hesap no, plan, ID", clearSearch: "Aramayı temizle", records: "kayıt", reset: "Temizle", refresh: "Yenile", loading: "Yükleniyor…", csv: "Gösterilen satırları CSV indir", price: "Ücret (USD)", email: "E-posta", account: "Hesap no" },
-  en: { title: "Memberships (AI)", all: "All", PENDING: "Pending", ACTIVE: "Active", CANCELLED: "Cancelled", EXPIRED: "Expired", customer: "Customer", plan: "Plan", status: "Status", exp: "Expires", created: "Requested", activate: "Activate", extend: "Extend", cancel: "Cancel", days: "Days", none: "No records", note: "Admins always have unlimited membership.", confirm: "Cancel membership?", search: "Search: name, email, account, plan, ID", clearSearch: "Clear search", records: "records", reset: "Clear", refresh: "Refresh", loading: "Loading…", csv: "Download shown rows as CSV", price: "Price (USD)", email: "Email", account: "Account" },
-  ru: { title: "Подписки (AI)", all: "Все", PENDING: "Ожидает", ACTIVE: "Активна", CANCELLED: "Отменена", EXPIRED: "Истекла", customer: "Клиент", plan: "План", status: "Статус", exp: "До", created: "Заявка", activate: "Активировать", extend: "Продлить", cancel: "Отменить", days: "Дней", none: "Нет записей", note: "У админов всегда безлимит.", confirm: "Отменить подписку?", search: "Поиск: имя, e-mail, счёт, план, ID", clearSearch: "Очистить поиск", records: "записей", reset: "Сбросить", refresh: "Обновить", loading: "Загрузка…", csv: "Скачать показанные строки CSV", price: "Цена (USD)", email: "E-mail", account: "Счёт" },
-  ar: { title: "العضويات (AI)", all: "الكل", PENDING: "معلّقة", ACTIVE: "نشطة", CANCELLED: "ملغاة", EXPIRED: "منتهية", customer: "العميل", plan: "الخطة", status: "الحالة", exp: "تنتهي", created: "الطلب", activate: "تفعيل", extend: "تمديد", cancel: "إلغاء", days: "أيام", none: "لا سجلات", note: "المسؤولون لديهم عضوية غير محدودة دائمًا.", confirm: "إلغاء العضوية؟", search: "بحث: الاسم، البريد، الحساب، الخطة، المعرّف", clearSearch: "مسح البحث", records: "سجل", reset: "مسح", refresh: "تحديث", loading: "جارٍ التحميل…", csv: "تنزيل الصفوف المعروضة CSV", price: "السعر (USD)", email: "البريد", account: "الحساب" },
-  de: { title: "Mitgliedschaften (KI)", all: "Alle", PENDING: "Ausstehend", ACTIVE: "Aktiv", CANCELLED: "Storniert", EXPIRED: "Abgelaufen", customer: "Kunde", plan: "Plan", status: "Status", exp: "Bis", created: "Angefragt", activate: "Aktivieren", extend: "Verlängern", cancel: "Stornieren", days: "Tage", none: "Keine Einträge", note: "Admins haben immer unbegrenzte Mitgliedschaft.", confirm: "Mitgliedschaft stornieren?", search: "Suche: Name, E-Mail, Konto, Plan, ID", clearSearch: "Suche löschen", records: "Einträge", reset: "Zurücksetzen", refresh: "Aktualisieren", loading: "Lädt…", csv: "Angezeigte Zeilen als CSV", price: "Preis (USD)", email: "E-Mail", account: "Konto" },
+  tr: { title: "Üyelikler (AI)", all: "Tümü", PENDING: "Bekliyor", ACTIVE: "Aktif", CANCELLED: "İptal", EXPIRED: "Süresi doldu", customer: "Müşteri", plan: "Plan", status: "Durum", exp: "Bitiş", created: "Talep", activate: "Aktifleştir", extend: "Uzat", cancel: "İptal et", days: "Gün", none: "Kayıt yok", note: "Yöneticiler her zaman sınırsız üyeliğe sahiptir.", confirm: "Üyelik iptal edilsin mi?", search: "Ara: ad, e-posta, hesap no, plan, ID", clearSearch: "Aramayı temizle", records: "kayıt", reset: "Temizle", refresh: "Yenile", loading: "Yükleniyor…", csv: "Gösterilen satırları CSV indir", price: "Ücret (USD)", email: "E-posta", account: "Hesap no", loadMore: "Daha fazla yükle" },
+  en: { title: "Memberships (AI)", all: "All", PENDING: "Pending", ACTIVE: "Active", CANCELLED: "Cancelled", EXPIRED: "Expired", customer: "Customer", plan: "Plan", status: "Status", exp: "Expires", created: "Requested", activate: "Activate", extend: "Extend", cancel: "Cancel", days: "Days", none: "No records", note: "Admins always have unlimited membership.", confirm: "Cancel membership?", search: "Search: name, email, account, plan, ID", clearSearch: "Clear search", records: "records", reset: "Clear", refresh: "Refresh", loading: "Loading…", csv: "Download shown rows as CSV", price: "Price (USD)", email: "Email", account: "Account", loadMore: "Load more" },
+  ru: { title: "Подписки (AI)", all: "Все", PENDING: "Ожидает", ACTIVE: "Активна", CANCELLED: "Отменена", EXPIRED: "Истекла", customer: "Клиент", plan: "План", status: "Статус", exp: "До", created: "Заявка", activate: "Активировать", extend: "Продлить", cancel: "Отменить", days: "Дней", none: "Нет записей", note: "У админов всегда безлимит.", confirm: "Отменить подписку?", search: "Поиск: имя, e-mail, счёт, план, ID", clearSearch: "Очистить поиск", records: "записей", reset: "Сбросить", refresh: "Обновить", loading: "Загрузка…", csv: "Скачать показанные строки CSV", price: "Цена (USD)", email: "E-mail", account: "Счёт", loadMore: "Загрузить ещё" },
+  ar: { title: "العضويات (AI)", all: "الكل", PENDING: "معلّقة", ACTIVE: "نشطة", CANCELLED: "ملغاة", EXPIRED: "منتهية", customer: "العميل", plan: "الخطة", status: "الحالة", exp: "تنتهي", created: "الطلب", activate: "تفعيل", extend: "تمديد", cancel: "إلغاء", days: "أيام", none: "لا سجلات", note: "المسؤولون لديهم عضوية غير محدودة دائمًا.", confirm: "إلغاء العضوية؟", search: "بحث: الاسم، البريد، الحساب، الخطة، المعرّف", clearSearch: "مسح البحث", records: "سجل", reset: "مسح", refresh: "تحديث", loading: "جارٍ التحميل…", csv: "تنزيل الصفوف المعروضة CSV", price: "السعر (USD)", email: "البريد", account: "الحساب", loadMore: "تحميل المزيد" },
+  de: { title: "Mitgliedschaften (KI)", all: "Alle", PENDING: "Ausstehend", ACTIVE: "Aktiv", CANCELLED: "Storniert", EXPIRED: "Abgelaufen", customer: "Kunde", plan: "Plan", status: "Status", exp: "Bis", created: "Angefragt", activate: "Aktivieren", extend: "Verlängern", cancel: "Stornieren", days: "Tage", none: "Keine Einträge", note: "Admins haben immer unbegrenzte Mitgliedschaft.", confirm: "Mitgliedschaft stornieren?", search: "Suche: Name, E-Mail, Konto, Plan, ID", clearSearch: "Suche löschen", records: "Einträge", reset: "Zurücksetzen", refresh: "Aktualisieren", loading: "Lädt…", csv: "Angezeigte Zeilen als CSV", price: "Preis (USD)", email: "E-Mail", account: "Konto", loadMore: "Mehr laden" },
 };
 const COLORS: Record<string, string> = { PENDING: "bg-amber-100 text-amber-800", ACTIVE: "bg-emerald-100 text-emerald-800", CANCELLED: "bg-gray-200 text-gray-700", EXPIRED: "bg-red-100 text-red-700" };
 
@@ -29,15 +29,40 @@ export default function UyeliklerPage() {
   const [filter, setFilter] = useState("");
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [moreBusy, setMoreBusy] = useState(false);
   const [days, setDays] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState("");
-  const load = useCallback(() => {
-    setLoading(true);
-    fetch("/api/admin/ai-memberships", { cache: "no-store", credentials: "include" })
+  const rowsRef = useRef<Row[]>([]);
+  const loadGen = useRef(0);
+  const load = useCallback((mode: "replace" | "more" = "replace") => {
+    const gen = ++loadGen.current;
+    const skip = mode === "more" ? rowsRef.current.length : 0;
+    if (mode === "more") setMoreBusy(true);
+    else setLoading(true);
+    const params = new URLSearchParams({ take: "50", skip: String(skip) });
+    fetch(`/api/admin/ai-memberships?${params}`, { cache: "no-store", credentials: "include" })
       .then((r) => (r.ok ? r.json() : { memberships: [] }))
-      .then((d) => setRows(d.memberships || []))
-      .catch(() => setRows([]))
-      .finally(() => setLoading(false));
+      .then((d) => {
+        if (gen !== loadGen.current) return;
+        const incoming: Row[] = d.memberships || [];
+        const seen = new Set(rowsRef.current.map((r) => r.id));
+        const next = mode === "more" ? rowsRef.current.concat(incoming.filter((r) => !seen.has(r.id))) : incoming;
+        rowsRef.current = next;
+        setRows(next);
+        setHasMore(Boolean(d.hasMore));
+      })
+      .catch(() => {
+        if (gen !== loadGen.current || mode === "more") return;
+        rowsRef.current = [];
+        setRows([]);
+        setHasMore(false);
+      })
+      .finally(() => {
+        if (gen !== loadGen.current) return;
+        if (mode === "more") setMoreBusy(false);
+        else setLoading(false);
+      });
   }, []);
   useEffect(load, [load]);
 
@@ -125,7 +150,7 @@ export default function UyeliklerPage() {
         >
           {L.reset}
         </button>
-        <button type="button" onClick={load} className="rounded-lg border border-black/15 bg-white px-2 py-1.5 hover:bg-gray-50">
+        <button type="button" onClick={() => load()} className="rounded-lg border border-black/15 bg-white px-2 py-1.5 hover:bg-gray-50">
           {loading ? L.loading : L.refresh}
         </button>
         <button
@@ -174,6 +199,16 @@ export default function UyeliklerPage() {
             </div>
           ))}
         </div>
+      )}
+      {hasMore && (
+        <button
+          type="button"
+          disabled={moreBusy}
+          onClick={() => load("more")}
+          className="mt-3 w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm font-medium text-[#111] hover:bg-[#f7f7f7] disabled:opacity-50"
+        >
+          {moreBusy ? L.loading : L.loadMore}
+        </button>
       )}
     </div>
   );

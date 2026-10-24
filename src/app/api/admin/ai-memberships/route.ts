@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin, requireAdminWrite, writeAudit } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { planById } from "@/lib/ai-membership";
+import { CRM_MEMBERSHIP_LEGACY, pagedOrLegacy } from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
 const H = { "Cache-Control": "no-store" };
@@ -9,16 +10,33 @@ const H = { "Cache-Control": "no-store" };
 export async function GET(req: Request) {
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401, headers: H });
-  const status = new URL(req.url).searchParams.get("status") || undefined;
+  const searchParams = new URL(req.url).searchParams;
+  const status = searchParams.get("status") || undefined;
   // Auto-mark expired
   await prisma.aiMembership.updateMany({ where: { status: "ACTIVE", expiresAt: { lte: new Date() } }, data: { status: "EXPIRED" } });
-  const rows = await prisma.aiMembership.findMany({ where: status ? { status } : {}, orderBy: { createdAt: "desc" }, take: 500 });
+  const paged = searchParams.has("take") || searchParams.has("skip");
+  const page = pagedOrLegacy(searchParams.get("take"), searchParams.get("skip"), paged, CRM_MEMBERSHIP_LEGACY);
+  const found = await prisma.aiMembership.findMany({
+    where: status ? { status } : {},
+    orderBy: { createdAt: "desc" },
+    skip: page.skip,
+    take: page.paged ? page.take + 1 : page.take,
+  });
+  const hasMore = page.paged && found.length > page.take;
+  const rows = hasMore ? found.slice(0, page.take) : found;
   const users = await prisma.user.findMany({
     where: { id: { in: Array.from(new Set(rows.map((r) => r.userId))) } },
     select: { id: true, name: true, email: true, accountLoginId: true },
   });
   const um = new Map(users.map((u) => [u.id, u]));
-  return NextResponse.json({ memberships: rows.map((r) => ({ ...r, user: um.get(r.userId) ?? null })) }, { headers: H });
+  return NextResponse.json(
+    {
+      memberships: rows.map((r) => ({ ...r, user: um.get(r.userId) ?? null })),
+      hasMore,
+      nextSkip: page.skip + rows.length,
+    },
+    { headers: H }
+  );
 }
 
 /** PATCH {id, action: activate|extend|cancel, days?} */

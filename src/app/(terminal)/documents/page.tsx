@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getSeenDocs, markDocsSeen } from "@/lib/docs-seen";
 import { useI18n } from "@/lib/i18n/context";
 import ProtectedAttachmentViewer from "@/components/chat/ProtectedAttachmentViewer";
@@ -16,6 +16,9 @@ export default function DocumentsPage() {
   const [open, setOpen] = useState<string | null>(null);
   const [seen, setSeen] = useState<Set<string>>(new Set());
   const [q, setQ] = useState("");
+  const [hasMore, setHasMore] = useState(false);
+  const [moreBusy, setMoreBusy] = useState(false);
+  const docsRef = useRef<Doc[]>([]);
 
   useEffect(() => setSeen(getSeenDocs()), []);
 
@@ -31,12 +34,33 @@ export default function DocumentsPage() {
   }, [docs, q, locale]);
   const unseen = (docs || []).filter((d) => !seen.has(d.id)).length;
 
-  useEffect(() => {
-    fetch("/api/documents", { cache: "no-store", credentials: "include" })
-      .then((r) => (r.ok ? r.json() : { documents: [] }))
-      .then((d) => setDocs(d.documents || []))
-      .catch(() => setDocs([]));
+  const load = useCallback(async (mode: "replace" | "more" = "replace") => {
+    const skip = mode === "more" ? docsRef.current.length : 0;
+    if (mode === "more") setMoreBusy(true);
+    try {
+      const params = new URLSearchParams({ take: "50", skip: String(skip) });
+      const r = await fetch(`/api/documents?${params}`, { cache: "no-store", credentials: "include" });
+      if (!r.ok) {
+        if (mode === "replace") setDocs([]);
+        return;
+      }
+      const data = await r.json();
+      const incoming: Doc[] = data.documents || [];
+      const seenIds = new Set(docsRef.current.map((d) => d.id));
+      const next = mode === "more" ? docsRef.current.concat(incoming.filter((d) => !seenIds.has(d.id))) : incoming;
+      docsRef.current = next;
+      setDocs(next);
+      setHasMore(Boolean(data.hasMore));
+    } catch {
+      if (mode === "replace") setDocs([]);
+    } finally {
+      if (mode === "more") setMoreBusy(false);
+    }
   }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
 
   return (
     <div className="fx-profile min-h-screen bg-[#000000] text-slate-100">
@@ -111,15 +135,25 @@ export default function DocumentsPage() {
                 <a
                   href={`/api/documents/${d.id}/download`}
                   download
-                  aria-label={({tr:"İndir",en:"Download",ru:"Скачать",ar:"تنزيل",de:"Herunterladen"} as Record<string,string>)[locale] ?? "İndir"}
+                  aria-label={t("docs.download")}
                   className="flex min-h-[64px] shrink-0 flex-col items-center justify-center rounded-xl border border-[#c9a54a]/50 bg-[#0a0a0a] px-3 text-xs font-semibold text-[#c9a54a] no-underline"
                 >
                   <span aria-hidden className="text-base leading-none">⬇</span>
-                  <span className="mt-1">{({tr:"İndir",en:"Download",ru:"Скачать",ar:"تنزيل",de:"Herunterladen"} as Record<string,string>)[locale] ?? "İndir"}</span>
+                  <span className="mt-1">{t("docs.download")}</span>
                 </a>
               </li>
             ))}
           </ul>
+        )}
+        {hasMore && (
+          <button
+            type="button"
+            disabled={moreBusy}
+            onClick={() => void load("more")}
+            className="mt-3 w-full rounded-lg border border-[#2a2a2a] bg-[#0a0a0a] px-3 py-2 text-sm font-medium text-slate-200 hover:bg-[#1f1f1f] disabled:opacity-50"
+          >
+            {moreBusy ? "…" : t("term.loadMore")}
+          </button>
         )}
       </main>
       {open && (
@@ -132,7 +166,7 @@ export default function DocumentsPage() {
             loading: t("profile.support.attLoading"),
             failed: t("profile.support.attFailed"),
             close: t("profile.support.close"),
-            download: ({tr:"İndir",en:"Download",ru:"Скачать",ar:"تنزيل",de:"Herunterladen"} as Record<string,string>)[locale] ?? "İndir",
+            download: t("docs.download"),
             hold: t("profile.support.holdToView"),
           }}
         />

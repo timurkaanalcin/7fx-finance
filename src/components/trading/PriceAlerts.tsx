@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useI18n } from "@/lib/i18n/context";
 import { formatPrice, getSymbol } from "@/lib/symbols";
 import type { PriceTick } from "./types";
 
@@ -100,6 +101,7 @@ function save(list: Alert[]) {
  * current symbol; fires an in-app toast (+ system notification if the user allowed it).
  */
 export default function PriceAlerts({ symbol, prices }: { symbol: string; prices: Record<string, PriceTick> }) {
+  const { t } = useI18n();
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [open, setOpen] = useState(false);
   const [val, setVal] = useState("");
@@ -297,7 +299,7 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
                     add();
                   }
                 }}
-                placeholder={Number.isFinite(cur) ? formatPrice(symbol, cur) : "Price"}
+                placeholder={Number.isFinite(cur) ? formatPrice(symbol, cur) : t("term.pricePh")}
                 className="min-w-0 flex-1 rounded-[10px] border border-desk-border bg-desk-bg px-2.5 py-2 text-sm tabular-nums text-desk-text outline-none"
               />
               <button
@@ -307,7 +309,7 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
                   add();
                 }}
                 className="min-h-[38px] rounded-[10px] bg-desk-accent px-3 text-xs font-semibold text-desk-accent-ink">
-                Add
+                {t("term.alert.add")}
               </button>
             </div>
             <div className="mt-2 flex items-center gap-1.5">
@@ -315,14 +317,14 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
                 type="button"
                 onClick={() => setRepeatNew((r) => !r)}
                 aria-pressed={repeatNew}
-                title={repeatNew ? "Tekrarla: tetiklenince kalır, fiyat geri dönünce yeniden kurulur · Repeat" : "Tek sefer: tetiklenince silinir · Once"}
+                title={repeatNew ? t("term.alert.repeatTitle") : t("term.alert.onceTitle")}
                 className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold transition ${
                   repeatNew ? "border-[#c8a96a] bg-[#c8a96a]/15 text-desk-text" : "border-desk-border bg-desk-elev/80 text-desk-muted hover:text-desk-text"
                 }`}
               >
-                ↻ Tekrarla · Repeat
+                ↻ {t("term.alert.repeat")}
               </button>
-              <span className="text-[10px] text-desk-muted">{repeatNew ? "Tekrarlı · Repeat" : "Tek sefer · Once"}</span>
+              <span className="text-[10px] text-desk-muted">{repeatNew ? t("term.alert.repeating") : t("term.alert.once")}</span>
             </div>
             {Number.isFinite(cur) && (
               <div className="mt-2 flex flex-wrap gap-1" role="group" aria-label="Quick percent offsets from mid">
@@ -348,8 +350,8 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
                     <span className={`min-w-0 tabular-nums ${a.armed === false ? "text-desk-muted" : ""}`}>
                       {a.dir === "above" ? "▲ ≥" : "▼ ≤"} {formatPrice(symbol, a.price)}
                       {a.armed === false && (
-                        <span className="ml-1.5 text-[10px] italic text-desk-muted/80" title="Fiyat seviyenin gerisine dönünce yeniden kurulur · Re-arms after price moves back">
-                          Bekliyor · Cooling
+                        <span className="ml-1.5 text-[10px] italic text-desk-muted/80" title={t("term.alert.rearm")}>
+                          {t("term.alert.cooling")}
                         </span>
                       )}
                     </span>
@@ -358,13 +360,13 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
                         type="button"
                         onClick={() => toggleRepeat(a.id)}
                         aria-pressed={!!a.repeat}
-                        aria-label={a.repeat ? "Repeat alert — switch to once" : "Once alert — switch to repeat"}
-                        title={a.repeat ? "Tekrarlı · Repeat → Tek sefer yap" : "Tek sefer · Once → Tekrarla"}
+                        aria-label={a.repeat ? t("term.alert.toOnce") : t("term.alert.toRepeat")}
+                        title={a.repeat ? t("term.alert.toOnce") : t("term.alert.toRepeat")}
                         className={`rounded-[6px] px-1.5 text-[10px] font-semibold ${a.repeat ? "text-[#c8a96a]" : "text-desk-muted"} hover:text-desk-text`}
                       >
                         {a.repeat ? "↻" : "1×"}
                       </button>
-                      <button type="button" onClick={() => remove(a.id)} className="px-1 text-desk-muted hover:text-desk-sell" aria-label="Remove alert" title="Sil · Remove">
+                      <button type="button" onClick={() => remove(a.id)} className="px-1 text-desk-muted hover:text-desk-sell" aria-label={t("term.alert.remove")} title={t("term.alert.remove")}>
                         ✕
                       </button>
                     </span>
@@ -372,7 +374,7 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
                 ))}
               </ul>
             ) : (
-              <p className="mt-2 text-[11px] text-desk-muted">Notifies you on this device when the price is reached.</p>
+              <p className="mt-2 text-[11px] text-desk-muted">{t("term.alert.empty")}</p>
             )}
           </div>
         )}

@@ -5,6 +5,7 @@ import { refreshAccountMetrics } from "@/lib/trading";
 import { recordLedger } from "@/lib/ledger";
 import { readApprovalPayload } from "@/lib/ticket-scenario";
 import { FxError, appendFxNote, convertAmountToUsd } from "@/lib/fx-usd";
+import { CRM_MONEY_LIST_LEGACY, pagedOrLegacy } from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
 
@@ -14,16 +15,21 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const status = searchParams.get("status");
   const where = status ? { status: status.toUpperCase() } : {};
-  const requests = await prisma.depositRequest.findMany({
+  const paged = searchParams.has("take") || searchParams.has("skip");
+  const page = pagedOrLegacy(searchParams.get("take"), searchParams.get("skip"), paged, CRM_MONEY_LIST_LEGACY);
+  const found = await prisma.depositRequest.findMany({
     where,
     include: {
       method: true,
       user: { select: { id: true, email: true, name: true } },
     },
     orderBy: { createdAt: "desc" },
-    take: 200,
+    skip: page.skip,
+    take: page.paged ? page.take + 1 : page.take,
   });
-  return NextResponse.json({ requests });
+  const hasMore = page.paged && found.length > page.take;
+  const requests = hasMore ? found.slice(0, page.take) : found;
+  return NextResponse.json({ requests, hasMore, nextSkip: page.skip + requests.length });
 }
 
 /** Approve or reject a deposit request */
