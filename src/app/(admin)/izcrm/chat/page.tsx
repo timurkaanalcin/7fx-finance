@@ -234,6 +234,9 @@ export default function ChatPage() {
   const { i18n, locale } = useCrmLabels();
   const [threads, setThreads] = useState<Thread[]>([]);
   const [traders, setTraders] = useState<TraderOpt[]>([]);
+  const [pickerHasMore, setPickerHasMore] = useState(false);
+  const [pickerBusy, setPickerBusy] = useState(false);
+  const tradersRef = useRef<TraderOpt[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [tab, setTab] = useState<Tab>("all");
@@ -310,7 +313,11 @@ export default function ChatPage() {
     p.set("skip", mode === "more" ? String(threadsRef.current.length) : "0");
     if (qDebounced) p.set("q", qDebounced);
     if (pins.length) p.set("pins", pins.join(","));
-    if (!pickerSeen.current && mode === "replace") p.set("picker", "1");
+    if (!pickerSeen.current && mode === "replace") {
+      p.set("picker", "1");
+      p.set("pickerTake", "50");
+      p.set("pickerSkip", "0");
+    }
     if (mode === "more") setMoreBusy(true);
     try {
       const res = await fetch(`/api/admin/chat?${p}`);
@@ -322,13 +329,39 @@ export default function ChatPage() {
       setThreads(next);
       setHasMore(Boolean(data.hasMore));
       if (Array.isArray(data.traders)) {
+        tradersRef.current = data.traders;
         setTraders(data.traders);
+        setPickerHasMore(Boolean(data.pickerHasMore));
         pickerSeen.current = true;
       }
     } finally {
       if (mode === "more" && gen === listGen.current) setMoreBusy(false);
     }
   }, [qDebounced, pins]);
+
+  const loadMoreTraders = useCallback(async () => {
+    if (pickerBusy) return;
+    setPickerBusy(true);
+    try {
+      const p = new URLSearchParams();
+      p.set("take", "20");
+      p.set("skip", "0");
+      p.set("picker", "1");
+      p.set("pickerTake", "50");
+      p.set("pickerSkip", String(tradersRef.current.length));
+      const res = await fetch(`/api/admin/chat?${p}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      const incoming: TraderOpt[] = data.traders || [];
+      const seen = new Set(tradersRef.current.map((row) => row.id));
+      const next = tradersRef.current.concat(incoming.filter((row) => !seen.has(row.id)));
+      tradersRef.current = next;
+      setTraders(next);
+      setPickerHasMore(Boolean(data.pickerHasMore));
+    } finally {
+      setPickerBusy(false);
+    }
+  }, [pickerBusy]);
 
   useEffect(() => {
     void load();
@@ -1458,6 +1491,16 @@ export default function ChatPage() {
                 </option>
               ))}
             </select>
+            {pickerHasMore && (
+              <button
+                type="button"
+                disabled={pickerBusy}
+                onClick={() => void loadMoreTraders()}
+                className="mt-2 w-full rounded-lg border border-neutral-200 bg-white px-3 py-2 text-xs font-medium hover:bg-neutral-50 disabled:opacity-50"
+              >
+                {pickerBusy ? i18n("crm.ui.loading") : i18n("crm.ui.loadMore")}
+              </button>
+            )}
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}

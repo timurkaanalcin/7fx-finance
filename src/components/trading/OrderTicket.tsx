@@ -410,7 +410,7 @@ export default function OrderTicket({
     const cs = def?.contractSize ?? 1;
     const vol = calcVolumeForRisk(risk, entry, slN, cs);
     if (vol == null) {
-      setRiskError("Invalid SL / entry for risk sizing");
+      setRiskError(t("term.ot.badRisk"));
       return;
     }
     setVolume(vol.toFixed(2));
@@ -584,16 +584,17 @@ export default function OrderTicket({
 
         <div>
           <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-desk-muted">
-            Order Type
+            {t("term.ot.orderType")}
           </div>
           <select
             value={type}
             onChange={(e) => setType(e.target.value as "MARKET" | "LIMIT" | "STOP")}
             className={inputCls}
+            aria-label={t("term.ot.orderType")}
           >
-            <option value="MARKET">Market</option>
-            <option value="LIMIT">Limit</option>
-            <option value="STOP">Stop</option>
+            <option value="MARKET">{t("term.ot.market")}</option>
+            <option value="LIMIT">{t("term.ot.limit")}</option>
+            <option value="STOP">{t("term.ot.stop")}</option>
           </select>
         </div>
 
@@ -643,7 +644,7 @@ export default function OrderTicket({
             </button>
           </div>
           <div className="mt-1.5 flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
-            <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Quick lot size">
+            <div className="flex flex-wrap items-center gap-1" role="group" aria-label={t("term.ot.quickLots")}>
               {LOT_PRESETS.map((p) => (
                 <button
                   key={p}
@@ -680,7 +681,7 @@ export default function OrderTicket({
               </button>
             </div>
             <span className="text-[10px] tabular-nums text-desk-muted/80">
-              Notional {fmtTicketMoney(notional, currency)}
+              {t("term.ot.notional")} {fmtTicketMoney(notional, currency)}
             </span>
           </div>
         </div>
@@ -727,7 +728,7 @@ export default function OrderTicket({
           <div>
             <div className="mb-1.5 flex items-end justify-between gap-2">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-desk-muted">
-                Stop Loss
+                {t("term.ot.stopLoss")}
               </span>
               {slInfo && (
                 <span
@@ -792,13 +793,13 @@ export default function OrderTicket({
             <div className="space-y-2 rounded-[12px] border border-desk-border/60 bg-desk-bg/70 p-2.5 md:rounded-control md:p-2">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[10px] font-semibold uppercase tracking-wider text-desk-muted">
-                  Risk sizing
+                  {t("term.ot.riskSizing")}
                 </span>
                 <span
                   className="text-[10px] font-semibold tabular-nums text-desk-muted"
-                  title="Current risk at entered volume if SL hits"
+                  title={t("term.ot.riskNow")}
                 >
-                  Risk{" "}
+                  {t("term.ot.risk")}{" "}
                   {preview.sl != null
                     ? fmtTicketMoney(Math.abs(preview.sl), currency)
                     : "—"}
@@ -813,10 +814,10 @@ export default function OrderTicket({
                   setRiskAmount(e.target.value);
                   setRiskError("");
                 }}
-                placeholder={`Max risk (${(currency || "USD").trim().toUpperCase() || "USD"})`}
+                placeholder={t("term.ot.maxRisk").replace("{currency}", (currency || "USD").trim().toUpperCase() || "USD")}
                 className={inputCls + " tabular-nums"}
               />
-              <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Risk presets">
+              <div className="flex flex-wrap items-center gap-1" role="group" aria-label={t("term.ot.riskPresets")}>
                 {[25, 50, 100].map((amt) => (
                   <button
                     key={amt}
@@ -839,7 +840,7 @@ export default function OrderTicket({
                         setRiskError("");
                       }}
                       className="rounded-full border border-desk-border/70 bg-desk-elev px-2 py-0.5 text-[10px] font-semibold tabular-nums text-desk-muted hover:bg-desk-hover hover:text-desk-text"
-                      title={`1% of equity (${fmtTicketMoney(equity, currency)})`}
+                      title={t("term.ot.equity1").replace("{amount}", fmtTicketMoney(equity, currency))}
                     >
                       1%
                     </button>
@@ -850,7 +851,7 @@ export default function OrderTicket({
                         setRiskError("");
                       }}
                       className="rounded-full border border-desk-border/70 bg-desk-elev px-2 py-0.5 text-[10px] font-semibold tabular-nums text-desk-muted hover:bg-desk-hover hover:text-desk-text"
-                      title={`2% of equity (${fmtTicketMoney(equity, currency)})`}
+                      title={t("term.ot.equity2").replace("{amount}", fmtTicketMoney(equity, currency))}
                     >
                       2%
                     </button>
@@ -874,7 +875,7 @@ export default function OrderTicket({
           <div>
             <div className="mb-1.5 flex items-end justify-between gap-2">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-desk-muted">
-                Take Profit
+                {t("term.ot.takeProfit")}
               </span>
               {tpInfo && (
                 <span
@@ -922,7 +923,7 @@ export default function OrderTicket({
                 className={`mt-1 text-right text-[10px] font-semibold tabular-nums ${
                   preview.tp < 0 ? "text-desk-sell" : "text-desk-buy"
                 }`}
-                title="Estimated P&L if Take Profit is hit"
+                title={t("term.ticket.tpPnl")}
               >
                 ≈ {fmtSignedMoney(preview.tp, currency)}
               </div>
@@ -1008,7 +1009,7 @@ export default function OrderTicket({
             </div>
             {showSl && sl.trim() !== "" && (
               <div className="flex items-center justify-between">
-                <span className="text-desk-muted">Stop Loss</span>
+                <span className="text-desk-muted">{t("term.ot.stopLoss")}</span>
                 <span className="font-semibold tabular-nums text-desk-text">
                   {sl}
                   {preview.sl != null && (
@@ -1019,7 +1020,7 @@ export default function OrderTicket({
             )}
             {showTp && tp.trim() !== "" && (
               <div className="flex items-center justify-between">
-                <span className="text-desk-muted">Take Profit</span>
+                <span className="text-desk-muted">{t("term.ot.takeProfit")}</span>
                 <span className="font-semibold tabular-nums text-desk-text">
                   {tp}
                   {preview.tp != null && (
@@ -1101,7 +1102,7 @@ export default function OrderTicket({
         className="fx-lx-overlay fixed inset-0 z-[80] flex items-end justify-center bg-black/55 p-0 backdrop-blur-[2px] sm:items-center sm:p-4"
         role="dialog"
         aria-modal="true"
-        aria-label="Order ticket"
+        aria-label={t("term.ot.aria")}
         onClick={(e) => {
           if (e.target === e.currentTarget && onClose) onClose();
         }}

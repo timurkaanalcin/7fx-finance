@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { refreshAccountMetrics, processPendingOrders, checkSlTp } from "@/lib/trading";
 import { stripStaff } from "@/lib/customer-sanitize";
 import {
+  CALENDAR_PAGE,
   CLOSED_DAY_PAGE,
   CLOSED_PAGE,
   OPEN_PAGE,
@@ -64,6 +65,46 @@ export async function GET(req: Request) {
     });
   }
 
+  if (
+    status === "CLOSED" &&
+    searchParams.get("calendar") !== "0" &&
+    pageSkip(searchParams.get("calendarSkip")) > 0 &&
+    !searchParams.get("day")
+  ) {
+    const calendarSkip = pageSkip(searchParams.get("calendarSkip"));
+    const found = await prisma.position.findMany({
+      where: { userId: user.id, status: "CLOSED" },
+      select: {
+        id: true,
+        symbol: true,
+        chartSymbol: true,
+        side: true,
+        volume: true,
+        openPrice: true,
+        closePrice: true,
+        profit: true,
+        closeProfit: true,
+        stopLoss: true,
+        takeProfit: true,
+        openedAt: true,
+        closedAt: true,
+      },
+      orderBy: [{ closedAt: "desc" }, { id: "desc" }],
+      skip: calendarSkip,
+      take: CALENDAR_PAGE + 1,
+    });
+    const calendarHasMore = found.length > CALENDAR_PAGE;
+    const page = calendarHasMore ? found.slice(0, CALENDAR_PAGE) : found;
+    return NextResponse.json({
+      positions: [],
+      hasMore: false,
+      nextSkip: 0,
+      calendar: page,
+      calendarHasMore,
+      calendarNextSkip: calendarSkip + page.length,
+    });
+  }
+
   await refreshAccountMetrics(user.id);
 
   if (status === "CLOSED") {
@@ -112,10 +153,13 @@ export async function GET(req: Request) {
     const hasMore = rows.length > take;
     const positions = hasMore ? rows.slice(0, take) : rows;
     let calendar: unknown[] | undefined;
-    // The 30s blotter refresh passes calendar=0. The full ledger is for the
-    // first load and when the terminal tab becomes visible again.
+    let calendarHasMore = false;
+    let calendarNextSkip = 0;
+    // calendar=0 is the 30s blotter refresh. The month totals load on the first
+    // paint and when the tab becomes visible, one page at a time.
     if (skip === 0 && searchParams.get("calendar") !== "0") {
-      calendar = await prisma.position.findMany({
+      const calendarSkip = pageSkip(searchParams.get("calendarSkip"));
+      const found = await prisma.position.findMany({
         where: { userId: user.id, status: "CLOSED" },
         select: {
           id: true,
@@ -133,13 +177,21 @@ export async function GET(req: Request) {
           closedAt: true,
         },
         orderBy: [{ closedAt: "desc" }, { id: "desc" }],
+        skip: calendarSkip,
+        take: CALENDAR_PAGE + 1,
       });
+      calendarHasMore = found.length > CALENDAR_PAGE;
+      const page = calendarHasMore ? found.slice(0, CALENDAR_PAGE) : found;
+      calendar = page;
+      calendarNextSkip = calendarSkip + page.length;
     }
     return NextResponse.json({
       positions: stripStaff(positions),
       hasMore,
       nextSkip: skip + positions.length,
       calendar,
+      calendarHasMore,
+      calendarNextSkip,
     });
   }
 

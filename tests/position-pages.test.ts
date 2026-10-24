@@ -4,6 +4,8 @@
 import assert from "node:assert/strict";
 import { PUBLIC_DEFAULT_LOCALE } from "../src/lib/i18n/locales";
 import {
+  CALENDAR_FOLLOW_CAP,
+  CALENDAR_PAGE,
   CLOSED_DAY_PAGE,
   CLOSED_PAGE,
   CLOSED_REFRESH_CAP,
@@ -23,6 +25,8 @@ function main() {
   assert.equal(pageSkip("999999999"), 100_000);
 
   assert.equal(CLOSED_DAY_PAGE, 100);
+  assert.equal(CALENDAR_PAGE, 200);
+  assert.equal(CALENDAR_FOLLOW_CAP, 40);
   assert.equal(closedRefreshTake(null), CLOSED_PAGE);
   assert.equal(closedRefreshTake("10"), CLOSED_PAGE);
   assert.equal(closedRefreshTake("80"), 80);

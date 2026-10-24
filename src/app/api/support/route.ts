@@ -3,20 +3,27 @@ import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { rateLimit } from "@/lib/security/rate-limit";
 import { serializeChatPresence } from "@/lib/chat-presence";
+import { crmPageWindow } from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
 
+const SUPPORT_LEGACY = 200;
+
 /** GET — customer's own live-support thread (Communication type=CHAT, workerName=null means client). */
-export async function GET() {
+export async function GET(req: Request) {
   const user = await requireUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   // Customers only see the last 24 hours of live-support messages.
   const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
-  const messages = await prisma.communication.findMany({
+  const { searchParams } = new URL(req.url);
+  const paged = searchParams.has("take") || searchParams.has("skip");
+  const page = paged ? crmPageWindow(searchParams.get("take"), searchParams.get("skip")) : { take: SUPPORT_LEGACY, skip: 0 };
+  const found = await prisma.communication.findMany({
     where: { userId: user.id, type: "CHAT", createdAt: { gte: since } },
-    orderBy: { createdAt: "asc" },
-    take: 200,
+    orderBy: paged ? { createdAt: "desc" } : { createdAt: "asc" },
+    skip: page.skip,
+    take: paged ? page.take + 1 : page.take,
     select: {
       id: true,
       title: true,
@@ -25,6 +32,9 @@ export async function GET() {
       createdAt: true,
     },
   });
+  const hasMore = paged && found.length > page.take;
+  const messages = hasMore ? found.slice(0, page.take) : found;
+  if (paged) messages.reverse();
 
   const [state, u] = await Promise.all([
     prisma.chatThreadState.findUnique({ where: { userId: user.id } }),
@@ -39,6 +49,8 @@ export async function GET() {
       from: m.workerName ? "support" : "customer",
       createdAt: m.createdAt.toISOString(),
     })),
+    hasMore,
+    nextSkip: page.skip + messages.length,
     presence: serializeChatPresence(state, u?.lastSeenAt ?? null),
   });
 }

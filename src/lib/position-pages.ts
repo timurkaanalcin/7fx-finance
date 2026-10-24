@@ -4,6 +4,10 @@ export const OPEN_PAGE = 200;
 export const CLOSED_PAGE = 50;
 /** One local-day closed blotter read. The client follows `hasMore` for the rest of that day. */
 export const CLOSED_DAY_PAGE = 100;
+/** One page of the closed-trade calendar. The client follows `calendarHasMore`. */
+export const CALENDAR_PAGE = 200;
+/** How many calendar pages a visible-tab refresh will follow. */
+export const CALENDAR_FOLLOW_CAP = 40;
 /**
  * 30s closed refresh reloads already shown rows up to this cap.
  * The full ledger stays on the first load and when the tab becomes visible.
