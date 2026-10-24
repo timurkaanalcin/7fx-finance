@@ -7,10 +7,10 @@ import { registerCrmDicts } from "@/lib/i18n/dictionaries/crm-registry";
 import { tr } from "@/lib/i18n/dictionaries/tr";
 
 registerCrmDicts(CRM_UI);
-// CRM default is Turkish. Keep that dictionary in this chunk so the first paint is not English.
+// English is the first paint. Turkish stays in this chunk so the switcher does not flash keys.
 installDict("tr", tr);
 
-/** Admin CRM — default Turkish, separate storage key from public site. */
+/** Admin CRM — English until a language is stored, separate key from the public site. */
 export default function CrmI18n({ children }: { children: React.ReactNode }) {
   return <I18nProvider scope="crm">{children}</I18nProvider>;
 }

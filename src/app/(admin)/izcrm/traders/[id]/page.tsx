@@ -343,7 +343,7 @@ function TraderAccessTools({ userId, traderName, readOnly = false, isStaff = fal
       )}
       {isStaff && !err && (
         <span className="text-[10px] font-medium text-amber-700">
-          Bu hesap personel (ADMIN) rolünde — terminal/otomatik giriş için Profil → Rol: Trader olmalı.
+          {i18n("crm.ui.staffRole")}
         </span>
       )}
       {msg && <span className="text-[10px] text-emerald-600">{msg}</span>}
@@ -1759,9 +1759,9 @@ export default function AdminUserDetailPage() {
 
       {activityEvents.filter((e) => e.kind === "SCREENSHOT_SUSPECTED").length > 0 && (
         <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-          <div className="font-semibold">Olası ekran görüntüsü / yakalama uyarıları (en iyi çaba)</div>
+          <div className="font-medium">{i18n("crm.ui.screenshotTitle")}</div>
           <p className="mt-0.5 text-[11px] text-amber-800/80">
-            Tarayıcılar işletim sistemi ekran görüntüsünü güvenilir şekilde tespit edemez; bunlar istemci tarafı sinyalleridir.
+            {i18n("crm.ui.screenshotBody")}
           </p>
           <ul className="mt-2 max-h-32 space-y-1 overflow-y-auto">
             {activityEvents

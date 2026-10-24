@@ -462,7 +462,7 @@ export default function AdminUsersPage() {
         body: JSON.stringify({ kind: "traders_csv", path: "/izcrm/traders", rows: rows.length }),
       }).catch(() => null);
       if (!audit || !audit.ok) {
-        setMsg(i18n("crm.ui.csvDenied", "CSV dışa aktarma bu hesap için kapalı."));
+        setMsg(i18n("crm.ui.csvDenied"));
         return;
       }
       const header = [
@@ -485,7 +485,7 @@ export default function AdminUsersPage() {
         i18n("crm.ui.bonus"),
         i18n("crm.ui.currency"),
         i18n("crm.ui.lastLogin"),
-        i18n("crm.ui.lastContact", "Son iletişim"),
+        i18n("crm.ui.lastContact"),
         i18n("crm.ui.regDate"),
       ];
       const lines = [header.map(csvCell).join(",")];
@@ -694,12 +694,12 @@ export default function AdminUsersPage() {
           options={(["overdue", "today", "week", "any"] as const).map((x) => ({ value: x, label: i18n(`crm.fu.${x}`) }))}
         />
         <label className="flex items-center gap-1 text-neutral-500" data-fx-last-contact-range>
-          <span>{i18n("crm.ui.lastContact", "Son iletişim")}</span>
+          <span>{i18n("crm.ui.lastContact")}</span>
           <input
             type="date"
             value={lastContactFrom}
             onChange={(e) => setLastContactFrom(e.target.value)}
-            aria-label={`${i18n("crm.ui.lastContact", "Son iletişim")} ${i18n("crm.ui.from")}`}
+            aria-label={`${i18n("crm.ui.lastContact")} ${i18n("crm.ui.from")}`}
             className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
           />
           <span>–</span>
@@ -707,7 +707,7 @@ export default function AdminUsersPage() {
             type="date"
             value={lastContactTo}
             onChange={(e) => setLastContactTo(e.target.value)}
-            aria-label={`${i18n("crm.ui.lastContact", "Son iletişim")} ${i18n("crm.ui.to")}`}
+            aria-label={`${i18n("crm.ui.lastContact")} ${i18n("crm.ui.to")}`}
             className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
           />
         </label>
@@ -715,12 +715,12 @@ export default function AdminUsersPage() {
           value={sort}
           onChange={(e) => setSort(e.target.value)}
           className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2 py-1.5"
-          aria-label={i18n("crm.ui.sort", "Sıralama")}
+          aria-label={i18n("crm.ui.sort")}
           data-fx-sort
         >
-          <option value="">{i18n("crm.ui.sortDefault", "Sıralama: kayıt tarihi")}</option>
-          <option value="lastContact_desc">{i18n("crm.ui.sortLastContactDesc", "Son iletişim (yeni → eski)")}</option>
-          <option value="lastContact_asc">{i18n("crm.ui.sortLastContactAsc", "Son iletişim (eski → yeni)")}</option>
+          <option value="">{i18n("crm.ui.sortDefault")}</option>
+          <option value="lastContact_desc">{i18n("crm.ui.sortLastContactDesc")}</option>
+          <option value="lastContact_asc">{i18n("crm.ui.sortLastContactAsc")}</option>
         </select>
         <label className="flex items-center gap-1 text-neutral-500">
           <input
@@ -876,7 +876,7 @@ export default function AdminUsersPage() {
             type="button"
             onClick={downloadCsv}
             disabled={rows.length === 0 || csvBusy}
-            title="Gösterilen satırları CSV indir · Download shown rows as CSV"
+            title={i18n("crm.ui.csvDownload")}
             className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2.5 py-1 font-medium hover:bg-[#f5f5f5] disabled:cursor-not-allowed disabled:opacity-40"
           >
             CSV
@@ -1053,7 +1053,7 @@ export default function AdminUsersPage() {
         </div>
       )}
       <div className={`overflow-x-auto rounded-xl border border-[#e5e5e5] ${listPhase === "loading" && rows.length === 0 ? "hidden" : ""}`}>
-        <table className="w-full text-left text-xs">
+        <table className="fx-crm-table w-full text-left text-xs">
           <thead className="bg-[#ffffff] text-neutral-500">
             <tr>
               <th className="px-2 py-2.5">
@@ -1079,10 +1079,10 @@ export default function AdminUsersPage() {
                   type="button"
                   onClick={() => setSort(sort === "lastContact_desc" ? "lastContact_asc" : "lastContact_desc")}
                   className="hover:text-neutral-900"
-                  title={i18n("crm.ui.sort", "Sıralama")}
+                  title={i18n("crm.ui.sort")}
                   data-fx-sort-last-contact
                 >
-                  {i18n("crm.ui.lastContact", "Son iletişim")}
+                  {i18n("crm.ui.lastContact")}
                   {sort === "lastContact_desc" ? " ↓" : sort === "lastContact_asc" ? " ↑" : " ↕"}
                 </button>
               </th>
@@ -1097,12 +1097,12 @@ export default function AdminUsersPage() {
                 </td>
                 <td className="px-3 py-2.5">
                   <div className="font-mono text-[9px] text-neutral-400">{u.id.slice(0, 8)}…</div>
-                  <div className="font-medium">{u.name}</div>
+                  <div className="font-normal">{u.name}</div>
                   <div className="text-neutral-500">{u.email}</div>
                   {u.accountLoginId && (
                     <div className="font-mono text-[10px] tracking-wide text-sky-600">
                       {i18n("crm.ui.accountId")}: {u.accountLoginId}
-                      <CopyButton value={u.accountLoginId} title="Hesap ID kopyala" className="ml-1" />
+                      <CopyButton value={u.accountLoginId} title={i18n("crm.ui.copyAccountId")} className="ml-1" />
                     </div>
                   )}
                   <div className="mt-0.5 flex flex-wrap gap-1">
@@ -1179,7 +1179,7 @@ export default function AdminUsersPage() {
                     );
                   })()}
                 </td>
-                <td className="px-3 py-2.5 tabular-nums">
+                <td className="fx-crm-num px-3 py-2.5">
                   <div>
                     {displayCrmMoney(u.balance, u.currency || "USD")}
                   </div>

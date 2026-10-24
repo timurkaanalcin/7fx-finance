@@ -236,14 +236,14 @@ export default function AdminSettingsPage() {
       </section>
 
       <div className="rounded-xl border border-neutral-200 bg-white p-4 shadow-sm">
-        <h2 className="text-sm font-semibold text-neutral-900">Two-factor authentication (TOTP)</h2>
+        <h2 className="text-sm font-medium text-neutral-900">{i18n("crm.set.totpTitle")}</h2>
         <p className="mt-1 text-xs text-neutral-500">
-          Protect CRM admin login with Google Authenticator / Authy / 1Password.
+          {i18n("crm.set.totpBody")}
         </p>
         <p className="mt-2 text-xs">
-          Status:{" "}
-          <span className={totpEnabled ? "font-semibold text-emerald-700" : "font-semibold text-amber-700"}>
-            {totpEnabled ? "Enabled" : "Disabled"}
+          {i18n("crm.set.totpStatus")}:{" "}
+          <span className={totpEnabled ? "font-medium text-emerald-700" : "font-medium text-amber-700"}>
+            {totpEnabled ? i18n("crm.set.totpEnabled") : i18n("crm.set.totpDisabled")}
           </span>
         </p>
         {!totpEnabled && (
@@ -257,23 +257,23 @@ export default function AdminSettingsPage() {
                 const r = await fetch("/api/admin/2fa/setup", { method: "POST" });
                 const d = await r.json();
                 if (!r.ok) {
-                  setTotpErr(d.error || "Setup failed");
+                  setTotpErr(d.error || i18n("crm.set.totpSetupFail"));
                   return;
                 }
                 setQr(d.qrDataUrl);
                 setTotpSecret(d.secret);
               }}
             >
-              Start setup
+              {i18n("crm.set.totpStart")}
             </button>
             {qr && (
               <div className="space-y-2">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={qr} alt="TOTP QR" className="h-40 w-40 rounded border" />
-                <p className="font-mono text-[10px] text-neutral-600">Secret: {totpSecret}</p>
+                <img src={qr} alt={i18n("crm.set.totpQr")} className="h-40 w-40 rounded border" />
+                <p className="font-mono text-[10px] text-neutral-600">{i18n("crm.set.totpSecret")}: {totpSecret}</p>
                 <input
                   className="w-full rounded border px-2 py-1.5 text-sm"
-                  placeholder="6-digit code"
+                  placeholder={i18n("crm.set.totpCodePh")}
                   value={totpCode}
                   onChange={(e) => setTotpCode(e.target.value)}
                 />
@@ -288,15 +288,15 @@ export default function AdminSettingsPage() {
                     });
                     const d = await r.json();
                     if (!r.ok) {
-                      setTotpErr(d.error || "Invalid code");
+                      setTotpErr(d.error || i18n("crm.set.totpInvalid"));
                       return;
                     }
                     setTotpEnabled(true);
                     setQr(null);
-                    setTotpMsg("2FA enabled");
+                    setTotpMsg(i18n("crm.set.totpOn"));
                   }}
                 >
-                  Confirm & enable
+                  {i18n("crm.set.totpConfirm")}
                 </button>
               </div>
             )}
@@ -306,7 +306,7 @@ export default function AdminSettingsPage() {
           <div className="mt-3 space-y-2">
             <input
               className="w-full rounded border px-2 py-1.5 text-sm"
-              placeholder="Code to disable"
+              placeholder={i18n("crm.set.totpDisablePh")}
               value={totpCode}
               onChange={(e) => setTotpCode(e.target.value)}
             />
@@ -321,14 +321,14 @@ export default function AdminSettingsPage() {
                 });
                 const d = await r.json();
                 if (!r.ok) {
-                  setTotpErr(d.error || "Failed");
+                  setTotpErr(d.error || i18n("crm.set.totpFail"));
                   return;
                 }
                 setTotpEnabled(false);
-                setTotpMsg("2FA disabled");
+                setTotpMsg(i18n("crm.set.totpOff"));
               }}
             >
-              Disable 2FA
+              {i18n("crm.set.totpDisable")}
             </button>
           </div>
         )}

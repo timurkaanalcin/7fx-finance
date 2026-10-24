@@ -484,6 +484,41 @@ body:has(.fx-auth-page) {
   padding: 5px 8px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
+.fx-crm .fx-crm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+.fx-crm .fx-crm-table th {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #525252;
+}
+.fx-crm .fx-crm-table td {
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+.fx-crm .fx-crm-table .fx-crm-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  white-space: nowrap;
+}
+@media (min-width: 1440px) {
+  .fx-crm .fx-crm-table { font-size: 13px; }
+  .fx-crm .fx-crm-table th,
+  .fx-crm .fx-crm-table td { padding-top: 10px; padding-bottom: 10px; }
+}
+@media (min-width: 1920px) {
+  .fx-crm .fx-crm-table { font-size: 14px; }
+  .fx-crm .fx-crm-table th { font-size: 12px; }
+  .fx-crm .fx-crm-table th,
+  .fx-crm .fx-crm-table td { padding-left: 16px; padding-right: 16px; }
+}
 .fx-crm .crm-pl-pos { color: #26a69a; }
 .fx-crm .crm-pl-neg { color: #ef5350; }
 
