@@ -124,10 +124,26 @@ export default function AdminImportPage() {
   } | null>(null);
 
   useEffect(() => {
-    fetch("/api/admin/import/meta")
-      .then((r) => r.json())
-      .then((d) => setDesks(d.desks || []))
-      .catch(() => {});
+    let cancel = false;
+    void (async () => {
+      const all: DeskOpt[] = [];
+      let skip = 0;
+      for (let page = 0; page < 20; page++) {
+        const res = await fetch(`/api/admin/import/meta?take=50&skip=${skip}`).catch(() => null);
+        if (!res || !res.ok || cancel) return;
+        const data = await res.json();
+        const rows: DeskOpt[] = data.desks || [];
+        for (const row of rows) {
+          if (!all.some((desk) => desk.id === row.id)) all.push(row);
+        }
+        if (!data.hasMore || typeof data.nextSkip !== "number" || data.nextSkip <= skip) break;
+        skip = data.nextSkip;
+      }
+      if (!cancel) setDesks(all);
+    })();
+    return () => {
+      cancel = true;
+    };
   }, []);
 
   const fieldOptions = useMemo(

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { fmtCrmDate } from "@/lib/crm-format";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
@@ -25,13 +25,23 @@ export default function TeamComments({
 }) {
   const { i18n } = useCrmLabels();
   const [notes, setNotes] = useState<Note[]>([]);
+  const [hasMore, setHasMore] = useState(false);
+  const [moreBusy, setMoreBusy] = useState(false);
+  const notesRef = useRef<Note[]>([]);
   // Server decides what this viewer may see / write (Sale staff never receive Retention comments).
   const [visible, setVisible] = useState<Team[]>([]);
   const [writable, setWritable] = useState<Team[]>([]);
   const [view, setView] = useState<View>("SALE");
   const [target, setTarget] = useState<Team>("SALE");
-  const apply = useCallback((d: { notes?: Note[]; visibleTeams?: Team[]; writableTeams?: Team[] }) => {
-    setNotes(Array.isArray(d.notes) ? d.notes : []);
+  const apply = useCallback((d: { notes?: Note[]; visibleTeams?: Team[]; writableTeams?: Team[]; hasMore?: boolean }, mode: "replace" | "more" = "replace") => {
+    const incoming = Array.isArray(d.notes) ? d.notes : [];
+    const next =
+      mode === "more"
+        ? notesRef.current.concat(incoming.filter((row) => !notesRef.current.some((prev) => prev.id === row.id)))
+        : incoming;
+    notesRef.current = next;
+    setNotes(next);
+    if (typeof d.hasMore === "boolean") setHasMore(d.hasMore);
     const vis = Array.isArray(d.visibleTeams) ? d.visibleTeams : [];
     const wr = Array.isArray(d.writableTeams) ? d.writableTeams : [];
     setVisible(vis);
@@ -40,9 +50,20 @@ export default function TeamComments({
     setView((v) => (v === "ALL" ? (vis.length > 1 ? "ALL" : vis[0] || "SALE") : vis.includes(v) ? v : wr[0] || vis[0] || "SALE"));
   }, []);
   const reload = useCallback(async () => {
-    const res = await fetch(`/api/admin/users/${userId}/team-notes`, { cache: "no-store" }).catch(() => null);
+    const res = await fetch(`/api/admin/users/${userId}/team-notes?take=50&skip=0`, { cache: "no-store" }).catch(() => null);
     if (res && res.ok) apply(await res.json());
   }, [userId, apply]);
+  const loadMore = useCallback(async () => {
+    if (moreBusy) return;
+    setMoreBusy(true);
+    try {
+      const skip = notesRef.current.length;
+      const res = await fetch(`/api/admin/users/${userId}/team-notes?take=50&skip=${skip}`, { cache: "no-store" });
+      if (res.ok) apply(await res.json(), "more");
+    } finally {
+      setMoreBusy(false);
+    }
+  }, [userId, apply, moreBusy]);
   useEffect(() => {
     void reload();
   }, [reload]);
@@ -222,6 +243,16 @@ export default function TeamComments({
         </ul>
       ) : (
         <div className="rounded-lg bg-[#f3f4f6] p-3 text-center text-neutral-400">{i18n("crm.ui.noComments", "Henüz yorum yok")}</div>
+      )}
+      {hasMore && (
+        <button
+          type="button"
+          disabled={moreBusy}
+          onClick={() => void loadMore()}
+          className="mt-3 w-full rounded-lg border border-[#e5e7eb] bg-white px-3 py-2 text-sm font-medium hover:bg-[#f7f7f7] disabled:opacity-50"
+        >
+          {moreBusy ? i18n("crm.ui.loading") : i18n("crm.ui.loadMore")}
+        </button>
       )}
     </section>
   );

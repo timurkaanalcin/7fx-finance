@@ -147,7 +147,7 @@ export async function GET(req: Request, ctx: Ctx) {
     orders,
     deposits,
     balanceRequests,
-    ledger,
+    ledgerPage,
     communications,
     documents,
     reminders,
@@ -176,11 +176,19 @@ export async function GET(req: Request, ctx: Ctx) {
       orderBy: { createdAt: "desc" },
       take: 100,
     }),
-    prisma.balanceLedger.findMany({
-      where: { userId: id },
-      orderBy: { createdAt: "desc" },
-      take: 200,
-    }),
+    (async () => {
+      const search = new URL(req.url).searchParams;
+      const page = pagedOrLegacy(search.get("take"), search.get("skip"), true, 50);
+      const found = await prisma.balanceLedger.findMany({
+        where: { userId: id },
+        orderBy: { createdAt: "desc" },
+        skip: page.skip,
+        take: page.take + 1,
+      });
+      const ledgerHasMore = found.length > page.take;
+      const ledger = ledgerHasMore ? found.slice(0, page.take) : found;
+      return { ledger, ledgerHasMore, ledgerNextSkip: page.skip + ledger.length };
+    })(),
     prisma.communication.findMany({
       where: { userId: id },
       orderBy: { createdAt: "desc" },
@@ -218,7 +226,9 @@ export async function GET(req: Request, ctx: Ctx) {
     orders,
     deposits,
     balanceRequests,
-    ledger,
+    ledger: ledgerPage.ledger,
+    ledgerHasMore: ledgerPage.ledgerHasMore,
+    ledgerNextSkip: ledgerPage.ledgerNextSkip,
     communications,
     documents,
     reminders,

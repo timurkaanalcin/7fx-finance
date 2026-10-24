@@ -244,7 +244,7 @@ export function chatThreadWindow(takeRaw: string | null, skipRaw: string | null)
   return { take, skip };
 }
 
-/** One page of an open chat thread. Omitting `take` on `?userId=` keeps the old 400-row read. */
+/** One page of an open chat thread. Omitting `take` uses this page, not a 400-row dump. */
 export const CHAT_MESSAGE_PAGE = 40;
 export const CHAT_MESSAGE_CAP = 80;
 

@@ -1,6 +1,6 @@
 "use client";
 
-import PriceAlerts from "./PriceAlerts";
+import type { BalanceRequestRow } from "./MarginCallModal";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const TERM_PREFS_KEY = "7fx_term_prefs_v1";
@@ -145,16 +145,8 @@ function mergeClosed(prev: PositionRow[], page: PositionRow[]): PositionRow[] {
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import TopBar from "./TopBar";
-import Watchlist from "./Watchlist";
-import OrderTicket from "./OrderTicket";
-import BottomPanels from "./BottomPanels";
 import FooterTicker from "./FooterTicker";
 import ToolRail from "./ToolRail";
-import DepositModal from "./DepositModal";
-import MarginCallModal, { type BalanceRequestRow } from "./MarginCallModal";
-import ForcePasswordModal from "./ForcePasswordModal";
-import ShortcutsHelp from "./ShortcutsHelp";
-import TradingCalculator from "./TradingCalculator";
 import { FeedBanner, FeedRecoveredToast, useFeedHealth } from "./FeedStatus";
 import { useI18n } from "@/lib/i18n/context";
 import { localizeTradeError } from "@/lib/trade-errors";
@@ -177,6 +169,15 @@ const TradingChart = dynamic(() => import("./TradingChart"), {
   ssr: false,
   loading: () => <BrandLoader variant="inline" className="flex min-h-0 flex-1" />,
 });
+const Watchlist = dynamic(() => import("./Watchlist"));
+const BottomPanels = dynamic(() => import("./BottomPanels"));
+const OrderTicket = dynamic(() => import("./OrderTicket"));
+const DepositModal = dynamic(() => import("./DepositModal"));
+const MarginCallModal = dynamic(() => import("./MarginCallModal"));
+const ForcePasswordModal = dynamic(() => import("./ForcePasswordModal"));
+const ShortcutsHelp = dynamic(() => import("./ShortcutsHelp"));
+const TradingCalculator = dynamic(() => import("./TradingCalculator"));
+const PriceAlerts = dynamic(() => import("./PriceAlerts"));
 
 export default function TerminalShell() {
   const router = useRouter();
@@ -210,6 +211,7 @@ export default function TerminalShell() {
   const [openLoading, setOpenLoading] = useState(false);
   const [closedPositions, setClosedPositions] = useState<PositionRow[]>([]);
   const [closedCalendar, setClosedCalendar] = useState<PositionRow[]>([]);
+  const [calendarPartial, setCalendarPartial] = useState(false);
   const [closedHasMore, setClosedHasMore] = useState(false);
   const [closedLoading, setClosedLoading] = useState(false);
   const closedSkipRef = useRef(0);
@@ -430,19 +432,26 @@ export default function TerminalShell() {
       }
       const firstClosed = parseClosedPayload(await closedRes.json());
       applyClosedPage(firstClosed, "refresh");
-      if (withCalendar && firstClosed.calendarHasMore) {
-        let calendarSkip = firstClosed.calendarNextSkip;
-        for (let page = 0; page < CALENDAR_FOLLOW_CAP && firstClosed.calendarHasMore; page++) {
-          const moreRes = await fetch(
-            `/api/positions?status=CLOSED&skip=0&tzOffset=${tz}&calendar=1&calendarSkip=${calendarSkip}`,
-            { credentials: "include" }
-          );
-          if (!moreRes.ok) break;
-          const more = parseClosedPayload(await moreRes.json());
-          if (more.calendar) setClosedCalendar((prev) => mergeClosed(prev, more.calendar || []));
-          if (!more.calendarHasMore || more.calendarNextSkip <= calendarSkip) break;
-          calendarSkip = more.calendarNextSkip;
+      if (withCalendar) {
+        let partial = Boolean(firstClosed.calendarHasMore);
+        if (partial) {
+          let calendarSkip = firstClosed.calendarNextSkip;
+          for (let page = 0; page < CALENDAR_FOLLOW_CAP; page++) {
+            const moreRes = await fetch(
+              `/api/positions?status=CLOSED&skip=0&tzOffset=${tz}&calendar=1&calendarSkip=${calendarSkip}`,
+              { credentials: "include" }
+            );
+            if (!moreRes.ok) break;
+            const more = parseClosedPayload(await moreRes.json());
+            if (more.calendar) setClosedCalendar((prev) => mergeClosed(prev, more.calendar || []));
+            if (!more.calendarHasMore || more.calendarNextSkip <= calendarSkip) {
+              partial = false;
+              break;
+            }
+            calendarSkip = more.calendarNextSkip;
+          }
         }
+        setCalendarPartial(partial);
       }
       const orders: OrderRow[] = await ordersRes.json();
       setPendingOrders(Array.isArray(orders) ? orders.filter((o) => o.status === "PENDING") : []);
@@ -1106,6 +1115,7 @@ export default function TerminalShell() {
                 openPositions={openPositions}
                 closedPositions={closedPositions}
                 closedCalendar={closedCalendar}
+                calendarPartial={calendarPartial}
                 closedHasMore={closedHasMore}
                 closedLoading={closedLoading}
                 onLoadMoreClosed={() => void loadMoreClosed()}
@@ -1147,6 +1157,7 @@ export default function TerminalShell() {
                 openPositions={openPositions}
                 closedPositions={closedPositions}
                 closedCalendar={closedCalendar}
+                calendarPartial={calendarPartial}
                 closedHasMore={closedHasMore}
                 closedLoading={closedLoading}
                 onLoadMoreClosed={() => void loadMoreClosed()}

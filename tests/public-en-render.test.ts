@@ -2,6 +2,7 @@
  * English public render must not contain Turkish copy.
  * Run: npx tsx tests/public-en-render.test.ts
  */
+import "./preload-dicts";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";

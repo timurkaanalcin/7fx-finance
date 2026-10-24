@@ -2,6 +2,7 @@
  * Footer/register copy, chat message pages, and calendar page windows.
  * Run: npx tsx tests/round15.test.ts
  */
+import "./preload-dicts";
 import assert from "node:assert/strict";
 import { translate } from "../src/lib/i18n/dictionaries";
 import { PUBLIC_DEFAULT_LOCALE } from "../src/lib/i18n/locales";
