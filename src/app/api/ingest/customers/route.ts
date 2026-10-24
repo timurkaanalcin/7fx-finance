@@ -18,12 +18,16 @@ import { siteForIngestToken } from "@/lib/sites";
  * Idempotent: matches by (site, externalId) then email. Existing rows of the same site get
  * contact fields refreshed (never balances/passwords/statuses). Emails owned by another site
  * are reported as "conflict" and left untouched. Max 200 per call.
+ * Optional "passwordHash" (bcrypt only) is used on CREATE so the customer keeps their source-site
+ * password; it is never applied to existing rows. Anything else → random unusable password.
  */
 
 export const dynamic = "force-dynamic";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_BATCH = 200;
+/** bcrypt ($2a/$2b/$2y, cost 10–14) — same algorithm bcryptjs verifies in lib/auth. */
+const BCRYPT_RE = /^\$2[aby]\$(1[0-4])\$[./A-Za-z0-9]{53}$/;
 
 function bearer(req: Request): string | null {
   const h = req.headers.get("authorization") || "";
@@ -115,8 +119,13 @@ export async function POST(req: Request) {
         continue;
       }
 
-      // New customer: unusable random password (admin can set one in CRM), empty account.
-      const passwordHash = await hashPassword(randomBytes(24).toString("base64url"));
+      // New customer: carry a compatible bcrypt hash from the source site, else an unusable
+      // random password (admin can set one in CRM). Empty account.
+      const srcHash = typeof c.passwordHash === "string" ? c.passwordHash.trim() : "";
+      const carriedHash = BCRYPT_RE.test(srcHash);
+      const passwordHash = carriedHash
+        ? srcHash
+        : await hashPassword(randomBytes(24).toString("base64url"));
       const accountLoginId = await allocateUniqueAccountLoginId();
       const user = await prisma.user.create({
         data: {
@@ -144,7 +153,14 @@ export async function POST(req: Request) {
         },
         select: { id: true },
       });
-      results.push({ index: i, status: "created", email, externalId, id: user.id });
+      results.push({
+        index: i,
+        status: "created",
+        email,
+        externalId,
+        id: user.id,
+        message: carriedHash ? "password carried (bcrypt)" : "password reset needed",
+      });
     } catch (e) {
       console.error("[ingest]", site, i, e);
       results.push({ index: i, status: "error", email, externalId, message: "server error" });
