@@ -39,7 +39,7 @@ export default function AffiliatesPage() {
     load();
   }, [period, reason]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
-    fetch("/api/auth/me")
+    fetch("/api/auth/me?scope=admin")
       .then((r) => r.json())
       .then((d) => setCanWrite(!d.permissions?.scoped && !d.permissions?.readOnly))
       .catch(() => {});

@@ -93,6 +93,8 @@ async function main() {
   assert.ok(setCookies.some((line) => line.includes("Domain=7fx.customer.org.tr") && line.startsWith("7fx_session=")));
   assert.ok(setCookies.some((line) => line.includes("Domain=customer.org.tr") && line.startsWith("deskflow_session=")));
   assert.ok(setCookies.some((line) => line.startsWith("7fx_admin_backup=") && line.includes("Expires=Thu, 01 Jan 1970 00:00:00 GMT")));
+  assert.ok(setCookies.some((line) => line.startsWith("7fx_impersonation=") && !line.includes("Domain=") && line.includes("Max-Age=0")));
+  assert.ok(setCookies.some((line) => line.startsWith("7fx_impersonation=") && line.includes("Domain=customer.org.tr")));
   const body = await json.json();
   assert.equal(body.ok, true);
 

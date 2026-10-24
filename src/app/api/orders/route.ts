@@ -6,6 +6,7 @@ import { tradingDisabledMessage, mustChangePasswordMessage } from "@/lib/account
 import { placeOrder } from "@/lib/trading";
 import { getMarketStatus } from "@/lib/market-hours";
 import { stripStaff } from "@/lib/customer-sanitize";
+import { impersonationReadonlyResponse } from "@/lib/impersonation-guard";
 
 export async function GET(req: Request) {
   const user = await requireUser();
@@ -28,6 +29,8 @@ export async function POST(req: Request) {
   await ensureSymbolCatalog();
   const user = await requireUser();
   if (!user) return NextResponse.json({ error: "No session" }, { status: 401 });
+  const readOnly = await impersonationReadonlyResponse();
+  if (readOnly) return readOnly;
   if ((user as { mustChangePassword?: boolean }).mustChangePassword === true) {
     return NextResponse.json(
       { error: mustChangePasswordMessage((user as { language?: string }).language) },

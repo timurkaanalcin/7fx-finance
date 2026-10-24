@@ -61,9 +61,15 @@ export function middleware(req: NextRequest) {
   };
 
   // API origin allowlist (credentialed browser calls). Missing Origin allowed (native / same-origin).
+  // Auto-login is a top-level GET navigation. The token is the secret. Email clients,
+  // link scanners, and other sites send a foreign Origin; blocking it returns
+  // {"error":"Origin not allowed"} and the link never signs the user in.
   if (pathname.startsWith("/api/")) {
     const origin = req.headers.get("origin");
-    if (origin && !isAllowedApiOrigin(origin)) {
+    const autoLoginNav =
+      req.method === "GET" &&
+      (pathname === "/api/auth/auto-login" || pathname === "/api/auth/auto-login/");
+    if (origin && !autoLoginNav && !isAllowedApiOrigin(origin)) {
       return applyHeaders(
         NextResponse.json({ error: "Origin not allowed" }, { status: 403 })
       );

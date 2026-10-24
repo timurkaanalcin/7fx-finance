@@ -745,6 +745,7 @@ export default function TerminalShell({
   function openOrder(side: "BUY" | "SELL" = "BUY") {
     if (user && user.tradingEnabled === false) return;
     if (user && user.mustChangePassword) return;
+    if (user?.impersonatedBy) return;
     setOrderPrefill(null);
     setOrderSide(side);
     setOrderOpen(true);
@@ -884,6 +885,7 @@ export default function TerminalShell({
   }, []);
 
   async function onClosePosition(id: string, volume?: number): Promise<TradeActionResult> {
+    if (user?.impersonatedBy) return { ok: false, error: t("term.impersonationReadOnly") };
     const body: { id: string; volume?: number } = { id };
     if (volume != null && Number.isFinite(volume)) body.volume = volume;
     const result = await postTrade("/api/positions/close", body, t("common.error"), t);
@@ -898,6 +900,7 @@ export default function TerminalShell({
     id: string,
     levels: { stopLoss: number | null; takeProfit: number | null }
   ): Promise<TradeActionResult> {
+    if (user?.impersonatedBy) return { ok: false, error: t("term.impersonationReadOnly") };
     const result = await postTrade("/api/positions/modify", { id, ...levels }, t("common.error"), t);
     if (result.ok) {
       setActionError(null);
@@ -907,6 +910,10 @@ export default function TerminalShell({
   }
 
   async function onClosePositions(ids: string[]) {
+    if (user?.impersonatedBy) {
+      setActionError(t("term.impersonationReadOnly"));
+      return;
+    }
     let firstError = "";
     for (const id of ids) {
       const result = await postTrade("/api/positions/close", { id }, t("common.error"), t);
@@ -917,6 +924,7 @@ export default function TerminalShell({
   }
 
   async function onCancelOrder(id: string): Promise<TradeActionResult> {
+    if (user?.impersonatedBy) return { ok: false, error: t("term.impersonationReadOnly") };
     const result = await postTrade("/api/orders/cancel", { id }, t("common.error"), t);
     if (result.ok) {
       setActionError(null);
@@ -928,6 +936,10 @@ export default function TerminalShell({
   }
 
   async function onCancelOrders(ids: string[]) {
+    if (user?.impersonatedBy) {
+      setActionError(t("term.impersonationReadOnly"));
+      return;
+    }
     let firstError = "";
     for (const id of ids) {
       const result = await postTrade("/api/orders/cancel", { id }, t("common.error"), t);
@@ -963,18 +975,24 @@ export default function TerminalShell({
         displayProfitLoss={headerChips?.profitLoss}
         displayFreeMargin={headerChips?.freeMargin}
         displayMarginLevel={headerChips?.marginLevel}
-        onDeposit={() => setDepositOpen(true)}
+        onDeposit={() => {
+          if (user.impersonatedBy) return;
+          setDepositOpen(true);
+        }}
+        depositDisabled={!!user.impersonatedBy}
       />
       {user.impersonatedBy && (
-        <div className="flex items-center justify-center gap-3 border-b border-sky-500/40 bg-sky-600/90 px-3 py-1.5 text-center text-[11px] font-medium text-white">
+        <div
+          data-impersonation-banner
+          className="flex items-center justify-center gap-2 border-b border-sky-500/40 bg-sky-600 px-3 py-2 text-center text-[13px] font-semibold text-white"
+        >
           <span>
-            {t("term.impersonationBanner")
-              .replace("{name}", user.name || "")
-              .replace("{email}", user.email || "")}
+            {t("term.impersonationBanner").replace("{name}", user.name || user.email || "")}
+            {" — "}
           </span>
           <button
             type="button"
-            className="rounded bg-white/20 px-2 py-0.5 hover:bg-white/30"
+            className="rounded bg-white px-2 py-0.5 text-[12px] font-semibold text-sky-800 hover:bg-sky-50"
             onClick={async () => {
               const res = await fetch("/api/admin/impersonate", { method: "DELETE" });
               const data = await res.json().catch(() => ({}));
@@ -1115,7 +1133,7 @@ export default function TerminalShell({
                   <button
                     type="button"
                     onClick={() => openOrder("BUY")}
-                    disabled={user.tradingEnabled === false || !!user.mustChangePassword}
+                    disabled={user.tradingEnabled === false || !!user.mustChangePassword || !!user.impersonatedBy}
                     aria-label={t("term.trade.open")}
                     className="pointer-events-auto hidden min-h-[22px] min-w-[52px] rounded-full bg-desk-accent px-3.5 py-[5px] text-[10px] font-bold tracking-[0.12em] text-desk-accent-ink shadow-accent-glow-sm transition hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 md:inline-flex md:min-h-[26px] md:min-w-[60px] md:px-[18px] md:py-1.5 md:text-[11px]"
                   >
@@ -1216,7 +1234,7 @@ export default function TerminalShell({
         <button
           type="button"
           onClick={() => openOrder("SELL")}
-          disabled={user.tradingEnabled === false || !!user.mustChangePassword}
+          disabled={user.tradingEnabled === false || !!user.mustChangePassword || !!user.impersonatedBy}
           className="flex flex-col items-center justify-center bg-desk-sell text-white disabled:opacity-40"
         >
           <span className="text-[10px] font-semibold uppercase leading-none tracking-[0.12em] opacity-90">{t("term.sell")}</span>
@@ -1227,7 +1245,7 @@ export default function TerminalShell({
         <button
           type="button"
           onClick={() => openOrder("BUY")}
-          disabled={user.tradingEnabled === false || !!user.mustChangePassword}
+          disabled={user.tradingEnabled === false || !!user.mustChangePassword || !!user.impersonatedBy}
           className="flex flex-col items-center justify-center bg-desk-buy text-white disabled:opacity-40"
         >
           <span className="text-[10px] font-semibold uppercase leading-none tracking-[0.12em] opacity-90">{t("term.buy")}</span>

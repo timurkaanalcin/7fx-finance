@@ -10,9 +10,38 @@ import { appendClearSessionCookies } from "./session-cookie";
 const COOKIE_NAME = "7fx_session";
 const LEGACY_COOKIE_NAME = "deskflow_session";
 const ADMIN_BACKUP_COOKIE = "7fx_admin_backup";
+/** Short-lived trader view. Never replaces 7fx_session. */
+export const IMPERSONATION_COOKIE = "7fx_impersonation";
+export const IMPERSONATION_TTL_SEC = 30 * 60;
 
-function sessionCookieOptions(maxAge: number, _host?: string | null) {
-  void _host;
+/**
+ * Host-only cookies unless COOKIE_DOMAIN is a parent of this exact host.
+ * A Domain of .customer.org.tr is rejected by the browser on 7fx.financeunit.co,
+ * 7fx.control.org.tr, and 7fx.login.org.tr, which drops the session silently.
+ */
+export function cookieDomainForHost(host?: string | null): string | undefined {
+  const envDomain = (process.env.COOKIE_DOMAIN || "").trim();
+  if (!envDomain) return undefined;
+  const hostname = (host || "").split(",")[0]?.trim().split(":")[0]?.trim().toLowerCase() || "";
+  if (!hostname) return undefined;
+  const bare = envDomain.replace(/^\./, "").toLowerCase();
+  if (!bare) return undefined;
+  if (hostname === bare || hostname.endsWith(`.${bare}`)) {
+    return envDomain.startsWith(".") ? envDomain : `.${bare}`;
+  }
+  return undefined;
+}
+
+function requestHostFallback(): string | null {
+  try {
+    const h = headers();
+    return h.get("x-forwarded-host") || h.get("host");
+  } catch {
+    return null;
+  }
+}
+
+function sessionCookieOptions(maxAge: number, host?: string | null) {
   const opts: {
     httpOnly: boolean;
     secure: boolean;
@@ -27,10 +56,8 @@ function sessionCookieOptions(maxAge: number, _host?: string | null) {
     path: "/",
     maxAge,
   };
-  // Optional explicit domain only (e.g. COOKIE_DOMAIN=.customer.org.tr). Not set by default —
-  // auto cross-subdomain cookies widen session theft surface for static CRM-on-Natro.
-  const envDomain = (process.env.COOKIE_DOMAIN || "").trim();
-  if (envDomain) opts.domain = envDomain;
+  const domain = cookieDomainForHost(host || requestHostFallback());
+  if (domain) opts.domain = domain;
   return opts;
 }
 
@@ -116,11 +143,14 @@ export async function verifyPassword(password: string, hash: string) {
   return bcrypt.compare(password, hash);
 }
 
-export async function signSessionToken(payload: SessionPayload): Promise<string> {
+export async function signSessionToken(
+  payload: SessionPayload & { returnTo?: string },
+  expiresIn = "7d"
+): Promise<string> {
   return new SignJWT({ ...payload })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("7d")
+    .setExpirationTime(expiresIn)
     .sign(getAuthSecret());
 }
 
@@ -148,6 +178,23 @@ export function clearSessionCookie(
   appendClearSessionCookies(res, host);
 }
 
+export function attachImpersonationCookie(
+  res: { cookies: { set: (name: string, value: string, opts: Record<string, unknown>) => void } },
+  token: string,
+  host?: string | null
+) {
+  const opts = sessionCookieOptions(IMPERSONATION_TTL_SEC, host);
+  res.cookies.set(IMPERSONATION_COOKIE, token, opts);
+}
+
+export function clearImpersonationCookie(
+  res: { cookies: { set: (name: string, value: string, opts: Record<string, unknown>) => void } },
+  host?: string | null
+) {
+  const opts = sessionCookieOptions(0, host);
+  res.cookies.set(IMPERSONATION_COOKIE, "", opts);
+}
+
 /** Legacy helper for Server Components / Server Actions. */
 export async function createSession(payload: SessionPayload) {
   const token = await signSessionToken(payload);
@@ -162,41 +209,81 @@ export async function destroySession() {
   cookies().set(COOKIE_NAME, "", opts);
   cookies().set(LEGACY_COOKIE_NAME, "", opts);
   cookies().set(ADMIN_BACKUP_COOKIE, "", opts);
+  cookies().set(IMPERSONATION_COOKIE, "", opts);
 }
 
-export async function getSession(): Promise<SessionPayload | null> {
-  const token =
-    cookies().get(COOKIE_NAME)?.value ||
-    cookies().get(LEGACY_COOKIE_NAME)?.value;
+function sessionFromPayload(payload: Record<string, unknown>): SessionPayload | null {
+  if (typeof payload.userId !== "string" || !payload.userId) return null;
+  const impersonatedBy =
+    typeof payload.impersonatedBy === "string" && payload.impersonatedBy
+      ? payload.impersonatedBy
+      : undefined;
+  const autoLoginLinkId =
+    typeof payload.autoLoginLinkId === "string" && payload.autoLoginLinkId
+      ? payload.autoLoginLinkId
+      : undefined;
+  const ipHash = typeof payload.ipHash === "string" && payload.ipHash ? payload.ipHash : undefined;
+  const uaHash = typeof payload.uaHash === "string" && payload.uaHash ? payload.uaHash : undefined;
+  return {
+    userId: payload.userId,
+    email: typeof payload.email === "string" ? payload.email : "",
+    name: typeof payload.name === "string" ? payload.name : "",
+    role: (typeof payload.role === "string" && payload.role) || "TRADER",
+    ...(impersonatedBy ? { impersonatedBy } : {}),
+    ...(autoLoginLinkId ? { autoLoginLinkId } : {}),
+    ...(typeof payload.iat === "number" ? { iat: payload.iat } : {}),
+    ...(ipHash ? { ipHash } : {}),
+    ...(uaHash ? { uaHash } : {}),
+  };
+}
+
+async function readCookieSession(token: string | undefined): Promise<SessionPayload | null> {
   if (!token) return null;
   try {
     const { payload } = await jwtVerify(token, getAuthSecret());
-    const impersonatedBy =
-      typeof payload.impersonatedBy === "string" && payload.impersonatedBy
-        ? payload.impersonatedBy
-        : undefined;
-    const autoLoginLinkId =
-      typeof payload.autoLoginLinkId === "string" && payload.autoLoginLinkId
-        ? payload.autoLoginLinkId
-        : undefined;
-    const ipHash =
-      typeof payload.ipHash === "string" && payload.ipHash ? payload.ipHash : undefined;
-    const uaHash =
-      typeof payload.uaHash === "string" && payload.uaHash ? payload.uaHash : undefined;
-    return {
-      userId: payload.userId as string,
-      email: payload.email as string,
-      name: payload.name as string,
-      role: (payload.role as string) || "TRADER",
-      ...(impersonatedBy ? { impersonatedBy } : {}),
-      ...(autoLoginLinkId ? { autoLoginLinkId } : {}),
-      ...(typeof payload.iat === "number" ? { iat: payload.iat } : {}),
-      ...(ipHash ? { ipHash } : {}),
-      ...(uaHash ? { uaHash } : {}),
-    };
+    return sessionFromPayload(payload as Record<string, unknown>);
   } catch {
     return null;
   }
+}
+
+/** CRM and admin APIs keep the real admin cookie even while a terminal view-as cookie is set. */
+function prefersAdminSession(): boolean {
+  try {
+    const h = headers();
+    const url = h.get("x-7fx-url") || "";
+    const path = url.split("?")[0] || "";
+    if (path.startsWith("/api/admin")) return true;
+    if (path === "/izcrm" || path.startsWith("/izcrm/")) return true;
+    if (path === "/api/auth/me" && url.includes("scope=admin")) return true;
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+export async function getPrimarySession(): Promise<SessionPayload | null> {
+  const token =
+    cookies().get(COOKIE_NAME)?.value || cookies().get(LEGACY_COOKIE_NAME)?.value;
+  return readCookieSession(token);
+}
+
+export async function getImpersonationSession(): Promise<SessionPayload | null> {
+  const session = await readCookieSession(cookies().get(IMPERSONATION_COOKIE)?.value);
+  if (!session?.impersonatedBy) return null;
+  return session;
+}
+
+export function readImpersonationToken(): string | undefined {
+  return cookies().get(IMPERSONATION_COOKIE)?.value;
+}
+
+export async function getSession(): Promise<SessionPayload | null> {
+  if (!prefersAdminSession()) {
+    const imp = await getImpersonationSession();
+    if (imp) return imp;
+  }
+  return getPrimarySession();
 }
 
 export async function requireUser() {

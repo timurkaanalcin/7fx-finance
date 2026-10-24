@@ -6,7 +6,12 @@
  * a raw expiry line for every variant.
  */
 
-export const SESSION_COOKIE_NAMES = ["7fx_session", "deskflow_session", "7fx_admin_backup"] as const;
+export const SESSION_COOKIE_NAMES = [
+  "7fx_session",
+  "deskflow_session",
+  "7fx_admin_backup",
+  "7fx_impersonation",
+] as const;
 
 const EPOCH = "Thu, 01 Jan 1970 00:00:00 GMT";
 

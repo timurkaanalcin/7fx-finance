@@ -14,6 +14,7 @@ type Props = {
   user: UserInfo;
   account: AccountMetrics | null;
   onDeposit: () => void;
+  depositDisabled?: boolean;
   /**
    * Blotter-matched Equity and P/L. Margin, free margin, and margin level
    * stay on the server snapshot in `account`.
@@ -29,6 +30,7 @@ export default function TopBar({
   user,
   account,
   onDeposit,
+  depositDisabled = false,
   displayEquity,
   displayProfitLoss,
   displayFreeMargin,
@@ -118,9 +120,10 @@ export default function TopBar({
         <button
           type="button"
           onClick={onDeposit}
+          disabled={depositDisabled}
           title={t("term.deposit")}
           aria-label={t("term.deposit")}
-          className="fx-deposit-btn flex h-7 items-center gap-1 rounded-[9px] bg-desk-accent px-2 text-[11px] font-semibold text-desk-accent-ink shadow-accent-glow-sm hover:brightness-110 md:h-8 md:gap-1.5 md:rounded-[10px] md:px-2.5 md:text-xs"
+          className="fx-deposit-btn flex h-7 items-center gap-1 rounded-[9px] bg-desk-accent px-2 text-[11px] font-semibold text-desk-accent-ink shadow-accent-glow-sm hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 md:h-8 md:gap-1.5 md:rounded-[10px] md:px-2.5 md:text-xs"
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
             <rect x="2" y="6" width="20" height="12" rx="2" />

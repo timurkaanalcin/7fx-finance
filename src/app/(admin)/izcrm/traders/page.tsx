@@ -12,6 +12,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useVisiblePoll } from "@/lib/use-visible-poll";
 import { LocationLabel, PresenceCell } from "@/components/crm/Presence";
 import CopyButton from "@/components/crm/CopyButton";
+import OpenTerminalButton from "@/components/crm/OpenTerminalButton";
 import MultiSelect, { csvList, toggleCsv } from "@/components/crm/MultiSelect";
 import {
   clearRecentClients,
@@ -376,7 +377,7 @@ export default function AdminUsersPage() {
   }, [deskQ]);
 
   useEffect(() => {
-    fetch("/api/auth/me", { credentials: "include" })
+    fetch("/api/auth/me?scope=admin", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => {
         setCanManageUsers(Boolean(d.permissions?.canManageUsers));
@@ -1203,12 +1204,15 @@ export default function AdminUsersPage() {
                   {u.lastContactAt ? fmtCrmDate(u.lastContactAt) : "—"}
                 </td>
                 <td className="px-3 py-2.5">
-                  <Link
-                    href={`/izcrm/traders/${u.id}`}
-                    className="rounded bg-black text-white/80 px-2 py-1 hover:bg-neutral-800"
-                  >
-                    {i18n("crm.ui.detail")}
-                  </Link>
+                  <div className="flex flex-wrap items-center gap-1">
+                    <OpenTerminalButton userId={u.id} returnTo="/izcrm/traders" />
+                    <Link
+                      href={`/izcrm/traders/${u.id}`}
+                      className="rounded bg-black text-white/80 px-2 py-1 hover:bg-neutral-800"
+                    >
+                      {i18n("crm.ui.detail")}
+                    </Link>
+                  </div>
                 </td>
               </tr>
             ))}

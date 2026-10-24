@@ -3,6 +3,7 @@ import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { stripStaff } from "@/lib/customer-sanitize";
+import { impersonationReadonlyResponse } from "@/lib/impersonation-guard";
 import { crmPageWindow } from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
@@ -33,6 +34,8 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   const user = await requireUser();
   if (!user) return NextResponse.json({ error: "No session" }, { status: 401 });
+  const readOnly = await impersonationReadonlyResponse();
+  if (readOnly) return readOnly;
   await ensureDemoSeed();
 
   const body = await req.json().catch(() => ({}));
