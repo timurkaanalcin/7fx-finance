@@ -3,7 +3,7 @@
  * Run: npx tsx tests/display-profit.test.ts
  */
 import assert from "node:assert/strict";
-import { displayBookDelta, displayOpenProfit } from "../src/lib/display-profit";
+import { displayAccountChips, displayBookDelta, displayOpenProfit } from "../src/lib/display-profit";
 import { positionMark } from "../src/lib/mark-price";
 
 function main() {
@@ -29,6 +29,13 @@ function main() {
   );
   assert.equal(delta, 70);
   assert.equal(displayBookDelta([base], () => Number.NaN, () => 1), 0);
+
+  const chips = displayAccountChips({ equity: 1000, freeMargin: 800, margin: 200, profitLoss: 50 }, 10);
+  assert.equal(chips.equity, 1010);
+  assert.equal(chips.freeMargin, 810);
+  assert.equal(chips.profitLoss, 60);
+  assert.equal(chips.marginLevel, 505);
+  assert.equal(displayAccountChips({ equity: 100, freeMargin: 100, margin: 0, profitLoss: 0 }, 5).marginLevel, 0);
 
   const buy = { symbol: "AAPL", chartSymbol: null, side: "BUY", currentPrice: 10, openPrice: 9 };
   assert.equal(positionMark(buy, { AAPL: { bid: 12, ask: 13, mid: 12.5 } }), 12);

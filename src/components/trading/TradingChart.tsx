@@ -16,6 +16,7 @@ import {
   CrosshairMode,
 } from "lightweight-charts";
 import type { PriceTick } from "./types";
+import { chartReconcilePlan, type OhlcBar } from "@/lib/chart-reconcile";
 import { formatPrice, getSymbol } from "@/lib/symbols";
 import SymbolIcon from "@/components/ui/SymbolIcon";
 import { useI18n } from "@/lib/i18n/context";
@@ -151,6 +152,8 @@ export default function TradingChart({
   const priceLinesRef = useRef<IPriceLine[]>([]);
   const liveBarRef = useRef<LiveBar | null>(null);
   const lastBarTimeRef = useRef<number | null>(null);
+  /** Bars last applied to the series, so a history refresh can patch instead of setData. */
+  const barsRef = useRef<OhlcBar[]>([]);
   /** True after the current symbol/timeframe history request settles (success or failure). */
   const historySettledRef = useRef(false);
   /** Ask the history effect to refetch when bars are missing. No-op until that effect is mounted. */
@@ -405,6 +408,7 @@ export default function TradingChart({
       lineRef.current = null;
       liveBarRef.current = null;
       lastBarTimeRef.current = null;
+      barsRef.current = [];
     };
   }, [mounted]);
 
@@ -467,7 +471,26 @@ export default function TradingChart({
         }
 
         if (bars.length) {
-          try {
+          const plain: OhlcBar[] = bars.map((bar) => ({
+            time: bar.time as number,
+            open: bar.open,
+            high: bar.high,
+            low: bar.low,
+            close: bar.close,
+          }));
+          const plan =
+            fit || barsRef.current.length === 0
+              ? { kind: "replace" as const }
+              : chartReconcilePlan(barsRef.current, plain);
+          const paintLast = () => {
+            const last = plain[plain.length - 1];
+            lastBarTimeRef.current = last.time;
+            liveBarRef.current = last;
+            if (lastMidRef.current == null && mid != null) lastMidRef.current = mid;
+            setOhlc({ o: last.open, h: last.high, l: last.low, c: last.close });
+            barsRef.current = plain;
+          };
+          const replaceSeries = () => {
             const ts = chartRef.current?.timeScale();
             let restore: { from: number; to: number } | null = null;
             let atLive = true;
@@ -481,26 +504,37 @@ export default function TradingChart({
                 /* ignore */
               }
             }
-            seriesRef.current.setData(bars);
+            seriesRef.current?.setData(bars);
             if (lineRef.current) {
               lineRef.current.setData(bars.map((b) => ({ time: b.time, value: b.close })));
             }
-            const last = bars[bars.length - 1];
-            lastBarTimeRef.current = last.time as number;
-            liveBarRef.current = {
-              time: last.time as number,
-              open: last.open,
-              high: last.high,
-              low: last.low,
-              close: last.close,
-            };
-            if (lastMidRef.current == null && mid != null) lastMidRef.current = mid;
-            setOhlc({ o: last.open, h: last.high, l: last.low, c: last.close });
+            paintLast();
             if (fit) ts?.fitContent();
             else if (restore) ts?.setVisibleLogicalRange(restore);
             else ts?.scrollToPosition(0, false);
+          };
+          try {
+            if (plan.kind === "patch") {
+              for (const bar of plan.updates) {
+                seriesRef.current?.update({
+                  time: bar.time as Time,
+                  open: bar.open,
+                  high: bar.high,
+                  low: bar.low,
+                  close: bar.close,
+                });
+                lineRef.current?.update({ time: bar.time as Time, value: bar.close });
+              }
+              paintLast();
+            } else {
+              replaceSeries();
+            }
           } catch {
-            setFeedError({ k: "update" });
+            try {
+              replaceSeries();
+            } catch {
+              setFeedError({ k: "update" });
+            }
           }
         }
 
@@ -529,6 +563,7 @@ export default function TradingChart({
 
     liveBarRef.current = null;
     lastBarTimeRef.current = null;
+    barsRef.current = [];
     try {
       seriesRef.current?.setData([]);
       lineRef.current?.setData([]);

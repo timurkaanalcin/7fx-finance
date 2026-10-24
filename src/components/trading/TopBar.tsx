@@ -20,6 +20,9 @@ type Props = {
    */
   displayEquity?: number;
   displayProfitLoss?: number;
+  /** Live free margin and margin level. Used margin stays on `account`. */
+  displayFreeMargin?: number;
+  displayMarginLevel?: number;
 };
 
 function Metric({
@@ -66,12 +69,22 @@ function Metric({
  * Compact margin-usage indicator (desktop only). Fill = used margin / equity;
  * colour follows margin level thresholds (>=200 healthy, 100–200 caution, <100 danger).
  */
-function MarginUsageBar({ account }: { account: AccountMetrics | null }) {
+function MarginUsageBar({
+  account,
+  equity: equityProp,
+  freeMargin: freeProp,
+  marginLevel: levelProp,
+}: {
+  account: AccountMetrics | null;
+  equity?: number;
+  freeMargin?: number;
+  marginLevel?: number;
+}) {
   const a = account;
   const margin = a?.margin ?? 0;
-  const equity = a?.equity ?? 0;
-  const freeMargin = a?.freeMargin ?? 0;
-  const ml = a?.marginLevel ?? 0;
+  const equity = equityProp ?? a?.equity ?? 0;
+  const freeMargin = freeProp ?? a?.freeMargin ?? 0;
+  const ml = levelProp ?? a?.marginLevel ?? 0;
   const denom = equity > 0 ? equity : margin + freeMargin;
   const rawPct = denom > 0 ? (margin / denom) * 100 : 0;
   const usedPct = Number.isFinite(rawPct) ? Math.max(0, Math.min(100, rawPct)) : 0;
@@ -111,12 +124,22 @@ function MarginUsageBar({ account }: { account: AccountMetrics | null }) {
   );
 }
 
-export default function TopBar({ user, account, onDeposit, onLogout, displayEquity, displayProfitLoss }: Props) {
+export default function TopBar({
+  user,
+  account,
+  onDeposit,
+  onLogout,
+  displayEquity,
+  displayProfitLoss,
+  displayFreeMargin,
+  displayMarginLevel,
+}: Props) {
   const { t } = useI18n();
   const a = account;
-  const ml = a?.marginLevel ?? 0;
+  const ml = displayMarginLevel ?? a?.marginLevel ?? 0;
   const pnl = displayProfitLoss ?? a?.profitLoss ?? 0;
   const eq = displayEquity ?? a?.equity ?? 0;
+  const free = displayFreeMargin ?? a?.freeMargin ?? 0;
   const pnlPctRaw = eq > 0 ? (pnl / eq) * 100 : NaN;
   const pnlPct =
     a && Number.isFinite(pnlPctRaw)
@@ -177,7 +200,7 @@ export default function TopBar({ user, account, onDeposit, onLogout, displayEqui
         />
         <Metric
           label="Serbest"
-          value={a ? fmtMoney(a.freeMargin, 2, a.currency) : "—"}
+          value={a ? fmtMoney(free, 2, a.currency) : "—"}
           className="hidden md:flex"
         />
         <Metric
@@ -186,7 +209,7 @@ export default function TopBar({ user, account, onDeposit, onLogout, displayEqui
           danger={ml > 0 && ml < 100}
           className="hidden md:flex"
         />
-        <MarginUsageBar account={a} />
+        <MarginUsageBar account={a} equity={eq} freeMargin={free} marginLevel={ml} />
         <Metric
           label="P/L"
           value={a ? fmtMoney(pnl, 2, a.currency) : "—"}

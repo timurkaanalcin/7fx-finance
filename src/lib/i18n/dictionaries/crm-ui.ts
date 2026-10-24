@@ -81,6 +81,7 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.ui.traders", "Traders", "Traderlar", "Трейдеры", "Trader", "المتداولون"],
   ["crm.ui.selected", "selected", "seçili", "выбрано", "ausgewählt", "محدد"],
   ["crm.ui.noRecords", "No records", "Kayıt yok", "Нет записей", "Keine Einträge", "لا توجد سجلات"],
+  ["crm.ui.loadMore", "Load more", "Daha fazla", "Ещё", "Mehr laden", "تحميل المزيد"],
   ["crm.ui.ftd", "FTD", "FTD", "FTD", "FTD", "FTD"],
   ["crm.ui.role", "Role", "Rol", "Роль", "Rolle", "الدور"],
   ["crm.ui.documents", "Documents", "Belgeler", "Документы", "Dokumente", "المستندات"],

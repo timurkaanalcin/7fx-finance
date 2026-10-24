@@ -154,7 +154,7 @@ import TradingCalculator from "./TradingCalculator";
 import { FeedBanner, FeedRecoveredToast, useFeedHealth } from "./FeedStatus";
 import { useI18n } from "@/lib/i18n/context";
 import { localizeTradeError } from "@/lib/trade-errors";
-import { displayBookDelta } from "@/lib/display-profit";
+import { displayAccountChips, displayBookDelta } from "@/lib/display-profit";
 import { positionMark } from "@/lib/mark-price";
 import { concatUniqueById } from "@/lib/position-pages";
 import { getSymbol } from "@/lib/symbols";
@@ -711,10 +711,7 @@ export default function TerminalShell() {
       (position) => positionMark(position, prices),
       (symbol) => getSymbol(symbol)?.contractSize
     );
-    return {
-      equity: account.equity + delta,
-      profitLoss: account.profitLoss + delta,
-    };
+    return displayAccountChips(account, delta);
   }, [account, openPositions, prices]);
 
   const chartLevels = useMemo(() => {
@@ -918,6 +915,8 @@ export default function TerminalShell() {
         account={account}
         displayEquity={headerChips?.equity}
         displayProfitLoss={headerChips?.profitLoss}
+        displayFreeMargin={headerChips?.freeMargin}
+        displayMarginLevel={headerChips?.marginLevel}
         onDeposit={() => setDepositOpen(true)}
         onLogout={onLogout}
       />
