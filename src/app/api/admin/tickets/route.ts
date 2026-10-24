@@ -37,7 +37,14 @@ export async function GET(req: Request) {
   const balWhere = base;
   const wdWhere = base;
   const userSelect = {
-    select: { id: true, name: true, email: true, account: true, country: true, accountLoginId: true },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      country: true,
+      accountLoginId: true,
+      account: { select: { id: true, currency: true } },
+    },
   } as const;
 
   const [deposits, balanceReqs, withdrawals] = await Promise.all([
@@ -46,7 +53,7 @@ export async function GET(req: Request) {
       : prisma.depositRequest.findMany({
           where: depWhere,
           include: {
-            method: true,
+            method: { select: { label: true } },
             user: userSelect,
           },
           orderBy: { createdAt: "desc" },

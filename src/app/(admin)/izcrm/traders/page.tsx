@@ -1,6 +1,7 @@
 "use client";
 
 import { fmtCrmDate } from "@/lib/crm-format";
+import { displayCrmMoney } from "@/lib/security/mask";
 
 import Link from "next/link";
 import { ACCOUNT_CURRENCIES, RETENTION_STATUSES, SALE_STATUSES } from "@/lib/membership";
@@ -35,10 +36,10 @@ type UserRow = {
   withdrawalsEnabled?: boolean;
   loginEnabled?: boolean;
   lastLoginAt: string | null;
-  balance: number;
-  equity: number;
-  credit: number;
-  bonus: number;
+  balance: number | null;
+  equity: number | null;
+  credit: number | null;
+  bonus: number | null;
   currency: string;
   country: string | null;
   desk: string | null;
@@ -1103,17 +1104,10 @@ export default function AdminUsersPage() {
                 </td>
                 <td className="px-3 py-2.5 tabular-nums">
                   <div>
-                    {u.balance.toLocaleString("en-US", {
-                      style: "currency",
-                      currency: u.currency || "USD",
-                    })}
+                    {displayCrmMoney(u.balance, u.currency || "USD")}
                   </div>
                   <div className="text-[9px] text-neutral-500">
-                    {i18n("crm.ui.equity")}{" "}
-                    {u.equity.toLocaleString("en-US", {
-                      style: "currency",
-                      currency: u.currency || "USD",
-                    })}
+                    {i18n("crm.ui.equity")} {displayCrmMoney(u.equity, u.currency || "USD")}
                   </div>
                 </td>
                 <td className="px-3 py-2.5 font-mono text-[9px] text-neutral-500">

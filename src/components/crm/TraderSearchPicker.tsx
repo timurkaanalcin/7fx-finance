@@ -30,6 +30,7 @@ export default function TraderSearchPicker({
           take: "50",
           meta: "0",
           role: "TRADER",
+          view: "picker",
         });
         const r = await fetch(`/api/admin/users?${params}`, { cache: "no-store" });
         if (!r.ok || !live) return;

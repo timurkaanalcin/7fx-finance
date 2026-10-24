@@ -76,6 +76,33 @@ export function wantTraderTable(raw: string | null): boolean {
   return raw === "table";
 }
 
+/** Transfer and trader search pickers ask for id, name, email, login id, role, and balance. */
+export function wantTraderPicker(raw: string | null): boolean {
+  return raw === "picker";
+}
+
+export const TRADER_PICKER_SELECT = {
+  id: true,
+  name: true,
+  email: true,
+  accountLoginId: true,
+  role: true,
+  account: {
+    select: {
+      balance: true,
+      currency: true,
+    },
+  },
+} satisfies Prisma.UserSelect;
+
+/** Trader detail poll. `full` is the existing payload. The other two skip unrelated tables. */
+export type TraderDetailScope = "full" | "positions" | "finance";
+
+export function traderDetailScope(raw: string | null): TraderDetailScope {
+  if (raw === "positions" || raw === "finance") return raw;
+  return "full";
+}
+
 function isoOrNull(value: unknown): string | null {
   if (value == null || value === "") return null;
   if (value instanceof Date) return value.toISOString();
@@ -126,5 +153,19 @@ export function serializeTraderTableRow(u: Record<string, unknown>) {
     bonus: account?.bonus ?? 0,
     currency: account?.currency ?? "USD",
     ...serializePresence(u),
+  };
+}
+
+/** JSON row for the transfer picker and the communications/documents search. */
+export function serializeTraderPickerRow(u: Record<string, unknown>) {
+  const account = (u.account as { balance?: number | null; currency?: string | null } | null) ?? null;
+  return {
+    id: u.id,
+    name: u.name,
+    email: u.email,
+    accountLoginId: (u.accountLoginId as string | null) ?? null,
+    role: (u.role as string | null) ?? "TRADER",
+    balance: account?.balance ?? 0,
+    currency: account?.currency ?? "USD",
   };
 }

@@ -14,26 +14,69 @@ import { recordLedger } from "@/lib/ledger";
 import { jobTitleSchema } from "@/lib/job-titles";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { noteVisibilityWhere } from "@/lib/comment-teams";
+import { traderDetailScope } from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
 
 type Ctx = { params: { id: string } };
 
-export async function GET(_req: Request, ctx: Ctx) {
+export async function GET(req: Request, ctx: Ctx) {
   await ensureDemoSeed();
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const id = ctx.params.id;
   if (!(await canAccessUser(admin, id))) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  const scope = traderDetailScope(new URL(req.url).searchParams.get("view"));
   const user = await prisma.user.findUnique({
     where: { id },
-    include: {
-      account: true,
-      notes: { where: noteVisibilityWhere(admin), orderBy: { createdAt: "desc" }, take: 100 },
-    },
+    include:
+      scope === "full"
+        ? {
+            account: true,
+            notes: { where: noteVisibilityWhere(admin), orderBy: { createdAt: "desc" as const }, take: 100 },
+          }
+        : { account: true },
   });
   if (!user) return NextResponse.json({ error: "User yok" }, { status: 404 });
+
+  const membership = serializeUserMembership(user as unknown as Record<string, unknown>);
+  const roViewer = isCrmReadOnlyAdmin(admin);
+  const userOut = roViewer
+    ? maskTraderForRoViewer(membership as unknown as Record<string, unknown>)
+    : membership;
+
+  if (scope === "finance") {
+    return NextResponse.json({
+      user: userOut,
+      dataMasked: roViewer,
+      tradingAccountId: membership.tradingAccountId,
+      view: "finance",
+    });
+  }
+
+  if (scope === "positions") {
+    const [positions, orders] = await Promise.all([
+      prisma.position.findMany({
+        where: { userId: id },
+        orderBy: { openedAt: "desc" },
+        take: 100,
+      }),
+      prisma.order.findMany({
+        where: { userId: id },
+        orderBy: { createdAt: "desc" },
+        take: 100,
+      }),
+    ]);
+    return NextResponse.json({
+      user: userOut,
+      dataMasked: roViewer,
+      tradingAccountId: membership.tradingAccountId,
+      positions,
+      orders,
+      view: "positions",
+    });
+  }
 
   const [
     positions,
@@ -47,76 +90,69 @@ export async function GET(_req: Request, ctx: Ctx) {
     withdrawals,
     depositMethods,
     activityEvents,
-  ] =
-    await Promise.all([
-      prisma.position.findMany({
-        where: { userId: id },
-        orderBy: { openedAt: "desc" },
-        take: 100,
-      }),
-      prisma.order.findMany({
-        where: { userId: id },
-        orderBy: { createdAt: "desc" },
-        take: 100,
-      }),
-      prisma.depositRequest.findMany({
-        where: { userId: id },
-        include: { method: true },
-        orderBy: { createdAt: "desc" },
-        take: 100,
-      }),
-      prisma.balanceRequest.findMany({
-        where: { userId: id },
-        orderBy: { createdAt: "desc" },
-        take: 100,
-      }),
-      prisma.balanceLedger.findMany({
-        where: { userId: id },
-        orderBy: { createdAt: "desc" },
-        take: 200,
-      }),
-      prisma.communication.findMany({
-        where: { userId: id },
-        orderBy: { createdAt: "desc" },
-        take: 100,
-      }),
-      prisma.documentRecord.findMany({
-        where: { userId: id },
-        orderBy: { createdAt: "desc" },
-        take: 100,
-      }),
-      prisma.reminder.findMany({
-        where: { userId: id },
-        orderBy: { remindAt: "asc" },
-        take: 100,
-      }),
-      prisma.withdrawalRequest.findMany({
-        where: { userId: id },
-        orderBy: { createdAt: "desc" },
-        take: 100,
-      }),
-      prisma.depositMethod.findMany({
-        select: { id: true, label: true, type: true, active: true },
-        orderBy: [{ active: "desc" }, { sortOrder: "asc" }],
-      }),
-      prisma.clientActivityEvent.findMany({
-        where: { userId: id },
-        orderBy: { createdAt: "desc" },
-        take: 50,
-      }),
-    ]);
-
-  const membership = serializeUserMembership(user as unknown as Record<string, unknown>);
-  const roViewer = isCrmReadOnlyAdmin(admin);
-  const userOut = roViewer
-    ? maskTraderForRoViewer(membership as unknown as Record<string, unknown>)
-    : membership;
+  ] = await Promise.all([
+    prisma.position.findMany({
+      where: { userId: id },
+      orderBy: { openedAt: "desc" },
+      take: 100,
+    }),
+    prisma.order.findMany({
+      where: { userId: id },
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    }),
+    prisma.depositRequest.findMany({
+      where: { userId: id },
+      include: { method: true },
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    }),
+    prisma.balanceRequest.findMany({
+      where: { userId: id },
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    }),
+    prisma.balanceLedger.findMany({
+      where: { userId: id },
+      orderBy: { createdAt: "desc" },
+      take: 200,
+    }),
+    prisma.communication.findMany({
+      where: { userId: id },
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    }),
+    prisma.documentRecord.findMany({
+      where: { userId: id },
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    }),
+    prisma.reminder.findMany({
+      where: { userId: id },
+      orderBy: { remindAt: "asc" },
+      take: 100,
+    }),
+    prisma.withdrawalRequest.findMany({
+      where: { userId: id },
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    }),
+    prisma.depositMethod.findMany({
+      select: { id: true, label: true, type: true, active: true },
+      orderBy: [{ active: "desc" }, { sortOrder: "asc" }],
+    }),
+    prisma.clientActivityEvent.findMany({
+      where: { userId: id },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+    }),
+  ]);
 
   return NextResponse.json({
     user: userOut,
     dataMasked: roViewer,
     tradingAccountId: membership.tradingAccountId,
-    notes: user.notes,
+    notes: "notes" in user ? user.notes : [],
     positions,
     orders,
     deposits,

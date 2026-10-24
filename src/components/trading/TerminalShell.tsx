@@ -923,7 +923,9 @@ export default function TerminalShell() {
       {user.impersonatedBy && (
         <div className="flex items-center justify-center gap-3 border-b border-sky-500/40 bg-sky-600/90 px-3 py-1.5 text-center text-[11px] font-medium text-white">
           <span>
-            Viewing terminal as <strong>{user.name}</strong> ({user.email}) — admin impersonation
+            {t("term.impersonationBanner")
+              .replace("{name}", user.name || "")
+              .replace("{email}", user.email || "")}
           </span>
           <button
             type="button"
@@ -932,10 +934,10 @@ export default function TerminalShell() {
               const res = await fetch("/api/admin/impersonate", { method: "DELETE" });
               const data = await res.json().catch(() => ({}));
               if (res.ok) window.location.href = data.redirect || "/izcrm";
-              else alert(data.error || "Could not exit impersonation");
+              else alert(data.error || t("term.impersonationExitFailed"));
             }}
           >
-            Back to admin
+            {t("term.impersonationBack")}
           </button>
         </div>
       )}
