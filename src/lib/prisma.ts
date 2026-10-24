@@ -41,7 +41,9 @@ export const prisma =
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   });
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+// Always cache on globalThis so serverless warm isolates reuse one client
+// (avoids exhausting shared-hosting max_user_connections).
+globalForPrisma.prisma = prisma;
 
 // ---- Scoped-staff data isolation (Sales/Retention Manager) ----
 const USER_OWNED = new Set([

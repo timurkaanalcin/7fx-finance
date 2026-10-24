@@ -52,7 +52,7 @@ export default function LanguageSwitcher({ compact, className = "", tone = "ligh
     ? "text-slate-400 hover:text-white"
     : "text-[#5c657a] hover:text-[#111111]";
   const active = dark ? "bg-white text-black" : "bg-[#111111] text-white";
-  const size = compact ? "h-7 min-w-[30px] px-1.5 text-[11px]" : "h-8 min-w-[36px] px-2 text-[12px]";
+  const size = compact ? "h-7 min-w-[30px] px-1.5 text-[7.8px]" : "h-8 min-w-[36px] px-2 text-[12px]";
 
   return (
     <div

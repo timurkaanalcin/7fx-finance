@@ -1250,10 +1250,9 @@ export default function AdminUserDetailPage() {
     {
       key: "sourceUserId",
       label: "crm.edit.sourceAccount",
-      required: true,
+      required: false,
+      requiredIf: (d) => d.type === "TRANSFER",
       hideInTable: true,
-      createOnly: true,
-      showIf: (d) => d.type === "TRANSFER",
       editor: (v, onChange) => <SourceAccountPicker value={v} onChange={onChange} excludeId={id} />,
     },
     { key: "amount", label: "crm.ui.amount", type: "money", required: true },

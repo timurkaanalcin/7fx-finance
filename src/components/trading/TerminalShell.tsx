@@ -171,23 +171,61 @@ export default function TerminalShell() {
   }, [refreshAccount, refreshPositions, refreshBalanceRequests]);
 
   useEffect(() => {
+    let cancelled = false;
     async function boot() {
       const symRes = await fetch("/api/symbols");
       if (symRes.ok) {
         const list: SymbolDef[] = await symRes.json();
-        setSymbols(list);
-        setSymbol((prev) => {
-          if (list.some((s) => s.symbol === prev)) return prev;
-          const saved = readTermPrefs().symbol;
-          if (typeof saved === "string" && list.some((s) => s.symbol === saved)) return saved;
-          return list[0]?.symbol || prev || "AAPL";
-        });
+        if (!cancelled) {
+          setSymbols(list);
+          setSymbol((prev) => {
+            if (list.some((s) => s.symbol === prev)) return prev;
+            const saved = readTermPrefs().symbol;
+            if (typeof saved === "string" && list.some((s) => s.symbol === saved)) return saved;
+            return list[0]?.symbol || prev || "AAPL";
+          });
+        }
       }
-      await refreshAll();
-      setReady(true);
+      // Auth first (sequential) — shared MySQL max_user_connections cannot survive parallel boot storms
+      let authed = false;
+      for (let attempt = 1; attempt <= 8 && !cancelled; attempt++) {
+        const res = await fetch("/api/auth/me", { credentials: "include", cache: "no-store" });
+        if (cancelled) return;
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 403 && data.code === "LOGIN_DISABLED") {
+          try {
+            sessionStorage.setItem("7fx_login_block_msg", String(data.message || ""));
+          } catch {
+            /* ignore */
+          }
+          router.push("/login?loginBlocked=1");
+          return;
+        }
+        if (res.status === 401) {
+          router.push("/login");
+          return;
+        }
+        if (res.ok && data.user) {
+          setUser(data.user);
+          setAccount(data.account);
+          authed = true;
+          break;
+        }
+        await new Promise((r) => setTimeout(r, Math.min(1500 * attempt, 8000)));
+      }
+      if (cancelled) return;
+      if (!authed) {
+        router.push("/login");
+        return;
+      }
+      await Promise.all([refreshPositions(), refreshBalanceRequests()]);
+      if (!cancelled) setReady(true);
     }
     boot();
-  }, [refreshAll]);
+    return () => {
+      cancelled = true;
+    };
+  }, [refreshPositions, refreshBalanceRequests, router]);
 
   useEffect(() => {
     writeTermPrefs({ symbol, timeframe, tab });

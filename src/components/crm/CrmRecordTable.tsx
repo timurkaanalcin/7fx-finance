@@ -35,6 +35,8 @@ export type CrmColumn = {
   hint?: string;
   options?: { value: string; label: string }[];
   required?: boolean;
+  /** Dynamic requirement based on the current draft. */
+  requiredIf?: (draft: Record<string, string>) => boolean;
   /** false = shown but never editable (computed/system) */
   editable?: boolean;
   /** hide from the add form */
@@ -73,6 +75,8 @@ function fromDraft(cols: CrmColumn[], draft: Record<string, string>, create: boo
   for (const c of cols) {
     if (c.editable === false || c.type === "readonly") continue;
     if (create && c.hideOnCreate) continue;
+    if (!create && c.createOnly) continue;
+    if (c.showIf && !c.showIf(draft)) continue;
     if (!(c.key in draft)) continue;
     const raw = draft[c.key];
     if (c.type === "datetime") out[c.key] = raw ? fromDatetimeLocalValue(raw) : "";
@@ -331,7 +335,7 @@ export function CrmAddForm({
 
   async function submit() {
     for (const c of cols) {
-      if (c.required && !String(draft[c.key] ?? "").trim()) {
+      if ((c.required || c.requiredIf?.(draft)) && !String(draft[c.key] ?? "").trim()) {
         setErr(`${i18n(c.label)}: ${i18n("crm.edit.required")}`);
         return;
       }
@@ -373,7 +377,7 @@ export function CrmAddForm({
           <label key={c.key} className="flex flex-col gap-1 text-[11px]">
             <span className="text-neutral-500">
               {i18n(c.label)}
-              {c.required ? " *" : ""}
+              {c.required || c.requiredIf?.(draft) ? " *" : ""}
               {c.hint ? <span className="ml-1 text-[10px] font-normal text-neutral-400">({i18n(c.hint)})</span> : null}
             </span>
             <CellInput
@@ -460,7 +464,11 @@ export default function CrmRecordTable({
   async function save() {
     if (!editingId || !onUpdate) return;
     for (const c of columns) {
-      if (c.required && c.editable !== false && !String(draft[c.key] ?? "").trim()) {
+      // createOnly / showIf fields are not in the edit UI — never require them here
+      // (e.g. ledger sourceUserId is TRANSFER-only; requiring it blocked ADJUSTMENT saves).
+      if (c.createOnly) continue;
+      if (c.showIf && !c.showIf(draft)) continue;
+      if ((c.required || c.requiredIf?.(draft)) && c.editable !== false && !String(draft[c.key] ?? "").trim()) {
         setErr(`${i18n(c.label)}: ${i18n("crm.edit.required")}`);
         return;
       }

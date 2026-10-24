@@ -35,17 +35,33 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
   });
 
   useEffect(() => {
-    fetch("/api/auth/me")
-      .then(async (r) => {
+    let cancelled = false;
+    let attempts = 0;
+    async function loadMe() {
+      attempts += 1;
+      try {
+        const r = await fetch("/api/auth/me", { credentials: "include", cache: "no-store" });
+        if (cancelled) return;
         if (r.status === 401) {
           router.push("/login");
-          return null;
+          return;
         }
-        return r.json();
-      })
-      .then((d) => {
-        if (!d) return;
-        if (d.user?.role !== "ADMIN") {
+        if (!r.ok) {
+          // Transient DB errors (e.g. max_user_connections) — retry, do NOT send to /trade
+          if (attempts < 8) {
+            setTimeout(loadMe, Math.min(1500 * attempts, 8000));
+            return;
+          }
+          router.push("/login");
+          return;
+        }
+        const d = await r.json();
+        if (cancelled) return;
+        if (!d?.user) {
+          router.push("/login");
+          return;
+        }
+        if (d.user.role !== "ADMIN") {
           router.push("/trade");
           return;
         }
@@ -57,8 +73,19 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
           router.replace("/izcrm/traders");
         }
         setReady(true);
-      })
-      .catch(() => router.push("/login"));
+      } catch {
+        if (cancelled) return;
+        if (attempts < 8) {
+          setTimeout(loadMe, Math.min(1500 * attempts, 8000));
+          return;
+        }
+        router.push("/login");
+      }
+    }
+    loadMe();
+    return () => {
+      cancelled = true;
+    };
   }, [router]);
 
   useEffect(() => {
