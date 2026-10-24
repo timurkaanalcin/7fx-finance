@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { publicErrorText } from "@/lib/security/public-error";
+import { clientErrorMessage } from "@/lib/security/public-error";
 import { requireUser } from "@/lib/auth";
 import { closePosition } from "@/lib/trading";
 import { tradingDisabledMessage, mustChangePasswordMessage } from "@/lib/account-perms";
@@ -33,6 +33,6 @@ export async function POST(req: Request) {
     const account = await closePosition(user.id, String(body.id), volume);
     return NextResponse.json({ ok: true, account });
   } catch (e) {
-    return NextResponse.json({ error: publicErrorText(e, "Close error") }, { status: 400 });
+    return NextResponse.json({ error: clientErrorMessage("[positions/close]", e, "Close error") }, { status: 400 });
   }
 }

@@ -7,7 +7,7 @@ import {
   parseImportFile,
   tableSamples,
 } from "@/lib/crm-import";
-import { publicErrorText } from "@/lib/security/public-error";
+import { clientErrorMessage } from "@/lib/security/public-error";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -75,7 +75,7 @@ export async function POST(req: Request) {
   } catch (e) {
     console.error("[import/parse]", e);
     return NextResponse.json(
-      { error: publicErrorText(e, "Parse failed") },
+      { error: clientErrorMessage("[import/parse]", e, "Parse failed") },
       { status: 500 }
     );
   }

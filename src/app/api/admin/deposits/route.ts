@@ -5,7 +5,7 @@ import { refreshAccountMetrics } from "@/lib/trading";
 import { recordLedger } from "@/lib/ledger";
 import { readApprovalPayload } from "@/lib/ticket-scenario";
 import { FxError, appendFxNote, convertAmountToUsd } from "@/lib/fx-usd";
-import { publicErrorText } from "@/lib/security/public-error";
+import { clientErrorMessage } from "@/lib/security/public-error";
 import { CRM_MONEY_LIST_LEGACY, pagedOrLegacy } from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
@@ -72,7 +72,7 @@ export async function POST(req: Request) {
     usdAmount = conv.usdAmount;
     comment = appendFxNote(comment, conv);
   } catch (e) {
-    if (e instanceof FxError) return NextResponse.json({ error: publicErrorText(e, "Rate unavailable") }, { status: 503 });
+    if (e instanceof FxError) return NextResponse.json({ error: clientErrorMessage("[admin/deposits]", e, "Rate unavailable") }, { status: 503 });
     throw e;
   }
 

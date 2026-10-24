@@ -204,7 +204,8 @@ export async function fetchOhlc(
     });
     return { candles };
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "Yahoo OHLC failed";
+    console.error("[yahoo-ohlc]", yahooTicker, e);
+    const msg = "Quote unavailable";
     if (cached?.value?.length) {
       ohlcCache.set(cacheKey, {
         expires: Date.now() + Math.min(OHLC_TTL_MS, 15_000),
@@ -330,7 +331,8 @@ export async function fetchQuoteFromChart(
     });
     return { quote };
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "Yahoo quote failed";
+    console.error("[yahoo-quote]", yahooTicker, e);
+    const msg = "Quote unavailable";
     if (cached?.value) {
       quoteCache.set(internalSymbol, {
         expires: Date.now() + Math.min(QUOTE_TTL_MS, 5_000),

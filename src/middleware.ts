@@ -4,6 +4,7 @@ import {
   hostnameFromRequest,
   isCrmHostname,
 } from "@/lib/crm-host";
+import { locationForRequest } from "@/lib/request-origin";
 import { isAllowedApiOrigin } from "@/lib/security/origins";
 import { HSTS_VALUE, PERMISSIONS_POLICY, requestIsHttps } from "@/lib/security/response-headers.cjs";
 import { isIndexableHost, isMarketingPath, isPrivateHtmlPath, shouldNoindex } from "@/lib/seo-hosts";
@@ -103,14 +104,14 @@ export function middleware(req: NextRequest) {
 
     if (pathname === "/login") {
       if (token) {
-        return applyHeaders(NextResponse.redirect(new URL("/izcrm", req.url)));
+        return applyHeaders(NextResponse.redirect(locationForRequest(req, "/izcrm")));
       }
       return applyHeaders(passNext());
     }
 
     if (pathname === "/izcrm" || pathname.startsWith("/izcrm/")) {
       if (!token) {
-        return applyHeaders(NextResponse.redirect(new URL("/login", req.url)));
+        return applyHeaders(NextResponse.redirect(locationForRequest(req, "/login")));
       }
       return applyHeaders(passNext());
     }
@@ -151,7 +152,7 @@ export function middleware(req: NextRequest) {
 
   if (pathname === "/login" || pathname === "/register") {
     if (token) {
-      return applyHeaders(NextResponse.redirect(new URL("/trade", req.url)));
+      return applyHeaders(NextResponse.redirect(locationForRequest(req, "/trade")));
     }
     return applyHeaders(passNext());
   }
@@ -166,7 +167,7 @@ export function middleware(req: NextRequest) {
       pathname.startsWith("/membership")) &&
     !token
   ) {
-    return applyHeaders(NextResponse.redirect(new URL("/login", req.url)));
+    return applyHeaders(NextResponse.redirect(locationForRequest(req, "/login")));
   }
 
   return applyHeaders(passNext());

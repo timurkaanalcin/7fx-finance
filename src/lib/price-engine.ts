@@ -4,6 +4,7 @@
  */
 import { SYMBOLS, getSymbol } from "./symbols";
 import { fetchOhlc, fetchQuotesBatch } from "./yahoo";
+import { publicErrorText } from "@/lib/security/public-error";
 import { applySpread, ensureSymbolCatalog, getEffectiveRates } from "./trading-settings";
 
 export type Tick = {
@@ -150,7 +151,7 @@ export async function getCandles(symbol: string, timeframe: string): Promise<{
       low: c.low,
       close: c.close,
     })),
-    error: result.error,
+    error: result.error ? publicErrorText(result.error, "Quote unavailable") : undefined,
     stale: result.stale,
   };
 }

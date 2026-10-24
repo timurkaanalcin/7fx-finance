@@ -50,3 +50,67 @@ export function publicAbsoluteUrl(req: Request, path: string): string {
   const p = path.startsWith("/") ? path : `/${path}`;
   return `${origin}${p}`;
 }
+
+type HeaderSource = { get(name: string): string | null };
+
+function splitHostPort(raw: string): { hostname: string; port: string } {
+  const first = raw.split(",")[0]?.trim() || "";
+  if (!first) return { hostname: "", port: "" };
+  const idx = first.lastIndexOf(":");
+  if (idx > 0 && /^\d+$/.test(first.slice(idx + 1))) {
+    return { hostname: first.slice(0, idx), port: first.slice(idx + 1) };
+  }
+  return { hostname: first, port: "" };
+}
+
+function isBindHost(hostname: string): boolean {
+  const h = hostname.trim().toLowerCase();
+  return !h || h === "0.0.0.0" || h === "::" || h === "[::]";
+}
+
+/**
+ * Absolute Location for a same-site path.
+ * X-Forwarded-Host wins over Host, and both win over req.url, so Next's
+ * internal URL (127.0.0.1 rewritten to localhost) cannot pick the domain.
+ * localhost and 127.0.0.1 stay when they are the forwarded host: they are real
+ * browser hosts in local runs.
+ */
+export function locationForRequest(req: { url: string; headers: HeaderSource }, path: string): string {
+  if (path.startsWith("https://") || path.startsWith("http://")) return path;
+  const xf = splitHostPort(req.headers.get("x-forwarded-host") || "");
+  const host = splitHostPort(req.headers.get("host") || "");
+  const headerProto = (req.headers.get("x-forwarded-proto") || "").split(",")[0]?.trim().toLowerCase() || "";
+  let requestProto = "";
+  try {
+    requestProto = new URL(req.url).protocol.replace(":", "");
+  } catch {
+    /* req.url is only a last resort */
+  }
+  const chosen = !isBindHost(xf.hostname) ? xf : !isBindHost(host.hostname) ? host : null;
+  let origin = "";
+  if (chosen) {
+    const hostname = chosen.hostname.toLowerCase();
+    const local = hostname === "localhost" || hostname.startsWith("127.");
+    const proto =
+      headerProto === "http" || headerProto === "https"
+        ? headerProto
+        : local
+          ? requestProto === "http" || requestProto === "https"
+            ? requestProto
+            : "http"
+          : "https";
+    const keepPort =
+      chosen.port && !((proto === "https" && chosen.port === "443") || (proto === "http" && chosen.port === "80"));
+    origin = `${proto}://${hostname}${keepPort ? `:${chosen.port}` : ""}`;
+  } else {
+    try {
+      const u = new URL(req.url);
+      if (!isBindHost(u.hostname)) origin = u.origin;
+    } catch {
+      /* ignore */
+    }
+    if (!origin) origin = "https://7fx.customer.org.tr";
+  }
+  const p = path.startsWith("/") ? path : `/${path}`;
+  return `${origin}${p}`;
+}
