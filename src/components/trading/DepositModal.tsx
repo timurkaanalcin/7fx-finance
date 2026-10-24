@@ -158,11 +158,11 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
   return (
     <div className="fx-lx-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/65 p-4 backdrop-blur-[2px]" onClick={onClose}>
       <div
-        className="fx-lx-modal w-full max-w-lg rounded-modal border border-desk-border bg-desk-panel shadow-desk-panel"
+        className="fx-lx-modal fx-cashier w-full max-w-lg max-h-[min(720px,calc(100dvh-32px))] overflow-y-auto rounded-modal border border-desk-border bg-desk-panel shadow-desk-panel"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-desk-border px-4 py-3">
-          <h2 className="text-sm font-semibold tracking-wide">{t("term.deposit")}</h2>
+          <h2 className="text-sm font-normal tracking-wide">{t("term.deposit")}</h2>
           <button type="button" onClick={onClose} aria-label={t("common.close")} className="rounded-[8px] px-2 py-1 text-desk-muted hover:bg-desk-hover hover:text-desk-text">
             ✕
           </button>
@@ -204,8 +204,9 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
                 </select>
               )}
 
+              <div className="fx-cashier-split">
               {selected && (
-                <div className="mb-3 space-y-2 rounded-[12px] border border-desk-border bg-desk-bg/60 p-3 text-xs">
+                <div className="space-y-2 rounded-[12px] border border-desk-border bg-desk-bg/60 p-3 text-xs">
                   <div className="font-medium text-desk-text">{selected.label}</div>
                   {selected.type === "IBAN" && (
                     <>
@@ -278,14 +279,14 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
 
               <form onSubmit={onSubmit} className="space-y-3">
                 <div>
-                  <label className="mb-1 block text-[10px] uppercase tracking-wide text-desk-muted">{t("term.deposit.amount")}</label>
+                  <label className="mb-1 block text-[10px] font-normal uppercase tracking-wide text-desk-muted">{t("term.deposit.amount")}</label>
                   <input
                     type="number"
                     min={1}
                     step="0.01"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    className="w-full rounded-[10px] border border-desk-border bg-desk-bg px-3 py-2 text-sm text-desk-text outline-none focus:border-desk-accent"
+                    className="w-full rounded-[10px] border border-desk-border bg-desk-bg px-3 py-2 text-sm font-normal tabular-nums text-desk-text outline-none focus:border-desk-accent"
                     required
                   />
                 </div>
@@ -303,18 +304,19 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
                 <button
                   type="submit"
                   disabled={loading || !selected}
-                  className="w-full rounded-control bg-desk-accent py-2.5 text-sm font-semibold text-desk-accent-ink shadow-accent-glow-sm hover:brightness-110 disabled:opacity-60"
+                  className="w-full rounded-control bg-desk-accent py-2.5 text-sm font-medium text-desk-accent-ink shadow-accent-glow-sm hover:brightness-110 disabled:opacity-60"
                 >
                   {loading ? t("term.deposit.submitting") : t("term.deposit.send")}
                 </button>
               </form>
+              </div>
               {history.length > 0 && (
                 <div className="mt-3 border-t border-desk-border pt-3">
                   <div className="mb-2 text-[10px] font-medium uppercase tracking-wide text-desk-muted">{t("term.wd.recent")}</div>
                   <ul className="max-h-36 space-y-1 overflow-auto text-xs">
                     {history.map((row) => (
                       <li key={row.id} className="flex items-center justify-between gap-2">
-                        <span className="tabular-nums">{row.amount} {row.currency || "USD"}</span>
+                        <span className="tabular-nums font-normal">{row.amount} {row.currency || "USD"}</span>
                         <span className="text-desk-muted">{row.status}</span>
                       </li>
                     ))}

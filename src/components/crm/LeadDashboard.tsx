@@ -38,10 +38,10 @@ function KpiCard({
   sub?: string;
 }) {
   const inner = (
-    <div className={`rounded-lg border border-neutral-200 bg-white p-3 shadow-sm ${tone || ""}`}>
-      <div className="text-[10px] font-medium uppercase tracking-wider text-neutral-500">{label}</div>
-      <div className="mt-1.5 text-2xl font-semibold tabular-nums text-neutral-900">{value}</div>
-      {sub ? <div className="mt-0.5 text-[10px] text-neutral-500">{sub}</div> : null}
+    <div className={`fx-dash-kpi ${tone || ""}`}>
+      <div className="fx-dash-k">{label}</div>
+      <div className="fx-dash-v">{value}</div>
+      {sub ? <div className="fx-dash-sub">{sub}</div> : null}
     </div>
   );
   return href ? <Link href={href}>{inner}</Link> : inner;
@@ -69,7 +69,7 @@ function AffiliateCharts({ rows }: { rows: AffiliateRow[] }) {
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      <div className="rounded-lg border border-neutral-200 bg-white p-3">
+      <div className="fx-dash-panel p-3">
         <div className="mb-2 text-[11px] font-semibold text-neutral-700">{i18n("crm.leads.chartBar")}</div>
         <div className="space-y-2">
           {top.map((r, i) => (
@@ -89,7 +89,7 @@ function AffiliateCharts({ rows }: { rows: AffiliateRow[] }) {
           {!top.length && <p className="text-[11px] text-neutral-400">{i18n("crm.leads.noAffiliates")}</p>}
         </div>
       </div>
-      <div className="rounded-lg border border-neutral-200 bg-white p-3">
+      <div className="fx-dash-panel p-3">
         <div className="mb-2 text-[11px] font-semibold text-neutral-700">{i18n("crm.leads.chartPie")}</div>
         <div className="flex items-center gap-4">
           <div className="h-28 w-28 shrink-0 rounded-full" style={{ background: gradient }} />
@@ -209,7 +209,7 @@ export default function LeadDashboard() {
       {err && <p className="mb-2 text-xs text-red-600">{err}</p>}
       {importMsg && <p className="mb-2 text-xs text-emerald-700">{importMsg}</p>}
 
-      <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="fx-lead-kpis mb-4">
         <KpiCard
           label={i18n("crm.leads.total")}
           value={kpis?.total ?? 0}
@@ -248,7 +248,7 @@ export default function LeadDashboard() {
 
       <AffiliateCharts rows={affiliates} />
 
-      <div className="mt-4 overflow-x-auto rounded-lg border border-neutral-200 bg-white">
+      <div className="fx-dash-panel mt-4 overflow-x-auto">
         <table className="min-w-full text-left text-[11px]">
           <thead className="border-b border-neutral-200 bg-neutral-50 text-neutral-500">
             <tr>
@@ -279,7 +279,7 @@ export default function LeadDashboard() {
                       </span>
                     )}
                   </td>
-                  <td className={`px-3 py-1.5 tabular-nums font-semibold ${high ? "text-emerald-700" : "text-neutral-600"}`}>
+                  <td className={`px-3 py-1.5 text-right tabular-nums font-normal ${high ? "text-emerald-700" : "text-neutral-600"}`}>
                     {a.depositAmount > 0
                       ? a.depositAmount.toLocaleString("en-US", { maximumFractionDigits: 0 })
                       : "—"}

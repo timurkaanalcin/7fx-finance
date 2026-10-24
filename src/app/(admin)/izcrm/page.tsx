@@ -59,15 +59,13 @@ function Card({
   dot?: string;
 }) {
   const inner = (
-    <div
-      className={`rounded-lg border border-neutral-200 bg-[#ffffff] p-3 shadow-sm ${accent || ""}`}
-    >
-      <div className="text-[10px] uppercase tracking-wider text-neutral-500">{label}</div>
-      <div className="mt-1.5 flex items-center gap-2 text-xl font-semibold tabular-nums text-neutral-900">
-        {dot && <span className={`inline-block h-2.5 w-2.5 rounded-full ${dot}`} />}
+    <div className={`fx-dash-kpi ${accent || ""}`}>
+      <div className="fx-dash-k">{label}</div>
+      <div className="fx-dash-v">
+        {dot && <span className={`inline-block h-2.5 w-2.5 shrink-0 rounded-full ${dot}`} />}
         {value}
       </div>
-      {sub && <div className="mt-0.5 text-[10px] text-neutral-500">{sub}</div>}
+      {sub && <div className="fx-dash-sub">{sub}</div>}
     </div>
   );
   return href ? <Link href={href}>{inner}</Link> : inner;
@@ -102,10 +100,10 @@ export default function AdminDashboard() {
   useVisiblePoll(load, CRM_IDLE_POLL_MS);
 
   return (
-    <div>
+    <div className="fx-dash">
       <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
         <div>
-          <h1 className="text-lg font-semibold">{i18n("crm.nav.dashboard")}</h1>
+          <h1 className="text-lg font-normal">{i18n("crm.nav.dashboard")}</h1>
           <p className="mt-0.5 text-xs text-neutral-500">
             {i18n("crm.dash.subtitle")}
             {updatedAt ? ` · ${new Date(updatedAt).toLocaleTimeString(locale === "tr" ? "tr-TR" : locale === "ru" ? "ru-RU" : "en-GB", { hour12: false })}` : ""}
@@ -128,7 +126,7 @@ export default function AdminDashboard() {
         </div>
       )}
       {kpis && (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <div className="fx-dash-kpis">
           <Card
             label={i18n("crm.presence.dashOnline")}
             value={kpis.onlineClients ?? 0}
@@ -156,9 +154,9 @@ export default function AdminDashboard() {
       )}
 
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
-        <section className="rounded-lg border border-neutral-200 bg-[#ffffff]">
+        <section className="fx-dash-panel overflow-hidden">
           <div className="flex items-center justify-between border-b border-neutral-200 px-3 py-2">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
+            <h2 className="text-xs font-normal uppercase tracking-wider text-neutral-500">
               {i18n("crm.dash.recentPositions")}
             </h2>
             <Link href="/izcrm/positions" className="text-[10px] text-sky-600 hover:underline">
@@ -166,13 +164,13 @@ export default function AdminDashboard() {
             </Link>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-[11px]">
+            <table className="fx-dash-table text-left text-[11px]">
               <thead className="text-neutral-500">
                 <tr>
-                  <th className="px-2 py-1.5">{i18n("crm.ui.symbol")}</th>
-                  <th className="px-2 py-1.5">{i18n("crm.ui.side")}</th>
-                  <th className="px-2 py-1.5">{i18n("crm.ui.vol")}</th>
-                  <th className="px-2 py-1.5">{i18n("crm.ui.profit")}</th>
+                  <th className="px-2 py-1.5 font-normal">{i18n("crm.ui.symbol")}</th>
+                  <th className="px-2 py-1.5 font-normal">{i18n("crm.ui.side")}</th>
+                  <th className="fx-dash-num px-2 py-1.5 font-normal">{i18n("crm.ui.vol")}</th>
+                  <th className="fx-dash-num px-2 py-1.5 font-normal">{i18n("crm.ui.profit")}</th>
                   <th className="px-2 py-1.5">{i18n("crm.ui.trader")}</th>
                   <th className="px-2 py-1.5">{i18n("crm.ui.status")}</th>
                 </tr>
@@ -180,11 +178,11 @@ export default function AdminDashboard() {
               <tbody>
                 {positions.map((p) => (
                   <tr key={p.id} className="border-t border-neutral-100">
-                    <td className="px-2 py-1.5 font-medium">{p.symbol}</td>
+                    <td className="px-2 py-1.5 font-normal">{p.symbol}</td>
                     <td className="px-2 py-1.5">{code("crm.kind", p.side)}</td>
-                    <td className="px-2 py-1.5 tabular-nums">{p.volume}</td>
+                    <td className="fx-dash-num px-2 py-1.5">{p.volume}</td>
                     <td
-                      className={`px-2 py-1.5 tabular-nums ${
+                      className={`fx-dash-num px-2 py-1.5 ${
                         Number(p.profit) >= 0 ? "text-emerald-600" : "text-red-500"
                       }`}
                     >
@@ -210,26 +208,26 @@ export default function AdminDashboard() {
           </div>
         </section>
 
-        <section className="rounded-lg border border-neutral-200 bg-[#ffffff]">
+        <section className="fx-dash-panel overflow-hidden">
           <div className="flex items-center justify-between border-b border-neutral-200 px-3 py-2">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
+            <h2 className="text-xs font-normal uppercase tracking-wider text-neutral-500">
               {i18n("crm.dash.recentOrders")}
             </h2>
             <Link
               href="/izcrm/positions?tab=orders"
               className="text-[10px] text-sky-600 hover:underline"
             >
-              All
+              {i18n("crm.ui.all")}
             </Link>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-[11px]">
+            <table className="fx-dash-table text-left text-[11px]">
               <thead className="text-neutral-500">
                 <tr>
-                  <th className="px-2 py-1.5">{i18n("crm.ui.symbol")}</th>
-                  <th className="px-2 py-1.5">{i18n("crm.ui.type")}</th>
-                  <th className="px-2 py-1.5">{i18n("crm.ui.side")}</th>
-                  <th className="px-2 py-1.5">{i18n("crm.ui.vol")}</th>
+                  <th className="px-2 py-1.5 font-normal">{i18n("crm.ui.symbol")}</th>
+                  <th className="px-2 py-1.5 font-normal">{i18n("crm.ui.type")}</th>
+                  <th className="px-2 py-1.5 font-normal">{i18n("crm.ui.side")}</th>
+                  <th className="fx-dash-num px-2 py-1.5 font-normal">{i18n("crm.ui.vol")}</th>
                   <th className="px-2 py-1.5">{i18n("crm.ui.trader")}</th>
                   <th className="px-2 py-1.5">{i18n("crm.ui.status")}</th>
                 </tr>
@@ -237,10 +235,10 @@ export default function AdminDashboard() {
               <tbody>
                 {orders.map((o) => (
                   <tr key={o.id} className="border-t border-neutral-100">
-                    <td className="px-2 py-1.5 font-medium">{o.symbol}</td>
+                    <td className="px-2 py-1.5 font-normal">{o.symbol}</td>
                     <td className="px-2 py-1.5">{code("crm.kind", o.type)}</td>
                     <td className="px-2 py-1.5">{code("crm.kind", o.side)}</td>
-                    <td className="px-2 py-1.5 tabular-nums">{o.volume}</td>
+                    <td className="fx-dash-num px-2 py-1.5">{o.volume}</td>
                     <td className="px-2 py-1.5">
                       <Link href={`/izcrm/traders/${o.traderId}`} className="text-sky-600 hover:underline">
                         {o.traderName}
@@ -276,10 +274,10 @@ export default function AdminDashboard() {
           <Link
             key={x.href}
             href={x.href}
-            className="rounded-lg border border-neutral-200 bg-[#ffffff] p-3 transition hover:border-neutral-400"
+            className="fx-dash-link transition hover:border-neutral-400"
           >
-            <div className="text-xs font-semibold">{x.title}</div>
-            <div className="mt-0.5 text-[10px] text-neutral-500">{x.desc}</div>
+            <div className="text-xs font-normal">{x.title}</div>
+            <div className="fx-dash-sub">{x.desc}</div>
           </Link>
         ))}
       </div>
