@@ -6,17 +6,26 @@ export const API_ALLOWED_ORIGINS = new Set(
     "https://7fx-finance.vercel.app",
     "https://7fx.customer.org.tr",
     "https://crm7fx.customer.org.tr",
+    "https://7fx.financeunit.co",
+    "https://7fx.login.org.tr",
     "https://7fx-finance-production.up.railway.app",
     process.env.NEXT_PUBLIC_SITE_ORIGIN,
+    process.env.NEXT_PUBLIC_APP_URL,
     process.env.MAIN_SITE_ORIGIN,
+    process.env.CRM_SITE_ORIGIN,
     // local / preview
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-  ].filter(Boolean) as string[]
+  ]
+    .filter(Boolean)
+    .map((o) => String(o).trim().replace(/\/+$/, ""))
+    .filter(Boolean)
 );
 
 export function isAllowedApiOrigin(origin: string | null): boolean {
-  if (!origin) return true; // same-origin navigations / server-to-server / mobile often omit Origin
+  // Missing Origin: same-origin navigations, curl, some WebViews.
+  // Literal "null": opaque origin sent by Android WebView / WKWebView.
+  if (!origin || origin === "null") return true;
   if (API_ALLOWED_ORIGINS.has(origin)) return true;
   // Capacitor / WebView
   if (origin.startsWith("capacitor://") || origin.startsWith("ionic://")) return true;
