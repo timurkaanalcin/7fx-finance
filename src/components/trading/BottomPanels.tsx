@@ -466,6 +466,7 @@ function SummaryStat({
 
 /** Tiny cumulative P&L curve (equity-style) for the closed-trades summary strip. */
 function PnlSparkline({ values }: { values: number[] }) {
+  const { t } = useI18n();
   const W = 96;
   const H = 22;
   const pad = 2;
@@ -485,7 +486,7 @@ function PnlSparkline({ values }: { values: number[] }) {
       viewBox={`0 0 ${W} ${H}`}
       className={`shrink-0 ${tone}`}
       role="img"
-      aria-label={`Kümülatif K/Z eğrisi, son değer ${last.toFixed(2)}`}
+      aria-label={t("term.blotter.curveAria").replace("{v}", last.toFixed(2))}
     >
       <line x1={pad} x2={W - pad} y1={zy} y2={zy} stroke="currentColor" strokeOpacity={0.25} strokeDasharray="2 2" strokeWidth={1} />
       <polygon points={`${x(0).toFixed(1)},${zy} ${pts} ${x(values.length - 1).toFixed(1)},${zy}`} fill="currentColor" fillOpacity={0.12} />
@@ -533,6 +534,7 @@ function HoldTime({
   openedAt: string | Date | null | undefined;
   className?: string;
 }) {
+  const { t } = useI18n();
   const [now, setNow] = useState(() => Date.now());
   const start = openedAt ? new Date(openedAt).getTime() : NaN;
   const young = Number.isFinite(start) && now - start < 60_000;
@@ -545,7 +547,7 @@ function HoldTime({
   return (
     <span
       suppressHydrationWarning
-      title="Açık kalma süresi · Time held"
+      title={t("term.hold.open")}
       className={`tabular-nums text-desk-muted ${className}`}
     >
       ⏱ {label}
@@ -573,12 +575,13 @@ function ClosedHoldTime({
   closedAt: string | Date | null | undefined;
   className?: string;
 }) {
+  const { t } = useI18n();
   const label = closedHoldLabel(openedAt, closedAt);
   if (!label) return null;
   return (
     <span
-      title="Tutma süresi · Holding duration"
-      aria-label={`Tutma süresi · Holding duration: ${label}`}
+      title={t("term.hold.closed")}
+      aria-label={`${t("term.hold.closed")}: ${label}`}
       className={`tabular-nums text-desk-muted ${className}`}
     >
       ⏱ {label}
@@ -628,12 +631,13 @@ function LevelDistance({
   prices?: Record<string, PriceTick>;
   className?: string;
 }) {
+  const { t } = useI18n();
   const d = levelDistancePips(p, kind === "sl" ? p.stopLoss : p.takeProfit, prices);
   if (d == null) return null;
   return (
     <span
       className={`tabular-nums text-[9.5px] ${kind === "sl" ? "text-desk-sell/80" : "text-desk-buy/90"} ${className}`}
-      title={kind === "sl" ? "Stop Loss seviyesine uzaklık (güncel fiyattan, pip)" : "Take Profit seviyesine uzaklık (güncel fiyattan, pip)"}
+      title={kind === "sl" ? t("term.level.sl") : t("term.level.tp")}
     >
       {kind === "sl" ? "SL" : "TP"} {fmtNum(d, 1)}p
     </span>
@@ -680,12 +684,13 @@ function PendingTriggerDistance({
   prices?: Record<string, PriceTick>;
   className?: string;
 }) {
+  const { t } = useI18n();
   const d = pendingTriggerDistancePips(o, prices);
   if (d == null) return <span className={`tabular-nums text-[9.5px] text-desk-muted/60 ${className}`}>—</span>;
   return (
     <span
       className={`tabular-nums text-[9.5px] text-desk-accent/90 ${className}`}
-      title="Tetik fiyatına uzaklık (güncel piyasadan, pip) · Distance to trigger"
+      title={t("term.level.trigger")}
     >
       {fmtNum(d, 1)} pip
     </span>
@@ -766,6 +771,7 @@ function SlQuickChips({
   prices?: Record<string, PriceTick>;
   size?: "sm" | "md";
 }) {
+  const { t } = useI18n();
   const beOk = breakevenAllowed(p, prices);
   return (
     <div className="mt-1 flex flex-wrap gap-0.5">
@@ -774,11 +780,7 @@ function SlQuickChips({
         tone="accent"
         disabled={!beOk}
         onClick={() => onSet(formatPrice(p.symbol, p.openPrice))}
-        title={
-          beOk
-            ? "Başabaş: SL = açılış fiyatı · Breakeven: SL at open price"
-            : "Başabaş için pozisyon kârda olmalı · Position must be in profit for breakeven"
-        }
+        title={beOk ? t("term.be.atOpen") : t("term.be.needProfit")}
       >
         BE
       </QuickChip>
@@ -788,13 +790,13 @@ function SlQuickChips({
           size={size}
           tone="sell"
           onClick={() => onSet(pipOffsetPrice(p, "sl", n, prices))}
-          title={`SL ${n} pip (güncel fiyattan · from current price)`}
+          title={t("term.level.pipsFrom").replace("{kind}", "SL").replace("{n}", String(n))}
         >
           {p.side === "BUY" ? "−" : "+"}
           {n}
         </QuickChip>
       ))}
-      <QuickChip size={size} onClick={() => onSet("")} title="SL temizle · Clear SL">
+      <QuickChip size={size} onClick={() => onSet("")} title={t("term.sl.clear")}>
         ✕
       </QuickChip>
     </div>
@@ -812,6 +814,7 @@ function TpQuickChips({
   prices?: Record<string, PriceTick>;
   size?: "sm" | "md";
 }) {
+  const { t } = useI18n();
   return (
     <div className="mt-1 flex flex-wrap gap-0.5">
       {PIP_PRESETS.map((n) => (
@@ -820,13 +823,13 @@ function TpQuickChips({
           size={size}
           tone="buy"
           onClick={() => onSet(pipOffsetPrice(p, "tp", n, prices))}
-          title={`TP ${n} pip (güncel fiyattan · from current price)`}
+          title={t("term.level.pipsFrom").replace("{kind}", "TP").replace("{n}", String(n))}
         >
           {p.side === "BUY" ? "+" : "−"}
           {n}
         </QuickChip>
       ))}
-      <QuickChip size={size} onClick={() => onSet("")} title="TP temizle · Clear TP">
+      <QuickChip size={size} onClick={() => onSet("")} title={t("term.tp.clear")}>
         ✕
       </QuickChip>
     </div>
@@ -1015,7 +1018,7 @@ function OpenCard({
               type="button"
               onClick={openEditPanel}
               className="rounded-[10px] border border-desk-border/70 bg-desk-bg/50 px-3 py-2 text-[11px] font-semibold text-desk-text hover:bg-desk-hover"
-              title="Edit SL/TP"
+              title={t("term.sl.edit")}
             >
               SL/TP
             </button>
@@ -1317,7 +1320,7 @@ function OpenRowActions({
             setMode("edit");
           }}
           className="rounded-[7px] border border-desk-border/60 bg-desk-bg/40 px-1.5 py-0.5 text-[10px] font-semibold text-desk-muted hover:text-desk-text"
-          title="Düzenle SL/TP"
+          title={t("term.sl.edit")}
         >
           ✎
         </button>
@@ -1501,7 +1504,7 @@ export default function BottomPanels({
   const { t } = useI18n();
   const reopenLabel = t("term.reopen");
   const reopenTitle = t("term.reopenTitle");
-  // Monthly account statement (Hesap özeti) — client-only, from closed trades
+  // Monthly account statement — client-only, from closed trades
   const [showStatement, setShowStatement] = useState(false);
   const closeStatement = useCallback(() => setShowStatement(false), []);
   const [showFilters, setShowFilters] = useState(false);
@@ -1836,14 +1839,14 @@ export default function BottomPanels({
   const summaryStrip =
     tab === "open" && openPositions.length > 0 ? (
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-desk-border/60 bg-desk-elev/20 px-2.5 py-1.5">
-        <SummaryStat label={filtersActive ? "Pozisyon (filtre)" : "Pozisyon"} className="text-desk-text">
+        <SummaryStat label={filtersActive ? t("term.blotter.positionsFiltered") : t("term.blotter.positions")} className="text-desk-text">
           {openSummary.count}
         </SummaryStat>
-        <SummaryStat label="Açık K/Z" className={moneyCls(openSummary.pnl)}>
+        <SummaryStat label={t("term.blotter.openPnl")} className={moneyCls(openSummary.pnl)}>
           {openSummary.pnl > 0 ? "+" : ""}
           {fmtNum(openSummary.pnl, 2)}
         </SummaryStat>
-        <SummaryStat label="AL / SAT" className="text-desk-muted">
+        <SummaryStat label={t("term.blotter.buySell")} className="text-desk-muted">
           <span className="text-desk-buy">{openSummary.buys}</span>
           {" / "}
           <span className="text-desk-sell">{openSummary.sells}</span>
@@ -1851,15 +1854,15 @@ export default function BottomPanels({
       </div>
     ) : tab === "closed" && closedLedger.length > 0 ? (
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-desk-border/60 bg-desk-elev/20 px-2.5 py-1.5">
-        <SummaryStat label={filtersActive ? "İşlem (filtre)" : "İşlem"} className="text-desk-text">
+        <SummaryStat label={filtersActive ? t("term.blotter.tradesFiltered") : t("term.blotter.trades")} className="text-desk-text">
           {closedSummary.count}
         </SummaryStat>
-        <SummaryStat label="Gerçekleşen K/Z" className={moneyCls(closedSummary.pnl)}>
+        <SummaryStat label={t("term.blotter.realized")} className={moneyCls(closedSummary.pnl)}>
           {closedSummary.pnl > 0 ? "+" : ""}
           {fmtNum(closedSummary.pnl, 2)}
         </SummaryStat>
         <SummaryStat
-          label="Kazanma oranı"
+          label={t("term.blotter.winRate")}
           className={
             closedSummary.count === 0
               ? "text-desk-muted"
@@ -1875,7 +1878,7 @@ export default function BottomPanels({
         {closedSummary.count > 0 && (
           <>
             <SummaryStat
-              label="Kâr faktörü"
+              label={t("term.blotter.profitFactor")}
               className={
                 closedSummary.profitFactor >= 1 ? "text-desk-buy" : "text-desk-sell"
               }
@@ -1884,12 +1887,12 @@ export default function BottomPanels({
                 ? fmtNum(closedSummary.profitFactor, 2)
                 : "∞"}
             </SummaryStat>
-            <SummaryStat label="Ort. kâr / zarar" className="text-desk-muted">
+            <SummaryStat label={t("term.blotter.avg")} className="text-desk-muted">
               <span className="text-desk-buy">+{fmtNum(closedSummary.avgWin, 2)}</span>
               {" / "}
               <span className="text-desk-sell">-{fmtNum(closedSummary.avgLoss, 2)}</span>
             </SummaryStat>
-            <SummaryStat label="En iyi / kötü" className="text-desk-muted">
+            <SummaryStat label={t("term.blotter.bestWorst")} className="text-desk-muted">
               <span className={moneyCls(closedSummary.best)}>
                 {closedSummary.best > 0 ? "+" : ""}
                 {fmtNum(closedSummary.best, 2)}
@@ -1903,10 +1906,10 @@ export default function BottomPanels({
             {closedSummary.curve.length > 2 && (
               <div
                 className="flex items-center gap-1.5"
-                title="Kümülatif gerçekleşen K/Z (kapanış sırasına göre) · Cumulative realised P&L"
+                title={t("term.blotter.curveTitle")}
               >
                 <span className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">
-                  Eğri
+                  {t("term.blotter.curve")}
                 </span>
                 <PnlSparkline values={closedSummary.curve} />
               </div>

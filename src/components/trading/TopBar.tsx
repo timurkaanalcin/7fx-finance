@@ -80,6 +80,7 @@ function MarginUsageBar({
   freeMargin?: number;
   marginLevel?: number;
 }) {
+  const { t } = useI18n();
   const a = account;
   const margin = a?.margin ?? 0;
   const equity = equityProp ?? a?.equity ?? 0;
@@ -96,8 +97,8 @@ function MarginUsageBar({
     level === "danger" ? "text-desk-sell" : level === "caution" ? "text-desk-warn" : "text-desk-text";
   const cur = a?.currency;
   const label = a
-    ? `Marj kullanımı / Margin usage: ${usedPct.toFixed(1)}% · Marj / Margin ${fmtMoney(margin, 2, cur)} · Serbest / Free ${fmtMoney(freeMargin, 2, cur)} · Marj seviyesi / Margin level ${ml > 0 ? fmtPct(ml) : "—"}`
-    : "Marj kullanımı / Margin usage: —";
+    ? `${t("term.margin.usage")}: ${usedPct.toFixed(1)}% · ${t("term.margin.margin")} ${fmtMoney(margin, 2, cur)} · ${t("term.margin.free")} ${fmtMoney(freeMargin, 2, cur)} · ${t("term.margin.level")} ${ml > 0 ? fmtPct(ml) : "—"}`
+    : `${t("term.margin.usage")}: —`;
   return (
     <div
       className="hidden min-w-[72px] flex-col justify-center rounded-[10px] border border-desk-border/60 bg-desk-elev/40 px-2 py-1 md:flex sm:min-w-[86px] sm:px-2.5"
@@ -109,7 +110,7 @@ function MarginUsageBar({
       aria-valuenow={Math.round(usedPct)}
     >
       <span className="text-[8px] font-semibold uppercase tracking-[0.1em] text-desk-muted sm:text-[9px] sm:tracking-[0.08em]">
-        Kullanım
+        {t("term.margin.used")}
       </span>
       <span className={`text-[12px] font-semibold tabular-nums leading-tight sm:text-[13px] ${textCls}`}>
         {a ? `${usedPct.toFixed(usedPct > 0 && usedPct < 10 ? 1 : 0)}%` : "—"}
@@ -194,17 +195,17 @@ export default function TopBar({
           className="hidden md:flex"
         />
         <Metric
-          label="Marj"
+          label={t("term.top.margin")}
           value={a ? fmtMoney(a.margin, 2, a.currency) : "—"}
           className="hidden md:flex"
         />
         <Metric
-          label="Serbest"
+          label={t("term.top.free")}
           value={a ? fmtMoney(free, 2, a.currency) : "—"}
           className="hidden md:flex"
         />
         <Metric
-          label="Marj %"
+          label={t("term.top.marginPct")}
           value={a ? fmtPct(ml) : "—"}
           danger={ml > 0 && ml < 100}
           className="hidden md:flex"
@@ -216,7 +217,7 @@ export default function TopBar({
           danger={pnl < 0}
           positive={pnl > 0}
           sub={pnlPct}
-          title={pnlPct ? `Açık P&L / equity · Open P&L / equity ${pnlPct}` : undefined}
+          title={pnlPct ? `${t("term.top.openPnl")} ${pnlPct}` : undefined}
         />
         {(a?.credit ?? 0) > 0 && (
           <Metric
@@ -232,15 +233,15 @@ export default function TopBar({
         <button
           type="button"
           onClick={onDeposit}
-          title="Deposit"
-          aria-label="Deposit"
+          title={t("term.deposit")}
+          aria-label={t("term.deposit")}
           className="fx-deposit-btn flex h-7 items-center gap-1 rounded-[9px] bg-desk-accent px-2 text-[11px] font-semibold text-desk-accent-ink shadow-accent-glow-sm hover:brightness-110 md:h-8 md:gap-1.5 md:rounded-[10px] md:px-2.5 md:text-xs"
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
             <rect x="2" y="6" width="20" height="12" rx="2" />
             <path d="M12 10v4M10 12h4" />
           </svg>
-          <span className="hidden sm:inline">Deposit</span>
+          <span className="hidden sm:inline">{t("term.deposit")}</span>
         </button>
 
         {/* Mobile: avatar is a direct link to /profile (tap target must not be swallowed) */}

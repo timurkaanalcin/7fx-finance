@@ -651,6 +651,9 @@ export default function TicketsPage() {
         <Link href="/izcrm/deposits" className="rounded bg-neutral-100 px-2 py-1.5 hover:bg-neutral-200">
           {i18n("crm.tickets.legacyDeposits")}
         </Link>
+        <Link href="/izcrm/withdrawals" className="rounded bg-neutral-100 px-2 py-1.5 hover:bg-neutral-200">
+          {i18n("crm.edit.withdrawals")}
+        </Link>
         <Link
           href="/izcrm/balance-requests"
           className="rounded bg-neutral-100 px-2 py-1.5 hover:bg-neutral-200"

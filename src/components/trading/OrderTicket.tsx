@@ -544,13 +544,13 @@ export default function OrderTicket({
       <div className="min-h-0 flex-1 space-y-3.5 overflow-y-auto p-3.5 md:space-y-3 md:p-3">
         <div className="grid grid-cols-2 gap-2">
           <div className="rounded-[12px] border border-desk-border/60 bg-desk-bg/80 px-2.5 py-2.5 text-center md:rounded-control md:py-2">
-            <div className="text-[9px] font-semibold uppercase tracking-wider text-desk-muted">Buy</div>
+            <div className="text-[9px] font-semibold uppercase tracking-wider text-desk-muted">{t("term.buy")}</div>
             <div className="mt-0.5 text-[15px] font-bold tabular-nums text-desk-buy md:text-sm md:font-semibold">
               {price ? formatPrice(symbol, price.ask) : "—"}
             </div>
           </div>
           <div className="rounded-[12px] border border-desk-border/60 bg-desk-bg/80 px-2.5 py-2.5 text-center md:rounded-control md:py-2">
-            <div className="text-[9px] font-semibold uppercase tracking-wider text-desk-muted">Sell</div>
+            <div className="text-[9px] font-semibold uppercase tracking-wider text-desk-muted">{t("term.sell")}</div>
             <div className="mt-0.5 text-[15px] font-bold tabular-nums text-desk-sell md:text-sm md:font-semibold">
               {price ? formatPrice(symbol, price.bid) : "—"}
             </div>
@@ -567,7 +567,7 @@ export default function OrderTicket({
                 : "border border-desk-border bg-desk-elev text-desk-muted hover:bg-desk-hover hover:text-desk-text"
             }`}
           >
-            AL
+            {t("term.buy")}
           </button>
           <button
             type="button"
@@ -578,7 +578,7 @@ export default function OrderTicket({
                 : "border border-desk-border bg-desk-elev text-desk-muted hover:bg-desk-hover hover:text-desk-text"
             }`}
           >
-            SAT
+            {t("term.sell")}
           </button>
         </div>
 
@@ -989,13 +989,13 @@ export default function OrderTicket({
               {t("term.ot.review")}
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-desk-muted">İşlem</span>
+              <span className="text-desk-muted">{t("term.ot.trade")}</span>
               <span className={`font-bold ${side === "BUY" ? "text-desk-buy" : "text-desk-sell"}`}>
                 {side === "BUY" ? t("term.buy") : t("term.sell")} {symbol}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-desk-muted">Tür / Lot</span>
+              <span className="text-desk-muted">{t("term.ot.typeLot")}</span>
               <span className="font-semibold tabular-nums text-desk-text">
                 {type === "MARKET" ? t("term.ot.market") : type === "LIMIT" ? t("term.ot.limit") : t("term.ot.stop")} · {Number(volume).toFixed(2)}
               </span>

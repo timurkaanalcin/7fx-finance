@@ -2,6 +2,15 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/lib/i18n/context";
+
+const INTL_TAG: Record<string, string> = {
+  en: "en",
+  tr: "tr",
+  de: "de",
+  ru: "ru",
+  ar: "ar",
+};
 
 type N = { id: string; kind: string; title: string; body: string; href: string | null; readAt: string | null; createdAt: string };
 
@@ -11,16 +20,18 @@ function b64ToU8(b64: string) {
   return Uint8Array.from(raw, (c) => c.charCodeAt(0));
 }
 
-function ago(iso: string) {
+function ago(iso: string, locale: string) {
   const s = Math.max(1, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
-  if (s < 60) return `${s} sn`;
-  if (s < 3600) return `${Math.round(s / 60)} dk`;
-  if (s < 86400) return `${Math.round(s / 3600)} sa`;
-  return `${Math.round(s / 86400)} g`;
+  const rtf = new Intl.RelativeTimeFormat(INTL_TAG[locale] || "en", { numeric: "auto" });
+  if (s < 60) return rtf.format(-s, "second");
+  if (s < 3600) return rtf.format(-Math.round(s / 60), "minute");
+  if (s < 86400) return rtf.format(-Math.round(s / 3600), "hour");
+  return rtf.format(-Math.round(s / 86400), "day");
 }
 
 export default function NotificationBell({ tone = "light" }: { tone?: "light" | "dark" }) {
   const router = useRouter();
+  const { t, locale } = useI18n();
   const [items, setItems] = useState<N[]>([]);
   const [unread, setUnread] = useState(0);
   const [open, setOpen] = useState(false);
@@ -107,7 +118,7 @@ export default function NotificationBell({ tone = "light" }: { tone?: "light" | 
     <div className="relative" ref={ref}>
       <button
         type="button"
-        aria-label={`Bildirimler${unread ? ` (${unread} okunmamış)` : ""}`}
+        aria-label={`${t("term.notify.title")}${unread ? ` (${t("term.notify.unread").replace("{n}", String(unread))})` : ""}`}
         onClick={() => setOpen((o) => !o)}
         className={`relative inline-flex h-8 w-8 items-center justify-center rounded-full border ${dark ? "border-[#2a2a2a] bg-[#0a0a0a] text-slate-200 hover:border-white/30" : "border-black/10 bg-white text-[#111111] hover:bg-neutral-50"}`}
       >
@@ -124,19 +135,19 @@ export default function NotificationBell({ tone = "light" }: { tone?: "light" | 
       {open && (
         <div className="absolute right-0 z-[70] mt-2 w-[min(340px,calc(100vw-24px))] overflow-hidden rounded-xl border border-black/10 bg-white text-[#111111] shadow-[0_16px_40px_rgba(0,0,0,0.18)]">
           <div className="flex items-center justify-between border-b border-black/5 px-3 py-2">
-            <span className="text-[13px] font-semibold">Bildirimler</span>
-            {unread > 0 && <button type="button" onClick={markAll} className="text-[11px] text-neutral-500 hover:text-black">Tümünü okundu yap</button>}
+            <span className="text-[13px] font-semibold">{t("term.notify.title")}</span>
+            {unread > 0 && <button type="button" onClick={markAll} className="text-[11px] text-neutral-500 hover:text-black">{t("term.notify.markAll")}</button>}
           </div>
           {pushState === "default" && vapid && (
             <button type="button" onClick={() => subscribe(true)} className="block w-full border-b border-black/5 bg-neutral-50 px-3 py-2 text-left text-[11px] text-neutral-600 hover:bg-neutral-100">
-              🔔 Bu cihazda anlık bildirimleri aç
+              🔔 {t("term.notify.enable")}
             </button>
           )}
           {pushState === "denied" && (
-            <p className="border-b border-black/5 bg-neutral-50 px-3 py-2 text-[11px] text-neutral-500">Tarayıcı bildirimleri engelli. Site ayarlarından izin verebilirsiniz.</p>
+            <p className="border-b border-black/5 bg-neutral-50 px-3 py-2 text-[11px] text-neutral-500">{t("term.notify.denied")}</p>
           )}
           <ul className="max-h-[360px] overflow-auto">
-            {items.length === 0 && <li className="px-3 py-6 text-center text-[12px] text-neutral-500">Bildirim yok</li>}
+            {items.length === 0 && <li className="px-3 py-6 text-center text-[12px] text-neutral-500">{t("term.notify.empty")}</li>}
             {items.map((n) => (
               <li key={n.id}>
                 <button type="button" onClick={() => openItem(n)} className={`flex w-full gap-2 px-3 py-2.5 text-left hover:bg-neutral-50 ${n.readAt ? "" : "bg-neutral-50/70"}`}>
@@ -145,7 +156,7 @@ export default function NotificationBell({ tone = "light" }: { tone?: "light" | 
                     <span className={`block truncate text-[12.5px] ${n.readAt ? "font-medium text-neutral-600" : "font-semibold"}`}>{n.title}</span>
                     <span className="mt-0.5 line-clamp-2 block text-[11.5px] text-neutral-500">{n.body}</span>
                   </span>
-                  <span className="shrink-0 text-[10px] text-neutral-400">{ago(n.createdAt)}</span>
+                  <span className="shrink-0 text-[10px] text-neutral-400">{ago(n.createdAt, locale)}</span>
                 </button>
               </li>
             ))}

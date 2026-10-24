@@ -683,7 +683,7 @@ export default function TradingChart({
     for (const lv of levels) {
       if (!Number.isFinite(lv.openPrice) || lv.openPrice <= 0) continue;
       const entryColor = lv.side === "BUY" ? buyColor : sellColor;
-      const sideLabel = lv.side === "BUY" ? "AL" : "SAT";
+      const sideLabel = lv.side === "BUY" ? t("term.buy") : t("term.sell");
       const suffix = levels.length > 1 ? ` ·${ticketSuffix(lv.id)}` : "";
       try {
         next.push(
@@ -693,7 +693,7 @@ export default function TradingChart({
             lineWidth: 1,
             lineStyle: LineStyle.Solid,
             axisLabelVisible: true,
-            title: `${sideLabel} · Giriş${suffix}`,
+            title: `${sideLabel} · ${t("term.chart.entry")}${suffix}`,
           })
         );
       } catch {
@@ -745,7 +745,7 @@ export default function TradingChart({
       }
       priceLinesRef.current = [];
     };
-  }, [levels, symbol, fxTheme, chartGen, mounted]);
+  }, [levels, symbol, fxTheme, chartGen, mounted, t]);
 
   const fmt = (n: number) => formatPrice(symbol, n);
   const legend = hoverBar ?? ohlc;
@@ -827,7 +827,7 @@ export default function TradingChart({
               <div
                 className="mt-0.5 flex flex-wrap gap-x-2.5 gap-y-0.5 text-[10px] tabular-nums text-desk-muted"
                 aria-live="off"
-                title={hoverBar ? "İmleç altındaki mum · Bar under cursor" : "Son mum · Latest bar"}
+                title={hoverBar ? t("term.chart.barUnder") : t("term.chart.latestBar")}
               >
                 {hoverLabel && (
                   <span className="rounded-[5px] bg-desk-elev/80 px-1 text-desk-text/80 ring-1 ring-desk-border/60">

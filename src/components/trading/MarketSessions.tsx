@@ -93,7 +93,7 @@ export default function MarketSessions({ className = "" }: { className?: string 
           const left = open ? minutesUntilClose(now, s) : 0;
           const cd = open ? formatCountdown(left) : "";
           const closeTip = cd
-            ? ` · ${cd} kaldı / left until close`
+            ? ` · ${t("term.sessions.left").replace("{time}", cd)}`
             : "";
           return (
             <span

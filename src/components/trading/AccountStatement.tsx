@@ -40,7 +40,7 @@ type Props = {
 };
 
 /**
- * Monthly account statement ("Hesap özeti") built client-side from the customer's own
+ * Monthly account statement built client-side from the customer's own
  * closed trades: month picker, totals, per-symbol breakdown, trade list, CSV of the month.
  * Read-only; no API calls. (Printing stays blocked by the screen-protection shield.)
  */
