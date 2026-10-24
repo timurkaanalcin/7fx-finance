@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { writeAudit, ADMIN_PERMISSIONS, hashPassword, requireAdmin, requireAdminPerm, isCrmReadOnlyAdmin } from "@/lib/auth";
 import { maskTraderForRoViewer } from "@/lib/security/mask";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 import { refreshAccountMetrics } from "@/lib/trading";
 import {
   isSupportedAccountCurrency,
@@ -16,7 +17,13 @@ import { recordLedger } from "@/lib/ledger";
 import { FxError, appendFxNote, convertAmountToUsd, type UsdConversion } from "@/lib/fx-usd";
 import { ensureLastContactBackfill } from "@/lib/last-contact";
 import { ONLINE_MS, RECENT_MS, serializePresence } from "@/lib/presence-shared";
-import { traderListWindow, wantTraderCounts } from "@/lib/trader-list";
+import {
+  serializeTraderTableRow,
+  TRADER_TABLE_SELECT,
+  traderListWindow,
+  wantTraderCounts,
+  wantTraderTable,
+} from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
 
@@ -127,26 +134,37 @@ export async function GET(req: Request) {
   const fuOrs = multi("followUp").filter((x) => FU_WHERE[x]).map((x) => FU_WHERE[x]);
   if (fuOrs.length) and.push({ OR: fuOrs });
   if (searchParams.get("ftd") === "1") and.push({ ftd: true });
+  const role = (searchParams.get("role") || "").trim().toUpperCase();
+  if (role === "TRADER" || role === "ADMIN") and.push({ role });
   const followUpActive = fuOrs.length > 0;
+  const tableView = wantTraderTable(searchParams.get("view"));
   const sort = (searchParams.get("sort") || "").trim(); // lastContact_desc | lastContact_asc
   if (and.length) where.AND = and;
 
   const { take, skip } = traderListWindow(searchParams.get("take"), searchParams.get("skip"));
-  const users = await prisma.user.findMany({
-    where: scopeUserWhere(admin, Object.keys(where).length ? where : undefined),
-    include: { account: true },
-    orderBy:
-      sort === "lastContact_desc" || sort === "lastContact_asc"
-        ? [
-            { lastContactAt: { sort: sort === "lastContact_asc" ? "asc" : "desc", nulls: "last" } },
-            { createdAt: "desc" },
-          ]
-        : followUpActive
-          ? [{ retentionFollowUpAt: "asc" }, { createdAt: "desc" }]
-          : { createdAt: "desc" },
-    skip,
-    take: take + 1,
-  });
+  const listWhere = scopeUserWhere(admin, Object.keys(where).length ? where : undefined);
+  const contactDir: "asc" | "desc" = sort === "lastContact_asc" ? "asc" : "desc";
+  const orderBy: Prisma.UserOrderByWithRelationInput | Prisma.UserOrderByWithRelationInput[] =
+    sort === "lastContact_desc" || sort === "lastContact_asc"
+      ? [{ lastContactAt: { sort: contactDir, nulls: "last" } }, { createdAt: "desc" }]
+      : followUpActive
+        ? [{ retentionFollowUpAt: "asc" }, { createdAt: "desc" }]
+        : { createdAt: "desc" };
+  const users = tableView
+    ? await prisma.user.findMany({
+        where: listWhere,
+        select: TRADER_TABLE_SELECT,
+        orderBy,
+        skip,
+        take: take + 1,
+      })
+    : await prisma.user.findMany({
+        where: listWhere,
+        include: { account: true },
+        orderBy,
+        skip,
+        take: take + 1,
+      });
   const hasMore = users.length > take;
   const page = hasMore ? users.slice(0, take) : users;
 
@@ -207,10 +225,12 @@ export async function GET(req: Request) {
 
   return NextResponse.json({
     users: page.map((u) => {
-      const row = {
-        ...serializeUserMembership(u as unknown as Record<string, unknown>),
-        ...serializePresence(u as unknown as Record<string, unknown>),
-      };
+      const row = tableView
+        ? serializeTraderTableRow(u as unknown as Record<string, unknown>)
+        : {
+            ...serializeUserMembership(u as unknown as Record<string, unknown>),
+            ...serializePresence(u as unknown as Record<string, unknown>),
+          };
       return roViewer ? maskTraderForRoViewer(row as Record<string, unknown>) : row;
     }),
     hasMore,

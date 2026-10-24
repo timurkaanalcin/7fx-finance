@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useVisiblePoll } from "@/lib/use-visible-poll";
+import { CRM_IDLE_POLL_MS, useVisiblePoll } from "@/lib/use-visible-poll";
 import Link from "next/link";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
@@ -135,7 +135,7 @@ export default function LeadDashboard() {
   useEffect(() => {
     load();
   }, [load]);
-  useVisiblePoll(load, 5000);
+  useVisiblePoll(load, CRM_IDLE_POLL_MS);
 
   const highDepositCut = useMemo(() => {
     const amounts = affiliates.map((a) => a.depositAmount).filter((n) => n > 0).sort((a, b) => a - b);

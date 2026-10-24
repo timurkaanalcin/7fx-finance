@@ -301,6 +301,7 @@ export default function AdminUsersPage() {
       if (metaSeen.current) params.set("meta", "0");
     }
     if (!countsSeen.current) params.set("counts", "1");
+    params.set("view", "table");
     try {
       const res = await fetch(`/api/admin/users?${params}`, { cache: "no-store" });
       if (!res.ok || gen !== listGen.current) return;

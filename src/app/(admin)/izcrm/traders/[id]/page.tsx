@@ -14,7 +14,7 @@ import { useParams } from "next/navigation";
 import RetentionPanel, { AssigneePicker } from "@/components/crm/RetentionPanel";
 import TeamComments from "@/components/crm/TeamComments";
 import { useCallback, useEffect, useState } from "react";
-import { useVisiblePoll } from "@/lib/use-visible-poll";
+import { CRM_IDLE_POLL_MS, useVisiblePoll } from "@/lib/use-visible-poll";
 import { LoginHistory, TraderPresenceHeader } from "@/components/crm/Presence";
 import AccountPermissionsPanel from "@/components/crm/AccountPermissionsPanel";
 import {
@@ -1082,9 +1082,9 @@ export default function AdminUserDetailPage() {
     load();
   }, [load]);
 
-  // Live refresh while viewing trading tabs so CRM mirrors terminal open/close.
-  // Edit drafts live in their own component state, so polling never overwrites typed values.
-  useVisiblePoll(load, 5000, Boolean(id) && (tab === "pozisyonlar" || tab === "finans"));
+  // Refresh trading tabs while they stay visible so CRM still mirrors terminal open/close.
+  // The interval is idle-paced; a hidden tab stays paused. Edit drafts live in their own state.
+  useVisiblePoll(load, CRM_IDLE_POLL_MS, Boolean(id) && (tab === "pozisyonlar" || tab === "finans"));
 
   function startProfileEdit() {
     if (!user) return;
