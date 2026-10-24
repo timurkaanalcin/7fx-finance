@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/context";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
+import { isCrmHostname, MAIN_SITE_ORIGIN } from "@/lib/crm-host";
 
 const inputClass =
   "fx-auth-input w-full rounded-xl border border-[rgba(16,20,37,0.12)] bg-[#ffffff] px-3.5 py-3 text-[15px] text-[#111111] outline-none transition placeholder:text-[#8b93a7] hover:border-[#111111]/40 focus:border-[#111111] focus:shadow-[0_0_0_3px_rgba(17,17,17,0.15)]";
@@ -136,11 +137,10 @@ export default function LoginForm() {
         );
         const onCrmHost =
           typeof window !== "undefined" &&
-          (window.location.hostname === "crm7fx.customer.org.tr" ||
-            window.location.hostname === "crm7fx.localhost");
+          isCrmHostname(window.location.hostname);
         // CRM host → always CRM UI. Main host: RO admins get trading like customers.
         if (onCrmHost) {
-          window.location.assign(role === "ADMIN" ? "/izcrm" : "https://7fx.customer.org.tr/trade");
+          window.location.assign(role === "ADMIN" ? "/izcrm" : `${MAIN_SITE_ORIGIN}/trade`);
         } else if (role === "ADMIN" && !crmReadOnly) {
           // TEMP: full ADMIN stays on /izcrm until Natro crm7fx is live
           window.location.assign("/izcrm");
@@ -187,10 +187,9 @@ export default function LoginForm() {
               const role = data.user?.role;
               const crmReadOnly = Boolean(data.user?.crmReadOnly ?? data.permissions?.crmReadOnly);
               const onCrmHost =
-                window.location.hostname === "crm7fx.customer.org.tr" ||
-                window.location.hostname === "crm7fx.localhost";
+                isCrmHostname(window.location.hostname);
               if (onCrmHost) {
-                window.location.assign(role === "ADMIN" ? "/izcrm" : "https://7fx.customer.org.tr/trade");
+                window.location.assign(role === "ADMIN" ? "/izcrm" : `${MAIN_SITE_ORIGIN}/trade`);
               } else if (role === "ADMIN" && !crmReadOnly) {
                 // TEMP: full ADMIN stays on /izcrm until Natro crm7fx is live
                 window.location.assign("/izcrm");

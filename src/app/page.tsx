@@ -45,7 +45,7 @@ export function generateMetadata(): Metadata {
 function JsonLd() {
   const locale = getPublicLocale();
   const t = serverT(locale);
-  const base = (process.env.NEXT_PUBLIC_APP_URL || "https://7fx.customer.org.tr").replace(/\/$/, "");
+  const base = (process.env.NEXT_PUBLIC_APP_URL || "https://7fx.control.org.tr").replace(/\/$/, "");
   const faq = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => ({
     "@type": "Question",
     name: t(`lp.q${n}`),

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ACCOUNT_CURRENCIES, RETENTION_STATUSES, SALE_STATUSES } from "@/lib/membership";
 import { dayEndIso, dayStartIso } from "@/lib/crm-api";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
+import { DEFAULT_SITE, KNOWN_SITES, siteLabel } from "@/lib/sites-shared";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LocationLabel, PresenceCell } from "@/components/crm/Presence";
 import CopyButton from "@/components/crm/CopyButton";
@@ -50,6 +51,7 @@ type UserRow = {
   ftd: boolean;
   phone: string | null;
   accountType: string;
+  site?: string | null;
   tradingAccountId?: string | null;
   lastSeenAt?: string | null;
   lastIp?: string | null;
@@ -69,6 +71,7 @@ const REFRESH_MS = 20000;
 const SAVED_FILTERS_KEY = "7fx.crm.traderFilters.v1";
 type TraderFilterState = {
   q: string;
+  site: string;
   status: string;
   desk: string;
   country: string;
@@ -87,6 +90,7 @@ type TraderFilterState = {
 type SavedTraderFilter = { name: string; f: TraderFilterState };
 const EMPTY_FILTERS: TraderFilterState = {
   q: "",
+  site: "",
   status: "all",
   desk: "",
   country: "",
@@ -135,6 +139,7 @@ const emptyCreate = {
   accountType: "STANDARD",
   balance: "0",
   currency: "USD",
+  site: DEFAULT_SITE,
 };
 
 export default function AdminUsersPage() {
@@ -142,6 +147,10 @@ export default function AdminUsersPage() {
   const [rows, setRows] = useState<UserRow[]>([]);
   const [deskOptions, setDeskOptions] = useState<DeskOpt[]>([]);
   const [q, setQ] = useState("");
+  const [site, setSite] = useState("");
+  const [siteOptions, setSiteOptions] = useState<{ key: string; label: string; count: number }[]>(
+    KNOWN_SITES.map((s) => ({ ...s, count: 0 }))
+  );
   const [status, setStatus] = useState("all");
   const [desk, setDesk] = useState("");
   const [country, setCountry] = useState("");
@@ -197,6 +206,7 @@ export default function AdminUsersPage() {
   }, []);
   const currentFilters: TraderFilterState = {
     q,
+    site,
     status,
     desk,
     country,
@@ -216,6 +226,7 @@ export default function AdminUsersPage() {
   const activePreset = savedFilters.find((p) => sameFilters(p.f, currentFilters))?.name ?? "";
   function applyFilters(f: TraderFilterState) {
     setQ(f.q);
+    setSite(f.site || "");
     setStatus(f.status || "all");
     setDesk(f.desk);
     setCountry(f.country);
@@ -255,6 +266,7 @@ export default function AdminUsersPage() {
   const load = useCallback(async () => {
     const params = new URLSearchParams();
     if (q) params.set("q", q);
+    if (site) params.set("site", site);
     if (status && status !== "all") params.set("status", status);
     if (desk) params.set("desk", desk);
     if (country) params.set("country", country);
@@ -283,6 +295,7 @@ export default function AdminUsersPage() {
     if (ftdOnly) list = list.filter((u: UserRow) => u.ftd);
     setRows(list);
     setDeskOptions(data.deskOptions || []);
+    if (Array.isArray(data.siteOptions)) setSiteOptions(data.siteOptions);
     if (data.followUpDue) {
       setFollowUpDue({
         overdue: Number(data.followUpDue.overdue) || 0,
@@ -292,7 +305,7 @@ export default function AdminUsersPage() {
     if (data.retentionCounts && typeof data.retentionCounts === "object") {
       setRetentionCounts(data.retentionCounts as Record<string, number>);
     }
-  }, [q, status, desk, country, saleStatus, retentionStatus, ftdOnly, presence, accountTypeFilter, dateFrom, dateTo, followUp, lastContactFrom, lastContactTo, sort]);
+  }, [q, site, status, desk, country, saleStatus, retentionStatus, ftdOnly, presence, accountTypeFilter, dateFrom, dateTo, followUp, lastContactFrom, lastContactTo, sort]);
 
   useEffect(() => {
     load();
@@ -384,6 +397,7 @@ export default function AdminUsersPage() {
         return;
       }
       const header = [
+        i18n("crm.site.label", "Site"),
         i18n("crm.ui.name"),
         i18n("crm.ui.email"),
         i18n("crm.ui.accountId"),
@@ -410,6 +424,7 @@ export default function AdminUsersPage() {
       for (const u of rows) {
         lines.push(
           [
+            siteLabel(u.site),
             u.name,
             u.email,
             u.accountLoginId ?? "",
@@ -471,6 +486,7 @@ export default function AdminUsersPage() {
           accountType: createForm.accountType,
           balance: Number(createForm.balance),
           currency: createForm.currency,
+          site: createForm.site,
         }),
       });
       const data = await res.json();
@@ -503,6 +519,35 @@ export default function AdminUsersPage() {
           placeholder={i18n("crm.ui.searchTraders")}
           className="ml-auto w-full max-w-xs rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-3 py-1.5 text-sm"
         />
+      </div>
+
+      <div className="mb-3 flex flex-wrap items-center gap-1 text-xs" data-fx-site-tabs>
+        <span className="mr-1 text-neutral-500">{i18n("crm.site.label", "Site")}:</span>
+        {[
+          { key: "", label: i18n("crm.site.all", "Tümü"), count: siteOptions.reduce((a, s) => a + (s.count || 0), 0) },
+          ...siteOptions,
+        ].map((opt) => {
+          const on = site === opt.key;
+          return (
+            <button
+              key={opt.key || "all"}
+              type="button"
+              data-fx-site={opt.key || "all"}
+              onClick={() => {
+                setSite(opt.key);
+                setSelected(new Set());
+              }}
+              className={`rounded-full border px-3 py-1 font-medium ${
+                on
+                  ? "border-[#111111] bg-[#111111] text-white"
+                  : "border-[#e5e5e5] bg-white text-[#111111] hover:border-[#111111]"
+              }`}
+            >
+              {opt.label}
+              <span className={`ml-1 ${on ? "text-neutral-300" : "text-neutral-500"}`}>{opt.count}</span>
+            </button>
+          );
+        })}
       </div>
 
       <div className="mb-3 flex flex-wrap gap-2 text-xs">
@@ -945,6 +990,7 @@ export default function AdminUsersPage() {
                   onChange={toggleAll}
                 />
               </th>
+              <th className="px-3 py-2.5">{i18n("crm.site.label", "Site")}</th>
               <th className="px-3 py-2.5">{i18n("crm.ui.memberId")}</th>
               <th className="px-3 py-2.5">{i18n("crm.presence.status")}</th>
               <th className="px-3 py-2.5">{i18n("crm.ui.phone")}</th>
@@ -976,6 +1022,18 @@ export default function AdminUsersPage() {
               <tr key={u.id} className="border-t border-[#e5e5e5] hover:bg-[#ffffff]/60">
                 <td className="px-2 py-2.5">
                   <input type="checkbox" checked={selected.has(u.id)} onChange={() => toggle(u.id)} />
+                </td>
+                <td className="px-3 py-2.5">
+                  <span
+                    data-fx-site-badge={u.site || DEFAULT_SITE}
+                    className={`inline-block rounded border px-1.5 py-0.5 text-[10px] font-semibold tracking-wide ${
+                      (u.site || DEFAULT_SITE) === DEFAULT_SITE
+                        ? "border-[#111111] bg-[#111111] text-white"
+                        : "border-[#111111] bg-white text-[#111111]"
+                    }`}
+                  >
+                    {siteLabel(u.site)}
+                  </span>
                 </td>
                 <td className="px-3 py-2.5">
                   <div className="font-mono text-[9px] text-neutral-400">{u.id.slice(0, 8)}…</div>
@@ -1131,7 +1189,7 @@ export default function AdminUsersPage() {
             ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={13} className="px-3 py-10 text-center text-neutral-500">
+                <td colSpan={15} className="px-3 py-10 text-center text-neutral-500">
                   {i18n("crm.ui.noRecords")}
                 </td>
               </tr>
@@ -1173,6 +1231,20 @@ export default function AdminUsersPage() {
                   />
                 </label>
               ))}
+              <label className="flex flex-col gap-1">
+                <span className="text-neutral-500">{i18n("crm.site.label", "Site")}</span>
+                <select
+                  value={createForm.site}
+                  onChange={(e) => setCreateForm({ ...createForm, site: e.target.value })}
+                  className="rounded border border-[#111111] bg-white px-2 py-1.5 text-sm text-[#111111]"
+                >
+                  {siteOptions.map((s) => (
+                    <option key={s.key} value={s.key}>
+                      {s.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
               <label className="flex flex-col gap-1">
                 <span className="text-neutral-500">{i18n("crm.ui.currency")}</span>
                 <select

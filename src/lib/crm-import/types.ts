@@ -45,6 +45,8 @@ export type ImportDefaults = {
   country?: string;
   /** Rule-based: CRM worker / assignee name applied to all rows without override */
   assigneeName?: string;
+  /** Source site key for all imported rows ("7fx", "mfx", …) */
+  site?: string;
 };
 
 export type DuplicateMode = "skip" | "update";
@@ -68,6 +70,8 @@ export type MappedCustomer = {
   password: string | null;
   /** True when email was auto-generated because schema requires unique email */
   emailPlaceholder: boolean;
+  /** Source site key */
+  site: string;
 };
 
 export type RowValidation = {

@@ -79,7 +79,7 @@ export default function AuthShell({ mode, children }: AuthShellProps) {
               <br className="hidden sm:block" /> {t("authx.secure")}
             </p>
             <p className="mt-4 text-center text-[12px] text-[#5c657a]">
-              © {new Date().getFullYear()} 7FX · 7fx.customer.org.tr
+              © {new Date().getFullYear()} 7FX · 7fx.control.org.tr
             </p>
           </div>
         </main>

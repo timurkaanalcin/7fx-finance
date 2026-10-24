@@ -33,7 +33,7 @@ export default function IosInstallPage() {
             {
               n: "1",
               t: "Open in Safari",
-              d: "Use Safari (not Chrome/in-app browsers). Open https://7fx.customer.org.tr",
+              d: "Use Safari (not Chrome/in-app browsers). Open https://7fx.control.org.tr",
             },
             {
               n: "2",

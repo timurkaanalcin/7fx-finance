@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import {
+  CRM_SITE_ORIGIN,
   hostnameFromRequest,
   isCrmHostname,
 } from "@/lib/crm-host";
@@ -80,8 +81,21 @@ export function middleware(req: NextRequest) {
     }
   }
 
-  // ——— CRM host (crm7fx.customer.org.tr) ———
+  // ——— CRM host (crm.control.org.tr) ———
   if (crmHost) {
+    // Host root → CRM dashboard (auth-gated) so https://crm.control.org.tr/ opens the CRM.
+    if (pathname === "/") {
+      return applyHeaders(
+        NextResponse.redirect(new URL(token ? "/izcrm" : "/login", req.url))
+      );
+    }
+    if (
+      pathname === "/site.webmanifest" ||
+      pathname === "/robots.txt" ||
+      pathname === "/logout"
+    ) {
+      return applyHeaders(passNext());
+    }
     if (
       pathname.startsWith("/api/") ||
       pathname.startsWith("/_next/") ||
@@ -137,8 +151,16 @@ export function middleware(req: NextRequest) {
     );
   }
 
-  // TEMP: /izcrm re-enabled on trading host until Natro crm7fx.customer.org.tr is live.
-  // Remove this auth-gate restore and re-cutover once crm7fx Natro CRM is serving.
+  // CRM lives on crm.control.org.tr. Once its DNS is live set CRM_HOST_ONLY=1 on Vercel:
+  // the trading host then sends every /izcrm URL to the CRM host (same path + query).
+  // Until then /izcrm keeps working here (auth-gated below) so admins are never locked out.
+  if (
+    process.env.CRM_HOST_ONLY === "1" &&
+    (pathname === "/izcrm" || pathname.startsWith("/izcrm/"))
+  ) {
+    const target = new URL(pathname + (req.nextUrl.search || ""), CRM_SITE_ORIGIN);
+    return applyHeaders(NextResponse.redirect(target, 308));
+  }
 
   if (pathname === "/login" || pathname === "/register") {
     if (token) {

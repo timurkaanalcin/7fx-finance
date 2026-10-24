@@ -1,3 +1,4 @@
+import { DEFAULT_SITE, normalizeSiteKey } from "@/lib/sites-shared";
 /** Shared CRM / membership field helpers for admin + trader profile */
 
 export const ACCOUNT_TYPES = ["STANDARD", "VIP", "PRO", "DEMO"] as const;
@@ -181,6 +182,10 @@ export function parseMembershipUpdate(
   setStr("name", 120);
   setStr("referralCodeUsed", 64);
 
+  if (!trader && "site" in body) {
+    const k = normalizeSiteKey(body.site);
+    if (k) data.site = k;
+  }
   if (!trader && "birthDate" in body) {
     data.birthDate = dateOrNull(body.birthDate);
   }
@@ -275,6 +280,8 @@ export function serializeUserMembership(u: Record<string, unknown>) {
     retentionFollowUpAt: (u.retentionFollowUpAt as Date | string | null | undefined) ?? null,
     documentsStatus: u.documentsStatus ?? "NONE",
     referralCodeUsed: (u.referralCodeUsed as string | null) ?? null,
+    site: (u.site as string | null | undefined) || DEFAULT_SITE,
+    siteExternalId: (u.siteExternalId as string | null | undefined) ?? null,
     canManageUsers: u.canManageUsers,
     canApproveDeposits: u.canApproveDeposits,
     canEditRates: u.canEditRates,

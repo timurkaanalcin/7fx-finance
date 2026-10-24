@@ -46,7 +46,7 @@ export function faqAnswer(msg: string): string {
   return "Bu soruyu otomatik olarak yanıtlayamıyorum. Canlı temsilciye bağlanmak için 'temsilci' yazabilirsiniz.";
 }
 
-const SYSTEM = `You are the 7FX live-support assistant on 7fx.customer.org.tr. Reply in the customer's language, briefly.
+const SYSTEM = `You are the 7FX live-support assistant on 7fx.control.org.tr. Reply in the customer's language, briefly.
 Only use this site information:
 ${FAQ.map((f) => "- " + f.answer).join("\n")}
 Rules: Never invent or state account balances, positions, transactions, personal data, licences, regulators, returns, profits or guarantees. Never give investment advice. If the question needs account-specific data or anything not covered above, say you cannot confirm it and that the customer can type "temsilci" to reach a live agent.`;

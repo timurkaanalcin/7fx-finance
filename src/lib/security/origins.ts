@@ -1,6 +1,9 @@
 /** Allowed browser Origins for credentialed / mutating API calls in production. */
 export const API_ALLOWED_ORIGINS = new Set(
   [
+    "https://7fx.control.org.tr",
+    "https://crm.control.org.tr",
+    "https://7fx-finance.vercel.app",
     "https://7fx.customer.org.tr",
     "https://crm7fx.customer.org.tr",
     "https://7fx-finance-production.up.railway.app",

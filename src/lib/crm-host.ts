@@ -1,10 +1,11 @@
-/** CRM-dedicated hosts (admin UI). Main trading site stays on 7fx.customer.org.tr. */
+/** CRM-dedicated hosts (admin UI). Main trading site is 7fx.control.org.tr. */
 export const CRM_HOSTNAMES = new Set([
+  "crm.control.org.tr",
   "crm7fx.customer.org.tr",
 ]);
 
-export const MAIN_SITE_ORIGIN = "https://7fx.customer.org.tr";
-export const CRM_SITE_ORIGIN = "https://crm7fx.customer.org.tr";
+export const MAIN_SITE_ORIGIN = "https://7fx.control.org.tr";
+export const CRM_SITE_ORIGIN = "https://crm.control.org.tr";
 
 export function hostnameFromRequest(req: { headers: { get: (n: string) => string | null } }): string {
   const raw =
@@ -18,7 +19,7 @@ export function isCrmHostname(host: string): boolean {
   if (!host) return false;
   if (CRM_HOSTNAMES.has(host)) return true;
   // Local/dev preview
-  if (host === "crm7fx.localhost" || host.endsWith(".crm7fx.localhost")) return true;
+  if (host === "crm.localhost" || host === "crm7fx.localhost" || host.endsWith(".crm7fx.localhost")) return true;
   return false;
 }
 

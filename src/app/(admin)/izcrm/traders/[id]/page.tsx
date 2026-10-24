@@ -26,6 +26,7 @@ import {
   VALIDATION_STATUSES,
 } from "@/lib/membership";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
+import { DEFAULT_SITE, KNOWN_SITES, siteLabel } from "@/lib/sites-shared";
 import { JOB_TITLE_KEYS, jobTitleLabel, jobTitleUi } from "@/lib/job-titles";
 
 type Tab =
@@ -122,6 +123,7 @@ const PROFILE_KEYS = [
   "affiliateB",
   "affiliateC",
   "referralCodeUsed",
+  "site",
   "retentionStatus",
   "saleStatus",
   "potentialStatus",
@@ -1407,6 +1409,12 @@ export default function AdminUserDetailPage() {
         <Link href="/izcrm/traders" className="text-xs text-neutral-500 hover:text-[#111111]">
           {i18n("crm.ui.backToTraders")}
         </Link>
+        <span
+          data-fx-site-badge={(user as { site?: string | null }).site || DEFAULT_SITE}
+          className="rounded border border-[#111111] bg-[#111111] px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-white"
+        >
+          {siteLabel((user as { site?: string | null }).site)}
+        </span>
         <h1 className="text-xl font-semibold">{user.name}</h1>
         <span className="text-xs text-neutral-500">{user.email}</span>
         {user.accountLoginId && (
@@ -1642,6 +1650,15 @@ export default function AdminUserDetailPage() {
             <Field label="B_BID" value={fv("affiliateB") as string} onChange={(v) => setF("affiliateB", v)} disabled={!ed} />
             <Field label="C_CID" value={fv("affiliateC") as string} onChange={(v) => setF("affiliateC", v)} disabled={!ed} />
             <Field label={i18n("crm.edit.referralCode")} value={fv("referralCodeUsed") as string} onChange={(v) => setF("referralCodeUsed", v)} disabled={!ed} />
+            <Field
+              label={i18n("crm.site.label", "Site")}
+              value={(fv("site") as string) || DEFAULT_SITE}
+              onChange={(v) => setF("site", v)}
+              options={Array.from(new Set([...KNOWN_SITES.map((x) => x.key), String(fv("site") || DEFAULT_SITE)]))}
+              allowEmpty={false}
+              optionLabel={siteLabel}
+              disabled={!ed}
+            />
             <Field
               label={i18n("crm.ui.retention")}
               value={fv("retentionStatus") as string}

@@ -37,7 +37,7 @@ const appUrl = process.env.NEXT_PUBLIC_APP_URL
   ? process.env.NEXT_PUBLIC_APP_URL
   : process.env.RAILWAY_PUBLIC_DOMAIN
     ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
-    : "https://7fx.customer.org.tr";
+    : "https://7fx.control.org.tr";
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
