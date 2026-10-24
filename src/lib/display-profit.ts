@@ -66,3 +66,23 @@ export function displayBookDelta<
   }
   return delta;
 }
+
+/**
+ * Header chips that stay in step with the live equity delta.
+ * Free margin moves with equity because used margin is unchanged.
+ * Margin level is equity / used margin, the same identity the server snapshot uses.
+ * This does not write the account.
+ */
+export function displayAccountChips(
+  account: { equity: number; freeMargin: number; margin: number; profitLoss: number },
+  delta: number
+): { equity: number; freeMargin: number; profitLoss: number; marginLevel: number } {
+  const num = (value: number) => (Number.isFinite(value) ? value : 0);
+  const shift = Number.isFinite(delta) ? delta : 0;
+  const equity = num(account.equity) + shift;
+  const freeMargin = num(account.freeMargin) + shift;
+  const profitLoss = num(account.profitLoss) + shift;
+  const margin = num(account.margin);
+  const marginLevel = margin > 0 ? (equity / margin) * 100 : 0;
+  return { equity, freeMargin, profitLoss, marginLevel };
+}

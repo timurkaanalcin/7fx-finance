@@ -5,6 +5,7 @@ import { fmtCrmDate } from "@/lib/crm-format";
 import Link from "next/link";
 import { ACCOUNT_CURRENCIES, RETENTION_STATUSES, SALE_STATUSES } from "@/lib/membership";
 import { dayEndIso, dayStartIso } from "@/lib/crm-api";
+import { TRADER_PAGE, TRADER_TAKE_CAP } from "@/lib/trader-list";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useVisiblePoll } from "@/lib/use-visible-poll";
@@ -141,6 +142,14 @@ const emptyCreate = {
 export default function AdminUsersPage() {
   const { i18n, code, deskName } = useCrmLabels();
   const [rows, setRows] = useState<UserRow[]>([]);
+  const [hasMore, setHasMore] = useState(false);
+  const [moreBusy, setMoreBusy] = useState(false);
+  const rowsRef = useRef<UserRow[]>([]);
+  rowsRef.current = rows;
+  const listGen = useRef(0);
+  const appliedKey = useRef("");
+  const countsSeen = useRef(false);
+  const metaSeen = useRef(false);
   const [deskOptions, setDeskOptions] = useState<DeskOpt[]>([]);
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("all");
@@ -253,7 +262,7 @@ export default function AdminUsersPage() {
   const [now, setNow] = useState(() => Date.now());
   const skew = useRef(0);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (mode: "refresh" | "more" = "refresh") => {
     const params = new URLSearchParams();
     if (q) params.set("q", q);
     if (status && status !== "all") params.set("status", status);
@@ -273,25 +282,59 @@ export default function AdminUsersPage() {
     if (lcf) params.set("lastContactFrom", lcf);
     if (lct) params.set("lastContactTo", lct);
     if (sort) params.set("sort", sort);
+    if (ftdOnly) params.set("ftd", "1");
     params.set("tzo", String(new Date().getTimezoneOffset()));
-    const res = await fetch(`/api/admin/users?${params}`, { cache: "no-store" });
-    if (!res.ok) return;
-    const data = await res.json();
-    const st = new Date(data.serverTime).getTime();
-    if (Number.isFinite(st)) skew.current = st - Date.now();
-    setNow(Date.now() + skew.current);
-    let list = data.users || [];
-    if (ftdOnly) list = list.filter((u: UserRow) => u.ftd);
-    setRows(list);
-    setDeskOptions(data.deskOptions || []);
-    if (data.followUpDue) {
-      setFollowUpDue({
-        overdue: Number(data.followUpDue.overdue) || 0,
-        today: Number(data.followUpDue.today) || 0,
-      });
+    const filterKey = params.toString();
+    const gen = ++listGen.current;
+    const refreshing = mode === "refresh";
+    const filtersChanged = refreshing && appliedKey.current !== filterKey;
+    if (filtersChanged) appliedKey.current = filterKey;
+    if (mode === "more") {
+      params.set("skip", String(rowsRef.current.length));
+      params.set("take", String(TRADER_PAGE));
+      params.set("meta", "0");
+      setMoreBusy(true);
+    } else {
+      const loaded = filtersChanged ? 0 : rowsRef.current.length;
+      params.set("skip", "0");
+      params.set("take", String(Math.max(TRADER_PAGE, Math.min(TRADER_TAKE_CAP, loaded || TRADER_PAGE))));
+      if (metaSeen.current) params.set("meta", "0");
     }
-    if (data.retentionCounts && typeof data.retentionCounts === "object") {
-      setRetentionCounts(data.retentionCounts as Record<string, number>);
+    if (!countsSeen.current) params.set("counts", "1");
+    try {
+      const res = await fetch(`/api/admin/users?${params}`, { cache: "no-store" });
+      if (!res.ok || gen !== listGen.current) return;
+      const data = await res.json();
+      const st = new Date(data.serverTime).getTime();
+      if (Number.isFinite(st)) skew.current = st - Date.now();
+      setNow(Date.now() + skew.current);
+      const list: UserRow[] = data.users || [];
+      if (mode === "more") {
+        setRows((prev) => {
+          const seen = new Set(prev.map((row) => row.id));
+          return prev.concat(list.filter((row) => !seen.has(row.id)));
+        });
+      } else {
+        setRows(list);
+      }
+      setHasMore(Boolean(data.hasMore));
+      if (data.deskOptions) {
+        setDeskOptions(data.deskOptions);
+        metaSeen.current = true;
+      }
+      if (data.followUpDue) {
+        setFollowUpDue({
+          overdue: Number(data.followUpDue.overdue) || 0,
+          today: Number(data.followUpDue.today) || 0,
+        });
+        countsSeen.current = true;
+      }
+      if (data.retentionCounts && typeof data.retentionCounts === "object") {
+        setRetentionCounts(data.retentionCounts as Record<string, number>);
+        countsSeen.current = true;
+      }
+    } finally {
+      if (mode === "more" && gen === listGen.current) setMoreBusy(false);
     }
   }, [q, status, desk, country, saleStatus, retentionStatus, ftdOnly, presence, accountTypeFilter, dateFrom, dateTo, followUp, lastContactFrom, lastContactTo, sort]);
 
@@ -1135,6 +1178,18 @@ export default function AdminUsersPage() {
           </tbody>
         </table>
       </div>
+      {hasMore && (
+        <div className="mt-3 text-center">
+          <button
+            type="button"
+            disabled={moreBusy}
+            onClick={() => void load("more")}
+            className="rounded-full border border-[#e5e5e5] px-3 py-1 text-xs font-semibold text-neutral-600 hover:bg-neutral-50 disabled:opacity-50"
+          >
+            {i18n("crm.ui.loadMore")}
+          </button>
+        </div>
+      )}
 
       {showCreate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">

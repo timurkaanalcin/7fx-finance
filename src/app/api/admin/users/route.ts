@@ -16,6 +16,7 @@ import { recordLedger } from "@/lib/ledger";
 import { FxError, appendFxNote, convertAmountToUsd, type UsdConversion } from "@/lib/fx-usd";
 import { ensureLastContactBackfill } from "@/lib/last-contact";
 import { ONLINE_MS, RECENT_MS, serializePresence } from "@/lib/presence-shared";
+import { traderListWindow, wantTraderCounts } from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
 
@@ -125,10 +126,12 @@ export async function GET(req: Request) {
   };
   const fuOrs = multi("followUp").filter((x) => FU_WHERE[x]).map((x) => FU_WHERE[x]);
   if (fuOrs.length) and.push({ OR: fuOrs });
+  if (searchParams.get("ftd") === "1") and.push({ ftd: true });
   const followUpActive = fuOrs.length > 0;
   const sort = (searchParams.get("sort") || "").trim(); // lastContact_desc | lastContact_asc
   if (and.length) where.AND = and;
 
+  const { take, skip } = traderListWindow(searchParams.get("take"), searchParams.get("skip"));
   const users = await prisma.user.findMany({
     where: scopeUserWhere(admin, Object.keys(where).length ? where : undefined),
     include: { account: true },
@@ -141,70 +144,81 @@ export async function GET(req: Request) {
         : followUpActive
           ? [{ retentionFollowUpAt: "asc" }, { createdAt: "desc" }]
           : { createdAt: "desc" },
-    take: 500,
+    skip,
+    take: take + 1,
   });
+  const hasMore = users.length > take;
+  const page = hasMore ? users.slice(0, take) : users;
 
-  // Due follow-up counters (scoped: Sales/Retention managers only count their own customers)
-  const [fuOverdue, fuToday] = await Promise.all([
-    prisma.user.count({
-      where: scopeUserWhere(admin, { role: "TRADER", retentionFollowUpAt: { lt: new Date(nowMs) } }),
-    }),
-    prisma.user.count({
-      where: scopeUserWhere(admin, { role: "TRADER", retentionFollowUpAt: { gte: new Date(nowMs), lt: todayEnd } }),
-    }),
-  ]).catch(() => [0, 0]);
+  // Counts are optional. The traders table asks once, then polls the page without them.
+  let followUpDue: { overdue: number; today: number } | undefined;
+  let retentionCounts: Record<string, number> | undefined;
+  if (wantTraderCounts(searchParams.get("counts"))) {
+    const [fuOverdue, fuToday] = await Promise.all([
+      prisma.user.count({
+        where: scopeUserWhere(admin, { role: "TRADER", retentionFollowUpAt: { lt: new Date(nowMs) } }),
+      }),
+      prisma.user.count({
+        where: scopeUserWhere(admin, { role: "TRADER", retentionFollowUpAt: { gte: new Date(nowMs), lt: todayEnd } }),
+      }),
+    ]).catch(() => [0, 0]);
+    followUpDue = { overdue: fuOverdue, today: fuToday };
 
-  // Retention status distribution (scoped like the list; TRADER only; nulls skipped)
-  const retentionCounts: Record<string, number> = {};
-  try {
-    const groups = await prisma.user.groupBy({
-      by: ["retentionStatus"],
-      where: scopeUserWhere(admin, { role: "TRADER", retentionStatus: { not: null } }),
-      _count: { _all: true },
-    });
-    for (const g of groups) {
-      const key = (g as { retentionStatus: string | null }).retentionStatus;
-      if (key) retentionCounts[key] = (g as { _count: { _all: number } })._count._all;
+    retentionCounts = {};
+    try {
+      const groups = await prisma.user.groupBy({
+        by: ["retentionStatus"],
+        where: scopeUserWhere(admin, { role: "TRADER", retentionStatus: { not: null } }),
+        _count: { _all: true },
+      });
+      for (const g of groups) {
+        const key = (g as { retentionStatus: string | null }).retentionStatus;
+        if (key) retentionCounts[key] = (g as { _count: { _all: number } })._count._all;
+      }
+    } catch {
+      /* counts are best-effort */
     }
-  } catch {
-    /* counts are best-effort */
   }
 
-  const deskRows = await prisma.user.findMany({
-    where: { desk: { not: null } },
-    select: { desk: true },
-    distinct: ["desk"],
-    take: 100,
-  });
-  const catalog = await prisma.desk.findMany({
-    where: { active: true },
-    orderBy: { name: "asc" },
-    select: { id: true, name: true, code: true },
-    take: 200,
-  });
-  const deskOptions = catalog.map((d) => ({ id: d.id, name: d.name, code: d.code }));
-  const knownNames = new Set(catalog.map((d) => d.name));
-  for (const row of deskRows) {
-    const name = row.desk;
-    if (name && !knownNames.has(name)) {
-      deskOptions.push({ id: name, name, code: null });
-      knownNames.add(name);
+  let deskOptions: { id: string; name: string; code: string | null }[] | undefined;
+  if (searchParams.get("meta") !== "0") {
+    const deskRows = await prisma.user.findMany({
+      where: { desk: { not: null } },
+      select: { desk: true },
+      distinct: ["desk"],
+      take: 100,
+    });
+    const catalog = await prisma.desk.findMany({
+      where: { active: true },
+      orderBy: { name: "asc" },
+      select: { id: true, name: true, code: true },
+      take: 200,
+    });
+    deskOptions = catalog.map((d) => ({ id: d.id, name: d.name, code: d.code }));
+    const knownNames = new Set(catalog.map((d) => d.name));
+    for (const row of deskRows) {
+      const name = row.desk;
+      if (name && !knownNames.has(name)) {
+        deskOptions.push({ id: name, name, code: null });
+        knownNames.add(name);
+      }
     }
   }
 
   return NextResponse.json({
-    users: users.map((u) => {
+    users: page.map((u) => {
       const row = {
         ...serializeUserMembership(u as unknown as Record<string, unknown>),
         ...serializePresence(u as unknown as Record<string, unknown>),
       };
       return roViewer ? maskTraderForRoViewer(row as Record<string, unknown>) : row;
     }),
+    hasMore,
+    nextSkip: skip + page.length,
     serverTime: new Date().toISOString(),
-    followUpDue: { overdue: fuOverdue, today: fuToday },
-    retentionCounts,
-    desks: deskOptions.map((d) => d.name),
-    deskOptions,
+    ...(followUpDue ? { followUpDue } : {}),
+    ...(retentionCounts ? { retentionCounts } : {}),
+    ...(deskOptions ? { desks: deskOptions.map((d) => d.name), deskOptions } : {}),
     permissionDefs: ADMIN_PERMISSIONS,
     dataMasked: roViewer,
   });
