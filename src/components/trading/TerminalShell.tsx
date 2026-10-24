@@ -155,6 +155,7 @@ import { displayAccountChips, displayBookDelta } from "@/lib/display-profit";
 import { positionMark } from "@/lib/mark-price";
 import { CALENDAR_FOLLOW_CAP, concatUniqueById } from "@/lib/position-pages";
 import { formatPrice, getSymbol } from "@/lib/symbols";
+import { markQuotesSeen } from "./quote-clock";
 import BrandLoader from "@/components/ui/BrandLoader";
 import { normalizeLocale } from "@/lib/i18n/locales";
 import type {
@@ -601,14 +602,31 @@ export default function TerminalShell({
         if (error) setPriceError(error);
         return;
       }
+      markQuotesSeen();
       const now = Date.now();
       const active = symbol.toUpperCase();
-      const map: Record<string, PriceTick> = {};
-      for (const t of ticks) {
-        map[t.symbol] = t.symbol.toUpperCase() === active ? { ...t, ts: now } : t;
-      }
-      setPrices((prev) => ({ ...prev, ...map }));
-      setPriceError(error);
+      setPrices((prev) => {
+        let changed = false;
+        const next: Record<string, PriceTick> = { ...prev };
+        for (const tick of ticks) {
+          const stamped = tick.symbol.toUpperCase() === active ? { ...tick, ts: now } : tick;
+          const old = prev[tick.symbol];
+          if (
+            old &&
+            old.bid === stamped.bid &&
+            old.ask === stamped.ask &&
+            old.mid === stamped.mid &&
+            old.change === stamped.change &&
+            old.changePct === stamped.changePct
+          ) {
+            continue;
+          }
+          next[tick.symbol] = stamped;
+          changed = true;
+        }
+        return changed ? next : prev;
+      });
+      setPriceError((prev) => (prev === error ? prev : error));
     };
 
     async function pullBook() {

@@ -2,19 +2,14 @@
 
 import { useFxTheme } from "@/components/theme/ThemeToggle";
 import { useEffect, useRef, useState } from "react";
-import {
-  createChart,
-  CandlestickSeries,
-  LineSeries,
-  LineStyle,
-  type IChartApi,
-  type ISeriesApi,
-  type IPriceLine,
-  type CandlestickData,
-  type Time,
-  ColorType,
-  CrosshairMode,
+import type {
+  IChartApi,
+  ISeriesApi,
+  IPriceLine,
+  CandlestickData,
+  Time,
 } from "lightweight-charts";
+import { quotesSeenAt } from "./quote-clock";
 import type { PriceTick } from "./types";
 import { chartReconcilePlan, type OhlcBar } from "@/lib/chart-reconcile";
 import { formatPrice, getSymbol } from "@/lib/symbols";
@@ -150,6 +145,7 @@ export default function TradingChart({
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
   const lineRef = useRef<ISeriesApi<"Line"> | null>(null);
   const priceLinesRef = useRef<IPriceLine[]>([]);
+  const chartsMod = useRef<typeof import("./chart-engine") | null>(null);
   const liveBarRef = useRef<LiveBar | null>(null);
   const lastBarTimeRef = useRef<number | null>(null);
   /** Bars last applied to the series, so a history refresh can patch instead of setData. */
@@ -296,10 +292,11 @@ export default function TradingChart({
   const [chartGen, setChartGen] = useState(0);
   useEffect(() => {
     const c = chartRef.current;
-    if (!c) return;
+    const lc = chartsMod.current;
+    if (!c || !lc) return;
     const L = fxTheme === "light";
     c.applyOptions({
-      layout: { background: { type: ColorType.Solid, color: L ? "#ffffff" : "#000000" }, textColor: L ? "#5b5e66" : "#8b97b0" },
+      layout: { background: { type: lc.ColorType.Solid, color: L ? "#ffffff" : "#000000" }, textColor: L ? "#5b5e66" : "#8b97b0" },
       grid: { vertLines: { color: L ? "#f1efe9" : "#141414" }, horzLines: { color: L ? "#f1efe9" : "#141414" } },
       rightPriceScale: { borderColor: L ? "#e6e2d8" : "#2a2a2a" },
       timeScale: { borderColor: L ? "#e6e2d8" : "#2a2a2a" },
@@ -317,95 +314,139 @@ export default function TradingChart({
     if (typeof window === "undefined") return;
 
     const el = containerRef.current;
-    const chart = createChart(el, {
-      layout: {
-        background: { type: ColorType.Solid, color: "#000000" },
-        textColor: "#8b97b0",
-      },
-      grid: {
-        vertLines: { color: "#141414" },
-        horzLines: { color: "#141414" },
-      },
-      crosshair: { mode: CrosshairMode.Normal },
-      rightPriceScale: { borderColor: "#2a2a2a" },
-      timeScale: { borderColor: "#2a2a2a", timeVisible: true, secondsVisible: false },
-      width: el.clientWidth || 300,
-      height: el.clientHeight || 240,
-    });
-    chartRef.current = chart;
+    let cancelled = false;
+    let chart: IChartApi | null = null;
+    let ro: ResizeObserver | null = null;
+    let io: IntersectionObserver | null = null;
+    let idleId = 0;
+    let usedIdle = false;
+    let onCrosshair: ((param: { time?: Time; seriesData: Map<unknown, unknown> }) => void) | null = null;
+    let onRange: (() => void) | null = null;
 
-    const candle = chart.addSeries(CandlestickSeries, {
-      upColor: "#26a69a",
-      downColor: "#ef5350",
-      borderUpColor: "#26a69a",
-      borderDownColor: "#ef5350",
-      wickUpColor: "#26a69a",
-      wickDownColor: "#ef5350",
-    });
-    seriesRef.current = candle;
+    const boot = () => {
+      void import("./chart-engine").then((lc) => {
+        if (cancelled || !containerRef.current) return;
+        chartsMod.current = lc;
+        const host = containerRef.current;
+        chart = lc.createChart(host, {
+          layout: {
+            background: { type: lc.ColorType.Solid, color: "#000000" },
+            textColor: "#8b97b0",
+          },
+          grid: {
+            vertLines: { color: "#141414" },
+            horzLines: { color: "#141414" },
+          },
+          crosshair: { mode: lc.CrosshairMode.Normal },
+          rightPriceScale: { borderColor: "#2a2a2a" },
+          timeScale: { borderColor: "#2a2a2a", timeVisible: true, secondsVisible: false },
+          width: host.clientWidth || 300,
+          height: host.clientHeight || 240,
+        });
+        chartRef.current = chart;
 
-    const line = chart.addSeries(LineSeries, {
-      color: "#ffffff",
-      lineWidth: 2,
-      visible: false,
-    });
-    lineRef.current = line;
-    setChartGen((g) => g + 1);
+        const candle = chart.addSeries(lc.CandlestickSeries, {
+          upColor: "#26a69a",
+          downColor: "#ef5350",
+          borderUpColor: "#26a69a",
+          borderDownColor: "#ef5350",
+          wickUpColor: "#26a69a",
+          wickDownColor: "#ef5350",
+        });
+        seriesRef.current = candle;
 
-    // Crosshair legend: show OHLC of the hovered bar.
-    const onCrosshair = (param: { time?: Time; seriesData: Map<unknown, unknown> }) => {
-      if (param.time == null) {
-        setHoverBar(null);
-        return;
-      }
-      const d = param.seriesData.get(candle) as CandlestickData<Time> | undefined;
-      if (d && typeof d.open === "number") {
-        setHoverBar({ o: d.open, h: d.high, l: d.low, c: d.close, t: param.time as number });
-        return;
-      }
-      const ld = param.seriesData.get(line) as { value?: number } | undefined;
-      if (ld && typeof ld.value === "number") {
-        setHoverBar({ o: ld.value, h: ld.value, l: ld.value, c: ld.value, t: param.time as number });
-        return;
-      }
-      setHoverBar(null);
+        const line = chart.addSeries(lc.LineSeries, {
+          color: "#ffffff",
+          lineWidth: 2,
+          visible: false,
+        });
+        lineRef.current = line;
+        setChartGen((g) => g + 1);
+
+        onCrosshair = (param) => {
+          if (param.time == null) {
+            setHoverBar(null);
+            return;
+          }
+          const d = param.seriesData.get(candle) as CandlestickData<Time> | undefined;
+          if (d && typeof d.open === "number") {
+            setHoverBar({ o: d.open, h: d.high, l: d.low, c: d.close, t: param.time as number });
+            return;
+          }
+          const ld = param.seriesData.get(line) as { value?: number } | undefined;
+          if (ld && typeof ld.value === "number") {
+            setHoverBar({ o: ld.value, h: ld.value, l: ld.value, c: ld.value, t: param.time as number });
+            return;
+          }
+          setHoverBar(null);
+        };
+        chart.subscribeCrosshairMove(onCrosshair as never);
+
+        onRange = () => {
+          try {
+            const pos = chart?.timeScale().scrollPosition();
+            setAwayFromLive(pos != null && Number.isFinite(pos) && pos < -3);
+          } catch {
+            /* ignore */
+          }
+        };
+        chart.timeScale().subscribeVisibleLogicalRangeChange(onRange);
+
+        ro =
+          typeof ResizeObserver !== "undefined"
+            ? new ResizeObserver(() => {
+                if (containerRef.current && chartRef.current) {
+                  chartRef.current.applyOptions({
+                    width: containerRef.current.clientWidth,
+                    height: containerRef.current.clientHeight,
+                  });
+                }
+              })
+            : null;
+        ro?.observe(host);
+      });
     };
-    chart.subscribeCrosshairMove(onCrosshair as never);
 
-    // "Back to live" button when scrolled into history.
-    const onRange = () => {
-      try {
-        const pos = chart.timeScale().scrollPosition();
-        setAwayFromLive(Number.isFinite(pos) && pos < -3);
-      } catch {
-        /* ignore */
+    const arm = () => {
+      const ric = window.requestIdleCallback;
+      if (typeof ric === "function") {
+        usedIdle = true;
+        idleId = ric(() => boot(), { timeout: 500 });
+      } else {
+        idleId = window.setTimeout(boot, 1);
       }
     };
-    chart.timeScale().subscribeVisibleLogicalRangeChange(onRange);
 
-    const ro =
-      typeof ResizeObserver !== "undefined"
-        ? new ResizeObserver(() => {
-            if (containerRef.current && chartRef.current) {
-              chartRef.current.applyOptions({
-                width: containerRef.current.clientWidth,
-                height: containerRef.current.clientHeight,
-              });
-            }
-          })
-        : null;
-    ro?.observe(el);
+    const box = el.getBoundingClientRect();
+    const onScreen = box.width > 0 && box.height > 0 && box.bottom > 0 && box.top < window.innerHeight;
+    if (onScreen) {
+      arm();
+    } else if (typeof IntersectionObserver === "function") {
+      io = new IntersectionObserver((entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        io?.disconnect();
+        io = null;
+        arm();
+      });
+      io.observe(el);
+    } else {
+      arm();
+    }
 
     return () => {
+      cancelled = true;
+      if (usedIdle && typeof window.cancelIdleCallback === "function") window.cancelIdleCallback(idleId);
+      else window.clearTimeout(idleId);
+      io?.disconnect();
       ro?.disconnect();
       try {
-        chart.unsubscribeCrosshairMove(onCrosshair as never);
-        chart.timeScale().unsubscribeVisibleLogicalRangeChange(onRange);
+        if (chart && onCrosshair) chart.unsubscribeCrosshairMove(onCrosshair as never);
+        if (chart && onRange) chart.timeScale().unsubscribeVisibleLogicalRangeChange(onRange);
       } catch {
         /* ignore */
       }
       priceLinesRef.current = [];
-      chart.remove();
+      chart?.remove();
       chartRef.current = null;
       seriesRef.current = null;
       lineRef.current = null;
@@ -418,6 +459,7 @@ export default function TradingChart({
   // Historical backbone on symbol/timeframe change. Live mid updates the forming bar.
   // Refetch only when a bar is missing (gap larger than one timeframe, or history never landed).
   useEffect(() => {
+    if (!seriesRef.current) return;
     let cancelled = false;
     let gapAt = 0;
     historySettledRef.current = false;
@@ -596,7 +638,7 @@ export default function TradingChart({
       document.removeEventListener("visibilitychange", onVis);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [symbol, timeframe]);
+  }, [symbol, timeframe, chartGen]);
 
   // Stream forming candle from live mid ≤1s (real Yahoo mid only — no synthetic drift).
   useEffect(() => {
@@ -623,6 +665,8 @@ export default function TradingChart({
         pushRealMid(mid);
         lastTickAtRef.current = Date.now();
       }
+      const seen = quotesSeenAt();
+      if (seen > lastTickAtRef.current) lastTickAtRef.current = seen;
       const fresh = Date.now() - lastTickAtRef.current < 2500;
       setLiveFresh((prev) => (prev === fresh ? prev : fresh));
     };
@@ -668,7 +712,8 @@ export default function TradingChart({
       }
     }
     priceLinesRef.current = [];
-    if (!series || !levels?.length) return;
+    const lc = chartsMod.current;
+    if (!series || !levels?.length || !lc) return;
 
     const L = fxTheme === "light";
     const buyColor = L ? "#0f9d76" : "#26a69a";
@@ -691,7 +736,7 @@ export default function TradingChart({
             price: lv.openPrice,
             color: entryColor,
             lineWidth: 1,
-            lineStyle: LineStyle.Solid,
+            lineStyle: lc.LineStyle.Solid,
             axisLabelVisible: true,
             title: `${sideLabel} · ${t("term.chart.entry")}${suffix}`,
           })
@@ -706,7 +751,7 @@ export default function TradingChart({
               price: lv.stopLoss,
               color: sellColor,
               lineWidth: 1,
-              lineStyle: LineStyle.Dashed,
+              lineStyle: lc.LineStyle.Dashed,
               axisLabelVisible: true,
               title: `SL${suffix}`,
             })
@@ -722,7 +767,7 @@ export default function TradingChart({
               price: lv.takeProfit,
               color: buyColor,
               lineWidth: 1,
-              lineStyle: LineStyle.Dashed,
+              lineStyle: lc.LineStyle.Dashed,
               axisLabelVisible: true,
               title: `TP${suffix}`,
             })
