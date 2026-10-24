@@ -1033,6 +1033,18 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.chat.quickDetailsBody", "Could you send the account ID and the approximate time of the request?", "Hesap numaranızı ve talebin yaklaşık saatini paylaşır mısınız?", "Пришлите номер счёта и примерное время запроса.", "Bitte Kontonummer und ungefähre Uhrzeit der Anfrage senden.", "هل يمكنك إرسال رقم الحساب والوقت التقريبي للطلب؟"],
   ["crm.chat.quickHours", "Market hours", "Seans saatleri", "Часы рынка", "Handelszeiten", "ساعات السوق"],
   ["crm.chat.quickHoursBody", "Stock orders are accepted only during that symbol's session. Crypto trades continuously.", "Hisse emirleri yalnızca o sembolün seansında kabul edilir. Kripto sürekli işlem görür.", "Заявки по акциям принимаются только в сессию этого символа. Крипто торгуется непрерывно.", "Aktienorders nur während der Sitzung dieses Symbols. Krypto handelt durchgehend.", "تُقبل أوامر الأسهم فقط خلال جلسة ذلك الرمز. يتداول التشفير باستمرار."],
+  ["crm.traders.searchKey", "Press / to search", "Aramak için /", "Нажмите / для поиска", "/ zum Suchen", "اضغط / للبحث"],
+  ["crm.traders.prev", "Previous", "Önceki", "Назад", "Zurück", "السابق"],
+  ["crm.traders.next", "Next", "Sonraki", "Далее", "Weiter", "التالي"],
+  ["crm.traders.pageStatus", "Page {page}", "Sayfa {page}", "Страница {page}", "Seite {page}", "صفحة {page}"],
+  ["crm.traders.range", "{from}–{to} of {total}", "{from}–{to} / {total}", "{from}–{to} из {total}", "{from}–{to} von {total}", "{from}–{to} من {total}"],
+  ["crm.traders.sortName", "Name", "Ad", "Имя", "Name", "الاسم"],
+  ["crm.traders.sortEmail", "Email", "E-posta", "Эл. почта", "E-Mail", "البريد"],
+  ["crm.traders.sortAccount", "Account ID", "Hesap no", "Номер счёта", "Kontonummer", "رقم الحساب"],
+  ["crm.traders.sortBalance", "Balance", "Bakiye", "Баланс", "Saldo", "الرصيد"],
+  ["crm.traders.sortCreated", "Registered", "Kayıt", "Регистрация", "Registriert", "التسجيل"],
+  ["crm.traders.sortLogin", "Last login", "Son giriş", "Последний вход", "Letzte Anmeldung", "آخر دخول"],
+  ["crm.traders.sortSale", "Sale status", "Satış durumu", "Статус продажи", "Verkaufsstatus", "حالة البيع"],
 ];
 
 function pack(index: 1|2|3|4|5): Dict {

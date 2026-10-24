@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { writeAudit, ADMIN_PERMISSIONS, hashPassword, requireAdmin, requireAdminPerm, isCrmReadOnlyAdmin } from "@/lib/auth";
 import { maskTraderForRoViewer } from "@/lib/security/mask";
 import { prisma } from "@/lib/prisma";
-import type { Prisma } from "@prisma/client";
+import { traderListOrderBy, traderTextSearch } from "@/lib/crm-trader-query";
 import { refreshAccountMetrics } from "@/lib/trading";
 import {
   isSupportedAccountCurrency,
@@ -110,19 +110,8 @@ export async function GET(req: Request) {
   const where: Record<string, unknown> = {};
   const and: Record<string, unknown>[] = [];
 
-  if (q) {
-    and.push({
-      OR: [
-        { email: { contains: q } },
-        { accountLoginId: { contains: q } },
-        { name: { contains: q } },
-        { firstName: { contains: q } },
-        { lastName: { contains: q } },
-        { phone: { contains: q } },
-        { brokerName: { contains: q } },
-      ],
-    });
-  }
+  const textSearch = traderTextSearch(q);
+  if (textSearch) and.push(textSearch);
   const STATUS_WHERE: Record<string, Record<string, unknown>> = {
     active: { active: true },
     frozen: { active: false },
@@ -195,15 +184,9 @@ export async function GET(req: Request) {
 
   const { take, skip } = traderListWindow(searchParams.get("take"), searchParams.get("skip"));
   const listWhere = scopeUserWhere(admin, Object.keys(where).length ? where : undefined);
-  const contactDir: "asc" | "desc" = sort === "lastContact_asc" ? "asc" : "desc";
-  const orderBy: Prisma.UserOrderByWithRelationInput | Prisma.UserOrderByWithRelationInput[] =
-    sort === "lastContact_desc" || sort === "lastContact_asc"
-      ? [{ lastContactAt: { sort: contactDir, nulls: "last" } }, { createdAt: "desc" }]
-      : followUpActive
-        ? [{ retentionFollowUpAt: "asc" }, { createdAt: "desc" }]
-        : { createdAt: "desc" };
-  const users = tableView
-    ? await prisma.user.findMany({
+  const orderBy = traderListOrderBy(sort, followUpActive);
+  const usersPromise = tableView
+    ? prisma.user.findMany({
         where: listWhere,
         select: TRADER_TABLE_SELECT,
         orderBy,
@@ -211,20 +194,22 @@ export async function GET(req: Request) {
         take: take + 1,
       })
     : pickerView
-      ? await prisma.user.findMany({
+      ? prisma.user.findMany({
           where: listWhere,
           select: TRADER_PICKER_SELECT,
           orderBy,
           skip,
           take: take + 1,
         })
-      : await prisma.user.findMany({
+      : prisma.user.findMany({
           where: listWhere,
           include: { account: true },
           orderBy,
           skip,
           take: take + 1,
         });
+  const totalPromise = tableView ? prisma.user.count({ where: listWhere }) : Promise.resolve(null);
+  const [users, total] = await Promise.all([usersPromise, totalPromise]);
   const hasMore = users.length > take;
   const page = hasMore ? users.slice(0, take) : users;
 
@@ -274,6 +259,7 @@ export async function GET(req: Request) {
     }),
     hasMore,
     nextSkip: skip + page.length,
+    ...(typeof total === "number" ? { total } : {}),
     serverTime: new Date().toISOString(),
     ...(followUpDue ? { followUpDue } : {}),
     ...(retentionCounts ? { retentionCounts } : {}),

@@ -6,7 +6,15 @@ import { displayCrmMoney } from "@/lib/security/mask";
 import Link from "next/link";
 import { ACCOUNT_CURRENCIES, RETENTION_STATUSES, SALE_STATUSES } from "@/lib/membership";
 import { dayEndIso, dayStartIso } from "@/lib/crm-api";
-import { TRADER_PAGE, TRADER_TAKE_CAP } from "@/lib/trader-list";
+import { TRADER_PAGE } from "@/lib/trader-list";
+import {
+  nextTraderSort,
+  parseTraderListQuery,
+  traderListSearchString,
+  traderPageRange,
+  traderPageSkip,
+  type TraderListFilters,
+} from "@/lib/crm-trader-query";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useVisiblePoll } from "@/lib/use-visible-poll";
@@ -123,6 +131,18 @@ function sameFilters(a: TraderFilterState, b: TraderFilterState): boolean {
   return (Object.keys(EMPTY_FILTERS) as (keyof TraderFilterState)[]).every((k) => a[k] === b[k]);
 }
 
+function sortMark(sort: string, field: string): string {
+  if (sort === `${field}_desc`) return " ↓";
+  if (sort === `${field}_asc`) return " ↑";
+  return " ↕";
+}
+
+function ariaSort(sort: string, field: string): "ascending" | "descending" | "none" {
+  if (sort === `${field}_asc`) return "ascending";
+  if (sort === `${field}_desc`) return "descending";
+  return "none";
+}
+
 function csvCell(v: unknown): string {
   const s = v == null ? "" : String(v);
   return /[",\r\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
@@ -147,11 +167,13 @@ export default function AdminUsersPage() {
   const [rows, setRows] = useState<UserRow[]>([]);
   const [listPhase, setListPhase] = useState<"loading" | "ready" | "error">("loading");
   const [hasMore, setHasMore] = useState(false);
-  const [moreBusy, setMoreBusy] = useState(false);
-  const rowsRef = useRef<UserRow[]>([]);
-  rowsRef.current = rows;
+  const [total, setTotal] = useState<number | null>(null);
+  const [page, setPage] = useState(1);
+  const [filtersReady, setFiltersReady] = useState(false);
   const listGen = useRef(0);
-  const appliedKey = useRef("");
+  const appliedFilter = useRef("");
+  const loadKey = useRef("");
+  const searchRef = useRef<HTMLInputElement>(null);
   const countsSeen = useRef(false);
   const metaSeen = useRef(false);
   const [deskOptions, setDeskOptions] = useState<DeskOpt[]>([]);
@@ -160,6 +182,7 @@ export default function AdminUsersPage() {
   const [deskHits, setDeskHits] = useState<DeskOpt[] | null>(null);
   const [deskSearchPartial, setDeskSearchPartial] = useState(false);
   const [q, setQ] = useState("");
+  const [qDebounced, setQDebounced] = useState("");
   const [status, setStatus] = useState("all");
   const [desk, setDesk] = useState("");
   const [country, setCountry] = useState("");
@@ -179,12 +202,6 @@ export default function AdminUsersPage() {
   const [bulkBroker, setBulkBroker] = useState("");
   const [ftdOnly, setFtdOnly] = useState(false);
 
-  useEffect(() => {
-    try {
-      const ss = new URLSearchParams(window.location.search).get("saleStatus");
-      if (ss) setSaleStatus(ss);
-    } catch { /* ignore */ }
-  }, []);
   const [presence, setPresence] = useState("");
   const [followUp, setFollowUp] = useState("");
   const [lastContactFrom, setLastContactFrom] = useState("");
@@ -248,6 +265,8 @@ export default function AdminUsersPage() {
     setLastContactFrom(f.lastContactFrom || "");
     setLastContactTo(f.lastContactTo || "");
     setSort(f.sort || "");
+    setQDebounced(f.q);
+    setPage(1);
     setSelected(new Set());
   }
   function persistSaved(list: SavedTraderFilter[]) {
@@ -269,10 +288,53 @@ export default function AdminUsersPage() {
   }
   const [now, setNow] = useState(() => Date.now());
   const skew = useRef(0);
+  const filterSig = [
+    qDebounced,
+    status,
+    desk,
+    country,
+    saleStatus,
+    accountTypeFilter,
+    dateFrom,
+    dateTo,
+    retentionStatus,
+    presence,
+    ftdOnly ? "1" : "0",
+    followUp,
+    lastContactFrom,
+    lastContactTo,
+    sort,
+  ].join("\u0001");
+  const listQuery: TraderListFilters = {
+    q: qDebounced,
+    status,
+    desk,
+    country,
+    saleStatus,
+    accountType: accountTypeFilter,
+    dateFrom,
+    dateTo,
+    retentionStatus,
+    presence,
+    ftdOnly,
+    followUp,
+    lastContactFrom,
+    lastContactTo,
+    sort,
+    page,
+  };
+  const range = traderPageRange(page, rows.length);
 
-  const load = useCallback(async (mode: "refresh" | "more" = "refresh") => {
+  const load = useCallback(async () => {
+    const sig = filterSig;
+    let usePage = page;
+    if (appliedFilter.current && appliedFilter.current !== sig) {
+      usePage = 1;
+      if (page !== 1) setPage(1);
+    }
+    appliedFilter.current = sig;
     const params = new URLSearchParams();
-    if (q) params.set("q", q);
+    if (qDebounced) params.set("q", qDebounced);
     if (status && status !== "all") params.set("status", status);
     if (desk) params.set("desk", desk);
     if (country) params.set("country", country);
@@ -292,29 +354,24 @@ export default function AdminUsersPage() {
     if (sort) params.set("sort", sort);
     if (ftdOnly) params.set("ftd", "1");
     params.set("tzo", String(new Date().getTimezoneOffset()));
-    const filterKey = params.toString();
+    const requestKey = `${params.toString()}&page=${usePage}`;
     const gen = ++listGen.current;
-    const refreshing = mode === "refresh";
-    const filtersChanged = refreshing && appliedKey.current !== filterKey;
-    if (filtersChanged) appliedKey.current = filterKey;
-    if (mode === "more") {
-      params.set("skip", String(rowsRef.current.length));
-      params.set("take", String(TRADER_PAGE));
-      params.set("meta", "0");
-      setMoreBusy(true);
-    } else {
-      const loaded = filtersChanged ? 0 : rowsRef.current.length;
-      params.set("skip", "0");
-      params.set("take", String(Math.max(TRADER_PAGE, Math.min(TRADER_TAKE_CAP, loaded || TRADER_PAGE))));
-      if (metaSeen.current) params.set("meta", "0");
-    }
+    params.set("skip", String(traderPageSkip(usePage)));
+    params.set("take", String(TRADER_PAGE));
+    if (metaSeen.current) params.set("meta", "0");
     if (!countsSeen.current) params.set("counts", "1");
     params.set("view", "table");
+    const previousKey = loadKey.current;
+    loadKey.current = requestKey;
+    if (previousKey && previousKey !== requestKey) {
+      setRows([]);
+      setListPhase("loading");
+    }
     try {
       const res = await fetch(`/api/admin/users?${params}`, { cache: "no-store" });
       if (gen !== listGen.current) return;
       if (!res.ok) {
-        if (mode !== "more") setListPhase("error");
+        setListPhase("error");
         return;
       }
       const data = await res.json();
@@ -322,15 +379,9 @@ export default function AdminUsersPage() {
       if (Number.isFinite(st)) skew.current = st - Date.now();
       setNow(Date.now() + skew.current);
       const list: UserRow[] = data.users || [];
-      if (mode === "more") {
-        setRows((prev) => {
-          const seen = new Set(prev.map((row) => row.id));
-          return prev.concat(list.filter((row) => !seen.has(row.id)));
-        });
-      } else {
-        setRows(list);
-      }
+      setRows(list);
       setHasMore(Boolean(data.hasMore));
+      setTotal(typeof data.total === "number" ? data.total : null);
       if (data.deskOptions) {
         setDeskOptions(data.deskOptions);
         setDesksPartial(Boolean(data.desksPartial));
@@ -347,17 +398,16 @@ export default function AdminUsersPage() {
         setRetentionCounts(data.retentionCounts as Record<string, number>);
         countsSeen.current = true;
       }
-      if (mode !== "more") setListPhase("ready");
+      setListPhase("ready");
     } catch {
-      if (gen === listGen.current && mode !== "more") setListPhase("error");
-    } finally {
-      if (mode === "more" && gen === listGen.current) setMoreBusy(false);
+      if (gen === listGen.current) setListPhase("error");
     }
-  }, [q, status, desk, country, saleStatus, retentionStatus, ftdOnly, presence, accountTypeFilter, dateFrom, dateTo, followUp, lastContactFrom, lastContactTo, sort]);
+  }, [filterSig, page, qDebounced, status, desk, country, saleStatus, retentionStatus, ftdOnly, presence, accountTypeFilter, dateFrom, dateTo, followUp, lastContactFrom, lastContactTo, sort]);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    if (!filtersReady) return;
+    void load();
+  }, [load, filtersReady]);
 
   useEffect(() => {
     const query = deskQ.trim();
@@ -395,9 +445,58 @@ export default function AdminUsersPage() {
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    const parsed = parseTraderListQuery(window.location.search);
+    setQ(parsed.q);
+    setQDebounced(parsed.q);
+    setStatus(parsed.status || "all");
+    setDesk(parsed.desk);
+    setCountry(parsed.country);
+    setSaleStatus(parsed.saleStatus);
+    setAccountTypeFilter(parsed.accountType);
+    setDateFrom(parsed.dateFrom);
+    setDateTo(parsed.dateTo);
+    setRetentionStatus(parsed.retentionStatus);
+    setPresence(parsed.presence);
+    setFtdOnly(parsed.ftdOnly);
+    setFollowUp(parsed.followUp);
+    setLastContactFrom(parsed.lastContactFrom);
+    setLastContactTo(parsed.lastContactTo);
+    setSort(parsed.sort);
+    setPage(parsed.page);
+    setFiltersReady(true);
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setQDebounced(q), 300);
+    return () => window.clearTimeout(timer);
+  }, [q]);
+
+  const queryString = traderListSearchString(listQuery);
+  useEffect(() => {
+    if (!filtersReady) return;
+    const path = window.location.pathname;
+    const url = queryString ? `${path}?${queryString}` : path;
+    if (url !== `${path}${window.location.search}`) window.history.replaceState(null, "", url);
+  }, [filtersReady, queryString]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "/" || e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
+      const target = e.target as HTMLElement | null;
+      const tag = target?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target?.isContentEditable) return;
+      e.preventDefault();
+      searchRef.current?.focus();
+      searchRef.current?.select();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   // Auto-refresh presence/balances. Only row data is replaced — filters, selection and the
   // create form live in separate state, so typed input is never overwritten.
-  useVisiblePoll(load, REFRESH_MS);
+  useVisiblePoll(load, REFRESH_MS, filtersReady);
 
   function toggle(id: string) {
     setSelected((prev) => {
@@ -586,12 +685,20 @@ export default function AdminUsersPage() {
         >
           {i18n("crm.ui.newMember")}
         </button>
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder={i18n("crm.ui.searchTraders")}
-          className="ml-auto w-full max-w-xs rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-3 py-1.5 text-sm"
-        />
+        <div className="ml-auto w-full max-w-xs">
+          <input
+            ref={searchRef}
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder={i18n("crm.ui.searchTraders")}
+            aria-label={i18n("crm.ui.searchTraders")}
+            aria-keyshortcuts="/"
+            data-fx-trader-search=""
+            autoComplete="off"
+            className="min-h-10 w-full rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-3 text-base lg:text-sm"
+          />
+          <p className="mt-1 text-[11px] font-medium text-neutral-400">{i18n("crm.traders.searchKey")}</p>
+        </div>
       </div>
 
       <div className="mb-3 flex flex-wrap gap-2 text-xs">
@@ -719,6 +826,20 @@ export default function AdminUsersPage() {
           data-fx-sort
         >
           <option value="">{i18n("crm.ui.sortDefault")}</option>
+          <option value="name_asc">{i18n("crm.traders.sortName")} ↑</option>
+          <option value="name_desc">{i18n("crm.traders.sortName")} ↓</option>
+          <option value="email_asc">{i18n("crm.traders.sortEmail")} ↑</option>
+          <option value="email_desc">{i18n("crm.traders.sortEmail")} ↓</option>
+          <option value="account_asc">{i18n("crm.traders.sortAccount")} ↑</option>
+          <option value="account_desc">{i18n("crm.traders.sortAccount")} ↓</option>
+          <option value="balance_desc">{i18n("crm.traders.sortBalance")} ↓</option>
+          <option value="balance_asc">{i18n("crm.traders.sortBalance")} ↑</option>
+          <option value="created_desc">{i18n("crm.traders.sortCreated")} ↓</option>
+          <option value="created_asc">{i18n("crm.traders.sortCreated")} ↑</option>
+          <option value="login_desc">{i18n("crm.traders.sortLogin")} ↓</option>
+          <option value="login_asc">{i18n("crm.traders.sortLogin")} ↑</option>
+          <option value="sale_asc">{i18n("crm.traders.sortSale")} ↑</option>
+          <option value="sale_desc">{i18n("crm.traders.sortSale")} ↓</option>
           <option value="lastContact_desc">{i18n("crm.ui.sortLastContactDesc")}</option>
           <option value="lastContact_asc">{i18n("crm.ui.sortLastContactAsc")}</option>
         </select>
@@ -868,8 +989,13 @@ export default function AdminUsersPage() {
             ✕ {i18n("crm.savedFilters.clear")}
           </button>
         )}
-        <span className="ml-auto text-neutral-400 tabular-nums">
-          {rows.length} {i18n("crm.savedFilters.results")}
+        <span className="ml-auto text-neutral-400 tabular-nums" data-fx-trader-count="">
+          {total == null
+            ? `${rows.length} ${i18n("crm.savedFilters.results")}`
+            : `${i18n("crm.traders.range")
+                .replace("{from}", String(range.from))
+                .replace("{to}", String(range.to))
+                .replace("{total}", String(total))} ${i18n("crm.savedFilters.results")}`}
         </span>
         {!crmReadOnly && (
           <button
@@ -1063,27 +1189,68 @@ export default function AdminUsersPage() {
                   onChange={toggleAll}
                 />
               </th>
-              <th className="px-3 py-2.5">{i18n("crm.ui.memberId")}</th>
+              <th className="px-3 py-2.5" aria-sort={ariaSort(sort, "name")}>
+                <button
+                  type="button"
+                  onClick={() => setSort(nextTraderSort(sort, "name"))}
+                  className="font-medium hover:text-neutral-900"
+                  data-fx-sort-col="name"
+                >
+                  {i18n("crm.ui.memberId")}
+                  {sortMark(sort, "name")}
+                </button>
+              </th>
               <th className="px-3 py-2.5">{i18n("crm.presence.status")}</th>
               <th className="px-3 py-2.5">{i18n("crm.ui.phone")}</th>
               <th className="px-3 py-2.5">{i18n("crm.ui.desk")}</th>
               <th className="px-3 py-2.5">{i18n("crm.ui.country")}</th>
-              <th className="px-3 py-2.5">{i18n("crm.ui.saleRet")}</th>
-              <th className="px-3 py-2.5">{i18n("crm.ui.balance")}</th>
+              <th className="px-3 py-2.5" aria-sort={ariaSort(sort, "sale")}>
+                <button
+                  type="button"
+                  onClick={() => setSort(nextTraderSort(sort, "sale"))}
+                  className="font-medium hover:text-neutral-900"
+                  data-fx-sort-col="sale"
+                >
+                  {i18n("crm.ui.saleRet")}
+                  {sortMark(sort, "sale")}
+                </button>
+              </th>
+              <th className="px-3 py-2.5" aria-sort={ariaSort(sort, "balance")}>
+                <button
+                  type="button"
+                  onClick={() => setSort(nextTraderSort(sort, "balance"))}
+                  className="font-medium hover:text-neutral-900"
+                  data-fx-sort-col="balance"
+                >
+                  {i18n("crm.ui.balance")}
+                  {sortMark(sort, "balance")}
+                </button>
+              </th>
               <th className="px-3 py-2.5">{i18n("crm.ui.account")}</th>
               <th className="px-3 py-2.5">{i18n("crm.presence.accountStatus")}</th>
               <th className="px-3 py-2.5">{i18n("crm.ui.broker")}</th>
-              <th className="px-3 py-2.5">{i18n("crm.ui.lastLogin")}</th>
-              <th className="px-3 py-2.5">
+              <th className="px-3 py-2.5" aria-sort={ariaSort(sort, "login")}>
                 <button
                   type="button"
-                  onClick={() => setSort(sort === "lastContact_desc" ? "lastContact_asc" : "lastContact_desc")}
-                  className="hover:text-neutral-900"
+                  onClick={() => setSort(nextTraderSort(sort, "login"))}
+                  className="font-medium hover:text-neutral-900"
+                  data-fx-sort-col="login"
+                >
+                  {i18n("crm.ui.lastLogin")}
+                  {sortMark(sort, "login")}
+                </button>
+              </th>
+              <th className="px-3 py-2.5" aria-sort={ariaSort(sort, "lastContact")}>
+                <button
+                  type="button"
+                  onClick={() => setSort(nextTraderSort(sort, "lastContact"))}
+                  className="font-medium hover:text-neutral-900"
                   title={i18n("crm.ui.sort")}
                   data-fx-sort-last-contact
+                  data-fx-sort-col="lastContact"
                 >
                   {i18n("crm.ui.lastContact")}
-                  {sort === "lastContact_desc" ? " ↓" : sort === "lastContact_asc" ? " ↑" : " ↕"}
+                  {sortMark(sort, "lastContact")}
                 </button>
               </th>
               <th className="px-3 py-2.5"></th>
@@ -1250,18 +1417,32 @@ export default function AdminUsersPage() {
           </tbody>
         </table>
       </div>
-      {hasMore && (
-        <div className="mt-3 text-center">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs" data-fx-trader-pager="">
+        <span className="tabular-nums text-neutral-500">
+          {i18n("crm.traders.pageStatus").replace("{page}", String(page))}
+          {total != null ? ` · ${total}` : ""}
+        </span>
+        <div className="flex gap-2">
           <button
             type="button"
-            disabled={moreBusy}
-            onClick={() => void load("more")}
-            className="rounded-full border border-[#e5e5e5] px-3 py-1 text-xs font-semibold text-neutral-600 hover:bg-neutral-50 disabled:opacity-50"
+            disabled={page <= 1}
+            onClick={() => setPage((n) => Math.max(1, n - 1))}
+            className="min-h-10 rounded-full border border-[#e5e5e5] px-3 font-medium text-neutral-700 hover:bg-neutral-50 disabled:opacity-40"
+            data-fx-trader-prev=""
           >
-            {i18n("crm.ui.loadMore")}
+            {i18n("crm.traders.prev")}
+          </button>
+          <button
+            type="button"
+            disabled={!hasMore}
+            onClick={() => setPage((n) => n + 1)}
+            className="min-h-10 rounded-full border border-[#e5e5e5] px-3 font-medium text-neutral-700 hover:bg-neutral-50 disabled:opacity-40"
+            data-fx-trader-next=""
+          >
+            {i18n("crm.traders.next")}
           </button>
         </div>
-      )}
+      </div>
 
       {showCreate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
