@@ -14,6 +14,12 @@ type Props = {
   account: AccountMetrics | null;
   onDeposit: () => void;
   onLogout: () => void;
+  /**
+   * Blotter-matched Equity and P/L. Margin, free margin, and margin level
+   * stay on the server snapshot in `account`.
+   */
+  displayEquity?: number;
+  displayProfitLoss?: number;
 };
 
 function Metric({
@@ -105,12 +111,12 @@ function MarginUsageBar({ account }: { account: AccountMetrics | null }) {
   );
 }
 
-export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
+export default function TopBar({ user, account, onDeposit, onLogout, displayEquity, displayProfitLoss }: Props) {
   const { t } = useI18n();
   const a = account;
   const ml = a?.marginLevel ?? 0;
-  const pnl = a?.profitLoss ?? 0;
-  const eq = a?.equity ?? 0;
+  const pnl = displayProfitLoss ?? a?.profitLoss ?? 0;
+  const eq = displayEquity ?? a?.equity ?? 0;
   const pnlPctRaw = eq > 0 ? (pnl / eq) * 100 : NaN;
   const pnlPct =
     a && Number.isFinite(pnlPctRaw)
@@ -161,7 +167,7 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
         <Metric label="Balance" value={a ? fmtMoney(a.balance, 2, a.currency) : "—"} />
         <Metric
           label="Equity"
-          value={a ? fmtMoney(a.equity, 2, a.currency) : "—"}
+          value={a ? fmtMoney(eq, 2, a.currency) : "—"}
           className="hidden md:flex"
         />
         <Metric
@@ -204,9 +210,10 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
           type="button"
           onClick={onDeposit}
           title="Deposit"
+          aria-label="Deposit"
           className="fx-deposit-btn flex h-7 items-center gap-1 rounded-[9px] bg-desk-accent px-2 text-[11px] font-semibold text-desk-accent-ink shadow-accent-glow-sm hover:brightness-110 md:h-8 md:gap-1.5 md:rounded-[10px] md:px-2.5 md:text-xs"
         >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
             <rect x="2" y="6" width="20" height="12" rx="2" />
             <path d="M12 10v4M10 12h4" />
           </svg>
@@ -230,6 +237,9 @@ export default function TopBar({ user, account, onDeposit, onLogout }: Props) {
           <button
             type="button"
             onClick={() => setMenuOpen((o) => !o)}
+            aria-label={user.name}
+            aria-expanded={menuOpen}
+            aria-haspopup="menu"
             className="flex items-center gap-1.5 rounded-full border border-desk-border/80 bg-desk-bg/50 p-0.5 hover:border-desk-accent/50 md:gap-2 md:py-1 md:pl-1 md:pr-2.5"
           >
             {avatar}

@@ -97,6 +97,36 @@ function parseClosedPayload(data: unknown): ClosedPayload {
   };
 }
 
+type OpenPayload = {
+  positions: PositionRow[];
+  account: AccountMetrics | null;
+  hasMore: boolean;
+  nextSkip: number;
+};
+
+function parseOpenPayload(data: unknown): OpenPayload | null {
+  if (Array.isArray(data)) {
+    return {
+      positions: data as PositionRow[],
+      account: null,
+      hasMore: false,
+      nextSkip: data.length,
+    };
+  }
+  if (!data || typeof data !== "object") return null;
+  const body = data as Record<string, unknown>;
+  if (!Array.isArray(body.positions)) return null;
+  const positions = body.positions as PositionRow[];
+  const account =
+    body.account && typeof body.account === "object" ? (body.account as AccountMetrics) : null;
+  return {
+    positions,
+    account,
+    hasMore: Boolean(body.hasMore),
+    nextSkip: typeof body.nextSkip === "number" ? body.nextSkip : positions.length,
+  };
+}
+
 function mergeClosed(prev: PositionRow[], page: PositionRow[]): PositionRow[] {
   const map = new Map<string, PositionRow>();
   for (const p of prev) map.set(p.id, p);
@@ -124,6 +154,10 @@ import TradingCalculator from "./TradingCalculator";
 import { FeedBanner, FeedRecoveredToast, useFeedHealth } from "./FeedStatus";
 import { useI18n } from "@/lib/i18n/context";
 import { localizeTradeError } from "@/lib/trade-errors";
+import { displayBookDelta } from "@/lib/display-profit";
+import { positionMark } from "@/lib/mark-price";
+import { concatUniqueById } from "@/lib/position-pages";
+import { getSymbol } from "@/lib/symbols";
 import BrandLoader from "@/components/ui/BrandLoader";
 import { normalizeLocale } from "@/lib/i18n/locales";
 import type {
@@ -168,6 +202,8 @@ export default function TerminalShell() {
   const [positionsError, setPositionsError] = useState(false);
   const [bootNonce, setBootNonce] = useState(0);
   const [openPositions, setOpenPositions] = useState<PositionRow[]>([]);
+  const [openHasMore, setOpenHasMore] = useState(false);
+  const [openLoading, setOpenLoading] = useState(false);
   const [closedPositions, setClosedPositions] = useState<PositionRow[]>([]);
   const [closedCalendar, setClosedCalendar] = useState<PositionRow[]>([]);
   const [closedHasMore, setClosedHasMore] = useState(false);
@@ -200,6 +236,13 @@ export default function TerminalShell() {
   mobileTabRef.current = mobileTab;
   const openPositionsRef = useRef(openPositions);
   openPositionsRef.current = openPositions;
+  const openExpandedRef = useRef(false);
+  const openHasMoreRef = useRef(false);
+  openHasMoreRef.current = openHasMore;
+  const openQueuedRef = useRef(0);
+  const openQueueRef = useRef(Promise.resolve());
+  const closedCountRef = useRef(0);
+  closedCountRef.current = closedPositions.length;
   const pendingOrdersRef = useRef(pendingOrders);
   pendingOrdersRef.current = pendingOrders;
   const bookAtRef = useRef(0);
@@ -261,32 +304,95 @@ export default function TerminalShell() {
     setPositionsError((prev) => (prev === next ? prev : next));
   }, []);
 
+  const fetchOpenPage = useCallback(async (skip: number): Promise<OpenPayload | "auth" | null> => {
+    const openRes = await fetch(`/api/positions?status=OPEN&skip=${skip}`, { credentials: "include" });
+    if (openRes.status === 401) return "auth";
+    if (!openRes.ok) return null;
+    return parseOpenPayload(await openRes.json());
+  }, []);
+
+  const enqueueOpen = useCallback((task: () => Promise<void>, dropIfBusy = false) => {
+    if (dropIfBusy && openQueuedRef.current > 0) return Promise.resolve();
+    openQueuedRef.current += 1;
+    const run = openQueueRef.current.then(async () => {
+      try {
+        await task();
+      } finally {
+        openQueuedRef.current -= 1;
+      }
+    });
+    openQueueRef.current = run.then(
+      () => undefined,
+      () => undefined
+    );
+    return run;
+  }, []);
+
   const refreshOpenPositions = useCallback(async () => {
-    try {
-      const openRes = await fetch("/api/positions?status=OPEN", { credentials: "include" });
-      if (openRes.status === 401) {
-        router.push("/login");
-        return;
-      }
-      if (!openRes.ok) {
+    await enqueueOpen(async () => {
+      try {
+        const first = await fetchOpenPage(0);
+        if (first === "auth") {
+          router.push("/login");
+          return;
+        }
+        if (!first) {
+          publishPosErr("open", true);
+          return;
+        }
+        const pages: PositionRow[][] = [first.positions];
+        let hasMore = first.hasMore;
+        let skip = first.nextSkip;
+        if (openExpandedRef.current && hasMore) {
+          const target = Math.max(openPositionsRef.current.length, first.positions.length);
+          while (hasMore && pages.reduce((n, page) => n + page.length, 0) < target) {
+            const page = await fetchOpenPage(skip);
+            if (page === "auth") {
+              router.push("/login");
+              return;
+            }
+            if (!page || page.positions.length === 0) break;
+            pages.push(page.positions);
+            skip = page.nextSkip;
+            hasMore = page.hasMore;
+          }
+        }
+        setOpenPositions(concatUniqueById(pages));
+        setOpenHasMore(hasMore);
+        if (first.account) setAccount(first.account);
+        publishPosErr("open", false);
+      } catch {
         publishPosErr("open", true);
-        return;
       }
-      const data = await openRes.json();
-      const rows = Array.isArray(data) ? data : Array.isArray(data?.positions) ? data.positions : null;
-      if (!rows) {
+    }, true);
+  }, [enqueueOpen, fetchOpenPage, publishPosErr, router]);
+
+  const loadMoreOpen = useCallback(async () => {
+    if (!openHasMoreRef.current) return;
+    await enqueueOpen(async () => {
+      if (!openHasMoreRef.current) return;
+      openExpandedRef.current = true;
+      setOpenLoading(true);
+      try {
+        const page = await fetchOpenPage(openPositionsRef.current.length);
+        if (page === "auth") {
+          router.push("/login");
+          return;
+        }
+        if (!page) {
+          publishPosErr("open", true);
+          return;
+        }
+        setOpenPositions((prev) => concatUniqueById([prev, page.positions]));
+        setOpenHasMore(page.hasMore);
+        publishPosErr("open", false);
+      } catch {
         publishPosErr("open", true);
-        return;
+      } finally {
+        setOpenLoading(false);
       }
-      setOpenPositions(rows);
-      if (data && typeof data === "object" && data.account && typeof data.account === "object") {
-        setAccount(data.account as AccountMetrics);
-      }
-      publishPosErr("open", false);
-    } catch {
-      publishPosErr("open", true);
-    }
-  }, [publishPosErr, router]);
+    });
+  }, [enqueueOpen, fetchOpenPage, publishPosErr, router]);
 
   const applyClosedPage = useCallback((parsed: ClosedPayload, mode: "refresh" | "append") => {
     setClosedPositions((prev) => mergeClosed(prev, parsed.positions));
@@ -304,8 +410,9 @@ export default function TerminalShell() {
     try {
       const tz = new Date().getTimezoneOffset();
       const calendar = withCalendar ? "1" : "0";
+      const loaded = withCalendar ? "" : `&loaded=${Math.max(0, closedCountRef.current)}`;
       const [closedRes, ordersRes] = await Promise.all([
-        fetch(`/api/positions?status=CLOSED&skip=0&tzOffset=${tz}&calendar=${calendar}`, { credentials: "include" }),
+        fetch(`/api/positions?status=CLOSED&skip=0&tzOffset=${tz}&calendar=${calendar}${loaded}`, { credentials: "include" }),
         fetch("/api/orders?status=PENDING", { credentials: "include" }),
       ]);
       if (closedRes.status === 401 || ordersRes.status === 401) {
@@ -597,6 +704,19 @@ export default function TerminalShell() {
     setOrderOpen(true);
   }
 
+  const headerChips = useMemo(() => {
+    if (!account) return null;
+    const delta = displayBookDelta(
+      openPositions,
+      (position) => positionMark(position, prices),
+      (symbol) => getSymbol(symbol)?.contractSize
+    );
+    return {
+      equity: account.equity + delta,
+      profitLoss: account.profitLoss + delta,
+    };
+  }, [account, openPositions, prices]);
+
   const chartLevels = useMemo(() => {
     const cur = symbol.trim().toUpperCase();
     return openPositions
@@ -796,6 +916,8 @@ export default function TerminalShell() {
       <TopBar
         user={user}
         account={account}
+        displayEquity={headerChips?.equity}
+        displayProfitLoss={headerChips?.profitLoss}
         onDeposit={() => setDepositOpen(true)}
         onLogout={onLogout}
       />
@@ -961,6 +1083,9 @@ export default function TerminalShell() {
                 closedHasMore={closedHasMore}
                 closedLoading={closedLoading}
                 onLoadMoreClosed={() => void loadMoreClosed()}
+                openHasMore={openHasMore}
+                openLoading={openLoading}
+                onLoadMoreOpen={() => void loadMoreOpen()}
                 onLoadClosedDay={(day) => void loadClosedDay(day)}
                 currency={account?.currency || "USD"}
                 prices={prices}
@@ -999,6 +1124,9 @@ export default function TerminalShell() {
                 closedHasMore={closedHasMore}
                 closedLoading={closedLoading}
                 onLoadMoreClosed={() => void loadMoreClosed()}
+                openHasMore={openHasMore}
+                openLoading={openLoading}
+                onLoadMoreOpen={() => void loadMoreOpen()}
                 onLoadClosedDay={(day) => void loadClosedDay(day)}
                 currency={account?.currency || "USD"}
                 prices={prices}
