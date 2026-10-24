@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useI18n } from "@/lib/i18n/context";
 import { formatPrice } from "@/lib/symbols";
 import type { PositionRow, PriceTick, SymbolDef } from "./types";
 import SymbolIcon from "@/components/ui/SymbolIcon";
@@ -64,24 +65,34 @@ const SORT_KEY = "fx-watch-sort";
 
 type SortMode = "DEFAULT" | "GAIN" | "LOSS" | "AZ";
 const SORT_CYCLE: SortMode[] = ["DEFAULT", "GAIN", "LOSS", "AZ"];
-const SORT_LABEL: Record<SortMode, string> = {
-  DEFAULT: "Default",
-  GAIN: "Top gainers",
-  LOSS: "Top losers",
-  AZ: "A–Z",
-};
 const SORT_ICON: Record<SortMode, string> = { DEFAULT: "⇅", GAIN: "▲%", LOSS: "▼%", AZ: "A–Z" };
+const FILTER_IDS = ["FAV", "RECENT", "ALL", "STOCK", "FX", "CRYPTO", "COMMODITY", "INDEX"] as const;
 
-const FILTERS = [
-  { id: "FAV", label: "★" },
-  { id: "RECENT", label: "Recent" },
-  { id: "ALL", label: "All" },
-  { id: "STOCK", label: "Stocks" },
-  { id: "FX", label: "FX" },
-  { id: "CRYPTO", label: "Crypto" },
-  { id: "COMMODITY", label: "Commodities" },
-  { id: "INDEX", label: "Indices" },
-];
+function filterLabel(id: string, t: (key: string) => string): string {
+  switch (id) {
+    case "RECENT":
+      return t("term.watch.recent");
+    case "STOCK":
+      return t("term.stocks");
+    case "FX":
+      return t("term.fx");
+    case "CRYPTO":
+      return t("term.crypto");
+    case "COMMODITY":
+      return t("term.commodities");
+    case "INDEX":
+      return t("term.indices");
+    default:
+      return t("term.all");
+  }
+}
+
+function sortLabel(mode: SortMode, t: (key: string) => string): string {
+  if (mode === "GAIN") return t("term.watch.sortGain");
+  if (mode === "LOSS") return t("term.watch.sortLoss");
+  if (mode === "AZ") return t("term.watch.sortAz");
+  return t("term.watch.sortDefault");
+}
 
 type OpenAgg = { count: number; profit: number; buyLots: number; sellLots: number };
 
@@ -92,6 +103,7 @@ function fmtSignedMoney(n: number): string {
 }
 
 export default function Watchlist({ symbols, prices, selected, onSelect, className = "", openPositions }: Props) {
+  const { t } = useI18n();
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState("ALL");
 
@@ -271,9 +283,9 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
                 setQ("");
               }
             }}
-            placeholder="Search symbol…"
+            placeholder={t("term.watch.search")}
             data-fx-watchlist-search=""
-            aria-label="Search symbol"
+            aria-label={t("term.watch.search")}
             aria-keyshortcuts="/"
             className="w-full rounded-[12px] border border-desk-border/80 bg-desk-bg py-2 pl-7 pr-7 text-xs text-desk-text outline-none placeholder:text-desk-muted/70 focus:border-desk-accent md:rounded-control md:py-1.5"
           />
@@ -281,8 +293,8 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
             <button
               type="button"
               onClick={() => setQ("")}
-              title="Aramayı temizle (Esc)"
-              aria-label="Aramayı temizle"
+              title={t("term.watch.clear")}
+              aria-label={t("term.watch.clear")}
               data-fx-watch-clear=""
               className="absolute right-1.5 top-1/2 inline-flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full text-[12px] leading-none text-desk-muted hover:bg-desk-hover hover:text-desk-text"
             >
@@ -292,14 +304,18 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
         </div>
         <div className="mt-2 flex gap-1 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:flex-wrap md:overflow-visible">
           {(hasOpen
-            ? [FILTERS[0], { id: "OPEN", label: `Açık · ${openBySymbol.size}` }, ...FILTERS.slice(1)]
-            : FILTERS
+            ? [
+                { id: FILTER_IDS[0], label: "★" },
+                { id: "OPEN", label: `${t("term.watch.open")} · ${openBySymbol.size}` },
+                ...FILTER_IDS.slice(1).map((id) => ({ id, label: filterLabel(id, t) })),
+              ]
+            : FILTER_IDS.map((id) => ({ id, label: id === "FAV" ? "★" : filterLabel(id, t) }))
           ).map((f) => (
             <button
               key={f.id}
               onClick={() => setFilter(f.id)}
               aria-pressed={filter === f.id}
-              title={f.id === "OPEN" ? "Açık pozisyonunuz olan semboller" : undefined}
+              title={f.id === "OPEN" ? t("term.watch.open") : undefined}
               className={`shrink-0 rounded-[8px] px-2 py-1 text-[10px] font-semibold transition-colors md:rounded-[7px] md:px-1.5 md:py-0.5 md:font-medium ${
                 filter === f.id
                   ? "bg-desk-accent text-desk-accent-ink shadow-accent-glow-sm"
@@ -311,10 +327,10 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
           ))}
         </div>
         {filter === "FAV" && list.length === 0 && (
-          <p className="mt-2 text-[11px] text-desk-muted">Favori eklemek için sembolün yanındaki ☆ işaretine dokunun.</p>
+          <p className="mt-2 text-[11px] text-desk-muted">{t("term.watch.favEmpty")}</p>
         )}
         {filter === "RECENT" && recent.length === 0 && (
-          <p className="mt-2 text-[11px] text-desk-muted">Symbols you open will appear here.</p>
+          <p className="mt-2 text-[11px] text-desk-muted">{t("term.watch.recentEmpty")}</p>
         )}
         <div className="hidden">
         </div>
@@ -323,8 +339,8 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
         <button
           type="button"
           onClick={cycleSort}
-          title={`Sort: ${SORT_LABEL[sortMode]} (click to change)`}
-          aria-label={`Sort watchlist: ${SORT_LABEL[sortMode]}. Click to change.`}
+          title={sortLabel(sortMode, t)}
+          aria-label={sortLabel(sortMode, t)}
           data-fx-watch-sort={sortMode}
           className={`-mx-1 inline-flex items-center gap-1 rounded-[6px] px-1 py-0.5 uppercase transition-colors hover:bg-desk-hover hover:text-desk-text ${
             sortMode !== "DEFAULT" ? "text-desk-accent" : ""
@@ -335,7 +351,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
             {SORT_ICON[sortMode]}
           </span>
           {sortMode !== "DEFAULT" && (
-            <span className="normal-case tracking-normal text-desk-muted/80">· {SORT_LABEL[sortMode]}</span>
+            <span className="normal-case tracking-normal text-desk-muted/80">· {sortLabel(sortMode, t)}</span>
           )}
         </button>
         <span>BID / ASK · SPR · %</span>

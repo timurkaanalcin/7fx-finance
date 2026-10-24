@@ -6,6 +6,7 @@ import { fmtCrmDate } from "@/lib/crm-format";
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useVisiblePoll } from "@/lib/use-visible-poll";
 
 type Row = {
   id: string;
@@ -49,13 +50,7 @@ export default function AdminDepositsPage() {
   }, [load]);
 
   // Pending queue refreshes itself so new requests show up without a manual reload.
-  useEffect(() => {
-    if (filter !== "PENDING") return;
-    const t = window.setInterval(() => {
-      if (document.visibilityState === "visible") load();
-    }, 30_000);
-    return () => window.clearInterval(t);
-  }, [filter, load]);
+  useVisiblePoll(load, 30_000, filter === "PENDING");
 
   const shown = useMemo(() => {
     const q = query.trim().toLocaleLowerCase("tr");

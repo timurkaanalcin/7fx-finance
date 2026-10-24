@@ -806,6 +806,7 @@ function OpenCard({
     levels: { stopLoss: number | null; takeProfit: number | null }
   ) => void | TradeActionResult | Promise<void | TradeActionResult>;
 }) {
+  const { t } = useI18n();
   const [closeOpen, setCloseOpen] = useState(false);
   const [editSlTp, setEditSlTp] = useState(false);
   const [closeVol, setCloseVol] = useState(String(p.volume));
@@ -959,7 +960,7 @@ function OpenCard({
             onClick={openClosePanel}
             className="flex-1 rounded-[10px] bg-desk-sell/90 py-2 text-[12px] font-bold text-white hover:bg-desk-sell"
           >
-            Close / Kapat
+            {t("common.close")}
           </button>
           {onModifySlTp && (
             <button
@@ -977,7 +978,7 @@ function OpenCard({
       {closeOpen && (
         <div className="mt-2.5 rounded-[10px] border border-desk-border/60 bg-desk-bg/50 p-2.5">
           <div className="text-[10px] font-medium uppercase tracking-wider text-desk-muted">
-            Volume · Kısmi kapat
+            {t("term.partialClose")}
           </div>
           <input
             type="number"
@@ -1007,7 +1008,7 @@ function OpenCard({
               onClick={confirmClose}
               className="flex-1 rounded-[8px] bg-desk-sell/90 py-1.5 text-[11px] font-bold text-white hover:bg-desk-sell disabled:opacity-50"
             >
-              Confirm
+              {t("term.confirm")}
             </button>
             <button
               type="button"
@@ -1015,7 +1016,7 @@ function OpenCard({
               onClick={() => setCloseOpen(false)}
               className="rounded-[8px] border border-desk-border/60 px-3 py-1.5 text-[11px] font-semibold text-desk-muted hover:text-desk-text"
             >
-              Cancel
+              {t("common.cancel")}
             </button>
           </div>
         </div>
@@ -1024,7 +1025,7 @@ function OpenCard({
       {editSlTp && (
         <div className="mt-2.5 rounded-[10px] border border-desk-border/60 bg-desk-bg/50 p-2.5">
           <div className="text-[10px] font-medium uppercase tracking-wider text-desk-muted">
-            Düzenle · Edit SL / TP
+            {t("term.editSlTp")}
           </div>
           <div className="mt-1.5 grid grid-cols-2 gap-2">
             <label className="block">
@@ -1057,7 +1058,7 @@ function OpenCard({
               onClick={saveSlTp}
               className="flex-1 rounded-[8px] bg-desk-accent py-1.5 text-[11px] font-bold text-desk-accent-ink hover:brightness-110 disabled:opacity-50"
             >
-              Save
+              {t("common.save")}
             </button>
             <button
               type="button"
@@ -1065,7 +1066,7 @@ function OpenCard({
               onClick={() => setEditSlTp(false)}
               className="rounded-[8px] border border-desk-border/60 px-3 py-1.5 text-[11px] font-semibold text-desk-muted hover:text-desk-text"
             >
-              Cancel
+              {t("common.cancel")}
             </button>
           </div>
         </div>
@@ -1095,6 +1096,7 @@ function OpenRowActions({
     levels: { stopLoss: number | null; takeProfit: number | null }
   ) => void | TradeActionResult | Promise<void | TradeActionResult>;
 }) {
+  const { t } = useI18n();
   const [mode, setMode] = useState<"idle" | "close" | "edit">("idle");
   const [closeVol, setCloseVol] = useState(String(p.volume));
   const [slInput, setSlInput] = useState(p.stopLoss != null ? String(p.stopLoss) : "");
@@ -1254,7 +1256,7 @@ function OpenRowActions({
         }}
         className="rounded-[7px] bg-desk-sell/85 px-2 py-0.5 text-[10px] font-semibold text-white hover:bg-desk-sell"
       >
-        Close
+        {t("common.close")}
       </button>
       {onModifySlTp && (
         <button
@@ -1368,6 +1370,7 @@ function PendingCard({
   onCancel: (id: string) => void;
   prices?: Record<string, PriceTick>;
 }) {
+  const { t } = useI18n();
   return (
     <div className="rounded-[14px] border border-desk-border/60 bg-desk-elev/40 p-3">
       <div className="flex items-start justify-between gap-2">
@@ -1412,7 +1415,7 @@ function PendingCard({
           onClick={() => onCancel(o.id)}
           className="rounded-[10px] border border-desk-border bg-desk-elev px-3 py-1.5 text-[11px] font-semibold text-desk-muted hover:bg-desk-hover hover:text-desk-text"
         >
-          Cancel
+          {t("common.cancel")}
         </button>
       </div>
     </div>
@@ -1476,9 +1479,9 @@ export default function BottomPanels({
 
 
   const tabs: { id: Tab; label: string; shortLabel: string; count?: number }[] = [
-    { id: "open", label: "Open Trades", shortLabel: "Open", count: openPositions.length || undefined },
-    { id: "closed", label: "Closed", shortLabel: "Closed", count: closedPositions.length || undefined },
-    { id: "pending", label: "Pending", shortLabel: "Pending", count: pendingOrders.length || undefined },
+    { id: "open", label: t("term.openTrades"), shortLabel: t("term.watch.open"), count: openPositions.length || undefined },
+    { id: "closed", label: t("term.closed"), shortLabel: t("term.closed"), count: closedPositions.length || undefined },
+    { id: "pending", label: t("term.pending"), shortLabel: t("term.pending"), count: pendingOrders.length || undefined },
   ];
 
   const filterOpts = useMemo(
@@ -1627,9 +1630,7 @@ export default function BottomPanels({
     if (bulkBusy || filteredOpen.length === 0) return;
     const n = filteredOpen.length;
     const ok = window.confirm(
-      filtersActive
-        ? `Filtreye uyan ${n} açık pozisyon kapatılsın mı?`
-        : `${n} açık pozisyonun tümü kapatılsın mı?`
+      (filtersActive ? t("term.confirmCloseFiltered") : t("term.confirmCloseAll")).replace("{n}", String(n))
     );
     if (!ok) return;
     setBulkBusy(true);
@@ -1642,15 +1643,13 @@ export default function BottomPanels({
     } finally {
       setBulkBusy(false);
     }
-  }, [bulkBusy, filteredOpen, filtersActive, onClosePositions, onClosePosition]);
+  }, [bulkBusy, filteredOpen, filtersActive, onClosePositions, onClosePosition, t]);
 
   const handleCancelAllFiltered = useCallback(async () => {
     if (bulkBusy || filteredPending.length === 0) return;
     const n = filteredPending.length;
     const ok = window.confirm(
-      filtersActive
-        ? `Filtreye uyan ${n} bekleyen emir iptal edilsin mi?`
-        : `${n} bekleyen emirin tümü iptal edilsin mi?`
+      (filtersActive ? t("term.confirmCancelFiltered") : t("term.confirmCancelAll")).replace("{n}", String(n))
     );
     if (!ok) return;
     setBulkBusy(true);
@@ -1663,7 +1662,7 @@ export default function BottomPanels({
     } finally {
       setBulkBusy(false);
     }
-  }, [bulkBusy, filteredPending, filtersActive, onCancelOrders, onCancelOrder]);
+  }, [bulkBusy, filteredPending, filtersActive, onCancelOrders, onCancelOrder, t]);
 
   const handleExportCsv = () => {
     if (!canExport) return;
@@ -1842,13 +1841,13 @@ export default function BottomPanels({
 
   const emptyFiltered = (
     <div className="px-3 py-10 text-center text-xs text-desk-muted">
-      <div>Filtreye uyan işlem yok</div>
+      <div>{t("term.emptyFilter")}</div>
       <button
         type="button"
         onClick={clearAllFilters}
         className="mt-2 rounded-[7px] border border-desk-border px-2.5 py-1 text-[11px] font-medium text-desk-muted hover:bg-desk-hover hover:text-desk-text"
       >
-        Filtreleri temizle · Clear filters
+        {t("term.clearFilters")}
       </button>
     </div>
   );
@@ -1892,15 +1891,11 @@ export default function BottomPanels({
               type="button"
               onClick={handleCloseAllFiltered}
               disabled={bulkBusy}
-              title={
-                filtersActive
-                  ? "Filtrelenmiş açık pozisyonları kapat"
-                  : "Tümünü kapat"
-              }
-              aria-label="Açık pozisyonları kapat"
+              title={filtersActive ? t("term.closeFiltered") : t("term.closeAll")}
+              aria-label={filtersActive ? t("term.closeFiltered") : t("term.closeAll")}
               className="rounded-control border border-desk-sell/40 px-2.5 py-1 text-[11px] font-semibold text-desk-sell transition-colors hover:bg-desk-sell/10 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              {bulkBusy ? "…" : filtersActive ? "Filtreyi kapat" : "Tümünü kapat"}
+              {bulkBusy ? "…" : filtersActive ? t("term.closeFiltered") : t("term.closeAll")}
             </button>
           ) : null}
           {tab === "pending" && filteredPending.length > 0 ? (
@@ -1908,15 +1903,11 @@ export default function BottomPanels({
               type="button"
               onClick={handleCancelAllFiltered}
               disabled={bulkBusy}
-              title={
-                filtersActive
-                  ? "Filtrelenmiş bekleyen emirleri iptal et"
-                  : "Tüm bekleyen emirleri iptal et"
-              }
-              aria-label="Bekleyen emirleri iptal et"
+              title={filtersActive ? t("term.cancelFiltered") : t("term.cancelAll")}
+              aria-label={filtersActive ? t("term.cancelFiltered") : t("term.cancelAll")}
               className="rounded-control border border-desk-warn/50 px-2.5 py-1 text-[11px] font-semibold text-desk-warn transition-colors hover:bg-desk-warn/10 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              {bulkBusy ? "…" : filtersActive ? "Filtreyi iptal" : "Tümünü iptal"}
+              {bulkBusy ? "…" : filtersActive ? t("term.cancelFiltered") : t("term.cancelAll")}
             </button>
           ) : null}
           {tab === "closed" && closedPositions.length > 0 ? (
@@ -1960,8 +1951,8 @@ export default function BottomPanels({
             <button
               type="button"
               onClick={clearAllFilters}
-              title="Filtreleri temizle · Clear filters"
-              aria-label="Filtreleri temizle · Clear filters"
+              title={t("term.clearFilters")}
+              aria-label={t("term.clearFilters")}
               className="rounded-control border border-desk-border px-2 py-1 text-[11px] text-desk-muted transition-colors hover:bg-desk-hover hover:text-desk-text"
             >
               ✕<span className="ml-1 hidden sm:inline">Temizle</span>
@@ -1991,7 +1982,7 @@ export default function BottomPanels({
               Side
             </span>
             <Chip active={sideFilter === "ALL"} onClick={() => setSideFilter("ALL")}>
-              Tümü
+              {t("term.all")}
             </Chip>
             <Chip
               active={sideFilter === "BUY"}
@@ -2049,7 +2040,7 @@ export default function BottomPanels({
                 <button
                   type="button"
                   onClick={() => setTextFilter("")}
-                  aria-label="Aramayı temizle · Clear search"
+                  aria-label={t("term.watch.clear")}
                   className="absolute right-1 top-1/2 -translate-y-1/2 rounded px-1 text-[11px] leading-none text-desk-muted hover:text-desk-text"
                 >
                   ✕
@@ -2063,7 +2054,7 @@ export default function BottomPanels({
                 Sonuç
               </span>
               <Chip active={resultFilter === "ALL"} onClick={() => setResultFilter("ALL")}>
-                Tümü
+                {t("term.all")}
               </Chip>
               <Chip
                 active={resultFilter === "PROFIT"}
@@ -2086,7 +2077,7 @@ export default function BottomPanels({
               Period
             </span>
             <Chip active={periodFilter === "ALL"} onClick={() => setPeriodFilter("ALL")}>
-              Tümü
+              {t("term.all")}
             </Chip>
             <Chip active={periodFilter === "TODAY"} onClick={() => setPeriodFilter("TODAY")}>
               Bugün
@@ -2109,10 +2100,11 @@ export default function BottomPanels({
             <button
               type="button"
               onClick={clearAllFilters}
-              title="Tüm filtreleri sıfırla · Reset all filters"
+              title={t("term.clearFilters")}
+              aria-label={t("term.clearFilters")}
               className="ml-auto rounded-[7px] border border-desk-border px-2 py-0.5 text-[10px] font-medium text-desk-muted hover:bg-desk-hover hover:text-desk-text"
             >
-              Filtreleri temizle · Clear filters
+              {t("term.clearFilters")}
             </button>
           )}
         </div>
@@ -2129,7 +2121,7 @@ export default function BottomPanels({
           </span>
           <span className="shrink-0">
             <Chip active={openSymbolChip === ""} onClick={() => setOpenSymbolChip("")}>
-              Tümü · All <span className="tabular-nums opacity-70">{openPositions.length}</span>
+              {t("term.all")} <span className="tabular-nums opacity-70">{openPositions.length}</span>
             </Chip>
           </span>
           {openSymbolCounts.map(([sym, n]) => (
@@ -2156,7 +2148,7 @@ export default function BottomPanels({
           </span>
           <span className="shrink-0">
             <Chip active={closedSymbolChip === ""} onClick={() => setClosedSymbolChip("")}>
-              Tümü · All <span className="tabular-nums opacity-70">{calendarClosed.length}</span>
+              {t("term.all")} <span className="tabular-nums opacity-70">{calendarClosed.length}</span>
             </Chip>
           </span>
           {closedSymbolCounts.map(([sym, n]) => (
@@ -2183,7 +2175,7 @@ export default function BottomPanels({
           </span>
           <span className="shrink-0">
             <Chip active={pendingSymbolChip === ""} onClick={() => setPendingSymbolChip("")}>
-              Tümü · All <span className="tabular-nums opacity-70">{pendingOrders.length}</span>
+              {t("term.all")} <span className="tabular-nums opacity-70">{pendingOrders.length}</span>
             </Chip>
           </span>
           {pendingSymbolCounts.map(([sym, n]) => (
@@ -2219,7 +2211,7 @@ export default function BottomPanels({
         {tab === "open" && (
           <>
             {openPositions.length === 0 && (
-              <div className="px-3 py-10 text-center text-xs text-desk-muted">No open trades</div>
+              <div className="px-3 py-10 text-center text-xs text-desk-muted">{t("term.emptyOpen")}</div>
             )}
             {openPositions.length > 0 && filteredOpen.length === 0 && emptyFiltered}
             {sortedOpen.map((p) => (
@@ -2231,7 +2223,7 @@ export default function BottomPanels({
           <>
             {closedPositions.length === 0 && (
               <div className="px-3 py-10 text-center text-xs text-desk-muted">
-                No closed positions
+                {t("term.emptyClosed")}
               </div>
             )}
             {closedPositions.length > 0 && filteredClosed.length === 0 && emptyFiltered}
@@ -2243,7 +2235,7 @@ export default function BottomPanels({
         {tab === "pending" && (
           <>
             {pendingOrders.length === 0 && (
-              <div className="px-3 py-10 text-center text-xs text-desk-muted">Pending emir yok</div>
+              <div className="px-3 py-10 text-center text-xs text-desk-muted">{t("term.emptyPending")}</div>
             )}
             {pendingOrders.length > 0 && filteredPending.length === 0 && emptyFiltered}
             {sortedPending.map((o) => (
@@ -2269,26 +2261,26 @@ export default function BottomPanels({
                 <th className="px-2 py-2">Current</th>
                 <th className="px-2 py-2">SL</th>
                 <th className="px-2 py-2">TP</th>
-                <th className="px-2 py-2">Takas</th>
-                <th className="px-2 py-2">Commission</th>
-                <th className="px-2 py-2">Tic. Kom.</th>
+                <th className="px-2 py-2">{t("term.col.swap")}</th>
+                <th className="px-2 py-2">{t("term.col.commission")}</th>
+                <th className="px-2 py-2">{t("term.col.ticketComm")}</th>
                 <SortTh label="Profit" col="profit" sort={openSort} onSort={onOpenSort} />
                 <th className="px-2 py-2">Net Profit</th>
-                <th className="px-2 py-2">Close</th>
+                <th className="px-2 py-2">{t("common.close")}</th>
               </tr>
             </thead>
             <tbody>
               {openPositions.length === 0 && (
                 <tr>
                   <td colSpan={16} className="px-3 py-8 text-center text-desk-muted">
-                    No open trades
+                    {t("term.emptyOpen")}
                   </td>
                 </tr>
               )}
               {openPositions.length > 0 && filteredOpen.length === 0 && (
                 <tr>
                   <td colSpan={16} className="px-3 py-8 text-center text-desk-muted">
-                    Filtreye uyan işlem yok
+                    {t("term.emptyFilter")}
                   </td>
                 </tr>
               )}
@@ -2368,7 +2360,7 @@ export default function BottomPanels({
                 <SortTh label="Asset" col="symbol" sort={closedSort} onSort={onClosedSort} />
                 <th className="px-2 py-2">Volume</th>
                 <th className="px-2 py-2">Open</th>
-                <th className="px-2 py-2">Close</th>
+                <th className="px-2 py-2">{t("common.close")}</th>
                 <th className="px-2 py-2">SL</th>
                 <th className="px-2 py-2">TP</th>
                 <SortTh label="Profit" col="profit" sort={closedSort} onSort={onClosedSort} />
@@ -2381,14 +2373,14 @@ export default function BottomPanels({
               {closedPositions.length === 0 && (
                 <tr>
                   <td colSpan={13} className="px-3 py-8 text-center text-desk-muted">
-                    No closed positions
+                    {t("term.emptyClosed")}
                   </td>
                 </tr>
               )}
               {closedPositions.length > 0 && filteredClosed.length === 0 && (
                 <tr>
                   <td colSpan={13} className="px-3 py-8 text-center text-desk-muted">
-                    Filtreye uyan işlem yok
+                    {t("term.emptyFilter")}
                   </td>
                 </tr>
               )}
@@ -2481,21 +2473,21 @@ export default function BottomPanels({
                 <th className="px-2 py-2" title="Tetik fiyatına uzaklık (pip)">Uzaklık</th>
                 <th className="px-2 py-2">SL</th>
                 <th className="px-2 py-2">TP</th>
-                <th className="px-2 py-2">Cancel</th>
+                <th className="px-2 py-2">{t("common.cancel")}</th>
               </tr>
             </thead>
             <tbody>
               {pendingOrders.length === 0 && (
                 <tr>
                   <td colSpan={11} className="px-3 py-8 text-center text-desk-muted">
-                    Pending emir yok
+                    {t("term.emptyPending")}
                   </td>
                 </tr>
               )}
               {pendingOrders.length > 0 && filteredPending.length === 0 && (
                 <tr>
                   <td colSpan={11} className="px-3 py-8 text-center text-desk-muted">
-                    Filtreye uyan işlem yok
+                    {t("term.emptyFilter")}
                   </td>
                 </tr>
               )}
@@ -2538,7 +2530,7 @@ export default function BottomPanels({
                       onClick={() => onCancelOrder(o.id)}
                       className="rounded-[7px] border border-desk-border bg-desk-elev px-2 py-0.5 text-[10px] font-medium text-desk-muted hover:bg-desk-hover hover:text-desk-text"
                     >
-                      Cancel
+                      {t("common.cancel")}
                     </button>
                   </td>
                 </tr>

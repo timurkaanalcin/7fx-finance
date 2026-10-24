@@ -449,6 +449,19 @@ export default function TradingChart({
 
         if (bars.length) {
           try {
+            const ts = chartRef.current?.timeScale();
+            let restore: { from: number; to: number } | null = null;
+            let atLive = true;
+            if (!fit && ts) {
+              try {
+                const pos = ts.scrollPosition();
+                atLive = !Number.isFinite(pos) || (pos >= -1 && pos <= 1);
+                const range = ts.getVisibleLogicalRange();
+                if (!atLive && range) restore = { from: range.from, to: range.to };
+              } catch {
+                /* ignore */
+              }
+            }
             seriesRef.current.setData(bars);
             if (lineRef.current) {
               lineRef.current.setData(bars.map((b) => ({ time: b.time, value: b.close })));
@@ -464,7 +477,9 @@ export default function TradingChart({
             };
             if (lastMidRef.current == null && mid != null) lastMidRef.current = mid;
             setOhlc({ o: last.open, h: last.high, l: last.low, c: last.close });
-            if (fit) chartRef.current?.timeScale().fitContent();
+            if (fit) ts?.fitContent();
+            else if (restore) ts?.setVisibleLogicalRange(restore);
+            else ts?.scrollToPosition(0, false);
           } catch {
             setFeedError("Could not update chart");
           }
