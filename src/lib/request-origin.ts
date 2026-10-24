@@ -42,7 +42,7 @@ export function publicRequestOrigin(req: Request): string {
   } catch {
     /* ignore */
   }
-  return "https://7fx.customer.org.tr";
+  return "https://7fx.control.org.tr";
 }
 
 export function publicAbsoluteUrl(req: Request, path: string): string {

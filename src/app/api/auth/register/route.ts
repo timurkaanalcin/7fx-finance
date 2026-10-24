@@ -11,6 +11,7 @@ import {
 } from "@/lib/system-settings";
 import { allocateUniqueAccountLoginId } from "@/lib/account-login-id";
 import { jobTitleSchema } from "@/lib/job-titles";
+import { ownSiteKey } from "@/lib/sites";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -82,6 +83,7 @@ export async function POST(req: Request) {
         active: true,
         registrationDate: now,
         referralCodeUsed: referralCode || null,
+        site: ownSiteKey(),
         account: {
           create: {
             balance: 0,

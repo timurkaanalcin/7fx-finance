@@ -239,6 +239,7 @@ export async function executeImport(opts: {
               registrationCountry: m.country,
               desk: m.desk,
               assigneeName: m.assigneeName,
+              site: m.site || "7fx",
               saleStatus: m.saleStatus || "NEW",
               affiliateA: m.source,
               campaign: m.source,

@@ -12,6 +12,7 @@ export const TRADER_LEGACY_TAKE = 500;
 export const TRADER_TABLE_SELECT = {
   id: true,
   email: true,
+  site: true,
   accountLoginId: true,
   name: true,
   role: true,
@@ -455,6 +456,7 @@ export function serializeTraderTableRow(u: Record<string, unknown>) {
   return {
     id: u.id,
     email: u.email,
+    site: (u.site as string | null | undefined) || "7fx",
     accountLoginId: (u.accountLoginId as string | null) ?? null,
     name: u.name,
     role: u.role,

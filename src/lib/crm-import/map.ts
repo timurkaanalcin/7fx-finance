@@ -1,3 +1,4 @@
+import { DEFAULT_SITE, normalizeSiteKey } from "@/lib/sites-shared";
 import {
   type ColumnMapping,
   type ImportDefaults,
@@ -236,6 +237,7 @@ export function applyMapping(
   mapping: ColumnMapping,
   defaults: ImportDefaults = {}
 ): MappedCustomer[] {
+  const site = normalizeSiteKey(defaults.site) ?? DEFAULT_SITE;
   const defCurrency = normalizeAccountCurrency(defaults.currency || "USD", "USD");
   const out: MappedCustomer[] = [];
 
@@ -298,6 +300,7 @@ export function applyMapping(
       balance: Math.max(0, balance),
       password: password && password.length >= 6 ? password.slice(0, 128) : password ? password : null,
       emailPlaceholder,
+      site,
     });
   }
   return out;

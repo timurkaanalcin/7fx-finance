@@ -90,6 +90,10 @@ model User {
   affiliateC           String? // C_CID
   /// Referral/invite code used at registration (optional audit)
   referralCodeUsed     String?  @db.VarChar(64)
+  /// Source site / brand this customer belongs to (e.g. "7fx", "mfx"). Lower-case key.
+  site                 String   @default("7fx") @db.VarChar(32)
+  /// Customer id on the source site (set by the site ingest API; used for idempotent upserts)
+  siteExternalId       String?  @db.VarChar(128)
   retentionStatus      String?
   saleStatus           String?
   potentialStatus      String?
@@ -141,6 +145,7 @@ model User {
   @@index([lastSeenAt])
   @@index([assigneeId])
   @@index([lastContactAt])
+  @@index([site])
 }
 
 model Account {

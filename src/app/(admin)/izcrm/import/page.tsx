@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { ACCOUNT_CURRENCIES, SALE_STATUSES } from "@/lib/membership";
+import { KNOWN_SITES } from "@/lib/sites-shared";
 
 type DeskOpt = { id: string; name: string; code: string | null };
 
@@ -104,6 +105,7 @@ export default function AdminImportPage() {
     source: "",
     language: "tr",
     country: "",
+    site: "7fx",
   });
   const [duplicateMode, setDuplicateMode] = useState<"skip" | "update">("skip");
   const [validations, setValidations] = useState<ValidationRow[]>([]);
@@ -386,6 +388,21 @@ export default function AdminImportPage() {
                   <option value="Retention">Retention</option>
                   <option value="Sale">Sale</option>
                   <option value="TR">TR</option>
+                </select>
+              </label>
+              <label className="text-[11px]">
+                <span className="text-neutral-500">{t("crm.site.label", "Site")}</span>
+                <select
+                  data-fx-import-site
+                  className="mt-0.5 w-full rounded border border-neutral-200 bg-white px-2 py-1.5 text-xs"
+                  value={defaults.site}
+                  onChange={(e) => setDefaults((d) => ({ ...d, site: e.target.value }))}
+                >
+                  {KNOWN_SITES.map((s) => (
+                    <option key={s.key} value={s.key}>
+                      {s.label}
+                    </option>
+                  ))}
                 </select>
               </label>
               <label className="text-[11px]">

@@ -1,4 +1,5 @@
 import { scopeUserWhere } from "@/lib/crm-scope";
+import { DEFAULT_SITE, KNOWN_SITES, normalizeSiteKey, siteLabel } from "@/lib/sites";
 import { NextResponse } from "next/server";
 import { writeAudit, ADMIN_PERMISSIONS, hashPassword, requireAdmin, requireAdminPerm, isCrmReadOnlyAdmin } from "@/lib/auth";
 import { maskTraderForRoViewer } from "@/lib/security/mask";
@@ -151,6 +152,8 @@ export async function GET(req: Request) {
     and.push({ OR: ors });
   }
   if (country) and.push({ country: { equals: country } });
+  const sites = multi("site").map((x) => normalizeSiteKey(x)).filter(Boolean) as string[];
+  if (sites.length) and.push({ site: { in: sites } });
   const saleStatuses = multi("saleStatus");
   if (saleStatuses.length) and.push({ saleStatus: { in: saleStatuses } });
   if (accountType) and.push({ accountType: { equals: accountType } });
@@ -257,6 +260,29 @@ export async function GET(req: Request) {
     }
   }
 
+  // Customers per source site (scoped like the list; TRADER only) — drives the site tabs
+  const siteCounts: Record<string, number> = {};
+  try {
+    const groups = await prisma.user.groupBy({
+      by: ["site"],
+      where: scopeUserWhere(admin, { role: "TRADER" }),
+      _count: { _all: true },
+    });
+    for (const g of groups) {
+      const key = (g as { site: string | null }).site || DEFAULT_SITE;
+      siteCounts[key] = (siteCounts[key] || 0) + (g as { _count: { _all: number } })._count._all;
+    }
+  } catch {
+    /* best-effort */
+  }
+  const siteOptions = [
+    ...KNOWN_SITES.map((s) => ({ key: s.key, label: s.label, count: siteCounts[s.key] || 0 })),
+    ...Object.keys(siteCounts)
+      .filter((k) => !KNOWN_SITES.some((s) => s.key === k))
+      .sort()
+      .map((k) => ({ key: k, label: siteLabel(k), count: siteCounts[k] })),
+  ];
+
   const deskPage = searchParams.get("meta") !== "0" ? await deskLookup("") : null;
 
   return NextResponse.json({
@@ -279,6 +305,7 @@ export async function GET(req: Request) {
     ...(deskPage
       ? { desks: deskPage.deskOptions.map((d) => d.name), deskOptions: deskPage.deskOptions, desksPartial: deskPage.desksPartial }
       : {}),
+    siteOptions,
     permissionDefs: ADMIN_PERMISSIONS,
     dataMasked: roViewer,
   });

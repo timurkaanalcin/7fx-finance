@@ -3,6 +3,7 @@ import { randomBytes } from "crypto";
 import { writeAudit, requireAdmin, requireAdminWrite } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { publicRequestOrigin } from "@/lib/request-origin";
+import { isCrmHostname, MAIN_SITE_ORIGIN } from "@/lib/crm-host";
 
 export const dynamic = "force-dynamic";
 
@@ -83,7 +84,16 @@ export async function POST(req: Request, { params }: Ctx) {
     }
     return null;
   })();
-  const origin = browserOrigin || publicRequestOrigin(req);
+  // Customer links always point at the trading site, never at the CRM host.
+  const origin = (() => {
+    const o = browserOrigin || publicRequestOrigin(req);
+    try {
+      if (isCrmHostname(new URL(o).hostname)) return MAIN_SITE_ORIGIN;
+    } catch {
+      /* ignore */
+    }
+    return o;
+  })();
   const url = `${origin}${path}`;
 
   await writeAudit({
