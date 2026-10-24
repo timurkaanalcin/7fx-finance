@@ -51,6 +51,9 @@ export async function GET() {
       credit: m.credit,
       bonus: m.bonus,
       currency: m.currency,
+      margin: m.margin,
+      freeMargin: m.freeMargin,
+      leverage: m.leverage,
       // CRM statuses visible read-only but not for edit
       ftd: m.ftd,
     },
