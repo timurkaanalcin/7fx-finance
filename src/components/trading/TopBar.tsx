@@ -98,7 +98,9 @@ export default function TopBar({
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/icons/v3/icon-64.png"
-          alt=""
+          alt="7FX"
+          width={28}
+          height={28}
           className="h-6 w-6 rounded-[8px] object-cover ring-1 ring-desk-border/80 md:h-7 md:w-7"
         />
         <div className="hidden leading-none sm:block">

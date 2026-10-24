@@ -65,6 +65,18 @@ export function marketingMetadata(hostHeader: string | null, path: string): Meta
   };
 }
 
+/** English document title, description, and social card for pages that stay out of the index. */
+export function privateEnglishMetadata(title: string, description: string, path: string): Metadata {
+  const url = `${PRIMARY_ORIGIN}${path.startsWith("/") ? path : `/${path}`}`;
+  return {
+    metadataBase: new URL(PRIMARY_ORIGIN),
+    title: { absolute: title },
+    description,
+    robots: { index: false, follow: false },
+    ...card(title, description, url),
+  };
+}
+
 export function organizationJsonLd(origin: string): string {
   const data = {
     "@context": "https://schema.org",

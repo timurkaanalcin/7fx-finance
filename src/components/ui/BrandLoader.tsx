@@ -27,6 +27,8 @@ export default function BrandLoader({ label, variant = "desk", className = "" }:
         <img
           src="/7fx-logo.png"
           alt="7FX"
+          width={512}
+          height={512}
           className={`fx-brand-loader-logo h-full w-full object-contain object-left ${
             variant === "desk" || variant === "inline" ? "brightness-0 invert" : ""
           }`}

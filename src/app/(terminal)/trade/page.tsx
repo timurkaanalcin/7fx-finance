@@ -1,5 +1,13 @@
+import type { Metadata } from "next";
 import TerminalShell from "@/components/trading/TerminalShell";
+import { privateEnglishMetadata } from "@/lib/seo";
 import { readTradeSnapshot } from "@/lib/trade-snapshot";
+
+export const metadata: Metadata = privateEnglishMetadata(
+  "Trade · 7FX",
+  "Charts, orders, and open positions on the 7FX terminal.",
+  "/trade"
+);
 
 export default async function TradePage() {
   const snapshot = await readTradeSnapshot();

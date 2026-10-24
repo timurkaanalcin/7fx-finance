@@ -4,7 +4,7 @@ import { cookies, headers } from "next/headers";
 import { notFound } from "next/navigation";
 import PublicDoc from "@/components/public/PublicDoc";
 import { publicLocaleFromCookie } from "@/lib/i18n/locales";
-import { localizeMarketingMeta, metaFor, publicBundle } from "@/lib/public-doc-copy";
+import { publicBundle } from "@/lib/public-doc-copy";
 import { ASSET_PAGES, assetBySlug } from "@/lib/public-pages";
 import { marketingMetadata } from "@/lib/seo";
 import { BUILTIN_SYMBOLS } from "@/lib/symbols";
@@ -23,14 +23,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const page = assetBySlug(params.asset);
   const h = headers();
   if (!page) return { robots: { index: false, follow: false } };
-  const locale = localeFromCookie();
-  const copy = metaFor(locale, page.path);
-  return localizeMarketingMeta(
-    marketingMetadata(h.get("x-forwarded-host") || h.get("host"), page.path),
-    locale,
-    copy.title,
-    copy.description
-  );
+  return marketingMetadata(h.get("x-forwarded-host") || h.get("host"), page.path);
 }
 
 export default function AssetMarketPage({ params }: Params) {

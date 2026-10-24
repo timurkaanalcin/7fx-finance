@@ -292,7 +292,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
             data-fx-watchlist-search=""
             aria-label={t("term.watch.search")}
             aria-keyshortcuts="/"
-            className="w-full rounded-[12px] border border-desk-border/80 bg-desk-bg py-2 pl-7 pr-7 text-xs text-desk-text outline-none placeholder:text-desk-muted/70 focus:border-desk-accent md:rounded-control md:py-1.5"
+            className="w-full rounded-[12px] border border-desk-border/80 bg-desk-bg py-2 pl-7 pr-7 text-xs text-desk-text outline-none placeholder:text-desk-muted focus:border-desk-accent md:rounded-control md:py-1.5"
           />
           {q && (
             <button
@@ -417,7 +417,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
                       </span>
                     </span>
                     {s.name && s.name.toUpperCase() !== s.symbol.toUpperCase() && (
-                      <span className="mt-0.5 block truncate text-[10px] text-desk-muted/70" title={s.name}>
+                      <span className="mt-0.5 block truncate text-[10px] text-desk-muted" title={s.name}>
                         {s.name}
                       </span>
                     )}

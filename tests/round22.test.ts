@@ -1,5 +1,5 @@
 /**
- * Round 22: auth document titles follow fx_lang, a missing cookie does not
+ * Round 22: auth dictionary titles exist per locale, a missing cookie does not
  * repaint this visit, calendar trader search and worker cap, activity pages.
  * Run: npx tsx tests/round22.test.ts
  */
@@ -39,8 +39,10 @@ function main() {
   assert.equal(login.includes("fx_crm_lang"), false);
 
   const meta = read("src/lib/i18n/public-meta.ts");
-  assert.equal(meta.includes("publicLocaleFromCookie"), true);
-  assert.equal(meta.includes('cookies().get("fx_lang")'), true);
+  assert.equal(meta.includes("privateEnglishMetadata"), true);
+  assert.equal(meta.includes('from "./dictionaries/en"'), true);
+  assert.equal(meta.includes("publicLocaleFromCookie"), false);
+  assert.equal(meta.includes('cookies().get("fx_lang")'), false);
   assert.equal(meta.includes("fx_crm_lang"), false);
 
   const layout = read("src/app/layout.tsx");

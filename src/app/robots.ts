@@ -13,7 +13,12 @@ const PRIVATE = [
   "/documents",
   "/assistant",
   "/membership",
+  "/fx-css",
+  "/fx-landing-css",
 ];
+
+/** Prefix allows. A longer Disallow still wins, so /trade stays out while /markets is in. */
+const PUBLIC = ["/", "/markets", "/platform", "/faq", "/ios"];
 
 export default function robots(): MetadataRoute.Robots {
   const host = normalizeHost(headers().get("x-forwarded-host") || headers().get("host"));
@@ -25,7 +30,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: ["/$", "/ios"],
+        allow: PUBLIC,
         disallow: PRIVATE,
       },
       { userAgent: "GPTBot", disallow: "/" },

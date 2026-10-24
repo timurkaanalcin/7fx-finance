@@ -27,7 +27,7 @@ export default function SponsorsSection() {
           {list.map((s) => {
             const inner = (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={s.logo} alt={s.name} className="h-12 w-full object-contain" loading="lazy" />
+              <img src={s.logo} alt={s.name} width={160} height={48} className="h-12 w-full object-contain" loading="lazy" />
             );
             const cls = "fx-sponsor-card";
             return s.url ? (

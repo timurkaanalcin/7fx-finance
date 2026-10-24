@@ -150,6 +150,8 @@ export default function InstallAppButtons({ size = "hero", className = "" }: Pro
                 <img
                   src="/icons/v3/apple-touch-icon.png"
                   alt=""
+                  width={64}
+                  height={64}
                   className="h-16 w-16 animate-pulse rounded-[16px] shadow"
                 />
                 <div className="h-1.5 w-40 overflow-hidden rounded-full bg-[#eceef3]">
@@ -161,7 +163,7 @@ export default function InstallAppButtons({ size = "hero", className = "" }: Pro
               <div className="px-5 py-5 sm:px-6">
                 <div className="flex items-start gap-3">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/icons/v3/apple-touch-icon.png" alt="" className="h-12 w-12 rounded-[12px] shadow" />
+                  <img src="/icons/v3/apple-touch-icon.png" alt="" width={48} height={48} className="h-12 w-12 rounded-[12px] shadow" />
                   <div className="min-w-0 flex-1">
                     <h2 id="fx-ios-install-title" className="text-[17px] font-semibold text-[#111111]">
                       {alreadyInstalled ? t("landing.ios.alreadyTitle") : t("landing.ios.sheetTitle")}

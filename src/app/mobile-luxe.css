@@ -13,7 +13,7 @@
   --lx-line-strong: rgba(255, 255, 255, 0.12);
   --lx-text: #f2f2f4;
   --lx-text-2: #a6a7ad;
-  --lx-text-3: #6f7077;
+  --lx-text-3: #a7b0c0;
   --lx-gold: #c8a96a;
   --lx-gold-2: #e6cf9c;
   --lx-gold-soft: rgba(200, 169, 106, 0.14);
@@ -456,7 +456,7 @@ html[data-fx-theme="light"] :is(.fx-desk, .fx-profile, .fx-lx-overlay) :is(input
   border-color: var(--lx-line-strong) !important;
   color: var(--lx-text) !important;
 }
-html[data-fx-theme="light"] :is(.fx-desk, .fx-profile, .fx-lx-overlay) ::placeholder { color: #9a9ca3 !important; }
+html[data-fx-theme="light"] :is(.fx-desk, .fx-profile, .fx-lx-overlay) ::placeholder { color: #54565c !important; }
 /* cards */
 html[data-fx-theme="light"] .fx-desk :is(.rounded-\[14px\]:not(button), .rounded-card),
 html[data-fx-theme="light"] .fx-profile :is(section, form, main > div.rounded-xl) {

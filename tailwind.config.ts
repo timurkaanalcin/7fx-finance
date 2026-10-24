@@ -56,7 +56,7 @@ const config: Config = {
           hover: "#1f1f1f",
           border: "#2a2a2a",
           text: "#d1d4dc",
-          muted: "#787b86",
+          muted: "#a7b0c0",
           accent: "#ffffff",
           "accent-strong": "#ffffff",
           "accent-ink": "#000000",

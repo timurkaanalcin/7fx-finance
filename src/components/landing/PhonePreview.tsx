@@ -44,12 +44,12 @@ export default function PhonePreview() {
         <div className="flex items-center justify-between px-3.5 pb-1.5 pt-7 sm:px-5 sm:pb-2 sm:pt-9">
           <div className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/7fx-logo.png" alt="" className="h-5 w-auto object-contain brightness-0 invert sm:h-6" />
+            <img src="/7fx-logo.png" alt="" width={24} height={24} className="h-5 w-auto object-contain brightness-0 invert sm:h-6" />
           </div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#111111]/15 px-2 py-0.5 text-[9px] font-semibold text-[#2a2a2a] sm:px-2.5 sm:py-1 sm:text-[10px]">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#3ddc97]/15 px-2 py-0.5 text-[9px] font-semibold text-[#e8eef8] sm:px-2.5 sm:py-1 sm:text-[10px]">
             <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#111111] opacity-40" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#111111]" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#3ddc97] opacity-40" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#3ddc97]" />
             </span>
             {t("landing.phone.live")}
           </span>
@@ -70,15 +70,15 @@ export default function PhonePreview() {
           <div className="mt-2.5 overflow-hidden rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-2.5 sm:mt-3.5 sm:rounded-2xl sm:p-3">
             <div className="mb-1 flex items-center justify-between sm:mb-1.5">
               <span className="text-[9px] font-medium text-[#8b97b0] sm:text-[10px]">{t("landing.phone.days")}</span>
-              <span className="text-[9px] font-semibold text-[#111111] sm:text-[10px]">+1.8%</span>
+              <span className="text-[9px] font-semibold text-[#3ddc97] sm:text-[10px]">+1.8%</span>
             </div>
             <svg viewBox="0 0 150 36" className="h-7 w-full sm:h-10" fill="none">
               <path d={`${spark} L148 36 L2 36 Z`} fill="url(#fxSparkFillDark)" opacity="0.45" />
-              <path d={spark} stroke="#111111" strokeWidth="2.4" strokeLinecap="round" />
+              <path d={spark} stroke="#3ddc97" strokeWidth="2.4" strokeLinecap="round" />
               <defs>
                 <linearGradient id="fxSparkFillDark" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#111111" stopOpacity="0.45" />
-                  <stop offset="100%" stopColor="#111111" stopOpacity="0" />
+                  <stop offset="0%" stopColor="#3ddc97" stopOpacity="0.45" />
+                  <stop offset="100%" stopColor="#3ddc97" stopOpacity="0" />
                 </linearGradient>
               </defs>
             </svg>

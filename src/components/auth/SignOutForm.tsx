@@ -14,7 +14,7 @@ export default function SignOutForm({
   return (
     <form method="post" action="/api/auth/logout" className={className ?? "inline"}>
       <input type="hidden" name="nav" value="1" />
-      <button type="submit" data-sign-out="" className={buttonClassName}>
+      <button type="submit" data-sign-out="" aria-label={label} className={buttonClassName}>
         {label}
       </button>
     </form>
