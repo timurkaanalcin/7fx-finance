@@ -1,0 +1,46 @@
+# Trading-engine backstop. Vercel Hobby can only run the route once a day, so
+# this workflow calls it every five minutes.
+#
+# The owner must add a repository Actions secret named CRON_SECRET with the
+# same value as the Vercel project environment (production and preview).
+# This file never prints that value. A missing secret fails the job.
+
+name: Trading engine
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  engine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Run trading engine
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CRON_SECRET:-}" ]; then
+            echo "CRON_SECRET repository secret is not set. Add it with the same value as the Vercel project environment."
+            exit 1
+          fi
+          body="$(mktemp)"
+          trap 'rm -f "$body"' EXIT
+          code="$(curl --silent --show-error --max-time 35 --output "$body" --write-out "%{http_code}" \
+            --header "Authorization: Bearer ${CRON_SECRET}" \
+            "https://7fx.customer.org.tr/api/cron/engine")" || {
+            echo "Engine request failed before a response."
+            exit 1
+          }
+          echo "HTTP ${code}"
+          cat "$body"
+          echo
+          case "${code}" in
+            2??) ;;
+            *)
+              echo "Engine cron returned a non-2xx status."
+              exit 1
+              ;;
+          esac
