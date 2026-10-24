@@ -1,4 +1,5 @@
 /* ——— 7FX Landing: dark premium terminal ——— */
+.fx-landing-marker { contain: none; }
 .fx-landing {
   --fx-bg: #07090d;
   --fx-bg-soft: #0c1017;

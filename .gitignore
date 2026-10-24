@@ -7,6 +7,8 @@ node_modules/
 *.log
 dev.db
 *.tsbuildinfo
+public/fx-public-utilities.css
+public/fx-landing.css
 
 ._*
 .DS_Store

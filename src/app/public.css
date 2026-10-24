@@ -1,0 +1,3 @@
+@config "../../tailwind.public.config.ts";
+@tailwind utilities;
+.fx-public-utilities-marker { contain: none; }

@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
 import InstallBanner from "@/components/InstallBanner";
-import "./globals.css";
-import "./mobile-luxe.css";
 import PublicI18n from "@/components/i18n/PublicI18n";
 import { inter } from "@/lib/fonts";
 import { LOCALE_META, publicLocaleFromCookie, type Locale } from "@/lib/i18n/locales";

@@ -1,0 +1,29 @@
+/* Phone auth chrome only. Terminal desk styles stay on the trade layout. */
+@media (max-width: 767px) {
+  .fx-auth-page {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .fx-auth-page main > div {
+    max-width: min(440px, 100%) !important;
+  }
+  .fx-auth-page form {
+    border-radius: 22px;
+  }
+  .fx-auth-page h1 {
+    font-size: 1.6rem !important;
+    letter-spacing: -0.025em !important;
+  }
+  .fx-auth-page input,
+  .fx-auth-page select {
+    min-height: 50px;
+    font-size: 16px !important;
+    border-radius: 14px !important;
+  }
+  .fx-auth-page button[type="submit"] {
+    min-height: 52px;
+    border-radius: 14px !important;
+    letter-spacing: 0.04em;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35) !important;
+  }
+}
