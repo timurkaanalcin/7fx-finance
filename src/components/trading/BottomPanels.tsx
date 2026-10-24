@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, useCallback, type ReactNode, type ReactElement, type MouseEvent as ReactMouseEvent } from "react";
 import { calcPipDistance, formatPrice, getSymbol } from "@/lib/symbols";
+import { displayOpenProfit } from "@/lib/display-profit";
 import { fmtDateTime, fmtNum } from "@/lib/format";
 import type { OrderRow, PositionRow, PriceTick } from "./types";
 import PnlCalendar, { closedDayKey } from "./PnlCalendar";
@@ -272,7 +273,12 @@ function cmpTime(a: string | null | undefined, b: string | null | undefined): nu
   return aa - bb;
 }
 
-function sortPositions(rows: PositionRow[], sort: SortState, mode: "open" | "closed"): PositionRow[] {
+function sortPositions(
+  rows: PositionRow[],
+  sort: SortState,
+  mode: "open" | "closed",
+  openProfit?: (row: PositionRow) => number
+): PositionRow[] {
   if (!sort) return rows;
   const mul = sort.dir === "asc" ? 1 : -1;
   const out = rows.slice();
@@ -281,8 +287,10 @@ function sortPositions(rows: PositionRow[], sort: SortState, mode: "open" | "clo
     if (sort.key === "symbol") d = cmpStr(a.symbol, b.symbol);
     else if (sort.key === "side") d = cmpStr(a.side, b.side);
     else if (sort.key === "profit") {
-      const pa = mode === "closed" ? Number(a.closeProfit ?? a.profit) : Number(a.profit);
-      const pb = mode === "closed" ? Number(b.closeProfit ?? b.profit) : Number(b.profit);
+      const pa =
+        mode === "closed" ? Number(a.closeProfit ?? a.profit) : openProfit ? openProfit(a) : Number(a.profit);
+      const pb =
+        mode === "closed" ? Number(b.closeProfit ?? b.profit) : openProfit ? openProfit(b) : Number(b.profit);
       d = cmpNum(pa, pb);
     } else if (sort.key === "time") {
       d =
@@ -858,6 +866,7 @@ function OpenCard({
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState("");
   const mark = markPrice(p, prices);
+  const shownProfit = displayOpenProfit(p, mark, getSymbol(p.symbol)?.contractSize);
   const pip =
     calcPipDistance(p.symbol, p.openPrice, mark) *
     (p.side === "BUY" ? 1 : -1);
@@ -960,8 +969,8 @@ function OpenCard({
           </div>
         </div>
         <div className="text-right">
-          <div className={`text-[14px] font-bold tabular-nums ${moneyCls(p.profit)}`}>
-            {fmtNum(p.profit, 2)}
+          <div className={`text-[14px] font-bold tabular-nums ${moneyCls(shownProfit)}`}>
+            {fmtNum(shownProfit, 2)}
           </div>
           <div className={`text-[10px] tabular-nums ${moneyCls(pip)}`}>
             {fmtNum(pip, 1)} pip
@@ -1570,12 +1579,17 @@ export default function BottomPanels({
     () => filterPositions(closedLedger, { ...filterOpts, result: resultFilter }),
     [closedLedger, filterOpts, resultFilter]
   );
-  // Distinct symbols among filtered closed rows (period/result/text), most first
+  // Chips count the loaded table rows (after filters, before the symbol chip), not the full ledger.
+  const closedTableBase = useMemo(() => {
+    let rows = filterPositions(closedPositions, { ...filterOpts, result: resultFilter });
+    if (closedDay) rows = rows.filter((p) => closedDayKey(p) === closedDay);
+    return rows;
+  }, [closedPositions, filterOpts, resultFilter, closedDay]);
   const closedSymbolCounts = useMemo(() => {
     const m = new Map<string, number>();
-    for (const p of calendarClosed) m.set(p.symbol, (m.get(p.symbol) ?? 0) + 1);
+    for (const p of closedTableBase) m.set(p.symbol, (m.get(p.symbol) ?? 0) + 1);
     return Array.from(m.entries()).sort((a, b) => b[1] - a[1] || cmpStr(a[0], b[0]));
-  }, [calendarClosed]);
+  }, [closedTableBase]);
   const showClosedSymbolChips = closedSymbolCounts.length >= 2;
 
   // Drop a stale closed chip when that symbol disappears from the filtered set
@@ -1586,11 +1600,8 @@ export default function BottomPanels({
   }, [closedSymbolChip, closedSymbolCounts]);
 
   const filteredClosed = useMemo(() => {
-    let rows = filterPositions(closedPositions, { ...filterOpts, result: resultFilter });
-    if (closedDay) rows = rows.filter((p) => closedDayKey(p) === closedDay);
-    if (closedSymbolChip) rows = rows.filter((p) => p.symbol === closedSymbolChip);
-    return rows;
-  }, [closedPositions, filterOpts, resultFilter, closedDay, closedSymbolChip]);
+    return closedSymbolChip ? closedTableBase.filter((p) => p.symbol === closedSymbolChip) : closedTableBase;
+  }, [closedTableBase, closedSymbolChip]);
   const summaryClosed = useMemo(() => {
     let rows = calendarClosed;
     if (closedDay) rows = rows.filter((p) => closedDayKey(p) === closedDay);
@@ -1617,9 +1628,13 @@ export default function BottomPanels({
     return pendingSymbolChip ? rows.filter((o) => o.symbol === pendingSymbolChip) : rows;
   }, [pendingOrders, filterOpts, pendingSymbolChip]);
 
+  const openShownProfit = useCallback(
+    (p: PositionRow) => displayOpenProfit(p, markPrice(p, prices), getSymbol(p.symbol)?.contractSize),
+    [prices]
+  );
   const sortedOpen = useMemo(
-    () => sortPositions(filteredOpen, openSort, "open"),
-    [filteredOpen, openSort]
+    () => sortPositions(filteredOpen, openSort, "open", openShownProfit),
+    [filteredOpen, openSort, openShownProfit]
   );
   const sortedClosed = useMemo(
     () => sortPositions(filteredClosed, closedSort, "closed"),
@@ -1767,12 +1782,12 @@ export default function BottomPanels({
     let buys = 0;
     let sells = 0;
     for (const p of filteredOpen) {
-      pnl += Number(p.profit) || 0;
+      pnl += openShownProfit(p);
       if (p.side.toUpperCase() === "BUY") buys++;
       else sells++;
     }
     return { count: filteredOpen.length, pnl, buys, sells };
-  }, [filteredOpen]);
+  }, [filteredOpen, openShownProfit]);
 
   const closedSummary = useMemo(() => {
     let pnl = 0;
@@ -2362,6 +2377,7 @@ export default function BottomPanels({
               )}
               {sortedOpen.map((p, i) => {
                 const mark = markPrice(p, prices);
+                const shownProfit = openShownProfit(p);
                 const pip =
                   calcPipDistance(p.symbol, p.openPrice, mark) *
                   (p.side === "BUY" ? 1 : -1);
@@ -2407,11 +2423,11 @@ export default function BottomPanels({
                     <td className="px-2 py-1.5 text-desk-muted">0.00</td>
                     <td className="px-2 py-1.5 text-desk-muted">0.00</td>
                     <td className="px-2 py-1.5 text-desk-muted">0.00</td>
-                    <td className={`px-2 py-1.5 font-semibold tabular-nums ${moneyCls(p.profit)}`}>
-                      {fmtNum(p.profit, 2)}
+                    <td className={`px-2 py-1.5 font-semibold tabular-nums ${moneyCls(shownProfit)}`}>
+                      {fmtNum(shownProfit, 2)}
                     </td>
-                    <td className={`px-2 py-1.5 font-semibold tabular-nums ${moneyCls(p.profit)}`}>
-                      {fmtNum(p.profit, 2)}
+                    <td className={`px-2 py-1.5 font-semibold tabular-nums ${moneyCls(shownProfit)}`}>
+                      {fmtNum(shownProfit, 2)}
                     </td>
                     <td className="px-2 py-1.5">
                       <OpenRowActions

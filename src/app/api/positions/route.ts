@@ -83,7 +83,9 @@ export async function GET(req: Request) {
     const hasMore = rows.length > CLOSED_PAGE;
     const positions = hasMore ? rows.slice(0, CLOSED_PAGE) : rows;
     let calendar: unknown[] | undefined;
-    if (skip === 0) {
+    // The 30s blotter refresh passes calendar=0. The full ledger is for the
+    // first load and when the terminal tab becomes visible again.
+    if (skip === 0 && searchParams.get("calendar") !== "0") {
       calendar = await prisma.position.findMany({
         where: { userId: user.id, status: "CLOSED" },
         select: {
