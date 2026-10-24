@@ -205,7 +205,11 @@ export default function TradingChart({
       lineRef.current?.update({ time: bar.time as Time, value: bar.close });
       lastBarTimeRef.current = bar.time;
       liveBarRef.current = bar;
-      setOhlc({ o: bar.open, h: bar.high, l: bar.low, c: bar.close });
+      setOhlc((prev) =>
+        prev && prev.o === bar.open && prev.h === bar.high && prev.l === bar.low && prev.c === bar.close
+          ? prev
+          : { o: bar.open, h: bar.high, l: bar.low, c: bar.close }
+      );
       return true;
     } catch {
       return false;
@@ -245,14 +249,25 @@ export default function TradingChart({
   };
 
   useEffect(() => {
-    const t = setInterval(() => {
+    const tick = () => {
+      if (typeof document !== "undefined" && document.hidden) return;
       const now = new Date();
       const h = String(now.getUTCHours()).padStart(2, "0");
       const m = String(now.getUTCMinutes()).padStart(2, "0");
       const s = String(now.getUTCSeconds()).padStart(2, "0");
-      setUtcClock(`${h}:${m}:${s} UTC`);
-    }, 1000);
-    return () => clearInterval(t);
+      const next = `${h}:${m}:${s} UTC`;
+      setUtcClock((prev) => (prev === next ? prev : next));
+    };
+    tick();
+    const t = setInterval(tick, 1000);
+    const onVis = () => {
+      if (!document.hidden) tick();
+    };
+    document.addEventListener("visibilitychange", onVis);
+    return () => {
+      clearInterval(t);
+      document.removeEventListener("visibilitychange", onVis);
+    };
   }, []);
 
   const fxTheme = useFxTheme();
@@ -468,10 +483,18 @@ export default function TradingChart({
     liveBarRef.current = null;
     lastBarTimeRef.current = null;
     load(true);
-    const id = setInterval(() => load(false), 30000);
+    const id = setInterval(() => {
+      if (typeof document !== "undefined" && document.hidden) return;
+      void load(false);
+    }, 30000);
+    const onVis = () => {
+      if (!document.hidden) void load(false);
+    };
+    document.addEventListener("visibilitychange", onVis);
     return () => {
       cancelled = true;
       clearInterval(id);
+      document.removeEventListener("visibilitychange", onVis);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symbol, timeframe]);
@@ -480,9 +503,11 @@ export default function TradingChart({
   useEffect(() => {
     let lastApplied: number | null = null;
     const tick = () => {
+      if (typeof document !== "undefined" && document.hidden) return;
       const mid = priceRef.current?.mid;
       if (mid == null || !Number.isFinite(mid) || mid <= 0) {
-        setLiveFresh(Date.now() - lastTickAtRef.current < 2500);
+        const next = Date.now() - lastTickAtRef.current < 2500;
+        setLiveFresh((prev) => (prev === next ? prev : next));
         return;
       }
       const changed = lastApplied == null || Math.abs(mid - lastApplied) > 0;
@@ -497,11 +522,19 @@ export default function TradingChart({
         pushRealMid(mid);
         lastTickAtRef.current = Date.now();
       }
-      setLiveFresh(Date.now() - lastTickAtRef.current < 2500);
+      const fresh = Date.now() - lastTickAtRef.current < 2500;
+      setLiveFresh((prev) => (prev === fresh ? prev : fresh));
     };
     tick();
     const id = window.setInterval(tick, 500);
-    return () => window.clearInterval(id);
+    const onVis = () => {
+      if (!document.hidden) tick();
+    };
+    document.addEventListener("visibilitychange", onVis);
+    return () => {
+      window.clearInterval(id);
+      document.removeEventListener("visibilitychange", onVis);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symbol, timeframe]);
 
@@ -613,15 +646,7 @@ export default function TradingChart({
     };
   }, [levels, symbol, fxTheme, chartGen, mounted]);
 
-  const digits =
-    price?.mid != null && price.mid >= 100
-      ? 2
-      : price?.mid != null && price.mid < 1
-        ? 6
-        : price?.mid != null && price.mid < 10
-          ? 5
-          : 2;
-  const fmt = (n: number) => n.toFixed(digits);
+  const fmt = (n: number) => formatPrice(symbol, n);
   const legend = hoverBar ?? ohlc;
   const legendChg = legend && legend.o > 0 ? ((legend.c - legend.o) / legend.o) * 100 : null;
   const hoverLabel = (() => {
@@ -642,8 +667,11 @@ export default function TradingChart({
 
   return (
     <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-desk-bg">
+      {/* Phones: chrome is in normal flow so the quote block cannot cover the timeframe bar.
+          sm+: overlay so the canvas stays full-bleed. */}
+      <div className="z-10 flex shrink-0 flex-col gap-1.5 border-b border-desk-border/50 bg-desk-bg px-2 py-1.5 sm:pointer-events-none sm:absolute sm:inset-x-2 sm:top-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3 sm:border-0 sm:bg-transparent sm:p-0 md:inset-x-2.5">
       <div
-        className="pointer-events-none absolute left-2 top-2 z-10 flex max-w-[calc(100%-0.75rem-1.5cm)] items-start gap-1.5 sm:max-w-[calc(100%-24rem)] md:left-2.5 md:top-2"
+        className="flex min-w-0 items-start gap-1.5 sm:max-w-[calc(100%-22rem)] sm:flex-1"
         data-fx-chart-head=""
       >
         <span
@@ -729,14 +757,20 @@ export default function TradingChart({
         </div>
       </div>
 
-      <div className="absolute left-2 right-[calc(0.5rem+1.5cm)] top-[6.75rem] z-10 flex items-center justify-start gap-1.5 sm:left-auto sm:top-2.5 sm:justify-end sm:right-[calc(0.75rem+1.5cm)] sm:max-w-none md:right-[calc(0.75rem+1.5cm)] md:top-2">
+      <div className="flex min-w-0 items-center gap-1.5 sm:pointer-events-auto sm:mr-[1.5cm] sm:shrink-0 sm:justify-end">
         <span className="hidden rounded-control border border-desk-border/60 bg-desk-panel/70 px-2 py-1 text-[10px] tabular-nums text-desk-muted sm:inline">
           {utcClock}
         </span>
-        <div className="flex max-w-full overflow-x-auto rounded-[12px] border border-desk-border/70 bg-desk-panel/95 p-0.5 shadow-desk-panel [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:rounded-control">
+        <div
+          className="flex min-w-0 max-w-full flex-1 overflow-x-auto rounded-[12px] border border-desk-border/70 bg-desk-panel/95 p-0.5 shadow-desk-panel [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-none md:rounded-control"
+          role="group"
+          aria-label="Timeframe"
+        >
           {TIMEFRAMES.map((tf) => (
             <button
               key={tf.id}
+              type="button"
+              aria-pressed={timeframe === tf.id}
               onClick={() => onTimeframe(tf.id)}
               className={`fx-tap-compact shrink-0 rounded-[9px] px-2.5 py-1.5 text-[11px] font-semibold transition-colors md:rounded-[8px] md:px-2 md:py-1 md:font-medium ${
                 timeframe === tf.id
@@ -748,24 +782,29 @@ export default function TradingChart({
             </button>
           ))}
         </div>
-        <div className="hidden overflow-hidden rounded-control border border-desk-border bg-desk-panel/90 p-0.5 sm:flex">
+        <div className="flex shrink-0 overflow-hidden rounded-control border border-desk-border bg-desk-panel/90 p-0.5" role="group" aria-label="Chart type">
           <button
+            type="button"
+            aria-pressed={chartType === "candle"}
             onClick={() => setChartType("candle")}
-            className={`rounded-[8px] px-2 py-1 text-[11px] font-medium ${
+            className={`fx-tap-compact rounded-[8px] px-2 py-1 text-[11px] font-medium ${
               chartType === "candle" ? "bg-desk-elev text-desk-text" : "text-desk-muted hover:text-desk-text"
             }`}
           >
             Mum
           </button>
           <button
+            type="button"
+            aria-pressed={chartType === "line"}
             onClick={() => setChartType("line")}
-            className={`rounded-[8px] px-2 py-1 text-[11px] font-medium ${
+            className={`fx-tap-compact rounded-[8px] px-2 py-1 text-[11px] font-medium ${
               chartType === "line" ? "bg-desk-elev text-desk-text" : "text-desk-muted hover:text-desk-text"
             }`}
           >
             Line
           </button>
         </div>
+      </div>
       </div>
 
       {feedError && (

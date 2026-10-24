@@ -23,6 +23,30 @@ function writeTermPrefs(patch: TermPrefs) {
     /* ignore */
   }
 }
+
+type TradeActionResult = { ok: true } | { ok: false; error: string };
+
+async function postTrade(url: string, body: unknown, fallback: string): Promise<TradeActionResult> {
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (res.ok) return { ok: true };
+    const data = await res.json().catch(() => ({}));
+    const error =
+      data && typeof data.error === "string" && data.error.trim() ? data.error.trim() : fallback;
+    return { ok: false, error };
+  } catch {
+    return { ok: false, error: fallback };
+  }
+}
+
+function pageHidden(): boolean {
+  return typeof document !== "undefined" && document.hidden;
+}
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import TopBar from "./TopBar";
@@ -84,6 +108,7 @@ export default function TerminalShell() {
   const [ready, setReady] = useState(false);
   const [depositOpen, setDepositOpen] = useState(false);
   const [priceError, setPriceError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [marginModalOpen, setMarginModalOpen] = useState(false);
   const [orderOpen, setOrderOpen] = useState(false);
   const [orderSide, setOrderSide] = useState<"BUY" | "SELL">("BUY");
@@ -218,9 +243,13 @@ export default function TerminalShell() {
         if (!cancelled) setPriceError("Price connection error");
       }
     }
-    pullBatchRef.current = () => void pullBatch();
-    pullBatch();
-    const id = setInterval(pullBatch, 3000);
+    async function pullIfVisible() {
+      if (pageHidden()) return;
+      await pullBatch();
+    }
+    pullBatchRef.current = () => void pullIfVisible();
+    void pullIfVisible();
+    const id = setInterval(() => void pullIfVisible(), 3000);
     return () => {
       cancelled = true;
       clearInterval(id);
@@ -248,9 +277,13 @@ export default function TerminalShell() {
         /* keep last good */
       }
     }
-    pullActiveRef.current = () => void pullActive();
-    pullActive();
-    const id = setInterval(pullActive, 800);
+    async function pullIfVisible() {
+      if (pageHidden()) return;
+      await pullActive();
+    }
+    pullActiveRef.current = () => void pullIfVisible();
+    void pullIfVisible();
+    const id = setInterval(() => void pullIfVisible(), 800);
     return () => {
       cancelled = true;
       clearInterval(id);
@@ -258,10 +291,19 @@ export default function TerminalShell() {
   }, [symbol, markFeedOk]);
 
   useEffect(() => {
-    const id = setInterval(() => {
-      refreshAll();
-    }, 5000);
-    return () => clearInterval(id);
+    const tick = () => {
+      if (pageHidden()) return;
+      void refreshAll();
+    };
+    const id = setInterval(tick, 5000);
+    const onVis = () => {
+      if (!pageHidden()) void refreshAll();
+    };
+    document.addEventListener("visibilitychange", onVis);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", onVis);
+    };
   }, [refreshAll]);
 
   // Margin-call episode detection (once per episode)
@@ -419,71 +461,58 @@ export default function TerminalShell() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  async function onClosePosition(id: string, volume?: number) {
+  async function onClosePosition(id: string, volume?: number): Promise<TradeActionResult> {
     const body: { id: string; volume?: number } = { id };
     if (volume != null && Number.isFinite(volume)) body.volume = volume;
-    await fetch("/api/positions/close", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    await refreshAll();
+    const result = await postTrade("/api/positions/close", body, t("common.error"));
+    if (result.ok) {
+      setActionError(null);
+      await refreshAll();
+    }
+    return result;
   }
 
   async function onModifySlTp(
     id: string,
     levels: { stopLoss: number | null; takeProfit: number | null }
-  ) {
-    await fetch("/api/positions/modify", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, ...levels }),
-    });
-    await refreshAll();
+  ): Promise<TradeActionResult> {
+    const result = await postTrade("/api/positions/modify", { id, ...levels }, t("common.error"));
+    if (result.ok) {
+      setActionError(null);
+      await refreshAll();
+    }
+    return result;
   }
 
   async function onClosePositions(ids: string[]) {
+    let firstError = "";
     for (const id of ids) {
-      try {
-        await fetch("/api/positions/close", {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id }),
-        });
-      } catch {
-        /* continue remaining */
-      }
+      const result = await postTrade("/api/positions/close", { id }, t("common.error"));
+      if (!result.ok && !firstError) firstError = result.error;
     }
     await refreshAll();
+    setActionError(firstError || null);
   }
 
-  async function onCancelOrder(id: string) {
-    await fetch("/api/orders/cancel", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
-    });
-    await refreshAll();
+  async function onCancelOrder(id: string): Promise<TradeActionResult> {
+    const result = await postTrade("/api/orders/cancel", { id }, t("common.error"));
+    if (result.ok) {
+      setActionError(null);
+      await refreshAll();
+    } else {
+      setActionError(result.error);
+    }
+    return result;
   }
 
   async function onCancelOrders(ids: string[]) {
+    let firstError = "";
     for (const id of ids) {
-      try {
-        await fetch("/api/orders/cancel", {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id }),
-        });
-      } catch {
-        /* continue remaining */
-      }
+      const result = await postTrade("/api/orders/cancel", { id }, t("common.error"));
+      if (!result.ok && !firstError) firstError = result.error;
     }
     await refreshAll();
+    setActionError(firstError || null);
   }
 
   if (!ready || !user) {
@@ -535,6 +564,21 @@ export default function TerminalShell() {
       {priceError && feed.state === "live" && (
         <div className="border-b border-desk-warn/30 bg-desk-warn/90 px-3 py-1.5 text-center text-[11px] font-medium text-black">
           Market data warning: {priceError} (showing last known prices)
+        </div>
+      )}
+      {actionError && (
+        <div
+          role="alert"
+          className="flex items-center justify-center gap-3 border-b border-desk-sell/40 bg-desk-sell/90 px-3 py-1.5 text-center text-[11px] font-medium text-white"
+        >
+          <span>{actionError}</span>
+          <button
+            type="button"
+            className="rounded bg-white/20 px-2 py-0.5 hover:bg-white/30"
+            onClick={() => setActionError(null)}
+          >
+            {t("common.close")}
+          </button>
         </div>
       )}
       {account?.marginCall && Number(account?.margin) > 0 && (
@@ -650,8 +694,6 @@ export default function TerminalShell() {
                 selected={symbol}
                 onSelect={(s) => {
                   setSymbol(s);
-                  setMobileTab("order");
-                  openOrder("BUY");
                 }}
               />
             )}
@@ -741,6 +783,7 @@ export default function TerminalShell() {
                 setMobileTab(t.id);
                 if (t.id === "order") openOrder("BUY");
               }}
+              aria-current={mobileTab === t.id ? "page" : undefined}
               className={`fx-desk-seg__btn ${
                 mobileTab === t.id ? "fx-desk-seg__btn--active" : ""
               }`}

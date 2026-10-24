@@ -138,7 +138,14 @@ export default function LoginForm() {
               required
             />
           </div>
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && (
+            <div
+              role="alert"
+              className="rounded-xl border border-[#ef5350]/40 bg-[#ef5350]/10 px-3.5 py-2.5 text-sm text-[#ef5350]"
+            >
+              {error}
+            </div>
+          )}
           <button
             type="submit"
             disabled={loading}
@@ -223,9 +230,9 @@ export default function LoginForm() {
       )}
 
       <div className="mt-7 border-t border-[rgba(16,20,37,0.08)] pt-5 text-center text-sm text-[#5c657a]">
-        Don&apos;t have an account?{" "}
+        {t("auth.noAccount")}{" "}
         <Link href="/register" className="font-semibold text-[#111111] underline-offset-2 transition hover:underline">
-          Register
+          {t("common.signUp")}
         </Link>
       </div>
 
