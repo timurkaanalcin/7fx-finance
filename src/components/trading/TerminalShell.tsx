@@ -167,7 +167,7 @@ import type {
 
 const TradingChart = dynamic(() => import("./TradingChart"), {
   ssr: false,
-  loading: () => <BrandLoader variant="inline" className="flex min-h-0 flex-1" />,
+  loading: () => <div className="min-h-[44vh] flex-1 md:min-h-0" aria-hidden />,
 });
 const Watchlist = dynamic(() => import("./Watchlist"));
 const BottomPanels = dynamic(() => import("./BottomPanels"));
@@ -188,6 +188,16 @@ export default function TerminalShell({
 }) {
   const router = useRouter();
   const { t, setLocale, locale } = useI18n();
+  // Desktop sidebar, history, and the ticker are CSS-hidden below 768px. Mounting
+  // them anyway pulls every symbol logo (twice) and their chunks into the phone load.
+  const [deskWide, setDeskWide] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const apply = () => setDeskWide(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
   const [user, setUser] = useState<UserInfo | null>(initialUser);
   const [account, setAccount] = useState<AccountMetrics | null>(initialAccount);
   const [symbols, setSymbols] = useState<SymbolDef[]>([]);
@@ -1055,6 +1065,7 @@ export default function TerminalShell({
       )}
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden md:flex-row">
         {/* Desktop watchlist sidebar */}
+        {deskWide && (
         <div className="hidden h-full md:flex">
           <Watchlist
             symbols={symbols}
@@ -1064,6 +1075,7 @@ export default function TerminalShell({
             onSelect={setSymbol}
           />
         </div>
+        )}
 
         <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden md:flex-row">
           {/* Chart + history (desktop history sits under chart, flush with order ticket) */}
@@ -1071,14 +1083,14 @@ export default function TerminalShell({
             {/* Chart fills main area; bottom history is fixed height (pre-elite proportions) */}
             <div className="relative flex min-h-[44vh] flex-1 md:min-h-0">
               {/* Chart canvas wrapper: TRADE overlays bottom-right ON the chart */}
-              <div className="relative flex h-full min-h-0 min-w-0 flex-1 flex-col">
-                {/* First-paint poster. It stays mounted so the later chart canvas does not replace LCP. */}
+              <div className="relative flex min-h-[44vh] w-full min-w-0 flex-1 flex-col md:min-h-0">
+                {/* First-paint poster. The box has a real min-height so the image paints before the canvas. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/landing/terminal-desktop.avif"
+                  src="/landing/chart-poster.avif"
                   alt=""
-                  width={640}
-                  height={400}
+                  width={400}
+                  height={250}
                   fetchPriority="high"
                   decoding="sync"
                   className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
@@ -1125,6 +1137,7 @@ export default function TerminalShell({
             </div>
 
             {/* Desktop bottom panels — fixed height so chart keeps prior larger share */}
+            {deskWide && (
             <div className="hidden md:flex md:h-[220px] md:shrink-0 md:flex-col">
               <BottomPanels
                 tab={tab}
@@ -1152,6 +1165,7 @@ export default function TerminalShell({
                 onReopenTrade={onReopenTrade}
               />
             </div>
+            )}
 
             {/* Mobile markets / positions. Chart tab keeps this panel unmounted so the chart uses the height. */}
             {mobileTab !== "chart" && (
@@ -1211,7 +1225,7 @@ export default function TerminalShell({
           className="flex flex-col items-center justify-center bg-desk-sell text-white disabled:opacity-40"
         >
           <span className="text-[10px] font-semibold uppercase leading-none tracking-[0.12em] opacity-90">{t("term.sell")}</span>
-          <span className="mt-0.5 text-[15px] font-semibold leading-none tabular-nums tracking-normal">
+          <span className="mt-0.5 min-h-[18px] min-w-[4.75rem] text-center text-[15px] font-semibold leading-none tabular-nums tracking-normal">
             {prices[symbol] && Number.isFinite(prices[symbol].bid) ? formatPrice(symbol, prices[symbol].bid) : "—"}
           </span>
         </button>
@@ -1222,7 +1236,7 @@ export default function TerminalShell({
           className="flex flex-col items-center justify-center bg-desk-buy text-white disabled:opacity-40"
         >
           <span className="text-[10px] font-semibold uppercase leading-none tracking-[0.12em] opacity-90">{t("term.buy")}</span>
-          <span className="mt-0.5 text-[15px] font-semibold leading-none tabular-nums tracking-normal">
+          <span className="mt-0.5 min-h-[18px] min-w-[4.75rem] text-center text-[15px] font-semibold leading-none tabular-nums tracking-normal">
             {prices[symbol] && Number.isFinite(prices[symbol].ask) ? formatPrice(symbol, prices[symbol].ask) : "—"}
           </span>
         </button>
@@ -1255,7 +1269,9 @@ export default function TerminalShell({
         </div>
       </nav>
 
-      <FooterTicker symbols={symbols} prices={prices} onSelect={setSymbol} feedState={feed.state} />
+      {deskWide && (
+        <FooterTicker symbols={symbols} prices={prices} onSelect={setSymbol} feedState={feed.state} />
+      )}
       <FeedRecoveredToast show={feed.recovered} onClose={feed.dismissRecovered} />
       {user.mustChangePassword && !user.impersonatedBy && (
         <ForcePasswordModal onDone={() => void refreshAll()} />

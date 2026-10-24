@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import BrandLogo from "@/components/landing/BrandLogo";
+import PublicLanguageMenu from "@/components/public/PublicLanguageMenu";
 import type { PublicNavCopy } from "@/lib/public-doc-copy";
 
 const NAV_HREFS = [
@@ -32,12 +33,13 @@ export default function PublicDoc({
           <Link href="/" aria-label={nav.home}>
             <BrandLogo height={32} />
           </Link>
-          <nav aria-label={nav.nav} className="flex flex-wrap gap-x-4 gap-y-2 text-sm font-semibold">
+          <nav aria-label={nav.nav} className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-semibold">
             {NAV_HREFS.map((item) => (
               <Link key={item.href} href={item.href} className="underline-offset-4 hover:underline">
                 {nav[item.key]}
               </Link>
             ))}
+            <PublicLanguageMenu label={nav.language} />
           </nav>
         </div>
       </header>
