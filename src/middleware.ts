@@ -51,12 +51,18 @@ export function middleware(req: NextRequest) {
     if (shouldNoindex(host, pathname) || crmHost) {
       res.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
     }
-    if (pathname === "/") {
-      // Session redirect depends on the cookie, so this response cannot be shared-cached.
+    // Public HTML still varies by fx_lang and by the session (home redirect, sign-in chrome).
+    // The root layout reads that cookie, so these routes stay dynamic. Anonymous requests
+    // on an indexable host share one CDN entry. A session or language cookie must not reuse it.
+    if (hasPersonalizationCookie(req) || isPrivateHtmlPath(pathname) || crmHost) {
       res.headers.set("Cache-Control", "private, no-store");
     } else if (isMarketingPath(pathname) && isIndexableHost(host)) {
-      res.headers.set("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400");
-    } else if (isPrivateHtmlPath(pathname)) {
+      res.headers.set(
+        "Cache-Control",
+        "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400"
+      );
+      res.headers.append("Vary", "Cookie");
+    } else if (isMarketingPath(pathname)) {
       res.headers.set("Cache-Control", "private, no-store");
     }
     // Replaces the camera/microphone/geolocation line above. payment and usb stay off.
@@ -171,6 +177,15 @@ export function middleware(req: NextRequest) {
   }
 
   return applyHeaders(passNext());
+}
+
+/** Session or a chosen public language. Those responses must not enter the shared cache. */
+function hasPersonalizationCookie(req: NextRequest): boolean {
+  if (req.cookies.get("7fx_session")?.value) return true;
+  if (req.cookies.get("deskflow_session")?.value) return true;
+  if (req.cookies.get("7fx_impersonation")?.value) return true;
+  const lang = req.cookies.get("fx_lang")?.value;
+  return typeof lang === "string" && lang.trim() !== "";
 }
 
 function awaitBlank(): string {
