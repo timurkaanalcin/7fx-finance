@@ -968,4 +968,12 @@ export const ru: Dict = {
   "gap.nf.title": "Этой страницы нет",
   "gap.nf.body": "Ссылка может быть старой, или страница переехала. Можно открыть терминал или вернуться на главную.",
   "gap.nf.home": "Главная",
+  "landing.desk.bid": "Бид",
+  "landing.desk.ask": "Аск",
+  "landing.desk.buy": "Купить",
+  "landing.desk.sell": "Продать",
+  "landing.desk.watch": "Список наблюдения",
+  "landing.desk.ticket": "Заявка",
+  "landing.desk.spread": "Спред",
+  "landing.desk.note": "Предпросмотр терминала. Цены приходят из публичной ленты. Купить и Продать открывают счёт и не отправляют заявку.",
 };

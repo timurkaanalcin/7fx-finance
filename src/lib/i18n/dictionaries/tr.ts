@@ -968,4 +968,12 @@ export const tr: Dict = {
   "gap.nf.title": "Bu sayfa bulunamadı",
   "gap.nf.body": "Bağlantı eski olabilir veya sayfa taşınmış olabilir. Terminali açabilir veya ana sayfaya dönebilirsiniz.",
   "gap.nf.home": "Ana sayfa",
+  "landing.desk.bid": "Alış",
+  "landing.desk.ask": "Satış",
+  "landing.desk.buy": "Al",
+  "landing.desk.sell": "Sat",
+  "landing.desk.watch": "İzleme listesi",
+  "landing.desk.ticket": "Emir bileti",
+  "landing.desk.spread": "Spread",
+  "landing.desk.note": "Terminal önizlemesi. Fiyatlar herkese açık akıştan gelir. Al ve Sat bir hesap açar ve emir göndermez.",
 };

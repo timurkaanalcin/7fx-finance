@@ -968,4 +968,12 @@ export const de: Dict = {
   "gap.nf.title": "Diese Seite gibt es nicht",
   "gap.nf.body": "Der Link ist vielleicht alt, oder die Seite wurde verschoben. Sie können das Terminal öffnen oder zur Startseite zurückkehren.",
   "gap.nf.home": "Start",
+  "landing.desk.bid": "Bid",
+  "landing.desk.ask": "Ask",
+  "landing.desk.buy": "Kaufen",
+  "landing.desk.sell": "Verkaufen",
+  "landing.desk.watch": "Watchlist",
+  "landing.desk.ticket": "Orderticket",
+  "landing.desk.spread": "Spread",
+  "landing.desk.note": "Vorschau des Terminals. Die Preise kommen aus dem öffentlichen Feed. Kaufen und Verkaufen öffnen ein Konto und senden keinen Auftrag.",
 };

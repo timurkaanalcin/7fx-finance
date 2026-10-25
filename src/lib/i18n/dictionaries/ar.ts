@@ -968,4 +968,12 @@ export const ar: Dict = {
   "gap.nf.title": "هذه الصفحة غير موجودة",
   "gap.nf.body": "قد يكون الرابط قديماً، أو تكون الصفحة قد نُقلت. يمكنك فتح الطرفية أو العودة إلى الرئيسية.",
   "gap.nf.home": "الرئيسية",
+  "landing.desk.bid": "عرض",
+  "landing.desk.ask": "طلب",
+  "landing.desk.buy": "شراء",
+  "landing.desk.sell": "بيع",
+  "landing.desk.watch": "قائمة المراقبة",
+  "landing.desk.ticket": "تذكرة الأمر",
+  "landing.desk.spread": "السبريد",
+  "landing.desk.note": "معاينة المنصة. الأسعار من التغذية العامة. شراء وبيع يفتحان حسابًا ولا يرسلان أمرًا.",
 };

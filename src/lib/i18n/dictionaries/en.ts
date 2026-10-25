@@ -968,4 +968,12 @@ export const en: Dict = {
   "gap.nf.title": "This page is not on the desk",
   "gap.nf.body": "The link may be old, or the page may have moved. You can open the terminal or go back home.",
   "gap.nf.home": "Home",
+  "landing.desk.bid": "Bid",
+  "landing.desk.ask": "Ask",
+  "landing.desk.buy": "Buy",
+  "landing.desk.sell": "Sell",
+  "landing.desk.watch": "Watchlist",
+  "landing.desk.ticket": "Order ticket",
+  "landing.desk.spread": "Spread",
+  "landing.desk.note": "Preview of the terminal. Prices come from the public feed. Buy and Sell open an account and do not send an order.",
 };

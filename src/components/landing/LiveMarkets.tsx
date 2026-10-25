@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useI18n } from "@/lib/i18n/context";
 import SymbolIcon from "@/components/ui/SymbolIcon";
+import { FeedDot, type FeedState } from "@/components/trading/FeedStatus";
 
 const QUOTE_SYMS = [
   "EURUSD",
@@ -104,7 +106,15 @@ async function refresh() {
   if (inflight || typeof window === "undefined") return;
   inflight = true;
   try {
-    const wanted = Array.from(new Set<string>([...CHART_SYMS, ...Array.from(extraCharts)]));
+    const wanted: string[] = [];
+    const seen = new Set<string>();
+    const take = (sym: string) => {
+      if (seen.has(sym)) return;
+      seen.add(sym);
+      wanted.push(sym);
+    };
+    for (let i = 0; i < CHART_SYMS.length; i += 1) take(CHART_SYMS[i]);
+    for (const sym of Array.from(extraCharts)) take(sym);
     const candleTask = Promise.all(wanted.map(async (symbol) => ({ symbol, row: await fetchCloses(symbol) })));
     const [symRes, quoteRes] = await Promise.all([
       fetch("/api/symbols", { cache: "no-store" }),
@@ -297,6 +307,12 @@ function Spark({ values }: { values: number[] }) {
   return <canvas ref={ref} className="fx-spark" aria-hidden />;
 }
 
+function feedState(status: Feed["status"]): FeedState {
+  if (status === "live") return "live";
+  if (status === "delayed") return "stale";
+  return "offline";
+}
+
 function Note({ status, stale, t }: { status: Feed["status"]; stale: boolean; t: (k: string) => string }) {
   if (status === "loading") return <p className="fx-live-note">{t("landing.live.loading")}</p>;
   if (status === "unavailable") return <p className="fx-live-note">{t("landing.live.unavailable")}</p>;
@@ -331,6 +347,7 @@ export function LiveHeroChart() {
           <i />
         </span>
         <span className="fx-terminal-name">{t("landing.live.terminal")}</span>
+        <FeedDot state={feedState(snap.status)} />
         <span className="fx-terminal-badge">{badge}</span>
       </div>
       <div className="fx-chart-card-head">
@@ -352,6 +369,22 @@ export function LiveHeroChart() {
           <Note status={snap.status === "loading" ? "loading" : "unavailable"} stale={false} t={t} />
         )}
       </div>
+      {tick ? (
+        <div className="fx-quote-strip">
+          <p>
+            <span>{t("landing.desk.bid")}</span>
+            <strong className="is-down">{formatPx(tick.bid, symbol, locale)}</strong>
+          </p>
+          <p>
+            <span>{t("landing.desk.ask")}</span>
+            <strong className="is-up">{formatPx(tick.ask, symbol, locale)}</strong>
+          </p>
+          <p>
+            <span>{t("landing.desk.spread")}</span>
+            <strong>{formatPx(Math.abs(tick.ask - tick.bid), symbol, locale)}</strong>
+          </p>
+        </div>
+      ) : null}
       <div className="fx-spark-row">
         {SPARK_SYMS.map((sym) => {
           const row = snap.ticks[sym];
@@ -428,6 +461,97 @@ export function LiveTape() {
           );
         })}
       </div>
+    </div>
+  );
+}
+
+const FEATURE_CHARTS = [
+  { title: "landing.card.markets.title", body: "landing.card.markets.body", symbol: "EURUSD" },
+  { title: "landing.card.orders.title", body: "landing.card.orders.body", symbol: "AAPL" },
+  { title: "landing.card.security.title", body: "landing.card.security.body", symbol: "XAUUSD" },
+] as const;
+
+const DESK_WATCH = ["EURUSD", "GBPUSD", "XAUUSD", "AAPL", "BTCUSD"] as const;
+
+export function FeatureDeck() {
+  const { t } = useI18n();
+  const snap = useLiveFeed();
+  return (
+    <>
+      {FEATURE_CHARTS.map((card) => {
+        const series = snap.series[card.symbol];
+        return (
+          <article key={card.symbol} className="fx-feature-card">
+            {series && series.length > 1 ? <MiniCanvas values={series} /> : <div className="fx-mini-canvas" aria-hidden />}
+            <p className="fx-feature-sym">{card.symbol}</p>
+            <h3 className="font-medium">{t(card.title)}</h3>
+            <p>{t(card.body)}</p>
+          </article>
+        );
+      })}
+    </>
+  );
+}
+
+export function TerminalDesk() {
+  const { t, locale } = useI18n();
+  const snap = useLiveFeed();
+  const symbol = "EURUSD";
+  const series = snap.series[symbol];
+  const tick = snap.ticks[symbol];
+  return (
+    <div className="fx-desk-mock">
+      <section className="fx-desk-col" aria-label={t("landing.desk.watch")}>
+        <p className="fx-desk-label">{t("landing.desk.watch")}</p>
+        <ul className="fx-desk-watch">
+          {DESK_WATCH.map((sym) => {
+            const row = snap.ticks[sym];
+            const up = row ? row.changePct >= 0 : true;
+            return (
+              <li key={sym}>
+                <SymbolIcon symbol={sym} size={16} />
+                <span className="fx-desk-sym">{sym}</span>
+                <span className={up ? "is-up" : "is-down"}>{row ? formatPx(row.mid, sym, locale) : "—"}</span>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+      <div className="fx-desk-chart">
+        <div className="fx-desk-chart-head">
+          <span>{symbol}</span>
+          <FeedDot state={feedState(snap.status)} />
+        </div>
+        {series && series.length > 1 ? (
+          <HeroCanvas values={series} label={`${t("landing.live.chartAria")} ${symbol}`} />
+        ) : (
+          <Note status={snap.status === "loading" ? "loading" : "unavailable"} stale={false} t={t} />
+        )}
+      </div>
+      <section className="fx-desk-col" aria-label={t("landing.desk.ticket")}>
+        <p className="fx-desk-label">{t("landing.desk.ticket")}</p>
+        {tick ? (
+          <div className="fx-quote-strip fx-quote-strip--stack">
+            <p>
+              <span>{t("landing.desk.bid")}</span>
+              <strong className="is-down">{formatPx(tick.bid, symbol, locale)}</strong>
+            </p>
+            <p>
+              <span>{t("landing.desk.ask")}</span>
+              <strong className="is-up">{formatPx(tick.ask, symbol, locale)}</strong>
+            </p>
+          </div>
+        ) : (
+          <Note status={snap.status === "loading" ? "loading" : "unavailable"} stale={false} t={t} />
+        )}
+        <Link href="/register" className="fx-desk-side fx-desk-side--buy">
+          {t("landing.desk.buy")}
+        </Link>
+        <Link href="/register" className="fx-desk-side fx-desk-side--sell">
+          {t("landing.desk.sell")}
+        </Link>
+        <p className="fx-desk-note">{t("landing.desk.note")}</p>
+      </section>
     </div>
   );
 }

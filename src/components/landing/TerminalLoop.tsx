@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
+import { TerminalDesk } from "@/components/landing/LiveMarkets";
 
 type Candle = { o: number; h: number; l: number; c: number };
 
@@ -129,7 +130,6 @@ export default function TerminalLoop() {
   }, []);
 
   useEffect(() => {
-    if (reduce) return;
     const el = stageRef.current;
     if (!el) return;
     const io = new IntersectionObserver(
@@ -138,43 +138,16 @@ export default function TerminalLoop() {
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [reduce]);
+  }, []);
 
   useEffect(() => {
     if (!near || reduce) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const candles = seedCandles();
-    let frame = 0;
-    let last = 0;
-    let shift = 0;
-    const tick = (now: number) => {
-      const dt = last ? Math.min(32, now - last) : 16;
-      last = now;
-      shift += dt * 0.012;
-      const slot = Math.max(8, canvas.clientWidth / 48);
-      if (shift >= slot) {
-        shift -= slot;
-        const prev = candles[candles.length - 1];
-        const drift = Math.sin(now / 900) * 0.0012;
-        const o = prev.c;
-        const c = o + drift;
-        candles.shift();
-        candles.push({
-          o,
-          c,
-          h: Math.max(o, c) + 0.0007,
-          l: Math.min(o, c) - 0.0007,
-        });
-      }
-      draw(canvas, candles, shift);
-      frame = requestAnimationFrame(tick);
-    };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
+    draw(canvas, seedCandles(), 0);
   }, [near, reduce]);
 
-  const caption = reduce ? t("landing.screen.reduced") : t("landing.screen.caption");
+  const caption = near ? t("landing.desk.note") : reduce ? t("landing.screen.reduced") : t("landing.screen.caption");
 
   return (
     <section id="screen" className="fx-section" aria-labelledby="screen-title" data-fx-reduced={reduce ? "1" : "0"}>
@@ -211,6 +184,7 @@ export default function TerminalLoop() {
             {near && !reduce ? (
               <canvas ref={canvasRef} className="fx-screen-canvas" aria-hidden />
             ) : null}
+            {near ? <TerminalDesk /> : null}
           </div>
           <p className="fx-film-cap">{caption}</p>
         </div>
