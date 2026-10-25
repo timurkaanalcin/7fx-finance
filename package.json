@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build && node scripts/publish-deferred-css.mjs",
+    "build": "PRISMA_HIDE_UPDATE_MESSAGE=1 prisma generate --no-hints && next build && node scripts/publish-deferred-css.mjs",
     "start": "prisma db push --skip-generate && NODE_ENV=production node server.js",
     "lint": "next lint",
     "db:push": "prisma db push",
@@ -32,24 +32,26 @@
     "react-dom": "^18",
     "web-push": "^3.6.7",
     "xlsx": "^0.18.5",
-    "zod": "^4.6.5"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@netlify/plugin-nextjs": "^5.16.0",
-    "@types/bcryptjs": "^3.0.0",
     "@types/node": "^20",
     "@types/papaparse": "^5.5.2",
-    "@types/pdf-parse": "^1.1.5",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/web-push": "^3.6.4",
     "eslint": "^8",
     "eslint-config-next": "14.2.35",
-    "postcss": "^8",
+    "postcss": "8.5.31",
     "tailwindcss": "^3.4.1",
     "tsx": "^4.23.13",
     "typescript": "^5"
+  },
+  "overrides": {
+    "postcss": "$postcss",
+    "source-map-js": "1.2.2"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

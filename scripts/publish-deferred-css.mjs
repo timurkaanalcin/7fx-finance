@@ -11,7 +11,14 @@ const utilities = path.join(root, "public", "fx-public-utilities.css");
 const compiled = spawnSync(
   bin,
   ["-c", "tailwind.public.config.ts", "-i", "src/app/public.css", "-o", utilities, "--minify"],
-  { cwd: root, stdio: "inherit" }
+  {
+    cwd: root,
+    stdio: "inherit",
+    // Tailwind 3.4's CLI bundles a 2024 caniuse snapshot and warns that it is
+    // older than six months. The installed caniuse-lite is current; this flag
+    // only skips that notice. Prefixes still come from the bundled snapshot.
+    env: { ...process.env, BROWSERSLIST_IGNORE_OLD_DATA: "1" },
+  }
 );
 if (compiled.status !== 0) process.exit(compiled.status || 1);
 const utilText = fs.readFileSync(utilities, "utf8");

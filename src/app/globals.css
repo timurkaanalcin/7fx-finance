@@ -609,33 +609,6 @@ body:has(.fx-crm) {
   background: #c4c4c4;
 }
 
-/* 7FX branded load transition — logo sweep L→R */
-.fx-brand-loader-mark {
-  -webkit-mask-image: linear-gradient(
-    90deg,
-    #000 0%,
-    #000 var(--fx-reveal, 0%),
-    transparent var(--fx-reveal, 0%)
-  );
-  mask-image: linear-gradient(
-    90deg,
-    #000 0%,
-    #000 var(--fx-reveal, 0%),
-    transparent var(--fx-reveal, 0%)
-  );
-  animation: fx-brand-reveal 1.15s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-@keyframes fx-brand-reveal {
-  0% {
-    -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 0%, transparent 0%);
-    mask-image: linear-gradient(90deg, #000 0%, #000 0%, transparent 0%);
-  }
-  100% {
-    -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 100%, transparent 100%);
-    mask-image: linear-gradient(90deg, #000 0%, #000 100%, transparent 100%);
-  }
-}
-
 /* iOS install sheet progress bar */
 @keyframes fx-ios-bar {
   0% { transform: translateX(-100%); }
