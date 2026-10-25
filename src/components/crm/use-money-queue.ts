@@ -5,6 +5,7 @@ import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { useVisiblePoll } from "@/lib/use-visible-poll";
 import {
   moneyQueueCsv,
+  MONEY_QUEUE_TAKES,
   moneyQueueRange,
   moneyQueueSearchString,
   moneyQueueSkip,
@@ -52,6 +53,7 @@ export function useMoneyQueue<T extends MoneyQueueRow>(path: string, opts: Optio
   const [status, setStatus] = useState("PENDING");
   const [sort, setSort] = useState("");
   const [page, setPage] = useState(1);
+  const [take, setTakeState] = useState(() => Number(opts.take) || 50);
   const [total, setTotal] = useState<number | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -65,10 +67,10 @@ export function useMoneyQueue<T extends MoneyQueueRow>(path: string, opts: Optio
   const appliedFilter = useRef("");
   const loadKey = useRef("");
 
-  const filterSig = [qDebounced, status, sort].join("\u0001");
-  const listQuery: MoneyQueueFilters = { q: qDebounced, status, sort, page };
+  const filterSig = [qDebounced, status, sort, take].join("\u0001");
+  const listQuery: MoneyQueueFilters = { q: qDebounced, status, sort, page, take };
   const queryString = moneyQueueSearchString(listQuery);
-  const range = moneyQueueRange(page, rows.length);
+  const range = moneyQueueRange(page, rows.length, take);
 
   const load = useCallback(async () => {
     const sig = filterSig;
@@ -78,7 +80,7 @@ export function useMoneyQueue<T extends MoneyQueueRow>(path: string, opts: Optio
       if (page !== 1) setPage(1);
     }
     appliedFilter.current = sig;
-    const params = new URLSearchParams({ take: opts.take, skip: String(moneyQueueSkip(usePage)) });
+    const params = new URLSearchParams({ take: String(take), skip: String(moneyQueueSkip(usePage, take)) });
     if (status && status !== "ALL") params.set("status", status);
     if (qDebounced) params.set("q", qDebounced);
     if (sort) params.set("sort", sort);
@@ -106,7 +108,7 @@ export function useMoneyQueue<T extends MoneyQueueRow>(path: string, opts: Optio
     } finally {
       if (gen === listGen.current) setLoading(false);
     }
-  }, [filterSig, page, path, opts.take, status, qDebounced, sort]);
+  }, [filterSig, page, path, take, status, qDebounced, sort]);
 
   useEffect(() => {
     const parsed = parseMoneyQueueQuery(window.location.search);
@@ -115,6 +117,7 @@ export function useMoneyQueue<T extends MoneyQueueRow>(path: string, opts: Optio
     setStatus(parsed.status);
     setSort(parsed.sort);
     setPage(parsed.page);
+    setTakeState(parsed.take);
     setFiltersReady(true);
   }, []);
 
@@ -158,7 +161,7 @@ export function useMoneyQueue<T extends MoneyQueueRow>(path: string, opts: Optio
       const all: T[] = [];
       let skip = 0;
       for (let i = 0; i < 40; i++) {
-        const params = new URLSearchParams({ take: opts.take, skip: String(skip) });
+        const params = new URLSearchParams({ take: String(take), skip: String(skip) });
         if (status && status !== "ALL") params.set("status", status);
         if (qDebounced) params.set("q", qDebounced);
         if (sort) params.set("sort", sort);
@@ -185,7 +188,21 @@ export function useMoneyQueue<T extends MoneyQueueRow>(path: string, opts: Optio
     } finally {
       setCsvBusy(false);
     }
-  }, [i18n, opts.kind, opts.take, path, qDebounced, sort, status]);
+  }, [i18n, opts.kind, path, qDebounced, sort, status, take]);
+
+  const setTake = useCallback((next: number) => {
+    if (!(MONEY_QUEUE_TAKES as readonly number[]).includes(next)) return;
+    setTakeState(next);
+    setPage(1);
+  }, []);
+
+  const clearFilters = useCallback(() => {
+    setQ("");
+    setQDebounced("");
+    setStatus("PENDING");
+    setSort("");
+    setPage(1);
+  }, []);
 
   return {
     rows,
@@ -197,6 +214,9 @@ export function useMoneyQueue<T extends MoneyQueueRow>(path: string, opts: Optio
     setSort,
     page,
     setPage,
+    take,
+    setTake,
+    clearFilters,
     total,
     hasMore,
     loading,

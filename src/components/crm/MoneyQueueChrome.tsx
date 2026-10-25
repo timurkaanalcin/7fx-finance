@@ -1,7 +1,7 @@
 "use client";
 
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
-import { queueStatusTone } from "@/lib/crm-money-queue";
+import { MONEY_QUEUE_TAKES, queueStatusTone } from "@/lib/crm-money-queue";
 import type { useMoneyQueue } from "@/components/crm/use-money-queue";
 
 type Queue = ReturnType<typeof useMoneyQueue>;
@@ -80,8 +80,22 @@ export function MoneyQueueChrome({
           <p className="mt-1 text-[11px] font-medium text-neutral-400">{i18n("crm.traders.searchKey")}</p>
         </div>
         <span className="rounded bg-[#f2f2f2] px-2 py-1 text-xs tabular-nums" data-fx-queue-count="">
-          {range}
+          {queue.total == null
+            ? range
+            : `${i18n("crm.list.showing")
+                .replace("{from}", String(queue.range.from))
+                .replace("{to}", String(queue.range.to))
+                .replace("{total}", String(queue.total))}`}
         </span>
+        <button
+          type="button"
+          onClick={queue.clearFilters}
+          disabled={!queue.q && queue.status === "PENDING" && !queue.sort}
+          data-fx-queue-clear=""
+          className="min-h-10 rounded border border-[#e5e5e5] bg-white px-3 text-xs font-medium text-neutral-700 hover:bg-[#f7f7f7] disabled:opacity-40"
+        >
+          {i18n("crm.list.clear")}
+        </button>
         {extra}
         <div className="ml-auto flex flex-wrap items-center gap-2 text-[11px] text-neutral-500">
           {clock}
@@ -118,7 +132,23 @@ export function MoneyQueuePager({ queue }: { queue: Queue }) {
         {i18n("crm.traders.pageStatus").replace("{page}", String(queue.page))}
         {queue.total != null ? ` · ${queue.total}` : ""}
       </span>
-      <div className="flex gap-2">
+      <div className="flex flex-wrap items-center gap-2">
+        <label className="flex items-center gap-1 text-neutral-500">
+          <span>{i18n("crm.list.pageSize")}</span>
+          <select
+            value={queue.take}
+            onChange={(e) => queue.setTake(Number(e.target.value))}
+            aria-label={i18n("crm.list.pageSize")}
+            data-fx-queue-take=""
+            className="min-h-10 rounded-full border border-[#e5e5e5] bg-white px-2 font-medium text-neutral-800"
+          >
+            {MONEY_QUEUE_TAKES.map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+        </label>
         <button
           type="button"
           disabled={queue.page <= 1}

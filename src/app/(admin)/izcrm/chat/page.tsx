@@ -5,7 +5,9 @@ import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import Link from "next/link";
 import { FormEvent, KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CRM_IDLE_POLL_MS, useVisiblePoll } from "@/lib/use-visible-poll";
-import { CHAT_MESSAGE_PAGE, CHAT_THREAD_CAP, CHAT_THREAD_PAGE, prependChatMessages } from "@/lib/trader-list";
+import { CHAT_MESSAGE_PAGE, CHAT_THREAD_PAGE, prependChatMessages } from "@/lib/trader-list";
+import { CrmListPager, useListQueryUrl } from "@/components/crm/CrmListBar";
+import { CHAT_LIST_TAKES, chatListSearchString, listPageRange, listPageSkip, parseChatListQuery } from "@/lib/crm-list-url";
 import {
   compareByLatestCustomer,
   formatChatStamp,
@@ -290,7 +292,9 @@ export default function ChatPage() {
   const [query, setQuery] = useState("");
   const [qDebounced, setQDebounced] = useState("");
   const [hasMore, setHasMore] = useState(false);
-  const [moreBusy, setMoreBusy] = useState(false);
+  const [page, setPage] = useState(1);
+  const [take, setTake] = useState(CHAT_THREAD_PAGE);
+  const [filtersReady, setFiltersReady] = useState(false);
   const [olderBusy, setOlderBusy] = useState(false);
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState("");
@@ -350,28 +354,43 @@ export default function ChatPage() {
     return rows.slice(0, 8);
   }, [slash, canned.items, i18n]);
 
-  const load = useCallback(async (mode: "replace" | "more" = "replace") => {
+  const chatQuery = chatListSearchString({
+    q: qDebounced,
+    tab,
+    page,
+    take,
+    user: selected || "",
+  });
+  useListQueryUrl(filtersReady, chatQuery);
+  const appliedChat = useRef("");
+
+  const load = useCallback(async () => {
+    if (!filtersReady) return;
     const gen = ++listGen.current;
-    const qChanged = mode === "replace" && qDebounced !== qRef.current;
-    if (qChanged) qRef.current = qDebounced;
-    const loaded = mode === "more" || !qChanged ? threadsRef.current.length : 0;
+    const sig = `${qDebounced}\u0001${take}`;
+    let usePage = page;
+    if (appliedChat.current && appliedChat.current !== sig) {
+      usePage = 1;
+      if (page !== 1) setPage(1);
+    }
+    appliedChat.current = sig;
+    qRef.current = qDebounced;
     const p = new URLSearchParams();
-    p.set("take", String(mode === "more" ? CHAT_THREAD_PAGE : Math.min(CHAT_THREAD_CAP, Math.max(CHAT_THREAD_PAGE, loaded || CHAT_THREAD_PAGE))));
-    p.set("skip", mode === "more" ? String(threadsRef.current.length) : "0");
+    p.set("take", String(take));
+    p.set("skip", String(listPageSkip(usePage, take)));
     if (qDebounced) p.set("q", qDebounced);
     if (pins.length) p.set("pins", pins.join(","));
-    if (!pickerSeen.current && mode === "replace") {
+    if (!pickerSeen.current) {
       p.set("picker", "1");
       p.set("pickerTake", "50");
       p.set("pickerSkip", "0");
     }
-    if (mode === "more") setMoreBusy(true);
     try {
       const res = await fetch(`/api/admin/chat?${p}`);
       if (!res.ok || gen !== listGen.current) return;
       const data = await res.json();
       const incoming: Thread[] = data.threads || [];
-      const next = mergeChatThreads(threadsRef.current, incoming, mode, selectedRef.current);
+      const next = mergeChatThreads(threadsRef.current, incoming, "replace", selectedRef.current);
       threadsRef.current = next;
       setThreads(next);
       setHasMore(Boolean(data.hasMore));
@@ -381,10 +400,24 @@ export default function ChatPage() {
         setPickerHasMore(Boolean(data.pickerHasMore));
         pickerSeen.current = true;
       }
-    } finally {
-      if (mode === "more" && gen === listGen.current) setMoreBusy(false);
+    } catch {
+      /* keep the inbox that is already on screen */
     }
-  }, [qDebounced, pins]);
+  }, [filtersReady, page, qDebounced, pins, take]);
+
+  useEffect(() => {
+    const parsed = parseChatListQuery(window.location.search);
+    setQuery(parsed.q);
+    setQDebounced(parsed.q);
+    setTab(parsed.tab);
+    setPage(parsed.page);
+    setTake(parsed.take);
+    if (parsed.user) {
+      setSelected(parsed.user);
+      setPicked(true);
+    }
+    setFiltersReady(true);
+  }, []);
 
   const loadMoreTraders = useCallback(async () => {
     if (pickerBusy) return;
@@ -996,20 +1029,28 @@ export default function ChatPage() {
               );
             })}
           </ul>
-          <p className="border-t border-neutral-200 px-3 py-2 text-center text-[10px] text-neutral-400">
-            {hasMore ? (
-              <button
-                type="button"
-                disabled={moreBusy}
-                onClick={() => void load("more")}
-                className="rounded-full border border-neutral-300 px-3 py-1 text-xs font-semibold text-neutral-600 hover:bg-neutral-50 disabled:opacity-50"
-              >
-                {i18n("crm.ui.loadMore")}
-              </button>
-            ) : (
-              i18n("crm.chat.allLoaded")
-            )}
-          </p>
+          <div className="border-t border-neutral-200 px-2 py-2">
+            <CrmListPager
+              page={page}
+              take={take}
+              takes={CHAT_LIST_TAKES}
+              hasMore={hasMore}
+              from={listPageRange(page, take, threads.length).from}
+              to={listPageRange(page, take, threads.length).to}
+              total={null}
+              onPage={setPage}
+              onTake={(n) => {
+                setTake(n);
+                setPage(1);
+              }}
+              onClear={() => {
+                setQuery("");
+                setTab("all");
+                setPage(1);
+              }}
+              clearDisabled={!query && tab === "all" && page === 1}
+            />
+          </div>
         </aside>
 
         {/* CENTER */}

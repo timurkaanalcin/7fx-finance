@@ -40,6 +40,7 @@ export type TraderListFilters = {
   lastContactTo: string;
   sort: string;
   page: number;
+  take: number;
 };
 
 export const EMPTY_TRADER_LIST_FILTERS: TraderListFilters = {
@@ -59,6 +60,7 @@ export const EMPTY_TRADER_LIST_FILTERS: TraderListFilters = {
   lastContactTo: "",
   sort: "",
   page: 1,
+  take: TRADER_PAGE,
 };
 
 function clip(value: string | null, max: number): string {
@@ -89,6 +91,7 @@ export function parseTraderListQuery(search: string): TraderListFilters {
     lastContactTo: clip(sp.get("lastContactTo"), 10),
     sort: SORT_SET.has(sort) ? sort : "",
     page,
+    take: clipListTake(sp.get("take"), TRADER_TAKES, TRADER_PAGE),
   };
 }
 
@@ -111,19 +114,28 @@ export function traderListSearchString(f: TraderListFilters): string {
   if (f.lastContactTo) sp.set("lastContactTo", f.lastContactTo);
   if (f.sort && SORT_SET.has(f.sort)) sp.set("sort", f.sort);
   if (f.page > 1) sp.set("page", String(Math.min(2000, Math.trunc(f.page))));
+  if (f.take && f.take !== TRADER_PAGE) sp.set("take", String(f.take));
   return sp.toString();
 }
 
-/** Skip for a 1-based page of `TRADER_PAGE` rows. */
-export function traderPageSkip(page: number): number {
+export const TRADER_TAKES = [25, 50, 100, 200];
+
+function clipListTake(raw: string | null, allowed: readonly number[], fallback: number): number {
+  const n = Math.trunc(Number(raw));
+  return allowed.includes(n) ? n : fallback;
+}
+
+/** Skip for a 1-based page. The size defaults to `TRADER_PAGE`. */
+export function traderPageSkip(page: number, pageSize = TRADER_PAGE): number {
   const p = Number.isFinite(page) && page > 1 ? Math.min(2000, Math.trunc(page)) : 1;
-  return (p - 1) * TRADER_PAGE;
+  const size = clipListTake(String(pageSize), TRADER_TAKES, TRADER_PAGE);
+  return (p - 1) * size;
 }
 
 /** Inclusive row numbers for the page. An empty page is 0–0, not a full window. */
-export function traderPageRange(page: number, rowCount: number): { from: number; to: number } {
+export function traderPageRange(page: number, rowCount: number, pageSize = TRADER_PAGE): { from: number; to: number } {
   if (!Number.isFinite(rowCount) || rowCount <= 0) return { from: 0, to: 0 };
-  const from = traderPageSkip(page) + 1;
+  const from = traderPageSkip(page, pageSize) + 1;
   return { from, to: from + Math.trunc(rowCount) - 1 };
 }
 

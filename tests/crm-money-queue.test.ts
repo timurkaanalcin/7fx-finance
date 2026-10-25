@@ -63,10 +63,11 @@ function main() {
   assert.equal(nextMoneySort("", "name"), "name_asc");
   assert.equal(nextMoneySort("", "amount"), "amount_desc");
 
-  const pending = { q: "", status: "PENDING", sort: "", page: 1 };
+  const pending = { q: "", status: "PENDING", sort: "", page: 1, take: 50 };
   assert.equal(moneyQueueSearchString(pending), "");
   assert.equal(moneyQueueSearchString({ ...pending, status: "ALL", page: 2 }), "status=ALL&page=2");
-  const filters = { q: "mehmet", status: "APPROVED", sort: "amount_desc", page: 3 };
+  assert.equal(moneyQueueSearchString({ ...pending, take: 25 }), "take=25");
+  const filters = { q: "mehmet", status: "APPROVED", sort: "amount_desc", page: 3, take: 50 };
   const roundTrip = parseMoneyQueueQuery(`?${moneyQueueSearchString(filters)}`);
   assert.deepEqual(roundTrip, filters);
   assert.equal(parseMoneyQueueQuery("?status=DROP&sort=drop-table&page=-4").status, "PENDING");

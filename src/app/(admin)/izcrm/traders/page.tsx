@@ -6,8 +6,8 @@ import { displayCrmMoney } from "@/lib/security/mask";
 import Link from "next/link";
 import { ACCOUNT_CURRENCIES, RETENTION_STATUSES, SALE_STATUSES } from "@/lib/membership";
 import { dayEndIso, dayStartIso } from "@/lib/crm-api";
-import { TRADER_PAGE } from "@/lib/trader-list";
 import {
+  TRADER_TAKES,
   nextTraderSort,
   parseTraderListQuery,
   traderListSearchString,
@@ -169,6 +169,7 @@ export default function AdminUsersPage() {
   const [hasMore, setHasMore] = useState(false);
   const [total, setTotal] = useState<number | null>(null);
   const [page, setPage] = useState(1);
+  const [take, setTake] = useState(50);
   const [filtersReady, setFiltersReady] = useState(false);
   const listGen = useRef(0);
   const appliedFilter = useRef("");
@@ -304,6 +305,7 @@ export default function AdminUsersPage() {
     lastContactFrom,
     lastContactTo,
     sort,
+    String(take),
   ].join("\u0001");
   const listQuery: TraderListFilters = {
     q: qDebounced,
@@ -322,8 +324,9 @@ export default function AdminUsersPage() {
     lastContactTo,
     sort,
     page,
+    take,
   };
-  const range = traderPageRange(page, rows.length);
+  const range = traderPageRange(page, rows.length, take);
 
   const load = useCallback(async () => {
     const sig = filterSig;
@@ -356,8 +359,8 @@ export default function AdminUsersPage() {
     params.set("tzo", String(new Date().getTimezoneOffset()));
     const requestKey = `${params.toString()}&page=${usePage}`;
     const gen = ++listGen.current;
-    params.set("skip", String(traderPageSkip(usePage)));
-    params.set("take", String(TRADER_PAGE));
+    params.set("skip", String(traderPageSkip(usePage, take)));
+    params.set("take", String(take));
     if (metaSeen.current) params.set("meta", "0");
     if (!countsSeen.current) params.set("counts", "1");
     params.set("view", "table");
@@ -402,7 +405,7 @@ export default function AdminUsersPage() {
     } catch {
       if (gen === listGen.current) setListPhase("error");
     }
-  }, [filterSig, page, qDebounced, status, desk, country, saleStatus, retentionStatus, ftdOnly, presence, accountTypeFilter, dateFrom, dateTo, followUp, lastContactFrom, lastContactTo, sort]);
+  }, [filterSig, page, take, qDebounced, status, desk, country, saleStatus, retentionStatus, ftdOnly, presence, accountTypeFilter, dateFrom, dateTo, followUp, lastContactFrom, lastContactTo, sort]);
 
   useEffect(() => {
     if (!filtersReady) return;
@@ -464,6 +467,7 @@ export default function AdminUsersPage() {
     setLastContactTo(parsed.lastContactTo);
     setSort(parsed.sort);
     setPage(parsed.page);
+    setTake(parsed.take);
     setFiltersReady(true);
   }, []);
 
@@ -980,22 +984,25 @@ export default function AdminUsersPage() {
             {i18n("crm.savedFilters.delete")}
           </button>
         )}
-        {anyFilterActive && (
-          <button
-            type="button"
-            onClick={() => applyFilters(EMPTY_FILTERS)}
-            className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2.5 py-1 text-neutral-600 hover:bg-[#f5f5f5]"
-          >
-            ✕ {i18n("crm.savedFilters.clear")}
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={() => {
+            applyFilters(EMPTY_FILTERS);
+            setPage(1);
+          }}
+          disabled={!anyFilterActive && page === 1}
+          data-fx-list-clear=""
+          className="rounded-lg border border-[#e5e5e5] bg-[#ffffff] px-2.5 py-1 font-medium text-neutral-600 hover:bg-[#f5f5f5] disabled:opacity-40"
+        >
+          {i18n("crm.list.clear")}
+        </button>
         <span className="ml-auto text-neutral-400 tabular-nums" data-fx-trader-count="">
           {total == null
             ? `${rows.length} ${i18n("crm.savedFilters.results")}`
-            : `${i18n("crm.traders.range")
+            : i18n("crm.list.showing")
                 .replace("{from}", String(range.from))
                 .replace("{to}", String(range.to))
-                .replace("{total}", String(total))} ${i18n("crm.savedFilters.results")}`}
+                .replace("{total}", String(total))}
         </span>
         {!crmReadOnly && (
           <button
@@ -1422,7 +1429,26 @@ export default function AdminUsersPage() {
           {i18n("crm.traders.pageStatus").replace("{page}", String(page))}
           {total != null ? ` · ${total}` : ""}
         </span>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="flex items-center gap-1 text-neutral-500">
+            <span>{i18n("crm.list.pageSize")}</span>
+            <select
+              value={take}
+              aria-label={i18n("crm.list.pageSize")}
+              data-fx-list-take=""
+              onChange={(e) => {
+                setTake(Number(e.target.value));
+                setPage(1);
+              }}
+              className="min-h-10 rounded-full border border-[#e5e5e5] bg-white px-2 font-medium text-neutral-800"
+            >
+              {TRADER_TAKES.map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+          </label>
           <button
             type="button"
             disabled={page <= 1}

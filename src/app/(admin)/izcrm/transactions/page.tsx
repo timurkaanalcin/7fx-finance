@@ -2,6 +2,14 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CrmListPager, useListQueryUrl } from "@/components/crm/CrmListBar";
+import {
+  CRM_LIST_TAKES,
+  ledgerListSearchString,
+  listPageRange,
+  listPageSkip,
+  parseLedgerListQuery,
+} from "@/lib/crm-list-url";
 import { ListPlaceholder } from "@/components/crm/CrmStates";
 import CrmRecordTable from "@/components/crm/crm-record-lazy";
 import type { CrmColumn } from "@/components/crm/CrmRecordTable";
@@ -10,7 +18,6 @@ import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { fmtCrmMoney } from "@/lib/crm-format";
 import { ACCOUNT_CURRENCIES } from "@/lib/membership";
 import { crmJson, dayEndIso, dayStartIso } from "@/lib/crm-api";
-import { CRM_LIST_PAGE } from "@/lib/trader-list";
 
 type Row = Record<string, unknown>;
 type Result = { ok: boolean; error?: string };
@@ -51,18 +58,32 @@ export default function TransactionsPage() {
   const [loading, setLoading] = useState(true);
   const [listFailed, setListFailed] = useState(false);
   const [hasMore, setHasMore] = useState(false);
-  const [moreBusy, setMoreBusy] = useState(false);
+  const [page, setPage] = useState(1);
+  const [take, setTake] = useState(50);
+  const [filtersReady, setFiltersReady] = useState(false);
   // Server counts ignore the type chip so the chips stay stable while a type is selected.
   const [baseCounts, setBaseCounts] = useState<{ total: number; byType: [string, number][] } | null>(null);
-  const rowsRef = useRef<Row[]>([]);
   const listGen = useRef(0);
+  const appliedFilter = useRef("");
 
   useEffect(() => {
     const t = setTimeout(() => setQDebounced(q.trim()), 300);
     return () => clearTimeout(t);
   }, [q]);
 
-  const load = useCallback(async (mode: "replace" | "more" = "replace") => {
+  const filterSig = [type, qDebounced, traderId, from, to, String(take)].join("\u0001");
+  const queryString = ledgerListSearchString({ q: qDebounced, type, userId: traderId, from, to, page, take });
+  useListQueryUrl(filtersReady, queryString);
+
+  const load = useCallback(async () => {
+    if (!filtersReady) return;
+    const sig = filterSig;
+    let usePage = page;
+    if (appliedFilter.current && appliedFilter.current !== sig) {
+      usePage = 1;
+      if (page !== 1) setPage(1);
+    }
+    appliedFilter.current = sig;
     const gen = ++listGen.current;
     const p = new URLSearchParams();
     if (type) p.set("type", type);
@@ -72,29 +93,23 @@ export default function TransactionsPage() {
     const tt = dayEndIso(to);
     if (f) p.set("from", f);
     if (tt) p.set("to", tt);
-    p.set("take", String(CRM_LIST_PAGE));
-    p.set("skip", mode === "more" ? String(rowsRef.current.length) : "0");
-    if (mode === "replace") p.set("counts", "1");
-    if (mode === "more") setMoreBusy(true);
-    else setLoading(true);
+    p.set("take", String(take));
+    p.set("skip", String(listPageSkip(usePage, take)));
+    p.set("counts", "1");
+    setLoading(true);
     try {
       const res = await fetch(`/api/admin/transactions?${p}`);
       if (gen !== listGen.current) return;
       if (!res.ok) {
-        if (mode !== "more") setListFailed(true);
+        setListFailed(true);
         return;
       }
       const data = await res.json();
       const list: Row[] = data.transactions || [];
-      const next =
-        mode === "more"
-          ? rowsRef.current.concat(list.filter((r) => !rowsRef.current.some((row) => row.id === r.id)))
-          : list;
-      rowsRef.current = next;
-      setRows(next);
-      if (mode !== "more") setListFailed(false);
+      setRows(list);
+      setListFailed(false);
       setHasMore(Boolean(data.hasMore));
-      if (data.counts && mode === "replace") {
+      if (data.counts) {
         const byKey = (data.counts.byKey || {}) as Record<string, number>;
         const byType = Object.entries(byKey)
           .map(([k, n]) => [k, Number(n) || 0] as [string, number])
@@ -102,13 +117,24 @@ export default function TransactionsPage() {
         setBaseCounts({ total: Number(data.counts.total) || 0, byType });
       }
     } catch {
-      if (gen === listGen.current && mode !== "more") setListFailed(true);
+      if (gen === listGen.current) setListFailed(true);
     } finally {
-      if (gen !== listGen.current) return;
-      if (mode === "more") setMoreBusy(false);
-      else setLoading(false);
+      if (gen === listGen.current) setLoading(false);
     }
-  }, [type, qDebounced, traderId, from, to]);
+  }, [filterSig, filtersReady, page, take, type, qDebounced, traderId, from, to]);
+
+  useEffect(() => {
+    const parsed = parseLedgerListQuery(window.location.search);
+    setQ(parsed.q);
+    setQDebounced(parsed.q);
+    setType(parsed.type);
+    setTraderId(parsed.userId);
+    setFrom(parsed.from);
+    setTo(parsed.to);
+    setPage(parsed.page);
+    setTake(parsed.take);
+    setFiltersReady(true);
+  }, []);
 
   useEffect(() => {
     load();
@@ -327,9 +353,11 @@ export default function TransactionsPage() {
             setTraderId("");
             setFrom("");
             setTo("");
+            setPage(1);
           }}
+          data-fx-list-clear=""
         >
-          {i18n("crm.ui.clear")}
+          {i18n("crm.list.clear")}
         </button>
         <button type="button" className={ctl + " hover:bg-neutral-50"} onClick={() => void load()}>
           {loading ? i18n("crm.ui.loading") : i18n("crm.ui.refresh")}
@@ -366,8 +394,22 @@ export default function TransactionsPage() {
         })}
       </div>
       <div className="mb-2 flex flex-wrap gap-3 text-[11px] text-neutral-600">
-        <span>
-          {rows.length}{hasMore ? "+" : ""} {i18n("crm.ui.records")}
+        <span data-fx-list-range="">
+          {(() => {
+            const span = listPageRange(page, take, rows.length);
+            const filtered = !baseCounts
+              ? null
+              : type
+                ? baseCounts.byType.find(([k]) => k === type)?.[1] ?? 0
+                : baseCounts.total;
+            if (filtered != null) {
+              return i18n("crm.list.showing")
+                .replace("{from}", String(span.from > 0 ? span.from : 0))
+                .replace("{to}", String(span.from > 0 ? span.to : 0))
+                .replace("{total}", String(filtered));
+            }
+            return `${rows.length} ${i18n("crm.ui.records")}`;
+          })()}
         </span>
         {totals.map(([c, v]) => (
           <span key={c} className="tabular-nums">
@@ -397,18 +439,32 @@ export default function TransactionsPage() {
         onUpdate={onUpdate}
         onDelete={onDelete}
       />
-      {hasMore && (
-        <div className="mt-3 text-center">
-          <button
-            type="button"
-            disabled={moreBusy}
-            onClick={() => void load("more")}
-            className="rounded-full border border-neutral-300 px-3 py-1 text-xs font-semibold text-neutral-600 hover:bg-neutral-50 disabled:opacity-50"
-          >
-            {i18n("crm.ui.loadMore")}
-          </button>
-        </div>
-      )}
+      <CrmListPager
+        page={page}
+        take={take}
+        takes={CRM_LIST_TAKES}
+        hasMore={hasMore}
+        from={listPageRange(page, take, rows.length).from}
+        to={listPageRange(page, take, rows.length).to}
+        total={
+          !baseCounts ? null : type ? (baseCounts.byType.find(([k]) => k === type)?.[1] ?? 0) : baseCounts.total
+        }
+        onPage={setPage}
+        onTake={(n) => {
+          setTake(n);
+          setPage(1);
+        }}
+        onClear={() => {
+          setType("");
+          setQ("");
+          setTraderId("");
+          setFrom("");
+          setTo("");
+          setPage(1);
+        }}
+        clearDisabled={!type && !q && !traderId && !from && !to}
+        busy={loading}
+      />
     </div>
   );
 }
