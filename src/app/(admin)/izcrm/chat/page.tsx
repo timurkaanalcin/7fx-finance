@@ -65,9 +65,6 @@ type TraderOpt = { id: string; name: string; email: string };
 
 type Tab = "all" | "new" | "unanswered";
 
-const GREETING_7FX =
-  "Hello, welcome to 7FX Live Support. How can I help you?\n\n7FX Support";
-
 const EMOJIS = ["👍", "🙏", "✅", "😊", "👋", "💼", "⚡", "📌"];
 
 function relativeTimeTr(iso: string, locale: string): string {
@@ -1199,7 +1196,7 @@ export default function ChatPage() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setMessage(GREETING_7FX)}
+                    onClick={() => setMessage(i18n("crm.chat.greetingBody"))}
                     className="rounded-full bg-[var(--accent-tint)] px-2.5 py-1 text-[10px] font-semibold text-[var(--accent)] ring-1 ring-[var(--accent)]/20"
                   >
                     {i18n("crm.chat.welcome")}
@@ -1511,7 +1508,7 @@ export default function ChatPage() {
             <div className="mt-2 flex flex-wrap gap-2">
               <button
                 type="button"
-                onClick={() => setMessage(GREETING_7FX)}
+                onClick={() => setMessage(i18n("crm.chat.greetingBody"))}
                 className="rounded-full bg-[var(--accent-tint)] px-2.5 py-1 text-[10px] font-semibold text-[var(--accent)]"
               >
                 {i18n("crm.chat.welcome")}

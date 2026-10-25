@@ -1,6 +1,7 @@
 "use client";
 
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
+import { LOCALE_META } from "@/lib/i18n/locales";
 import { fmtCrmDate } from "@/lib/crm-format";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -19,7 +20,7 @@ type Row = {
 
 /** Withdrawal queue. Approve and reject stay on the existing POST. */
 export default function AdminWithdrawalsPage() {
-  const { i18n, code } = useCrmLabels();
+  const { i18n, code, locale } = useCrmLabels();
   const [rows, setRows] = useState<Row[]>([]);
   const [filter, setFilter] = useState("PENDING");
   const [busy, setBusy] = useState<string | null>(null);
@@ -107,7 +108,7 @@ export default function AdminWithdrawalsPage() {
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center gap-2">
-        <h1 className="text-lg font-semibold">{i18n("crm.edit.withdrawals")}</h1>
+        <h1 className="text-lg font-medium">{i18n("crm.edit.withdrawals")}</h1>
         <div className="ml-auto flex gap-1">
           {["PENDING", "APPROVED", "REJECTED", ""].map((f) => (
             <button
@@ -150,7 +151,7 @@ export default function AdminWithdrawalsPage() {
         <div className="ml-auto flex items-center gap-2 text-[11px] text-neutral-500">
           {loadedAt && (
             <span>
-              {i18n("crm.dep.updated")} {loadedAt.toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+              {i18n("crm.dep.updated")} {loadedAt.toLocaleTimeString(LOCALE_META[locale].htmlLang, { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
             </span>
           )}
           <button
@@ -164,13 +165,13 @@ export default function AdminWithdrawalsPage() {
       </div>
       {msg && <p className="mb-3 text-xs text-emerald-400">{msg}</p>}
       <div className="overflow-x-auto rounded-lg border border-[#e5e5e5]">
-        <table className="w-full text-left text-xs">
+        <table className="fx-crm-table w-full text-left text-xs">
           <thead className="border-b border-black/10 bg-white text-neutral-500">
             <tr>
               <th className="px-3 py-2">{i18n("crm.ui.date")}</th>
               <th className="px-3 py-2">{i18n("crm.ui.user")}</th>
               <th className="px-3 py-2">{i18n("crm.ui.method")}</th>
-              <th className="px-3 py-2">{i18n("crm.ui.amount")}</th>
+              <th className="fx-crm-num px-3 py-2">{i18n("crm.ui.amount")}</th>
               <th className="px-3 py-2">{i18n("crm.ui.note")}</th>
               <th className="px-3 py-2">{i18n("crm.ui.status")}</th>
               <th className="px-3 py-2">{i18n("crm.ui.action")}</th>
@@ -187,7 +188,7 @@ export default function AdminWithdrawalsPage() {
                   <div className="text-neutral-500">{r.user.email}</div>
                 </td>
                 <td className="px-3 py-2">{r.method || "—"}</td>
-                <td className="px-3 py-2 tabular-nums font-medium">{money(r.amount, r.currency)}</td>
+                <td className="fx-crm-num px-3 py-2">{money(r.amount, r.currency)}</td>
                 <td className="px-3 py-2 max-w-[160px] truncate text-neutral-500">{r.note || "—"}</td>
                 <td className="px-3 py-2">{code("crm.status", r.status)}</td>
                 <td className="px-3 py-2">

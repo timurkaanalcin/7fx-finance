@@ -23,7 +23,7 @@ function read(rel: string): string {
 
 function main() {
   assert.equal(PUBLIC_DEFAULT_LOCALE, "en");
-  assert.equal(CRM_DEFAULT_LOCALE, "tr");
+  assert.equal(CRM_DEFAULT_LOCALE, "en");
   assert.equal(CUSTOMER_DOCS_LEGACY, 200);
   assert.equal(CRM_MEMBERSHIP_LEGACY, 500);
   assert.equal(CRM_MONEY_LIST_LEGACY, 200);

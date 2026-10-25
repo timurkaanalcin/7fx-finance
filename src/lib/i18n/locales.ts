@@ -8,8 +8,8 @@ export type I18nScope = "public" | "crm";
  * The server reads the fx_lang cookie so that first paint matches. No cookie stays English.
  */
 export const PUBLIC_DEFAULT_LOCALE: Locale = "en";
-/** CRM / admin default */
-export const CRM_DEFAULT_LOCALE: Locale = "tr";
+/** CRM / admin default. English until fx_crm_lang is stored. */
+export const CRM_DEFAULT_LOCALE: Locale = "en";
 
 /** @deprecated use PUBLIC_DEFAULT_LOCALE */
 export const DEFAULT_LOCALE = PUBLIC_DEFAULT_LOCALE;
