@@ -15,6 +15,7 @@ import {
   LOCALE_STORAGE,
   defaultLocaleFor,
   normalizeLocale,
+  publicLocaleFromCookie,
   type I18nScope,
   type Locale,
 } from "./locales";
@@ -51,11 +52,10 @@ function writeStored(scope: I18nScope, locale: Locale) {
 
 function applyDocumentLocale(locale: Locale, scope: I18nScope) {
   const meta = LOCALE_META[locale];
-  // Public site owns <html lang/dir>. CRM applies dir on .fx-crm root instead when nested.
-  if (scope === "public") {
-    document.documentElement.lang = meta.htmlLang;
-    document.documentElement.dir = meta.dir;
-  }
+  // The public provider wraps CRM and its effect runs later. Leave <html> to CRM while that scope is mounted.
+  if (scope === "public" && document.querySelector("[data-i18n-scope='crm']")) return;
+  document.documentElement.lang = meta.htmlLang;
+  document.documentElement.dir = meta.dir;
 }
 
 export function I18nProvider({
@@ -112,6 +112,23 @@ export function I18nProvider({
       cancel = true;
     };
   }, [scope, initialLocale, fallback, hasLocaleCookie]);
+
+  useEffect(() => {
+    if (scope !== "crm") return;
+    applyDocumentLocale(locale, "crm");
+    return () => {
+      let raw: string | null = null;
+      try {
+        const match = document.cookie.match(/(?:^|; )fx_lang=([^;]*)/);
+        raw = match ? decodeURIComponent(match[1]) : null;
+      } catch {
+        raw = null;
+      }
+      const pub = publicLocaleFromCookie(raw);
+      document.documentElement.lang = LOCALE_META[pub].htmlLang;
+      document.documentElement.dir = LOCALE_META[pub].dir;
+    };
+  }, [scope, locale]);
 
   const setLocale = useCallback(
     (next: Locale) => {

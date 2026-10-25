@@ -965,7 +965,7 @@ export const tr: Dict = {
   "gap.zoom.out": "Uzaklaştır",
   "gap.zoom.in": "Yakınlaştır",
   "gap.zoom.download": "İndir",
-  "gap.nf.title": "Bu sayfa masada yok",
+  "gap.nf.title": "Bu sayfa bulunamadı",
   "gap.nf.body": "Bağlantı eski olabilir veya sayfa taşınmış olabilir. Terminali açabilir veya ana sayfaya dönebilirsiniz.",
   "gap.nf.home": "Ana sayfa",
 };

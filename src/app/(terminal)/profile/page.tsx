@@ -335,7 +335,7 @@ export default function ProfileePage() {
           href="/trade"
           className="ml-auto rounded-md bg-[#2a2a2a] px-2.5 py-1.5 text-xs hover:bg-[#1f1f1f]"
         >
-          ← {t("common.terminal")}
+          <span className="fx-rtl-flip" aria-hidden="true">←</span> {t("common.terminal")}
         </Link>
         <NotificationBell tone="dark" />
         <ThemeToggle />

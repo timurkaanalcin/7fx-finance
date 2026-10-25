@@ -750,3 +750,32 @@ body:has(.fx-auth-page) {
   }
 }
 
+/* Same Arabic rules as globals.css. Public and auth pages load this file, not globals. */
+html[dir="rtl"] .ml-auto {
+  margin-left: 0;
+  margin-inline-start: auto;
+}
+html[dir="rtl"] .mr-auto {
+  margin-right: 0;
+  margin-inline-end: auto;
+}
+html[dir="rtl"] .fx-rtl-flip {
+  transform: scaleX(-1);
+}
+html[dir="rtl"] span.fx-rtl-flip {
+  display: inline-block;
+}
+html[dir="rtl"] .tabular-nums,
+html[dir="rtl"] .tv-lightweight-charts,
+html[dir="rtl"] input[type="email"],
+html[dir="rtl"] input[type="password"],
+html[dir="rtl"] input[type="url"],
+html[dir="rtl"] input[type="number"],
+html[dir="rtl"] input[inputmode="decimal"],
+html[dir="rtl"] input[inputmode="numeric"],
+html[dir="rtl"] input[inputmode="email"],
+html[dir="rtl"] input[inputmode="tel"] {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+

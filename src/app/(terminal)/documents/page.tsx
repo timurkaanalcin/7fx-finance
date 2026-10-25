@@ -78,7 +78,7 @@ export default function DocumentsPage() {
         <img src="/icons/v3/icon-64.png" alt="" className="h-7 w-7 rounded-md object-cover ring-1 ring-[#2a2a2a]" />
         <span className="min-w-0 truncate text-sm font-medium">{t("docs.title")}</span>
         <Link href="/profile" className="ml-auto inline-flex min-h-11 items-center rounded-md bg-[#2a2a2a] px-3 text-xs hover:bg-[#1f1f1f]">
-          ← {t("docs.back")}
+          <span className="fx-rtl-flip" aria-hidden="true">←</span> {t("docs.back")}
         </Link>
         <ThemeToggle />
       </header>
