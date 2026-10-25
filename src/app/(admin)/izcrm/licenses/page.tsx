@@ -158,7 +158,7 @@ export default function AdminLicensesPage() {
               <span className="cursor-grab select-none text-neutral-400" title={i18n("gap.spon.drag")}>⋮⋮</span>
               <span className="w-6 text-xs tabular-nums text-neutral-500">{i + 1}</span>
               <label className="flex h-10 w-24 cursor-pointer items-center justify-center rounded bg-neutral-50 text-[10px] text-neutral-400" title={i18n("gap.lic.changeLogo")}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                {/* eslint-disable-next-line @next/next/no-img-element -- static bitmap; next/image would change this layout */}
                 {s.logo ? <img src={s.logo} alt={s.regulator} className="h-10 w-24 object-contain" /> : i18n("gap.lic.noLogo")}
                 <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden"
                   onChange={async (e) => { const f = e.target.files?.[0]; if (!f) return; try { patch(s.id, { logo: await readImage(f) }); } catch (err) { setMsg(imgMessage(i18n, (err as Error).message)); } }} />

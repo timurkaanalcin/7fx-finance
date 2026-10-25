@@ -146,7 +146,7 @@ export default function InstallAppButtons({ size = "hero", className = "" }: Pro
           >
             {phase === "installing" ? (
               <div className="flex flex-col items-center justify-center gap-4 px-6 py-14">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                {/* eslint-disable-next-line @next/next/no-img-element -- static bitmap; next/image would change this layout */}
                 <img
                   src="/icons/v3/apple-touch-icon.png"
                   alt=""
@@ -162,7 +162,7 @@ export default function InstallAppButtons({ size = "hero", className = "" }: Pro
             ) : (
               <div className="px-5 py-5 sm:px-6">
                 <div className="flex items-start gap-3">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {/* eslint-disable-next-line @next/next/no-img-element -- static bitmap; next/image would change this layout */}
                   <img src="/icons/v3/apple-touch-icon.png" alt="" width={48} height={48} className="h-12 w-12 rounded-[12px] shadow" />
                   <div className="min-w-0 flex-1">
                     <h2 id="fx-ios-install-title" className="text-[17px] font-semibold text-[#111111]">

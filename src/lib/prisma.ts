@@ -11,7 +11,7 @@ function ensureDatabaseUrl(): void {
 
   if (process.env.NETLIFY) {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      // eslint-disable-next-line @typescript-eslint/no-require-imports -- Netlify's database helper is CommonJS
       const { getConnectionString } = require("@netlify/database") as {
         getConnectionString: () => string;
       };

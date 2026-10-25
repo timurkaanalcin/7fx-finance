@@ -89,7 +89,7 @@ export default function InstallBanner() {
         <span className="fx-install-shine pointer-events-none absolute inset-y-0 -left-1/2 w-1/2" aria-hidden />
         <div className="flex items-center gap-2">
           <span className="fx-install-icon relative shrink-0">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+            {/* eslint-disable-next-line @next/next/no-img-element -- static bitmap; next/image would change this layout */}
             <img src="/icons/v3/icon-64.png" alt="" width={24} height={24} loading="lazy" decoding="async" className="h-6 w-6 rounded-[8px] shadow-[0_6px_14px_rgba(0,0,0,0.25)] ring-1 ring-black/5" />
           </span>
           <button type="button" onClick={onClick} className="inline-flex min-h-11 min-w-0 flex-1 items-center text-left">

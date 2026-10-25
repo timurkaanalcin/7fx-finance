@@ -195,7 +195,7 @@ export default function AdminSponsorsPage() {
           {i18n("gap.spon.add")}
         </button>
         {logo && (
-          // eslint-disable-next-line @next/next/no-img-element
+          // eslint-disable-next-line @next/next/no-img-element -- static bitmap; next/image would change this layout
           <img src={logo.data} alt={i18n("gap.spon.preview")} className="h-10 w-auto object-contain sm:col-span-5" />
         )}
       </form>
@@ -226,7 +226,7 @@ export default function AdminSponsorsPage() {
             >
               <span className="cursor-grab select-none text-neutral-400" title={i18n("gap.spon.drag")}>⋮⋮</span>
               <span className="w-6 text-xs tabular-nums text-neutral-500">{i + 1}</span>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
+              {/* eslint-disable-next-line @next/next/no-img-element -- static bitmap; next/image would change this layout */}
               <img src={s.logo} alt={s.name} className="h-10 w-28 rounded bg-neutral-50 object-contain" />
               <div className="min-w-[140px] flex-1">
                 <input

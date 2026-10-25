@@ -336,17 +336,17 @@ function SortTh({
   onSort: (key: SortKey) => void;
   className?: string;
 }): ReactElement {
-  const active = sort?.key === col;
-  const indicator = active ? (sort!.dir === "asc" ? " ▲" : " ▼") : "";
+  const activeSort = sort && sort.key === col ? sort : null;
+  const indicator = activeSort ? (activeSort.dir === "asc" ? " ▲" : " ▼") : "";
   return (
     <th className={`px-2 py-2 ${className}`}>
       <button
         type="button"
         onClick={() => onSort(col)}
         className={`inline-flex items-center gap-0.5 rounded px-0.5 -mx-0.5 font-medium uppercase tracking-wider transition-colors hover:text-desk-text ${
-          active ? "text-desk-text" : "text-desk-muted"
+          activeSort ? "text-desk-text" : "text-desk-muted"
         }`}
-        aria-label={`Sort by ${label}${active ? `, ${sort!.dir}ending` : ""}`}
+        aria-label={`Sort by ${label}${activeSort ? `, ${activeSort.dir}ending` : ""}`}
       >
         {label}
         <span className="tabular-nums text-[8px] opacity-80" aria-hidden>

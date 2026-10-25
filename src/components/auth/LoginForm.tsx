@@ -106,7 +106,7 @@ export default function LoginForm() {
     } catch {
       /* ignore */
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- read the login query once on mount
   }, []);
 
   return (

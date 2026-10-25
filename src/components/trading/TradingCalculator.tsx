@@ -69,7 +69,7 @@ export default function TradingCalculator({ open, onClose, symbol, symbols, pric
       const target = entry + (side === "BUY" ? 1 : -1) * pip * 20;
       setClosePx(target.toFixed(dg));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- live quotes must not reset the typed prices
   }, [open, sym, side]);
 
   const res = useMemo(() => {

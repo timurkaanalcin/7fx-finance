@@ -26,7 +26,7 @@ export default function SponsorsSection() {
         <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {list.map((s) => {
             const inner = (
-              // eslint-disable-next-line @next/next/no-img-element
+              // eslint-disable-next-line @next/next/no-img-element -- static bitmap; next/image would change this layout
               <img src={s.logo} alt={s.name} width={160} height={48} className="h-12 w-full object-contain" loading="lazy" />
             );
             const cls = "fx-sponsor-card";

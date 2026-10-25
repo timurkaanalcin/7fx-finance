@@ -38,7 +38,7 @@ const DEFAULTS: SystemSettingsRow = {
 let cache: { at: number; row: SystemSettingsRow } | null = null;
 const TTL_MS = 5_000;
 
-export function invalidateSystemSettingsCache() {
+export function invalidateSystemSettingsCache(): void {
   cache = null;
 }
 

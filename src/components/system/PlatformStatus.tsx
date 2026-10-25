@@ -105,7 +105,7 @@ export default function PlatformStatus({ code, title, body, primary, secondary }
   return (
     <main style={page} data-fx-status={code}>
       <div style={card}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
+        {/* eslint-disable-next-line @next/next/no-img-element -- static bitmap; next/image would change this layout */}
         <img
           src="/icons/v3/icon-64.png"
           alt=""

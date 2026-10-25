@@ -38,7 +38,7 @@ export default function SymbolIcon({
   }
 
   return (
-    // eslint-disable-next-line @next/next/no-img-element
+    // eslint-disable-next-line @next/next/no-img-element -- static bitmap; next/image would change this layout
     <img
       src={url}
       alt=""

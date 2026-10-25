@@ -37,7 +37,7 @@ export default function AffiliatesPage() {
       .catch(() => {});
   useEffect(() => {
     load();
-  }, [period, reason]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [period, reason]); // eslint-disable-line react-hooks/exhaustive-deps -- load uses period and reason; its identity changes every render
   useEffect(() => {
     fetch("/api/auth/me")
       .then((r) => r.json())
@@ -62,7 +62,7 @@ export default function AffiliatesPage() {
     k === "name" ? r.name.toLowerCase() : k === "cr" ? r.leads ? r.deposits / r.leads : 0 : k === "crv" ? r.valid ? r.deposits / r.valid : 0 : (r[k as keyof Row] as number);
   const sorted = useMemo(
     () => [...rows].sort((a, b) => (val(a, sort.k) > val(b, sort.k) ? 1 : val(a, sort.k) < val(b, sort.k) ? -1 : 0) * sort.d),
-    [rows, sort] // eslint-disable-line react-hooks/exhaustive-deps
+    [rows, sort] // eslint-disable-line react-hooks/exhaustive-deps -- val closes over rows and sort and changes every render
   );
   const tot = useMemo(() => {
     const z: Row = { name: t.total, leads: 0, valid: 0, invalid: 0, deposits: 0, day: 0, week: 0, month: 0, m3: 0, m6: 0, year: 0 };

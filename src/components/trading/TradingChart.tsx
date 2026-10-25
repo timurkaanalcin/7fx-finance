@@ -637,7 +637,7 @@ export default function TradingChart({
       requestHistoryRef.current = () => {};
       document.removeEventListener("visibilitychange", onVis);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- reload history only when the symbol, timeframe, or chart instance changes
   }, [symbol, timeframe, chartGen]);
 
   // Stream forming candle from live mid ≤1s (real Yahoo mid only — no synthetic drift).
@@ -680,7 +680,7 @@ export default function TradingChart({
       window.clearInterval(id);
       document.removeEventListener("visibilitychange", onVis);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the interval reads the mid from a ref so price ticks do not restart it
   }, [symbol, timeframe]);
 
   // Immediate apply when parent mid/ts updates (active-symbol 800ms poll).
@@ -692,7 +692,7 @@ export default function TradingChart({
     setLivePulse(true);
     const t = window.setTimeout(() => setLivePulse(false), 280);
     return () => window.clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- apply the parent mid immediately; the push helper is stable for this effect
   }, [price?.mid, price?.ts, symbol]);
 
   useEffect(() => {

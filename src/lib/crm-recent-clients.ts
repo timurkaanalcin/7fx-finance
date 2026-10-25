@@ -42,7 +42,7 @@ function save(list: RecentClient[]) {
   }
 }
 
-export function pushRecentClient(c: { id: string; name?: string | null; accountLoginId?: string | null }) {
+export function pushRecentClient(c: { id: string; name?: string | null; accountLoginId?: string | null }): void {
   if (!c.id) return;
   const href = `/izcrm/traders/${c.id}`;
   const entry: RecentClient = {
@@ -55,11 +55,11 @@ export function pushRecentClient(c: { id: string; name?: string | null; accountL
   save([entry, ...prev.filter((p) => p.href !== href)]);
 }
 
-export function removeRecentClient(href: string) {
+export function removeRecentClient(href: string): void {
   save(loadRecentClients().filter((p) => p.href !== href));
 }
 
-export function clearRecentClients() {
+export function clearRecentClients(): void {
   save([]);
 }
 

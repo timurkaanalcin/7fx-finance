@@ -15,7 +15,7 @@ export default function TerminalWindow() {
       <picture>
         <source srcSet="/landing/terminal-desktop.avif" type="image/avif" />
         <source srcSet="/landing/terminal-desktop.webp" type="image/webp" />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
+        {/* eslint-disable-next-line @next/next/no-img-element -- static bitmap; next/image would change this layout */}
         <img
           src="/landing/terminal-desktop.webp"
           alt={t("landing.demo.desktop")}

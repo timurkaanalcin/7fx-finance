@@ -275,7 +275,7 @@ const g = globalThis as unknown as {
 };
 export const SYMBOLS: SymbolDef[] = g.__7fxSymbolCatalog ?? (g.__7fxSymbolCatalog = BUILTIN_DEFS.map((s) => ({ ...s })));
 
-export function replaceSymbolCatalog(next: SymbolDef[]) {
+export function replaceSymbolCatalog(next: SymbolDef[]): void {
   SYMBOLS.splice(0, SYMBOLS.length, ...next);
   g.__7fxSymbolIndex = null;
 }

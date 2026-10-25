@@ -1109,7 +1109,7 @@ export default function TerminalShell({
               {/* Chart canvas wrapper: TRADE overlays bottom-right ON the chart */}
               <div className="relative flex min-h-[44vh] w-full min-w-0 flex-1 flex-col md:min-h-0">
                 {/* First-paint poster. The box has a real min-height so the image paints before the canvas. */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                {/* eslint-disable-next-line @next/next/no-img-element -- static bitmap; next/image would change this layout */}
                 <img
                   src="/landing/chart-poster.avif"
                   alt=""

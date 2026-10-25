@@ -29,7 +29,7 @@ export function useDialogFocus(
   onEscape: () => void,
   ref: RefObject<HTMLElement | null>,
   initialSelector?: string
-) {
+): void {
   const escapeRef = useRef(onEscape);
   escapeRef.current = onEscape;
 

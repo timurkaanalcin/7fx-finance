@@ -47,14 +47,15 @@ Each pull request in the polish stack is based on the previous head. Land them o
 #87
 #88
 #89
+#90
 #52
 #56
 #48
 <!-- merge-order:end -->
 
-#89 adds this file. Its base is `cursor/round62-smoke-b495` (#88). Merge #89 immediately after #88 and before #52.
+#89 adds this file. Its base is `cursor/round62-smoke-b495` (#88). #90 (`cursor/round64-quality-infra-b495`) is stacked on #89. Merge #89, then #90, before #52.
 
-After #88 and #89 are on `main`:
+After #88, #89, and #90 are on `main`:
 
 1. Retarget #52 (`cursor/auto-login-impersonation-f020`) from `cursor/round33-register-platform-b495` to `main`, then merge #52.
 2. Set the #56 variables on the Vercel project (below), then merge #56 (`cursor/live-support-autoreply-push-61c4`, base `main`).
@@ -102,6 +103,7 @@ Heads, for the same order:
 | #87 | `cursor/round61-rtl-i18n-b495` |
 | #88 | `cursor/round62-smoke-b495` |
 | #89 | `cursor/round63-deploy-docs-b495` |
+| #90 | `cursor/round64-quality-infra-b495` |
 | #52 | `cursor/auto-login-impersonation-f020` |
 | #56 | `cursor/live-support-autoreply-push-61c4` |
 | #48 | `cursor/optional-source-account-f34f` |
@@ -139,7 +141,7 @@ Per pull request, new Vercel variables:
 
 | PRs | New Vercel variables |
 | --- | --- |
-| #46 through #89 | none |
+| #46 through #90 | none |
 | #52 | none |
 | #56 | `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` |
 | #48 | none |
@@ -172,7 +174,11 @@ npm run smoke -- --base-url https://7fx.customer.org.tr --crm-url https://crm7fx
 
 Leave `SMOKE_USER` and `SMOKE_PASS` unset. Each run calls `GET /api/cron/engine` once, without a bearer token, and expects HTTP 401. Do not call that path again yourself.
 
-Signed-out, the script records `ok   signed-in checks skipped (SMOKE_USER/SMOKE_PASS unset)` and prints `smoke: N passed, M failed`.
+Signed-out, the script records `ok   signed-in checks skipped (SMOKE_USER/SMOKE_PASS unset)` and prints `smoke: N passed, M failed`. When the CRM certificate does not match its hostname, the script adds one `infra` line and still exits 0 if every application check passed.
+
+## CRM host certificate
+
+`crm7fx.customer.org.tr` DNS currently points at a cPanel server, `94.73.150.188`. The certificate common name is `cpls12.srvpanel.com`. That host is not the Vercel app. The mismatch is infrastructure outside this repository. The smoke script reads the certificate, prints `infra CRM host cert/DNS mismatch` with the resolved IP when DNS answers, and does not count it as a failed check. `SMOKE_IGNORE_HTTPS=1` skips that probe for a local self-signed certificate. `vercel alias set` on `7fx.customer.org.tr` does not change this DNS record or certificate.
 
 ## Rollback
 
@@ -215,5 +221,5 @@ What that output means:
 
 - Security headers, cron 401, English landing, markets, FAQ, signed-out `/trade` → `/login`, and read-only login fields during submit all passed on current production.
 - The bad-login sentence is copy from this stack. Production is still `b0d34d3`, so that timeout is the expected gap until this stack is deployed.
-- `net::ERR_CERT_COMMON_NAME_INVALID` on `https://crm7fx.customer.org.tr/` is a live certificate mismatch for that hostname. It is host infrastructure. This repository change does not repair it.
+- `net::ERR_CERT_COMMON_NAME_INVALID` on `https://crm7fx.customer.org.tr/` is the cPanel certificate (`94.73.150.188`, CN `cpls12.srvpanel.com`). The script that produced this baseline treated it as a failed check. The current script reports the same condition as `infra CRM host cert/DNS mismatch` and does not fail the run for it.
 - `TypeError: pass is not a function` is the #88 smoke script: `const pass = process.env.SMOKE_PASS` shadowed the `pass()` reporter, so a signed-out run threw before the summary line. #89 renames those locals to `smokeUser` and `smokePass`. The skip path is covered by the unit test. The production baseline was not run again.
