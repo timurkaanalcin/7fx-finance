@@ -976,4 +976,6 @@ export const tr: Dict = {
   "landing.desk.ticket": "Emir bileti",
   "landing.desk.spread": "Spread",
   "landing.desk.note": "Al ve Sat hesap açar, emir göndermez.",
+  "term.watch.closed": "kapalı",
+  "term.watch.closedHint": "Son kapanış. Canlı alış ve satış henüz gelmedi.",
 };

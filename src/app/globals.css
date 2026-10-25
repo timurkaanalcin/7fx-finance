@@ -902,22 +902,21 @@ body:has(.fx-crm) {
 .fx-account-metrics {
   grid-area: metrics;
   display: flex;
+  flex-wrap: wrap;
   align-items: stretch;
+  align-content: center;
   gap: 6px;
   min-width: 0;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scrollbar-width: none;
+  overflow: visible;
   padding-block: 2px;
 }
-.fx-account-metrics::-webkit-scrollbar { display: none; }
 .fx-account-metric {
-  flex: 0 0 auto;
+  flex: 1 1 7.25rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: max-content;
-  min-width: 6.75rem;
+  width: auto;
+  min-width: max-content;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.03);
@@ -1032,9 +1031,13 @@ html[data-fx-theme="light"] .fx-account-metric__value.is-warn { color: #9a6b12; 
   }
   .fx-account-bar .fx-account-metrics {
     display: flex;
+    flex-wrap: nowrap;
     overflow-x: auto;
+    scrollbar-width: none;
   }
+  .fx-account-bar .fx-account-metrics::-webkit-scrollbar { display: none; }
   .fx-account-bar .fx-account-metric {
+    flex: 0 0 auto;
     width: max-content;
     min-width: 6.75rem;
     padding-block: 2px;
@@ -1182,6 +1185,22 @@ html[data-fx-theme="light"] .fx-account-metric__value.is-warn { color: #9a6b12; 
   right: 0;
   background: #0a0a0a;
   box-shadow: -10px 0 12px rgba(0, 0, 0, 0.45);
+}
+/* A single empty-state cell spans the table. It is also :last-child, so the
+   sticky night fill would paint the whole history panel black in day theme. */
+.fx-blotter td[colspan] {
+  position: static;
+  right: auto;
+  background: transparent;
+  box-shadow: none;
+}
+html[data-fx-theme="light"] .fx-desk .fx-blotter th:last-child,
+html[data-fx-theme="light"] .fx-desk .fx-blotter td:last-child:not([colspan]) {
+  background: var(--lx-bg-2);
+  box-shadow: -8px 0 14px rgba(60, 45, 15, 0.08);
+}
+html[data-fx-theme="light"] .fx-desk .fx-blotter thead th:last-child {
+  background: var(--lx-elev);
 }
 .fx-blotter thead th:last-child {
   z-index: 2;

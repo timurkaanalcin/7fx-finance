@@ -976,4 +976,6 @@ export const ru: Dict = {
   "landing.desk.ticket": "Заявка",
   "landing.desk.spread": "Спред",
   "landing.desk.note": "Купить и Продать открывают счёт и не отправляют заявку.",
+  "term.watch.closed": "закрыт",
+  "term.watch.closedHint": "Цена закрытия. Bid и ask ещё не пришли.",
 };

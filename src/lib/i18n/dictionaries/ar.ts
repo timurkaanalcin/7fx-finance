@@ -976,4 +976,6 @@ export const ar: Dict = {
   "landing.desk.ticket": "تذكرة الأمر",
   "landing.desk.spread": "السبريد",
   "landing.desk.note": "شراء وبيع يفتحان حسابًا ولا يرسلان أمرًا.",
+  "term.watch.closed": "مغلق",
+  "term.watch.closedHint": "آخر إغلاق. سعر الشراء والبيع لم يصلا بعد.",
 };
