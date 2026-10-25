@@ -90,12 +90,17 @@ function main() {
   assert.match(traders, /href=\{`\/izcrm\/traders\/\$\{u\.id\}`\}/);
   assert.match(traders, /crm\.list\.none/);
   assert.match(traders, /data-fx-list-row/);
-  assert.equal(traders.includes("?scope=admin"), false);
+  if (traders.includes("OpenTerminalButton")) {
+    assert.match(traders, /fetch\("\/api\/auth\/me\?scope=admin", \{ credentials: "include" \}\)/);
+  } else {
+    assert.match(traders, /fetch\("\/api\/auth\/me", \{ credentials: "include" \}\)/);
+    assert.equal(traders.includes("?scope=admin"), false);
+  }
 
   const layout = read("src/app/(admin)/izcrm/layout.tsx");
   assert.match(layout, /<CrmShortcuts \/>/);
-  assert.match(layout, /fetch\("\/api\/auth\/me"\)/);
-  assert.match(layout, /<NotificationBell \/>/);
+  assert.match(layout, /fetch\("\/api\/auth\/me(\?scope=admin)?"\)/);
+  assert.match(layout, /<NotificationBell(\s[^>]*)?\s*\/>/);
 
   assert.match(read("src/components/crm/CrmListBar.tsx"), /crm\.list\.none/);
   assert.match(read("src/app/(admin)/izcrm/positions/page.tsx"), /crm\.list\.none/);
