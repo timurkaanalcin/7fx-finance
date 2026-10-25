@@ -1,6 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import PlatformStatus from "@/components/system/PlatformStatus";
+import { useT } from "@/lib/i18n/context";
 
 export function reportClientError(error: unknown, where: string) {
   try {
@@ -23,14 +24,15 @@ export default function ErrorFallback({ error, reset, where }: { error: Error & 
     console.error("[7fx] render error in", where, error);
     reportClientError(error, where);
   }, [error, where]);
-  const reference = error.digest ? ` Reference ${error.digest}.` : "";
+  const t = useT();
+  const reference = error.digest ? ` ${t("gap.err.reference").replace("{digest}", error.digest)}` : "";
   return (
     <PlatformStatus
       code="500"
-      title="This screen did not load"
-      body={`Something on this page failed. Your account and orders are unchanged.${reference} Try again, or go back to the terminal.`}
-      primary={{ label: "Try again", onClick: () => reset() }}
-      secondary={{ href: "/trade", label: "Open terminal" }}
+      title={t("gap.err.title")}
+      body={`${t("gap.err.body")}${reference} ${t("gap.err.after")}`}
+      primary={{ label: t("gap.err.retry"), onClick: () => reset() }}
+      secondary={{ href: "/trade", label: t("gap.err.terminal") }}
     />
   );
 }

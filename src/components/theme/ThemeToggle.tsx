@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useT } from "@/lib/i18n/context";
 
 export type FxTheme = "light" | "dark";
 export const FX_THEME_KEY = "fx-theme";
@@ -22,13 +23,14 @@ export function useFxTheme(): FxTheme {
 
 export default function ThemeToggle({ className = "" }: { className?: string }) {
   const theme = useFxTheme();
+  const t = useT();
   const next: FxTheme = theme === "dark" ? "light" : "dark";
   return (
     <button
       type="button"
       className={`fx-theme-toggle inline-flex h-11 w-11 min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full border ${className}`}
-      aria-label={theme === "dark" ? "Switch to day theme" : "Switch to night theme"}
-      title={theme === "dark" ? "Day" : "Night"}
+      aria-label={theme === "dark" ? t("gap.theme.day") : t("gap.theme.night")}
+      title={theme === "dark" ? t("gap.theme.dayShort") : t("gap.theme.nightShort")}
       onClick={() => {
         document.documentElement.setAttribute("data-fx-theme", next);
         try { localStorage.setItem(FX_THEME_KEY, next); } catch {}

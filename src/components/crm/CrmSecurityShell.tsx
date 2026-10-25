@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 type Props = {
   adminName: string;
@@ -42,6 +43,7 @@ export default function CrmSecurityShell({
   readOnly,
   children,
 }: Props) {
+  const { i18n } = useCrmLabels();
   const [now, setNow] = useState(() => new Date());
   const [deviceTag, setDeviceTag] = useState("…");
 
@@ -120,7 +122,7 @@ export default function CrmSecurityShell({
         });
         if (readOnly) {
           e.preventDefault();
-          alert("Salt okunur CRM: dışa aktarma kapalı.");
+          alert(i18n("gap.crm.exportOff"));
         }
       }
     };
@@ -137,7 +139,7 @@ export default function CrmSecurityShell({
       window.removeEventListener("beforeprint", onBeforePrint);
       document.removeEventListener("click", onClick, true);
     };
-  }, [readOnly, label, invisible, adminId, deviceTag]);
+  }, [readOnly, label, invisible, adminId, deviceTag, i18n]);
 
   return (
     <div className={`relative min-h-screen ${readOnly ? "select-none" : ""}`} data-fx-crm-mark={adminId || ""}>

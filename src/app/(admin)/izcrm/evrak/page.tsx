@@ -27,7 +27,7 @@ const cls = "w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm
 
 export default function EvrakPage() {
   const { locale } = useI18n();
-  const L = T[locale] ?? T.tr;
+  const L = T[locale] ?? T.en;
   const [q, setQ] = useState("");
   const [opts, setOpts] = useState<PickUser[]>([]);
   const [searching, setSearching] = useState(false);

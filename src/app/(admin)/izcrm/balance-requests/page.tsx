@@ -312,7 +312,7 @@ export default function AdminBalanceRequestsPage() {
             type="button"
             onClick={downloadCsv}
             disabled={shown.length === 0 || csvBusy}
-            title="Gösterilen satırları CSV indir · Download shown rows as CSV"
+            title={i18n("gap.csv.shown")}
             className="rounded border border-[#e5e5e5] bg-white px-2 py-1 text-xs font-medium text-black hover:bg-[#f5f5f5] disabled:cursor-not-allowed disabled:opacity-40"
           >
             CSV

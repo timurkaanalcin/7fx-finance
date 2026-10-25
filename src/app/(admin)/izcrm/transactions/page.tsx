@@ -338,7 +338,7 @@ export default function TransactionsPage() {
           type="button"
           onClick={downloadCsv}
           disabled={rows.length === 0}
-          title="Yüklenen satırları CSV indir · Download loaded rows as CSV"
+          title={i18n("gap.csv.loaded")}
           className={ctl + " font-medium text-neutral-700 hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-40"}
         >
           CSV

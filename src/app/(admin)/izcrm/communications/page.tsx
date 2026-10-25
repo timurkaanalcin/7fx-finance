@@ -187,7 +187,7 @@ export default function CommunicationsPage() {
                 type="button"
                 onClick={downloadCsv}
                 disabled={shown.length === 0}
-                title="Gösterilen satırları CSV indir · Download shown rows as CSV"
+                title={i18n("gap.csv.shown")}
                 className="ml-auto rounded border border-neutral-300 bg-white px-2 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 CSV
