@@ -7,7 +7,7 @@ import {
 import { locationForRequest } from "@/lib/request-origin";
 import { isAllowedApiOrigin } from "@/lib/security/origins";
 import { HSTS_VALUE, PERMISSIONS_POLICY, requestIsHttps } from "@/lib/security/response-headers.cjs";
-import { isIndexableHost, isMarketingPath, isPrivateHtmlPath, shouldNoindex } from "@/lib/seo-hosts";
+import { isMarketingPath, isPrivateHtmlPath, shouldNoindex } from "@/lib/seo-hosts";
 
 const STRICT_CSP = [
   "default-src 'self'",
@@ -51,18 +51,17 @@ export function middleware(req: NextRequest) {
     if (shouldNoindex(host, pathname) || crmHost) {
       res.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
     }
-    // Public HTML still varies by fx_lang and by the session (home redirect, sign-in chrome).
-    // The root layout reads that cookie, so these routes stay dynamic. Anonymous requests
-    // on an indexable host share one CDN entry. A session or language cookie must not reuse it.
-    if (hasPersonalizationCookie(req) || isPrivateHtmlPath(pathname) || crmHost) {
-      res.headers.set("Cache-Control", "private, no-store");
-    } else if (isMarketingPath(pathname) && isIndexableHost(host)) {
-      res.headers.set(
-        "Cache-Control",
-        "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400"
-      );
-      res.headers.append("Vary", "Cookie");
-    } else if (isMarketingPath(pathname)) {
+    // Marketing HTML still varies by fx_lang and by session chrome (Sign in vs Sign out).
+    // Vercel runs middleware before the CDN cache, but next() does not split the cache key:
+    // a stored s-maxage document is the URL's document. Vary: Cookie is not a cache key
+    // (high-cardinality; the CDN does not store a separate anonymous entry). Keep every
+    // marketing and account response private so a shared copy is never written.
+    if (
+      hasPersonalizationCookie(req) ||
+      isPrivateHtmlPath(pathname) ||
+      crmHost ||
+      isMarketingPath(pathname)
+    ) {
       res.headers.set("Cache-Control", "private, no-store");
     }
     // Replaces the camera/microphone/geolocation line above. payment and usb stay off.

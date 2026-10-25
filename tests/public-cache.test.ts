@@ -1,5 +1,6 @@
 /**
- * Anonymous marketing HTML can sit on the CDN. Personalized HTML cannot.
+ * Marketing HTML is private. Vercel does not key the CDN on Cookie, and a
+ * stored s-maxage document would be reused for later requests to the same URL.
  * Run: npx tsx tests/public-cache.test.ts
  */
 import assert from "node:assert/strict";
@@ -20,34 +21,39 @@ function ask(path: string, cookie?: string, host = "7fx.customer.org.tr") {
 }
 
 function main() {
+  const privateHeader = "private, no-store";
   for (const path of ["/", "/markets", "/faq", "/platform", "/ios", "/markets/forex"]) {
     const res = ask(path);
-    assert.equal(
-      res.headers.get("cache-control"),
-      "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400",
-      path
-    );
-    assert.match(String(res.headers.get("vary")), /Cookie/, path);
+    assert.equal(res.headers.get("cache-control"), privateHeader, path);
+    assert.equal(String(res.headers.get("cache-control")).includes("s-maxage"), false, path);
+    assert.equal(res.headers.get("vary"), null, path);
   }
 
-  for (const cookie of ["fx_lang=tr", "fx_lang=en", "7fx_session=abc", "deskflow_session=abc", "7fx_impersonation=abc"]) {
+  for (const cookie of [
+    "fx_lang=tr",
+    "fx_lang=en",
+    "7fx_session=abc",
+    "deskflow_session=abc",
+    "7fx_impersonation=abc",
+    "unrelated=1",
+  ]) {
     for (const path of ["/", "/markets", "/faq"]) {
       const res = ask(path, cookie);
-      assert.equal(res.headers.get("cache-control"), "private, no-store", `${path} ${cookie}`);
+      assert.equal(res.headers.get("cache-control"), privateHeader, `${path} ${cookie}`);
       assert.equal(String(res.headers.get("cache-control")).includes("s-maxage"), false, cookie);
     }
   }
 
-  assert.equal(ask("/login").headers.get("cache-control"), "private, no-store");
-  assert.equal(ask("/trade").headers.get("cache-control"), "private, no-store");
-  assert.equal(ask("/profile").headers.get("cache-control"), "private, no-store");
-  assert.equal(ask("/izcrm").headers.get("cache-control"), "private, no-store");
+  assert.equal(ask("/login").headers.get("cache-control"), privateHeader);
+  assert.equal(ask("/trade").headers.get("cache-control"), privateHeader);
+  assert.equal(ask("/profile").headers.get("cache-control"), privateHeader);
+  assert.equal(ask("/izcrm").headers.get("cache-control"), privateHeader);
 
   const otherHost = ask("/faq", undefined, "7fx.login.org.tr");
-  assert.equal(otherHost.headers.get("cache-control"), "private, no-store");
+  assert.equal(otherHost.headers.get("cache-control"), privateHeader);
 
   const finance = ask("/markets", undefined, "7fx.financeunit.co");
-  assert.match(String(finance.headers.get("cache-control")), /s-maxage=3600/);
+  assert.equal(finance.headers.get("cache-control"), privateHeader);
 
   console.log("public-cache tests passed");
 }
