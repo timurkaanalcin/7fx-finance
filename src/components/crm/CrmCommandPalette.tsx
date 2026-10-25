@@ -10,6 +10,7 @@
  */
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent as ReactMouseEvent } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { useDialogFocus } from "@/components/a11y/useDialogFocus";
 import { CRM_NAV_GROUPS } from "@/lib/crm-nav";
 import { useI18n } from "@/lib/i18n/context";
 import {
@@ -77,6 +78,8 @@ export default function CrmCommandPalette({ readOnly }: { readOnly?: boolean }) 
   const [recentClients, setRecentClients] = useState<RecentClient[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useDialogFocus(open, () => setOpen(false), dialogRef, "input");
 
   const pages = useMemo(
     () =>
@@ -271,6 +274,7 @@ export default function CrmCommandPalette({ readOnly }: { readOnly?: boolean }) 
 
   return (
     <div
+      ref={dialogRef}
       className="fixed inset-0 z-[90] flex items-start justify-center bg-black/30 px-3 pt-[12vh]"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) setOpen(false);

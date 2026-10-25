@@ -5,7 +5,8 @@
  * When `balanceAware` is set, edit/add/delete expose the explicit "Bakiyeye yansıt"
  * (reflect to balance) checkbox — default OFF — and pass it to the handlers.
  */
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
+import { useDialogFocus } from "@/components/a11y/useDialogFocus";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import {
   fmtCrmDate,
@@ -105,9 +106,11 @@ export function ConfirmDialog({
 }) {
   const { i18n } = useCrmLabels();
   const [apply, setApply] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+  useDialogFocus(open, onCancel, panelRef);
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4" role="dialog" aria-modal>
+    <div ref={panelRef} className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4" role="dialog" aria-modal="true">
       <div className="w-full max-w-sm rounded-xl border border-[#e5e5e5] bg-white p-4 text-xs text-[#111111] shadow-xl">
         <h3 className="mb-2 text-sm font-semibold">{title}</h3>
         <p className="mb-3 text-neutral-600">{message}</p>

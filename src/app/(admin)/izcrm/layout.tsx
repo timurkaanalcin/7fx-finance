@@ -111,6 +111,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
               <button
                 type="button"
                 onClick={() => setOpenGroups((p) => ({ ...p, [g.id]: !p[g.id] }))}
+                aria-expanded={Boolean(openGroups[g.id])}
                 className="mb-0.5 flex w-full items-center justify-between px-2 py-1 text-[9px] font-semibold uppercase tracking-wider text-neutral-500 hover:text-neutral-700"
               >
                 {t(g.labelKey)}
@@ -187,6 +188,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
               type="button"
               onClick={() => window.dispatchEvent(new Event("fx-crm-palette"))}
               className="flex items-center gap-1.5 rounded border border-black/10 px-2 py-1 text-neutral-500 hover:bg-neutral-100 hover:text-black"
+              aria-label={t("crm.palette.title")}
               title={`${t("crm.palette.title")} (Ctrl/⌘ + K)`}
             >
               <span aria-hidden>⌕</span>

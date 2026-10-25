@@ -1,5 +1,6 @@
 "use client";
 
+import { useDialogFocus } from "@/components/a11y/useDialogFocus";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 import Link from "next/link";
@@ -309,6 +310,8 @@ export default function ChatPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
+  const createDialogRef = useRef<HTMLDivElement>(null);
+  useDialogFocus(createOpen, () => setCreateOpen(false), createDialogRef, "select");
   const [newUserId, setNewUserId] = useState("");
   const [profileDraft, setProfileeDraft] = useState<Profilee | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -1270,6 +1273,7 @@ export default function ChatPage() {
                         key={e}
                         type="button"
                         className="rounded-lg px-2 py-1 text-lg hover:bg-neutral-100"
+                        aria-label={e}
                         onClick={() => {
                           setMessage((r) => r + e);
                           setEmojiOpen(false);
@@ -1648,9 +1652,11 @@ export default function ChatPage() {
           role="presentation"
         >
           <div
+            ref={createDialogRef}
             className="w-full max-w-md rounded-2xl border border-neutral-200 bg-white p-4 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
+            aria-modal="true"
             aria-label={i18n("crm.chat.create")}
           >
             <h3 className="text-sm font-semibold text-neutral-900">{i18n("crm.chat.create")}</h3>

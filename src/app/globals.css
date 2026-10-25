@@ -1642,18 +1642,22 @@ html[data-fx-theme="dark"] .fx-crm .fx-trader-tabs {
 .fx-desk :focus-visible {
   outline: 2px solid #f4f7fb;
   outline-offset: 2px;
+  box-shadow: 0 0 0 4px #15161a;
 }
 html[data-fx-theme="light"] .fx-desk :focus-visible {
   outline-color: #15161a;
+  box-shadow: 0 0 0 4px #f4f7fb;
 }
 .fx-desk .outline-none:focus-visible,
 .fx-desk .focus\:outline-none:focus-visible {
   outline: 2px solid #f4f7fb !important;
   outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px #15161a !important;
 }
 html[data-fx-theme="light"] .fx-desk .outline-none:focus-visible,
 html[data-fx-theme="light"] .fx-desk .focus\:outline-none:focus-visible {
   outline-color: #15161a !important;
+  box-shadow: 0 0 0 4px #f4f7fb !important;
 }
 .fx-crm :focus-visible,
 .fx-crm input:focus-visible,
@@ -1663,6 +1667,33 @@ html[data-fx-theme="light"] .fx-desk .focus\:outline-none:focus-visible {
 .fx-crm a:focus-visible {
   outline: 2px solid #15161a !important;
   outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px #f4f7fb !important;
+}
+html[data-fx-theme="dark"] .fx-crm :focus-visible,
+html[data-fx-theme="dark"] .fx-crm input:focus-visible,
+html[data-fx-theme="dark"] .fx-crm select:focus-visible,
+html[data-fx-theme="dark"] .fx-crm textarea:focus-visible,
+html[data-fx-theme="dark"] .fx-crm button:focus-visible,
+html[data-fx-theme="dark"] .fx-crm a:focus-visible {
+  outline: 2px solid #f4f7fb !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px #15161a !important;
+}
+/* Secondary copy must clear 4.5:1. Neutral-400 on white does not. */
+.fx-crm :is(.text-neutral-400, .text-neutral-500) {
+  color: #333333;
+}
+.fx-crm :is(input, textarea)::placeholder {
+  color: #333333;
+}
+html[data-fx-theme="dark"] .fx-crm :is(input, textarea)::placeholder {
+  color: #a7b0c0 !important;
+}
+html[data-fx-theme="light"] :is(.fx-desk, .fx-lx-overlay) :is(.text-neutral-400, .text-neutral-500) {
+  color: #333333 !important;
+}
+html[data-fx-theme="light"] :is(.fx-desk, .fx-lx-overlay) .text-desk-warn {
+  color: #6b5326 !important;
 }
 
 @keyframes fx-toast-in {
@@ -1841,6 +1872,16 @@ html[data-fx-theme="light"] .fx-desk .focus\:outline-none:focus-visible {
 .fx-crm aside :is(button, a),
 .fx-crm main :is(button, a) {
   min-width: 44px;
+}
+/* 390px phones sit inside this breakpoint. Icon controls stay at least 40px. */
+@media (max-width: 480px) {
+  .fx-desk :is(button, a, [role="button"], select),
+  .fx-crm :is(button, a, [role="button"], select),
+  .fx-desk input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+  .fx-crm input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]) {
+    min-height: 40px !important;
+    min-width: 40px !important;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -767,6 +767,7 @@ function QuickChip({
       type="button"
       onClick={onClick}
       title={title}
+      aria-label={title}
       disabled={disabled}
       className={`border bg-desk-elev/50 font-semibold tabular-nums transition-colors disabled:cursor-not-allowed disabled:opacity-35 ${toneCls} ${sizeCls}`}
     >
