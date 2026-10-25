@@ -14,6 +14,8 @@ type Msg = {
   id: string;
   body: string;
   from: "customer" | "support" | string;
+  sender?: string | null;
+  automatic?: boolean;
   createdAt: string;
 };
 
@@ -264,6 +266,9 @@ export default function LiveSupportPanel() {
                           : "bg-[#1a1a1a] text-slate-100 ring-1 ring-[#2a2a2a]"
                       }`}
                     >
+                      {!mine && (m.automatic || m.sender === "7FX") && (
+                        <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-[#c9a54a]">7FX</p>
+                      )}
                       <ChatFormattedBody
                         text={m.body}
                         className="break-words text-sm leading-relaxed"

@@ -4,6 +4,15 @@ import { prisma } from "@/lib/prisma";
 import { rateLimit } from "@/lib/security/rate-limit";
 import { serializeChatPresence } from "@/lib/chat-presence";
 import { crmPageWindow } from "@/lib/trader-list";
+import {
+  LIVE_SUPPORT_NOTIFY_TITLE,
+  SYSTEM_WORKER_ID,
+  SYSTEM_WORKER_NAME,
+  autoReplyText,
+  isSystemAutoReply,
+  liveSupportNotifyBody,
+  shouldSendOpeningAutoReply,
+} from "@/lib/support-autoreply";
 
 export const dynamic = "force-dynamic";
 
@@ -29,6 +38,7 @@ export async function GET(req: Request) {
       title: true,
       description: true,
       workerName: true,
+      workerId: true,
       createdAt: true,
     },
   });
@@ -47,6 +57,8 @@ export async function GET(req: Request) {
       title: m.title,
       body: m.description,
       from: m.workerName ? "support" : "customer",
+      sender: isSystemAutoReply(m) ? SYSTEM_WORKER_NAME : m.workerName,
+      automatic: isSystemAutoReply(m),
       createdAt: m.createdAt.toISOString(),
     })),
     hasMore,
@@ -92,47 +104,50 @@ export async function POST(req: Request) {
     markCustomerRead: true,
   });
 
-  // ——— AI auto-reply / human handoff ———
-  let reply: { id: string; body: string; from: "support"; createdAt: string } | null = null;
+  // Opening acknowledgment (once per conversation) + admin alert on every customer message.
+  let reply: { id: string; body: string; from: "support"; sender: string; automatic: true; createdAt: string } | null = null;
   try {
-    const { aiReply, wantsHuman, HANDOFF_TEXT, AI_WORKER_ID, AI_WORKER_NAME } = await import("@/lib/support-ai");
     const { notifyAgents } = await import("@/lib/notify");
-    const st = await prisma.chatThreadState.findUnique({ where: { userId: user.id }, select: { supportMode: true } });
-    const mode = st?.supportMode || "AI";
     const href = `/izcrm/chat?user=${encodeURIComponent(user.id)}`;
-    const who = user.name || user.email || "Müşteri";
-    let replyText: string | null = null;
-
-    if (mode !== "HUMAN" && wantsHuman(message)) {
+    const prior = await prisma.communication.findMany({
+      where: { userId: user.id, type: "CHAT", id: { not: row.id } },
+      orderBy: { createdAt: "desc" },
+      take: 80,
+      select: { createdAt: true, workerId: true, workerName: true },
+    });
+    if (shouldSendOpeningAutoReply(prior, row.createdAt)) {
+      const text = autoReplyText(user.language);
+      const r = await prisma.communication.create({
+        data: {
+          userId: user.id,
+          type: "CHAT",
+          title: "Live support",
+          description: text,
+          workerName: SYSTEM_WORKER_NAME,
+          workerId: SYSTEM_WORKER_ID,
+        },
+      });
       await prisma.chatThreadState.upsert({
         where: { userId: user.id },
         create: { userId: user.id, supportMode: "HUMAN", handoffAt: new Date() },
         update: { supportMode: "HUMAN", handoffAt: new Date() },
       });
-      replyText = HANDOFF_TEXT;
-      await notifyAgents({ kind: "handoff", title: `Canlı temsilci bekleniyor: ${who}`, body: message, href });
-    } else if (mode === "HUMAN") {
-      await notifyAgents({ kind: "chat", title: `Yeni mesaj: ${who}`, body: message, href });
-    } else {
-      const hist = await prisma.communication.findMany({
-        where: { userId: user.id, type: "CHAT", id: { not: row.id } },
-        orderBy: { createdAt: "desc" },
-        take: 8,
-        select: { description: true, workerName: true },
-      });
-      replyText = await aiReply(
-        message,
-        hist.reverse().map((h) => ({ from: h.workerName ? ("support" as const) : ("customer" as const), body: h.description }))
-      );
-      await notifyAgents({ kind: "chat", title: `Yeni mesaj (AI yanıtladı): ${who}`, body: message, href });
+      reply = {
+        id: r.id,
+        body: r.description,
+        from: "support",
+        sender: SYSTEM_WORKER_NAME,
+        automatic: true,
+        createdAt: r.createdAt.toISOString(),
+      };
     }
-
-    if (replyText) {
-      const r = await prisma.communication.create({
-        data: { userId: user.id, type: "CHAT", title: "Live support", description: replyText, workerName: AI_WORKER_NAME, workerId: AI_WORKER_ID },
-      });
-      reply = { id: r.id, body: r.description, from: "support", createdAt: r.createdAt.toISOString() };
-    }
+    await notifyAgents({
+      kind: "chat",
+      title: LIVE_SUPPORT_NOTIFY_TITLE,
+      body: liveSupportNotifyBody(user.name || user.email, user.id, message),
+      href,
+      topic: null,
+    });
   } catch (e) {
     console.error("[support] auto-reply", e);
   }

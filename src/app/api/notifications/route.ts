@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { vapidPublicKey } from "@/lib/notify";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +36,7 @@ export async function GET(req: Request) {
     unread,
     hasMore,
     nextSkip: skip + items.length,
-    vapidPublicKey: process.env.VAPID_PUBLIC_KEY || null,
+    vapidPublicKey: vapidPublicKey(),
   });
 }
 
