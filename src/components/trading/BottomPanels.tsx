@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useCallback, type ReactNode, type ReactElement, type MouseEvent as ReactMouseEvent } from "react";
+import { memo, useEffect, useMemo, useState, useCallback, type ReactNode, type ReactElement, type MouseEvent as ReactMouseEvent } from "react";
 import { calcPipDistance, formatPrice, getSymbol } from "@/lib/symbols";
 import { displayOpenProfit } from "@/lib/display-profit";
 import { positionMark } from "@/lib/mark-price";
@@ -1478,6 +1478,82 @@ function PendingCard({
   );
 }
 
+function sameTicks(
+  symbol: string,
+  chartSymbol: string | null | undefined,
+  a?: Record<string, PriceTick>,
+  b?: Record<string, PriceTick>
+) {
+  const keys = [symbol, chartSymbol || ""];
+  for (const key of keys) {
+    if (!key) continue;
+    if ((a?.[key] || a?.[key.toUpperCase()]) !== (b?.[key] || b?.[key.toUpperCase()])) return false;
+  }
+  return true;
+}
+
+const OpenCardView = memo(OpenCard, (a, b) => a.p === b.p && sameTicks(a.p.symbol, a.p.chartSymbol, a.prices, b.prices));
+const ClosedCardView = memo(ClosedCard, (a, b) => a.p === b.p && a.reopenLabel === b.reopenLabel);
+const PendingCardView = memo(PendingCard, (a, b) => a.o === b.o && sameTicks(a.o.symbol, null, a.prices, b.prices));
+
+const OpenTradeRow = memo(function OpenTradeRow({
+  p,
+  index,
+  prices,
+  onClose,
+  onModifySlTp,
+}: {
+  p: PositionRow;
+  index: number;
+  prices?: Record<string, PriceTick>;
+  onClose: (id: string, volume?: number) => void | TradeActionResult | Promise<void | TradeActionResult>;
+  onModifySlTp?: (
+    id: string,
+    levels: { stopLoss: number | null; takeProfit: number | null }
+  ) => void | TradeActionResult | Promise<void | TradeActionResult>;
+}) {
+  const { t } = useI18n();
+  const mark = markPrice(p, prices);
+  const shownProfit = displayOpenProfit(p, mark, getSymbol(p.symbol)?.contractSize);
+  const pip = calcPipDistance(p.symbol, p.openPrice, mark) * (p.side === "BUY" ? 1 : -1);
+  return (
+    <tr className="border-t border-desk-border/50 transition-colors hover:bg-desk-hover/50">
+      <td className="px-2 py-1.5 text-desk-muted" title={t("term.blotter.ticket").replace("{id}", p.id)}>
+        <div>{index + 1}</div>
+        <div className="opacity-90"><CopyTicket id={p.id} variant="table" /></div>
+      </td>
+      <td className="whitespace-nowrap px-2 py-1.5 text-desk-muted">
+        <div>{fmtDateTime(p.openedAt)}</div>
+        <HoldTime openedAt={p.openedAt} className="text-[9.5px] opacity-80" />
+      </td>
+      <td className={`px-2 py-1.5 font-semibold ${p.side === "BUY" ? "text-desk-buy" : "text-desk-sell"}`}>
+        {p.side === "BUY" ? t("term.buy") : t("term.sell")}
+      </td>
+      <td className="px-2 py-1.5 font-medium text-desk-text">{p.symbol}</td>
+      <td className="px-2 py-1.5 tabular-nums">{fmtNum(p.volume, 2)}</td>
+      <td className={`px-2 py-1.5 tabular-nums ${moneyCls(pip)}`}>{fmtNum(pip, 1)}</td>
+      <td className="px-2 py-1.5 tabular-nums">{formatPrice(p.symbol, p.openPrice)}</td>
+      <td className="px-2 py-1.5 tabular-nums">{formatPrice(p.symbol, mark)}</td>
+      <td className="px-2 py-1.5 tabular-nums text-desk-muted">
+        <div>{p.stopLoss != null ? formatPrice(p.symbol, p.stopLoss) : "—"}</div>
+        <LevelDistance p={p} kind="sl" prices={prices} className="block leading-tight" />
+      </td>
+      <td className="px-2 py-1.5 tabular-nums text-desk-muted">
+        <div>{p.takeProfit != null ? formatPrice(p.symbol, p.takeProfit) : "—"}</div>
+        <LevelDistance p={p} kind="tp" prices={prices} className="block leading-tight" />
+      </td>
+      <td className="px-2 py-1.5 text-desk-muted">0.00</td>
+      <td className="px-2 py-1.5 text-desk-muted">0.00</td>
+      <td className="px-2 py-1.5 text-desk-muted">0.00</td>
+      <td className={`px-2 py-1.5 font-semibold tabular-nums ${moneyCls(shownProfit)}`}>{fmtNum(shownProfit, 2)}</td>
+      <td className={`px-2 py-1.5 font-semibold tabular-nums ${moneyCls(shownProfit)}`}>{fmtNum(shownProfit, 2)}</td>
+      <td className="px-2 py-1.5">
+        <OpenRowActions p={p} prices={prices} onClose={onClose} onModifySlTp={onModifySlTp} />
+      </td>
+    </tr>
+  );
+}, (a, b) => a.p === b.p && a.index === b.index && sameTicks(a.p.symbol, a.p.chartSymbol, a.prices, b.prices));
+
 export default function BottomPanels({
   tab,
   onTab,
@@ -2298,7 +2374,7 @@ export default function BottomPanels({
             )}
             {openPositions.length > 0 && filteredOpen.length === 0 && emptyFiltered}
             {sortedOpen.map((p) => (
-              <OpenCard key={p.id} p={p} prices={prices} onClose={onClosePosition} onModifySlTp={onModifySlTp} onSelectSymbol={onSelectSymbol} />
+              <OpenCardView key={p.id} p={p} prices={prices} onClose={onClosePosition} onModifySlTp={onModifySlTp} onSelectSymbol={onSelectSymbol} />
             ))}
             {openHasMore && (
               <div className="pt-1 text-center">
@@ -2323,7 +2399,7 @@ export default function BottomPanels({
             )}
             {closedPositions.length > 0 && filteredClosed.length === 0 && emptyFiltered}
             {sortedClosed.map((p) => (
-              <ClosedCard key={p.id} p={p} onReopenTrade={onReopenTrade} reopenLabel={reopenLabel} reopenTitle={reopenTitle} />
+              <ClosedCardView key={p.id} p={p} onReopenTrade={onReopenTrade} reopenLabel={reopenLabel} reopenTitle={reopenTitle} />
             ))}
             {closedHasMore && (
               <div className="pt-1 text-center">
@@ -2346,7 +2422,7 @@ export default function BottomPanels({
             )}
             {pendingOrders.length > 0 && filteredPending.length === 0 && emptyFiltered}
             {sortedPending.map((o) => (
-              <PendingCard key={o.id} o={o} onCancel={onCancelOrder} prices={prices} />
+              <PendingCardView key={o.id} o={o} onCancel={onCancelOrder} prices={prices} />
             ))}
           </>
         )}
@@ -2391,71 +2467,16 @@ export default function BottomPanels({
                   </td>
                 </tr>
               )}
-              {sortedOpen.map((p, i) => {
-                const mark = markPrice(p, prices);
-                const shownProfit = openShownProfit(p);
-                const pip =
-                  calcPipDistance(p.symbol, p.openPrice, mark) *
-                  (p.side === "BUY" ? 1 : -1);
-                return (
-                  <tr
-                    key={p.id}
-                    className="border-t border-desk-border/50 transition-colors hover:bg-desk-hover/50"
-                  >
-                    <td className="px-2 py-1.5 text-desk-muted" title={t("term.blotter.ticket").replace("{id}", p.id)}>
-                      <div>{i + 1}</div>
-                      <div className="opacity-90"><CopyTicket id={p.id} variant="table" /></div>
-                    </td>
-                    <td className="whitespace-nowrap px-2 py-1.5 text-desk-muted">
-                      <div>{fmtDateTime(p.openedAt)}</div>
-                      <HoldTime openedAt={p.openedAt} className="text-[9.5px] opacity-80" />
-                    </td>
-                    <td
-                      className={`px-2 py-1.5 font-semibold ${
-                        p.side === "BUY" ? "text-desk-buy" : "text-desk-sell"
-                      }`}
-                    >
-                      {p.side === "BUY" ? t("term.buy") : t("term.sell")}
-                    </td>
-                    <td className="px-2 py-1.5 font-medium text-desk-text">{p.symbol}</td>
-                    <td className="px-2 py-1.5 tabular-nums">{fmtNum(p.volume, 2)}</td>
-                    <td className={`px-2 py-1.5 tabular-nums ${moneyCls(pip)}`}>
-                      {fmtNum(pip, 1)}
-                    </td>
-                    <td className="px-2 py-1.5 tabular-nums">
-                      {formatPrice(p.symbol, p.openPrice)}
-                    </td>
-                    <td className="px-2 py-1.5 tabular-nums">
-                      {formatPrice(p.symbol, mark)}
-                    </td>
-                    <td className="px-2 py-1.5 tabular-nums text-desk-muted">
-                      <div>{p.stopLoss != null ? formatPrice(p.symbol, p.stopLoss) : "—"}</div>
-                      <LevelDistance p={p} kind="sl" prices={prices} className="block leading-tight" />
-                    </td>
-                    <td className="px-2 py-1.5 tabular-nums text-desk-muted">
-                      <div>{p.takeProfit != null ? formatPrice(p.symbol, p.takeProfit) : "—"}</div>
-                      <LevelDistance p={p} kind="tp" prices={prices} className="block leading-tight" />
-                    </td>
-                    <td className="px-2 py-1.5 text-desk-muted">0.00</td>
-                    <td className="px-2 py-1.5 text-desk-muted">0.00</td>
-                    <td className="px-2 py-1.5 text-desk-muted">0.00</td>
-                    <td className={`px-2 py-1.5 font-semibold tabular-nums ${moneyCls(shownProfit)}`}>
-                      {fmtNum(shownProfit, 2)}
-                    </td>
-                    <td className={`px-2 py-1.5 font-semibold tabular-nums ${moneyCls(shownProfit)}`}>
-                      {fmtNum(shownProfit, 2)}
-                    </td>
-                    <td className="px-2 py-1.5">
-                      <OpenRowActions
-                        p={p}
-                        prices={prices}
-                        onClose={onClosePosition}
-                        onModifySlTp={onModifySlTp}
-                      />
-                    </td>
-                  </tr>
-                );
-              })}
+              {sortedOpen.map((p, i) => (
+                <OpenTradeRow
+                  key={p.id}
+                  p={p}
+                  index={i}
+                  prices={prices}
+                  onClose={onClosePosition}
+                  onModifySlTp={onModifySlTp}
+                />
+              ))}
               {openHasMore && (
                 <tr>
                   <td colSpan={16} className="px-3 py-2 text-center">

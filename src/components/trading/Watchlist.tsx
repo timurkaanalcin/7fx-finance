@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
 import { formatPrice } from "@/lib/symbols";
 import { displayOpenProfit } from "@/lib/display-profit";
@@ -97,6 +97,132 @@ function sortLabel(mode: SortMode, t: (key: string) => string): string {
 
 type OpenAgg = { count: number; profit: number; buyLots: number; sellLots: number };
 
+const WatchRow = memo(function WatchRow({
+  symbol,
+  name,
+  flag,
+  active,
+  fav,
+  price,
+  openCount,
+  openProfit,
+  openLots,
+  onSelect,
+  onToggleFav,
+}: {
+  symbol: string;
+  name: string;
+  flag: string;
+  active: boolean;
+  fav: boolean;
+  price: PriceTick | undefined;
+  openCount: number;
+  openProfit: number;
+  openLots: string;
+  onSelect: (symbol: string) => void;
+  onToggleFav: (symbol: string) => void;
+}) {
+  const { t } = useI18n();
+  const up = (price?.change ?? 0) >= 0;
+  const showName = name.length > 0 && name.toUpperCase() !== symbol.toUpperCase();
+  const openTitle =
+    openCount > 0
+      ? `${t("term.watch.openPos").replace("{n}", String(openCount))}${openLots ? ` (${openLots})` : ""} · ${t("term.watch.livePnl")} ${fmtSignedMoney(openProfit)}`
+      : "";
+  return (
+    <button
+      onClick={() => onSelect(symbol)}
+      className={`fx-watch-row relative flex w-full items-center gap-2.5 border-b border-desk-border/30 px-3 py-2.5 text-left transition-colors hover:bg-desk-hover/80 md:gap-2 md:px-2.5 md:py-1.5 ${
+        active ? "bg-desk-elev/90" : "bg-transparent"
+      }`}
+    >
+      {active && (
+        <span
+          className="absolute bottom-1 left-0 top-1 w-[3px] rounded-r-full bg-desk-accent shadow-[0_0_8px_rgba(255,255,255,0.5)] md:bottom-0.5 md:top-0.5"
+          aria-hidden
+        />
+      )}
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-desk-bg md:h-5 md:w-5 md:rounded-full md:bg-transparent">
+        <SymbolIcon symbol={symbol} fallback={flag || "•"} size={20} className="md:!h-4 md:!w-4" />
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center justify-between gap-2">
+          <div className="min-w-0">
+            <span
+              className={`flex items-center truncate text-[13px] font-normal tracking-tight md:text-[12px] ${
+                active ? "text-desk-accent" : "text-desk-text"
+              }`}
+            >
+              {symbol}
+              <span
+                role="button"
+                tabIndex={0}
+                title={fav ? t("term.watch.unfav") : t("term.watch.fav")}
+                aria-label={fav ? t("term.watch.unfav") : t("term.watch.fav")}
+                aria-pressed={fav}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleFav(symbol);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onToggleFav(symbol);
+                  }
+                }}
+                className={`fx-fav ml-1.5 inline-flex h-6 w-6 -my-1 items-center justify-center rounded-full align-middle text-[13px] leading-none md:h-4 md:w-4 md:text-[11px] ${
+                  fav ? "fx-fav--on text-[#c8a96a]" : "text-desk-muted/60 hover:text-desk-text"
+                }`}
+              >
+                {fav ? "★" : "☆"}
+              </span>
+            </span>
+            {showName && (
+              <span className="mt-0.5 block truncate text-[10px] text-desk-muted" title={name}>
+                {name}
+              </span>
+            )}
+            {openCount > 0 && (
+              <span
+                data-fx-watch-open={openCount}
+                title={openTitle}
+                className={`mt-0.5 inline-flex max-w-full items-center gap-1 rounded-[6px] px-1 py-px text-[9.5px] font-normal tabular-nums leading-tight ${
+                  openProfit >= 0 ? "bg-desk-buy/10 text-desk-buy" : "bg-desk-sell/10 text-desk-sell"
+                }`}
+              >
+                <span aria-hidden>●</span>
+                <span>{openCount}</span>
+                <span className="truncate">{fmtSignedMoney(openProfit)}</span>
+              </span>
+            )}
+          </div>
+          <div className="flex shrink-0 flex-col items-end gap-0.5 tabular-nums">
+            <div className="flex items-baseline gap-1.5 text-[11px] font-normal tabular-nums text-desk-text/80 md:gap-1 md:text-[10px]">
+              <FlashPrice title={t("term.bid")} value={price?.bid} text={price ? formatPrice(symbol, price.bid) : "—"} />
+              <span className="text-desk-muted/50">/</span>
+              <FlashPrice title={t("term.ask")} value={price?.ask} text={price ? formatPrice(symbol, price.ask) : "—"} />
+            </div>
+            <span className="text-[10px] tabular-nums text-desk-muted/70 md:text-[9px]" title={t("term.watch.spread")}>
+              {price && Number.isFinite(price.bid) && Number.isFinite(price.ask)
+                ? formatPrice(symbol, Number(price.ask) - Number(price.bid))
+                : "—"}
+            </span>
+            <span
+              className={`rounded-[6px] px-1.5 py-0.5 text-[11px] font-normal tabular-nums md:rounded md:px-1 md:py-px md:text-[10px] ${
+                !price ? "text-desk-muted" : up ? "bg-desk-buy/12 text-desk-buy" : "bg-desk-sell/12 text-desk-sell"
+              }`}
+              title={t("term.watch.day")}
+            >
+              {price ? `${up ? "+" : ""}${price.changePct.toFixed(2)}%` : "—"}
+            </span>
+          </div>
+        </div>
+      </div>
+    </button>
+  );
+});
+
 function fmtSignedMoney(n: number): string {
   const abs = Math.abs(n);
   const txt = abs >= 1000 ? abs.toLocaleString("en-US", { maximumFractionDigits: 0 }) : abs.toFixed(2);
@@ -145,7 +271,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
       if (Array.isArray(v)) setFavs(v.filter((x) => typeof x === "string").slice(0, 40));
     } catch {}
   }, []);
-  const toggleFav = (sym: string) => {
+  const toggleFav = useCallback((sym: string) => {
     setFavs((prev) => {
       let next = prev.includes(sym) ? prev.filter((x) => x !== sym) : [...prev, sym];
       if (next.length > 40) next = next.slice(-40);
@@ -154,7 +280,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
       } catch {}
       return next;
     });
-  };
+  }, []);
 
   /** Recently viewed symbols (most-recent-first) — per device, localStorage. */
   const [recent, setRecent] = useState<string[]>([]);
@@ -363,127 +489,30 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto">
         {list.map((s) => {
-          const p = prices[s.symbol];
-          const up = (p?.change ?? 0) >= 0;
-          const active = selected === s.symbol;
+          const agg = openBySymbol.get(s.symbol.toUpperCase());
+          const openLots = agg
+            ? [
+                agg.buyLots > 0 ? `${t("term.bid")} ${+agg.buyLots.toFixed(2)} lot` : "",
+                agg.sellLots > 0 ? `${t("term.ask")} ${+agg.sellLots.toFixed(2)} lot` : "",
+              ]
+                .filter(Boolean)
+                .join(" · ")
+            : "";
           return (
-            <button
+            <WatchRow
               key={s.symbol}
-              onClick={() => onSelect(s.symbol)}
-              className={`fx-watch-row relative flex w-full items-center gap-2.5 border-b border-desk-border/30 px-3 py-2.5 text-left transition-colors hover:bg-desk-hover/80 md:gap-2 md:px-2.5 md:py-1.5 ${
-                active ? "bg-desk-elev/90" : "bg-transparent"
-              }`}
-            >
-              {active && (
-                <span
-                  className="absolute bottom-1 left-0 top-1 w-[3px] rounded-r-full bg-desk-accent shadow-[0_0_8px_rgba(255,255,255,0.5)] md:bottom-0.5 md:top-0.5"
-                  aria-hidden
-                />
-              )}
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-desk-bg md:h-5 md:w-5 md:rounded-full md:bg-transparent">
-                <SymbolIcon symbol={s.symbol} fallback={s.flag || "•"} size={20} className="md:!h-4 md:!w-4" />
-              </span>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center justify-between gap-2">
-                  <div className="min-w-0">
-                    <span
-                      className={`flex items-center truncate text-[13px] font-normal tracking-tight md:text-[12px] ${
-                        active ? "text-desk-accent" : "text-desk-text"
-                      }`}
-                    >
-                      {s.symbol}
-                      <span
-                        role="button"
-                        tabIndex={0}
-                        title={favs.includes(s.symbol) ? t("term.watch.unfav") : t("term.watch.fav")}
-                        aria-label={favs.includes(s.symbol) ? t("term.watch.unfav") : t("term.watch.fav")}
-                        aria-pressed={favs.includes(s.symbol)}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleFav(s.symbol);
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            toggleFav(s.symbol);
-                          }
-                        }}
-                        className={`fx-fav ml-1.5 inline-flex h-6 w-6 -my-1 items-center justify-center rounded-full align-middle text-[13px] leading-none md:h-4 md:w-4 md:text-[11px] ${
-                          favs.includes(s.symbol) ? "fx-fav--on text-[#c8a96a]" : "text-desk-muted/60 hover:text-desk-text"
-                        }`}
-                      >
-                        {favs.includes(s.symbol) ? "★" : "☆"}
-                      </span>
-                    </span>
-                    {s.name && s.name.toUpperCase() !== s.symbol.toUpperCase() && (
-                      <span className="mt-0.5 block truncate text-[10px] text-desk-muted" title={s.name}>
-                        {s.name}
-                      </span>
-                    )}
-                    {(() => {
-                      const agg = openBySymbol.get(s.symbol.toUpperCase());
-                      if (!agg) return null;
-                      const lots = [
-                        agg.buyLots > 0 ? `${t("term.bid")} ${+agg.buyLots.toFixed(2)} lot` : "",
-                        agg.sellLots > 0 ? `${t("term.ask")} ${+agg.sellLots.toFixed(2)} lot` : "",
-                      ]
-                        .filter(Boolean)
-                        .join(" · ");
-                      const openTitle = `${t("term.watch.openPos").replace("{n}", String(agg.count))}${lots ? ` (${lots})` : ""} · ${t("term.watch.livePnl")} ${fmtSignedMoney(agg.profit)}`;
-                      return (
-                        <span
-                          data-fx-watch-open={agg.count}
-                          title={openTitle}
-                          className={`mt-0.5 inline-flex max-w-full items-center gap-1 rounded-[6px] px-1 py-px text-[9.5px] font-normal tabular-nums leading-tight ${
-                            agg.profit >= 0 ? "bg-desk-buy/10 text-desk-buy" : "bg-desk-sell/10 text-desk-sell"
-                          }`}
-                        >
-                          <span aria-hidden>●</span>
-                          <span>{agg.count}</span>
-                          <span className="truncate">{fmtSignedMoney(agg.profit)}</span>
-                        </span>
-                      );
-                    })()}
-                  </div>
-                  <div className="flex shrink-0 flex-col items-end gap-0.5 tabular-nums">
-                    <div className="flex items-baseline gap-1.5 text-[11px] font-normal tabular-nums text-desk-text/80 md:gap-1 md:text-[10px]">
-                      <FlashPrice
-                        title={t("term.bid")}
-                        value={p?.bid}
-                        text={p ? formatPrice(s.symbol, p.bid) : "—"}
-                      />
-                      <span className="text-desk-muted/50">/</span>
-                      <FlashPrice
-                        title={t("term.ask")}
-                        value={p?.ask}
-                        text={p ? formatPrice(s.symbol, p.ask) : "—"}
-                      />
-                    </div>
-                    <span
-                      className="text-[10px] tabular-nums text-desk-muted/70 md:text-[9px]"
-                      title={t("term.watch.spread")}
-                    >
-                      {p && Number.isFinite(p.bid) && Number.isFinite(p.ask)
-                        ? formatPrice(s.symbol, Number(p.ask) - Number(p.bid))
-                        : "—"}
-                    </span>
-                    <span
-                      className={`rounded-[6px] px-1.5 py-0.5 text-[11px] font-normal tabular-nums md:rounded md:px-1 md:py-px md:text-[10px] ${
-                        !p
-                          ? "text-desk-muted"
-                          : up
-                            ? "bg-desk-buy/12 text-desk-buy"
-                            : "bg-desk-sell/12 text-desk-sell"
-                      }`}
-                      title={t("term.watch.day")}
-                    >
-                      {p ? `${up ? "+" : ""}${p.changePct.toFixed(2)}%` : "—"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </button>
+              symbol={s.symbol}
+              name={s.name || ""}
+              flag={s.flag || "•"}
+              active={selected === s.symbol}
+              fav={favs.includes(s.symbol)}
+              price={prices[s.symbol]}
+              openCount={agg?.count ?? 0}
+              openProfit={agg?.profit ?? 0}
+              openLots={openLots}
+              onSelect={onSelect}
+              onToggleFav={toggleFav}
+            />
           );
         })}
         {list.length === 0 && !(filter === "RECENT" && recent.length === 0) && (
