@@ -5,9 +5,23 @@ import Link from "next/link";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 import { useI18n } from "@/lib/i18n/context";
 import { jobTitleOptions, jobTitleUi } from "@/lib/job-titles";
+import {
+  PHONE_COUNTRIES,
+  composePhone,
+  defaultPhoneCountry,
+  digitsOnly,
+  emailOk,
+  formatNational,
+  passwordHintKey,
+  passwordStrength,
+  phoneCountry,
+  phoneTooShort,
+  registerErrorKey,
+} from "@/lib/auth-fields";
+import { AuthAlert, FieldMessage, PasswordMeter, PasswordToggle } from "@/components/auth/AuthBits";
 
 const inputClass =
-  "fx-auth-input w-full rounded-xl border border-[rgba(16,20,37,0.12)] bg-[#ffffff] px-3.5 py-3 text-[15px] text-[#111111] outline-none transition placeholder:text-[#8b93a7] hover:border-[#111111]/40 focus:border-[#111111] focus:shadow-[0_0_0_3px_rgba(17,17,17,0.15)]";
+  "fx-auth-input w-full rounded-xl border border-[rgba(16,20,37,0.12)] bg-[#ffffff] px-3.5 py-3 text-base text-[#111111] outline-none transition placeholder:text-[#8b93a7] hover:border-[#111111]/40 focus:border-[#111111] focus:shadow-[0_0_0_3px_rgba(17,17,17,0.15)]";
 
 const labelClass = "mb-1.5 block text-[13px] font-medium text-[#5c657a]";
 
@@ -15,15 +29,22 @@ export default function RegisterForm() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phoneDigits, setPhoneDigits] = useState("");
+  const [countryIso, setCountryIso] = useState("");
+  const [countryPicked, setCountryPicked] = useState(false);
   const [jobTitle, setJobTitle] = useState("");
   const { t, locale } = useI18n();
   const jt = jobTitleUi(locale);
+  const country = countryPicked ? countryIso : defaultPhoneCountry(locale);
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword2, setShowPassword2] = useState(false);
   const [step, setStep] = useState<1 | 2>(1);
   const [referralCode, setReferralCode] = useState("");
-  const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [serverKey, setServerKey] = useState("");
+  const serverError = serverKey ? t(serverKey) : "";
   const [loading, setLoading] = useState(false);
   const [expectedReferral, setExpectedReferral] = useState<string | null>(null);
   const [referralRequired, setReferralRequired] = useState(true);
@@ -51,53 +72,43 @@ export default function RegisterForm() {
     };
   }, []);
 
-  function emailOk(value: string) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+  function clearField(name: string) {
+    setFieldErrors((prev) => {
+      if (!prev[name]) return prev;
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
   }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
-    setError("");
+    setServerKey("");
     if (step === 1) {
-      if (!emailOk(email)) {
-        setError(t("auth.emailInvalid"));
-        return;
-      }
-      if (password.length < 8) {
-        setError(t("auth.passwordMin"));
-        return;
-      }
-      if (password !== passwordConfirm) {
-        setError(t("auth.passwordMismatch"));
-        return;
-      }
+      const next: Record<string, string> = {};
+      if (!emailOk(email)) next.email = "auth.emailInvalid";
+      if (password.length < 8) next.password = "auth.passwordMin";
+      if (password !== passwordConfirm) next.confirm = "auth.passwordMismatch";
+      setFieldErrors(next);
+      if (Object.keys(next).length) return;
       setStep(2);
       return;
     }
-    setLoading(true);
-    if (password.length < 8) {
-      setError(t("auth.passwordMin"));
-      setLoading(false);
-      return;
-    }
-    if (password !== passwordConfirm) {
-      setError(t("auth.passwordMismatch"));
-      setLoading(false);
-      return;
-    }
+    const next: Record<string, string> = {};
+    if (!firstName.trim()) next.first = "auth.firstNameRequired";
+    if (!lastName.trim()) next.last = "auth.lastNameRequired";
+    if (phoneTooShort(phoneDigits)) next.phone = "auth.phoneShort";
+    if (password.length < 8) next.password = "auth.passwordMin";
+    if (password !== passwordConfirm) next.confirm = "auth.passwordMismatch";
     const code = referralCode.trim();
     if (referralRequired) {
-      if (!code) {
-        setError(t("auth.referralRequired"));
-        setLoading(false);
-        return;
-      }
-      if (expectedReferral && code !== expectedReferral) {
-        setError(t("auth.referralInvalid"));
-        setLoading(false);
-        return;
-      }
+      if (!code) next.referral = "auth.referralRequired";
+      else if (expectedReferral && code !== expectedReferral) next.referral = "auth.referralInvalid";
     }
+    setFieldErrors(next);
+    if (Object.keys(next).length) return;
+    const phone = composePhone(country, phoneDigits);
+    setLoading(true);
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
@@ -115,7 +126,7 @@ export default function RegisterForm() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || t("auth.registerFailed"));
+        setServerKey(registerErrorKey(typeof data.error === "string" ? data.error : ""));
         return;
       }
       const id = data.user?.accountLoginId ? String(data.user.accountLoginId) : null;
@@ -125,7 +136,7 @@ export default function RegisterForm() {
         window.location.assign("/trade");
       }
     } catch {
-      setError(t("auth.connectionError"));
+      setServerKey("auth.registerFailed");
     } finally {
       setLoading(false);
     }
@@ -206,45 +217,83 @@ export default function RegisterForm() {
                 autoComplete="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  clearField("email");
+                }}
                 placeholder={t("auth.emailPlaceholder")}
                 disabled={loading}
                 autoFocus
+                aria-invalid={fieldErrors.email ? true : undefined}
+                aria-describedby={fieldErrors.email ? "fx-reg-email-error" : undefined}
               />
+              <FieldMessage id="fx-reg-email-error">{fieldErrors.email ? t(fieldErrors.email) : ""}</FieldMessage>
             </div>
             <div>
               <label htmlFor="fx-reg-password" className={labelClass}>
                 {t("common.password")}
               </label>
-              <input
-                id="fx-reg-password"
-                className={inputClass}
-                type="password"
-                autoComplete="new-password"
-                required
-                minLength={8}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder={t("auth.passwordMin")}
-                disabled={loading}
-              />
+              <div className="fx-auth-password">
+                <input
+                  id="fx-reg-password"
+                  className={inputClass}
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  required
+                  minLength={8}
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    clearField("password");
+                  }}
+                  placeholder={t("auth.passwordMin")}
+                  disabled={loading}
+                  aria-invalid={fieldErrors.password ? true : undefined}
+                  aria-describedby="fx-reg-password-hint"
+                />
+                <PasswordToggle
+                  pressed={showPassword}
+                  onClick={() => setShowPassword((v) => !v)}
+                  showLabel={t("auth.showPassword")}
+                  hideLabel={t("auth.hidePassword")}
+                />
+              </div>
+              <PasswordMeter level={passwordStrength(password)} />
+              <p className="fx-auth-hint" id="fx-reg-password-hint">
+                {t(passwordHintKey(passwordStrength(password)))}
+              </p>
+              <FieldMessage id="fx-reg-password-error">{fieldErrors.password ? t(fieldErrors.password) : ""}</FieldMessage>
             </div>
             <div>
               <label htmlFor="fx-reg-password2" className={labelClass}>
                 {t("auth.repeatPassword")}
               </label>
-              <input
-                id="fx-reg-password2"
-                className={inputClass}
-                type="password"
-                autoComplete="new-password"
-                required
-                minLength={8}
-                value={passwordConfirm}
-                onChange={(e) => setPasswordConfirm(e.target.value)}
-                placeholder={t("auth.repeatPassword")}
-                disabled={loading}
-              />
+              <div className="fx-auth-password">
+                <input
+                  id="fx-reg-password2"
+                  className={inputClass}
+                  type={showPassword2 ? "text" : "password"}
+                  autoComplete="new-password"
+                  required
+                  minLength={8}
+                  value={passwordConfirm}
+                  onChange={(e) => {
+                    setPasswordConfirm(e.target.value);
+                    clearField("confirm");
+                  }}
+                  placeholder={t("auth.repeatPassword")}
+                  disabled={loading}
+                  aria-invalid={fieldErrors.confirm ? true : undefined}
+                  aria-describedby={fieldErrors.confirm ? "fx-reg-password2-error" : undefined}
+                />
+                <PasswordToggle
+                  pressed={showPassword2}
+                  onClick={() => setShowPassword2((v) => !v)}
+                  showLabel={t("auth.showPassword")}
+                  hideLabel={t("auth.hidePassword")}
+                />
+              </div>
+              <FieldMessage id="fx-reg-password2-error">{fieldErrors.confirm ? t(fieldErrors.confirm) : ""}</FieldMessage>
             </div>
           </>
         ) : (
@@ -261,10 +310,16 @@ export default function RegisterForm() {
               autoComplete="given-name"
               autoFocus
               value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              onChange={(e) => {
+                setFirstName(e.target.value);
+                clearField("first");
+              }}
               placeholder={t("auth.firstName")}
               disabled={loading}
+              aria-invalid={fieldErrors.first ? true : undefined}
+              aria-describedby={fieldErrors.first ? "fx-reg-first-error" : undefined}
             />
+            <FieldMessage id="fx-reg-first-error">{fieldErrors.first ? t(fieldErrors.first) : ""}</FieldMessage>
           </div>
           <div>
             <label htmlFor="fx-reg-last" className={labelClass}>
@@ -276,26 +331,65 @@ export default function RegisterForm() {
               required
               autoComplete="family-name"
               value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
+              onChange={(e) => {
+                setLastName(e.target.value);
+                clearField("last");
+              }}
               placeholder={t("auth.lastName")}
               disabled={loading}
+              aria-invalid={fieldErrors.last ? true : undefined}
+              aria-describedby={fieldErrors.last ? "fx-reg-last-error" : undefined}
             />
+            <FieldMessage id="fx-reg-last-error">{fieldErrors.last ? t(fieldErrors.last) : ""}</FieldMessage>
           </div>
         </div>
         <div>
-          <label htmlFor="fx-reg-phone" className={labelClass}>
-            {t("common.phone")} <span className="font-normal text-[#8b93a7]">({t("auth.optional")})</span>
+          <label htmlFor="fx-reg-country" className={labelClass}>
+            {t("auth.country")}
           </label>
-          <input
-            id="fx-reg-phone"
-            className={inputClass}
-            type="tel"
-            autoComplete="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder={t("auth.phonePlaceholder")}
-            disabled={loading}
-          />
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+            <select
+              id="fx-reg-country"
+              className={inputClass}
+              value={country}
+              onChange={(e) => {
+                setCountryPicked(true);
+                setCountryIso(e.target.value);
+              }}
+              disabled={loading}
+            >
+              {PHONE_COUNTRIES.map((row) => (
+                <option key={row.iso} value={row.iso}>
+                  {t(`auth.country.${row.iso}`)} +{row.dial}
+                </option>
+              ))}
+            </select>
+            <div>
+              <label htmlFor="fx-reg-phone" className="sr-only">
+                {t("common.phone")}
+              </label>
+              <input
+                id="fx-reg-phone"
+                className={inputClass}
+                type="tel"
+                autoComplete="tel-national"
+                inputMode="tel"
+                value={formatNational(phoneDigits, phoneCountry(country).groups)}
+                onChange={(e) => {
+                  setPhoneDigits(digitsOnly(e.target.value));
+                  clearField("phone");
+                }}
+                placeholder={t("auth.phonePlaceholder")}
+                disabled={loading}
+                aria-invalid={fieldErrors.phone ? true : undefined}
+                aria-describedby={fieldErrors.phone ? "fx-reg-phone-error" : undefined}
+              />
+            </div>
+          </div>
+          <p className="fx-auth-hint">
+            {t("common.phone")} ({t("auth.optional")})
+          </p>
+          <FieldMessage id="fx-reg-phone-error">{fieldErrors.phone ? t(fieldErrors.phone) : ""}</FieldMessage>
         </div>
 
         <div>
@@ -339,26 +433,27 @@ export default function RegisterForm() {
             required={referralRequired}
             aria-required={referralRequired}
             value={referralCode}
-            onChange={(e) => setReferralCode(e.target.value.replace(/[^\d]/g, ""))}
+            onChange={(e) => {
+              setReferralCode(e.target.value.replace(/[^\d]/g, ""));
+              clearField("referral");
+            }}
             placeholder={t("auth.referralCode")}
             disabled={loading}
             inputMode="numeric"
             autoComplete="off"
+            aria-invalid={fieldErrors.referral ? true : undefined}
+            aria-describedby={fieldErrors.referral ? "fx-reg-referral-error" : "fx-reg-referral-hint"}
           />
+          <FieldMessage id="fx-reg-referral-error">{fieldErrors.referral ? t(fieldErrors.referral) : ""}</FieldMessage>
           {referralRequired && (
-            <p className="mt-2 text-[12px] leading-relaxed text-[#5c657a]">{t("auth.referralHint")}</p>
+            <p id="fx-reg-referral-hint" className="fx-auth-hint">{t("auth.referralHint")}</p>
           )}
         </div>
           </>
         )}
 
-        {error && (
-          <div
-            role="alert"
-            className="rounded-xl border border-[#ef5350]/40 bg-[#ef5350]/10 px-3.5 py-2.5 text-sm text-[#ef5350]"
-          >
-            {error}
-          </div>
+        {serverError && (
+          <AuthAlert title={t("auth.errorTitle")}>{serverError}</AuthAlert>
         )}
 
         {step === 1 ? (
@@ -374,7 +469,8 @@ export default function RegisterForm() {
               type="button"
               disabled={loading}
               onClick={() => {
-                setError("");
+                setServerKey("");
+                setFieldErrors({});
                 setStep(1);
               }}
               className="rounded-xl border border-[rgba(16,20,37,0.15)] bg-white px-4 py-3.5 text-sm font-semibold text-[#111111] transition hover:bg-[#f0f1f4] disabled:opacity-60"

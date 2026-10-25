@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/context";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
+import { loginErrorKey } from "@/lib/auth-fields";
+import { AuthAlert, FieldMessage, PasswordToggle } from "@/components/auth/AuthBits";
 
 const inputClass =
-  "fx-auth-input w-full rounded-xl border border-[rgba(16,20,37,0.12)] bg-[#ffffff] px-3.5 py-3 text-[15px] text-[#111111] outline-none transition placeholder:text-[#8b93a7] hover:border-[#111111]/40 focus:border-[#111111] focus:shadow-[0_0_0_3px_rgba(17,17,17,0.15)]";
+  "fx-auth-input w-full rounded-xl border border-[rgba(16,20,37,0.12)] bg-[#ffffff] px-3.5 py-3 text-base text-[#111111] outline-none transition placeholder:text-[#8b93a7] hover:border-[#111111]/40 focus:border-[#111111] focus:shadow-[0_0_0_3px_rgba(17,17,17,0.15)]";
 
 const labelClass = "mb-1.5 block text-[13px] font-medium text-[#5c657a]";
 
@@ -54,8 +56,12 @@ export default function LoginForm() {
   const { t } = useI18n();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [serverKey, setServerKey] = useState("");
+  const [idError, setIdError] = useState("");
+  const [pwError, setPwError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const error = serverKey ? t(serverKey) : "";
   const [challengeToken, setChallengeToken] = useState<string | null>(null);
   const [totpCode, setTotpCode] = useState("");
   const [blockOpen, setBlockOpen] = useState(false);
@@ -94,7 +100,7 @@ export default function LoginForm() {
         showLoginBlocked(t("auth.accessClosed"));
       }
       const err = sp.get("error");
-      if (err && !sp.get("loginBlocked")) setError(err);
+      if (err && !sp.get("loginBlocked")) setServerKey(loginErrorKey(err));
       const challenge = sp.get("challenge");
       if (challenge) setChallengeToken(challenge);
     } catch {
@@ -139,12 +145,7 @@ export default function LoginForm() {
             />
           </div>
           {error && (
-            <div
-              role="alert"
-              className="rounded-xl border border-[#ef5350]/40 bg-[#ef5350]/10 px-3.5 py-2.5 text-sm text-[#ef5350]"
-            >
-              {error}
-            </div>
+            <AuthAlert title={t("auth.errorTitle")}>{error}</AuthAlert>
           )}
           <button
             type="submit"
@@ -159,7 +160,7 @@ export default function LoginForm() {
             onClick={() => {
               setChallengeToken(null);
               setTotpCode("");
-              setError("");
+              setServerKey("");
               window.history.replaceState(null, "", "/login");
             }}
           >
@@ -171,7 +172,18 @@ export default function LoginForm() {
         method="post"
         action="/api/auth/login"
         className="space-y-4"
-        onSubmit={() => setLoading(true)}
+        noValidate
+        onSubmit={(e: FormEvent<HTMLFormElement>) => {
+          const nextId = identifier.trim() ? "" : "auth.identifierRequired";
+          const nextPw = password ? "" : "auth.passwordRequired";
+          setIdError(nextId);
+          setPwError(nextPw);
+          if (nextId || nextPw) {
+            e.preventDefault();
+            return;
+          }
+          setLoading(true);
+        }}
       >
         <input type="hidden" name="nav" value="1" />
         <div>
@@ -186,37 +198,52 @@ export default function LoginForm() {
             autoComplete="username"
             required
             value={identifier}
-            onChange={(e) => setIdentifier(e.target.value)}
+            onChange={(e) => {
+              setIdentifier(e.target.value);
+              if (idError) setIdError("");
+            }}
             placeholder={t("auth.identifierPh")}
             readOnly={loading}
             inputMode="email"
+            aria-invalid={idError ? true : undefined}
+            aria-describedby={idError ? "fx-login-identifier-error" : undefined}
           />
+          <FieldMessage id="fx-login-identifier-error">{idError ? t(idError) : ""}</FieldMessage>
         </div>
         <div>
           <label htmlFor="fx-login-password" className={labelClass}>
             {t("common.password")}
           </label>
+          <div className="fx-auth-password">
           <input
             id="fx-login-password"
             name="password"
+            readOnly={loading}
             className={inputClass}
-            type="password"
+            type={showPassword ? "text" : "password"}
             autoComplete="current-password"
             required
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              if (pwError) setPwError("");
+            }}
             placeholder="••••••••"
-            readOnly={loading}
+            aria-invalid={pwError ? true : undefined}
+            aria-describedby={pwError ? "fx-login-password-error" : undefined}
           />
+          <PasswordToggle
+            pressed={showPassword}
+            onClick={() => setShowPassword((v) => !v)}
+            showLabel={t("auth.showPassword")}
+            hideLabel={t("auth.hidePassword")}
+          />
+          </div>
+          <FieldMessage id="fx-login-password-error">{pwError ? t(pwError) : ""}</FieldMessage>
         </div>
 
         {error && (
-          <div
-            role="alert"
-            className="rounded-xl border border-[#ef5350]/40 bg-[#ef5350]/10 px-3.5 py-2.5 text-sm text-[#ef5350]"
-          >
-            {error}
-          </div>
+          <AuthAlert title={t("auth.errorTitle")}>{error}</AuthAlert>
         )}
 
         <button
