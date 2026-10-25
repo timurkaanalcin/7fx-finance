@@ -1,23 +1,16 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { pushRecentClient } from "@/lib/crm-recent-clients";
 import { LOCALES } from "@/lib/i18n/locales";
-import EditablePositionsTable from "@/components/crm/EditablePositionsTable";
-import EditableOrdersTable from "@/components/crm/EditableOrdersTable";
 import CopyButton from "@/components/crm/CopyButton";
-import CrmRecordTable, { CrmAddForm, type CrmColumn } from "@/components/crm/CrmRecordTable";
+import type { CrmColumn } from "@/components/crm/CrmRecordTable";
 import { fmtCrmDate, fmtCrmMoney, fromDatetimeLocalValue, toDatetimeLocalValue } from "@/lib/crm-format";
-import { SYMBOLS } from "@/lib/symbols";
-
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import RetentionPanel, { AssigneePicker } from "@/components/crm/RetentionPanel";
-import TeamComments from "@/components/crm/TeamComments";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CRM_IDLE_POLL_MS, useVisiblePoll } from "@/lib/use-visible-poll";
 import { TRADER_LAZY_SCOPES, traderDetailScopeForEntity, traderDetailScopeForTab, type TraderDetailScope } from "@/lib/trader-list";
-import { LoginHistory, TraderPresenceHeader } from "@/components/crm/Presence";
-import AccountPermissionsPanel from "@/components/crm/AccountPermissionsPanel";
 import {
   ACCOUNT_CURRENCIES,
   ACCOUNT_TYPES,
@@ -30,6 +23,21 @@ import {
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { CrmNotice, TraderSkeleton } from "@/components/crm/CrmStates";
 import { JOB_TITLE_KEYS, jobTitleLabel, jobTitleUi } from "@/lib/job-titles";
+
+function PanelFallback() {
+  return <div className="h-16 rounded bg-neutral-100" role="status" aria-busy="true" />;
+}
+
+const CrmRecordTable = dynamic(() => import("@/components/crm/CrmRecordTable"), { loading: PanelFallback });
+const CrmAddForm = dynamic(() => import("@/components/crm/CrmRecordTable").then((m) => m.CrmAddForm), { loading: PanelFallback });
+const EditablePositionsTable = dynamic(() => import("@/components/crm/EditablePositionsTable"), { loading: PanelFallback });
+const EditableOrdersTable = dynamic(() => import("@/components/crm/EditableOrdersTable"), { loading: PanelFallback });
+const RetentionPanel = dynamic(() => import("@/components/crm/RetentionPanel"), { loading: PanelFallback });
+const AssigneePicker = dynamic(() => import("@/components/crm/RetentionPanel").then((m) => m.AssigneePicker), { loading: PanelFallback });
+const TeamComments = dynamic(() => import("@/components/crm/TeamComments"), { loading: PanelFallback });
+const LoginHistory = dynamic(() => import("@/components/crm/Presence").then((m) => m.LoginHistory), { loading: PanelFallback });
+const TraderPresenceHeader = dynamic(() => import("@/components/crm/Presence").then((m) => m.TraderPresenceHeader));
+const AccountPermissionsPanel = dynamic(() => import("@/components/crm/AccountPermissionsPanel"), { loading: PanelFallback });
 
 type Tab =
   | "profil"
@@ -1006,6 +1014,20 @@ export default function AdminUserDetailPage() {
     // Read-only admins may view Hesap İzinleri; only kick if no view access at all.
     if (tab === "izinler" && !canManageUsers && !crmReadOnly) setTab("profil");
   }, [tab, canManageUsers, crmReadOnly]);
+  const [symbolOpts, setSymbolOpts] = useState<{ value: string; label: string }[]>([]);
+  const [firstSymbol, setFirstSymbol] = useState("");
+  useEffect(() => {
+    if (tab !== "pozisyonlar" || symbolOpts.length) return;
+    let live = true;
+    void import("@/lib/symbols").then(({ SYMBOLS }) => {
+      if (!live) return;
+      setSymbolOpts(SYMBOLS.map((s) => ({ value: s.symbol, label: s.symbol })));
+      setFirstSymbol(SYMBOLS[0]?.symbol || "");
+    });
+    return () => {
+      live = false;
+    };
+  }, [tab, symbolOpts.length]);
   const [notes, setNotes] = useState<Row[]>([]);
   const [positions, setPositions] = useState<Row[]>([]);
   const [orders, setOrders] = useState<Row[]>([]);
@@ -1611,8 +1633,8 @@ export default function AdminUserDetailPage() {
       type: "select",
       options: [
         { value: "", label: "—" },
-        { value: "SALE", label: "Sale" },
-        { value: "RET", label: "Retention" },
+        { value: "SALE", label: i18n("crm.deskName.SALE") },
+        { value: "RET", label: i18n("crm.deskName.RETENTION") },
       ],
     },
     { key: "authorName", label: "crm.edit.author", hideOnCreate: true },
@@ -1620,7 +1642,7 @@ export default function AdminUserDetailPage() {
   ];
   const sideOpts = ["BUY", "SELL"].map((v) => ({ value: v, label: code("crm.kind", v) }));
   const newPositionCols: CrmColumn[] = [
-    { key: "symbol", label: "crm.ui.symbol", type: "select", required: true, options: SYMBOLS.map((s) => ({ value: s.symbol, label: s.symbol })) },
+    { key: "symbol", label: "crm.ui.symbol", type: "select", required: true, options: symbolOpts },
     { key: "side", label: "crm.ui.side", type: "select", options: sideOpts, required: true },
     { key: "volume", label: "crm.ui.volume", type: "number", required: true },
     { key: "openPrice", label: "crm.ui.open", type: "number", required: true },
@@ -1687,7 +1709,7 @@ export default function AdminUserDetailPage() {
             {user.accountLoginId && (
               <span className="rounded bg-sky-50 px-2 py-0.5 font-mono text-[10px] text-sky-700">
                 {i18n("crm.ui.accountId")}: {user.accountLoginId}
-                <CopyButton value={user.accountLoginId} title="Hesap ID kopyala" className="ml-1" />
+                <CopyButton value={user.accountLoginId} title={i18n("crm.ui.copyAccountId")} className="ml-1" />
               </span>
             )}
             <span
@@ -2103,7 +2125,7 @@ export default function AdminUserDetailPage() {
             <div className="mb-2">
               <CrmAddForm
                 columns={newPositionCols}
-                initial={{ side: "BUY", status: "OPEN", symbol: SYMBOLS[0]?.symbol || "" }}
+                initial={{ side: "BUY", status: "OPEN", symbol: firstSymbol }}
                 balanceAware
                 onCreate={createPosition}
                 title={i18n("crm.edit.addPosition")}

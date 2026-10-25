@@ -23,7 +23,7 @@ function csvCell(v: unknown): string {
 
 export default function UyeliklerPage() {
   const { locale } = useI18n();
-  const L = T[locale] ?? T.tr;
+  const L = T[locale] ?? T.en;
   // Load the full set once (no status query) so chip counts stay stable; filter client-side
   const [rows, setRows] = useState<Row[]>([]);
   const [filter, setFilter] = useState("");

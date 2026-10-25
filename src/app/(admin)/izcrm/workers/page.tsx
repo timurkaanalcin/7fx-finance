@@ -387,8 +387,8 @@ export default function WorkersPage() {
               { k: "inactive", label: i18n("crm.ui.inactive"), title: "" },
               {
                 k: "stale",
-                label: "7+ gün giriş yok",
-                title: "Aktif ama 7 günden uzun süredir (veya hiç) giriş yapmamış · Active but no login for 7+ days",
+                label: i18n("gap.work.stale"),
+                title: i18n("gap.work.staleTitle"),
               },
             ] as { k: WFilter; label: string; title: string }[]
           ).map(({ k, label, title }) => {

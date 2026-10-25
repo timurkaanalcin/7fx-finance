@@ -1,17 +1,21 @@
 "use client";
 
 import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 /** Small staff-only copy-to-clipboard control (e.g. account login ID). */
 export default function CopyButton({
   value,
-  title = "Kopyala",
+  title,
   className = "",
 }: {
   value: string;
   title?: string;
   className?: string;
 }) {
+  const { i18n } = useCrmLabels();
+  const label = title || i18n("gap.copy.action");
+  const done = i18n("gap.copy.done");
   const [copied, setCopied] = useState(false);
   const timer = useRef<number | null>(null);
 
@@ -64,8 +68,8 @@ export default function CopyButton({
     <button
       type="button"
       onClick={onClick}
-      title={copied ? "Kopyalandı" : title}
-      aria-label={copied ? "Kopyalandı" : title}
+      title={copied ? done : label}
+      aria-label={copied ? done : label}
       className={`inline-flex items-center gap-0.5 rounded border px-1 py-px align-middle text-[9px] font-sans font-medium leading-none transition-colors ${
         copied
           ? "border-emerald-300 bg-emerald-50 text-emerald-700"
@@ -77,7 +81,7 @@ export default function CopyButton({
           <svg viewBox="0 0 16 16" className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M3 8.5l3 3 7-7" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          Kopyalandı
+          {done}
         </>
       ) : (
         <svg viewBox="0 0 16 16" className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth="1.6">

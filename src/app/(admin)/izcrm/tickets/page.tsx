@@ -663,7 +663,7 @@ export default function TicketsPage() {
           type="button"
           onClick={downloadCsv}
           disabled={tickets.length === 0}
-          title="Gösterilen satırları CSV indir · Download shown rows as CSV"
+          title={i18n("gap.csv.shown")}
           className="rounded border border-neutral-300 bg-white px-2 py-1.5 font-medium text-neutral-700 hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-40"
         >
           CSV

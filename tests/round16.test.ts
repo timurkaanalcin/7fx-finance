@@ -42,7 +42,7 @@ function main() {
   );
   assert.match(page, /take: "50"/);
   assert.match(page, /load\("more"\)/);
-  assert.match(page, /T\[locale\] \?\? T\.tr/);
+  assert.match(page, /T\[locale\] \?\? T\.en/);
 
   console.log("round16 tests passed");
 }

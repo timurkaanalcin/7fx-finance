@@ -13,16 +13,18 @@ function read(rel: string): string {
 }
 
 function main() {
-  const missing = read("src/app/not-found.tsx");
+  const en = read("src/lib/i18n/dictionaries/en.ts");
   assert.match(read("src/components/system/PlatformStatus.tsx"), /data-fx-status=\{code\}/);
-  assert.match(missing, /code="404"/);
-  assert.match(missing, /This page is not on the desk/);
-  assert.match(missing, /Open terminal/);
+  assert.match(read("src/components/system/NotFoundStatus.tsx"), /code="404"/);
+  assert.match(en, /This page is not on the desk/);
+  assert.match(en, /Open terminal/);
 
   const fallback = read("src/components/system/ErrorFallback.tsx");
   assert.match(fallback, /code="500"/);
-  assert.match(fallback, /Try again/);
-  assert.match(fallback, /This screen did not load/);
+  assert.match(fallback, /gap\.err\.retry/);
+  assert.match(fallback, /gap\.err\.title/);
+  assert.match(en, /This screen did not load/);
+  assert.match(en, /"gap\.err\.retry": "Try again"/);
   assert.equal(fallback.includes("fontWeight: 600"), false);
   assert.equal(fallback.includes("fontWeight: 700"), false);
 

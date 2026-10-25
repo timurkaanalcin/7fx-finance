@@ -18,19 +18,27 @@ type Sponsor = {
 
 function readImage(file: File): Promise<{ data: string; w: number; h: number }> {
   return new Promise((resolve, reject) => {
-    if (!/^image\/(png|jpeg|webp|gif)$/.test(file.type)) return reject(new Error("PNG, JPG, WEBP veya GIF seçin"));
-    if (file.size > 500 * 1024) return reject(new Error("Logo en fazla 500 KB olmalı"));
+    if (!/^image\/(png|jpeg|webp|gif)$/.test(file.type)) return reject(new Error("type"));
+    if (file.size > 500 * 1024) return reject(new Error("size"));
     const r = new FileReader();
-    r.onerror = () => reject(new Error("Dosya okunamadı"));
+    r.onerror = () => reject(new Error("read"));
     r.onload = () => {
       const data = String(r.result);
       const img = new Image();
       img.onload = () => resolve({ data, w: img.naturalWidth, h: img.naturalHeight });
-      img.onerror = () => reject(new Error("Geçersiz görsel"));
+      img.onerror = () => reject(new Error("invalid"));
       img.src = data;
     };
     r.readAsDataURL(file);
   });
+}
+
+function imgMessage(i18n: (key: string) => string, code: string): string {
+  if (code === "type") return i18n("gap.img.type");
+  if (code === "size") return i18n("gap.img.size");
+  if (code === "read") return i18n("gap.img.read");
+  if (code === "invalid") return i18n("gap.img.invalid");
+  return i18n("gap.err");
 }
 
 export default function AdminSponsorsPage() {
@@ -77,7 +85,7 @@ export default function AdminSponsorsPage() {
         body: body ? JSON.stringify(body) : undefined,
       });
       const d = await r.json().catch(() => ({}));
-      if (!r.ok) { setMsg(d.error || "Hata"); return null; }
+      if (!r.ok) { setMsg(d.error || i18n("gap.err")); return null; }
       return d;
     } finally { setBusy(false); }
   }
@@ -85,12 +93,12 @@ export default function AdminSponsorsPage() {
   async function onAdd(e: FormEvent) {
     e.preventDefault();
     setMsg("");
-    if (!name.trim() || !logo) return setMsg("İsim ve logo gerekli");
+    if (!name.trim() || !logo) return setMsg(i18n("gap.spon.need"));
     const d = await call("POST", { name, url, priority, logo: logo.data, logoW: logo.w, logoH: logo.h, active: true });
     if (d) {
       setName(""); setUrl(""); setPriority(5); setLogo(null);
       if (fileRef.current) fileRef.current.value = "";
-      setMsg("Sponsor eklendi");
+      setMsg(i18n("gap.spon.added"));
       load();
     }
   }
@@ -98,7 +106,7 @@ export default function AdminSponsorsPage() {
   async function saveOrder(next: Sponsor[]) {
     setList(next);
     const d = await call("PATCH", { order: next.map((s) => s.id) });
-    if (d) { setList(d.sponsors); setMsg("Sıralama kaydedildi"); }
+    if (d) { setList(d.sponsors); setMsg(i18n("gap.spon.ordered")); }
   }
 
   function onDrop(targetId: string) {
@@ -123,7 +131,7 @@ export default function AdminSponsorsPage() {
 
   async function aiSort() {
     const d = await call("PATCH", { ai: true });
-    if (d) { setList(d.sponsors); setMsg("AI sıralaması uygulandı — sürükleyerek değiştirebilirsiniz"); }
+    if (d) { setList(d.sponsors); setMsg(i18n("gap.spon.ai")); }
   }
 
   async function patch(id: string, data: Partial<Sponsor>) {
@@ -132,10 +140,10 @@ export default function AdminSponsorsPage() {
   }
 
   async function remove(s: Sponsor) {
-    if (!confirm(`"${s.name}" silinsin mi?`)) return;
+    if (!confirm(i18n("gap.spon.confirm").replace("{name}", s.name))) return;
     if (await call("DELETE", undefined, `?id=${encodeURIComponent(s.id)}`)) {
       setList((l) => l.filter((x) => x.id !== s.id));
-      setMsg("Silindi");
+      setMsg(i18n("gap.spon.deleted"));
     }
   }
 
@@ -143,8 +151,8 @@ export default function AdminSponsorsPage() {
     <div className="p-4 text-[#111111]">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-lg font-semibold">Sponsorlar</h1>
-          <p className="text-xs text-neutral-500">Aktif sponsorlar ana sayfada bu sırayla görünür. Hiç aktif sponsor yoksa bölüm gizlenir.</p>
+          <h1 className="text-lg font-semibold">{i18n("gap.spon.title")}</h1>
+          <p className="text-xs text-neutral-500">{i18n("gap.spon.lead")}</p>
         </div>
         <button
           type="button"
@@ -152,25 +160,25 @@ export default function AdminSponsorsPage() {
           disabled={busy || list.length < 2}
           className="rounded-full bg-[#111111] px-4 py-2 text-xs font-semibold text-white disabled:opacity-40"
         >
-          AI sıralasın
+          {i18n("gap.spon.aiSort")}
         </button>
       </div>
 
       <form onSubmit={onAdd} className="mb-6 grid gap-3 rounded-xl border border-neutral-200 bg-white p-4 sm:grid-cols-[1fr_1fr_110px_1fr_auto] sm:items-end">
         <label className="text-xs">
-          <span className="text-neutral-500">İsim *</span>
+          <span className="text-neutral-500">{i18n("gap.spon.name")}</span>
           <input value={name} onChange={(e) => setName(e.target.value)} className="mt-1 w-full rounded border border-neutral-200 px-2 py-1.5" />
         </label>
         <label className="text-xs">
-          <span className="text-neutral-500">URL (opsiyonel)</span>
+          <span className="text-neutral-500">{i18n("gap.spon.url")}</span>
           <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://" className="mt-1 w-full rounded border border-neutral-200 px-2 py-1.5" />
         </label>
         <label className="text-xs">
-          <span className="text-neutral-500">Öncelik 0-10</span>
+          <span className="text-neutral-500">{i18n("gap.spon.priority")}</span>
           <input type="number" min={0} max={10} value={priority} onChange={(e) => setPriority(Number(e.target.value))} className="mt-1 w-full rounded border border-neutral-200 px-2 py-1.5" />
         </label>
         <label className="text-xs">
-          <span className="text-neutral-500">Logo * (PNG/JPG/WEBP, ≤500 KB)</span>
+          <span className="text-neutral-500">{i18n("gap.spon.logo")}</span>
           <input
             ref={fileRef}
             type="file"
@@ -178,17 +186,17 @@ export default function AdminSponsorsPage() {
             onChange={async (e) => {
               const f = e.target.files?.[0];
               if (!f) return setLogo(null);
-              try { setLogo(await readImage(f)); setMsg(""); } catch (err) { setLogo(null); setMsg((err as Error).message); }
+              try { setLogo(await readImage(f)); setMsg(""); } catch (err) { setLogo(null); setMsg(imgMessage(i18n, (err as Error).message)); }
             }}
             className="mt-1 w-full text-xs"
           />
         </label>
         <button disabled={busy} className="rounded-full border border-neutral-300 bg-white px-4 py-2 text-xs font-semibold hover:bg-neutral-50 disabled:opacity-40">
-          Ekle
+          {i18n("gap.spon.add")}
         </button>
         {logo && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={logo.data} alt="Önizleme" className="h-10 w-auto object-contain sm:col-span-5" />
+          <img src={logo.data} alt={i18n("gap.spon.preview")} className="h-10 w-auto object-contain sm:col-span-5" />
         )}
       </form>
 
@@ -216,7 +224,7 @@ export default function AdminSponsorsPage() {
               onDrop={() => onDrop(s.id)}
               className={`flex flex-wrap items-center gap-3 rounded-xl border bg-white p-3 ${s.active ? "border-neutral-200" : "border-neutral-200 opacity-50"}`}
             >
-              <span className="cursor-grab select-none text-neutral-400" title="Sürükle">⋮⋮</span>
+              <span className="cursor-grab select-none text-neutral-400" title={i18n("gap.spon.drag")}>⋮⋮</span>
               <span className="w-6 text-xs tabular-nums text-neutral-500">{i + 1}</span>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={s.logo} alt={s.name} className="h-10 w-28 rounded bg-neutral-50 object-contain" />
@@ -228,13 +236,13 @@ export default function AdminSponsorsPage() {
                 />
                 <input
                   defaultValue={s.url || ""}
-                  placeholder="URL yok"
+                  placeholder={i18n("gap.spon.noUrl")}
                   onBlur={(e) => (e.target.value || "") !== (s.url || "") && patch(s.id, { url: e.target.value })}
                   className="w-full rounded border border-transparent px-1 py-0.5 text-xs text-neutral-500 hover:border-neutral-200"
                 />
               </div>
               <label className="text-xs text-neutral-500">
-                Öncelik
+                {i18n("gap.spon.priorityShort")}
                 <input
                   type="number" min={0} max={10} defaultValue={s.priority}
                   onBlur={(e) => Number(e.target.value) !== s.priority && patch(s.id, { priority: Number(e.target.value) })}
@@ -243,12 +251,12 @@ export default function AdminSponsorsPage() {
               </label>
               <label className="flex items-center gap-1.5 text-xs">
                 <input type="checkbox" checked={s.active} onChange={(e) => patch(s.id, { active: e.target.checked })} />
-                Aktif
+                {i18n("gap.spon.active")}
               </label>
               <div className="flex gap-1">
                 <button type="button" onClick={() => move(s.id, -1)} disabled={busy || i === 0} className="rounded border border-neutral-200 px-2 py-1 text-xs disabled:opacity-30">↑</button>
                 <button type="button" onClick={() => move(s.id, 1)} disabled={busy || i === list.length - 1} className="rounded border border-neutral-200 px-2 py-1 text-xs disabled:opacity-30">↓</button>
-                <button type="button" onClick={() => remove(s)} disabled={busy} className="rounded border border-red-200 px-2 py-1 text-xs text-red-600 hover:bg-red-50">Sil</button>
+                <button type="button" onClick={() => remove(s)} disabled={busy} className="rounded border border-red-200 px-2 py-1 text-xs text-red-600 hover:bg-red-50">{i18n("gap.spon.delete")}</button>
               </div>
             </li>
           ))}

@@ -8,13 +8,20 @@ type L = { id: string; regulator: string; number: string; entity: string; regist
 
 function readImage(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
-    if (!/^image\/(png|jpeg|webp|gif)$/.test(file.type)) return reject(new Error("PNG, JPG, WEBP veya GIF seçin"));
-    if (file.size > 500 * 1024) return reject(new Error("Logo en fazla 500 KB olmalı"));
+    if (!/^image\/(png|jpeg|webp|gif)$/.test(file.type)) return reject(new Error("type"));
+    if (file.size > 500 * 1024) return reject(new Error("size"));
     const r = new FileReader();
-    r.onerror = () => reject(new Error("Dosya okunamadı"));
+    r.onerror = () => reject(new Error("read"));
     r.onload = () => resolve(String(r.result));
     r.readAsDataURL(file);
   });
+}
+
+function imgMessage(i18n: (key: string) => string, code: string): string {
+  if (code === "type") return i18n("gap.img.type");
+  if (code === "size") return i18n("gap.img.size");
+  if (code === "read") return i18n("gap.img.read");
+  return i18n("gap.err");
 }
 
 const empty = { regulator: "", number: "", entity: "", registerUrl: "" };
@@ -59,7 +66,7 @@ export default function AdminLicensesPage() {
     try {
       const r = await fetch(`/api/admin/licenses${qs}`, { method, headers: { "Content-Type": "application/json" }, body: body ? JSON.stringify(body) : undefined });
       const d = await r.json().catch(() => ({}));
-      if (!r.ok) { setMsg(d.error || "Hata"); return null; }
+      if (!r.ok) { setMsg(d.error || i18n("gap.err")); return null; }
       return d;
     } finally { setBusy(false); }
   }
@@ -67,12 +74,12 @@ export default function AdminLicensesPage() {
   async function onAdd(e: FormEvent) {
     e.preventDefault();
     setMsg("");
-    if (!form.regulator.trim() || !form.number.trim() || !form.entity.trim()) return setMsg("Kurum, lisans no ve şirket adı gerekli");
-    if (!/^https:\/\//i.test(form.registerUrl.trim())) return setMsg("Resmi kayıt URL'si https:// ile başlamalı");
+    if (!form.regulator.trim() || !form.number.trim() || !form.entity.trim()) return setMsg(i18n("gap.lic.need"));
+    if (!/^https:\/\//i.test(form.registerUrl.trim())) return setMsg(i18n("gap.lic.https"));
     if (await call("POST", { ...form, logo, active: true })) {
       setForm({ ...empty }); setLogo(null);
       if (fileRef.current) fileRef.current.value = "";
-      setMsg("Lisans eklendi");
+      setMsg(i18n("gap.lic.added"));
       load();
     }
   }
@@ -80,7 +87,7 @@ export default function AdminLicensesPage() {
   async function saveOrder(next: L[]) {
     setList(next);
     const d = await call("PATCH", { order: next.map((s) => s.id) });
-    if (d) { setList(d.licenses); setMsg("Sıralama kaydedildi"); }
+    if (d) { setList(d.licenses); setMsg(i18n("gap.spon.ordered")); }
   }
   function onDrop(target: string) {
     const from = dragId.current; dragId.current = null;
@@ -102,34 +109,32 @@ export default function AdminLicensesPage() {
     else load();
   }
   async function remove(s: L) {
-    if (!confirm(`"${s.regulator} ${s.number}" silinsin mi?`)) return;
-    if (await call("DELETE", undefined, `?id=${encodeURIComponent(s.id)}`)) { setList((l) => l.filter((x) => x.id !== s.id)); setMsg("Silindi"); }
+    if (!confirm(i18n("gap.lic.confirm").replace("{name}", `${s.regulator} ${s.number}`))) return;
+    if (await call("DELETE", undefined, `?id=${encodeURIComponent(s.id)}`)) { setList((l) => l.filter((x) => x.id !== s.id)); setMsg(i18n("gap.spon.deleted")); }
   }
 
   return (
     <div className="p-4 text-[#111111]">
-      <h1 className="text-lg font-semibold">Lisanslar</h1>
-      <p className="mb-4 text-xs text-neutral-500">
-        Yalnızca gerçek ve doğrulanabilir lisansları ekleyin. Aktif olanlar ana sayfada bu sırayla, resmi kayıt bağlantısıyla gösterilir. Aktif lisans yoksa bölüm gizlenir.
-      </p>
+      <h1 className="text-lg font-semibold">{i18n("gap.lic.title")}</h1>
+      <p className="mb-4 text-xs text-neutral-500">{i18n("gap.lic.lead")}</p>
 
       <form onSubmit={onAdd} className="mb-6 grid gap-3 rounded-xl border border-neutral-200 bg-white p-4 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1.3fr_1fr_auto] lg:items-end">
-        <label className="text-xs"><span className="text-neutral-500">Düzenleyici kurum *</span>
+        <label className="text-xs"><span className="text-neutral-500">{i18n("gap.lic.regulator")}</span>
           <input value={form.regulator} onChange={(e) => setForm({ ...form, regulator: e.target.value })} className={inp} /></label>
-        <label className="text-xs"><span className="text-neutral-500">Lisans no *</span>
+        <label className="text-xs"><span className="text-neutral-500">{i18n("gap.lic.number")}</span>
           <input value={form.number} onChange={(e) => setForm({ ...form, number: e.target.value })} className={inp} /></label>
-        <label className="text-xs"><span className="text-neutral-500">Tüzel kişi (şirket) *</span>
+        <label className="text-xs"><span className="text-neutral-500">{i18n("gap.lic.entity")}</span>
           <input value={form.entity} onChange={(e) => setForm({ ...form, entity: e.target.value })} className={inp} /></label>
-        <label className="text-xs"><span className="text-neutral-500">Resmi kayıt URL&apos;si (https) *</span>
+        <label className="text-xs"><span className="text-neutral-500">{i18n("gap.lic.url")}</span>
           <input value={form.registerUrl} onChange={(e) => setForm({ ...form, registerUrl: e.target.value })} placeholder="https://" className={inp} /></label>
-        <label className="text-xs"><span className="text-neutral-500">Logo (opsiyonel, ≤500 KB)</span>
+        <label className="text-xs"><span className="text-neutral-500">{i18n("gap.lic.logo")}</span>
           <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="mt-1 w-full text-xs"
             onChange={async (e) => {
               const f = e.target.files?.[0];
               if (!f) return setLogo(null);
-              try { setLogo(await readImage(f)); setMsg(""); } catch (err) { setLogo(null); setMsg((err as Error).message); }
+              try { setLogo(await readImage(f)); setMsg(""); } catch (err) { setLogo(null); setMsg(imgMessage(i18n, (err as Error).message)); }
             }} /></label>
-        <button disabled={busy} className="rounded-full bg-[#111111] px-4 py-2 text-xs font-semibold text-white disabled:opacity-40">Ekle</button>
+        <button disabled={busy} className="rounded-full bg-[#111111] px-4 py-2 text-xs font-semibold text-white disabled:opacity-40">{i18n("gap.spon.add")}</button>
       </form>
 
       {msg && <p className="mb-3 text-xs text-neutral-600">{msg}</p>}
@@ -150,13 +155,13 @@ export default function AdminLicensesPage() {
           {list.map((s, i) => (
             <li key={s.id} draggable onDragStart={() => (dragId.current = s.id)} onDragOver={(e) => e.preventDefault()} onDrop={() => onDrop(s.id)}
               className={`flex flex-wrap items-center gap-3 rounded-xl border border-neutral-200 bg-white p-3 ${s.active ? "" : "opacity-50"}`}>
-              <span className="cursor-grab select-none text-neutral-400" title="Sürükle">⋮⋮</span>
+              <span className="cursor-grab select-none text-neutral-400" title={i18n("gap.spon.drag")}>⋮⋮</span>
               <span className="w-6 text-xs tabular-nums text-neutral-500">{i + 1}</span>
-              <label className="flex h-10 w-24 cursor-pointer items-center justify-center rounded bg-neutral-50 text-[10px] text-neutral-400" title="Logoyu değiştir">
+              <label className="flex h-10 w-24 cursor-pointer items-center justify-center rounded bg-neutral-50 text-[10px] text-neutral-400" title={i18n("gap.lic.changeLogo")}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                {s.logo ? <img src={s.logo} alt={s.regulator} className="h-10 w-24 object-contain" /> : "Logo yok"}
+                {s.logo ? <img src={s.logo} alt={s.regulator} className="h-10 w-24 object-contain" /> : i18n("gap.lic.noLogo")}
                 <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden"
-                  onChange={async (e) => { const f = e.target.files?.[0]; if (!f) return; try { patch(s.id, { logo: await readImage(f) }); } catch (err) { setMsg((err as Error).message); } }} />
+                  onChange={async (e) => { const f = e.target.files?.[0]; if (!f) return; try { patch(s.id, { logo: await readImage(f) }); } catch (err) { setMsg(imgMessage(i18n, (err as Error).message)); } }} />
               </label>
               <div className="grid min-w-[260px] flex-1 gap-0.5 sm:grid-cols-3">
                 <input defaultValue={s.regulator} onBlur={(e) => e.target.value.trim() !== s.regulator && patch(s.id, { regulator: e.target.value })} className={`${cell} text-sm font-semibold`} />
@@ -164,12 +169,12 @@ export default function AdminLicensesPage() {
                 <input defaultValue={s.entity} onBlur={(e) => e.target.value.trim() !== s.entity && patch(s.id, { entity: e.target.value })} className={`${cell} text-sm`} />
                 <input defaultValue={s.registerUrl} onBlur={(e) => e.target.value.trim() !== s.registerUrl && patch(s.id, { registerUrl: e.target.value })} className={`${cell} text-xs text-neutral-500 sm:col-span-3`} />
               </div>
-              {s.logo && <button type="button" onClick={() => patch(s.id, { logo: null })} className="text-[11px] text-neutral-500 underline">Logoyu kaldır</button>}
-              <label className="flex items-center gap-1.5 text-xs"><input type="checkbox" checked={s.active} onChange={(e) => patch(s.id, { active: e.target.checked })} />Aktif</label>
+              {s.logo && <button type="button" onClick={() => patch(s.id, { logo: null })} className="text-[11px] text-neutral-500 underline">{i18n("gap.lic.removeLogo")}</button>}
+              <label className="flex items-center gap-1.5 text-xs"><input type="checkbox" checked={s.active} onChange={(e) => patch(s.id, { active: e.target.checked })} />{i18n("gap.spon.active")}</label>
               <div className="flex gap-1">
                 <button type="button" onClick={() => move(s.id, -1)} disabled={busy || i === 0} className="rounded border border-neutral-200 px-2 py-1 text-xs disabled:opacity-30">↑</button>
                 <button type="button" onClick={() => move(s.id, 1)} disabled={busy || i === list.length - 1} className="rounded border border-neutral-200 px-2 py-1 text-xs disabled:opacity-30">↓</button>
-                <button type="button" onClick={() => remove(s)} disabled={busy} className="rounded border border-red-200 px-2 py-1 text-xs text-red-600 hover:bg-red-50">Sil</button>
+                <button type="button" onClick={() => remove(s)} disabled={busy} className="rounded border border-red-200 px-2 py-1 text-xs text-red-600 hover:bg-red-50">{i18n("gap.spon.delete")}</button>
               </div>
             </li>
           ))}

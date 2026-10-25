@@ -18,9 +18,10 @@ function main() {
   assert.match(status, /fontWeight: 500/);
   assert.equal(status.includes("fontWeight: 600"), false);
   assert.equal(status.includes("fontWeight: 700"), false);
-  assert.match(read("src/app/not-found.tsx"), /code="404"/);
+  assert.match(read("src/components/system/NotFoundStatus.tsx"), /code="404"/);
   assert.match(read("src/components/system/ErrorFallback.tsx"), /code="500"/);
-  assert.match(read("src/components/system/ErrorFallback.tsx"), /Try again/);
+  assert.match(read("src/components/system/ErrorFallback.tsx"), /gap\.err\.retry/);
+  assert.match(read("src/lib/i18n/dictionaries/en.ts"), /"gap\.err\.retry": "Try again"/);
 
   for (const rel of [
     "src/app/(public)/loading.tsx",

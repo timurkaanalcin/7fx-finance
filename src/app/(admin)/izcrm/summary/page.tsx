@@ -154,9 +154,9 @@ export default function AdminSummaryPage() {
 
   const chips: { k: Filter; label: string }[] = [
     { k: "all", label: i18n("crm.ui.all") },
-    { k: "open", label: "Açık pozisyonlu" },
-    { k: "profit", label: "Kârda" },
-    { k: "loss", label: "Zararda" },
+    { k: "open", label: i18n("gap.sum.open") },
+    { k: "profit", label: i18n("gap.sum.profit") },
+    { k: "loss", label: i18n("gap.sum.loss") },
   ];
 
   const th = (k: SortKey, children: ReactNode) => {
@@ -255,7 +255,7 @@ export default function AdminSummaryPage() {
               type="button"
               onClick={downloadCsv}
               disabled={shown.length === 0}
-              title="Filtrelenmiş satırları CSV indir · Download filtered rows as CSV"
+              title={i18n("gap.csv.filtered")}
               className="rounded border border-neutral-300 bg-white px-2 py-1 text-[11px] font-medium text-neutral-700 hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-40"
             >
               CSV
