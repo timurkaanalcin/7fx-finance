@@ -2,99 +2,47 @@
 
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { LOCALE_META } from "@/lib/i18n/locales";
-
 import { fmtCrmDate } from "@/lib/crm-format";
-
+import { formatQueueMoney, nextMoneySort, queueStatusTone } from "@/lib/crm-money-queue";
+import { MoneyQueueChrome, MoneyQueuePager } from "@/components/crm/MoneyQueueChrome";
+import { useMoneyQueue, type MoneyQueueRow } from "@/components/crm/use-money-queue";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useVisiblePoll } from "@/lib/use-visible-poll";
+import { useMemo, useState } from "react";
 
-type Row = {
-  id: string;
-  amount: number;
-  currency: string;
-  status: string;
-  note: string | null;
-  adminNote: string | null;
-  createdAt: string;
-  reviewedAt: string | null;
-  user: { id: string; email: string; name: string };
+type Row = MoneyQueueRow & {
   method: { label: string; type: string };
 };
 
+function sortMark(sort: string, field: string): string {
+  if (field === "created" && (sort === "" || sort === "created_desc")) return " ↓";
+  if (sort === `${field}_desc`) return " ↓";
+  if (sort === `${field}_asc`) return " ↑";
+  return " ↕";
+}
+
 export default function AdminDepositsPage() {
   const { i18n, code, locale } = useCrmLabels();
-  const [rows, setRows] = useState<Row[]>([]);
-  const [filter, setFilter] = useState("PENDING");
+  const queue = useMoneyQueue<Row>("/api/admin/deposits", { take: "50", kind: "deposit" });
+  const dateLocale = LOCALE_META[locale].htmlLang;
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState("");
-  const [query, setQuery] = useState("");
-  const [loadedAt, setLoadedAt] = useState<Date | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(false);
-  const [moreBusy, setMoreBusy] = useState(false);
-  const rowsRef = useRef<Row[]>([]);
-
-  const load = useCallback(async (mode: "replace" | "more" = "replace") => {
-    const skip = mode === "more" ? rowsRef.current.length : 0;
-    if (mode === "more") setMoreBusy(true);
-    else setLoading(true);
-    try {
-      const params = new URLSearchParams({ take: "50", skip: String(skip) });
-      if (filter) params.set("status", filter);
-      const res = await fetch(`/api/admin/deposits?${params}`);
-      if (!res.ok) return;
-      const data = await res.json();
-      const incoming: Row[] = data.requests || [];
-      const seen = new Set(rowsRef.current.map((r) => r.id));
-      const next = mode === "more" ? rowsRef.current.concat(incoming.filter((r) => !seen.has(r.id))) : incoming;
-      rowsRef.current = next;
-      setRows(next);
-      setHasMore(Boolean(data.hasMore));
-      setLoadedAt(new Date());
-    } finally {
-      if (mode === "more") setMoreBusy(false);
-      else setLoading(false);
-    }
-  }, [filter]);
-
-  useEffect(() => {
-    load();
-  }, [load]);
-
-  // Pending queue refreshes itself so new requests show up without a manual reload.
-  useVisiblePoll(load, 30_000, filter === "PENDING");
-
-  const shown = useMemo(() => {
-    const q = query.trim().toLocaleLowerCase("tr");
-    if (!q) return rows;
-    return rows.filter((r) =>
-      [r.user.name, r.user.email, r.method.label, r.method.type, r.note || "", r.currency]
-        .join(" ")
-        .toLocaleLowerCase("tr")
-        .includes(q),
-    );
-  }, [rows, query]);
-
-  const totals = useMemo(() => {
-    const m = new Map<string, number>();
-    for (const r of shown) {
-      const c = r.currency || "USD";
-      m.set(c, (m.get(c) || 0) + (Number(r.amount) || 0));
-    }
-    return Array.from(m.entries()).sort((a, b) => b[1] - a[1]);
-  }, [shown]);
 
   function money(amount: number, currency: string) {
-    try {
-      return amount.toLocaleString("en-US", { style: "currency", currency: currency || "USD" });
-    } catch {
-      return `${amount.toLocaleString("en-US", { maximumFractionDigits: 2 })} ${currency}`;
-    }
+    return formatQueueMoney(amount, currency, dateLocale);
   }
 
+  const totals = useMemo(() => {
+    if (queue.page !== 1 || queue.hasMore) return [];
+    const grouped = new Map<string, number>();
+    for (const row of queue.rows) {
+      const currency = row.currency || "USD";
+      grouped.set(currency, (grouped.get(currency) || 0) + (Number(row.amount) || 0));
+    }
+    return Array.from(grouped.entries()).sort((a, b) => b[1] - a[1]);
+  }, [queue.rows, queue.page, queue.hasMore]);
+
   async function act(id: string, action: "approve" | "reject") {
-    const row = rows.find((r) => r.id === id);
+    const row = queue.rows.find((r) => r.id === id);
     const detail = row ? `\n\n${row.user.name} · ${row.user.email}\n${money(row.amount, row.currency)}` : "";
     const question = action === "approve" ? i18n("crm.dep.confirmApprove") : i18n("crm.dep.confirmReject");
     if (!window.confirm(question + detail)) return;
@@ -112,7 +60,7 @@ export default function AdminDepositsPage() {
         return;
       }
       setMsg(action === "approve" ? i18n("crm.dep.approved") : i18n("crm.dep.rejected"));
-      await load();
+      await queue.load();
     } finally {
       setBusy(null);
     }
@@ -120,99 +68,87 @@ export default function AdminDepositsPage() {
 
   return (
     <div>
-      <div className="mb-4 flex flex-wrap items-center gap-2">
-        <h1 className="text-lg font-medium">{i18n("crm.dep.title")}</h1>
-        <div className="ml-auto flex gap-1">
-          {["PENDING", "APPROVED", "REJECTED", ""].map((f) => (
-            <button
-              key={f || "ALL"}
-              onClick={() => setFilter(f)}
-              className={`rounded px-2 py-1 text-xs ${filter === f ? "bg-black text-white" : "bg-[#e5e5e5]"}`}
-            >
-              {f ? code("crm.status", f) : i18n("crm.ui.all")}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div className="mb-3 flex flex-wrap items-center gap-2">
-        <div className="relative w-full max-w-xs">
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Escape") setQuery("");
-            }}
-            placeholder={i18n("crm.dep.searchPh")}
-            aria-label={i18n("crm.ui.search")}
-            className="w-full rounded border border-[#e5e5e5] bg-white py-1 pl-2 pr-6 text-xs outline-none focus:border-black/40"
-          />
-          {query && (
-            <button
-              type="button"
-              onClick={() => setQuery("")}
-              aria-label={i18n("crm.ui.clearField")}
-              title={i18n("crm.ui.clearField")}
-              className="absolute right-1 top-1/2 -translate-y-1/2 px-1 text-neutral-400 hover:text-neutral-700"
-            >
-              ×
-            </button>
-          )}
-        </div>
-        <span className="rounded bg-[#f2f2f2] px-2 py-1 text-xs tabular-nums">
-          {i18n("crm.dep.count")}: <b>{shown.length}</b>
-        </span>
-        {totals.map(([c, v]) => (
-          <span key={c} className="rounded bg-[#f2f2f2] px-2 py-1 text-xs tabular-nums">
-            {i18n("crm.dep.total")} {c}: <b>{money(v, c)}</b>
+      <MoneyQueueChrome
+        queue={queue}
+        title={i18n("crm.dep.title")}
+        extra={totals.map(([currency, value]) => (
+          <span key={currency} className="rounded bg-[#f2f2f2] px-2 py-1 text-xs tabular-nums">
+            {i18n("crm.dep.total")} {currency}: <span className="font-medium">{money(value, currency)}</span>
           </span>
         ))}
-        <div className="ml-auto flex items-center gap-2 text-[11px] text-neutral-500">
-          {loadedAt && (
-            <span title={filter === "PENDING" ? i18n("crm.dep.autoRefresh") : undefined}>
-              {i18n("crm.dep.updated")} {loadedAt.toLocaleTimeString(LOCALE_META[locale].htmlLang, { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+        clock={
+          queue.loadedAt ? (
+            <span title={queue.status === "PENDING" ? i18n("crm.dep.autoRefresh") : undefined}>
+              {i18n("crm.dep.updated")}{" "}
+              {queue.loadedAt.toLocaleTimeString(LOCALE_META[locale].htmlLang, {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+              })}
             </span>
-          )}
-          <button
-            onClick={() => load()}
-            disabled={loading}
-            className="rounded bg-[#e5e5e5] px-2 py-1 text-xs text-black disabled:opacity-50"
-          >
-            {i18n("crm.dep.refresh")}
-          </button>
-        </div>
-      </div>
+          ) : null
+        }
+      />
       {msg && <p className="mb-3 text-xs text-emerald-400">{msg}</p>}
       <div className="overflow-x-auto rounded-lg border border-[#e5e5e5]">
         <table className="fx-crm-table w-full text-left text-xs">
           <thead className="border-b border-black/10 bg-white text-neutral-500">
             <tr>
-              <th className="px-3 py-2">{i18n("crm.ui.date")}</th>
-              <th className="px-3 py-2">{i18n("crm.ui.user")}</th>
+              <th className="px-3 py-2">
+                <button type="button" className="font-medium hover:text-neutral-900" data-fx-queue-sort="created" onClick={() => queue.setSort(nextMoneySort(queue.sort, "created"))}>
+                  {i18n("crm.ui.date")}
+                  {sortMark(queue.sort, "created")}
+                </button>
+              </th>
+              <th className="px-3 py-2">
+                <button type="button" className="font-medium hover:text-neutral-900" data-fx-queue-sort="name" onClick={() => queue.setSort(nextMoneySort(queue.sort, "name"))}>
+                  {i18n("crm.ui.user")}
+                  {sortMark(queue.sort, "name")}
+                </button>
+              </th>
               <th className="px-3 py-2">{i18n("crm.ui.method")}</th>
-              <th className="fx-crm-num px-3 py-2">{i18n("crm.ui.amount")}</th>
+              <th className="fx-crm-num px-3 py-2">
+                <button type="button" className="font-medium hover:text-neutral-900" data-fx-queue-sort="amount" onClick={() => queue.setSort(nextMoneySort(queue.sort, "amount"))}>
+                  {i18n("crm.ui.amount")}
+                  {sortMark(queue.sort, "amount")}
+                </button>
+              </th>
               <th className="px-3 py-2">{i18n("crm.ui.note")}</th>
-              <th className="px-3 py-2">{i18n("crm.ui.status")}</th>
+              <th className="px-3 py-2">
+                <button type="button" className="font-medium hover:text-neutral-900" data-fx-queue-sort="status" onClick={() => queue.setSort(nextMoneySort(queue.sort, "status"))}>
+                  {i18n("crm.ui.status")}
+                  {sortMark(queue.sort, "status")}
+                </button>
+              </th>
               <th className="px-3 py-2">{i18n("crm.ui.action")}</th>
             </tr>
           </thead>
           <tbody>
-            {shown.map((r) => (
+            {queue.rows.map((r) => (
               <tr key={r.id} className="border-t border-[#e5e5e5]">
-                <td className="px-3 py-2 whitespace-nowrap">{fmtCrmDate(r.createdAt)}</td>
+                <td className="whitespace-nowrap px-3 py-2">{fmtCrmDate(r.createdAt)}</td>
                 <td className="px-3 py-2">
                   <Link href={`/izcrm/traders/${r.user.id}`} className="text-sky-600 hover:underline">
                     {r.user.name}
                   </Link>
                   <div className="text-neutral-500">{r.user.email}</div>
+                  {r.user.accountLoginId && (
+                    <div className="font-mono text-[10px] text-sky-700">{r.user.accountLoginId}</div>
+                  )}
                 </td>
                 <td className="px-3 py-2">
                   {r.method.type} · {r.method.label}
                 </td>
-                <td className="fx-crm-num px-3 py-2">
-                  {money(r.amount, r.currency)}
+                <td className="fx-crm-num px-3 py-2 tabular-nums">{money(r.amount, r.currency)}</td>
+                <td className="max-w-[160px] truncate px-3 py-2 text-neutral-500">{r.note || "—"}</td>
+                <td className="px-3 py-2">
+                  <span
+                    data-fx-queue-status={r.status}
+                    className={`inline-flex rounded-full border px-2 py-0.5 font-medium ${queueStatusTone(r.status)}`}
+                  >
+                    {code("crm.status", r.status)}
+                  </span>
                 </td>
-                <td className="px-3 py-2 max-w-[160px] truncate text-neutral-500">{r.note || "—"}</td>
-                <td className="px-3 py-2">{code("crm.status", r.status)}</td>
                 <td className="px-3 py-2">
                   {r.status === "PENDING" ? (
                     <div className="flex gap-1">
@@ -237,7 +173,7 @@ export default function AdminDepositsPage() {
                 </td>
               </tr>
             ))}
-            {shown.length === 0 && (
+            {queue.rows.length === 0 && (
               <tr>
                 <td colSpan={7} className="px-3 py-8 text-center text-neutral-500">
                   {i18n("crm.ui.noRecords")}
@@ -247,16 +183,7 @@ export default function AdminDepositsPage() {
           </tbody>
         </table>
       </div>
-      {hasMore && (
-        <button
-          type="button"
-          disabled={moreBusy}
-          onClick={() => void load("more")}
-          className="mt-3 w-full rounded-lg border border-[#e5e5e5] bg-white px-3 py-2 text-sm font-medium hover:bg-[#f7f7f7] disabled:opacity-50"
-        >
-          {moreBusy ? i18n("crm.ui.loading") : i18n("crm.ui.loadMore")}
-        </button>
-      )}
+      <MoneyQueuePager queue={queue} />
     </div>
   );
 }

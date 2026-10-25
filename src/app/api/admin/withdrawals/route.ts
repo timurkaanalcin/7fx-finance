@@ -7,6 +7,7 @@ import { readApprovalPayload } from "@/lib/ticket-scenario";
 import { FxError, appendFxNote, convertAmountToUsd } from "@/lib/fx-usd";
 import { clientErrorMessage } from "@/lib/security/public-error";
 import { CRM_MONEY_LIST_LEGACY, pagedOrLegacy } from "@/lib/trader-list";
+import { moneyQueueOrderBy, moneyQueueStatus, moneyQueueTextWhere } from "@/lib/crm-money-queue";
 
 export const dynamic = "force-dynamic";
 
@@ -14,22 +15,34 @@ export async function GET(req: Request) {
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   const { searchParams } = new URL(req.url);
-  const status = searchParams.get("status");
-  const where = status ? { status: status.toUpperCase() } : {};
+  const and: Record<string, unknown>[] = [];
+  const status = moneyQueueStatus(searchParams.get("status"));
+  const text = moneyQueueTextWhere("withdrawal", searchParams.get("q") || "");
+  if (status) and.push({ status });
+  if (text) and.push(text);
+  const where = and.length ? { AND: and } : {};
   const paged = searchParams.has("take") || searchParams.has("skip");
   const page = pagedOrLegacy(searchParams.get("take"), searchParams.get("skip"), paged, CRM_MONEY_LIST_LEGACY);
-  const found = await prisma.withdrawalRequest.findMany({
+  const orderBy = moneyQueueOrderBy(searchParams.get("sort") || "");
+  const foundPromise = prisma.withdrawalRequest.findMany({
     where,
     include: {
-      user: { select: { id: true, email: true, name: true } },
+      user: { select: { id: true, email: true, name: true, accountLoginId: true } },
     },
-    orderBy: { createdAt: "desc" },
+    orderBy,
     skip: page.skip,
     take: page.paged ? page.take + 1 : page.take,
   });
+  const totalPromise = paged ? prisma.withdrawalRequest.count({ where }) : Promise.resolve(null);
+  const [found, total] = await Promise.all([foundPromise, totalPromise]);
   const hasMore = page.paged && found.length > page.take;
   const requests = hasMore ? found.slice(0, page.take) : found;
-  return NextResponse.json({ requests, hasMore, nextSkip: page.skip + requests.length });
+  return NextResponse.json({
+    requests,
+    hasMore,
+    nextSkip: page.skip + requests.length,
+    ...(typeof total === "number" ? { total } : {}),
+  });
 }
 
 /** Approve or reject a withdrawal request */
