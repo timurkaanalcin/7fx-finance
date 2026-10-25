@@ -105,6 +105,7 @@ const WatchRow = memo(function WatchRow({
   active,
   fav,
   price,
+  lastClose,
   openCount,
   openProfit,
   openLots,
@@ -118,6 +119,8 @@ const WatchRow = memo(function WatchRow({
   active: boolean;
   fav: boolean;
   price: PriceTick | undefined;
+  /** Daily close, shown only while the live bid/ask has not arrived. Not a quote. */
+  lastClose?: number;
   openCount: number;
   openProfit: number;
   openLots: string;
@@ -127,6 +130,8 @@ const WatchRow = memo(function WatchRow({
 }) {
   const { t } = useI18n();
   const up = (price?.change ?? 0) >= 0;
+  const live = !!price && Number.isFinite(price.bid) && Number.isFinite(price.ask);
+  const showLast = !live && typeof lastClose === "number" && Number.isFinite(lastClose) && lastClose > 0;
   const showName = name.length > 0 && name.toUpperCase() !== symbol.toUpperCase();
   const openTitle =
     openCount > 0
@@ -209,25 +214,46 @@ const WatchRow = memo(function WatchRow({
               </span>
             )}
           </div>
-          <div className="flex shrink-0 flex-col items-end gap-0.5 tabular-nums">
-            <div className="flex items-baseline gap-1.5 text-[11px] font-normal tabular-nums text-desk-text/80 md:gap-1 md:text-[10px]">
-              <FlashPrice title={t("term.bid")} value={price?.bid} text={price ? formatPrice(symbol, price.bid) : "—"} />
-              <span className="text-desk-muted/50">/</span>
-              <FlashPrice title={t("term.ask")} value={price?.ask} text={price ? formatPrice(symbol, price.ask) : "—"} />
-            </div>
-            <span className="text-[10px] tabular-nums text-desk-muted/70 md:text-[9px]" title={t("term.watch.spread")}>
-              {price && Number.isFinite(price.bid) && Number.isFinite(price.ask)
-                ? formatPrice(symbol, Number(price.ask) - Number(price.bid))
-                : "—"}
-            </span>
-            <span
-              className={`rounded-[6px] px-1.5 py-0.5 text-[11px] font-normal tabular-nums md:rounded md:px-1 md:py-px md:text-[10px] ${
-                !price ? "text-desk-muted" : up ? "bg-desk-buy/12 text-desk-buy" : "bg-desk-sell/12 text-desk-sell"
-              }`}
-              title={t("term.watch.day")}
-            >
-              {price ? `${up ? "+" : ""}${price.changePct.toFixed(2)}%` : "—"}
-            </span>
+          <div
+            className="flex shrink-0 flex-col items-end gap-0.5 tabular-nums"
+            data-fx-watch-quote={live ? "live" : showLast ? "last" : "empty"}
+          >
+            {showLast ? (
+              <span
+                className="text-[11px] font-normal tabular-nums text-desk-muted md:text-[10px]"
+                title={t("term.watch.closedHint")}
+              >
+                {formatPrice(symbol, lastClose)}
+              </span>
+            ) : (
+              <div className="flex items-baseline gap-1.5 text-[11px] font-normal tabular-nums text-desk-text/80 md:gap-1 md:text-[10px]">
+                <FlashPrice title={t("term.bid")} value={price?.bid} text={live ? formatPrice(symbol, price.bid) : "—"} />
+                <span className="text-desk-muted/50">/</span>
+                <FlashPrice title={t("term.ask")} value={price?.ask} text={live ? formatPrice(symbol, price.ask) : "—"} />
+              </div>
+            )}
+            {showLast ? (
+              <span
+                className="fx-watch-closed text-[9px] font-normal uppercase tracking-wide text-desk-muted"
+                title={t("term.watch.closedHint")}
+              >
+                {t("term.watch.closed")}
+              </span>
+            ) : (
+              <span className="text-[10px] tabular-nums text-desk-muted/70 md:text-[9px]" title={t("term.watch.spread")}>
+                {live && price ? formatPrice(symbol, Number(price.ask) - Number(price.bid)) : "—"}
+              </span>
+            )}
+            {!showLast && (
+              <span
+                className={`rounded-[6px] px-1.5 py-0.5 text-[11px] font-normal tabular-nums md:rounded md:px-1 md:py-px md:text-[10px] ${
+                  !live ? "text-desk-muted" : up ? "bg-desk-buy/12 text-desk-buy" : "bg-desk-sell/12 text-desk-sell"
+                }`}
+                title={t("term.watch.day")}
+              >
+                {live && price ? `${up ? "+" : ""}${price.changePct.toFixed(2)}%` : "—"}
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -257,6 +283,10 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
 
   const pricesRef = useRef(prices);
   pricesRef.current = prices;
+  /** Last daily close for rows that do not have a live tick yet. Display only. */
+  const [lastCloses, setLastCloses] = useState<Record<string, number>>({});
+  const lastClosesRef = useRef(lastCloses);
+  lastClosesRef.current = lastCloses;
   /** Open positions grouped by catalog symbol (matches both symbol and chartSymbol). */
   const openTickKey = positionTickKey(openPositions ?? [], prices);
   const openBySymbol = useMemo(() => {
@@ -415,6 +445,86 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
   }, [baseList, sortMode, pctSnap, favs]);
 
   const listRef = useRef<HTMLDivElement>(null);
+  const rowKey = list.map((s) => s.symbol).join("|");
+  useEffect(() => {
+    const root = listRef.current;
+    if (!root || !rowKey) return;
+    let cancelled = false;
+    const queued = new Set<string>();
+    const inflight = new Set<string>();
+    const failed = new Set<string>();
+    const pending: string[] = [];
+    let running = 0;
+
+    const needsClose = (symbol: string) => {
+      if (pricesRef.current[symbol]) return false;
+      if (lastClosesRef.current[symbol]) return false;
+      if (inflight.has(symbol) || failed.has(symbol) || queued.has(symbol)) return false;
+      return true;
+    };
+
+    const pump = () => {
+      while (running < 3 && pending.length) {
+        const symbol = pending.shift();
+        if (!symbol) break;
+        queued.delete(symbol);
+        if (!needsClose(symbol) && !inflight.has(symbol)) continue;
+        if (pricesRef.current[symbol] || lastClosesRef.current[symbol] || failed.has(symbol)) continue;
+        inflight.add(symbol);
+        running += 1;
+        const url = `/api/market/ohlc?symbol=${encodeURIComponent(symbol)}&timeframe=1D`;
+        fetch(url, { cache: "no-store" })
+          .then((res) => (res.ok ? res.json() : Promise.reject(new Error("ohlc"))))
+          .then((data: { candles?: { close?: number }[] }) => {
+            const candles = data?.candles;
+            const close = Array.isArray(candles) && candles.length ? candles[candles.length - 1]?.close : undefined;
+            if (cancelled) return;
+            if (typeof close === "number" && Number.isFinite(close) && close > 0) {
+              setLastCloses((prev) => (prev[symbol] === close ? prev : { ...prev, [symbol]: close }));
+            } else {
+              failed.add(symbol);
+            }
+          })
+          .catch(() => {
+            failed.add(symbol);
+          })
+          .finally(() => {
+            inflight.delete(symbol);
+            running -= 1;
+            if (!cancelled) pump();
+          });
+      }
+    };
+
+    const enqueue = (symbol: string) => {
+      if (!needsClose(symbol)) return;
+      queued.add(symbol);
+      pending.push(symbol);
+      pump();
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const symbol = (entry.target as HTMLElement).getAttribute("data-fx-watch-row");
+          if (symbol) enqueue(symbol);
+        }
+      },
+      { root, rootMargin: "120px 0px" }
+    );
+    const observe = () => {
+      root.querySelectorAll<HTMLElement>("[data-fx-watch-row]").forEach((el) => io.observe(el));
+    };
+    observe();
+    const mo = new MutationObserver(observe);
+    mo.observe(root, { childList: true });
+    return () => {
+      cancelled = true;
+      io.disconnect();
+      mo.disconnect();
+    };
+  }, [rowKey]);
   const focusRow = useCallback((symbol: string) => {
     const el = listRef.current?.querySelector<HTMLButtonElement>(`[data-fx-watch-row="${CSS.escape(symbol)}"]`);
     el?.focus();
@@ -563,6 +673,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
               active={selected === s.symbol}
               fav={favs.includes(s.symbol)}
               price={prices[s.symbol]}
+              lastClose={lastCloses[s.symbol]}
               openCount={agg?.count ?? 0}
               openProfit={agg?.profit ?? 0}
               openLots={openLots}

@@ -976,4 +976,6 @@ export const de: Dict = {
   "landing.desk.ticket": "Orderticket",
   "landing.desk.spread": "Spread",
   "landing.desk.note": "Kaufen und Verkaufen öffnen ein Konto und senden keinen Auftrag.",
+  "term.watch.closed": "geschlossen",
+  "term.watch.closedHint": "Letzter Schluss. Geld und Brief sind noch nicht da.",
 };
