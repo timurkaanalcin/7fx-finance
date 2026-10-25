@@ -50,14 +50,15 @@ Each pull request in the polish stack is based on the previous head. Land them o
 #90
 #91
 #92
+#93
 #52
 #56
 #48
 <!-- merge-order:end -->
 
-#89 adds this file. Its base is `cursor/round62-smoke-b495` (#88). #90 (`cursor/round64-quality-infra-b495`) is stacked on #89. #91 (`cursor/round65-landing-visual-b495`) is stacked on #90. #92 (`cursor/round66-trade-candles-b495`) is stacked on #91. Merge #89, then #90, then #91, then #92, before #52.
+#89 adds this file. Its base is `cursor/round62-smoke-b495` (#88). #90 (`cursor/round64-quality-infra-b495`) is stacked on #89. #91 (`cursor/round65-landing-visual-b495`) is stacked on #90. #92 (`cursor/round66-trade-candles-b495`) is stacked on #91. #93 (`cursor/round67-trade-theme-b495`) is stacked on #92. Merge #89, then #90, then #91, then #92, then #93, before #52.
 
-After #88, #89, #90, #91, and #92 are on `main`:
+After #88, #89, #90, #91, #92, and #93 are on `main`:
 
 1. Retarget #52 (`cursor/auto-login-impersonation-f020`) from `cursor/round33-register-platform-b495` to `main`, then merge #52.
 2. Set the #56 variables on the Vercel project (below), then merge #56 (`cursor/live-support-autoreply-push-61c4`, base `main`).
@@ -108,6 +109,7 @@ Heads, for the same order:
 | #90 | `cursor/round64-quality-infra-b495` |
 | #91 | `cursor/round65-landing-visual-b495` |
 | #92 | `cursor/round66-trade-candles-b495` |
+| #93 | `cursor/round67-trade-theme-b495` |
 | #52 | `cursor/auto-login-impersonation-f020` |
 | #56 | `cursor/live-support-autoreply-push-61c4` |
 | #48 | `cursor/optional-source-account-f34f` |
@@ -145,7 +147,7 @@ Per pull request, new Vercel variables:
 
 | PRs | New Vercel variables |
 | --- | --- |
-| #46 through #92 | none |
+| #46 through #93 | none |
 | #52 | none |
 | #56 | `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` |
 | #48 | none |
