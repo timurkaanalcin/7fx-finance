@@ -7,7 +7,7 @@ function TerminalFilm() {
   return (
     <figure className="fx-film">
       {/* Still only. The looping screen is the canvas section, so this column does not fetch the demo video. */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {/* eslint-disable-next-line @next/next/no-img-element -- static bitmap; next/image would change this layout */}
       <img
         src="/landing/terminal-poster.webp"
         alt={t("landing.video.caption")}
@@ -36,7 +36,7 @@ export default function ProductStage() {
           <picture>
             <source srcSet="/landing/terminal-desktop.avif" type="image/avif" />
             <source srcSet="/landing/terminal-desktop.webp" type="image/webp" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+            {/* eslint-disable-next-line @next/next/no-img-element -- static bitmap; next/image would change this layout */}
             <img
               src="/landing/terminal-desktop.webp"
               alt={t("landing.demo.desktop")}
@@ -56,7 +56,7 @@ export default function ProductStage() {
           <picture>
             <source srcSet="/landing/terminal-mobile.avif" type="image/avif" />
             <source srcSet="/landing/terminal-mobile.webp" type="image/webp" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+            {/* eslint-disable-next-line @next/next/no-img-element -- static bitmap; next/image would change this layout */}
             <img
               src="/landing/terminal-mobile.webp"
               alt={t("landing.demo.mobile")}

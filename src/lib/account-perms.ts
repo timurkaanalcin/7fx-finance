@@ -52,17 +52,17 @@ const LOGIN_DISABLED_FALLBACK: Record<string, string> = {
   ar: "تم إغلاق الوصول إلى حسابك.",
 };
 
-export function tradingDisabledMessage(locale?: string | null) {
+export function tradingDisabledMessage(locale?: string | null): string {
   const l = (locale || "en").slice(0, 2).toLowerCase();
   return TRADING_DISABLED[l] || TRADING_DISABLED.en;
 }
 
-export function withdrawalsDisabledMessage(locale?: string | null) {
+export function withdrawalsDisabledMessage(locale?: string | null): string {
   const l = (locale || "en").slice(0, 2).toLowerCase();
   return WITHDRAWALS_DISABLED[l] || WITHDRAWALS_DISABLED.en;
 }
 
-export function loginDisabledFallbackMessage(locale?: string | null) {
+export function loginDisabledFallbackMessage(locale?: string | null): string {
   const l = (locale || "en").slice(0, 2).toLowerCase();
   return LOGIN_DISABLED_FALLBACK[l] || LOGIN_DISABLED_FALLBACK.en;
 }
@@ -83,11 +83,11 @@ const MUST_CHANGE_PASSWORD: Record<string, string> = {
   ar: "يجب تعيين كلمة مرور جديدة قبل المتابعة.",
 };
 
-export function mustChangePasswordMessage(locale?: string | null) {
+export function mustChangePasswordMessage(locale?: string | null): string {
   const l = (locale || "en").slice(0, 2).toLowerCase();
   return MUST_CHANGE_PASSWORD[l] || MUST_CHANGE_PASSWORD.en;
 }
 
-export function userMustChangePassword(u: { mustChangePassword?: boolean | null }) {
+export function userMustChangePassword(u: { mustChangePassword?: boolean | null }): boolean {
   return u.mustChangePassword === true;
 }

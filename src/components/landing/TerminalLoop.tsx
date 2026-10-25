@@ -199,7 +199,7 @@ export default function TerminalLoop() {
           </div>
           <div className="fx-screen-stage">
             {/* Poster stays in the document. The canvas covers it only while the section is near the viewport. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+            {/* eslint-disable-next-line @next/next/no-img-element -- static bitmap; next/image would change this layout */}
             <img
               src="/landing/terminal-poster.webp"
               alt={t("landing.screen.poster")}

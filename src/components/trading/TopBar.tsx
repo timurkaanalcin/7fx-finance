@@ -95,7 +95,7 @@ export default function TopBar({
     /* relative z-40: dropdown must stack above terminal content (sibling paints later otherwise) */
     <header className="fx-desk-glass fx-account-bar relative z-40 shrink-0 border-b border-desk-border/80">
       <div className="fx-account-toolbar border-r border-desk-border/80 pr-2 md:pr-3">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
+        {/* eslint-disable-next-line @next/next/no-img-element -- static bitmap; next/image would change this layout */}
         <img
           src="/icons/v3/icon-64.png"
           alt="7FX"

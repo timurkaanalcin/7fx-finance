@@ -258,11 +258,12 @@ export default function EditablePositionsTable({ rows, onSaved, manage }: Props)
           <tbody>
             {rows.map((p) => {
               const id = String(p.id);
-              const isEdit = editingId === id && draft;
-              const profitN = Number(isEdit ? draft!.profit : p.profit);
+              const editing = editingId === id && draft ? draft : null;
+              const isEdit = editing !== null;
+              const profitN = Number(editing ? editing.profit : p.profit);
               const realizedN =
-                isEdit && draft!.closeProfit !== ""
-                  ? Number(draft!.closeProfit)
+                editing && editing.closeProfit !== ""
+                  ? Number(editing.closeProfit)
                   : p.closeProfit != null
                     ? Number(p.closeProfit)
                     : p.status === "CLOSED"
@@ -274,10 +275,10 @@ export default function EditablePositionsTable({ rows, onSaved, manage }: Props)
                   className={`border-t border-[#e5e5e5] ${isEdit ? "bg-amber-50/70" : ""}`}
                 >
                   <td className="px-2 py-1.5 font-medium">
-                    {isEdit ? (
+                    {editing ? (
                       <input
                         className={inp}
-                        value={draft!.symbol}
+                        value={editing.symbol}
                         onChange={(e) => patchPrices({ symbol: e.target.value })}
                         title={i18n("crm.ui.tradeSymbol")}
                       />
@@ -286,12 +287,12 @@ export default function EditablePositionsTable({ rows, onSaved, manage }: Props)
                     )}
                   </td>
                   <td className="px-2 py-1.5">
-                    {isEdit ? (
+                    {editing ? (
                       <select
                         className={inp + " min-w-[6.5rem]"}
-                        value={draft!.chartSymbol}
+                        value={editing.chartSymbol}
                         onChange={(e) =>
-                          setDraft({ ...draft!, chartSymbol: e.target.value })
+                          setDraft({ ...editing, chartSymbol: e.target.value })
                         }
                         title={i18n("crm.ui.chartHint")}
                       >
@@ -309,10 +310,10 @@ export default function EditablePositionsTable({ rows, onSaved, manage }: Props)
                     )}
                   </td>
                   <td className="px-2 py-1.5">
-                    {isEdit ? (
+                    {editing ? (
                       <select
                         className={inp}
-                        value={draft!.side}
+                        value={editing.side}
                         onChange={(e) => patchPrices({ side: e.target.value })}
                       >
                         <option value="BUY">{code("crm.kind", "BUY")}</option>
@@ -323,10 +324,10 @@ export default function EditablePositionsTable({ rows, onSaved, manage }: Props)
                     )}
                   </td>
                   <td className="px-2 py-1.5 tabular-nums">
-                    {isEdit ? (
+                    {editing ? (
                       <input
                         className={inp}
-                        value={draft!.volume}
+                        value={editing.volume}
                         onChange={(e) => patchPrices({ volume: e.target.value })}
                       />
                     ) : (
@@ -334,10 +335,10 @@ export default function EditablePositionsTable({ rows, onSaved, manage }: Props)
                     )}
                   </td>
                   <td className="px-2 py-1.5 tabular-nums">
-                    {isEdit ? (
+                    {editing ? (
                       <input
                         className={inp}
-                        value={draft!.openPrice}
+                        value={editing.openPrice}
                         onChange={(e) => patchPrices({ openPrice: e.target.value })}
                       />
                     ) : (
@@ -351,10 +352,10 @@ export default function EditablePositionsTable({ rows, onSaved, manage }: Props)
                     {displayAmount(p, !!isEdit)}
                   </td>
                   <td className="px-2 py-1.5 tabular-nums">
-                    {isEdit ? (
+                    {editing ? (
                       <input
                         className={inp}
-                        value={draft!.currentPrice}
+                        value={editing.currentPrice}
                         onChange={(e) => patchPrices({ currentPrice: e.target.value })}
                       />
                     ) : (
@@ -362,11 +363,11 @@ export default function EditablePositionsTable({ rows, onSaved, manage }: Props)
                     )}
                   </td>
                   <td className="px-2 py-1.5 tabular-nums">
-                    {isEdit ? (
+                    {editing ? (
                       <input
                         className={inp}
                         placeholder="—"
-                        value={draft!.closePrice}
+                        value={editing.closePrice}
                         onChange={(e) => patchPrices({ closePrice: e.target.value })}
                       />
                     ) : p.closePrice != null ? (
@@ -380,10 +381,10 @@ export default function EditablePositionsTable({ rows, onSaved, manage }: Props)
                       Number.isFinite(profitN) && profitN >= 0 ? "text-emerald-600" : "text-red-500"
                     }`}
                   >
-                    {isEdit ? (
+                    {editing ? (
                       <input
                         className={inp}
-                        value={draft!.profit}
+                        value={editing.profit}
                         onChange={(e) => patchProfit({ profit: e.target.value }, "profit")}
                       />
                     ) : (
@@ -399,11 +400,11 @@ export default function EditablePositionsTable({ rows, onSaved, manage }: Props)
                         : "text-neutral-400"
                     }`}
                   >
-                    {isEdit ? (
+                    {editing ? (
                       <input
                         className={inp}
                         placeholder={i18n("crm.ui.exampleProfit")}
-                        value={draft!.closeProfit}
+                        value={editing.closeProfit}
                         onChange={(e) =>
                           patchProfit({ closeProfit: e.target.value }, "closeProfit")
                         }
@@ -415,21 +416,21 @@ export default function EditablePositionsTable({ rows, onSaved, manage }: Props)
                     )}
                   </td>
                   <td className="px-2 py-1.5">
-                    {isEdit ? (
+                    {editing ? (
                       <select
                         className={inp}
-                        value={draft!.status}
+                        value={editing.status}
                         onChange={(e) => {
                           const status = e.target.value as "OPEN" | "CLOSED";
                           setRecalcFrom("prices");
                           setDraft(
                             syncDraftFromPrices({
-                              ...draft!,
+                              ...editing,
                               status,
                               closePrice:
-                                status === "CLOSED" && draft!.closePrice === ""
-                                  ? draft!.currentPrice
-                                  : draft!.closePrice,
+                                status === "CLOSED" && editing.closePrice === ""
+                                  ? editing.currentPrice
+                                  : editing.closePrice,
                             })
                           );
                         }}
@@ -451,7 +452,7 @@ export default function EditablePositionsTable({ rows, onSaved, manage }: Props)
                   </td>
                   {(["stopLoss", "takeProfit"] as const).map((k) => (
                     <td key={k} className="px-2 py-1.5 tabular-nums">
-                      {isEdit ? (
+                      {editing ? (
                         <input
                           className={inp}
                           placeholder="—"
@@ -466,27 +467,27 @@ export default function EditablePositionsTable({ rows, onSaved, manage }: Props)
                     </td>
                   ))}
                   <td className="px-2 py-1.5 whitespace-nowrap text-neutral-600">
-                    {isEdit ? (
+                    {editing ? (
                       <input
                         type="datetime-local"
                         step={1}
                         className={inp + " min-w-[12.5rem]"}
-                        value={draft!.openedAt}
-                        onChange={(e) => setDraft({ ...draft!, openedAt: e.target.value })}
+                        value={editing.openedAt}
+                        onChange={(e) => setDraft({ ...editing, openedAt: e.target.value })}
                       />
                     ) : (
                       fmtCrmDate(p.openedAt)
                     )}
                   </td>
                   <td className="px-2 py-1.5 whitespace-nowrap text-neutral-600">
-                    {isEdit ? (
+                    {editing ? (
                       <input
                         type="datetime-local"
                         step={1}
                         className={inp + " min-w-[12.5rem]"}
-                        value={draft!.closedAt}
-                        onChange={(e) => setDraft({ ...draft!, closedAt: e.target.value })}
-                        disabled={draft!.status !== "CLOSED"}
+                        value={editing.closedAt}
+                        onChange={(e) => setDraft({ ...editing, closedAt: e.target.value })}
+                        disabled={editing.status !== "CLOSED"}
                       />
                     ) : (
                       fmtCrmDate(p.closedAt)
@@ -500,7 +501,7 @@ export default function EditablePositionsTable({ rows, onSaved, manage }: Props)
                         : "—"}
                   </td>
                   <td className="px-2 py-1.5 whitespace-nowrap">
-                    {isEdit ? (
+                    {editing ? (
                       <div className="flex flex-col gap-1">
                       <div className="flex gap-1">
                         <button

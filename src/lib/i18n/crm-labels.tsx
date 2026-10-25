@@ -2,6 +2,7 @@
 
 import { useCallback } from "react";
 import { useI18n } from "./context";
+import type { Locale } from "./locales";
 
 const DESK_ALIAS: Record<string, string> = {
   Retention: "RETENTION",
@@ -12,7 +13,13 @@ const DESK_ALIAS: Record<string, string> = {
   TR: "TR",
 };
 
-export function useCrmLabels() {
+export function useCrmLabels(): {
+  i18n: (key: string, fallback?: string) => string;
+  code: (prefix: string, value: string | null | undefined) => string;
+  deskName: (input: { name?: string | null; code?: string | null } | string | null | undefined) => string;
+  t: (key: string) => string;
+  locale: Locale;
+} {
   const { t, locale } = useI18n();
 
   const i18n = useCallback((key: string, fallback?: string) => {

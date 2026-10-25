@@ -83,7 +83,7 @@ export default function NotificationBell({ tone = "light" }: { tone?: "light" | 
   // Keep the server subscription fresh when permission was already granted.
   useEffect(() => {
     if (pushState === "granted" && vapid) subscribe(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- refresh the push subscription when permission and the key arrive
   }, [pushState, vapid]);
 
   useEffect(() => {

@@ -95,10 +95,11 @@ export default function ScreenshotGuard() {
     const mediaDevices = typeof navigator !== "undefined" ? navigator.mediaDevices : null;
     let origGetDisplay: typeof navigator.mediaDevices.getDisplayMedia | null = null;
     if (mediaDevices?.getDisplayMedia) {
-      origGetDisplay = mediaDevices.getDisplayMedia.bind(mediaDevices);
-      mediaDevices.getDisplayMedia = async (...args: Parameters<typeof mediaDevices.getDisplayMedia>) => {
+      const capture = mediaDevices.getDisplayMedia.bind(mediaDevices);
+      origGetDisplay = capture;
+      mediaDevices.getDisplayMedia = async (...args: Parameters<typeof capture>) => {
         report("getDisplayMedia");
-        return origGetDisplay!(...args);
+        return capture(...args);
       };
     }
 

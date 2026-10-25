@@ -18,7 +18,7 @@ export function hasDict(locale: Locale): boolean {
 }
 
 /** Merge a locale's public strings. Feed copy for that locale is added here. */
-export function installDict(locale: Locale, dict: Dict) {
+export function installDict(locale: Locale, dict: Dict): void {
   loaded[locale] = { ...dict, ...FEED_UI[locale], ...STATES_UI[locale] };
 }
 

@@ -41,7 +41,7 @@ export const JOB_TITLE_UI: Record<string, { field: string; register: string; pla
   de: { field: "Position", register: "Ihre Rolle im Unternehmen", placeholder: "Rolle auswählen", none: "—" },
 };
 
-export function jobTitleUi(locale: string) {
+export function jobTitleUi(locale: string): { field: string; register: string; placeholder: string; none: string } {
   return JOB_TITLE_UI[locale] ?? JOB_TITLE_UI.en;
 }
 
@@ -52,7 +52,7 @@ export function jobTitleLabel(key: string | null | undefined, locale: string): s
   return row[locale] ?? row.en;
 }
 
-export function jobTitleOptions(locale: string) {
+export function jobTitleOptions(locale: string): { value: JobTitle; label: string }[] {
   return JOB_TITLE_KEYS.map((k) => ({ value: k, label: jobTitleLabel(k, locale) }));
 }
 

@@ -24,7 +24,7 @@ export default function LicensesSection() {
           {list.map((l) => (
             <article key={l.id} className="fx-feature-card flex flex-col">
               {l.logo && (
-                // eslint-disable-next-line @next/next/no-img-element
+                // eslint-disable-next-line @next/next/no-img-element -- static bitmap; next/image would change this layout
                 <img src={l.logo} alt={l.regulator} width={120} height={40} className="mb-4 h-10 w-auto self-start object-contain" loading="lazy" />
               )}
               <p className="text-[15px] font-semibold tracking-tight">{l.regulator}</p>

@@ -186,6 +186,6 @@ export function useI18n(): I18nContextValue {
   return ctx;
 }
 
-export function useT() {
+export function useT(): (key: string) => string {
   return useI18n().t;
 }

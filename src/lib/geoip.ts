@@ -104,7 +104,7 @@ let offlineMod: { lookup: (ip: string) => { country?: string; name?: string } | 
 function viaOffline(ip: string): GeoResult | null {
   try {
     if (offlineMod === undefined) {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      // eslint-disable-next-line @typescript-eslint/no-require-imports -- geoip-country is CommonJS
       offlineMod = require("geoip-country");
     }
     const r = offlineMod?.lookup(ip);

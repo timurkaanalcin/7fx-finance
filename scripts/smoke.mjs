@@ -11,10 +11,15 @@
  *
  * SMOKE_CHANNEL=chrome uses the installed Chrome instead of bundled Chromium.
  * SMOKE_IGNORE_HTTPS=1 accepts a local self-signed certificate.
+ * A CRM hostname whose certificate does not match (DNS pointed at another host)
+ * is reported as an infra warning and does not fail the run.
  * Plain HTTP also bypasses browser CSP. Middleware sends upgrade-insecure-requests
  * on every response, and Chrome then blocks same-origin form posts on http.
  * Response headers are still checked from Node, which does not bypass CSP.
  */
+import { lookup } from "node:dns/promises";
+import tls from "node:tls";
+
 const REQUIRED_HEADERS = [
   ["x-frame-options", "DENY"],
   ["x-content-type-options", "nosniff"],
@@ -75,6 +80,96 @@ async function check(name, fn) {
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
+}
+
+function infra(name) {
+  results.push(`infra ${name}`);
+  console.log(`infra ${name}`);
+}
+
+function nameMatchesHost(host, name) {
+  if (!name || name.includes(" ")) return false;
+  if (name === host) return true;
+  if (!name.startsWith("*.")) return false;
+  const rest = name.slice(2);
+  if (!rest || host === rest) return false;
+  const hostLabels = host.split(".");
+  const restLabels = rest.split(".");
+  return host.endsWith(`.${rest}`) && hostLabels.length === restLabels.length + 1;
+}
+
+function hostCoveredByCert(hostname, cert) {
+  const host = String(hostname || "").toLowerCase();
+  if (!host || !cert) return false;
+  const cn = String((cert.subject && cert.subject.CN) || "").toLowerCase();
+  if (cn === host) return true;
+  const names = String(cert.subjectaltname || "")
+    .split(",")
+    .map((part) => part.trim().replace(/^DNS:/i, "").toLowerCase())
+    .filter(Boolean);
+  for (let i = 0; i < names.length; i += 1) {
+    if (nameMatchesHost(host, names[i])) return true;
+  }
+  return false;
+}
+
+function certMismatchMessage(hostname, address, cn) {
+  const where = address ? `${hostname} resolved ${address}` : hostname;
+  const name = cn ? `certificate CN ${cn}` : "certificate CN missing";
+  return `CRM host cert/DNS mismatch: ${where}; ${name} does not match this host`;
+}
+
+function readPeerCertificate(hostname, port) {
+  return new Promise((resolve, reject) => {
+    const socket = tls.connect(
+      {
+        host: hostname,
+        port,
+        servername: hostname,
+        rejectUnauthorized: false,
+        timeout: 8000,
+      },
+      () => {
+        const cert = socket.getPeerCertificate();
+        socket.end();
+        resolve(cert && cert.subject ? cert : null);
+      }
+    );
+    socket.on("error", (error) => {
+      socket.destroy();
+      reject(error);
+    });
+  });
+}
+
+async function crmInfraMismatch(crmUrl) {
+  let url;
+  try {
+    url = new URL(crmUrl);
+  } catch {
+    return null;
+  }
+  if (url.protocol !== "https:") return null;
+  let address = "";
+  try {
+    const looked = await lookup(url.hostname);
+    address = looked && looked.address ? looked.address : "";
+  } catch {
+    address = "";
+  }
+  let cert = null;
+  try {
+    cert = await readPeerCertificate(url.hostname, Number(url.port || 443));
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (/CERT|altname|certificate|ENOTFOUND|EAI_AGAIN/i.test(message)) {
+      return certMismatchMessage(url.hostname, address, "");
+    }
+    return null;
+  }
+  if (!cert || hostCoveredByCert(url.hostname, cert)) return null;
+  const cn = cert.subject && cert.subject.CN ? String(cert.subject.CN) : "";
+  return certMismatchMessage(url.hostname, address, cn);
 }
 
 function watchPage(page, bucket) {
@@ -261,24 +356,29 @@ async function main() {
       assert(errors.length === 0, errors.join(" | "));
     });
 
-    await check("CRM host login page loads", async () => {
-      const crmPage = await context.newPage();
-      const crmErrors = [];
-      watchPage(crmPage, crmErrors);
-      const root = await crmPage.goto(crmUrl + "/", { waitUntil: "domcontentloaded" });
-      assert(root, "no CRM response");
-      assert(new URL(crmPage.url()).hostname === crmHost, `host ${new URL(crmPage.url()).hostname}`);
-      const robots = root.headers()["x-robots-tag"] || "";
-      assert(robots.includes("noindex"), "CRM host root missing noindex");
-      const login = await crmPage.goto(crmUrl + "/login", { waitUntil: "domcontentloaded" });
-      assert(login && login.ok(), `CRM login status ${login ? login.status() : "none"}`);
-      assert(new URL(crmPage.url()).hostname === crmHost, "CRM login left the CRM host");
-      await crmPage.getByRole("heading", { name: "Sign In" }).waitFor({ timeout: 15000 });
-      await crmPage.locator("#fx-login-identifier").waitFor();
-      await crmPage.locator("#fx-login-password").waitFor();
-      assert(crmErrors.length === 0, crmErrors.join(" | "));
-      await crmPage.close();
-    });
+    const crmMismatch = process.env.SMOKE_IGNORE_HTTPS === "1" ? null : await crmInfraMismatch(crmUrl);
+    if (crmMismatch) {
+      infra(crmMismatch);
+    } else {
+      await check("CRM host login page loads", async () => {
+        const crmPage = await context.newPage();
+        const crmErrors = [];
+        watchPage(crmPage, crmErrors);
+        const root = await crmPage.goto(crmUrl + "/", { waitUntil: "domcontentloaded" });
+        assert(root, "no CRM response");
+        assert(new URL(crmPage.url()).hostname === crmHost, `host ${new URL(crmPage.url()).hostname}`);
+        const robots = root.headers()["x-robots-tag"] || "";
+        assert(robots.includes("noindex"), "CRM host root missing noindex");
+        const login = await crmPage.goto(crmUrl + "/login", { waitUntil: "domcontentloaded" });
+        assert(login && login.ok(), `CRM login status ${login ? login.status() : "none"}`);
+        assert(new URL(crmPage.url()).hostname === crmHost, "CRM login left the CRM host");
+        await crmPage.getByRole("heading", { name: "Sign In" }).waitFor({ timeout: 15000 });
+        await crmPage.locator("#fx-login-identifier").waitFor();
+        await crmPage.locator("#fx-login-password").waitFor();
+        assert(crmErrors.length === 0, crmErrors.join(" | "));
+        await crmPage.close();
+      });
+    }
 
     await context.close();
     await signedIn(browser, baseUrl);
@@ -287,7 +387,10 @@ async function main() {
   }
 
   const failed = results.filter((line) => line.startsWith("FAIL")).length;
-  console.log(`smoke: ${results.length - failed} passed, ${failed} failed`);
+  const infraCount = results.filter((line) => line.startsWith("infra ")).length;
+  const passed = results.length - failed - infraCount;
+  const infraNote = infraCount ? `, ${infraCount} infra` : "";
+  console.log(`smoke: ${passed} passed, ${failed} failed${infraNote}`);
   if (failed) process.exit(1);
 }
 

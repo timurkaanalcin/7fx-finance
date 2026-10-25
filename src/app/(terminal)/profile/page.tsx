@@ -328,7 +328,7 @@ export default function ProfileePage() {
   return (
     <div className="fx-profile min-h-screen bg-[#000000] text-slate-100">
       <header className="sticky top-0 z-30 flex h-12 items-center gap-3 border-b border-[#2a2a2a] bg-[#0a0a0a] px-4">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
+        {/* eslint-disable-next-line @next/next/no-img-element -- static bitmap; next/image would change this layout */}
         <img src="/icons/v3/icon-64.png" alt="" className="h-7 w-7 rounded-md object-cover ring-1 ring-[#2a2a2a]" />
         <span className="min-w-0 flex-1 truncate text-sm font-medium">{t("term.profile.membership")}</span>
         <Link

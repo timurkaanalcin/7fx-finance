@@ -268,7 +268,7 @@ export default function AdminSettingsPage() {
             </button>
             {qr && (
               <div className="space-y-2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                {/* eslint-disable-next-line @next/next/no-img-element -- static bitmap; next/image would change this layout */}
                 <img src={qr} alt={i18n("crm.set.totpQr")} className="h-40 w-40 rounded border" />
                 <p className="font-mono text-[10px] text-neutral-600">{i18n("crm.set.totpSecret")}: {totpSecret}</p>
                 <input

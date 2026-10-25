@@ -9,7 +9,7 @@ export function wrapTextareaSelection(
   before: string,
   after: string,
   emptyPlaceholder = ""
-) {
+): void {
   if (!el) {
     setValue(value + before + emptyPlaceholder + after);
     return;
@@ -32,7 +32,7 @@ export function applyFormatAction(
   value: string,
   setValue: (next: string) => void,
   action: FormatAction
-) {
+): void {
   switch (action) {
     case "bold":
       wrapTextareaSelection(el, value, setValue, "**", "**", "kalın");

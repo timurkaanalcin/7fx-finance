@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import PlatformStatus from "@/components/system/PlatformStatus";
 import { useT } from "@/lib/i18n/context";
 
-export function reportClientError(error: unknown, where: string) {
+export function reportClientError(error: unknown, where: string): void {
   try {
     const e = error as { message?: string; stack?: string; digest?: string };
     const body = JSON.stringify({
