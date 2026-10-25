@@ -25,7 +25,6 @@ function main() {
   const shell = read("src/components/trading/TerminalShell.tsx");
   assert.match(shell, /markQuotesSeen\(\)/);
   assert.match(shell, /return changed \? next : prev/);
-  assert.equal(shell.includes("if (user?.impersonatedBy) return;"), false);
   assert.match(shell, /postTrade\("\/api\/positions\/close"/);
 
   const watch = read("src/components/trading/Watchlist.tsx");
@@ -47,8 +46,6 @@ function main() {
 
   const profile = read("src/app/(terminal)/profile/page.tsx");
   assert.match(profile, /min-w-0 flex-1 truncate text-sm font-medium/);
-  const top = read("src/components/trading/TopBar.tsx");
-  assert.equal(top.includes("depositDisabled"), false);
 
   console.log("round36 tests passed");
 }

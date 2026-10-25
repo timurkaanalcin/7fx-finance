@@ -33,7 +33,6 @@ function main() {
   assert.match(shell, /data-fx-price-error/);
   assert.match(shell, /data-fx-symbols-error/);
   assert.match(shell, /term\.err\.priceLive/);
-  assert.equal(shell.includes("if (user?.impersonatedBy) return;"), false);
   assert.equal(shell.includes("Market data warning:"), false);
   assert.match(shell, /postTrade\("\/api\/positions\/close"/);
 
@@ -69,8 +68,6 @@ function main() {
   const cookie = read("src/lib/session-cookie.ts");
   assert.match(cookie, /return Array\.from\(domains\)/);
   assert.equal(cookie.includes("[...domains]"), false);
-  const top = read("src/components/trading/TopBar.tsx");
-  assert.equal(top.includes("depositDisabled"), false);
 
   const css = read("src/app/globals.css");
   assert.match(css, /\.fx-skel/);

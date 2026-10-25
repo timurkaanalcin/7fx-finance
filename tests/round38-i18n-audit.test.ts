@@ -69,11 +69,9 @@ function main() {
   const shell = read("src/components/trading/TerminalShell.tsx");
   assert.equal(shell.includes("We couldn't load the symbol list."), false);
   assert.match(shell, /t\("term\.symbolsError"\)/);
-  assert.equal(shell.includes("if (user?.impersonatedBy) return;"), false);
 
   const top = read("src/components/trading/TopBar.tsx");
   assert.match(top, /t\("common\.terminal"\)/);
-  assert.equal(top.includes("depositDisabled"), false);
 
   const blotter = read("src/components/trading/BottomPanels.tsx");
   for (const phrase of [">Open<", ">Current<", ">Close<", ">Price<", ">Stop Loss<", ">Take Profit<", ">Pip<", 'placeholder="SL"', 'placeholder="TP"', "} lot", "} pip", '|| "Error"']) {

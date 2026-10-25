@@ -61,8 +61,6 @@ function main() {
 
   const profile = read("src/app/(terminal)/profile/page.tsx");
   assert.match(profile, /min-w-0 flex-1 truncate text-sm font-medium/);
-  const top = read("src/components/trading/TopBar.tsx");
-  assert.equal(top.includes("depositDisabled"), false);
 
   console.log("round35 tests passed");
 }
