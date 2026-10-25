@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export type TicketKind = "DEPOSIT" | "WITHDRAW" | "MARGIN";
 
 export type TicketFacts = {
@@ -62,19 +64,51 @@ export function composeTicketScenario(facts: TicketFacts): string {
   ].join("\n\n");
 }
 
-export function readApprovalPayload(body: Record<string, unknown>) {
-  const rawReason =
-    body.approvalReason != null
-      ? String(body.approvalReason)
-      : body.adminNote != null
-        ? String(body.adminNote)
-        : "";
-  const approvalReason = rawReason.trim().slice(0, 4000);
-  const eventScenario =
-    body.eventScenario != null ? String(body.eventScenario).trim().slice(0, 12000) : "";
-  return {
-    approvalReason: approvalReason || null,
-    eventScenario: eventScenario || null,
-    adminNote: approvalReason ? approvalReason.slice(0, 500) : null,
-  };
+/**
+ * Approve payload shared by deposit, withdrawal, and margin routes.
+ * Reason and event scenario are optional: empty, whitespace, null, or a missing
+ * key all parse successfully and are stored as null. A present reason still
+ * falls back from `adminNote` when `approvalReason` itself is omitted.
+ * Reject handlers call this too and must keep working when no reason is sent;
+ * they apply their own note rules after this parse.
+ */
+export const approvalPayloadSchema = z
+  .object({
+    approvalReason: z.unknown().optional(),
+    adminNote: z.unknown().optional(),
+    eventScenario: z.unknown().optional(),
+  })
+  .transform((body) => {
+    const rawReason =
+      body.approvalReason != null
+        ? String(body.approvalReason)
+        : body.adminNote != null
+          ? String(body.adminNote)
+          : "";
+    const approvalReason = rawReason.trim().slice(0, 4000);
+    const eventScenario =
+      body.eventScenario != null ? String(body.eventScenario).trim().slice(0, 12000) : "";
+    return {
+      approvalReason: approvalReason || null,
+      eventScenario: eventScenario || null,
+      adminNote: approvalReason ? approvalReason.slice(0, 500) : null,
+    };
+  });
+
+export type ApprovalPayload = z.output<typeof approvalPayloadSchema>;
+
+export function readApprovalPayload(body: Record<string, unknown> | null | undefined): ApprovalPayload {
+  const parsed = approvalPayloadSchema.safeParse(body && typeof body === "object" ? body : {});
+  if (!parsed.success) {
+    return { approvalReason: null, eventScenario: null, adminNote: null };
+  }
+  return parsed.data;
+}
+
+/**
+ * Ledger comment for an approval. An empty reason still yields `fallback`, so the
+ * ledger row (actor, time, amount) is written the same way as a reasoned approval.
+ */
+export function approvalAuditComment(adminNote: string | null | undefined, fallback: string): string {
+  return adminNote || fallback;
 }

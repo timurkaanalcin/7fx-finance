@@ -3,7 +3,7 @@ import { requireAdmin, requireAdminPerm } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { applyBalanceAdd, applyBalanceReset } from "@/lib/trading";
 import { recordLedger } from "@/lib/ledger";
-import { readApprovalPayload } from "@/lib/ticket-scenario";
+import { approvalAuditComment, readApprovalPayload } from "@/lib/ticket-scenario";
 import { DEFAULT_RESET_BALANCE, MARGIN_CALL_LEVEL, MARGIN_CALL_RULE_EN } from "@/lib/margin-call";
 import { FxError, appendFxNote, convertAmountToUsd } from "@/lib/fx-usd";
 import { clientErrorMessage } from "@/lib/security/public-error";
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
   const beforeAcc = await prisma.account.findUnique({ where: { userId: request.userId } });
   const balanceBefore = beforeAcc?.balance ?? 0;
 
-  let ledgerComment = adminNote || `Margin-call ${request.type} approved`;
+  let ledgerComment = approvalAuditComment(approval.adminNote, `Margin-call ${request.type} approved`);
   if (request.type === "RESET") {
     await applyBalanceReset(request.userId);
   } else if (request.type === "ADD") {
