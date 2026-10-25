@@ -8,6 +8,7 @@ import type { AccountMetrics, UserInfo } from "./types";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 import NotificationBell from "@/components/notifications/NotificationBell";
 import { useI18n } from "@/lib/i18n/context";
+import AccountMetricStrip, { type AccountMetricItem } from "./AccountMetrics";
 
 type Props = {
   user: UserInfo;
@@ -23,106 +24,6 @@ type Props = {
   displayFreeMargin?: number;
   displayMarginLevel?: number;
 };
-
-function Metric({
-  label,
-  value,
-  danger,
-  positive,
-  className = "flex",
-  sub,
-  title,
-}: {
-  label: string;
-  value: string;
-  danger?: boolean;
-  positive?: boolean;
-  /** Display utilities — default `flex`; use `hidden md:flex` for desktop-only chips */
-  className?: string;
-  /** Optional compact secondary text shown beside the value (same tone). */
-  sub?: string;
-  title?: string;
-}) {
-  const tone = danger
-    ? "text-desk-sell"
-    : positive
-      ? "text-desk-buy"
-      : "text-desk-text";
-  return (
-    <div
-      className={`${className} min-w-[64px] flex-col rounded-[10px] border border-desk-border/60 bg-desk-elev/40 px-2 py-1 sm:min-w-[86px] sm:px-2.5`}
-      title={title}
-    >
-      <span className="text-[8px] font-semibold uppercase tracking-[0.1em] text-desk-muted sm:text-[9px] sm:tracking-[0.08em]">
-        {label}
-      </span>
-      <span className={`text-[12px] font-semibold tabular-nums leading-tight sm:text-[13px] ${tone}`}>
-        {value}
-        {sub && <span className="ml-1 text-[9px] font-medium opacity-80 sm:text-[10px]">{sub}</span>}
-      </span>
-    </div>
-  );
-}
-
-/**
- * Compact margin-usage indicator (desktop only). Fill = used margin / equity;
- * colour follows margin level thresholds (>=200 healthy, 100–200 caution, <100 danger).
- */
-function MarginUsageBar({
-  account,
-  equity: equityProp,
-  freeMargin: freeProp,
-  marginLevel: levelProp,
-}: {
-  account: AccountMetrics | null;
-  equity?: number;
-  freeMargin?: number;
-  marginLevel?: number;
-}) {
-  const { t } = useI18n();
-  const a = account;
-  const margin = a?.margin ?? 0;
-  const equity = equityProp ?? a?.equity ?? 0;
-  const freeMargin = freeProp ?? a?.freeMargin ?? 0;
-  const ml = levelProp ?? a?.marginLevel ?? 0;
-  const denom = equity > 0 ? equity : margin + freeMargin;
-  const rawPct = denom > 0 ? (margin / denom) * 100 : 0;
-  const usedPct = Number.isFinite(rawPct) ? Math.max(0, Math.min(100, rawPct)) : 0;
-  const level: "healthy" | "caution" | "danger" =
-    ml > 0 && ml < 100 ? "danger" : ml >= 100 && ml < 200 ? "caution" : "healthy";
-  const fillCls =
-    level === "danger" ? "bg-desk-sell" : level === "caution" ? "bg-desk-warn" : "bg-desk-buy";
-  const textCls =
-    level === "danger" ? "text-desk-sell" : level === "caution" ? "text-desk-warn" : "text-desk-text";
-  const cur = a?.currency;
-  const label = a
-    ? `${t("term.margin.usage")}: ${usedPct.toFixed(1)}% · ${t("term.margin.margin")} ${fmtMoney(margin, 2, cur)} · ${t("term.margin.free")} ${fmtMoney(freeMargin, 2, cur)} · ${t("term.margin.level")} ${ml > 0 ? fmtPct(ml) : "—"}`
-    : `${t("term.margin.usage")}: —`;
-  return (
-    <div
-      className="hidden min-w-[72px] flex-col justify-center rounded-[10px] border border-desk-border/60 bg-desk-elev/40 px-2 py-1 md:flex sm:min-w-[86px] sm:px-2.5"
-      title={label}
-      aria-label={label}
-      role="meter"
-      aria-valuemin={0}
-      aria-valuemax={100}
-      aria-valuenow={Math.round(usedPct)}
-    >
-      <span className="text-[8px] font-semibold uppercase tracking-[0.1em] text-desk-muted sm:text-[9px] sm:tracking-[0.08em]">
-        {t("term.margin.used")}
-      </span>
-      <span className={`text-[12px] font-semibold tabular-nums leading-tight sm:text-[13px] ${textCls}`}>
-        {a ? `${usedPct.toFixed(usedPct > 0 && usedPct < 10 ? 1 : 0)}%` : "—"}
-      </span>
-      <span className="mt-0.5 block h-[3px] w-full max-w-[72px] overflow-hidden rounded-full bg-desk-border/70">
-        <span
-          className={`block h-full rounded-full transition-[width] duration-300 ${fillCls}`}
-          style={{ width: `${usedPct}%` }}
-        />
-      </span>
-    </div>
-  );
-}
 
 export default function TopBar({
   user,
@@ -144,6 +45,44 @@ export default function TopBar({
     a && Number.isFinite(pnlPctRaw)
       ? `(${pnlPctRaw > 0 ? "+" : ""}${pnlPctRaw.toFixed(Math.abs(pnlPctRaw) < 10 ? 2 : 1)}%)`
       : undefined;
+  const margin = a?.margin ?? 0;
+  const denom = eq > 0 ? eq : margin + free;
+  const rawPct = denom > 0 ? (margin / denom) * 100 : 0;
+  const usedPct = Number.isFinite(rawPct) ? Math.max(0, Math.min(100, rawPct)) : 0;
+  const money = (n: number) => (a ? fmtMoney(n, 2, a.currency) : "—");
+  const usedTone: AccountMetricItem["tone"] =
+    ml > 0 && ml < 100 ? "danger" : ml >= 100 && ml < 200 ? "caution" : a ? "positive" : "default";
+  const metrics: AccountMetricItem[] = [
+    { key: "balance", label: t("term.top.balance"), value: money(a?.balance ?? 0) },
+    { key: "equity", label: t("term.top.equity"), value: money(eq) },
+    { key: "margin", label: t("term.top.margin"), value: money(margin) },
+    { key: "free", label: t("term.top.free"), value: money(free) },
+    {
+      key: "level",
+      label: t("term.margin.level"),
+      value: a ? fmtPct(ml) : "—",
+      tone: ml > 0 && ml < 100 ? "danger" : "default",
+    },
+    {
+      key: "used",
+      label: t("term.margin.usage"),
+      value: a ? `${usedPct.toFixed(usedPct > 0 && usedPct < 10 ? 1 : 0)}%` : "—",
+      tone: usedTone,
+      meter: a ? usedPct : undefined,
+      title: a
+        ? `${t("term.margin.usage")}: ${usedPct.toFixed(1)}% · ${t("term.margin.margin")} ${money(margin)} · ${t("term.top.free")} ${money(free)} · ${t("term.margin.level")} ${ml > 0 ? fmtPct(ml) : "—"}`
+        : t("term.margin.usage"),
+    },
+    {
+      key: "pl",
+      label: t("term.top.pl"),
+      value: money(pnl),
+      tone: pnl < 0 ? "danger" : pnl > 0 ? "positive" : "default",
+      sub: pnlPct,
+      title: pnlPct ? `${t("term.top.openPnl")} ${pnlPct}` : t("term.top.pl"),
+    },
+    { key: "credit", label: t("term.top.credit"), value: money(a?.credit ?? 0) },
+  ];
   const shortId = `#${user.id.slice(-10)}`;
 
   const avatar = (
@@ -154,8 +93,8 @@ export default function TopBar({
 
   return (
     /* relative z-40: dropdown must stack above terminal content (sibling paints later otherwise) */
-    <header className="fx-desk-glass relative z-40 flex h-11 shrink-0 items-center gap-1.5 border-b border-desk-border/80 px-2.5 md:h-12 md:px-3">
-      <div className="mr-1 flex shrink-0 items-center gap-1.5 border-r border-desk-border/80 pr-2 md:mr-1.5 md:gap-2 md:pr-3">
+    <header className="fx-desk-glass fx-account-bar relative z-40 shrink-0 border-b border-desk-border/80">
+      <div className="fx-account-toolbar border-r border-desk-border/80 pr-2 md:pr-3">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/icons/v3/icon-64.png"
@@ -170,49 +109,9 @@ export default function TopBar({
         </div>
       </div>
 
-      <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto py-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:gap-1.5">
-        {/* Desktop order preserved; mobile shows Balance + P/L only */}
-        <Metric label={t("term.top.balance")} value={a ? fmtMoney(a.balance, 2, a.currency) : "—"} />
-        <Metric
-          label={t("term.top.equity")}
-          value={a ? fmtMoney(eq, 2, a.currency) : "—"}
-          className="hidden md:flex"
-        />
-        <Metric
-          label={t("term.top.margin")}
-          value={a ? fmtMoney(a.margin, 2, a.currency) : "—"}
-          className="hidden md:flex"
-        />
-        <Metric
-          label={t("term.top.free")}
-          value={a ? fmtMoney(free, 2, a.currency) : "—"}
-          className="hidden md:flex"
-        />
-        <Metric
-          label={t("term.top.marginPct")}
-          value={a ? fmtPct(ml) : "—"}
-          danger={ml > 0 && ml < 100}
-          className="hidden md:flex"
-        />
-        <MarginUsageBar account={a} equity={eq} freeMargin={free} marginLevel={ml} />
-        <Metric
-          label={t("term.top.pl")}
-          value={a ? fmtMoney(pnl, 2, a.currency) : "—"}
-          danger={pnl < 0}
-          positive={pnl > 0}
-          sub={pnlPct}
-          title={pnlPct ? `${t("term.top.openPnl")} ${pnlPct}` : undefined}
-        />
-        {(a?.credit ?? 0) > 0 && (
-          <Metric
-            label={t("term.top.credit")}
-            value={fmtMoney(a!.credit ?? 0, 2, a!.currency)}
-            className="hidden md:flex"
-          />
-        )}
-      </div>
+      <AccountMetricStrip items={metrics} variant="bar" />
 
-      <div className="relative z-10 flex shrink-0 items-center gap-1 pl-1 md:gap-1.5 md:pl-1.5">
+      <div className="fx-account-actions relative z-10">
         <ThemeToggle />
         <button
           type="button"

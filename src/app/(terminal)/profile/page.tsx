@@ -15,6 +15,9 @@ import NotificationBell from "@/components/notifications/NotificationBell";
 import BrandLoader from "@/components/ui/BrandLoader";
 import { getSeenDocs } from "@/lib/docs-seen";
 import { normalizeLocale, PUBLIC_DEFAULT_LOCALE } from "@/lib/i18n/locales";
+import { fmtMoney, fmtPct } from "@/lib/format";
+import { metricsFromStoredAccount } from "@/lib/trade-metrics";
+import AccountMetricStrip, { type AccountMetricItem } from "@/components/trading/AccountMetrics";
 
 type Profilee = {
   id: string;
@@ -46,6 +49,9 @@ type Profilee = {
   credit: number;
   bonus: number;
   currency: string;
+  margin?: number;
+  freeMargin?: number;
+  leverage?: number;
   ftd: boolean;
 };
 
@@ -264,13 +270,44 @@ export default function ProfileePage() {
 
   const money = (n: number) =>
     n.toLocaleString("en-US", { style: "currency", currency: profile.currency || "USD" });
+  const stored = metricsFromStoredAccount({
+    balance: profile.balance,
+    equity: profile.equity,
+    margin: profile.margin ?? 0,
+    freeMargin: profile.freeMargin ?? 0,
+    leverage: profile.leverage ?? 1,
+    currency: profile.currency || "USD",
+    credit: profile.credit,
+    bonus: profile.bonus,
+  });
+  const fig = (n: number) => fmtMoney(n, 2, stored.currency);
+  const financeItems: AccountMetricItem[] = [
+    { key: "balance", label: t("term.top.balance"), value: fig(stored.balance) },
+    { key: "equity", label: t("term.top.equity"), value: fig(stored.equity) },
+    { key: "margin", label: t("term.top.margin"), value: fig(stored.margin) },
+    { key: "free", label: t("term.top.free"), value: fig(stored.freeMargin) },
+    {
+      key: "level",
+      label: t("term.margin.level"),
+      value: stored.margin > 0 ? fmtPct(stored.marginLevel) : "—",
+      tone: stored.marginLevel > 0 && stored.marginLevel < 100 ? "danger" : "default",
+    },
+    {
+      key: "pl",
+      label: t("term.top.pl"),
+      value: fig(stored.profitLoss),
+      tone: stored.profitLoss < 0 ? "danger" : stored.profitLoss > 0 ? "positive" : "default",
+    },
+    { key: "credit", label: t("term.top.credit"), value: fig(stored.credit ?? 0) },
+    { key: "bonus", label: t("term.profile.bonus"), value: fig(stored.bonus ?? 0) },
+  ];
 
   return (
     <div className="fx-profile min-h-screen bg-[#000000] text-slate-100">
       <header className="sticky top-0 z-30 flex h-12 items-center gap-3 border-b border-[#2a2a2a] bg-[#0a0a0a] px-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/icons/v3/icon-64.png" alt="" className="h-7 w-7 rounded-md object-cover ring-1 ring-[#2a2a2a]" />
-        <span className="text-sm font-semibold">{t("term.profile.membership")}</span>
+        <span className="min-w-0 flex-1 truncate text-sm font-medium">{t("term.profile.membership")}</span>
         <Link
           href="/trade"
           className="ml-auto rounded-md bg-[#2a2a2a] px-2.5 py-1.5 text-xs hover:bg-[#1f1f1f]"
@@ -377,12 +414,8 @@ export default function ProfileePage() {
         </section>
 
         <section className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
-          <h2 className="mb-2 text-sm font-medium text-slate-300">{t("term.profile.finance")}</h2>
-          <Row label={t("term.top.balance")} value={money(profile.balance)} />
-          <Row label={t("term.top.equity")} value={money(profile.equity)} />
-          <Row label={t("term.top.credit")} value={money(profile.credit)} />
-          <Row label={t("term.profile.bonus")} value={money(profile.bonus)} />
-          <Row label={t("term.profile.currency")} value={profile.currency} />
+          <h2 className="mb-3 text-sm font-medium text-slate-300">{t("term.profile.finance")}</h2>
+          <AccountMetricStrip variant="panel" items={financeItems} />
         </section>
 
 
