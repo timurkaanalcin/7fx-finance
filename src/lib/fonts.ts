@@ -1,12 +1,9 @@
-import { Inter, Sora } from "next/font/google";
+import { Inter } from "next/font/google";
 
 /**
- * Self-hosted fonts. Latin-ext covers Turkish.
- * Sora 600 is the landing/auth display face and is preloaded so the hero title
- * can paint with that file. Inter latin is the trade/body face and is preloaded
- * too: leaving it to be discovered from CSS held the trade first paint.
- * Latin-ext is available for Turkish glyphs but is not preloaded, so the phone
- * does not wait on that file.
+ * One self-hosted variable sans. Latin is preloaded so headings and the trade
+ * desk paint with Inter. Latin-ext covers Turkish and loads with the page,
+ * without competing on the first paint.
  */
 const interLatin = Inter({
   subsets: ["latin"],
@@ -26,12 +23,3 @@ const interExt = Inter({
 export const inter = {
   variable: `${interLatin.variable} ${interExt.variable}`,
 };
-
-export const sora = Sora({
-  subsets: ["latin", "latin-ext"],
-  weight: "600",
-  display: "swap",
-  variable: "--font-sora",
-  preload: true,
-  adjustFontFallback: true,
-});

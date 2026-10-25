@@ -15,8 +15,8 @@ export default function IosInstallPage() {
 
   return (
     <main className="fx-ios min-h-screen">
-      <div className="mx-auto max-w-lg px-5 py-8 sm:py-14">
-        <Link href="/" className="text-[13px] font-medium text-[#9aa3b5] hover:text-white">
+      <div className="fx-ios-shell px-1 py-8 sm:py-14">
+        <Link href="/" className="fx-ios-back inline-flex items-center text-sm font-medium text-[#9aa3b5] hover:text-white">
           ← {t("landing.ios.back")}
         </Link>
         <div className="mt-8 flex items-center gap-3">
@@ -29,7 +29,7 @@ export default function IosInstallPage() {
             className="h-14 w-14 rounded-[14px] shadow"
           />
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">{t("landing.ios.pageTitle")}</h1>
+            <h1 className="fx-ios-title font-semibold">{t("landing.ios.pageTitle")}</h1>
             <p className="mt-1 text-[14px] text-[#9aa3b5]">{t("landing.ios.devices")}</p>
           </div>
         </div>

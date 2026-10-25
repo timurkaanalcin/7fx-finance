@@ -39,6 +39,48 @@ html, body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-inter), var(--font-inter-ext), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Type scale: 12 / 13 / 14 / 16 / 20 / 24 / 32 / 44 / 56.
+   Headings stay 500–600. Weight 300 is only for large high-contrast lines. */
+:root {
+  --fx-fs-12: 12px;
+  --fx-fs-13: 13px;
+  --fx-fs-14: 14px;
+  --fx-fs-16: 16px;
+  --fx-fs-20: 20px;
+  --fx-fs-24: 24px;
+  --fx-fs-32: 32px;
+  --fx-fs-44: 44px;
+  --fx-fs-56: 56px;
+  --fx-track-display: -0.02em;
+  --fx-lh-body: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+}
+h1, h2 {
+  letter-spacing: var(--fx-track-display);
+}
+h1 { font-weight: 500; }
+
+.fx-landing p,
+.fx-auth-page p,
+.fx-ios p,
+.fx-crm p {
+  line-height: var(--fx-lh-body);
+}
+
+.tabular-nums,
+.fx-desk-tradebar,
+.fx-crm .crm-kpi .value,
+.fx-crm .crm-dense-table td {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
 }
 
 ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -109,6 +151,27 @@ input, select, button { font: inherit; }
   padding-bottom: max(10px, env(safe-area-inset-bottom, 0px));
 }
 
+/* The type scale starts at 12px on every viewport, including desktop CRM and the desk. */
+.text-\[8px\],
+.text-\[9px\],
+.text-\[9\.5px\],
+.text-\[10px\],
+.text-\[11px\],
+.text-\[11\.5px\],
+.sm\:text-\[8px\],
+.sm\:text-\[9px\],
+.sm\:text-\[9\.5px\],
+.sm\:text-\[10px\],
+.sm\:text-\[11px\],
+.md\:text-\[8px\],
+.md\:text-\[9px\],
+.md\:text-\[9\.5px\],
+.md\:text-\[10px\],
+.md\:text-\[11px\] {
+  font-size: var(--fx-fs-12) !important;
+  line-height: 1.35 !important;
+}
+
 @media (max-width: 767px) {
   html,
   body {
@@ -136,6 +199,11 @@ input, select, button { font: inherit; }
   .fx-desk input:not([type="checkbox"]):not([type="radio"]) {
     min-height: 44px;
   }
+  .fx-desk > header button,
+  .fx-desk > header a,
+  .fx-desk > header select {
+    min-width: 44px;
+  }
   .fx-desk .fx-tap-compact {
     min-height: 0;
   }
@@ -161,7 +229,7 @@ input, select, button { font: inherit; }
     min-height: 46px;
     border-radius: 12px;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: 0.08em;
   }
 
@@ -180,7 +248,7 @@ input, select, button { font: inherit; }
   --fx-line: rgba(255, 255, 255, 0.08);
   --fx-buy: #3ddc97;
   --fx-sell: #ff5d73;
-  --fx-shell: min(1180px, calc(100% - 32px));
+  --fx-shell: min(1280px, calc(100% - 32px));
   --fx-section-pad: 72px;
   --fx-sticky-h: 64px;
   background: var(--fx-bg);
@@ -196,7 +264,7 @@ input, select, button { font: inherit; }
 @media (min-width: 768px) {
   .fx-landing {
     --fx-section-pad: 104px;
-    --fx-shell: min(1180px, calc(100% - 48px));
+    --fx-shell: min(1280px, calc(100% - 48px));
     --fx-sticky-h: 0px;
   }
 }
@@ -214,10 +282,10 @@ html:has(.fx-landing) {
 .fx-landing h1,
 .fx-landing h2,
 .fx-landing h3 {
-  font-family: var(--font-sora), system-ui, sans-serif;
+  font-family: var(--font-inter), var(--font-inter-ext), system-ui, sans-serif;
   font-weight: 600;
   color: #f4f7fb;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
 }
 .fx-landing [role="dialog"] h2,
 .fx-landing [role="dialog"] h3 {
@@ -226,7 +294,7 @@ html:has(.fx-landing) {
 
 .fx-landing .fx-shell {
   width: var(--fx-shell);
-  max-width: 1180px;
+  max-width: 1280px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -242,30 +310,31 @@ html:has(.fx-landing) {
 }
 
 .fx-landing .fx-h1 {
-  font-size: clamp(40px, 8vw, 76px);
-  line-height: 0.98;
-  letter-spacing: -0.055em;
+  font-size: clamp(var(--fx-fs-32), 6.4vw, var(--fx-fs-56));
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
 }
 .fx-landing .fx-h2 {
-  font-size: clamp(30px, 4.4vw, 48px);
-  line-height: 1.05;
+  font-size: clamp(var(--fx-fs-24), 4vw, var(--fx-fs-44));
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
 }
 .fx-landing .fx-hero-body,
 .fx-landing .fx-section-body {
   color: var(--fx-muted);
-  font-size: 16px;
-  line-height: 1.65;
+  font-size: var(--fx-fs-16);
+  font-weight: 400;
+  line-height: 1.6;
   max-width: 58ch;
-}
-.fx-landing .fx-hero-body {
-  font-size: 17px;
 }
 
 .fx-landing .fx-eyebrow {
   margin: 0;
   color: #d7ffe9;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -316,8 +385,8 @@ html:has(.fx-landing) {
 }
 .fx-landing .fx-icon-btn {
   display: inline-flex;
-  height: 40px;
-  width: 40px;
+  height: 44px;
+  width: 44px;
   align-items: center;
   justify-content: center;
   border-radius: 999px;
@@ -359,7 +428,7 @@ html:has(.fx-landing) {
   border-radius: 8px;
   padding: 8px 12px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
 }
 .fx-landing .fx-skip:focus {
   transform: none;
@@ -408,7 +477,7 @@ html:has(.fx-landing) {
   color: #1a1a1a;
   padding: 4px 10px 4px 8px;
   font-size: 12px;
-  font-weight: 650;
+  font-weight: 500;
 }
 .fx-landing .fx-trust-row {
   display: flex;
@@ -455,22 +524,22 @@ html:has(.fx-landing) {
 .fx-landing .fx-kicker {
   margin: 0;
   color: #8ea0b8;
-  font-size: 11px;
+  font-size: var(--fx-fs-12);
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  font-weight: 700;
+  font-weight: 500;
 }
 .fx-landing .fx-chart-symbol {
   margin: 2px 0 0;
-  font-size: 18px;
-  font-weight: 700;
+  font-size: var(--fx-fs-20);
+  font-weight: 600;
 }
 .fx-landing .fx-chart-px {
   margin: 0;
-  font-size: 28px;
-  font-weight: 650;
+  font-size: var(--fx-fs-32);
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
 }
 .fx-landing .fx-chart-chg,
 .fx-landing .is-up { color: var(--fx-buy); }
@@ -478,7 +547,7 @@ html:has(.fx-landing) {
 .fx-landing .fx-chart-chg {
   margin: 0;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 .fx-landing .fx-chart-stage {
@@ -510,10 +579,11 @@ html:has(.fx-landing) {
   border: 1px solid var(--fx-line);
   background: transparent;
   color: #c5cedd;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: var(--fx-fs-12);
+  font-weight: 500;
   letter-spacing: 0.04em;
-  padding: 5px 8px;
+  padding: 8px 12px;
+  min-height: 36px;
 }
 .fx-landing .fx-chip.is-on {
   background: #f4f7fb;
@@ -552,7 +622,7 @@ html:has(.fx-landing) {
   gap: 8px;
   color: #d5dce8;
   font-size: 13px;
-  font-weight: 650;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 .fx-landing .fx-ticker-sym { color: #fff; }
@@ -623,7 +693,7 @@ html:has(.fx-landing) {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-weight: 700;
+  font-weight: 600;
 }
 .fx-landing .fx-market-miss { grid-column: 2 / -1; color: #8ea0b8; text-align: right; }
 
@@ -661,7 +731,10 @@ html:has(.fx-landing) {
 .fx-landing .fx-film img,
 .fx-landing .fx-film video {
   width: 100%;
+  max-width: 100%;
   height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
   display: block;
   background: #0b0e13;
 }
@@ -680,7 +753,7 @@ html:has(.fx-landing) {
 .fx-landing .fx-laptop figcaption span,
 .fx-landing .fx-phone figcaption span {
   color: #d7ffe9;
-  font-weight: 700;
+  font-weight: 600;
 }
 .fx-landing .fx-phone {
   width: min(210px, 46vw);
@@ -748,10 +821,10 @@ html:has(.fx-landing) {
   display: block;
   color: #3ddc97;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0.14em;
 }
-.fx-landing .fx-steps h3 { margin: 10px 0 0; font-size: 18px; }
+.fx-landing .fx-steps h3 { margin: 10px 0 0; font-size: var(--fx-fs-20); font-weight: 600; }
 .fx-landing .fx-steps p { margin: 8px 0 0; color: var(--fx-muted); font-size: 14px; line-height: 1.55; }
 
 .fx-landing .fx-infra {
@@ -844,7 +917,7 @@ html:has(.fx-landing) {
 .fx-landing .fx-footer-links span {
   color: #f4f7fb;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -887,7 +960,7 @@ html:has(.fx-landing) {
   justify-content: center;
   border-radius: 999px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .fx-landing a:focus-visible,
@@ -933,7 +1006,7 @@ html:has(.fx-landing) {
 .fx-landing .fx-trust-band li {
   color: #d5dce8;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.02em;
 }
 .fx-landing .fx-trust-band li::before {
@@ -973,10 +1046,10 @@ html:has(.fx-landing) {
 .fx-landing .fx-mid-cta-title {
   margin: 0;
   color: #f4f7fb;
-  font-family: var(--font-sora), system-ui, sans-serif;
-  font-size: 22px;
-  font-weight: 650;
-  letter-spacing: -0.03em;
+  font-family: var(--font-inter), var(--font-inter-ext), system-ui, sans-serif;
+  font-size: var(--fx-fs-24);
+  font-weight: 300;
+  letter-spacing: -0.02em;
 }
 .fx-landing .fx-cta-row {
   display: flex;
@@ -995,11 +1068,11 @@ html:has(.fx-landing) {
 @media (max-width: 640px) {
   .fx-landing {
     --fx-section-pad: 52px;
-    --fx-shell: min(1180px, calc(100% - 28px));
+    --fx-shell: min(1280px, calc(100% - 28px));
   }
   .fx-landing .fx-hero { padding-top: 16px; }
-  .fx-landing .fx-h1 { font-size: clamp(34px, 11vw, 46px); }
-  .fx-landing .fx-hero-body { font-size: 15px; }
+  .fx-landing .fx-h1 { font-size: clamp(var(--fx-fs-32), 10vw, var(--fx-fs-44)); }
+  .fx-landing .fx-hero-body { font-size: var(--fx-fs-16); }
   .fx-landing .fx-chart-slot,
   .fx-landing .fx-chart-card { min-height: 300px; }
   .fx-landing .fx-cta-row { flex-direction: column; }
@@ -1037,9 +1110,9 @@ html:has(.fx-landing) {
 }
 .fx-ios h1,
 .fx-ios h2 {
-  font-family: var(--font-sora), system-ui, sans-serif;
+  font-family: var(--font-inter), var(--font-inter-ext), system-ui, sans-serif;
   color: #f4f7fb;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
 }
 html:has(.fx-ios),
 body:has(.fx-ios) {
@@ -1066,14 +1139,14 @@ body:has(.fx-ios) {
   background: #f4f7fb;
   color: #0b0e13;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
 }
 .fx-ios-step p:first-child,
 .fx-ios-note > p:first-child,
 .fx-ios-note > p:nth-of-type(3) {
   margin: 0;
   font-size: 15px;
-  font-weight: 650;
+  font-weight: 500;
 }
 .fx-ios-step p:last-child,
 .fx-ios-note p {
@@ -1087,7 +1160,7 @@ body:has(.fx-ios) {
   margin-top: 18px;
 }
 .fx-ios-note a {
-  font-weight: 700;
+  font-weight: 600;
   color: #f4f7fb;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -1123,7 +1196,7 @@ body:has(.fx-ios) {
   --fx-line: rgba(255, 255, 255, 0.1);
   background: #07090d !important;
   color: #f4f7fb !important;
-  font-family: var(--font-sora), var(--font-inter), var(--font-inter-ext), system-ui, sans-serif;
+  font-family: var(--font-inter), var(--font-inter-ext), system-ui, sans-serif;
   color-scheme: dark;
 }
 
@@ -1131,8 +1204,8 @@ body:has(.fx-ios) {
 .fx-auth-page h2,
 .fx-auth-page h3,
 .fx-auth-page .text-\[\#111111\] {
-  font-family: var(--font-sora), system-ui, sans-serif;
-  letter-spacing: -0.03em;
+  font-family: var(--font-inter), var(--font-inter-ext), system-ui, sans-serif;
+  letter-spacing: -0.02em;
   color: #f4f7fb !important;
 }
 
@@ -1230,17 +1303,17 @@ body:has(.fx-auth-page) {
   padding: 10px 12px;
 }
 .fx-crm .crm-kpi .label {
-  font-size: 10px;
-  font-weight: 600;
+  font-size: var(--fx-fs-12);
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: #525252;
 }
 .fx-crm .crm-kpi .value {
   margin-top: 4px;
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1.1;
+  font-size: var(--fx-fs-20);
+  font-weight: 500;
+  line-height: 1.2;
   color: #111;
 }
 .fx-crm .crm-dense-table {
@@ -1251,8 +1324,8 @@ body:has(.fx-auth-page) {
 .fx-crm .crm-dense-table th {
   padding: 6px 8px;
   text-align: left;
-  font-size: 10px;
-  font-weight: 600;
+  font-size: var(--fx-fs-12);
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: #525252;
@@ -1379,4 +1452,216 @@ body:has(.fx-crm) {
   animation: fx-px-flash-down 0.5s ease-out;
   border-radius: 3px;
   padding: 0 2px;
+}
+
+/* ——— Fluid sizing: headings, shells, touch, short landscape ——— */
+.fx-doc {
+  background: #fff;
+  color: #15161a;
+}
+.fx-doc-shell {
+  width: min(920px, calc(100% - 32px));
+  margin-inline: auto;
+}
+.fx-doc-title {
+  font-size: clamp(var(--fx-fs-32), 4vw, var(--fx-fs-44));
+  line-height: 1.12;
+  letter-spacing: var(--fx-track-display);
+}
+.fx-doc h2 {
+  font-size: clamp(var(--fx-fs-20), 2vw, var(--fx-fs-24));
+  line-height: 1.25;
+  letter-spacing: var(--fx-track-display);
+}
+.fx-doc img,
+.fx-doc video,
+.fx-ios img,
+.fx-ios video,
+.fx-auth-page img,
+.fx-profile img,
+.fx-crm img {
+  max-width: 100%;
+}
+
+.fx-ios-shell {
+  width: min(640px, calc(100% - 32px));
+  margin-inline: auto;
+}
+.fx-ios-title {
+  font-size: clamp(var(--fx-fs-24), 1.2rem + 1.5vw, var(--fx-fs-44));
+  line-height: 1.15;
+  letter-spacing: var(--fx-track-display);
+}
+.fx-auth-page h1 {
+  font-size: clamp(var(--fx-fs-24), 1.35rem + 1vw, var(--fx-fs-32)) !important;
+  line-height: 1.15;
+}
+.fx-crm h1 {
+  font-size: clamp(var(--fx-fs-20), 1.15rem + 0.8vw, var(--fx-fs-32));
+  line-height: 1.2;
+  letter-spacing: var(--fx-track-display);
+}
+.fx-crm h2 {
+  font-size: clamp(var(--fx-fs-16), 0.9rem + 0.4vw, var(--fx-fs-20));
+  line-height: 1.3;
+}
+.fx-crm aside {
+  width: clamp(200px, 16vw, 240px);
+}
+.fx-crm .overflow-x-auto {
+  max-width: 100%;
+}
+.fx-profile main {
+  width: min(840px, calc(100% - 32px));
+  max-width: 840px;
+}
+.fx-lang-select {
+  min-height: 36px;
+  font-size: var(--fx-fs-12);
+}
+.fx-profile h2 {
+  font-size: clamp(var(--fx-fs-14), 0.9rem + 0.3vw, var(--fx-fs-16));
+  letter-spacing: 0.08em;
+}
+@media (min-width: 768px) {
+  .fx-watchlist {
+    width: clamp(220px, 18vw, 300px);
+    max-width: 300px;
+  }
+  .fx-desk-history {
+    height: clamp(200px, 22vh, 280px);
+  }
+}
+
+/* Quote stays one line (reserved min-widths). If the line is wider than the
+   card it scrolls inside the card, never the page. */
+[data-fx-chart-quote] {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+[data-fx-chart-quote]::-webkit-scrollbar {
+  display: none;
+}
+
+/* Phone chart head: drop the live badge onto its own row so the quote
+   can use the full card width at 360px. */
+@media (max-width: 639px) {
+  [data-fx-chart-head] {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+  [data-fx-chart-head] > div {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+}
+
+/* Landscape phones are wide enough for the sm overlay, which pins the
+   quote beside the timeframe cluster. Stack the chrome so bid/ask stay
+   on one readable line and the chart keeps the short-height flex. */
+@media (max-height: 520px) {
+  .fx-desk .fx-chart-chrome {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    row-gap: 6px;
+  }
+  .fx-desk [data-fx-chart-head] {
+    max-width: none !important;
+  }
+  .fx-desk .fx-chart-tools {
+    margin-right: 0 !important;
+  }
+}
+
+.fx-landing .fx-btn-primary,
+.fx-landing .fx-btn-secondary,
+.fx-ios .fx-btn-primary,
+.fx-ios .fx-btn-secondary {
+  min-height: 44px;
+}
+
+@media (max-width: 767px), (max-height: 520px) {
+  .fx-landing .fx-chip { min-height: 40px; }
+  .fx-landing .fx-footer a,
+  .fx-landing .fx-mobile-menu button,
+  .fx-landing .fx-mobile-menu a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .fx-doc main a { padding-block: 8px; }
+  .fx-doc header a,
+  .fx-doc nav a,
+  .fx-ios a,
+  .fx-auth-page a,
+  .fx-auth-page select,
+  .fx-landing select,
+  .fx-profile > header a,
+  .fx-profile > header button,
+  .fx-profile input:not([type="checkbox"]):not([type="radio"]),
+  .fx-profile select,
+  .fx-profile textarea,
+  .fx-desk > header button,
+  .fx-desk > header a,
+  .fx-desk > header select,
+  .fx-desk .fx-desk-tradebar button,
+  .fx-desk .fx-desk-seg__btn {
+    min-height: 44px;
+  }
+  .fx-desk > header button,
+  .fx-desk > header a,
+  .fx-desk > header select {
+    min-width: 44px;
+  }
+  .fx-desk .fx-tap-compact {
+    min-height: 36px;
+    min-width: 36px;
+  }
+  .fx-crm button {
+    min-height: 40px;
+  }
+  .fx-doc header a,
+  .fx-doc nav a,
+  .fx-ios a,
+  .fx-auth-page header a,
+  .fx-auth-page .fx-auth-panel a {
+    display: inline-flex;
+    align-items: center;
+  }
+  .fx-crm header {
+    height: auto;
+    min-height: 48px;
+  }
+  .fx-crm header a,
+  .fx-crm header button,
+  .fx-crm header select {
+    min-height: 40px;
+  }
+}
+
+@media (max-height: 520px) {
+  .fx-desk .min-h-\[44vh\] {
+    min-height: 0 !important;
+  }
+  .fx-lx-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .fx-lx-overlay > div {
+    max-height: 100dvh;
+    width: min(480px, 100%);
+    border-radius: 16px 16px 0 0;
+  }
+  .fx-lx-overlay input,
+  .fx-lx-overlay select,
+  .fx-lx-overlay textarea {
+    min-height: 44px;
+    font-size: var(--fx-fs-16);
+  }
+  .fx-crm aside a,
+  .fx-crm aside button {
+    min-height: 40px;
+  }
 }

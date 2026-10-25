@@ -145,7 +145,7 @@
     min-height: 50px !important;
     border-radius: 14px !important;
     font-size: 13px !important;
-    font-weight: 700 !important;
+    font-weight: 600 !important;
     letter-spacing: 0.14em !important;
     transition: transform 0.15s var(--lx-ease), filter 0.2s;
   }
@@ -207,7 +207,8 @@
 
   /* chart timeframe pill */
   .fx-desk .fx-tap-compact {
-    min-height: 32px !important;
+    min-height: 36px !important;
+    min-width: 36px;
     border-radius: 9px !important;
     font-size: 12px !important;
   }
@@ -288,7 +289,8 @@
   .fx-profile > header span { font-size: 15px !important; letter-spacing: -0.01em; }
   .fx-profile > header a,
   .fx-profile > header button {
-    min-height: 40px;
+    min-height: 44px;
+    min-width: 44px;
     border-radius: 12px !important;
     padding: 0 14px !important;
     display: inline-flex;
@@ -311,7 +313,7 @@
     margin-bottom: 14px !important;
   }
   .fx-profile h2 {
-    font-size: 11px !important;
+    font-size: 14px !important;
     font-weight: 600 !important;
     text-transform: uppercase;
     letter-spacing: 0.16em !important;
@@ -328,7 +330,7 @@
     border-radius: 14px !important;
     background: linear-gradient(180deg, #f3f3f5, #d9d9de) !important;
     color: #0a0a0b !important;
-    font-weight: 700 !important;
+    font-weight: 600 !important;
     letter-spacing: 0.04em;
   }
   .fx-profile button,

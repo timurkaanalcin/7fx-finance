@@ -770,7 +770,7 @@ export default function TradingChart({
     <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-desk-bg">
       {/* Phones: chrome is in normal flow so the quote block cannot cover the timeframe bar.
           sm+: overlay so the canvas stays full-bleed. */}
-      <div className="z-10 flex shrink-0 flex-col gap-1.5 border-b border-desk-border/50 bg-desk-bg px-2 py-1.5 sm:pointer-events-none sm:absolute sm:inset-x-2 sm:top-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3 sm:border-0 sm:bg-transparent sm:p-0 md:inset-x-2.5">
+      <div className="fx-chart-chrome z-10 flex shrink-0 flex-col gap-1.5 border-b border-desk-border/50 bg-desk-bg px-2 py-1.5 sm:pointer-events-none sm:absolute sm:inset-x-2 sm:top-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3 sm:border-0 sm:bg-transparent sm:p-0 md:inset-x-2.5">
       <div
         className="flex min-w-0 items-start gap-1.5 sm:max-w-[calc(100%-22rem)] sm:flex-1"
         data-fx-chart-head=""
@@ -806,7 +806,7 @@ export default function TradingChart({
               )}
             </div>
             <div
-              className="mt-0.5 flex min-h-[18px] flex-nowrap items-baseline gap-x-1.5 overflow-hidden text-[11px] font-semibold tabular-nums leading-tight md:text-[12px]"
+              className="mt-0.5 flex min-h-[18px] flex-nowrap items-baseline gap-x-1 overflow-hidden text-[11px] font-semibold tabular-nums leading-tight sm:gap-x-1.5 md:text-[12px]"
               data-fx-chart-quote=""
               title={t("term.liveQuote")}
               aria-live="off"
@@ -857,7 +857,7 @@ export default function TradingChart({
         </div>
       </div>
 
-      <div className="flex min-w-0 items-center gap-1.5 sm:pointer-events-auto sm:mr-[1.5cm] sm:shrink-0 sm:justify-end">
+      <div className="fx-chart-tools flex min-w-0 items-center gap-1.5 sm:pointer-events-auto sm:mr-[1.5cm] sm:shrink-0 sm:justify-end">
         <span className="hidden rounded-control border border-desk-border/60 bg-desk-panel/70 px-2 py-1 text-[10px] tabular-nums text-desk-muted sm:inline">
           {utcClock}
         </span>

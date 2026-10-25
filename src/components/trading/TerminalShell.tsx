@@ -193,7 +193,7 @@ export default function TerminalShell({
   // them anyway pulls every symbol logo (twice) and their chunks into the phone load.
   const [deskWide, setDeskWide] = useState(false);
   useEffect(() => {
-    const mq = window.matchMedia("(min-width: 768px)");
+    const mq = window.matchMedia("(min-width: 768px) and (min-height: 560px)");
     const apply = () => setDeskWide(mq.matches);
     apply();
     mq.addEventListener("change", apply);
@@ -1133,7 +1133,7 @@ export default function TerminalShell({
 
             {/* Desktop bottom panels — fixed height so chart keeps prior larger share */}
             {deskWide && (
-            <div className="hidden md:flex md:h-[220px] md:shrink-0 md:flex-col">
+            <div className="fx-desk-history hidden md:flex md:shrink-0 md:flex-col">
               <BottomPanels
                 tab={tab}
                 onTab={setTab}

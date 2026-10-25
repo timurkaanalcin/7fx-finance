@@ -4,7 +4,7 @@ import InstallBanner from "@/components/InstallBanner";
 import "./globals.css";
 import "./mobile-luxe.css";
 import PublicI18n from "@/components/i18n/PublicI18n";
-import { inter, sora } from "@/lib/fonts";
+import { inter } from "@/lib/fonts";
 import { LOCALE_META, publicLocaleFromCookie, type Locale } from "@/lib/i18n/locales";
 import type { Dict } from "@/lib/i18n/types";
 import { DESCRIPTION, OG_ALT, OG_IMAGE, TITLE } from "@/lib/seo";
@@ -80,7 +80,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html
       lang={meta.htmlLang}
       dir={meta.dir}
-      className={`${inter.variable} ${sora.variable}`}
+      className={inter.variable}
       data-fx-theme="light"
       suppressHydrationWarning
     >
