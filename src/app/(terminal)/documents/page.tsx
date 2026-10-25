@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getSeenDocs, markDocsSeen } from "@/lib/docs-seen";
 import { useI18n } from "@/lib/i18n/context";
 import ProtectedAttachmentViewer from "@/components/chat/ProtectedAttachmentViewer";
+import { DeskRetry, DeskSkeleton } from "@/components/system/PanelState";
 import ThemeToggle from "@/components/theme/ThemeToggle";
 
 type Doc = { id: string; title: string; kind: "pdf" | "image"; size: number; createdAt: string };
@@ -13,6 +14,7 @@ type Doc = { id: string; title: string; kind: "pdf" | "image"; size: number; cre
 export default function DocumentsPage() {
   const { t, locale } = useI18n();
   const [docs, setDocs] = useState<Doc[] | null>(null);
+  const [docsError, setDocsError] = useState(false);
   const [open, setOpen] = useState<string | null>(null);
   const [seen, setSeen] = useState<Set<string>>(new Set());
   const [q, setQ] = useState("");
@@ -41,9 +43,13 @@ export default function DocumentsPage() {
       const params = new URLSearchParams({ take: "50", skip: String(skip) });
       const r = await fetch(`/api/documents?${params}`, { cache: "no-store", credentials: "include" });
       if (!r.ok) {
-        if (mode === "replace") setDocs([]);
+        if (mode === "replace") {
+          setDocsError(true);
+          setDocs([]);
+        }
         return;
       }
+      setDocsError(false);
       const data = await r.json();
       const incoming: Doc[] = data.documents || [];
       const seenIds = new Set(docsRef.current.map((d) => d.id));
@@ -52,7 +58,10 @@ export default function DocumentsPage() {
       setDocs(next);
       setHasMore(Boolean(data.hasMore));
     } catch {
-      if (mode === "replace") setDocs([]);
+      if (mode === "replace") {
+        setDocsError(true);
+        setDocs([]);
+      }
     } finally {
       if (mode === "more") setMoreBusy(false);
     }
@@ -100,7 +109,9 @@ export default function DocumentsPage() {
           </div>
         )}
         {docs === null ? (
-          <p className="p-6 text-center text-sm text-slate-500">…</p>
+          <DeskSkeleton label={t("state.loading")} />
+        ) : docsError ? (
+          <DeskRetry title={t("state.docsFailed")} retry={t("state.retry")} onRetry={() => void load()} />
         ) : docs.length === 0 ? (
           <div className="rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-8 text-center text-sm text-slate-500">{t("docs.empty")}</div>
         ) : shown && shown.length === 0 ? (

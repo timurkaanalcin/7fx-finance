@@ -26,6 +26,8 @@ export default function LiveSupportPanel() {
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [booting, setBooting] = useState(true);
   const [presence, setPresence] = useState<ChatPresenceSnapshot | null>(null);
   const [viewAtt, setViewAtt] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -55,7 +57,11 @@ export default function LiveSupportPanel() {
     if (mode === "older") setOlderBusy(true);
     try {
       const res = await fetch(`/api/support?take=50&skip=${skip}`, { credentials: "include" });
-      if (!res.ok) return;
+      if (!res.ok) {
+        if (mode === "refresh") setLoadFailed(true);
+        return;
+      }
+      setLoadFailed(false);
       const data = await res.json();
       const incoming: Msg[] = data.messages || [];
       setMessages((prev) => {
@@ -76,9 +82,10 @@ export default function LiveSupportPanel() {
         olderSkipRef.current = typeof data.nextSkip === "number" ? data.nextSkip : incoming.length;
       }
     } catch {
-      /* ignore */
+      if (mode === "refresh") setLoadFailed(true);
     } finally {
       if (mode === "older") setOlderBusy(false);
+      else setBooting(false);
     }
   }, []);
 
@@ -220,9 +227,27 @@ export default function LiveSupportPanel() {
                   {olderBusy ? t("common.loading") : t("profile.support.older")}
                 </button>
               )}
-              {messages.length === 0 && (
-                <p className="px-2 py-6 text-center text-xs text-slate-500">{t("profile.support.empty")}</p>
-              )}
+              {loadFailed && messages.length === 0 ? (
+                <div className="px-2 py-6 text-center" data-fx-support-error="">
+                  <p className="text-sm font-normal text-slate-300">{t("state.supportFailed")}</p>
+                  <button
+                    type="button"
+                    data-fx-desk-retry=""
+                    onClick={() => void load()}
+                    className="mt-3 min-h-10 rounded-full bg-[#f4f5f7] px-4 text-xs font-medium text-[#111111]"
+                  >
+                    {t("state.retry")}
+                  </button>
+                </div>
+              ) : booting && messages.length === 0 ? (
+                <div data-fx-desk-skeleton="" aria-busy="true" className="space-y-2 px-2 py-4">
+                  <span className="sr-only">{t("state.loading")}</span>
+                  <span className="fx-skel h-10 w-2/3" />
+                  <span className="fx-skel ml-auto h-10 w-1/2" />
+                </div>
+              ) : messages.length === 0 ? (
+                <p className="px-2 py-6 text-center text-xs font-normal text-slate-500" data-fx-support-empty="">{t("profile.support.empty")}</p>
+              ) : null}
               {messages.map((m) => {
                 const mine = m.from === "customer";
                 const read =

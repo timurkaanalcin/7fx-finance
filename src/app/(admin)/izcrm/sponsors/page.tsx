@@ -1,6 +1,8 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { ListPlaceholder, listPhase } from "@/components/crm/CrmStates";
+import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 type Sponsor = {
   id: string;
@@ -32,7 +34,10 @@ function readImage(file: File): Promise<{ data: string; w: number; h: number }> 
 }
 
 export default function AdminSponsorsPage() {
+  const { i18n } = useCrmLabels();
   const [list, setList] = useState<Sponsor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
   const [name, setName] = useState("");
@@ -43,11 +48,24 @@ export default function AdminSponsorsPage() {
   const dragId = useRef<string | null>(null);
 
   const load = useCallback(async () => {
-    const r = await fetch("/api/admin/sponsors", { cache: "no-store" });
-    const d = await r.json().catch(() => ({}));
-    if (!r.ok) return setMsg(d.error || "Yüklenemedi");
-    setList(d.sponsors || []);
-  }, []);
+    setLoading(true);
+    try {
+      const r = await fetch("/api/admin/sponsors", { cache: "no-store" });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) {
+        setFailed(true);
+        setMsg(d.error || i18n("crm.ui.loadFailed"));
+        return;
+      }
+      setList(d.sponsors || []);
+      setFailed(false);
+    } catch {
+      setFailed(true);
+      setMsg(i18n("crm.ui.loadFailed"));
+    } finally {
+      setLoading(false);
+    }
+  }, [i18n]);
   useEffect(() => { load(); }, [load]);
 
   async function call(method: string, body?: unknown, qs = "") {
@@ -177,9 +195,16 @@ export default function AdminSponsorsPage() {
       {msg && <p className="mb-3 text-xs text-neutral-600">{msg}</p>}
 
       {list.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-neutral-300 bg-white p-6 text-center text-sm text-neutral-500">
-          Henüz sponsor yok. Ana sayfadaki Sponsorlar bölümü gizli.
-        </p>
+        <div className="rounded-xl border border-dashed border-neutral-300 bg-white p-6 text-center">
+          <ListPlaceholder
+            phase={listPhase(failed, loading)}
+            empty={i18n("crm.spon.empty")}
+            title={i18n("crm.ui.loadFailed")}
+            retry={i18n("crm.ui.tryAgain")}
+            loading={i18n("crm.ui.loading")}
+            onRetry={() => void load()}
+          />
+        </div>
       ) : (
         <ul className="space-y-2">
           {list.map((s, i) => (

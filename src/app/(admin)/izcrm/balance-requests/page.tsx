@@ -1,5 +1,6 @@
 "use client";
 
+import { ListPlaceholder, listPhase } from "@/components/crm/CrmStates";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 import { fmtCrmDate } from "@/lib/crm-format";
@@ -43,7 +44,8 @@ export default function AdminBalanceRequestsPage() {
   const [typeFilter, setTypeFilter] = useState("");
   const [csvBusy, setCsvBusy] = useState(false);
   const [loadedAt, setLoadedAt] = useState<Date | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [listFailed, setListFailed] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [moreBusy, setMoreBusy] = useState(false);
   const rowsRef = useRef<Row[]>([]);
@@ -56,16 +58,22 @@ export default function AdminBalanceRequestsPage() {
     else setLoading(true);
     try {
       const res = await fetch(`/api/admin/balance-requests?${params}`);
-      if (!res.ok) return;
+      if (!res.ok) {
+        if (mode !== "more") setListFailed(true);
+        return;
+      }
       const data = await res.json();
       const incoming: Row[] = data.requests || [];
       const seen = new Set(rowsRef.current.map((row) => row.id));
       const next = mode === "more" ? rowsRef.current.concat(incoming.filter((row) => !seen.has(row.id))) : incoming;
       rowsRef.current = next;
       setRows(next);
+      if (mode !== "more") setListFailed(false);
       setHasMore(Boolean(data.hasMore));
       if (data.config?.ruleTr) setRuleTr(data.config.ruleTr);
       setLoadedAt(new Date());
+    } catch {
+      if (mode !== "more") setListFailed(true);
     } finally {
       if (mode === "more") setMoreBusy(false);
       else setLoading(false);
@@ -313,6 +321,18 @@ export default function AdminBalanceRequestsPage() {
       </div>
 
       {msg && <p className="mb-3 text-xs text-emerald-400">{msg}</p>}
+      {listFailed && (
+        <div className="mb-3 rounded-xl border border-black/10 bg-white px-4 py-6 text-center">
+          <ListPlaceholder
+            phase="error"
+            empty={i18n("crm.ui.noRecords")}
+            title={i18n("crm.ui.loadFailed")}
+            retry={i18n("crm.ui.tryAgain")}
+            loading={i18n("crm.ui.loading")}
+            onRetry={() => void load()}
+          />
+        </div>
+      )}
       <div className="overflow-x-auto rounded-lg border border-[#e5e5e5]">
         <table className="w-full text-left text-xs">
           <thead className="border-b border-black/10 bg-white text-neutral-500">
@@ -385,10 +405,17 @@ export default function AdminBalanceRequestsPage() {
                 </td>
               </tr>
             ))}
-            {shown.length === 0 && (
+            {shown.length === 0 && !listFailed && (
               <tr>
                 <td colSpan={7} className="px-3 py-8 text-center text-neutral-500">
-                  {i18n("crm.ui.noRecords")}
+                  <ListPlaceholder
+                    phase={listPhase(false, loading && rows.length === 0)}
+                    empty={i18n("crm.ui.noRecords")}
+                    title={i18n("crm.ui.loadFailed")}
+                    retry={i18n("crm.ui.tryAgain")}
+                    loading={i18n("crm.ui.loading")}
+                    onRetry={() => void load()}
+                  />
                 </td>
               </tr>
             )}

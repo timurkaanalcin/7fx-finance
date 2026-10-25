@@ -1,5 +1,6 @@
 "use client";
 
+import { ListPlaceholder } from "@/components/crm/CrmStates";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 import { useCallback, useEffect, useState } from "react";
@@ -28,14 +29,21 @@ export default function ReportPage() {
   const { i18n } = useCrmLabels();
   const [report, setReport] = useState<Report | null>(null);
   const [busy, setBusy] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   const load = useCallback(async () => {
     setBusy(true);
     try {
       const res = await fetch("/api/admin/analytics/report");
-      if (!res.ok) return;
+      if (!res.ok) {
+        setFailed(true);
+        return;
+      }
       const data = await res.json();
       setReport(data.report || null);
+      setFailed(false);
+    } catch {
+      setFailed(true);
     } finally {
       setBusy(false);
     }
@@ -112,7 +120,19 @@ export default function ReportPage() {
           </div>
         ))}
       </div>
-      {!report && <p className="mt-4 text-xs text-neutral-500">{i18n("crm.ui.loading")}</p>}
+      {!report && failed && (
+        <div className="mt-4">
+          <ListPlaceholder
+            phase="error"
+            empty=""
+            title={i18n("crm.ui.loadFailed")}
+            retry={i18n("crm.ui.tryAgain")}
+            loading={i18n("crm.ui.loading")}
+            onRetry={() => void load()}
+          />
+        </div>
+      )}
+      {!report && !failed && <p className="mt-4 text-xs font-normal text-neutral-500">{busy ? i18n("crm.ui.loading") : i18n("crm.ui.loading")}</p>}
     </div>
   );
 }

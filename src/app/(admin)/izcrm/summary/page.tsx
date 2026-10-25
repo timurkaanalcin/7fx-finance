@@ -1,8 +1,9 @@
 "use client";
 
+import { ListPlaceholder } from "@/components/crm/CrmStates";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 
 type Row = {
   userId: string;
@@ -63,16 +64,27 @@ export default function AdminSummaryPage() {
   const [filter, setFilter] = useState<Filter>("all");
   const [sortKey, setSortKey] = useState<SortKey | null>(null);
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [phase, setPhase] = useState<"loading" | "ready" | "error">("loading");
 
-  useEffect(() => {
+  const load = useCallback(() => {
+    setPhase("loading");
     fetch("/api/admin/summary")
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error("load");
+        return r.json();
+      })
       .then((d) => {
         setRows(d.accounts || []);
         setTotals(d.totals || null);
         setAccountsPartial(Boolean(d.accountsPartial));
-      });
+        setPhase("ready");
+      })
+      .catch(() => setPhase("error"));
   }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   const fmt = (n: number) =>
     num(n).toLocaleString("en-US", { style: "currency", currency: "USD" });
@@ -295,7 +307,14 @@ export default function AdminSummaryPage() {
             {shown.length === 0 && (
               <tr>
                 <td colSpan={8} className="px-3 py-8 text-center text-neutral-500">
-                  {i18n("crm.sum.empty")}
+                  <ListPlaceholder
+                    phase={phase === "ready" && rows.length > 0 ? "ready" : phase}
+                    empty={i18n("crm.sum.empty")}
+                    title={i18n("crm.ui.loadFailed")}
+                    retry={i18n("crm.ui.tryAgain")}
+                    loading={i18n("crm.ui.loading")}
+                    onRetry={load}
+                  />
                 </td>
               </tr>
             )}

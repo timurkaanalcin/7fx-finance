@@ -1,8 +1,9 @@
 "use client";
 
+import { ListPlaceholder } from "@/components/crm/CrmStates";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type Kpis = {
   income: number;
@@ -30,16 +31,25 @@ export default function FinanceAnalyticsPage() {
   const { i18n, code } = useCrmLabels();
   const [kpis, setKpis] = useState<Kpis | null>(null);
   const [byType, setByType] = useState<ByType[]>([]);
+  const [failed, setFailed] = useState(false);
 
-  useEffect(() => {
+  const load = useCallback(() => {
+    setFailed(false);
     fetch("/api/admin/analytics/finance")
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error("load");
+        return r.json();
+      })
       .then((d) => {
         setKpis(d.kpis || null);
         setByType(d.byType || []);
       })
-      .catch(() => {});
+      .catch(() => setFailed(true));
   }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   const maxBar = Math.max(kpis?.income || 1, kpis?.outcome || 1, 1);
 
@@ -118,7 +128,17 @@ export default function FinanceAnalyticsPage() {
           </div>
         </>
       )}
-      {!kpis && <p className="text-xs text-neutral-500">{i18n("crm.ui.loading")}</p>}
+      {!kpis && failed && (
+        <ListPlaceholder
+          phase="error"
+          empty=""
+          title={i18n("crm.ui.loadFailed")}
+          retry={i18n("crm.ui.tryAgain")}
+          loading={i18n("crm.ui.loading")}
+          onRetry={load}
+        />
+      )}
+      {!kpis && !failed && <p className="text-xs font-normal text-neutral-500">{i18n("crm.ui.loading")}</p>}
     </div>
   );
 }

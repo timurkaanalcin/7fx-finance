@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import { ListPlaceholder, listPhase } from "@/components/crm/CrmStates";
 import { StatusBadge } from "@/components/crm/StubPage";
 import { ConfirmDialog, CrmFormGrid, type CrmColumn } from "@/components/crm/CrmRecordTable";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
@@ -83,6 +84,8 @@ export default function AssetsPage() {
   const [state, setState] = useState("");
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [editSym, setEditSym] = useState<string | null>(null);
   const [draft, setDraft] = useState<Draft>({});
@@ -94,12 +97,23 @@ export default function AssetsPage() {
   const [deleteTarget, setDeleteTarget] = useState<Asset | null>(null);
 
   const load = useCallback(async () => {
-    const r = await fetch("/api/admin/assets");
-    if (!r.ok) return;
-    const d = await r.json();
-    setAssets(d.assets || []);
-    setCounts(d.counts || null);
-    setDeletedBuiltins(d.deletedBuiltins || []);
+    setLoading(true);
+    try {
+      const r = await fetch("/api/admin/assets");
+      if (!r.ok) {
+        setFailed(true);
+        return;
+      }
+      const d = await r.json();
+      setAssets(d.assets || []);
+      setCounts(d.counts || null);
+      setDeletedBuiltins(d.deletedBuiltins || []);
+      setFailed(false);
+    } catch {
+      setFailed(true);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -353,6 +367,18 @@ export default function AssetsPage() {
       {msg && <p className="mb-2 text-xs text-emerald-700">{msg}</p>}
       {err && <p className="mb-2 text-xs text-red-600">{err}</p>}
 
+      {failed && (
+        <div className="mb-3 rounded-xl border border-black/10 bg-white px-4 py-6 text-center">
+          <ListPlaceholder
+            phase="error"
+            empty={i18n("crm.ui.noRecords")}
+            title={i18n("crm.ui.loadFailed")}
+            retry={i18n("crm.ui.tryAgain")}
+            loading={i18n("crm.ui.loading")}
+            onRetry={() => void load()}
+          />
+        </div>
+      )}
       <div className="overflow-x-auto rounded-xl border border-[#e5e5e5] bg-white">
         <table className="w-full text-left text-[11px]">
           <thead className="bg-white text-neutral-500">
@@ -476,10 +502,17 @@ export default function AssetsPage() {
                 </Fragment>
               );
             })}
-            {filtered.length === 0 && (
+            {filtered.length === 0 && !failed && (
               <tr>
                 <td colSpan={10} className="px-3 py-8 text-center text-neutral-500">
-                  {i18n("crm.ui.noRecords")}
+                  <ListPlaceholder
+                    phase={listPhase(false, loading && assets.length === 0)}
+                    empty={i18n("crm.ui.noRecords")}
+                    title={i18n("crm.ui.loadFailed")}
+                    retry={i18n("crm.ui.tryAgain")}
+                    loading={i18n("crm.ui.loading")}
+                    onRetry={() => void load()}
+                  />
                 </td>
               </tr>
             )}

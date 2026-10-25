@@ -54,7 +54,8 @@ export function useMoneyQueue<T extends MoneyQueueRow>(path: string, opts: Optio
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState<number | null>(null);
   const [hasMore, setHasMore] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
   const [csvBusy, setCsvBusy] = useState(false);
   const [loadedAt, setLoadedAt] = useState<Date | null>(null);
   const [filtersReady, setFiltersReady] = useState(false);
@@ -90,12 +91,18 @@ export function useMoneyQueue<T extends MoneyQueueRow>(path: string, opts: Optio
     try {
       const res = await fetch(`${path}?${params}`, { cache: "no-store" });
       if (gen !== listGen.current) return;
-      if (!res.ok) return;
+      if (!res.ok) {
+        setFailed(true);
+        return;
+      }
       const data = await res.json();
       setRows((data.requests || []) as T[]);
       setHasMore(Boolean(data.hasMore));
       setTotal(typeof data.total === "number" ? data.total : null);
       setLoadedAt(new Date());
+      setFailed(false);
+    } catch {
+      if (gen === listGen.current) setFailed(true);
     } finally {
       if (gen === listGen.current) setLoading(false);
     }
@@ -193,6 +200,7 @@ export function useMoneyQueue<T extends MoneyQueueRow>(path: string, opts: Optio
     total,
     hasMore,
     loading,
+    failed,
     csvBusy,
     loadedAt,
     msg,

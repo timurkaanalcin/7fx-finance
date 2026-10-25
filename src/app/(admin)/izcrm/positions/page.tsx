@@ -1,5 +1,6 @@
 "use client";
 
+import { ListPlaceholder } from "@/components/crm/CrmStates";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -129,7 +130,18 @@ export default function PositionsPage() {
           {i18n("crm.ui.live")} ({CRM_IDLE_POLL_MS / 1000}s)
         </label>
       </div>
-      {err && <p className="mb-2 text-xs text-red-500">{err}</p>}
+      {err && (
+        <div className="mb-3">
+          <ListPlaceholder
+            phase="error"
+            empty=""
+            title={err}
+            retry={i18n("crm.ui.tryAgain")}
+            loading={i18n("crm.ui.loading")}
+            onRetry={() => void load()}
+          />
+        </div>
+      )}
       <div className="mb-3 flex gap-1">
         {(["OPEN", "CLOSED", "ALL", "ORDERS"] as const).map((t) => (
           <button
