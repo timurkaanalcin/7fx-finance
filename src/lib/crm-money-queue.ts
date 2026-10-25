@@ -2,6 +2,7 @@ import type { Prisma } from "@prisma/client";
 
 /** One page of the deposit or withdrawal queue. Callers that omit take keep the legacy window. */
 export const MONEY_QUEUE_PAGE = 50;
+export const MONEY_QUEUE_TAKES = [25, 50, 100] as const;
 
 export const MONEY_QUEUE_STATUSES = ["PENDING", "APPROVED", "REJECTED"] as const;
 
@@ -25,6 +26,7 @@ export type MoneyQueueFilters = {
   status: string;
   sort: string;
   page: number;
+  take: number;
 };
 
 function clip(value: string | null, max: number): string {
@@ -45,6 +47,7 @@ export function parseMoneyQueueQuery(search: string): MoneyQueueFilters {
     status,
     sort: SORT_SET.has(sort) ? sort : "",
     page,
+    take: clipTake(sp.get("take")),
   };
 }
 
@@ -56,19 +59,33 @@ export function moneyQueueSearchString(f: MoneyQueueFilters): string {
   else if (f.status && f.status !== "PENDING" && STATUS_SET.has(f.status)) sp.set("status", f.status);
   if (f.sort && SORT_SET.has(f.sort)) sp.set("sort", f.sort);
   if (f.page > 1) sp.set("page", String(Math.min(2000, Math.trunc(f.page))));
+  if (f.take && f.take !== MONEY_QUEUE_PAGE) sp.set("take", String(f.take));
   return sp.toString();
 }
 
-export function moneyQueueSkip(page: number): number {
+function clipTake(raw: string | null): number {
+  const n = Math.trunc(Number(raw));
+  return (MONEY_QUEUE_TAKES as readonly number[]).includes(n) ? n : MONEY_QUEUE_PAGE;
+}
+
+export function moneyQueueSkip(page: number, take = MONEY_QUEUE_PAGE): number {
   const p = Number.isFinite(page) && page > 1 ? Math.min(2000, Math.trunc(page)) : 1;
-  return (p - 1) * MONEY_QUEUE_PAGE;
+  return (p - 1) * clipTake(String(take));
 }
 
 /** Inclusive row numbers. An empty page is 0–0, not a full window. */
-export function moneyQueueRange(page: number, rowCount: number): { from: number; to: number } {
+export function moneyQueueRange(page: number, rowCount: number, take = MONEY_QUEUE_PAGE): { from: number; to: number } {
   if (!Number.isFinite(rowCount) || rowCount <= 0) return { from: 0, to: 0 };
-  const from = moneyQueueSkip(page) + 1;
+  const from = moneyQueueSkip(page, take) + 1;
   return { from, to: from + Math.trunc(rowCount) - 1 };
+}
+
+/** Header sort state. The date column is newest-first when no sort is chosen. */
+export function moneyAriaSort(sort: string, field: string): "ascending" | "descending" | "none" {
+  if (field === "created" && (sort === "" || sort === "created_desc")) return "descending";
+  if (sort === `${field}_asc`) return "ascending";
+  if (sort === `${field}_desc`) return "descending";
+  return "none";
 }
 
 /** Status filter. ALL, blank, and unknown values do not narrow the query. */

@@ -5,13 +5,20 @@ import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CrmListPager, useListQueryUrl } from "@/components/crm/CrmListBar";
+import {
+  CRM_LIST_TAKES,
+  listPageRange,
+  listPageSkip,
+  parsePositionListQuery,
+  positionListSearchString,
+} from "@/lib/crm-list-url";
 import { CRM_IDLE_POLL_MS, useVisiblePoll } from "@/lib/use-visible-poll";
 import { fmtCrmDate, fmtCrmMoney } from "@/lib/crm-format";
 
 const tableFallback = () => <div className="h-16 rounded bg-neutral-100" role="status" aria-busy="true" />;
 const EditableOrdersTable = dynamic(() => import("@/components/crm/EditableOrdersTable"), { loading: tableFallback });
 const EditablePositionsTable = dynamic(() => import("@/components/crm/EditablePositionsTable"), { loading: tableFallback });
-import { CRM_LIST_PAGE, CRM_LIST_TAKE_CAP } from "@/lib/trader-list";
 
 
 type PosRow = Record<string, unknown>;
@@ -42,7 +49,9 @@ export default function PositionsPage() {
   const [showExposure, setShowExposure] = useState(true);
   const [exposure, setExposure] = useState<Exposure[]>([]);
   const [hasMore, setHasMore] = useState(false);
-  const [moreBusy, setMoreBusy] = useState(false);
+  const [page, setPage] = useState(1);
+  const [take, setTake] = useState(50);
+  const [filtersReady, setFiltersReady] = useState(false);
   const rowsRef = useRef<PosRow[]>([]);
   const ordersRef = useRef<PosRow[]>([]);
   const listGen = useRef(0);
@@ -61,21 +70,34 @@ export default function PositionsPage() {
     [exposure]
   );
 
-  const load = useCallback(async (mode: "replace" | "more" = "replace") => {
+  const filterSig = `${tab}|${qDebounced}|${take}`;
+  const queryString = positionListSearchString({
+    q: qDebounced,
+    tab,
+    page,
+    take,
+  });
+  useListQueryUrl(filtersReady, queryString);
+  const shown = tab === "ORDERS" ? orders : rows;
+  const range = listPageRange(page, take, shown.length);
+
+  const load = useCallback(async () => {
+    if (!filtersReady) return;
     const gen = ++listGen.current;
-    const filterKey = `${tab}|${qDebounced}`;
-    const filtersChanged = mode === "replace" && appliedKey.current !== filterKey;
-    if (filtersChanged) appliedKey.current = filterKey;
+    const filterKey = filterSig;
+    let usePage = page;
+    if (appliedKey.current && appliedKey.current !== filterKey) {
+      usePage = 1;
+      if (page !== 1) setPage(1);
+    }
+    appliedKey.current = filterKey;
     const p = new URLSearchParams();
     if (qDebounced) p.set("q", qDebounced);
     const ordersTab = tab === "ORDERS";
-    const loaded = filtersChanged ? 0 : (ordersTab ? ordersRef.current.length : rowsRef.current.length);
-    const pageTake = mode === "more" ? CRM_LIST_PAGE : Math.min(CRM_LIST_TAKE_CAP, Math.max(CRM_LIST_PAGE, loaded || CRM_LIST_PAGE));
-    p.set("take", String(pageTake));
-    p.set("skip", mode === "more" ? String(loaded) : "0");
+    p.set("take", String(take));
+    p.set("skip", String(listPageSkip(usePage, take)));
     if (ordersTab) p.set("tab", "orders");
     else p.set("status", tab);
-    if (mode === "more") setMoreBusy(true);
     try {
       const res = await fetch(`/api/admin/positions?${p}`, { cache: "no-store" });
       if (gen !== listGen.current) return;
@@ -85,15 +107,12 @@ export default function PositionsPage() {
       }
       const data = await res.json();
       const list: PosRow[] = ordersTab ? data.orders || [] : data.positions || [];
-      const prev = ordersTab ? ordersRef.current : rowsRef.current;
-      const next =
-        mode === "more" ? prev.concat(list.filter((row) => !prev.some((old) => old.id === row.id))) : list;
       if (ordersTab) {
-        ordersRef.current = next;
-        setOrders(next);
+        ordersRef.current = list;
+        setOrders(list);
       } else {
-        rowsRef.current = next;
-        setRows(next);
+        rowsRef.current = list;
+        setRows(list);
         setExposure(Array.isArray(data.exposure) ? data.exposure : []);
       }
       setHasMore(Boolean(data.hasMore));
@@ -101,10 +120,18 @@ export default function PositionsPage() {
       setErr("");
     } catch {
       if (gen === listGen.current) setErr(i18n("crm.ui.connectionError"));
-    } finally {
-      if (mode === "more" && gen === listGen.current) setMoreBusy(false);
     }
-  }, [tab, qDebounced, i18n]);
+  }, [filterSig, filtersReady, page, take, tab, qDebounced, i18n]);
+
+  useEffect(() => {
+    const parsed = parsePositionListQuery(window.location.search);
+    setQ(parsed.q);
+    setQDebounced(parsed.q);
+    setTab(parsed.tab);
+    setPage(parsed.page);
+    setTake(parsed.take);
+    setFiltersReady(true);
+  }, []);
 
   useEffect(() => {
     load();
@@ -180,10 +207,24 @@ export default function PositionsPage() {
             className="w-full rounded border border-neutral-300 bg-white px-2.5 py-1.5 text-xs text-neutral-900 placeholder:text-neutral-400 focus:border-black focus:outline-none"
           />
         </div>
-        <span className="text-[11px] tabular-nums text-neutral-500">
-          {(tab === "ORDERS" ? orders.length : rows.length)}
-          {hasMore ? "+" : ""} {i18n("crm.pos.shown")}
+        <span className="text-[11px] tabular-nums text-neutral-500" data-fx-list-range="">
+          {range.from > 0
+            ? i18n("crm.list.showingOpen").replace("{from}", String(range.from)).replace("{to}", String(range.to))
+            : `0 ${i18n("crm.pos.shown")}`}
         </span>
+        <button
+          type="button"
+          onClick={() => {
+            setQ("");
+            setTab("OPEN");
+            setPage(1);
+          }}
+          disabled={!q && tab === "OPEN" && page === 1}
+          data-fx-list-clear=""
+          className="rounded border border-neutral-300 bg-white px-2.5 py-1 text-[11px] font-medium text-neutral-700 hover:bg-neutral-50 disabled:opacity-40"
+        >
+          {i18n("crm.list.clear")}
+        </button>
         {tab === "OPEN" && (
           <button
             type="button"
@@ -272,18 +313,26 @@ export default function PositionsPage() {
           />
         </div>
       )}
-      {hasMore && (
-        <div className="mt-3 text-center">
-          <button
-            type="button"
-            disabled={moreBusy}
-            onClick={() => void load("more")}
-            className="rounded-full border border-neutral-300 px-3 py-1 text-xs font-semibold text-neutral-600 hover:bg-neutral-50 disabled:opacity-50"
-          >
-            {i18n("crm.ui.loadMore")}
-          </button>
-        </div>
-      )}
+      <CrmListPager
+        page={page}
+        take={take}
+        takes={CRM_LIST_TAKES}
+        hasMore={hasMore}
+        from={range.from}
+        to={range.to}
+        total={null}
+        onPage={setPage}
+        onTake={(n) => {
+          setTake(n);
+          setPage(1);
+        }}
+        onClear={() => {
+          setQ("");
+          setTab("OPEN");
+          setPage(1);
+        }}
+        clearDisabled={!q && tab === "OPEN"}
+      />
     </div>
   );
 }

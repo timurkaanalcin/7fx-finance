@@ -2,6 +2,13 @@
 
 import Link from "next/link";
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CrmListPager, useListQueryUrl } from "@/components/crm/CrmListBar";
+import {
+  CRM_LIST_TAKES,
+  parseTicketListQuery,
+  ticketListSearchString,
+  type TicketCursor,
+} from "@/lib/crm-list-url";
 import { ListPlaceholder, listPhase } from "@/components/crm/CrmStates";
 import { StatusBadge } from "@/components/crm/StubPage";
 import { ConfirmDialog, CrmFormGrid, ReflectBox } from "@/components/crm/crm-record-lazy";
@@ -46,6 +53,7 @@ type Draft = Record<string, string>;
 const KIND_KEYS: KindKey[] = ["DEPOSIT", "WITHDRAW", "MARGIN_ADD", "MARGIN_RESET"];
 const STATUSES = ["PENDING", "APPROVED", "REJECTED"];
 /** Kind filter values understood by /api/admin/tickets, mapped to Ticket.kind. */
+const ZERO_CURSOR: TicketCursor = { deposit: 0, margin: 0, withdraw: 0 };
 const KIND_FILTERS: { value: string; kind: Ticket["kind"] }[] = [
   { value: "deposit", kind: "DEPOSIT" },
   { value: "margin", kind: "MARGIN" },
@@ -155,16 +163,43 @@ export default function TicketsPage() {
   // delete
   const [deleteTarget, setDeleteTarget] = useState<Ticket | null>(null);
   const [hasMore, setHasMore] = useState(false);
-  const [moreBusy, setMoreBusy] = useState(false);
-  const ticketsRef = useRef<Ticket[]>([]);
-  const cursorsRef = useRef({ deposit: 0, margin: 0, withdraw: 0 });
+  const [take, setTake] = useState(50);
+  const [cursor, setCursor] = useState<TicketCursor>({ deposit: 0, margin: 0, withdraw: 0 });
+  const [stack, setStack] = useState<TicketCursor[]>([]);
+  const [filtersReady, setFiltersReady] = useState(false);
+  const nextCursor = useRef<TicketCursor>({ deposit: 0, margin: 0, withdraw: 0 });
+  const appliedFilter = useRef("");
 
   useEffect(() => {
     const t = setTimeout(() => setQDebounced(q.trim()), 300);
     return () => clearTimeout(t);
   }, [q]);
 
-  const load = useCallback(async (mode: "replace" | "more" = "replace") => {
+  const filterSig = [status, kind, qDebounced, from, to, String(take)].join("\u0001");
+  const queryString = ticketListSearchString({
+    q: qDebounced,
+    status,
+    kind,
+    from,
+    to,
+    take,
+    cursor,
+    stack,
+  });
+  useListQueryUrl(filtersReady, queryString);
+
+  const load = useCallback(async () => {
+    if (!filtersReady) return;
+    const sig = filterSig;
+    let useCursor = cursor;
+    if (appliedFilter.current && appliedFilter.current !== sig) {
+      useCursor = ZERO_CURSOR;
+      if (cursor.deposit || cursor.margin || cursor.withdraw || stack.length) {
+        setCursor(ZERO_CURSOR);
+        setStack([]);
+      }
+    }
+    appliedFilter.current = sig;
     const params = new URLSearchParams();
     if (status) params.set("status", status);
     if (kind !== "all") params.set("kind", kind);
@@ -173,30 +208,26 @@ export default function TicketsPage() {
     const tt = dayEndIso(to);
     if (f) params.set("from", f);
     if (tt) params.set("to", tt);
-    const cursors = mode === "more" ? cursorsRef.current : { deposit: 0, margin: 0, withdraw: 0 };
-    params.set("take", "50");
-    params.set("depSkip", String(cursors.deposit));
-    params.set("marginSkip", String(cursors.margin));
-    params.set("wdSkip", String(cursors.withdraw));
-    if (mode === "more") setMoreBusy(true);
-    else setLoading(true);
+    params.set("take", String(take));
+    params.set("depSkip", String(useCursor.deposit));
+    params.set("marginSkip", String(useCursor.margin));
+    params.set("wdSkip", String(useCursor.withdraw));
+    const atStart = !useCursor.deposit && !useCursor.margin && !useCursor.withdraw;
+    setLoading(true);
     try {
       const res = await fetch(`/api/admin/tickets?${params}`);
       if (!res.ok) {
-        if (mode !== "more") setListFailed(true);
+        setListFailed(true);
         return;
       }
       const data = await res.json();
       const incoming: Ticket[] = data.tickets || [];
-      const seen = new Set(ticketsRef.current.map((row) => `${row.kind}:${row.id}`));
-      const list = mode === "more" ? ticketsRef.current.concat(incoming.filter((row) => !seen.has(`${row.kind}:${row.id}`))) : incoming;
-      ticketsRef.current = list;
-      setTickets(list);
-      if (mode !== "more") setListFailed(false);
+      setTickets(incoming);
+      setListFailed(false);
       setMethods(data.methods || []);
-      if (data.cursors) cursorsRef.current = data.cursors;
+      if (data.cursors) nextCursor.current = data.cursors;
       setHasMore(Boolean(data.hasMore));
-      if (mode === "replace" && data.counts) {
+      if (atStart && data.counts) {
         const byKind = {
           DEPOSIT: Number(data.counts.DEPOSIT) || 0,
           MARGIN: Number(data.counts.MARGIN) || 0,
@@ -205,12 +236,38 @@ export default function TicketsPage() {
         setBaseCounts({ total: byKind.DEPOSIT + byKind.MARGIN + byKind.WITHDRAW, byKind });
       }
     } catch {
-      if (mode !== "more") setListFailed(true);
+      setListFailed(true);
     } finally {
-      if (mode === "more") setMoreBusy(false);
-      else setLoading(false);
+      setLoading(false);
     }
-  }, [status, kind, qDebounced, from, to]);
+  }, [filterSig, filtersReady, cursor, stack.length, status, kind, qDebounced, from, to, take]);
+
+  useEffect(() => {
+    const parsed = parseTicketListQuery(window.location.search);
+    setQ(parsed.q);
+    setQDebounced(parsed.q);
+    setStatus(parsed.status);
+    setKind(parsed.kind);
+    setFrom(parsed.from);
+    setTo(parsed.to);
+    setTake(parsed.take);
+    setCursor(parsed.cursor);
+    setStack(parsed.stack);
+    setFiltersReady(true);
+  }, []);
+
+  function goNext() {
+    setStack((s) => [...s, cursor].slice(-8));
+    setCursor({ ...nextCursor.current });
+  }
+  function goPrev() {
+    setStack((s) => {
+      const prev = s[s.length - 1];
+      if (!prev) return s;
+      setCursor(prev);
+      return s.slice(0, -1);
+    });
+  }
 
   const kindChips = useMemo(() => {
     const base = baseCounts || { total: tickets.length, byKind: {} as Record<string, number> };
@@ -647,10 +704,13 @@ export default function TicketsPage() {
             setQ("");
             setFrom("");
             setTo("");
+            setCursor(ZERO_CURSOR);
+            setStack([]);
           }}
-          className="rounded border border-neutral-300 bg-white px-2 py-1.5 hover:bg-neutral-50"
+          data-fx-list-clear=""
+          className="rounded border border-neutral-300 bg-white px-2 py-1.5 font-medium hover:bg-neutral-50"
         >
-          {i18n("crm.ui.clear")}
+          {i18n("crm.list.clear")}
         </button>
         <button
           type="button"
@@ -971,16 +1031,35 @@ export default function TicketsPage() {
           </tbody>
         </table>
       </div>
-      {hasMore && (
-        <button
-          type="button"
-          disabled={moreBusy}
-          onClick={() => void load("more")}
-          className="mt-3 w-full rounded-lg border border-[#e5e5e5] bg-white px-3 py-2 text-sm font-medium hover:bg-[#f7f7f7] disabled:opacity-50"
-        >
-          {moreBusy ? i18n("crm.ui.loading") : i18n("crm.ui.loadMore")}
-        </button>
-      )}
+      <CrmListPager
+        page={stack.length + 1}
+        take={take}
+        takes={CRM_LIST_TAKES}
+        hasMore={hasMore}
+        from={!cursor.deposit && !cursor.margin && !cursor.withdraw ? (tickets.length ? 1 : 0) : 0}
+        to={tickets.length}
+        total={baseCounts ? baseCounts.total : null}
+        onPage={(n) => {
+          if (n > stack.length + 1) goNext();
+          else goPrev();
+        }}
+        onTake={(n) => {
+          setTake(n);
+          setCursor(ZERO_CURSOR);
+          setStack([]);
+        }}
+        onClear={() => {
+          setStatus("PENDING");
+          setKind("all");
+          setQ("");
+          setFrom("");
+          setTo("");
+          setCursor(ZERO_CURSOR);
+          setStack([]);
+        }}
+        clearDisabled={status === "PENDING" && kind === "all" && !q && !from && !to && stack.length === 0}
+        busy={loading}
+      />
 
       <ConfirmDialog
         open={deleteTarget != null}

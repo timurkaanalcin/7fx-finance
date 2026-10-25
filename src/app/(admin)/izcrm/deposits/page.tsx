@@ -3,7 +3,7 @@
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { LOCALE_META } from "@/lib/i18n/locales";
 import { fmtCrmDate } from "@/lib/crm-format";
-import { formatQueueMoney, nextMoneySort, queueStatusTone } from "@/lib/crm-money-queue";
+import { formatQueueMoney, moneyAriaSort, nextMoneySort, queueStatusTone } from "@/lib/crm-money-queue";
 import { ListPlaceholder, listPhase } from "@/components/crm/CrmStates";
 import { MoneyQueueChrome, MoneyQueuePager } from "@/components/crm/MoneyQueueChrome";
 import { useMoneyQueue, type MoneyQueueRow } from "@/components/crm/use-money-queue";
@@ -107,27 +107,27 @@ export default function AdminDepositsPage() {
         <table className="fx-crm-table w-full text-left text-xs">
           <thead className="border-b border-black/10 bg-white text-neutral-500">
             <tr>
-              <th className="px-3 py-2">
+              <th className="px-3 py-2" aria-sort={moneyAriaSort(queue.sort, "created")}>
                 <button type="button" className="font-medium hover:text-neutral-900" data-fx-queue-sort="created" onClick={() => queue.setSort(nextMoneySort(queue.sort, "created"))}>
                   {i18n("crm.ui.date")}
                   {sortMark(queue.sort, "created")}
                 </button>
               </th>
-              <th className="px-3 py-2">
+              <th className="px-3 py-2" aria-sort={moneyAriaSort(queue.sort, "name")}>
                 <button type="button" className="font-medium hover:text-neutral-900" data-fx-queue-sort="name" onClick={() => queue.setSort(nextMoneySort(queue.sort, "name"))}>
                   {i18n("crm.ui.user")}
                   {sortMark(queue.sort, "name")}
                 </button>
               </th>
               <th className="px-3 py-2">{i18n("crm.ui.method")}</th>
-              <th className="fx-crm-num px-3 py-2">
+              <th className="fx-crm-num px-3 py-2" aria-sort={moneyAriaSort(queue.sort, "amount")}>
                 <button type="button" className="font-medium hover:text-neutral-900" data-fx-queue-sort="amount" onClick={() => queue.setSort(nextMoneySort(queue.sort, "amount"))}>
                   {i18n("crm.ui.amount")}
                   {sortMark(queue.sort, "amount")}
                 </button>
               </th>
               <th className="px-3 py-2">{i18n("crm.ui.note")}</th>
-              <th className="px-3 py-2">
+              <th className="px-3 py-2" aria-sort={moneyAriaSort(queue.sort, "status")}>
                 <button type="button" className="font-medium hover:text-neutral-900" data-fx-queue-sort="status" onClick={() => queue.setSort(nextMoneySort(queue.sort, "status"))}>
                   {i18n("crm.ui.status")}
                   {sortMark(queue.sort, "status")}
