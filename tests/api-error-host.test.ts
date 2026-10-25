@@ -8,7 +8,7 @@ import path from "node:path";
 import { NextRequest } from "next/server";
 import { middleware } from "../src/middleware";
 import { clientErrorMessage, publicErrorText } from "../src/lib/security/public-error";
-import { locationForRequest } from "../src/lib/request-origin";
+import { isTrustedRedirectHost, locationForRequest } from "../src/lib/request-origin";
 
 const ROOT = path.resolve(__dirname, "..");
 const DOMAINS = [
@@ -154,6 +154,61 @@ function main() {
     },
   });
   assert.equal(middleware(crm).headers.get("location"), "https://crm7fx.customer.org.tr/login");
+
+  assert.equal(isTrustedRedirectHost("evil.com"), false);
+  assert.equal(isTrustedRedirectHost("evil.vercel.app"), false);
+  assert.equal(isTrustedRedirectHost("7fx-finance.vercel.app.evil.com"), false);
+  assert.equal(isTrustedRedirectHost("7fx-finance.vercel.app"), true);
+  assert.equal(isTrustedRedirectHost("7fx-finance-git-main-team.vercel.app"), true);
+  assert.equal(isTrustedRedirectHost("localhost"), true);
+  assert.equal(isTrustedRedirectHost("127.0.0.1"), true);
+
+  const poisoned = {
+    url: "http://127.0.0.1:3000/trade",
+    headers: headers({
+      "x-forwarded-host": "evil.com",
+      "x-forwarded-proto": "https",
+      host: "evil.com",
+    }),
+  };
+  assert.equal(locationForRequest(poisoned, "/login"), "http://127.0.0.1:3000/login");
+  assert.equal(locationForRequest(poisoned, "/login").includes("evil.com"), false);
+
+  const preview = locationForRequest(
+    {
+      url: "http://127.0.0.1:3000/faq",
+      headers: headers({
+        "x-forwarded-host": "7fx-finance-git-main-team.vercel.app",
+        "x-forwarded-proto": "https",
+        host: "127.0.0.1:3000",
+      }),
+    },
+    "/faq"
+  );
+  assert.equal(preview, "https://7fx-finance-git-main-team.vercel.app/faq");
+
+  const evilPreview = locationForRequest(
+    {
+      url: "https://7fx.customer.org.tr/markets",
+      headers: headers({
+        "x-forwarded-host": "evil.vercel.app",
+        "x-forwarded-proto": "https",
+      }),
+    },
+    "/markets"
+  );
+  assert.equal(evilPreview, "https://7fx.customer.org.tr/markets");
+
+  const evilReq = new NextRequest("http://127.0.0.1:3000/trade", {
+    headers: {
+      "x-forwarded-host": "evil.com",
+      "x-forwarded-proto": "https",
+      host: "evil.com",
+    },
+  });
+  const evilLocation = evilReq && middleware(evilReq).headers.get("location");
+  assert.equal(evilLocation?.includes("evil.com"), false);
+  assert.match(String(evilLocation), /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?\/login$/);
 
   console.log("api-error-host tests passed");
 }
