@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useDialogFocus } from "@/components/a11y/useDialogFocus";
 
 /**
  * Staff-side "Hazır yanıtlar" (canned replies) for CRM live support.
@@ -123,24 +124,17 @@ export function CannedRepliesPanel({
   const { items, save, remove } = canned;
   const [draft, setDraft] = useState<{ id?: string; title: string; body: string } | null>(null);
   const [filter, setFilter] = useState("");
+  const panelRef = useRef<HTMLDivElement>(null);
+  useDialogFocus(open, () => {
+    if (draft) setDraft(null);
+    else onClose();
+  }, panelRef);
   useEffect(() => {
     if (!open) {
       setDraft(null);
       setFilter("");
     }
   }, [open]);
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        if (draft) setDraft(null);
-        else onClose();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, draft, onClose]);
 
   const shown = useMemo(() => {
     const q = filter.trim().toLocaleLowerCase("tr");
@@ -157,8 +151,10 @@ export function CannedRepliesPanel({
 
   return (
     <div
+      ref={panelRef}
       className="absolute bottom-full left-3 right-3 z-30 mb-2 max-h-[min(420px,60vh)] overflow-y-auto rounded-xl border border-neutral-200 bg-white p-2.5 shadow-xl sm:left-3 sm:right-auto sm:w-[380px]"
       role="dialog"
+      aria-modal="true"
       aria-label={labels.title}
     >
       <div className="mb-2 flex items-center justify-between gap-2">

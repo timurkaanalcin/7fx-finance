@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useDialogFocus } from "@/components/a11y/useDialogFocus";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 type Perms = {
@@ -40,6 +41,8 @@ export default function AccountPermissionsPanel({
   const [err, setErr] = useState("");
   const [msg, setMsg] = useState("");
   const [confirm, setConfirm] = useState<ConfirmState>(null);
+  const confirmRef = useRef<HTMLDivElement>(null);
+  useDialogFocus(Boolean(confirm), () => setConfirm(null), confirmRef);
   const [loginMsgDraft, setLoginMsgDraft] = useState(initial.loginBlockedMessage || "");
 
   useEffect(() => {
@@ -232,7 +235,7 @@ export default function AccountPermissionsPanel({
       )}
 
       {confirm && (
-        <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/40 p-4" role="dialog">
+        <div ref={confirmRef} className="fixed inset-0 z-[90] flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true">
           <div className="w-full max-w-md rounded-xl bg-white p-4 shadow-xl">
             <h3 className="text-sm font-semibold text-[#111111]">{i18n("crm.perms.confirmTitle")}</h3>
             <p className="mt-2 text-xs text-neutral-600">
