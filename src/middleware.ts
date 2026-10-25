@@ -130,7 +130,7 @@ export function middleware(req: NextRequest) {
       return applyHeaders(passNext());
     }
 
-    if (pathname === "/izcrm" || pathname.startsWith("/izcrm/")) {
+    if (isCrmDeskPath(pathname)) {
       if (!token) {
         return applyHeaders(NextResponse.redirect(locationForRequest(req, "/login")));
       }
@@ -180,8 +180,7 @@ export function middleware(req: NextRequest) {
 
   if (
     (pathname.startsWith("/trade") ||
-      pathname === "/izcrm" ||
-      pathname.startsWith("/izcrm/") ||
+      isCrmDeskPath(pathname) ||
       pathname.startsWith("/profile") ||
       pathname.startsWith("/documents") ||
       pathname.startsWith("/assistant") ||
@@ -201,6 +200,16 @@ function hasPersonalizationCookie(req: NextRequest): boolean {
   if (req.cookies.get("7fx_impersonation")?.value) return true;
   const lang = req.cookies.get("fx_lang")?.value;
   return typeof lang === "string" && lang.trim() !== "";
+}
+
+/** /izcrm and /crmx share one session gate on trading hosts and CRM hosts. */
+function isCrmDeskPath(pathname: string): boolean {
+  return (
+    pathname === "/izcrm" ||
+    pathname.startsWith("/izcrm/") ||
+    pathname === "/crmx" ||
+    pathname.startsWith("/crmx/")
+  );
 }
 
 function awaitBlank(): string {

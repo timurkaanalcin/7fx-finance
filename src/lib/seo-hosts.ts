@@ -59,6 +59,7 @@ export function isPrivateHtmlPath(pathname: string): boolean {
     pathname.startsWith("/assistant") ||
     pathname.startsWith("/membership") ||
     pathname.startsWith("/izcrm") ||
+    pathname.startsWith("/crmx") ||
     pathname.startsWith("/admin")
   );
 }

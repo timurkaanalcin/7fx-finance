@@ -49,6 +49,18 @@ const nextConfig = {
         ],
       },
       {
+        source: "/crmx",
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" },
+        ],
+      },
+      {
+        source: "/crmx/:path*",
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" },
+        ],
+      },
+      {
         source: "/api/admin/:path*",
         headers: [
           { key: "X-Robots-Tag", value: "noindex, nofollow" },
