@@ -980,4 +980,12 @@ export const de: Dict = {
   "landing.desk.note": "Kaufen und Verkaufen öffnen ein Konto und senden keinen Auftrag.",
   "term.watch.closed": "geschlossen",
   "term.watch.closedHint": "Letzter Schluss. Geld und Brief sind noch nicht da.",
+  "term.onboard.title": "Erste Schritte",
+  "term.onboard.lead": "Eine kurze Liste. Hier wird kein Auftrag gesendet und kein Geld bewegt.",
+  "term.onboard.profile": "E-Mail und Profil prüfen",
+  "term.onboard.deposit": "Eine Einzahlung machen",
+  "term.onboard.ticket": "Das Orderticket ansehen",
+  "term.onboard.dismiss": "Schließen",
+  "term.onboard.marketsHint": "Märkte ansehen",
+  "term.onboard.walletHint": "Dieses Wallet ist leer. Eine Einzahlung füllt es nach Freigabe.",
 };

@@ -980,4 +980,12 @@ export const ar: Dict = {
   "landing.desk.note": "شراء وبيع يفتحان حسابًا ولا يرسلان أمرًا.",
   "term.watch.closed": "مغلق",
   "term.watch.closedHint": "آخر إغلاق. سعر الشراء والبيع لم يصلا بعد.",
+  "term.onboard.title": "الخطوات الأولى",
+  "term.onboard.lead": "قائمة قصيرة. لا يُرسل أمر من هنا ولا تتحرك أموال.",
+  "term.onboard.profile": "تحقق من البريد والملف",
+  "term.onboard.deposit": "قم بإيداع",
+  "term.onboard.ticket": "انظر إلى تذكرة الأمر",
+  "term.onboard.dismiss": "إغلاق",
+  "term.onboard.marketsHint": "تصفح الأسواق",
+  "term.onboard.walletHint": "هذه المحفظة فارغة. الإيداع يموّلها بعد الموافقة.",
 };

@@ -19,7 +19,7 @@ function read(rel: string): string {
   return fs.readFileSync(new URL(`../${rel}`, import.meta.url), "utf8");
 }
 
-function key(partial: Partial<KeyInfo> & { key: string }): KeyInfo {
+function key<T extends Partial<KeyInfo> & { key: string }>(partial: T): KeyInfo & T {
   return {
     repeat: false,
     metaKey: false,

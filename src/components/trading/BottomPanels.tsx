@@ -449,6 +449,8 @@ type Props = {
   openLoading?: boolean;
   onLoadMoreOpen?: () => void;
   onLoadClosedDay?: (day: string) => void;
+  /** Point an empty open blotter at the watchlist. Does not pick a symbol. */
+  onBrowseMarkets?: () => void;
   className?: string;
 };
 
@@ -1590,6 +1592,7 @@ export default function BottomPanels({
   openLoading = false,
   onLoadMoreOpen,
   onLoadClosedDay,
+  onBrowseMarkets,
   className = "",
 }: Props) {
   const { t } = useI18n();
@@ -2414,7 +2417,19 @@ export default function BottomPanels({
         {tab === "open" && (
           <>
             {openPositions.length === 0 && (
-              <div className="fx-blotter-empty px-3 py-10 text-center text-xs text-desk-muted">{t("term.emptyOpen")}</div>
+              <div className="fx-blotter-empty px-3 py-10 text-center text-xs text-desk-muted">
+                <div>{t("term.emptyOpen")}</div>
+                {onBrowseMarkets && (
+                  <button
+                    type="button"
+                    data-fx-empty-markets=""
+                    onClick={onBrowseMarkets}
+                    className="mt-2 text-xs font-medium text-desk-text underline decoration-desk-border underline-offset-2"
+                  >
+                    {t("term.onboard.marketsHint")}
+                  </button>
+                )}
+              </div>
             )}
             {openPositions.length > 0 && filteredOpen.length === 0 && emptyFiltered}
             {sortedOpen.map((p) => (
@@ -2500,7 +2515,17 @@ export default function BottomPanels({
               {openPositions.length === 0 && (
                 <tr>
                   <td colSpan={16} className="fx-empty-cell px-3 py-8 text-center text-desk-muted">
-                    {t("term.emptyOpen")}
+                    <div>{t("term.emptyOpen")}</div>
+                    {onBrowseMarkets && (
+                      <button
+                        type="button"
+                        data-fx-empty-markets=""
+                        onClick={onBrowseMarkets}
+                        className="mt-2 text-xs font-medium text-desk-text underline decoration-desk-border underline-offset-2"
+                      >
+                        {t("term.onboard.marketsHint")}
+                      </button>
+                    )}
                   </td>
                 </tr>
               )}

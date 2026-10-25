@@ -7,6 +7,7 @@ import { useI18n } from "@/lib/i18n/context";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { LOCALES, LOCALE_META, type Locale } from "@/lib/i18n/locales";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
@@ -19,6 +20,8 @@ import { normalizeLocale, PUBLIC_DEFAULT_LOCALE } from "@/lib/i18n/locales";
 import { fmtMoney, fmtPct } from "@/lib/format";
 import { metricsFromStoredAccount } from "@/lib/trade-metrics";
 import AccountMetricStrip, { type AccountMetricItem } from "@/components/trading/AccountMetrics";
+
+const DepositModal = dynamic(() => import("@/components/trading/DepositModal"));
 
 type Profilee = {
   id: string;
@@ -114,6 +117,7 @@ export default function ProfileePage() {
   const [wdMsg, setWdMsg] = useState("");
   const [wdErr, setWdErr] = useState("");
   const [wdBusy, setWdBusy] = useState(false);
+  const [depositOpen, setDepositOpen] = useState(false);
   const [withdrawals, setWithdrawals] = useState<WithdrawalRow[]>([]);
   const [wdHasMore, setWdHasMore] = useState(false);
   const [wdMoreBusy, setWdMoreBusy] = useState(false);
@@ -464,6 +468,20 @@ export default function ProfileePage() {
         <section className="mb-4 rounded-xl border border-desk-border bg-desk-panel p-4">
           <h2 className="mb-3 text-sm font-medium text-desk-muted">{t("term.profile.finance")}</h2>
           <AccountMetricStrip variant="panel" items={financeItems} />
+          {stored.balance === 0 && (
+            <p className="mt-3 text-xs font-normal text-desk-muted" data-fx-wallet-empty="">
+              {t("term.onboard.walletHint")}{" "}
+              <button
+                type="button"
+                data-fx-wallet-deposit=""
+                disabled={!!profile.impersonatedBy}
+                onClick={() => setDepositOpen(true)}
+                className="font-medium text-desk-text underline decoration-desk-border underline-offset-2 disabled:opacity-40"
+              >
+                {t("term.deposit")}
+              </button>
+            </p>
+          )}
         </section>
 
 
@@ -670,9 +688,25 @@ export default function ProfileePage() {
           </form>
 
           {withdrawals.length === 0 ? (
-            <p className="fx-empty mt-4 border-t border-desk-border pt-3 text-xs font-normal text-desk-muted" data-fx-wd-empty="">
-              {t("term.profile.wdEmpty")}
-            </p>
+            <div className="mt-4 border-t border-desk-border pt-3">
+              <p className="fx-empty text-xs font-normal text-desk-muted" data-fx-wd-empty="">
+                {t("term.profile.wdEmpty")}
+              </p>
+              {stored.balance === 0 && (
+                <p className="mt-1 text-xs font-normal text-desk-muted" data-fx-wd-deposit-hint="">
+                  {t("term.onboard.walletHint")}{" "}
+                  <button
+                    type="button"
+                    data-fx-wallet-deposit=""
+                    disabled={!!profile.impersonatedBy}
+                    onClick={() => setDepositOpen(true)}
+                    className="font-medium text-desk-text underline decoration-desk-border underline-offset-2 disabled:opacity-40"
+                  >
+                    {t("term.deposit")}
+                  </button>
+                </p>
+              )}
+            </div>
           ) : (
             <div className="mt-4 border-t border-desk-border pt-3">
               <h3 className="mb-2 text-xs font-normal uppercase tracking-wide text-desk-muted">
@@ -729,6 +763,14 @@ export default function ProfileePage() {
       {profile?.mustChangePassword ? (
         <ForcePasswordModal onDone={() => window.location.reload()} />
       ) : null}
+      <DepositModal
+        open={depositOpen}
+        onClose={() => setDepositOpen(false)}
+        onSubmitted={() => {
+          setDepositOpen(false);
+          loadProfile();
+        }}
+      />
     </div>
   );
 }
