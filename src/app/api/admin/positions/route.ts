@@ -16,7 +16,7 @@ import { normalizeSide } from "@/lib/pnl";
 import { getSymbol } from "@/lib/symbols";
 import type { Prisma } from "@prisma/client";
 import { crmListWindow, exposureFromPositionGroups, serializeOrderListRow, serializePositionListRow } from "@/lib/trader-list";
-import { publicErrorText } from "@/lib/security/public-error";
+import { clientErrorMessage } from "@/lib/security/public-error";
 
 export const dynamic = "force-dynamic";
 
@@ -776,7 +776,7 @@ export async function POST(req: Request) {
     });
     return NextResponse.json({ ok: true, position, balance });
   } catch (e) {
-    return NextResponse.json({ error: publicErrorText(e, "Invalid input") }, { status: 400 });
+    return NextResponse.json({ error: clientErrorMessage("[admin/positions]", e, "Invalid input") }, { status: 400 });
   }
 }
 

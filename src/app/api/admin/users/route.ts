@@ -15,7 +15,7 @@ import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { allocateUniqueAccountLoginId } from "@/lib/account-login-id";
 import { recordLedger } from "@/lib/ledger";
 import { FxError, appendFxNote, convertAmountToUsd, type UsdConversion } from "@/lib/fx-usd";
-import { publicErrorText } from "@/lib/security/public-error";
+import { clientErrorMessage } from "@/lib/security/public-error";
 import { ensureLastContactBackfill } from "@/lib/last-contact";
 import { ONLINE_MS, RECENT_MS, serializePresence } from "@/lib/presence-shared";
 import {
@@ -339,7 +339,7 @@ export async function POST(req: Request) {
         openingFx = appendFxNote("", conv);
         balance = conv.usdAmount;
       } catch (e) {
-        if (e instanceof FxError) return NextResponse.json({ error: publicErrorText(e, "Rate unavailable") }, { status: 503 });
+        if (e instanceof FxError) return NextResponse.json({ error: clientErrorMessage("[admin/users]", e, "Rate unavailable") }, { status: 503 });
         throw e;
       }
     }
@@ -624,7 +624,7 @@ export async function POST(req: Request) {
     try {
       conv = await convertAmountToUsd(value, enteredCur);
     } catch (e) {
-      if (e instanceof FxError) return NextResponse.json({ error: publicErrorText(e, "Rate unavailable") }, { status: 503 });
+      if (e instanceof FxError) return NextResponse.json({ error: clientErrorMessage("[admin/users]", e, "Rate unavailable") }, { status: 503 });
       throw e;
     }
     const balanceBefore = target.account.balance;
@@ -741,7 +741,7 @@ export async function POST(req: Request) {
         financeConv = await convertAmountToUsd(data.balance, currencyAfter);
         data.balance = financeConv.usdAmount;
       } catch (e) {
-        if (e instanceof FxError) return NextResponse.json({ error: publicErrorText(e, "Rate unavailable") }, { status: 503 });
+        if (e instanceof FxError) return NextResponse.json({ error: clientErrorMessage("[admin/users]", e, "Rate unavailable") }, { status: 503 });
         throw e;
       }
     }

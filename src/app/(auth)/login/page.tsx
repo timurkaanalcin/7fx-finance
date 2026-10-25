@@ -5,6 +5,7 @@ import { hostnameFromRequest, isCrmHostname, MAIN_SITE_ORIGIN } from "@/lib/crm-
 import AuthShell from "@/components/auth/AuthShell";
 import LoginForm from "@/components/auth/LoginForm";
 import { publicAuthMetadata } from "@/lib/i18n/public-meta";
+import { locationForRequest } from "@/lib/request-origin";
 
 export const dynamic = "force-dynamic";
 
@@ -17,12 +18,15 @@ export default async function LoginPage() {
   if (session) {
     const user = await requireUser();
     if (user) {
-      const host = hostnameFromRequest({ headers: headers() });
+      const h = headers();
+      const host = hostnameFromRequest({ headers: h });
+      const loc = (path: string) =>
+        locationForRequest({ url: "http://0.0.0.0/", headers: { get: (name) => h.get(name) } }, path);
       if (isCrmHostname(host)) {
-        redirect(user.role === "ADMIN" ? "/izcrm" : `${MAIN_SITE_ORIGIN}/trade`);
+        redirect(loc(user.role === "ADMIN" ? "/izcrm" : `${MAIN_SITE_ORIGIN}/trade`));
       }
       // TEMP: postLoginPath /izcrm stays on main host until Natro crm7fx is live
-      redirect(postLoginPath(user));
+      redirect(loc(postLoginPath(user)));
     }
     // Stale cookie (e.g. loginEnabled=false) — clear so middleware allows /login
     await destroySession();

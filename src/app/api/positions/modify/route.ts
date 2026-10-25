@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { publicErrorText } from "@/lib/security/public-error";
+import { clientErrorMessage } from "@/lib/security/public-error";
 import { requireUser } from "@/lib/auth";
 import { modifyPositionSlTp } from "@/lib/trading";
 import { tradingDisabledMessage, mustChangePasswordMessage } from "@/lib/account-perms";
@@ -55,6 +55,6 @@ export async function POST(req: Request) {
     const position = await modifyPositionSlTp(user.id, id, levels);
     return NextResponse.json({ ok: true, position });
   } catch (e) {
-    return NextResponse.json({ error: publicErrorText(e, "Modify error") }, { status: 400 });
+    return NextResponse.json({ error: clientErrorMessage("[positions/modify]", e, "Modify error") }, { status: 400 });
   }
 }

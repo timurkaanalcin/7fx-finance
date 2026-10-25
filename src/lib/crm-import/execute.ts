@@ -281,6 +281,7 @@ export async function executeImport(opts: {
         created += 1;
       } catch (e) {
         console.error("[import] row", v.rowIndex, e);
+        const code = (e as { code?: string } | null)?.code;
         results.push({
           rowIndex: v.rowIndex,
           status: "error",
@@ -288,7 +289,7 @@ export async function executeImport(opts: {
           accountLoginId: null,
           userId: null,
           password: null,
-          message: e instanceof Error ? e.message.slice(0, 200) : "import_failed",
+          message: code === "P2002" ? "Email already registered" : "Import failed",
         });
         errors += 1;
       }

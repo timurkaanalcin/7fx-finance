@@ -1,6 +1,6 @@
 import { ensureSymbolCatalog } from "@/lib/trading-settings";
 import { NextResponse } from "next/server";
-import { publicErrorText } from "@/lib/security/public-error";
+import { clientErrorMessage } from "@/lib/security/public-error";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { tradingDisabledMessage, mustChangePasswordMessage } from "@/lib/account-perms";
@@ -65,6 +65,6 @@ export async function POST(req: Request) {
     });
     return NextResponse.json({ ok: true, result });
   } catch (e) {
-    return NextResponse.json({ error: publicErrorText(e, "Order error") }, { status: 400 });
+    return NextResponse.json({ error: clientErrorMessage("[orders]", e, "Order error") }, { status: 400 });
   }
 }

@@ -86,10 +86,11 @@ function main() {
   assert.equal(publicErrorText(undefined, "Quote fetch failed"), "Quote fetch failed");
 
   const orders = read("src/app/api/orders/route.ts");
-  assert.match(orders, /publicErrorText\(e, "Order error"\)/);
+  assert.match(orders, /clientErrorMessage\("\[orders\]", e, "Order error"\)/);
   assert.equal(orders.includes("e.message"), false);
   assert.match(read("src/app/api/auth/login/route.ts"), /Sign-in error/);
   assert.equal(read("src/app/api/auth/login/route.ts").includes("publicErrorText"), false);
+  assert.equal(read("src/app/api/auth/login/route.ts").includes("clientErrorMessage"), false);
 
   console.log("security-headers tests passed");
 }
