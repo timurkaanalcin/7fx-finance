@@ -392,11 +392,18 @@ function Chip({
 
 type TradeActionResult = { ok: boolean; error?: string };
 
-function failedAction(result: unknown): string | null {
+function failedAction(result: unknown, fallback: string): string | null {
   if (!result || typeof result !== "object" || !("ok" in result)) return null;
   const row = result as TradeActionResult;
   if (row.ok !== false) return null;
-  return row.error || "Error";
+  return row.error || fallback;
+}
+
+function orderTypeLabel(type: string, translate: (key: string) => string): string {
+  if (type === "MARKET") return translate("term.ot.market");
+  if (type === "LIMIT") return translate("term.ot.limit");
+  if (type === "STOP") return translate("term.ot.stop");
+  return type;
 }
 
 type Props = {
@@ -641,7 +648,7 @@ function LevelDistance({
       className={`tabular-nums text-[9.5px] ${kind === "sl" ? "text-desk-sell/80" : "text-desk-buy/90"} ${className}`}
       title={kind === "sl" ? t("term.level.sl") : t("term.level.tp")}
     >
-      {kind === "sl" ? "SL" : "TP"} {fmtNum(d, 1)}p
+      {kind === "sl" ? t("term.col.sl") : t("term.col.tp")} {fmtNum(d, 1)}p
     </span>
   );
 }
@@ -694,7 +701,7 @@ function PendingTriggerDistance({
       className={`tabular-nums text-[9.5px] text-desk-accent/90 ${className}`}
       title={t("term.level.trigger")}
     >
-      {fmtNum(d, 1)} pip
+      {fmtNum(d, 1)} {t("term.unit.pip")}
     </span>
   );
 }
@@ -896,7 +903,7 @@ function OpenCard({
       const result = await Promise.resolve(
         vol >= p.volume - 1e-9 ? onClose(p.id) : onClose(p.id, vol)
       );
-      const err = failedAction(result);
+      const err = failedAction(result, t("common.error"));
       if (err) {
         setActionError(err);
         return;
@@ -918,7 +925,7 @@ function OpenCard({
     setBusy(true);
     setActionError("");
     try {
-      const err = failedAction(await Promise.resolve(onModifySlTp(p.id, { stopLoss, takeProfit })));
+      const err = failedAction(await Promise.resolve(onModifySlTp(p.id, { stopLoss, takeProfit })), t("common.error"));
       if (err) {
         setActionError(err);
         return;
@@ -959,7 +966,7 @@ function OpenCard({
               {p.side === "BUY" ? t("term.buy") : t("term.sell")}
             </span>
             <span className="text-[11px] tabular-nums text-desk-muted">
-              {fmtNum(p.volume, 2)} lot
+              {fmtNum(p.volume, 2)} {t("term.unit.lot")}
             </span>
           </div>
           <div className="mt-1 flex items-center gap-1.5 text-[10px] text-desk-muted">
@@ -973,25 +980,25 @@ function OpenCard({
             {fmtNum(shownProfit, 2)}
           </div>
           <div className={`text-[10px] tabular-nums ${moneyCls(pip)}`}>
-            {fmtNum(pip, 1)} pip
+            {fmtNum(pip, 1)} {t("term.unit.pip")}
           </div>
         </div>
       </div>
       <div className="fx-pos-levels mt-2.5 text-[11px]">
         <div className="fx-pos-level rounded-[8px] bg-desk-bg/60 px-2 py-1.5">
-          <div className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">Open</div>
+          <div className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">{t("term.col.open")}</div>
           <div className="mt-0.5 font-medium tabular-nums text-desk-text">
             {formatPrice(p.symbol, p.openPrice)}
           </div>
         </div>
         <div className="fx-pos-level rounded-[8px] bg-desk-bg/60 px-2 py-1.5">
-          <div className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">Current</div>
+          <div className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">{t("term.col.current")}</div>
           <div className="mt-0.5 font-medium tabular-nums text-desk-text">
             {formatPrice(p.symbol, mark)}
           </div>
         </div>
         <div className="fx-pos-level rounded-[8px] bg-desk-bg/60 px-2 py-1.5">
-          <div className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">SL / TP</div>
+          <div className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">{t("term.col.slTp")}</div>
           <div className="mt-0.5 font-medium tabular-nums text-desk-muted [overflow-wrap:anywhere]">
             {p.stopLoss != null ? formatPrice(p.symbol, p.stopLoss) : "—"}
             {" / "}
@@ -1022,7 +1029,7 @@ function OpenCard({
               className="rounded-[10px] border border-desk-border/70 bg-desk-bg/50 px-3 py-2 text-[11px] font-semibold text-desk-text hover:bg-desk-hover"
               title={t("term.sl.edit")}
             >
-              SL/TP
+              {t("term.col.slTp")}
             </button>
           )}
         </div>
@@ -1082,7 +1089,7 @@ function OpenCard({
           </div>
           <div className="mt-1.5 grid grid-cols-2 gap-2">
             <label className="block">
-              <span className="text-[9px] text-desk-muted">Stop Loss</span>
+              <span className="text-[9px] text-desk-muted">{t("term.ot.stopLoss")}</span>
               <input
                 type="number"
                 value={slInput}
@@ -1093,7 +1100,7 @@ function OpenCard({
               <SlQuickChips p={p} onSet={setSlInput} prices={prices} />
             </label>
             <label className="block">
-              <span className="text-[9px] text-desk-muted">Take Profit</span>
+              <span className="text-[9px] text-desk-muted">{t("term.ot.takeProfit")}</span>
               <input
                 type="number"
                 value={tpInput}
@@ -1197,7 +1204,7 @@ function OpenRowActions({
                 const result = await Promise.resolve(
                   vol >= p.volume - 1e-9 ? onClose(p.id) : onClose(p.id, vol)
                 );
-                const err = failedAction(result);
+                const err = failedAction(result, t("common.error"));
                 if (err) {
                   setActionError(err);
                   return;
@@ -1237,7 +1244,7 @@ function OpenRowActions({
               type="number"
               value={slInput}
               onChange={(e) => setSlInput(e.target.value)}
-              placeholder="SL"
+              placeholder={t("term.col.sl")}
               className="w-full rounded-[6px] border border-desk-border/50 bg-desk-bg px-1.5 py-0.5 text-[10px] tabular-nums text-desk-text outline-none"
             />
             <SlQuickChips p={p} onSet={setSlInput} prices={prices} size="sm" />
@@ -1247,7 +1254,7 @@ function OpenRowActions({
               type="number"
               value={tpInput}
               onChange={(e) => setTpInput(e.target.value)}
-              placeholder="TP"
+              placeholder={t("term.col.tp")}
               className="w-full rounded-[6px] border border-desk-border/50 bg-desk-bg px-1.5 py-0.5 text-[10px] tabular-nums text-desk-text outline-none"
             />
             <TpQuickChips p={p} onSet={setTpInput} prices={prices} size="sm" />
@@ -1269,7 +1276,8 @@ function OpenRowActions({
               setActionError("");
               try {
                 const err = failedAction(
-                  await Promise.resolve(onModifySlTp(p.id, { stopLoss, takeProfit }))
+                  await Promise.resolve(onModifySlTp(p.id, { stopLoss, takeProfit })),
+                  t("common.error")
                 );
                 if (err) {
                   setActionError(err);
@@ -1363,7 +1371,7 @@ function ClosedCard({
               {p.side === "BUY" ? t("term.buy") : t("term.sell")}
             </span>
             <span className="text-[11px] tabular-nums text-desk-muted">
-              {fmtNum(p.volume, 2)} lot
+              {fmtNum(p.volume, 2)} {t("term.unit.lot")}
             </span>
           </div>
           <div className="mt-1 flex items-center gap-1.5 text-[10px] text-desk-muted">
@@ -1378,13 +1386,13 @@ function ClosedCard({
       </div>
       <div className="mt-2.5 grid grid-cols-2 gap-2 text-[11px]">
         <div className="rounded-[8px] bg-desk-bg/60 px-2 py-1.5">
-          <div className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">Open</div>
+          <div className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">{t("term.col.open")}</div>
           <div className="mt-0.5 font-medium tabular-nums">
             {formatPrice(p.symbol, p.openPrice)}
           </div>
         </div>
         <div className="rounded-[8px] bg-desk-bg/60 px-2 py-1.5">
-          <div className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">Close</div>
+          <div className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">{t("term.col.close")}</div>
           <div className="mt-0.5 font-medium tabular-nums">
             {p.closePrice != null ? formatPrice(p.symbol, p.closePrice) : "—"}
           </div>
@@ -1445,7 +1453,7 @@ function PendingCard({
               {o.side === "BUY" ? t("term.buy") : t("term.sell")}
             </span>
             <span className="rounded-[6px] bg-desk-bg px-1.5 py-0.5 text-[10px] font-medium text-desk-muted">
-              {o.type}
+              {orderTypeLabel(o.type, t)}
             </span>
           </div>
           <div className="mt-1 flex items-center gap-1.5 text-[10px] text-desk-muted">
@@ -1454,12 +1462,12 @@ function PendingCard({
           </div>
         </div>
         <div className="text-right text-[12px] font-semibold tabular-nums text-desk-text">
-          {fmtNum(o.volume, 2)} lot
+          {fmtNum(o.volume, 2)} {t("term.unit.lot")}
         </div>
       </div>
       <div className="mt-2.5 flex items-center justify-between gap-2 text-[11px]">
         <div className="rounded-[8px] bg-desk-bg/60 px-2 py-1.5">
-          <div className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">Price</div>
+          <div className="text-[9px] font-medium uppercase tracking-wider text-desk-muted">{t("term.col.price")}</div>
           <div className="mt-0.5 font-medium tabular-nums">
             {o.price != null ? formatPrice(o.symbol, o.price) : "—"}
           </div>
@@ -2439,11 +2447,11 @@ export default function BottomPanels({
                 <SortTh label={t("term.col.type")} col="side" sort={openSort} onSort={onOpenSort} />
                 <SortTh label={t("term.col.asset")} col="symbol" sort={openSort} onSort={onOpenSort} />
                 <th className="px-2 py-2">{t("term.col.volume")}</th>
-                <th className="px-2 py-2">Pip</th>
+                <th className="px-2 py-2">{t("term.unit.pip")}</th>
                 <th className="px-2 py-2">{t("term.col.open")}</th>
                 <th className="px-2 py-2">{t("term.col.current")}</th>
-                <th className="px-2 py-2">SL</th>
-                <th className="px-2 py-2">TP</th>
+                <th className="px-2 py-2" title={t("term.ot.stopLoss")}>{t("term.col.sl")}</th>
+                <th className="px-2 py-2" title={t("term.ot.takeProfit")}>{t("term.col.tp")}</th>
                 <th className="px-2 py-2">{t("term.col.swap")}</th>
                 <th className="px-2 py-2">{t("term.col.commission")}</th>
                 <th className="px-2 py-2">{t("term.col.ticketComm")}</th>
@@ -2505,9 +2513,9 @@ export default function BottomPanels({
                 <SortTh label={t("term.col.asset")} col="symbol" sort={closedSort} onSort={onClosedSort} />
                 <th className="px-2 py-2">{t("term.col.volume")}</th>
                 <th className="px-2 py-2">{t("term.col.open")}</th>
-                <th className="px-2 py-2">{t("common.close")}</th>
-                <th className="px-2 py-2">SL</th>
-                <th className="px-2 py-2">TP</th>
+                <th className="px-2 py-2">{t("term.col.close")}</th>
+                <th className="px-2 py-2" title={t("term.ot.stopLoss")}>{t("term.col.sl")}</th>
+                <th className="px-2 py-2" title={t("term.ot.takeProfit")}>{t("term.col.tp")}</th>
                 <SortTh label={t("term.col.profit")} col="profit" sort={closedSort} onSort={onClosedSort} />
                 <th className="px-2 py-2">{t("term.col.net")}</th>
                 <th className="px-2 py-2">{reopenLabel}</th>
@@ -2630,8 +2638,8 @@ export default function BottomPanels({
                 <th className="px-2 py-2">{t("term.col.volume")}</th>
                 <th className="px-2 py-2">{t("term.col.price")}</th>
                 <th className="px-2 py-2" title={t("term.col.distance")}>{t("term.col.distance")}</th>
-                <th className="px-2 py-2">SL</th>
-                <th className="px-2 py-2">TP</th>
+                <th className="px-2 py-2" title={t("term.ot.stopLoss")}>{t("term.col.sl")}</th>
+                <th className="px-2 py-2" title={t("term.ot.takeProfit")}>{t("term.col.tp")}</th>
                 <th className="px-2 py-2">{t("common.cancel")}</th>
               </tr>
             </thead>
@@ -2669,7 +2677,7 @@ export default function BottomPanels({
                   >
                     {o.side === "BUY" ? t("term.buy") : t("term.sell")}
                   </td>
-                  <td className="px-2 py-1.5">{o.type}</td>
+                  <td className="px-2 py-1.5">{orderTypeLabel(o.type, t)}</td>
                   <td className="px-2 py-1.5 font-medium">{o.symbol}</td>
                   <td className="px-2 py-1.5 tabular-nums">{fmtNum(o.volume, 2)}</td>
                   <td className="px-2 py-1.5 tabular-nums">

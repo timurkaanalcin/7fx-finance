@@ -106,7 +106,7 @@ export default function TopBar({
         <div className="hidden leading-none sm:block">
           <span className="text-sm font-semibold tracking-tight text-desk-text">7FX</span>
           <span className="mt-0.5 block text-[9px] font-medium uppercase tracking-[0.12em] text-desk-muted">
-            Terminal
+            {t("common.terminal")}
           </span>
         </div>
       </div>

@@ -384,7 +384,7 @@ export default function ProfileePage() {
           <div className="text-xs text-slate-500">{profile.email}</div>
           {profile.accountLoginId && (
             <div className="mt-1 text-xs text-slate-400">
-              Account ID:{" "}
+              {t("term.profile.accountId")}:{" "}
               <span className="font-mono tracking-wider text-slate-200">{profile.accountLoginId}</span>
             </div>
           )}
@@ -399,7 +399,14 @@ export default function ProfileePage() {
             </span>
             {profile.documentsStatus && profile.documentsStatus !== "NONE" && (
               <span className="rounded bg-blue-500/20 px-1.5 py-0.5 text-blue-300">
-                {t("term.profile.documents")}: {profile.documentsStatus}
+                {t("term.profile.documents")}:{" "}
+                {profile.documentsStatus === "PENDING"
+                  ? t("term.wd.pending")
+                  : profile.documentsStatus === "APPROVED"
+                    ? t("term.wd.approved")
+                    : profile.documentsStatus === "REJECTED"
+                      ? t("term.wd.rejected")
+                      : profile.documentsStatus}
               </span>
             )}
           </div>
@@ -472,7 +479,7 @@ export default function ProfileePage() {
                 ))}
               </select>
               <span className="mt-1 text-[10px] text-slate-500">
-                Site language:{' '}
+                {t("term.profile.siteLang")}:{' '}
                 <LanguageSwitcher compact tone="dark" />
               </span>
             </label>
