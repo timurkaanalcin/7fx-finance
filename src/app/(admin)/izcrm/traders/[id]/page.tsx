@@ -558,10 +558,10 @@ function Field({
 
 function Stat({ label, value, hint, tone }: { label: string; value: string; hint?: string; tone?: "pos" | "neg" }) {
   return (
-    <div className="rounded-lg border border-[#e5e5e5] bg-white p-3" title={hint}>
-      <div className="text-[11px] text-neutral-500">{label}</div>
+    <div className="fx-crm-stat" title={hint}>
+      <div className="fx-dash-k">{label}</div>
       <div
-        className={`text-base font-semibold tabular-nums ${
+        className={`fx-dash-v ${
           tone === "pos" ? "text-emerald-600" : tone === "neg" ? "text-red-500" : "text-[#111111]"
         }`}
       >
@@ -1654,59 +1654,80 @@ export default function AdminUserDetailPage() {
   const dateView = (k: string) => (ed ? (form[k] as string) : fmtCrmDate(user[k]));
 
   return (
-    <div className="text-[#111111]">
-      <div className="mb-4 flex flex-wrap items-center gap-3">
-        <Link href="/izcrm/traders" className="text-xs text-neutral-500 hover:text-[#111111]">
-          {i18n("crm.ui.backToTraders")}
-        </Link>
-        <h1 className="text-xl font-semibold">{user.name}</h1>
-        <span className="text-xs text-neutral-500">{user.email}</span>
-        {user.accountLoginId && (
-          <span className="rounded bg-sky-50 px-2 py-0.5 font-mono text-[10px] text-sky-700">
-            {i18n("crm.ui.accountId")}: {user.accountLoginId}
-            <CopyButton value={user.accountLoginId} title="Hesap ID kopyala" className="ml-1" />
-          </span>
-        )}
-        <span
-          className={`rounded px-1.5 py-0.5 text-[10px] font-semibold ${
-            user.active ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-600"
-          }`}
-        >
-          {user.active ? i18n("crm.ui.active") : i18n("crm.ui.frozen")}
-        </span>
-        {user.tradingEnabled === false && (
-          <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700">
-            {i18n("crm.perms.badgeTradeOff")}
-          </span>
-        )}
-        {user.withdrawalsEnabled === false && (
-          <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700">
-            {i18n("crm.perms.badgeWithdrawOff")}
-          </span>
-        )}
-        {user.loginEnabled === false && (
-          <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700">
-            {i18n("crm.perms.badgeLoginOff")}
-          </span>
-        )}
-        <TraderPresenceHeader userId={user.id} />
-        {tradingAccountId && (
-          <span className="rounded bg-neutral-100 px-2 py-0.5 font-mono text-[10px] text-neutral-600">
-            {i18n("crm.ui.account")}: {tradingAccountId}
-          </span>
-        )}
-        <span className="rounded bg-neutral-100 px-2 py-0.5 text-[10px] tabular-nums text-neutral-700">
-          {i18n("crm.ui.balance")}: {fmtCrmMoney(user.balance, 2)} {user.currency}
-        </span>
-        <TraderAccessTools readOnly={crmReadOnly} userId={user.id} traderName={user.name} isStaff={user.role === "ADMIN"} />
+    <div className="fx-trader text-[#111111]">
+      <div className="fx-trader-head">
+        <div className="min-w-0">
+          <Link href="/izcrm/traders" className="text-xs text-neutral-500 hover:text-[#111111]">
+            {i18n("crm.ui.backToTraders")}
+          </Link>
+          <h1 className="mt-1 truncate text-xl font-normal">{user.name}</h1>
+          <p className="truncate text-xs text-neutral-500">{user.email}</p>
+          <div className="mt-2 flex flex-wrap items-center gap-1">
+            {user.accountLoginId && (
+              <span className="rounded bg-sky-50 px-2 py-0.5 font-mono text-[10px] text-sky-700">
+                {i18n("crm.ui.accountId")}: {user.accountLoginId}
+                <CopyButton value={user.accountLoginId} title="Hesap ID kopyala" className="ml-1" />
+              </span>
+            )}
+            <span
+              className={`rounded px-1.5 py-0.5 text-[10px] font-normal ${
+                user.active ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-600"
+              }`}
+            >
+              {user.active ? i18n("crm.ui.active") : i18n("crm.ui.frozen")}
+            </span>
+            {user.tradingEnabled === false && (
+              <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-normal text-amber-700">
+                {i18n("crm.perms.badgeTradeOff")}
+              </span>
+            )}
+            {user.withdrawalsEnabled === false && (
+              <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-normal text-amber-700">
+                {i18n("crm.perms.badgeWithdrawOff")}
+              </span>
+            )}
+            {user.loginEnabled === false && (
+              <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-normal text-amber-700">
+                {i18n("crm.perms.badgeLoginOff")}
+              </span>
+            )}
+            <TraderPresenceHeader userId={user.id} />
+            {tradingAccountId && (
+              <span className="rounded bg-neutral-100 px-2 py-0.5 font-mono text-[10px] text-neutral-600">
+                {i18n("crm.ui.account")}: {tradingAccountId}
+              </span>
+            )}
+          </div>
+          <div className="mt-2">
+            <TraderAccessTools readOnly={crmReadOnly} userId={user.id} traderName={user.name} isStaff={user.role === "ADMIN"} />
+          </div>
+        </div>
+        <div className="fx-trader-metrics">
+          <div className="fx-trader-metric">
+            <div className="fx-dash-k">{i18n("crm.ui.balance")}</div>
+            <div className="fx-dash-v">{fmtCrmMoney(user.balance, 2)} {user.currency}</div>
+          </div>
+          <div className="fx-trader-metric">
+            <div className="fx-dash-k">{i18n("crm.ui.equity")}</div>
+            <div className="fx-dash-v">{fmtCrmMoney(user.equity, 2)} {user.currency}</div>
+          </div>
+          <div className="fx-trader-metric">
+            <div className="fx-dash-k">{i18n("crm.fin.usedMargin")}</div>
+            <div className="fx-dash-v">{fmtCrmMoney(user.margin, 2)} {user.currency}</div>
+          </div>
+          <div className="fx-trader-metric">
+            <div className="fx-dash-k">{i18n("crm.fin.freeMargin")}</div>
+            <div className="fx-dash-v">{fmtCrmMoney(user.freeMargin, 2)} {user.currency}</div>
+          </div>
+        </div>
       </div>
 
-      <div className="mb-4 flex flex-wrap gap-1 border-b border-[#e5e5e5] pb-2">
+      <div className="fx-trader-tabs">
         {TABS.filter((t) => !t.requiresManageUsers || canManageUsers || crmReadOnly).map((t) => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className={`rounded-md px-3 py-1.5 text-xs font-medium ${
+            className={`rounded-md px-3 py-1.5 text-xs font-normal ${
               tab === t.id ? "bg-black text-white" : "text-neutral-500 hover:bg-[#e5e5e5]"
             }`}
           >
@@ -1786,7 +1807,7 @@ export default function AdminUserDetailPage() {
           </div>
 
           <h2 className="mb-2 text-sm font-medium text-neutral-600">{i18n("crm.ui.idSection")}</h2>
-          <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="fx-trader-fields">
             <Field label={i18n("crm.ui.firstName")} value={fv("firstName") as string} onChange={(v) => setF("firstName", v)} disabled={!ed} />
             <Field label={i18n("crm.ui.lastName")} value={fv("lastName") as string} onChange={(v) => setF("lastName", v)} disabled={!ed} />
             <Field label={i18n("crm.edit.displayName")} value={fv("name") as string} onChange={(v) => setF("name", v)} disabled={!ed} />
@@ -1814,7 +1835,7 @@ export default function AdminUserDetailPage() {
           </div>
 
           <h2 className="mb-2 text-sm font-medium text-neutral-600">{i18n("crm.ui.account")}</h2>
-          <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="fx-trader-fields">
             <Field
               label={i18n("crm.ui.accountType")}
               value={fv("accountType") as string}
@@ -1870,7 +1891,7 @@ export default function AdminUserDetailPage() {
           </div>
 
           <h2 className="mb-2 text-sm font-medium text-neutral-600">{i18n("crm.ui.tradingCrm")}</h2>
-          <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="fx-trader-fields">
             <Field label={i18n("crm.ui.tradingServer")} value={fv("tradingServer") as string} onChange={(v) => setF("tradingServer", v)} disabled={!ed} />
             <Field label={i18n("crm.ui.tradingGroup")} value={fv("tradingGroup") as string} onChange={(v) => setF("tradingGroup", v)} disabled={!ed} />
             <label className="flex flex-col gap-1 text-xs">

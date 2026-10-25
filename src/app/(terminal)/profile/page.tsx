@@ -535,9 +535,9 @@ export default function ProfileePage() {
         {/* Withdraw funds — bottom of profile */}
         <section
           id="para-cekme"
-          className="rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4"
+          className="fx-cashier rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4"
         >
-          <h2 className="mb-1 text-sm font-medium text-slate-300">{t("term.profile.withdraw")}</h2>
+          <h2 className="mb-1 text-sm font-normal text-slate-300">{t("term.profile.withdraw")}</h2>
           <p className="mb-3 text-[11px] text-slate-500">
             {t("term.profile.wdLead").replace("{amount}", money(profile.balance))}
           </p>
@@ -547,8 +547,8 @@ export default function ProfileePage() {
             </div>
           )}
 
-          <form onSubmit={onWithdraw} className="space-y-3">
-            <div className="flex gap-1 rounded-lg border border-[#2a2a2a] bg-[#000000] p-1">
+          <form onSubmit={onWithdraw} className="fx-wd-fields">
+            <div className="fx-wd-note flex gap-1 rounded-lg border border-[#2a2a2a] bg-[#000000] p-1">
               {(["BANK", "CRYPTO"] as const).map((m) => (
                 <button
                   key={m}
@@ -574,7 +574,7 @@ export default function ProfileePage() {
                 required
                 value={wdAmount}
                 onChange={(e) => setWdAmount(e.target.value)}
-                className="rounded border border-[#2a2a2a] bg-[#000000] px-3 py-2 text-sm"
+                className="rounded border border-[#2a2a2a] bg-[#000000] px-3 py-2 text-sm font-normal tabular-nums"
               />
             </label>
 
@@ -593,7 +593,7 @@ export default function ProfileePage() {
               />
             </label>
 
-            <label className="flex flex-col gap-1 text-xs">
+            <label className="fx-wd-note flex flex-col gap-1 text-xs">
               <span className="text-slate-500">{t("term.profile.wdNote")}</span>
               <input
                 value={wdNote}
@@ -604,10 +604,10 @@ export default function ProfileePage() {
             </label>
 
             {wdErr && (
-              <div className="rounded-lg bg-red-500/10 px-3 py-2 text-xs text-red-300">{wdErr}</div>
+              <div className="fx-wd-note rounded-lg bg-red-500/10 px-3 py-2 text-xs text-red-300">{wdErr}</div>
             )}
             {wdMsg && (
-              <div className="rounded-lg bg-emerald-500/10 px-3 py-2 text-xs text-emerald-300">
+              <div className="fx-wd-note rounded-lg bg-emerald-500/10 px-3 py-2 text-xs text-emerald-300">
                 {wdMsg}
               </div>
             )}
@@ -615,7 +615,7 @@ export default function ProfileePage() {
             <button
               type="submit"
               disabled={wdBusy || profile.withdrawalsEnabled === false}
-              className="w-full rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-50"
+              className="fx-wd-note w-full rounded-lg bg-blue-600 py-2.5 text-sm font-medium text-white hover:bg-blue-500 disabled:opacity-50"
             >
               {wdBusy ? t("term.profile.wdBusy") : t("term.profile.wdSubmit")}
             </button>
@@ -623,17 +623,17 @@ export default function ProfileePage() {
 
           {withdrawals.length > 0 && (
             <div className="mt-4 border-t border-[#2a2a2a] pt-3">
-              <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-500">
+              <h3 className="mb-2 text-xs font-normal uppercase tracking-wide text-slate-500">
                 {t("term.wd.recent")}
               </h3>
               <ul className="space-y-2 text-xs">
                 {withdrawals.map((w) => (
-                  <li
+                    <li
                     key={w.id}
                     className="flex items-center justify-between gap-2 rounded-lg border border-[#2a2a2a] bg-[#000000] px-3 py-2"
                   >
-                    <div>
-                      <div className="font-medium tabular-nums text-slate-200">
+                    <div className="min-w-0">
+                      <div className="font-normal tabular-nums text-slate-200">
                         {money(w.amount)} · {w.method}
                       </div>
                       <div className="text-[10px] text-slate-500">
