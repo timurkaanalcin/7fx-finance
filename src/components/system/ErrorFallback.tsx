@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import PlatformStatus from "@/components/system/PlatformStatus";
 import { useT } from "@/lib/i18n/context";
+import { isChunkLoadError } from "@/lib/chunk-reload";
 
 export function reportClientError(error: unknown, where: string): void {
   try {
@@ -25,6 +26,16 @@ export default function ErrorFallback({ error, reset, where }: { error: Error & 
     reportClientError(error, where);
   }, [error, where]);
   const t = useT();
+  if (isChunkLoadError(error)) {
+    return (
+      <PlatformStatus
+        code="500"
+        title={t("gap.err.chunkTitle")}
+        body={t("gap.err.chunkBody")}
+        primary={{ label: t("gap.err.reload"), onClick: () => window.location.reload() }}
+      />
+    );
+  }
   const reference = error.digest ? ` ${t("gap.err.reference").replace("{digest}", error.digest)}` : "";
   return (
     <PlatformStatus

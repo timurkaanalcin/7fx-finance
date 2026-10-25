@@ -75,9 +75,10 @@ function main() {
 
   const sw = read("public/sw.js");
   assert.match(sw, /OFFLINE_URL = "\/offline.html"/);
-  assert.match(sw, /fetch\(req\)\.catch/);
+  assert.match(sw, /fetch\(url\.href, \{ cache: "no-store"/);
+  assert.match(sw, /\.catch\(async \(\) => \{/);
   assert.equal(sw.includes("caches.put"), false);
-  assert.match(sw, /2026-10-24-v4-offline/);
+  assert.match(sw, /2026-10-25-v5-network/);
 
   const shell = read("src/components/trading/TerminalShell.tsx");
   assert.match(

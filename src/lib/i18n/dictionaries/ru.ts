@@ -989,4 +989,7 @@ export const ru: Dict = {
   "term.onboard.marketsHint": "К рынкам",
   "term.onboard.walletHint": "Этот кошелёк пуст. Депозит зачислится после одобрения.",
   "crm.tickets.approvedToast": "Одобрено {amount} для {customer}.",
+  "gap.err.chunkTitle": "Эта страница устарела",
+  "gap.err.chunkBody": "Файл не загрузился. Обновите страницу, чтобы открыть последнюю версию.",
+  "gap.err.reload": "Обновить",
 };
