@@ -1531,7 +1531,6 @@ export default function AdminUserDetailPage() {
     {
       key: "sourceUserId",
       label: "crm.edit.sourceAccount",
-      required: true,
       hideInTable: true,
       createOnly: true,
       showIf: (d) => d.type === "TRANSFER",
