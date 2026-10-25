@@ -989,3 +989,70 @@ html[data-fx-theme="light"] .fx-account-metric__value.is-warn { color: #9a6b12; 
     overflow: visible;
   }
 }
+
+/* CRM header, tables, and modals: phone wrap and wide-desktop column width. */
+.fx-crm header button,
+.fx-crm header a,
+.fx-crm header select {
+  box-sizing: border-box;
+  min-height: 40px;
+}
+.fx-crm header button {
+  min-width: 40px;
+}
+@media (max-width: 480px) {
+  .fx-crm-root > .flex > header {
+    flex-wrap: wrap;
+    height: auto;
+    row-gap: 8px;
+    padding-block: 8px;
+  }
+  .fx-crm-mobile-nav {
+    order: 2;
+    flex: 1 1 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+  .fx-crm-actions {
+    order: 1;
+    width: 100%;
+    margin-left: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .fx-crm .fixed.inset-0 {
+    align-items: flex-end;
+    padding: 8px;
+  }
+  .fx-crm .fixed.inset-0 > form,
+  .fx-crm .fixed.inset-0 > div {
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100dvh - 16px);
+  }
+  .fx-crm .fixed.inset-0 .grid-cols-2,
+  .fx-crm .fixed.inset-0 .grid-cols-3 {
+    grid-template-columns: 1fr;
+  }
+  .fx-crm .fixed.inset-0 input,
+  .fx-crm .fixed.inset-0 select,
+  .fx-crm .fixed.inset-0 textarea,
+  .fx-crm .fixed.inset-0 button {
+    min-height: 44px;
+  }
+}
+@media (min-width: 1440px) {
+  .fx-crm aside {
+    width: clamp(240px, 14vw, 280px);
+  }
+  .fx-crm main .overflow-x-auto > table {
+    width: max-content;
+    min-width: min(100%, 960px);
+  }
+  .fx-crm .fixed.inset-0 > form.max-w-lg,
+  .fx-crm .fixed.inset-0 > form.max-w-md,
+  .fx-crm .fixed.inset-0 > div.max-w-lg,
+  .fx-crm .fixed.inset-0 > div.max-w-md {
+    max-width: 760px;
+  }
+}

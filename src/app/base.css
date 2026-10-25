@@ -1,0 +1,466 @@
+
+@tailwind base;
+/* ——— 7FX brand tokens = HRAM 1:1 (black / white / gray) ———
+   Light surfaces (landing, auth, CRM): primary #111111 on white.
+   Trade terminal: dark black panels; chrome accent white (via desk-* Tailwind).
+   Buy/sell = HRAM TV green/red.
+*/
+:root {
+  --bg: #000000;
+  --bg-panel: #0a0a0a;
+  --bg-elevated: #141414;
+  --bg-hover: #1f1f1f;
+  --border: #2a2a2a;
+  --text: #d1d4dc;
+  --text-muted: #787b86;
+  --accent: #111111;
+  --accent-strong: #111111;
+  --accent-soft: #2a2a2a;
+  --accent-ink: #ffffff;      /* text on black CTA fills */
+  --accent-glow: rgba(0, 0, 0, 0.18);
+  --accent-tint: rgba(17, 17, 17, 0.08);
+  --buy: #26a69a;
+  --sell: #ef5350;
+  --warn: #f5a524;
+  --crm-bg: #f7f7f7;
+  --crm-card: #ffffff;
+  --crm-border: rgba(0, 0, 0, 0.12);
+  --radius-card: 14px;
+  --radius-control: 10px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-inter), var(--font-inter-ext), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Type scale: 12 / 13 / 14 / 16 / 20 / 24 / 32 / 44 / 56.
+   Headings stay 500–600. Weight 300 is only for large high-contrast lines. */
+:root {
+  --fx-fs-12: 12px;
+  --fx-fs-13: 13px;
+  --fx-fs-14: 14px;
+  --fx-fs-16: 16px;
+  --fx-fs-20: 20px;
+  --fx-fs-24: 24px;
+  --fx-fs-32: 32px;
+  --fx-fs-44: 44px;
+  --fx-fs-56: 56px;
+  --fx-track-display: -0.02em;
+  --fx-lh-body: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+}
+h1, h2 {
+  letter-spacing: var(--fx-track-display);
+}
+h1 { font-weight: 500; }
+
+.fx-landing p,
+.fx-auth-page p,
+.fx-ios p,
+.fx-crm p {
+  line-height: var(--fx-lh-body);
+}
+
+.tabular-nums,
+.fx-desk-tradebar,
+.fx-crm .crm-kpi .value,
+.fx-crm .crm-dense-table td {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: #333333; border-radius: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+input, select, button { font: inherit; }
+
+/* 1x ticker speed: one full loop takes 80s for a calmer read pace. */
+.ticker-track { animation: ticker-scroll 80s linear infinite; }
+.ticker-seq {
+  display: flex;
+  flex-shrink: 0;
+}
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-1 * var(--ticker-shift, 50%))); }
+}
+
+/* ——— 7FX Trade Desk polish ——— */
+.fx-desk {
+  color-scheme: dark;
+}
+
+.fx-desk-glass {
+  background: linear-gradient(180deg, rgba(10, 10, 10, 0.94) 0%, rgba(10, 10, 10, 0.88) 100%);
+  backdrop-filter: blur(14px) saturate(1.15);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+}
+
+/* Soft elevated pill track — mobile segmented control */
+.fx-desk-seg {
+  display: flex;
+  gap: 3px;
+  padding: 4px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #0a0a0a 0%, #000000 100%);
+  border: 1px solid rgba(42, 42, 42, 0.9);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 6px 18px rgba(0, 0, 0, 0.28);
+}
+
+.fx-desk-seg__btn {
+  flex: 1;
+  border-radius: 11px;
+  padding: 10px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #8b97b0;
+  transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
+}
+
+.fx-desk-seg__btn:active {
+  transform: scale(0.98);
+}
+
+.fx-desk-seg__btn--active {
+  background: linear-gradient(180deg, #1f1f1f 0%, #141414 100%);
+  color: #e8eef8;
+  box-shadow:
+    0 0 0 1px rgba(17, 17, 17, 0.45),
+    0 4px 14px rgba(17, 17, 17, 0.18),
+    0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.fx-desk-seg__btn--active::after {
+  content: none;
+}
+
+/* Mobile bottom nav — safe-area padding only (< md) */
+.fx-desk-mobile-nav {
+  padding-bottom: max(10px, env(safe-area-inset-bottom, 0px));
+}
+
+/* The type scale starts at 12px on every viewport, including desktop CRM and the desk. */
+.text-\[8px\],
+.text-\[9px\],
+.text-\[9\.5px\],
+.text-\[10px\],
+.text-\[11px\],
+.text-\[11\.5px\],
+.sm\:text-\[8px\],
+.sm\:text-\[9px\],
+.sm\:text-\[9\.5px\],
+.sm\:text-\[10px\],
+.sm\:text-\[11px\],
+.md\:text-\[8px\],
+.md\:text-\[9px\],
+.md\:text-\[9\.5px\],
+.md\:text-\[10px\],
+.md\:text-\[11px\] {
+  font-size: var(--fx-fs-12) !important;
+  line-height: 1.35 !important;
+}
+
+@media (max-width: 767px) {
+  html,
+  body {
+    overflow-x: clip;
+    max-width: 100%;
+  }
+  .fx-desk {
+    /* Prefer app-like overflow containment on phone */
+    overscroll-behavior: none;
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+    font-feature-settings: "tnum" 1, "cv11" 1;
+    -webkit-font-smoothing: antialiased;
+  }
+  .fx-desk img,
+  .fx-desk canvas,
+  .fx-desk table {
+    max-width: 100%;
+  }
+  /* 44px minimum tap targets on phone */
+  .fx-desk button,
+  .fx-desk [role="button"],
+  .fx-desk a,
+  .fx-desk select,
+  .fx-desk input:not([type="checkbox"]):not([type="radio"]) {
+    min-height: 44px;
+  }
+  .fx-desk > header button,
+  .fx-desk > header a,
+  .fx-desk > header select {
+    min-width: 44px;
+  }
+  .fx-desk .fx-tap-compact {
+    min-height: 0;
+  }
+  .fx-desk-seg__btn {
+    min-height: 44px;
+    font-size: 12.5px;
+    letter-spacing: 0.02em;
+  }
+  .fx-desk-seg__btn--active {
+    color: #ffffff;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.08),
+      0 6px 18px rgba(0, 0, 0, 0.35);
+  }
+  /* Sticky trade bar above the bottom nav */
+  .fx-desk-tradebar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 8px 12px 0;
+  }
+  .fx-desk-tradebar button {
+    min-height: 46px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+
+  .fx-desk-glass {
+    background: linear-gradient(180deg, rgba(10, 10, 10, 0.97) 0%, rgba(0, 0, 0, 0.92) 100%);
+  }
+}
+
+/* ——— iOS install: same dark family as the landing ——— */
+.fx-ios {
+  background: #07090d;
+  color: #f4f7fb;
+  color-scheme: dark;
+  font-family: var(--font-inter), var(--font-inter-ext), system-ui, sans-serif;
+}
+.fx-ios h1,
+.fx-ios h2 {
+  font-family: var(--font-inter), var(--font-inter-ext), system-ui, sans-serif;
+  color: #f4f7fb;
+  letter-spacing: -0.02em;
+}
+html:has(.fx-ios),
+body:has(.fx-ios) {
+  background: #07090d;
+  color-scheme: dark;
+}
+.fx-ios-step,
+.fx-ios-note {
+  display: flex;
+  gap: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 14px;
+}
+.fx-ios-step > span {
+  display: flex;
+  height: 32px;
+  width: 32px;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #f4f7fb;
+  color: #0b0e13;
+  font-size: 13px;
+  font-weight: 600;
+}
+.fx-ios-step p:first-child,
+.fx-ios-note > p:first-child,
+.fx-ios-note > p:nth-of-type(3) {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+}
+.fx-ios-step p:last-child,
+.fx-ios-note p {
+  margin: 4px 0 0;
+  color: #9aa3b5;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.fx-ios-note {
+  display: block;
+  margin-top: 18px;
+}
+.fx-ios-note a {
+  font-weight: 600;
+  color: #f4f7fb;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.fx-ios .fx-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.fx-ios .fx-btn-primary,
+.fx-ios .fx-btn-secondary {
+  border-radius: 999px;
+}
+.fx-ios .fx-btn-primary {
+  background: #f4f7fb;
+  color: #0b0e13;
+}
+.fx-ios .fx-btn-secondary {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #f4f7fb;
+}
+@media (max-width: 640px) {
+  .fx-ios .fx-cta-row { flex-direction: column; }
+  .fx-ios .fx-cta-row > a { width: 100%; }
+}
+
+/* ——— 7FX Auth: dark, same family as the landing ——— */
+.fx-auth-page {
+  --fx-bg: #07090d;
+  --fx-surface: #10151d;
+  --fx-ink: #f4f7fb;
+  --fx-muted: #9aa3b5;
+  --fx-line: rgba(255, 255, 255, 0.1);
+  background: #07090d !important;
+  color: #f4f7fb !important;
+  font-family: var(--font-inter), var(--font-inter-ext), system-ui, sans-serif;
+  color-scheme: dark;
+}
+
+.fx-auth-page h1,
+.fx-auth-page h2,
+.fx-auth-page h3,
+.fx-auth-page .text-\[\#111111\] {
+  font-family: var(--font-inter), var(--font-inter-ext), system-ui, sans-serif;
+  letter-spacing: -0.02em;
+  color: #f4f7fb !important;
+}
+
+.fx-auth-page .fx-nav-logo {
+  filter: brightness(0) invert(1);
+}
+
+.fx-auth-page .fx-auth-panel,
+.fx-auth-page .bg-white,
+.fx-auth-page .bg-\[\#ffffff\],
+.fx-auth-page .bg-\[\#f7f8fa\] {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #f4f7fb;
+}
+
+.fx-auth-page .fx-auth-panel {
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+}
+
+.fx-auth-page .fx-auth-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 20%, #000 20%, transparent 75%);
+}
+
+.fx-auth-page .fx-auth-panel input,
+.fx-auth-page .fx-auth-input,
+.fx-auth-page .fx-landing-input,
+.fx-auth-page select {
+  color: #f4f7fb !important;
+  background: #0c1017 !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+}
+
+.fx-auth-page input::placeholder {
+  color: rgba(244, 247, 251, 0.38);
+}
+
+.fx-auth-page .fx-auth-accent-text {
+  background: linear-gradient(120deg, #f4f7fb, #3ddc97);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+}
+
+.fx-auth-page button[type="submit"],
+.fx-auth-page .bg-\[\#111111\] {
+  background: #f4f7fb !important;
+  color: #0b0e13 !important;
+  border-color: transparent !important;
+}
+
+.fx-auth-page a:focus-visible,
+.fx-auth-page button:focus-visible,
+.fx-auth-page input:focus-visible {
+  outline: 2px solid #f4f7fb;
+  outline-offset: 2px;
+}
+
+html:has(.fx-auth-page),
+body:has(.fx-auth-page) {
+  background: #07090d !important;
+  color: #f4f7fb !important;
+  color-scheme: dark;
+}
+
+
+
+/* ——— Fluid sizing: headings, shells, touch, short landscape ——— */
+.fx-doc {
+  background: #fff;
+  color: #15161a;
+}
+.fx-doc-shell {
+  width: min(920px, calc(100% - 32px));
+  margin-inline: auto;
+}
+.fx-doc-title {
+  font-size: clamp(var(--fx-fs-32), 4vw, var(--fx-fs-44));
+  line-height: 1.12;
+  letter-spacing: var(--fx-track-display);
+}
+.fx-doc h2 {
+  font-size: clamp(var(--fx-fs-20), 2vw, var(--fx-fs-24));
+  line-height: 1.25;
+  letter-spacing: var(--fx-track-display);
+}
+.fx-doc img,
+.fx-doc video,
+.fx-ios img,
+.fx-ios video,
+.fx-auth-page img,
+.fx-profile img,
+.fx-crm img {
+  max-width: 100%;
+}
+
+.fx-ios-shell {
+  width: min(640px, calc(100% - 32px));
+  margin-inline: auto;
+}
+.fx-ios-title {
+  font-size: clamp(var(--fx-fs-24), 1.2rem + 1.5vw, var(--fx-fs-44));
+  line-height: 1.15;
+  letter-spacing: var(--fx-track-display);
+}
+.fx-auth-page h1 {
+  font-size: clamp(var(--fx-fs-24), 1.35rem + 1vw, var(--fx-fs-32)) !important;
+  line-height: 1.15;
+}
+
+.fx-lang-select {
+  min-height: 36px;
+  font-size: var(--fx-fs-12);
+}
+

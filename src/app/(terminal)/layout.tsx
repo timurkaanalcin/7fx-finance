@@ -1,3 +1,5 @@
+import "../globals.css";
+import "../mobile-luxe.css";
 import PresenceHeartbeat from "@/components/presence/PresenceHeartbeat";
 import SymbolCatalogSync from "@/components/trading/SymbolCatalogSync";
 import ScreenshotShield from "@/components/security/ScreenshotShield";

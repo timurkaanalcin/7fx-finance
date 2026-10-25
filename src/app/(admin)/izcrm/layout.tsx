@@ -1,5 +1,6 @@
 "use client";
 
+import "../../globals.css";
 import SignOutForm from "@/components/auth/SignOutForm";
 import NotificationBell from "@/components/notifications/NotificationBell";
 import Link from "next/link";
@@ -163,7 +164,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
 
       <div className="flex min-w-0 flex-1 flex-col bg-white">
         <header className="flex h-11 items-center gap-2 border-b border-black/10 bg-white px-3">
-          <div className="flex max-w-[50%] gap-1 overflow-x-auto md:hidden">
+          <div className="fx-crm-mobile-nav flex max-w-[50%] gap-1 overflow-x-auto md:hidden">
             {flatMobile.slice(0, 8).map((n) => (
               <Link
                 key={n.href}
@@ -176,7 +177,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
               </Link>
             ))}
           </div>
-          <div className="ml-auto flex items-center gap-2 text-[11px] text-neutral-500">
+          <div className="fx-crm-actions ml-auto flex items-center gap-2 text-[11px] text-neutral-500">
             <button
               type="button"
               onClick={() => window.dispatchEvent(new Event("fx-crm-palette"))}
