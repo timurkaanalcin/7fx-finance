@@ -229,7 +229,7 @@ function TraderAccessTools({ userId, traderName, readOnly = false, isStaff = fal
       const res = await fetch("/api/admin/impersonate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId }),
+        body: JSON.stringify({ userId, returnTo: `/izcrm/traders/${userId}` }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -295,6 +295,7 @@ function TraderAccessTools({ userId, traderName, readOnly = false, isStaff = fal
         type="button"
         disabled={busy || readOnly}
         onClick={openTerminal}
+        data-open-terminal={userId}
         className="rounded bg-sky-600 px-2.5 py-1 text-[10px] font-semibold text-white hover:bg-sky-500 disabled:opacity-50"
         title={`Open terminal as ${traderName}`}
       >
@@ -1139,7 +1140,7 @@ export default function AdminUserDetailPage() {
     const session = scope === "full" || scope === "profile";
     const [res, meRes] = await Promise.all([
       fetch(`/api/admin/users/${requestId}${q}`),
-      session ? fetch("/api/auth/me", { credentials: "include" }) : Promise.resolve(null),
+      session ? fetch("/api/auth/me?scope=admin", { credentials: "include" }) : Promise.resolve(null),
     ]);
     if (!alive()) return false;
     if (meRes?.ok) {

@@ -41,7 +41,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
   });
 
   useEffect(() => {
-    fetch("/api/auth/me")
+    fetch("/api/auth/me?scope=admin")
       .then(async (r) => {
         if (r.status === 401) {
           router.push("/login");

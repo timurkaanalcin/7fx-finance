@@ -3,6 +3,7 @@ import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { withdrawalsDisabledMessage, mustChangePasswordMessage } from "@/lib/account-perms";
 import { stripStaff } from "@/lib/customer-sanitize";
+import { impersonationReadonlyResponse } from "@/lib/impersonation-guard";
 import { crmPageWindow } from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
@@ -35,6 +36,8 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   const user = await requireUser();
   if (!user) return NextResponse.json({ error: "No session" }, { status: 401 });
+  const readOnly = await impersonationReadonlyResponse();
+  if (readOnly) return readOnly;
   if ((user as { mustChangePassword?: boolean }).mustChangePassword === true) {
     return NextResponse.json(
       { error: mustChangePasswordMessage((user as { language?: string }).language) },

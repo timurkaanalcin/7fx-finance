@@ -5,6 +5,7 @@ import { refreshAccountMetrics } from "@/lib/trading";
 import { isMarginCall } from "@/lib/margin-call";
 import { stripStaff } from "@/lib/customer-sanitize";
 import { crmPageWindow } from "@/lib/trader-list";
+import { impersonationReadonlyResponse } from "@/lib/impersonation-guard";
 
 export const dynamic = "force-dynamic";
 
@@ -45,6 +46,8 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   const user = await requireUser();
   if (!user) return NextResponse.json({ error: "No session" }, { status: 401 });
+  const readOnly = await impersonationReadonlyResponse();
+  if (readOnly) return readOnly;
 
   const body = await req.json().catch(() => ({}));
   const type = String(body?.type || "ADD").toUpperCase();

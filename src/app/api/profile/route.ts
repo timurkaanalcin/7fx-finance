@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { hashPassword, requireUser, verifyPassword } from "@/lib/auth";
+import { getSession, hashPassword, requireUser, verifyPassword } from "@/lib/auth";
+import { impersonationReadonlyResponse } from "@/lib/impersonation-guard";
 import { prisma } from "@/lib/prisma";
 import { parseMembershipUpdate, serializeUserMembership } from "@/lib/membership";
 
@@ -9,6 +10,7 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   const user = await requireUser();
   if (!user) return NextResponse.json({ error: "No session" }, { status: 401 });
+  const session = await getSession();
 
   const full = await prisma.user.findUnique({
     where: { id: user.id },
@@ -31,6 +33,7 @@ export async function GET() {
       withdrawalsEnabled: m.withdrawalsEnabled !== false,
       loginEnabled: m.loginEnabled !== false,
       mustChangePassword: (full as { mustChangePassword?: boolean }).mustChangePassword === true,
+      impersonatedBy: session?.impersonatedBy ?? null,
       firstName: m.firstName,
       lastName: m.lastName,
       phone: m.phone,
@@ -57,13 +60,15 @@ export async function GET() {
       // CRM statuses visible read-only but not for edit
       ftd: m.ftd,
     },
-    editable: ["phone", "language", "timezone", "address"],
+    editable: session?.impersonatedBy ? [] : ["phone", "language", "timezone", "address"],
   });
 }
 
 export async function PATCH(req: Request) {
   const user = await requireUser();
   if (!user) return NextResponse.json({ error: "No session" }, { status: 401 });
+  const readOnly = await impersonationReadonlyResponse();
+  if (readOnly) return readOnly;
 
   const body = await req.json().catch(() => ({}));
 

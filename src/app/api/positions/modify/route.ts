@@ -3,10 +3,13 @@ import { clientErrorMessage } from "@/lib/security/public-error";
 import { requireUser } from "@/lib/auth";
 import { modifyPositionSlTp } from "@/lib/trading";
 import { tradingDisabledMessage, mustChangePasswordMessage } from "@/lib/account-perms";
+import { impersonationReadonlyResponse } from "@/lib/impersonation-guard";
 
 export async function POST(req: Request) {
   const user = await requireUser();
   if (!user) return NextResponse.json({ error: "No session" }, { status: 401 });
+  const readOnly = await impersonationReadonlyResponse();
+  if (readOnly) return readOnly;
   if ((user as { mustChangePassword?: boolean }).mustChangePassword === true) {
     return NextResponse.json(
       { error: mustChangePasswordMessage((user as { language?: string }).language) },

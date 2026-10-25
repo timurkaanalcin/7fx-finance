@@ -54,6 +54,7 @@ type Profilee = {
   freeMargin?: number;
   leverage?: number;
   ftd: boolean;
+  impersonatedBy?: string | null;
 };
 
 type WithdrawalRow = {
@@ -175,6 +176,10 @@ export default function ProfileePage() {
 
   async function save(e: FormEvent) {
     e.preventDefault();
+    if (profile?.impersonatedBy) {
+      setMsg(t("term.impersonationReadOnly"));
+      return;
+    }
     setBusy(true);
     setMsg("");
     try {
@@ -198,6 +203,10 @@ export default function ProfileePage() {
 
   async function changePassword(e: FormEvent) {
     e.preventDefault();
+    if (profile?.impersonatedBy) {
+      setPwErr(t("term.impersonationReadOnly"));
+      return;
+    }
     setPwBusy(true);
     setPwMsg("");
     setPwErr("");
@@ -242,6 +251,10 @@ export default function ProfileePage() {
 
   async function onWithdraw(e: FormEvent) {
     e.preventDefault();
+    if (profile?.impersonatedBy) {
+      setWdErr(t("term.impersonationReadOnly"));
+      return;
+    }
     if (profile?.withdrawalsEnabled === false) {
       setWdErr(t("term.withdrawalsDisabled"));
       return;
@@ -331,6 +344,11 @@ export default function ProfileePage() {
         {/* eslint-disable-next-line @next/next/no-img-element -- static bitmap; next/image would change this layout */}
         <img src="/icons/v3/icon-64.png" alt="" className="h-7 w-7 rounded-md object-cover ring-1 ring-[#2a2a2a]" />
         <span className="min-w-0 flex-1 truncate text-sm font-medium">{t("term.profile.membership")}</span>
+        {profile.impersonatedBy ? (
+          <span className="shrink-0 rounded bg-sky-600 px-2 py-0.5 text-[11px] font-semibold text-white">
+            {t("term.impersonationBanner").replace("{name}", profile.name || profile.email)} — {t("term.impersonationReadOnly")}
+          </span>
+        ) : null}
         <Link
           href="/trade"
           className="ml-auto rounded-md bg-[#2a2a2a] px-2.5 py-1.5 text-xs hover:bg-[#1f1f1f]"
