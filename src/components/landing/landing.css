@@ -117,6 +117,30 @@ html:has(.fx-landing) {
   background: rgba(7, 9, 13, 0.82);
   border-bottom: 1px solid var(--fx-line);
   backdrop-filter: blur(16px);
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+.fx-landing .fx-nav > .fx-shell {
+  height: auto;
+  min-height: 3.5rem;
+}
+@media (min-width: 640px) {
+  .fx-landing .fx-nav > .fx-shell { min-height: 4rem; }
+}
+@media (max-width: 420px) {
+  .fx-landing .fx-nav > .fx-shell {
+    flex-wrap: wrap;
+    row-gap: 8px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}
+.fx-landing .fx-nav-link,
+.fx-landing .fx-nav .fx-btn-primary,
+.fx-landing .fx-nav .fx-btn-secondary,
+.fx-landing .fx-nav .fx-lang-select {
+  min-height: 44px;
 }
 .fx-landing .fx-nav-link,
 .fx-landing .fx-mobile-menu button,
@@ -126,6 +150,7 @@ html:has(.fx-landing) {
   color: #c5cedd;
   border-radius: 999px;
   padding: 8px 12px;
+  min-height: 44px;
   font-size: 13px;
   font-weight: 500;
   text-align: left;
@@ -180,12 +205,21 @@ html:has(.fx-landing) {
   border-color: transparent !important;
 }
 
+.fx-landing .fx-logo-lockup {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  min-width: 44px;
+}
 .fx-landing .fx-skip {
   position: absolute;
   left: 16px;
   top: 12px;
   z-index: 80;
   transform: translateY(-160%);
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   background: #f4f7fb;
   color: #0b0e13;
   border-radius: 8px;
@@ -424,7 +458,7 @@ html:has(.fx-landing) {
   font-weight: 500;
   letter-spacing: 0.04em;
   padding: 8px 12px;
-  min-height: 36px;
+  min-height: 44px;
 }
 .fx-landing .fx-chip.is-on {
   background: #f4f7fb;
@@ -794,11 +828,14 @@ html:has(.fx-landing) {
 }
 .fx-landing .fx-footer button,
 .fx-landing .fx-footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: #9aa3b5;
   text-align: left;
   background: none;
   border: 0;
-  padding: 0;
+  padding: 8px 0;
 }
 .fx-landing .fx-footer button:hover,
 .fx-landing .fx-footer a:hover { color: #fff; }

@@ -47,9 +47,9 @@ function main() {
   assert.match(css, /font-variant-numeric:\s*tabular-nums/);
   assert.match(
     css,
-    /@media \(max-width: 767px\) \{[\s\S]*\.fx-desk \.fx-chart-tools button[\s\S]*\.fx-desk \.fx-watchlist \[data-fx-watch-clear\][\s\S]*min-width:\s*40px/
+    /@media \(max-width: 767px\) \{[\s\S]*\.fx-desk \.fx-chart-tools button[\s\S]*\.fx-desk \.fx-watchlist \[data-fx-watch-clear\][\s\S]*min-width:\s*44px/
   );
-  assert.match(css, /min-height:\s*40px/);
+  assert.match(css, /min-height:\s*44px/);
   assert.match(css, /max-height:\s*176px/);
 
   const login = read("src/components/auth/LoginForm.tsx");

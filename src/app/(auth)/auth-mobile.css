@@ -14,7 +14,7 @@
   right: 6px;
   top: 50%;
   transform: translateY(-50%);
-  min-height: 40px;
+  min-height: 44px;
   min-width: 44px;
   padding: 0 10px;
   border: 0;
@@ -25,6 +25,9 @@
   font-weight: 500;
 }
 .fx-auth-reveal:hover { color: #ffffff; }
+.fx-auth-page :is(h1, h2, h3, button, a) {
+  font-weight: 500;
+}
 .fx-auth-hint,
 .fx-auth-field-error {
   margin: 6px 0 0;
@@ -65,10 +68,17 @@
 .fx-pw-meter.is-ok span.is-on { background: #f0c36a; }
 .fx-pw-meter.is-strong span.is-on { background: #3ddc97; }
 
+.fx-auth-page {
+  overflow-x: clip;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
 @media (max-width: 767px) {
   .fx-auth-page {
-    padding-top: env(safe-area-inset-top, 0px);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    overflow-x: clip;
   }
   .fx-auth-page main > div {
     max-width: min(440px, 100%) !important;

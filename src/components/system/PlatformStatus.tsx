@@ -64,7 +64,7 @@ const primaryBtn: CSSProperties = {
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
-  minHeight: 40,
+  minHeight: 44,
   padding: "0 16px",
   borderRadius: 999,
   border: 0,

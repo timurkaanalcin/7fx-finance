@@ -1,0 +1,20 @@
+/* Loaded with the banner, including the 404 page that does not pull Tailwind. */
+.fx-install-card > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.fx-install-card button {
+  min-height: 44px;
+  font-weight: 500;
+}
+.fx-install-card button[aria-label] {
+  min-width: 44px;
+}
+.fx-install-cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: 16px;
+  border-radius: 999px;
+}
