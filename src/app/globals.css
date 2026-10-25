@@ -1572,6 +1572,97 @@ html[data-fx-theme="light"] .fx-desk .focus\:outline-none:focus-visible {
   }
 }
 
+/* Signed-in screens: 44px taps, dialogs that scroll inside the viewport, keyboard inset. */
+:root {
+  --fx-kb: 0px;
+}
+.fx-chart-desktop-actions button {
+  min-height: 44px !important;
+  min-width: 44px !important;
+  font-weight: 500 !important;
+}
+.fx-desk-tradebar button,
+.fx-desk-tradebar button span {
+  font-weight: 500;
+}
+.fx-desk button.h-9,
+.fx-desk button.h-8,
+.fx-desk button.h-7,
+.fx-desk button.h-6,
+.fx-desk button.h-5,
+.fx-desk [data-fx-watch-clear] {
+  min-height: 44px;
+  min-width: 44px;
+}
+.fx-desk [data-fx-watchlist-search] {
+  min-height: 44px;
+  font-size: 16px;
+  padding-right: 48px;
+}
+.fx-lx-overlay {
+  overflow: hidden;
+}
+.fx-order-sheet,
+.fx-lx-modal,
+.fx-lx-overlay > [role="dialog"] {
+  max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - var(--fx-kb, 0px)) !important;
+  overflow-y: auto;
+}
+.fx-order-sheet button,
+.fx-lx-overlay button,
+.fx-lx-modal button {
+  min-height: 44px;
+  min-width: 44px;
+  font-weight: 500;
+}
+.fx-profile .fx-lx-overlay > div[role="dialog"] {
+  height: min(560px, calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - var(--fx-kb, 0px))) !important;
+  max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - var(--fx-kb, 0px)) !important;
+  overflow-y: auto;
+}
+.fx-lx-overlay :is(input, textarea, select):not([type="checkbox"]):not([type="radio"]),
+.fx-order-sheet :is(input, textarea, select):not([type="checkbox"]):not([type="radio"]),
+.fx-profile :is(input, textarea, select):not([type="checkbox"]):not([type="radio"]),
+.fx-cashier :is(input, textarea, select):not([type="checkbox"]):not([type="radio"]),
+.fx-crm :is(input, textarea, select):not([type="checkbox"]):not([type="radio"]),
+[role="dialog"] :is(input, textarea, select):not([type="checkbox"]):not([type="radio"]) {
+  font-size: 16px;
+  min-height: 44px;
+  scroll-margin-bottom: calc(var(--fx-kb, 0px) + 24px);
+  scroll-margin-top: 12px;
+}
+[role="dialog"]:not(.fixed),
+.fixed.inset-0[role="dialog"] > div {
+  max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - var(--fx-kb, 0px));
+  overflow-y: auto;
+}
+.fx-crm .fixed.inset-0:not([aria-hidden]) > form,
+.fx-crm .fixed.inset-0:not([aria-hidden]) > div {
+  max-height: calc(100dvh - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - var(--fx-kb, 0px));
+  overflow-y: auto;
+}
+.fx-crm main button,
+.fx-crm .fixed.inset-0 button {
+  min-height: 44px;
+}
+.fx-desk :is(button, a, select),
+.fx-desk input:not([type="checkbox"]):not([type="radio"]),
+.fx-profile :is(button, a),
+.fx-profile input:not([type="checkbox"]):not([type="radio"]),
+.fx-profile select,
+.fx-profile textarea,
+.fx-crm :is(button, a) {
+  min-height: 44px;
+}
+.fx-desk :is(button, a, .fx-tap-compact, .fx-watch-filter),
+.fx-profile > header :is(button, a),
+.fx-profile button.h-8,
+.fx-crm header :is(button, a),
+.fx-crm aside :is(button, a),
+.fx-crm main :is(button, a) {
+  min-width: 44px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ticker-track,
   .fx-px-flash-up,

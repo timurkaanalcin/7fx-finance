@@ -248,14 +248,14 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
           }}
           aria-label={t("term.alert.title")}
           title={t("term.alert.title")}
-          className="relative flex h-9 w-9 items-center justify-center rounded-full border border-desk-border bg-desk-panel/90 text-desk-text shadow-desk-panel backdrop-blur"
+          className="relative flex h-11 w-11 items-center justify-center rounded-full border border-desk-border bg-desk-panel/90 text-desk-text shadow-desk-panel backdrop-blur"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
             <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
           </svg>
           {mine.length > 0 && (
-            <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#c8a96a] px-1 text-[9px] font-bold text-black">
+            <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#c8a96a] px-1 text-[9px] font-medium text-black">
               {mine.length}
             </span>
           )}
@@ -272,7 +272,7 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
                   aria-label={sound ? t("term.alert.mute") : t("term.alert.unmute")}
                   aria-pressed={!sound}
                   title={sound ? t("term.alert.soundOn") : t("term.alert.soundOff")}
-                  className={`flex h-6 w-6 items-center justify-center rounded-full ${sound ? "text-desk-text" : "text-desk-muted/60"} hover:bg-desk-elev`}
+                  className={`flex h-11 w-11 items-center justify-center rounded-full ${sound ? "text-desk-text" : "text-desk-muted/60"} hover:bg-desk-elev`}
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M11 5 6 9H3v6h3l5 4V5z" />

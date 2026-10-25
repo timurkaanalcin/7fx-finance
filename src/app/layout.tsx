@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
 import InstallBanner from "@/components/InstallBanner";
 import PublicI18n from "@/components/i18n/PublicI18n";
+import KeyboardInset from "@/components/system/KeyboardInset";
 import { inter } from "@/lib/fonts";
 import { LOCALE_META, publicLocaleFromCookie, type Locale } from "@/lib/i18n/locales";
 import type { Dict } from "@/lib/i18n/types";
@@ -21,6 +22,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  interactiveWidget: "resizes-content",
   themeColor: "#07090d",
 };
 
@@ -90,6 +92,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
       </head>
       <body className="antialiased">
+        <KeyboardInset />
         <PublicI18n initialLocale={locale} initialDict={initialDict} hasLocaleCookie={hasLocaleCookie}>
           {children}
         </PublicI18n>
