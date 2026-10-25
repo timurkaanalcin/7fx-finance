@@ -285,6 +285,18 @@ function MiniCanvas({ values }: { values: number[] }) {
   return <canvas ref={ref} className="fx-mini-canvas" aria-hidden />;
 }
 
+const SPARK_SYMS = ["EURUSD", "AAPL", "BTCUSD", "XAUUSD"] as const;
+
+function Spark({ values }: { values: number[] }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = ref.current;
+    if (!canvas) return;
+    drawSeries(canvas, values, 0);
+  }, [values]);
+  return <canvas ref={ref} className="fx-spark" aria-hidden />;
+}
+
 function Note({ status, stale, t }: { status: Feed["status"]; stale: boolean; t: (k: string) => string }) {
   if (status === "loading") return <p className="fx-live-note">{t("landing.live.loading")}</p>;
   if (status === "unavailable") return <p className="fx-live-note">{t("landing.live.unavailable")}</p>;
@@ -308,8 +320,19 @@ export function LiveHeroChart() {
     }
   }, [symbol, snap.series, snap.status]);
 
+  const badge = snap.status === "live" ? t("landing.live.badge") : "—";
+
   return (
-    <div className="fx-chart-card">
+    <div className="fx-chart-card fx-terminal">
+      <div className="fx-terminal-bar">
+        <span className="fx-terminal-dots" aria-hidden>
+          <i />
+          <i />
+          <i />
+        </span>
+        <span className="fx-terminal-name">{t("landing.live.terminal")}</span>
+        <span className="fx-terminal-badge">{badge}</span>
+      </div>
       <div className="fx-chart-card-head">
         <div>
           <p className="fx-kicker">{t("landing.live.chartAria")}</p>
@@ -328,6 +351,27 @@ export function LiveHeroChart() {
         ) : (
           <Note status={snap.status === "loading" ? "loading" : "unavailable"} stale={false} t={t} />
         )}
+      </div>
+      <div className="fx-spark-row">
+        {SPARK_SYMS.map((sym) => {
+          const row = snap.ticks[sym];
+          const spark = snap.series[sym];
+          const sparkUp = row ? row.changePct >= 0 : true;
+          return (
+            <button
+              key={sym}
+              type="button"
+              className={`fx-spark-card ${sym === symbol ? "is-on" : ""}`}
+              onClick={() => setSymbol(sym)}
+            >
+              <span className="fx-spark-sym">{sym}</span>
+              <span className={`fx-spark-px ${sparkUp ? "is-up" : "is-down"}`}>
+                {row ? formatPx(row.mid, sym, locale) : "—"}
+              </span>
+              {spark && spark.length > 1 ? <Spark values={spark} /> : <span className="fx-spark fx-spark--empty" />}
+            </button>
+          );
+        })}
       </div>
       <div className="fx-chip-row" role="tablist" aria-label={t("landing.live.chartAria")}>
         {QUOTE_SYMS.map((sym) => (

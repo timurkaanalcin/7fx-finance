@@ -1058,10 +1058,10 @@ export default function TerminalShell({
           </button>
         </div>
       )}
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden md:flex-row">
+      <div className="fx-desk-row flex min-h-0 flex-1 flex-col overflow-hidden md:flex-row">
         {/* Desktop watchlist sidebar */}
         {deskWide && (
-        <div className="hidden h-full md:flex">
+        <div className="fx-desk-side hidden h-full md:flex">
           <Watchlist
             symbols={symbols}
             prices={prices}
@@ -1133,7 +1133,7 @@ export default function TerminalShell({
 
             {/* Desktop bottom panels — fixed height so chart keeps prior larger share */}
             {deskWide && (
-            <div className="fx-desk-history hidden md:flex md:shrink-0 md:flex-col">
+            <div className="fx-desk-history hidden min-w-0 md:flex md:shrink-0 md:flex-col">
               <BottomPanels
                 tab={tab}
                 onTab={setTab}

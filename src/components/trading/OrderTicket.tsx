@@ -515,16 +515,16 @@ export default function OrderTicket({
 
   const body = (
     <>
-      <div className="flex items-center justify-between border-b border-desk-border/80 px-3.5 py-3 md:px-3 md:py-2.5">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-desk-muted">
+      <div className="flex min-w-0 items-center justify-between gap-2 border-b border-desk-border/80 px-3.5 py-3 md:px-3 md:py-2.5">
+        <span className="shrink-0 text-[11px] font-medium uppercase tracking-[0.1em] text-desk-muted">
           {t("term.order")}
         </span>
-        <div className="flex items-center gap-2">
-          <span className="inline-flex max-w-[min(68vw,280px)] items-center gap-1.5 rounded-full border border-desk-border/60 bg-desk-elev/80 px-2.5 py-0.5 text-[10px] font-semibold text-desk-text">
+        <div className="flex min-w-0 items-center gap-2">
+          <span className="fx-order-symbol rounded-full border border-desk-border/60 bg-desk-elev/80 px-2.5 py-0.5 text-[10px] font-medium text-desk-text">
             <SymbolIcon symbol={symbol} fallback={def?.flag || "•"} size={16} />
             <span className="shrink-0">{symbol}</span>
             {def?.name && def.name.toUpperCase() !== symbol.toUpperCase() && (
-              <span className="truncate font-medium text-desk-muted" title={def.name}>
+              <span className="fx-order-symbol-name font-normal text-desk-muted" title={def.name}>
                 {def.name}
               </span>
             )}
@@ -680,7 +680,7 @@ export default function OrderTicket({
                 ×2
               </button>
             </div>
-            <span className="text-[10px] tabular-nums text-desk-muted/80">
+            <span className="fx-order-notional text-[10px] tabular-nums text-desk-muted/80">
               {t("term.ot.notional")} {fmtTicketMoney(notional, currency)}
             </span>
           </div>
@@ -1109,7 +1109,7 @@ export default function OrderTicket({
       >
         <div
           ref={rootRef}
-          className={`flex max-h-[92vh] w-full max-w-[420px] flex-col overflow-hidden rounded-t-[20px] border border-desk-border bg-desk-panel shadow-2xl sm:rounded-[16px] ${className}`}
+          className={`fx-order-sheet flex max-h-[92vh] w-full max-w-[420px] flex-col overflow-hidden rounded-t-[20px] border border-desk-border bg-desk-panel shadow-2xl sm:rounded-[16px] ${className}`}
         >
           {body}
         </div>

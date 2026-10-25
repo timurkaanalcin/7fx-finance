@@ -1056,3 +1056,95 @@ html[data-fx-theme="light"] .fx-account-metric__value.is-warn { color: #9a6b12; 
     max-width: 760px;
   }
 }
+
+/* Desk row / history stay visible at 768+ even if a utility variant is missing. */
+@media (min-width: 768px) {
+  .fx-desk-row {
+    flex-direction: row;
+  }
+  .fx-desk-side,
+  .fx-desk-history {
+    display: flex;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .fx-desk-history {
+    flex-direction: column;
+  }
+  .fx-desk-side {
+    flex-direction: row;
+    height: 100%;
+  }
+  .fx-blotter {
+    display: block;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+}
+
+.fx-order-sheet {
+  width: 100%;
+  max-width: 420px;
+  min-width: 0;
+}
+.fx-order-symbol {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  max-width: min(100%, 240px);
+}
+.fx-order-symbol-name,
+.fx-order-notional {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.fx-order-symbol-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fx-blotter {
+  max-width: 100%;
+  min-width: 0;
+  overflow: auto;
+}
+.fx-blotter table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.fx-blotter th,
+.fx-blotter td {
+  font-weight: 400;
+  white-space: nowrap;
+}
+.fx-blotter th:last-child,
+.fx-blotter td:last-child {
+  position: sticky;
+  right: 0;
+  background: #0a0a0a;
+  box-shadow: -10px 0 12px rgba(0, 0, 0, 0.45);
+}
+.fx-blotter thead th:last-child {
+  z-index: 2;
+}
+.fx-blotter td:last-child {
+  z-index: 1;
+}
+
+.fx-pos-card {
+  min-width: 0;
+  max-width: 100%;
+}
+.fx-pos-levels {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.fx-pos-level {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
