@@ -22,6 +22,9 @@ const MarketBoard = dynamic(() => import("@/components/landing/LiveMarkets").the
 const ProductStage = dynamic(() => import("@/components/landing/ProductStage"), {
   loading: () => <div className="fx-stage-slot" aria-hidden />,
 });
+const TerminalLoop = dynamic(() => import("@/components/landing/TerminalLoop"), {
+  loading: () => <div className="fx-screen-slot" aria-hidden />,
+});
 
 function scrollToId(id: string) {
   const el = document.getElementById(id);
@@ -224,6 +227,8 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
+
+        <TerminalLoop />
 
         <section id="platform" className="fx-section fx-section--soft" aria-labelledby="platform-title">
           <div className="fx-shell">

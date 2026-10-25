@@ -471,3 +471,98 @@ body:has(.fx-auth-page) {
   font-size: var(--fx-fs-12);
 }
 
+.fx-quote { max-width: 100%; margin-top: 4px; }
+.fx-quote-status {
+  margin: 0 0 8px;
+  color: #3f4248;
+  font-size: 13px;
+  font-weight: 400;
+}
+.fx-quote-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  background: #fff;
+}
+.fx-quote table {
+  width: 100%;
+  min-width: 520px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13px;
+  font-weight: 400;
+}
+.fx-quote caption {
+  caption-side: bottom;
+  padding: 8px 2px 0;
+  text-align: left;
+  color: #3f4248;
+  font-size: 12px;
+  font-weight: 400;
+}
+.fx-quote th,
+.fx-quote td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.fx-quote thead th {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #3f4248;
+  text-align: right;
+  background: #faf8f3;
+}
+.fx-quote thead th:first-child,
+.fx-quote tbody th {
+  text-align: left;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: #fff;
+  box-shadow: 8px 0 10px rgba(21, 22, 26, 0.04);
+}
+.fx-quote thead th:first-child { background: #faf8f3; z-index: 2; }
+.fx-quote td {
+  text-align: right;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: #15161a;
+}
+.fx-quote .fx-quote-sym {
+  font-weight: 500;
+  color: #15161a;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.fx-quote .fx-quote-name {
+  display: block;
+  margin-top: 2px;
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  font-weight: 400;
+  color: #3f4248;
+}
+.fx-quote .is-up { color: #0a6b50; }
+.fx-quote .is-down { color: #b4231c; }
+@media (max-width: 767px) {
+  .fx-quote tbody th,
+  .fx-quote thead th:first-child { max-width: 168px; }
+  .fx-quote .fx-quote-name { max-width: 140px; }
+}
+.fx-quote a:focus-visible {
+  outline: 2px solid #15161a;
+  outline-offset: 2px;
+}
+@media (min-width: 1024px) {
+  .fx-quote table { min-width: 0; }
+  .fx-quote .fx-quote-name { max-width: none; }
+}
+

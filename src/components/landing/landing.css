@@ -619,6 +619,35 @@ html:has(.fx-landing) {
 .fx-landing .fx-film video,
 .fx-landing .fx-film img { border-radius: 12px; }
 
+.fx-landing .fx-screen-slot { min-height: 420px; }
+.fx-landing .fx-screen {
+  margin-top: 28px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #10151d;
+  overflow: hidden;
+  padding: 8px 8px 0;
+}
+.fx-landing .fx-screen .fx-terminal-bar { margin: 2px 4px 8px; }
+.fx-landing .fx-screen-stage {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  min-height: 180px;
+  background: #0b0e13;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.fx-landing .fx-screen-stage img,
+.fx-landing .fx-screen-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.fx-landing .fx-screen-stage img { object-fit: cover; }
+.fx-landing .fx-screen-canvas { background: #0b0e13; }
+
 .fx-landing .fx-check-list,
 .fx-landing .fx-steps,
 .fx-landing .fx-infra {
