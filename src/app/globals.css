@@ -1481,3 +1481,38 @@ html[data-fx-theme="light"] .fx-account-metric__value.is-warn { color: #9a6b12; 
 html[data-fx-theme="light"] .fx-desk :focus-visible {
   outline-color: #15161a;
 }
+.fx-desk .outline-none:focus-visible,
+.fx-desk .focus\:outline-none:focus-visible {
+  outline: 2px solid #f4f7fb !important;
+  outline-offset: 2px !important;
+}
+html[data-fx-theme="light"] .fx-desk .outline-none:focus-visible,
+html[data-fx-theme="light"] .fx-desk .focus\:outline-none:focus-visible {
+  outline-color: #15161a !important;
+}
+.fx-crm :focus-visible,
+.fx-crm input:focus-visible,
+.fx-crm select:focus-visible,
+.fx-crm textarea:focus-visible,
+.fx-crm button:focus-visible,
+.fx-crm a:focus-visible {
+  outline: 2px solid #15161a !important;
+  outline-offset: 2px !important;
+}
+
+@keyframes fx-toast-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.fx-toast { animation: fx-toast-in 0.18s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track,
+  .fx-px-flash-up,
+  .fx-px-flash-down,
+  .fx-toast,
+  .fx-ios-install-bar,
+  .animate-pulse {
+    animation: none !important;
+  }
+}

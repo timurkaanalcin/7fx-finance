@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
+import { useDialogFocus } from "@/components/a11y/useDialogFocus";
 import { useI18n } from "@/lib/i18n/context";
 
 type Props = {
@@ -15,6 +16,8 @@ export default function ForcePasswordModal({ onDone }: Props) {
   const [show2, setShow2] = useState(false);
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+  useDialogFocus(true, () => {}, panelRef, "input");
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -60,7 +63,7 @@ export default function ForcePasswordModal({ onDone }: Props) {
       aria-modal="true"
       aria-labelledby="fx-force-pw-title"
     >
-      <div className="w-full max-w-md rounded-2xl bg-desk-panel p-5 shadow-2xl ring-1 ring-desk-border">
+      <div ref={panelRef} className="w-full max-w-md rounded-2xl bg-desk-panel p-5 shadow-2xl ring-1 ring-desk-border">
         <h2 id="fx-force-pw-title" className="text-lg font-semibold text-desk-text">
           {t("auth.setNewPasswordTitle")}
         </h2>

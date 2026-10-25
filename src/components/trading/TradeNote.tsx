@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useDialogFocus } from "@/components/a11y/useDialogFocus";
 import { useI18n } from "@/lib/i18n/context";
 
 /**
@@ -65,18 +66,8 @@ export default function TradeNote({ id, symbol, variant = "card" }: { id: string
   const [note, save] = useTradeNote(id);
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState("");
-
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.stopPropagation();
-        setOpen(false);
-      }
-    };
-    window.addEventListener("keydown", onKey, true);
-    return () => window.removeEventListener("keydown", onKey, true);
-  }, [open]);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useDialogFocus(open, () => setOpen(false), dialogRef, "textarea");
 
   const start = () => {
     setDraft(note);
@@ -113,7 +104,7 @@ export default function TradeNote({ id, symbol, variant = "card" }: { id: string
           aria-label={t("term.note.title")}
           onClick={(e) => e.target === e.currentTarget && setOpen(false)}
         >
-          <div className="w-full max-w-sm rounded-[14px] border border-desk-border bg-desk-panel p-4 text-desk-text shadow-xl">
+          <div ref={dialogRef} className="w-full max-w-sm rounded-[14px] border border-desk-border bg-desk-panel p-4 text-desk-text shadow-xl">
             <div className="mb-2 flex items-center justify-between gap-2">
               <div className="text-[13px] font-bold">
                 {t("term.note.title")} · {symbol}

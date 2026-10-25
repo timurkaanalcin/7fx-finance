@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useEffect, useId, useState } from "react";
+import { FormEvent, useEffect, useId, useRef, useState } from "react";
+import { useDialogFocus } from "@/components/a11y/useDialogFocus";
 import { MARGIN_CALL_LEVEL } from "@/lib/margin-call";
 import { fmtMoney } from "@/lib/format";
 import { useI18n } from "@/lib/i18n/context";
@@ -50,6 +51,10 @@ export default function MarginCallModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const panelRef = useRef<HTMLDivElement>(null);
+  useDialogFocus(open, () => {
+    if (pendingRequest?.status === "PENDING" || success) onClose();
+  }, panelRef);
 
   useEffect(() => {
     if (!open) return;
@@ -112,6 +117,7 @@ export default function MarginCallModal({
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4 backdrop-blur-[2px]">
       <div
+        ref={panelRef}
         dir={dir}
         role="dialog"
         aria-modal="true"
