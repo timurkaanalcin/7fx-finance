@@ -6,6 +6,14 @@ import Link from "next/link";
 import { FormEvent, KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CRM_IDLE_POLL_MS, useVisiblePoll } from "@/lib/use-visible-poll";
 import { CHAT_MESSAGE_PAGE, CHAT_THREAD_CAP, CHAT_THREAD_PAGE, prependChatMessages } from "@/lib/trader-list";
+import {
+  compareByLatestCustomer,
+  formatChatStamp,
+  isCustomerMessage,
+  latestCustomerAt,
+  unreadCustomerCount,
+  viewerIntlLocale,
+} from "@/lib/crm-inbox";
 import { ChatFormattedBody } from "@/components/chat/ChatFormattedBody";
 import { ChatFormatToolbar } from "@/components/chat/ChatFormatToolbar";
 import { applyFormatAction, type FormatAction } from "@/components/chat/chatFormat";
@@ -119,10 +127,7 @@ function avatarHue(seed: string): string {
 }
 
 function formatClock(iso: string, locale: string) {
-  return new Date(iso).toLocaleTimeString(locale, {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return formatChatStamp(iso, locale);
 }
 
 function formatDateSep(iso: string, locale: string) {
@@ -227,14 +232,59 @@ function savePins(list: string[]) {
   } catch {}
 }
 
+const SEEN_KEY = "7fx.crm.chat.seen.v1";
+function loadSeen(): Record<string, string> {
+  try {
+    const v = JSON.parse(localStorage.getItem(SEEN_KEY) || "{}");
+    if (!v || typeof v !== "object" || Array.isArray(v)) return {};
+    const out: Record<string, string> = {};
+    for (const [k, val] of Object.entries(v)) {
+      if (typeof k === "string" && typeof val === "string" && k && val) out[k] = val;
+    }
+    return out;
+  } catch {
+    return {};
+  }
+}
+function saveSeen(map: Record<string, string>) {
+  try {
+    localStorage.setItem(SEEN_KEY, JSON.stringify(map));
+  } catch {}
+}
+
+function useInboxWide(): boolean {
+  const [wide, setWide] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const apply = () => setWide(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+  return wide;
+}
+
+const QUICK_REPLIES = [
+  ["crm.chat.quickLooking", "crm.chat.quickLookingBody"],
+  ["crm.chat.quickWait", "crm.chat.quickWaitBody"],
+  ["crm.chat.quickDetails", "crm.chat.quickDetailsBody"],
+  ["crm.chat.quickHours", "crm.chat.quickHoursBody"],
+] as const;
+
 export default function ChatPage() {
   const { i18n, locale } = useCrmLabels();
+  const wide = useInboxWide();
+  const [navLang, setNavLang] = useState<string | null>(null);
+  useEffect(() => setNavLang(navigator.language), []);
+  const dateLocale = viewerIntlLocale(locale, navLang);
   const [threads, setThreads] = useState<Thread[]>([]);
   const [traders, setTraders] = useState<TraderOpt[]>([]);
   const [pickerHasMore, setPickerHasMore] = useState(false);
   const [pickerBusy, setPickerBusy] = useState(false);
   const tradersRef = useRef<TraderOpt[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
+  const [picked, setPicked] = useState(false);
+  const [seen, setSeen] = useState<Record<string, string>>({});
   const [message, setMessage] = useState("");
   const [tab, setTab] = useState<Tab>("all");
   const [query, setQuery] = useState("");
@@ -436,10 +486,15 @@ export default function ChatPage() {
     let rows = threads;
     if (tab === "new") rows = rows.filter(isNew);
     else if (tab === "unanswered") rows = rows.filter(isUnanswered);
+    const byCustomer = (a: Thread, b: Thread) => compareByLatestCustomer(a, b);
     if (pins.length) {
       const rank = new Map(pins.map((id, i) => [id, i]));
       const pinned = rows.filter((t) => rank.has(t.traderId)).sort((a, b) => (rank.get(a.traderId) ?? 0) - (rank.get(b.traderId) ?? 0));
-      if (pinned.length) rows = [...pinned, ...rows.filter((t) => !rank.has(t.traderId))];
+      const rest = rows.filter((t) => !rank.has(t.traderId)).sort(byCustomer);
+      if (pinned.length) rows = [...pinned, ...rest];
+      else rows = rest;
+    } else {
+      rows = [...rows].sort(byCustomer);
     }
     return rows;
   }, [threads, tab, pins]);
@@ -447,14 +502,22 @@ export default function ChatPage() {
 
   // Deep link from notifications: /izcrm/chat?user=<traderId>
   useEffect(() => {
-    const u = new URLSearchParams(window.location.search).get("user");
-    if (u) setSelected(u);
+    setSeen(loadSeen());
   }, []);
 
-  const active = threads.find((t) => t.traderId === selected) || list[0] || null;
+  useEffect(() => {
+    const u = new URLSearchParams(window.location.search).get("user");
+    if (u) {
+      setSelected(u);
+      setPicked(true);
+    }
+  }, []);
+
+  const opened = threads.find((t) => t.traderId === selected) || null;
+  const active = opened || (wide ? list[0] || null : null);
 
   useEffect(() => {
-    if (active && active.traderId !== selected) setSelected(active.traderId);
+    if (wide && active && active.traderId !== selected) setSelected(active.traderId);
     if (active?.profile) setProfileeDraft({ ...active.profile });
     else if (active) {
       setProfileeDraft({
@@ -476,9 +539,21 @@ export default function ChatPage() {
         isActiveWithdrawal: true,
       });
     } else setProfileeDraft(null);
-  }, [active, selected]);
+  }, [active, selected, wide]);
 
   const tailId = active?.messages[active.messages.length - 1]?.id;
+  const threadOnScreen = wide || picked;
+  useEffect(() => {
+    if (!threadOnScreen || !active) return;
+    const last = active.messages[active.messages.length - 1];
+    if (!last) return;
+    setSeen((prev) => {
+      if (prev[active.traderId] === last.createdAt) return prev;
+      const next = { ...prev, [active.traderId]: last.createdAt };
+      saveSeen(next);
+      return next;
+    });
+  }, [threadOnScreen, active]);
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [active?.traderId, tailId]);
@@ -715,11 +790,11 @@ export default function ChatPage() {
       const key = dayKey(m.createdAt);
       const last = blocks[blocks.length - 1];
       if (!last || last.key !== key) {
-        blocks.push({ key, label: formatDateSep(m.createdAt, locale), items: [m] });
+        blocks.push({ key, label: formatDateSep(m.createdAt, dateLocale), items: [m] });
       } else last.items.push(m);
     }
     return blocks;
-  }, [active, locale]);
+  }, [active, dateLocale]);
 
   function onSend(e?: FormEvent) {
     e?.preventDefault();
@@ -728,7 +803,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="-mx-1 flex h-[calc(100dvh-3.5rem)] min-h-[560px] flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-lg md:-mx-0">
+    <div className="-mx-1 flex h-[calc(100dvh-7.25rem)] min-h-0 flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-lg md:-mx-0 lg:h-[calc(100dvh-3.5rem)] lg:min-h-[560px]">
       {/* Top bar */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-200 px-3 py-2.5 sm:px-4">
         <div className="flex items-center gap-2">
@@ -753,7 +828,7 @@ export default function ChatPage() {
 
       <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(260px,320px)_minmax(0,1fr)_minmax(260px,320px)]">
         {/* LEFT */}
-        <aside className="flex min-h-0 flex-col border-b border-neutral-200 lg:border-b-0 lg:border-r">
+        <aside className={`${picked ? "max-lg:hidden" : "flex"} h-full min-h-0 flex-col border-b border-neutral-200 lg:flex lg:border-b-0 lg:border-r`}>
           <div className="space-y-2 border-b border-neutral-200 p-3">
             <div className="relative">
               <svg
@@ -815,9 +890,18 @@ export default function ChatPage() {
               </li>
             )}
             {list.map((t) => {
-              const last = t.messages[t.messages.length - 1];
+              let last = t.messages[t.messages.length - 1];
+              for (let i = t.messages.length - 1; i >= 0; i--) {
+                if (isCustomerMessage(t.messages[i])) {
+                  last = t.messages[i];
+                  break;
+                }
+              }
               const isActive = active?.traderId === t.traderId;
               const unread = isUnanswered(t);
+              const unreadN = unreadCustomerCount(t.messages, seen[t.traderId]);
+              const customerAt = latestCustomerAt(t.messages);
+              const previewAt = customerAt ? new Date(customerAt).toISOString() : t.lastAt;
               const isPinned = pins.includes(t.traderId);
               return (
                 <li key={t.traderId} className="group relative">
@@ -846,7 +930,10 @@ export default function ChatPage() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setSelected(t.traderId)}
+                    onClick={() => {
+                      setSelected(t.traderId);
+                      setPicked(true);
+                    }}
                     className={`flex w-full items-start gap-2.5 rounded-xl px-2.5 py-2.5 text-left transition ${
                       isActive
                         ? "bg-[var(--accent-tint)] ring-1 ring-[var(--accent)]/30"
@@ -879,21 +966,29 @@ export default function ChatPage() {
                             {t.trader}
                           </span>
                         </span>
-                        <span className="shrink-0 text-[10px] text-neutral-500">
-                          {relativeTimeTr(t.lastAt, locale)}
+                        <span className="flex shrink-0 items-center gap-1.5">
+                          {unreadN > 0 && (
+                            <span
+                              data-unread={unreadN}
+                              className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--accent)] px-1.5 text-[10px] font-medium tabular-nums text-white"
+                              aria-label={`${unreadN} ${i18n("crm.chat.unread")}`}
+                            >
+                              {unreadN > 99 ? "99+" : unreadN}
+                            </span>
+                          )}
+                          <span className="text-[10px] font-medium tabular-nums text-neutral-500">
+                            {relativeTimeTr(previewAt, dateLocale)}
+                          </span>
                         </span>
                       </span>
                       <span className="mt-0.5 flex items-center gap-1.5 pr-6">
                         <span
                           className={`truncate text-[11px] ${
-                            unread ? "font-semibold text-neutral-800" : "text-neutral-500"
+                            unread ? "font-medium text-neutral-800" : "text-neutral-500"
                           }`}
                         >
                           {last?.body || t.traderEmail}
                         </span>
-                        {unread && (
-                          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent)]" />
-                        )}
                       </span>
                     </span>
                   </button>
@@ -918,15 +1013,26 @@ export default function ChatPage() {
         </aside>
 
         {/* CENTER */}
-        <section className="flex min-h-0 flex-col bg-white">
+        <section className={`${picked ? "flex" : "hidden"} h-full min-h-0 flex-col bg-white lg:flex`}>
           {!active ? (
             <div className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-sm text-neutral-500">
               <p>{i18n("crm.chat.emptyThread")}</p>
             </div>
           ) : (
             <>
-              <div className="flex items-center justify-between gap-2 border-b border-neutral-200 bg-white px-4 py-3">
-                <div className="flex min-w-0 items-center gap-2.5">
+              <div className="flex items-center justify-between gap-2 border-b border-neutral-200 bg-white px-3 py-2.5 sm:px-4">
+                <div className="flex min-w-0 items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPicked(false);
+                      setSelected(null);
+                    }}
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-neutral-200 text-sm font-medium text-neutral-800 lg:hidden"
+                    aria-label={i18n("crm.chat.back")}
+                  >
+                    ←
+                  </button>
                   <span
                     className="flex h-9 w-9 items-center justify-center rounded-full text-[11px] font-bold text-white"
                     style={{ background: avatarHue(active.trader) }}
@@ -1087,7 +1193,7 @@ export default function ChatPage() {
                                     {i18n("crm.chat.read")}
                                   </span>
                                 )}
-                              <span>{formatClock(m.createdAt, locale)}</span>
+                              <span className="tabular-nums">{formatClock(m.createdAt, dateLocale)}</span>
                             </p>
                           </div>
                         </div>
@@ -1174,7 +1280,27 @@ export default function ChatPage() {
                     <li className="px-2.5 pb-1 pt-1.5 text-[10px] text-neutral-400">{i18n("crm.canned.pickHint")}</li>
                   </ul>
                 )}
-                <div className="mb-2 flex flex-wrap items-center gap-2">
+                <div
+                  className="mb-2 flex gap-1.5 overflow-x-auto pb-0.5"
+                  aria-label={i18n("crm.chat.quickReplies")}
+                >
+                  {QUICK_REPLIES.map(([labelKey, bodyKey]) => (
+                    <button
+                      key={labelKey}
+                      type="button"
+                      onClick={() =>
+                        setMessage((cur) => {
+                          const body = i18n(bodyKey);
+                          return cur.trim() ? `${cur.trim()}\n${body}` : body;
+                        })
+                      }
+                      className="shrink-0 rounded-full border border-neutral-200 bg-white px-3 py-2 text-[12px] font-medium text-neutral-800 hover:bg-neutral-50"
+                    >
+                      {i18n(labelKey)}
+                    </button>
+                  ))}
+                </div>
+                <div className="mb-2 flex flex-nowrap items-center gap-2 overflow-x-auto">
                   <button
                     type="button"
                     onClick={() => {
@@ -1255,7 +1381,7 @@ export default function ChatPage() {
                     onKeyDown={onComposerKeyDown}
                     onBlur={() => window.setTimeout(() => setSlash(null), 120)}
                     placeholder={i18n("crm.chat.enter")}
-                    rows={3}
+                    rows={2}
                     className="min-h-[2.75rem] max-h-40 min-w-0 flex-1 resize-y rounded-xl border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-900 outline-none focus:border-[var(--accent)]/40"
                     aria-label={i18n("crm.ui.reply")}
                     disabled={busy}
@@ -1413,7 +1539,7 @@ export default function ChatPage() {
                 label={i18n("crm.chat.registeredAt")}
                 value={
                   profileDraft.registrationDate
-                    ? new Date(profileDraft.registrationDate).toLocaleString(locale)
+                    ? new Date(profileDraft.registrationDate).toLocaleString(dateLocale)
                     : "—"
                 }
               />
@@ -1431,7 +1557,7 @@ export default function ChatPage() {
                 label={i18n("crm.ui.lastLogin")}
                 value={
                   profileDraft.lastLoginAt
-                    ? new Date(profileDraft.lastLoginAt).toLocaleString(locale)
+                    ? new Date(profileDraft.lastLoginAt).toLocaleString(dateLocale)
                     : "—"
                 }
               />
