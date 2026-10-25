@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { keyTargetFromNode, wantsClosePopover } from "@/lib/crm-shortcuts";
 
 /** CSV <-> list helpers for multi-select filter state ("" = nothing selected). */
 export function csvList(v: string): string[] {
@@ -37,12 +38,27 @@ export default function MultiSelect({
     const onDoc = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    const onKey = (e: KeyboardEvent) => {
+      if (
+        !wantsClosePopover({
+          key: e.key,
+          repeat: e.repeat,
+          target: keyTargetFromNode(e.target),
+          popoverOpen: true,
+        })
+      ) {
+        return;
+      }
+      setOpen(false);
+    };
+    const onClose = () => setOpen(false);
     document.addEventListener("mousedown", onDoc);
     document.addEventListener("keydown", onKey);
+    window.addEventListener("fx-crm-close-filters", onClose);
     return () => {
       document.removeEventListener("mousedown", onDoc);
       document.removeEventListener("keydown", onKey);
+      window.removeEventListener("fx-crm-close-filters", onClose);
     };
   }, [open]);
   const label =
@@ -66,6 +82,7 @@ export default function MultiSelect({
         <div
           role="listbox"
           aria-multiselectable="true"
+          data-fx-filter-popover=""
           className="absolute left-0 z-30 mt-1 max-h-72 min-w-[180px] overflow-auto rounded-lg border border-[#e5e5e5] bg-white p-1 shadow-lg"
         >
           {options.map((o) => (

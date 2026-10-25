@@ -37,6 +37,19 @@ export function listPageRange(page: number, take: number, rowCount: number): { f
   return { from, to: from + Math.trunc(rowCount) - 1 };
 }
 
+export type ListCountKind = "empty" | "showing" | "open" | "count" | "page";
+
+/** Which count sentence a list should show. An empty page is its own sentence. */
+export function listCountKind(from: number, to: number, total: number | null): ListCountKind {
+  const start = Number.isFinite(from) ? from : 0;
+  const end = Number.isFinite(to) ? to : 0;
+  if (start <= 0 && end <= 0) return "empty";
+  if (start > 0 && total != null) return "showing";
+  if (start > 0) return "open";
+  if (end > 0 && total != null) return "count";
+  return "page";
+}
+
 function readSearch(search: string): URLSearchParams {
   return new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
 }

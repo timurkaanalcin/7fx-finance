@@ -16,6 +16,7 @@ import {
   type TraderListFilters,
 } from "@/lib/crm-trader-query";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
+import { CRM_ROW_FOCUS, useCrmRowKeys } from "@/components/crm/CrmListRow";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useVisiblePoll } from "@/lib/use-visible-poll";
 import { LocationLabel, PresenceCell } from "@/components/crm/Presence";
@@ -164,6 +165,7 @@ const emptyCreate = {
 
 export default function AdminUsersPage() {
   const { i18n, code, deskName } = useCrmLabels();
+  const onRowKey = useCrmRowKeys();
   const [rows, setRows] = useState<UserRow[]>([]);
   const [listPhase, setListPhase] = useState<"loading" | "ready" | "error">("loading");
   const [hasMore, setHasMore] = useState(false);
@@ -997,12 +999,14 @@ export default function AdminUsersPage() {
           {i18n("crm.list.clear")}
         </button>
         <span className="ml-auto text-neutral-400 tabular-nums" data-fx-trader-count="">
-          {total == null
-            ? `${rows.length} ${i18n("crm.savedFilters.results")}`
-            : i18n("crm.list.showing")
-                .replace("{from}", String(range.from))
-                .replace("{to}", String(range.to))
-                .replace("{total}", String(total))}
+          {range.from <= 0
+            ? i18n("crm.list.none")
+            : total == null
+              ? `${rows.length} ${i18n("crm.savedFilters.results")}`
+              : i18n("crm.list.showing")
+                  .replace("{from}", String(range.from))
+                  .replace("{to}", String(range.to))
+                  .replace("{total}", String(total))}
         </span>
         {!crmReadOnly && (
           <button
@@ -1265,7 +1269,13 @@ export default function AdminUsersPage() {
           </thead>
           <tbody>
             {rows.map((u) => (
-              <tr key={u.id} className="border-t border-[#e5e5e5] hover:bg-[#ffffff]/60">
+              <tr
+                key={u.id}
+                tabIndex={0}
+                data-fx-list-row=""
+                onKeyDown={onRowKey(`/izcrm/traders/${u.id}`)}
+                className={`border-t border-[#e5e5e5] hover:bg-[#ffffff]/60 ${CRM_ROW_FOCUS}`}
+              >
                 <td className="px-2 py-2.5">
                   <input type="checkbox" checked={selected.has(u.id)} onChange={() => toggle(u.id)} />
                 </td>

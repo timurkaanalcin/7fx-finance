@@ -80,12 +80,14 @@ export function MoneyQueueChrome({
           <p className="mt-1 text-[11px] font-medium text-neutral-400">{i18n("crm.traders.searchKey")}</p>
         </div>
         <span className="rounded bg-[#f2f2f2] px-2 py-1 text-xs tabular-nums" data-fx-queue-count="">
-          {queue.total == null
-            ? range
-            : `${i18n("crm.list.showing")
-                .replace("{from}", String(queue.range.from))
-                .replace("{to}", String(queue.range.to))
-                .replace("{total}", String(queue.total))}`}
+          {queue.rows.length === 0
+            ? i18n("crm.list.none")
+            : queue.total == null
+              ? range
+              : i18n("crm.list.showing")
+                  .replace("{from}", String(queue.range.from))
+                  .replace("{to}", String(queue.range.to))
+                  .replace("{total}", String(queue.total))}
         </span>
         <button
           type="button"

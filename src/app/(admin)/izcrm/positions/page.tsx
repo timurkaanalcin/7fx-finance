@@ -204,13 +204,14 @@ export default function PositionsPage() {
             }}
             placeholder={i18n("crm.pos.search")}
             aria-label={i18n("crm.pos.search")}
+            data-fx-list-search=""
             className="w-full rounded border border-neutral-300 bg-white px-2.5 py-1.5 text-xs text-neutral-900 placeholder:text-neutral-400 focus:border-black focus:outline-none"
           />
         </div>
         <span className="text-[11px] tabular-nums text-neutral-500" data-fx-list-range="">
           {range.from > 0
             ? i18n("crm.list.showingOpen").replace("{from}", String(range.from)).replace("{to}", String(range.to))
-            : `0 ${i18n("crm.pos.shown")}`}
+            : i18n("crm.list.none")}
         </span>
         <button
           type="button"

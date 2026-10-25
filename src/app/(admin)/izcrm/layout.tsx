@@ -15,6 +15,7 @@ import { useI18n } from "@/lib/i18n/context";
 import CrmSecurityShell from "@/components/crm/CrmSecurityShell";
 import { CrmShellSkeleton } from "@/components/crm/CrmStates";
 import CrmCommandPalette from "@/components/crm/CrmCommandPalette";
+import CrmShortcuts from "@/components/crm/CrmShortcuts";
 
 function AdminChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -194,6 +195,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
             </button>
             <NotificationBell />
             <LanguageSwitcher compact tone="crm" />
+            <CrmShortcuts />
             <span className="hidden sm:inline">{name}{readOnly ? (
             <span className="ml-1 rounded bg-amber-50 px-1.5 py-0.5 text-[9px] font-semibold uppercase text-amber-700">{t("crm.ui.readOnly")}</span>
           ) : null}</span>

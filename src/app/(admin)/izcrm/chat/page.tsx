@@ -878,6 +878,7 @@ export default function ChatPage() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={i18n("crm.ui.search")}
+                data-fx-list-search=""
                 className="w-full rounded-xl border border-neutral-200 bg-white py-2 pl-9 pr-3 text-sm text-neutral-900 outline-none focus:border-[var(--accent)]/40"
                 aria-label={i18n("crm.ui.search")}
               />
@@ -967,7 +968,7 @@ export default function ChatPage() {
                       setSelected(t.traderId);
                       setPicked(true);
                     }}
-                    className={`flex w-full items-start gap-2.5 rounded-xl px-2.5 py-2.5 text-left transition ${
+                    className={`flex w-full items-start gap-2.5 rounded-xl px-2.5 py-2.5 text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black ${
                       isActive
                         ? "bg-[var(--accent-tint)] ring-1 ring-[var(--accent)]/30"
                         : "hover:bg-neutral-100"

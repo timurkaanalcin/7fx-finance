@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
+import { listCountKind } from "@/lib/crm-list-url";
 
 /** Keep the address bar in step with list state. Refresh and back land on the same filters. */
 export function useListQueryUrl(ready: boolean, query: string) {
@@ -44,15 +45,16 @@ export function CrmListPager({
 }: PagerProps) {
   const { i18n } = useCrmLabels();
   const showing = i18n("crm.list.showing");
+  const kind = listCountKind(from, to, total);
   let range = i18n("crm.list.page").replace("{page}", String(page));
-  if (from > 0 && total != null) {
+  if (kind === "empty") {
+    range = i18n("crm.list.none");
+  } else if (kind === "showing") {
     range = showing.replace("{from}", String(from)).replace("{to}", String(to)).replace("{total}", String(total));
-  } else if (from > 0) {
+  } else if (kind === "open") {
     range = i18n("crm.list.showingOpen").replace("{from}", String(from)).replace("{to}", String(to));
-  } else if (to > 0 && total != null) {
+  } else if (kind === "count") {
     range = i18n("crm.list.countOf").replace("{count}", String(to)).replace("{total}", String(total));
-  } else if (total != null) {
-    range = showing.replace("{from}", "0").replace("{to}", "0").replace("{total}", String(total));
   }
   return (
     <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs" data-fx-list-pager="">
