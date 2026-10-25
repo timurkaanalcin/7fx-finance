@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useDialogFocus } from "@/components/a11y/useDialogFocus";
 import { useI18n } from "@/lib/i18n/context";
 import { calcTradeProfit } from "@/lib/pnl";
 import type { PriceTick, SymbolDef } from "./types";
@@ -34,7 +35,8 @@ function num(v: string): number {
 export default function TradingCalculator({ open, onClose, symbol, symbols, prices, leverage, currency }: Props) {
   const { t } = useI18n();
   const cur = currency || "USD";
-  const closeRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useDialogFocus(open, onClose, dialogRef);
 
   const [sym, setSym] = useState(symbol);
   const [side, setSide] = useState<"BUY" | "SELL">("BUY");
@@ -70,27 +72,6 @@ export default function TradingCalculator({ open, onClose, symbol, symbols, pric
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, sym, side]);
 
-  useEffect(() => {
-    if (!open) return;
-    const prev = document.activeElement as HTMLElement | null;
-    closeRef.current?.focus();
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        onClose();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      try {
-        prev?.focus?.();
-      } catch {
-        /* ignore */
-      }
-    };
-  }, [open, onClose]);
-
   const res = useMemo(() => {
     const vol = num(volume);
     const lv = Math.max(1, num(lev) || 1);
@@ -119,6 +100,7 @@ export default function TradingCalculator({ open, onClose, symbol, symbols, pric
       onClick={onClose}
     >
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="fx-calc-title"
@@ -130,7 +112,6 @@ export default function TradingCalculator({ open, onClose, symbol, symbols, pric
             {t("term.calc.title")}
           </h2>
           <button
-            ref={closeRef}
             type="button"
             onClick={onClose}
             aria-label={t("common.close")}

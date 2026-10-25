@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useDialogFocus } from "@/components/a11y/useDialogFocus";
 import { useI18n } from "@/lib/i18n/context";
 import { formatPrice } from "@/lib/symbols";
 import { fmtNum } from "@/lib/format";
@@ -129,7 +130,8 @@ const PRINT_CSS = `
 export default function AccountStatement({ open, onClose, rows, currency, partial }: Props) {
   const { t, locale } = useI18n();
   const cur = currency || "USD";
-  const closeRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useDialogFocus(open, onClose, dialogRef);
   const [mounted, setMounted] = useState(false);
   const [from, setFrom] = useState(monthStart);
   const [to, setTo] = useState(() => localDate(new Date()));
@@ -157,27 +159,6 @@ export default function AccountStatement({ open, onClose, rows, currency, partia
       cancel = true;
     };
   }, [open]);
-
-  useEffect(() => {
-    if (!open) return;
-    const prev = document.activeElement as HTMLElement | null;
-    closeRef.current?.focus();
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        onClose();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      try {
-        prev?.focus?.();
-      } catch {
-        /* ignore */
-      }
-    };
-  }, [open, onClose]);
 
   const trades = useMemo<StatementTrade[]>(
     () =>
@@ -286,6 +267,7 @@ export default function AccountStatement({ open, onClose, rows, currency, partia
     >
       <style>{PRINT_CSS}</style>
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="fx-stmt-title"
@@ -303,7 +285,6 @@ export default function AccountStatement({ open, onClose, rows, currency, partia
             </p>
           </div>
           <button
-            ref={closeRef}
             type="button"
             onClick={onClose}
             aria-label={t("common.close")}

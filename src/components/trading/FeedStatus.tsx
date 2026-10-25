@@ -11,6 +11,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
+import { prefersReducedMotion } from "@/lib/motion";
 
 export type FeedState = "live" | "stale" | "offline";
 export const FEED_STALE_MS = 10_000;
@@ -82,7 +83,7 @@ export function useFeedHealth(onKick: () => void) {
 
   // Auto-hide the "reconnected" toast
   useEffect(() => {
-    if (!recovered) return;
+    if (!recovered || prefersReducedMotion()) return;
     const t = window.setTimeout(() => setRecovered(false), 3500);
     return () => window.clearTimeout(t);
   }, [recovered]);
@@ -144,7 +145,7 @@ export function FeedRecoveredToast({ show, onClose }: { show: boolean; onClose: 
       role="status"
       aria-live="polite"
       data-fx-feed="recovered"
-      className="fixed left-1/2 top-16 z-[85] max-w-[92vw] -translate-x-1/2 rounded-[14px] border border-desk-buy/50 bg-desk-panel px-4 py-2.5 text-[12px] font-semibold text-desk-text shadow-desk-panel"
+      className="fx-toast fixed left-1/2 top-16 z-[85] max-w-[92vw] -translate-x-1/2 rounded-[14px] border border-desk-buy/50 bg-desk-panel px-4 py-2.5 text-[12px] font-semibold text-desk-text shadow-desk-panel"
     >
       <span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-desk-buy align-middle" aria-hidden />
       {t("term.feed.recovered")}

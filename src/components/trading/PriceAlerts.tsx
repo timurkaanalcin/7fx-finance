@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
+import { prefersReducedMotion } from "@/lib/motion";
 import { formatPrice, getSymbol } from "@/lib/symbols";
 import type { PriceTick } from "./types";
 
@@ -170,12 +171,14 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
     const msg = hit.map((a) => `${a.symbol} ${a.dir === "above" ? "≥" : "≤"} ${formatPrice(a.symbol, a.price)}${a.repeat ? " ↻" : ""}`).join(" · ");
     setToast(msg);
     if (toastTimer.current) window.clearTimeout(toastTimer.current);
-    toastTimer.current = window.setTimeout(() => setToast(null), 8000);
+    if (!prefersReducedMotion()) {
+      toastTimer.current = window.setTimeout(() => setToast(null), 8000);
+    }
     try {
       if (typeof Notification !== "undefined" && Notification.permission === "granted") new Notification("7FX price alert", { body: msg });
     } catch {}
     try {
-      navigator.vibrate?.(120);
+      if (!prefersReducedMotion()) navigator.vibrate?.(120);
     } catch {}
     if (soundRef.current) beep();
   }, [prices, alerts]);
@@ -380,7 +383,7 @@ export default function PriceAlerts({ symbol, prices }: { symbol: string; prices
         )}
       </div>
       {toast && (
-        <div role="status" className="fixed left-1/2 top-16 z-[90] max-w-[92vw] -translate-x-1/2 rounded-[14px] border border-[#c8a96a]/50 bg-desk-panel px-4 py-3 text-sm font-semibold text-desk-text shadow-desk-panel">
+        <div role="status" className="fx-toast fixed left-1/2 top-16 z-[90] max-w-[92vw] -translate-x-1/2 rounded-[14px] border border-[#c8a96a]/50 bg-desk-panel px-4 py-3 text-sm font-semibold text-desk-text shadow-desk-panel">
           🔔 {toast}
           <button type="button" onClick={() => setToast(null)} className="ml-3 text-desk-muted" aria-label={t("term.feed.dismiss")}>
             ✕

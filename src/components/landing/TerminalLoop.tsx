@@ -177,7 +177,7 @@ export default function TerminalLoop() {
   const caption = reduce ? t("landing.screen.reduced") : t("landing.screen.caption");
 
   return (
-    <section id="screen" className="fx-section" aria-labelledby="screen-title">
+    <section id="screen" className="fx-section" aria-labelledby="screen-title" data-fx-reduced={reduce ? "1" : "0"}>
       <div className="fx-shell">
         <p className="fx-eyebrow inline-flex items-center gap-2">
           <span className="fx-eyebrow-dot" aria-hidden />

@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useDialogFocus } from "@/components/a11y/useDialogFocus";
 import { useI18n } from "@/lib/i18n/context";
 
 export type DepositMethod = {
@@ -47,6 +48,8 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [copied, setCopied] = useState("");
+  const panelRef = useRef<HTMLDivElement>(null);
+  useDialogFocus(open, onClose, panelRef);
 
   useEffect(() => {
     if (!open) return;
@@ -158,11 +161,15 @@ export default function DepositModal({ open, onClose, onSubmitted }: Props) {
   return (
     <div className="fx-lx-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/65 p-4 backdrop-blur-[2px]" onClick={onClose}>
       <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="fx-deposit-title"
         className="fx-lx-modal fx-cashier w-full max-w-lg max-h-[min(720px,calc(100dvh-32px))] overflow-y-auto rounded-modal border border-desk-border bg-desk-panel shadow-desk-panel"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-desk-border px-4 py-3">
-          <h2 className="text-sm font-normal tracking-wide">{t("term.deposit")}</h2>
+          <h2 id="fx-deposit-title" className="text-sm font-normal tracking-wide">{t("term.deposit")}</h2>
           <button type="button" onClick={onClose} aria-label={t("common.close")} className="rounded-[8px] px-2 py-1 text-desk-muted hover:bg-desk-hover hover:text-desk-text">
             ✕
           </button>

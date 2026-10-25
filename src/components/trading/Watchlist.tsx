@@ -109,6 +109,7 @@ const WatchRow = memo(function WatchRow({
   openLots,
   onSelect,
   onToggleFav,
+  onKeyNav,
 }: {
   symbol: string;
   name: string;
@@ -121,6 +122,7 @@ const WatchRow = memo(function WatchRow({
   openLots: string;
   onSelect: (symbol: string) => void;
   onToggleFav: (symbol: string) => void;
+  onKeyNav: (key: "ArrowDown" | "ArrowUp" | "Home" | "End") => void;
 }) {
   const { t } = useI18n();
   const up = (price?.change ?? 0) >= 0;
@@ -131,7 +133,16 @@ const WatchRow = memo(function WatchRow({
       : "";
   return (
     <button
+      type="button"
+      data-fx-watch-row={symbol}
+      tabIndex={active ? 0 : -1}
       onClick={() => onSelect(symbol)}
+      onKeyDown={(e) => {
+        if (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Home" || e.key === "End") {
+          e.preventDefault();
+          onKeyNav(e.key);
+        }
+      }}
       className={`fx-watch-row relative flex w-full items-center gap-2.5 border-b border-desk-border/30 px-3 py-2.5 text-left transition-colors hover:bg-desk-hover/80 md:gap-2 md:px-2.5 md:py-1.5 ${
         active ? "bg-desk-elev/90" : "bg-transparent"
       }`}
@@ -156,7 +167,7 @@ const WatchRow = memo(function WatchRow({
               {symbol}
               <span
                 role="button"
-                tabIndex={0}
+                tabIndex={active ? 0 : -1}
                 title={fav ? t("term.watch.unfav") : t("term.watch.fav")}
                 aria-label={fav ? t("term.watch.unfav") : t("term.watch.fav")}
                 aria-pressed={fav}
@@ -386,6 +397,28 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
     return [...favsPart, ...restPart];
   }, [baseList, sortMode, pctSnap, favs]);
 
+  const listRef = useRef<HTMLDivElement>(null);
+  const focusRow = useCallback((symbol: string) => {
+    const el = listRef.current?.querySelector<HTMLButtonElement>(`[data-fx-watch-row="${CSS.escape(symbol)}"]`);
+    el?.focus();
+  }, []);
+  const onKeyNav = useCallback(
+    (key: "ArrowDown" | "ArrowUp" | "Home" | "End") => {
+      if (!list.length) return;
+      const current = list.findIndex((s) => s.symbol === selected);
+      const start = current >= 0 ? current : 0;
+      let next = start;
+      if (key === "ArrowDown") next = Math.min(list.length - 1, start + 1);
+      if (key === "ArrowUp") next = Math.max(0, start - 1);
+      if (key === "Home") next = 0;
+      if (key === "End") next = list.length - 1;
+      const symbol = list[next].symbol;
+      onSelect(symbol);
+      window.requestAnimationFrame(() => focusRow(symbol));
+    },
+    [list, selected, onSelect, focusRow]
+  );
+
   return (
     <aside
       className={`fx-watchlist flex w-full shrink-0 flex-col border-r border-desk-border bg-desk-panel ${className}`}
@@ -412,6 +445,12 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
                 e.preventDefault();
                 e.stopPropagation();
                 setQ("");
+              }
+              if (e.key === "ArrowDown" && list.length) {
+                e.preventDefault();
+                const symbol = list.some((s) => s.symbol === selected) ? selected : list[0].symbol;
+                onSelect(symbol);
+                window.requestAnimationFrame(() => focusRow(symbol));
               }
             }}
             placeholder={t("term.watch.search")}
@@ -487,7 +526,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
         </button>
         <span>{t("term.watch.quote")}</span>
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div ref={listRef} className="min-h-0 flex-1 overflow-y-auto" aria-keyshortcuts="ArrowUp ArrowDown">
         {list.map((s) => {
           const agg = openBySymbol.get(s.symbol.toUpperCase());
           const openLots = agg
@@ -512,6 +551,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
               openLots={openLots}
               onSelect={onSelect}
               onToggleFav={toggleFav}
+              onKeyNav={onKeyNav}
             />
           );
         })}

@@ -690,3 +690,31 @@ body:has(.fx-auth-page) {
   }
 }
 
+:focus-visible {
+  outline: 2px solid #15161a;
+  outline-offset: 2px;
+}
+.fx-landing :focus-visible,
+.fx-auth-page :focus-visible {
+  outline-color: #f4f7fb;
+}
+.outline-none:focus-visible,
+.focus\:outline-none:focus-visible {
+  outline: 2px solid #15161a !important;
+  outline-offset: 2px !important;
+}
+.fx-landing .outline-none:focus-visible,
+.fx-auth-page .outline-none:focus-visible,
+.fx-landing .focus\:outline-none:focus-visible,
+.fx-auth-page .focus\:outline-none:focus-visible {
+  outline-color: #f4f7fb !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track,
+  .fx-toast,
+  .animate-pulse {
+    animation: none !important;
+  }
+}
+

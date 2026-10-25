@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useDialogFocus } from "@/components/a11y/useDialogFocus";
+import { prefersReducedMotion } from "@/lib/motion";
 import { formatPrice } from "@/lib/symbols";
 import { fmtMoney } from "@/lib/format";
 import { useI18n } from "@/lib/i18n/context";
@@ -244,7 +246,7 @@ export default function OrderTicket({
     // Brief focus / scroll into view when modal is open
     try {
       const el = rootRef.current;
-      el?.scrollIntoView?.({ block: "nearest", behavior: "smooth" });
+      el?.scrollIntoView?.({ block: "nearest", behavior: prefersReducedMotion() ? "auto" : "smooth" });
       const focusable = el?.querySelector<HTMLElement>("button, input, select, textarea");
       focusable?.focus?.({ preventScroll: true });
     } catch {
@@ -352,20 +354,10 @@ export default function OrderTicket({
     return { sl: slPnl, tp: tpPnl, rr };
   }, [entry, volume, def?.contractSize, side, sl, tp, showSl, showTp]);
 
-  // Escape closes the ticket (modal / mobile sheet)
-  useEffect(() => {
-    if (!onClose || !modal) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "Escape") return;
-      if (confirming) {
-        setConfirming(false);
-        return;
-      }
-      onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose, modal, confirming]);
+  useDialogFocus(Boolean(modal), () => {
+    if (confirming) setConfirming(false);
+    else onClose?.();
+  }, rootRef, "[data-fx-ticket-volume]");
 
   // Inline (desktop) ticket: Esc cancels a pending review
   useEffect(() => {
@@ -611,6 +603,25 @@ export default function OrderTicket({
             </span>
           </div>
           <div className="relative flex items-center gap-2 md:gap-1.5">
+            <input
+              value={volume}
+              onChange={(e) => setVolume(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+                e.preventDefault();
+                const delta = e.key === "ArrowUp" ? 0.01 : -0.01;
+                setVolume((v) => {
+                  const n = Number(v);
+                  const base = Number.isFinite(n) ? n : 0.1;
+                  return Math.max(0.01, Math.round((base + delta) * 100) / 100).toFixed(2);
+                });
+              }}
+              inputMode="decimal"
+              aria-label={t("term.col.volume")}
+              aria-keyshortcuts="ArrowUp ArrowDown"
+              data-fx-ticket-volume=""
+              className={`${inputCls} order-2 text-center text-base font-semibold tabular-nums md:text-sm`}
+            />
             <button
               type="button"
               onClick={() =>
@@ -621,17 +632,10 @@ export default function OrderTicket({
                 })
               }
               aria-label={t("term.ot.volDown")}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] border border-desk-border/80 bg-desk-elev text-base font-semibold text-desk-muted hover:bg-desk-hover hover:text-desk-text md:h-9 md:w-9 md:rounded-control md:text-sm"
+              className="order-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] border border-desk-border/80 bg-desk-elev text-base font-semibold text-desk-muted hover:bg-desk-hover hover:text-desk-text md:h-9 md:w-9 md:rounded-control md:text-sm"
             >
               −
             </button>
-            <input
-              value={volume}
-              onChange={(e) => setVolume(e.target.value)}
-              inputMode="decimal"
-              aria-label={t("term.col.volume")}
-              className={`${inputCls} text-center text-base font-semibold tabular-nums md:text-sm`}
-            />
             <button
               type="button"
               onClick={() =>
@@ -642,7 +646,7 @@ export default function OrderTicket({
                 })
               }
               aria-label={t("term.ot.volUp")}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] border border-desk-border/80 bg-desk-elev text-base font-semibold text-desk-muted hover:bg-desk-hover hover:text-desk-text md:h-9 md:w-9 md:rounded-control md:text-sm"
+              className="order-3 flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] border border-desk-border/80 bg-desk-elev text-base font-semibold text-desk-muted hover:bg-desk-hover hover:text-desk-text md:h-9 md:w-9 md:rounded-control md:text-sm"
             >
               +
             </button>
