@@ -620,6 +620,123 @@ body:has(.fx-crm) {
   background: #c4c4c4;
 }
 
+/* Night theme. CRM stays on the light chrome above unless the desk theme is dark.
+   Surfaces use the same tokens as the terminal (:root --bg, --bg-panel, --text). */
+html[data-fx-theme="dark"]:has(.fx-crm),
+html[data-fx-theme="dark"] body:has(.fx-crm) {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+  color-scheme: dark;
+}
+html[data-fx-theme="dark"] .fx-crm {
+  /* Night values from :root. Re-declared here so the light CRM lock does not keep white. */
+  --background: #000000;
+  --foreground: #d1d4dc;
+  --card: #0a0a0a;
+  --muted: #a7b0c0;
+  --accent: #d1d4dc;
+  --accent-ink: #000000;
+  --border: #2a2a2a;
+  --bg: #000000;
+  --bg-panel: #0a0a0a;
+  --bg-elevated: #141414;
+  --muted-bg: #141414;
+  background: var(--bg) !important;
+  color: var(--text) !important;
+  color-scheme: dark;
+}
+html[data-fx-theme="dark"] .fx-crm :is(
+  .bg-white,
+  .bg-\[\#ffffff\],
+  .bg-\[\#fff\],
+  .bg-neutral-50,
+  .bg-neutral-100,
+  .bg-amber-50,
+  .crm-kpi,
+  .crm-card,
+  [data-crm-card],
+  .btn-secondary
+) {
+  background-color: var(--bg-panel) !important;
+  color: var(--text);
+}
+html[data-fx-theme="dark"] .fx-crm :is(main, aside, header, section, table, thead, thead tr, th, [role="dialog"]) {
+  background-color: var(--bg-panel);
+  color: var(--text);
+}
+html[data-fx-theme="dark"] .fx-crm :is(.text-black, .text-\[\#111111\], .text-neutral-900, .text-neutral-800) {
+  color: var(--text) !important;
+}
+html[data-fx-theme="dark"] .fx-crm :is(.text-neutral-400, .text-neutral-500, .text-neutral-600, .text-neutral-700) {
+  color: var(--text-muted) !important;
+}
+html[data-fx-theme="dark"] .fx-crm :is(
+  .border-black\/10,
+  .border-neutral-100,
+  .border-neutral-200,
+  .border-neutral-300,
+  .border-\[\#e5e5e5\],
+  .border-\[\#111111\]
+) {
+  border-color: var(--border) !important;
+}
+html[data-fx-theme="dark"] .fx-crm .crm-kpi .label,
+html[data-fx-theme="dark"] .fx-crm .crm-dense-table th,
+html[data-fx-theme="dark"] .fx-crm .fx-crm-table th {
+  color: var(--text-muted) !important;
+  background: var(--bg-panel) !important;
+}
+html[data-fx-theme="dark"] .fx-crm .crm-kpi .value {
+  color: var(--text) !important;
+}
+html[data-fx-theme="dark"] .fx-crm .btn-primary {
+  background: var(--text) !important;
+  color: var(--bg) !important;
+}
+html[data-fx-theme="dark"] .fx-crm .bg-black {
+  background-color: var(--text) !important;
+  color: var(--bg) !important;
+}
+html[data-fx-theme="dark"] .fx-crm .bg-black.text-white,
+html[data-fx-theme="dark"] .fx-crm .text-white {
+  color: var(--bg) !important;
+}
+html[data-fx-theme="dark"] .fx-crm input:not([type="checkbox"]):not([type="radio"]),
+html[data-fx-theme="dark"] .fx-crm select,
+html[data-fx-theme="dark"] .fx-crm textarea {
+  background: var(--bg-elevated) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+html[data-fx-theme="dark"] .fx-crm input:not([type="checkbox"]):not([type="radio"]):focus,
+html[data-fx-theme="dark"] .fx-crm select:focus,
+html[data-fx-theme="dark"] .fx-crm textarea:focus {
+  border-color: var(--text-muted) !important;
+  box-shadow: 0 0 0 1px var(--border) !important;
+}
+html[data-fx-theme="dark"] .fx-crm ::-webkit-scrollbar-thumb {
+  background: #3a3a3a;
+}
+
+/* Notification menu is a fixed white card. In night theme it uses the desk panel token. */
+html[data-fx-theme="dark"] :is(.fx-desk, .fx-profile) .z-\[70\].bg-white {
+  background-color: var(--bg-panel) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+html[data-fx-theme="dark"] :is(.fx-desk, .fx-profile) .z-\[70\].bg-white :is(.bg-neutral-50, [class*="bg-neutral-50"]) {
+  background-color: var(--bg-elevated) !important;
+}
+html[data-fx-theme="dark"] :is(.fx-desk, .fx-profile) .z-\[70\].bg-white :is(.text-neutral-400, .text-neutral-500, .text-neutral-600) {
+  color: var(--text-muted) !important;
+}
+html[data-fx-theme="dark"] :is(.fx-desk, .fx-profile) .z-\[70\].bg-white :is(.font-semibold, .text-\[\#111111\]) {
+  color: var(--text) !important;
+}
+html[data-fx-theme="dark"] :is(.fx-desk, .fx-profile) .z-\[70\].bg-white [class*="border-black"] {
+  border-color: var(--border) !important;
+}
+
 /* iOS install sheet progress bar */
 @keyframes fx-ios-bar {
   0% { transform: translateX(-100%); }
@@ -1046,6 +1163,27 @@ html[data-fx-theme="light"] .fx-account-metric__value.is-warn { color: #9a6b12; 
     overflow: visible;
   }
 }
+/* 1024–1440: eight figures in two equal rows. A wrapping flex row
+   stretched Credit across the leftover line. */
+@media (min-width: 1024px) and (max-width: 1440px) and (min-height: 521px) {
+  .fx-account-bar .fx-account-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    overflow: visible;
+  }
+  .fx-account-bar .fx-account-metric {
+    width: auto;
+    min-width: 0;
+  }
+  .fx-account-bar .fx-account-metric__label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .fx-account-bar .fx-account-metric__value {
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+}
 
 /* CRM header, tables, and modals: phone wrap and wide-desktop column width. */
 .fx-crm header button,
@@ -1313,6 +1451,29 @@ html[data-fx-theme="light"] .fx-desk .fx-blotter thead th:last-child {
   margin-bottom: 16px;
   padding-bottom: 8px;
   border-bottom: 1px solid #e5e5e5;
+}
+/* Dash and trader cards are painted after the light CRM lock. Night theme
+   has to follow them or the labels stay light on a white card. */
+html[data-fx-theme="dark"] .fx-crm :is(
+  .fx-dash-kpi,
+  .fx-dash-link,
+  .fx-dash-panel,
+  .fx-crm-stat,
+  .fx-trader-metric,
+  .fx-trader-head
+) {
+  background: var(--bg-panel);
+  border-color: var(--border);
+  color: var(--text);
+}
+html[data-fx-theme="dark"] .fx-crm :is(.fx-dash-k, .fx-dash-sub) {
+  color: var(--text-muted);
+}
+html[data-fx-theme="dark"] .fx-crm .fx-dash-v {
+  color: var(--text);
+}
+html[data-fx-theme="dark"] .fx-crm .fx-trader-tabs {
+  border-bottom-color: var(--border);
 }
 .fx-trader-tabs button {
   flex: 0 0 auto;

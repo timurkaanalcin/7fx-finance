@@ -512,8 +512,8 @@ html[data-fx-theme="light"] :is(.fx-desk, .fx-lx-overlay) [class*="bg-desk-accen
 html[data-fx-theme="light"] .fx-desk .bg-desk-accent.animate-pulse { background-color: var(--lx-buy) !important; box-shadow: 0 0 6px rgba(15, 157, 118, 0.6) !important; }
 html[data-fx-theme="light"] .fx-desk .fx-desk-tradebar button,
 html[data-fx-theme="light"] .fx-desk .fx-desk-tradebar button * { color: #fff !important; }
-html[data-fx-theme="light"] :is(.fx-desk, .fx-lx-overlay) :is(.bg-desk-buy, [class*="bg-desk-buy/9"], .bg-desk-sell, [class*="bg-desk-sell/9"]),
-html[data-fx-theme="light"] :is(.fx-desk, .fx-lx-overlay) :is(.bg-desk-buy, [class*="bg-desk-buy/9"], .bg-desk-sell, [class*="bg-desk-sell/9"]) * { color: #fff !important; }
+html[data-fx-theme="light"] :is(.fx-desk, .fx-profile, .fx-lx-overlay) :is(.bg-desk-buy, [class*="bg-desk-buy/9"], .bg-desk-sell, [class*="bg-desk-sell/9"]),
+html[data-fx-theme="light"] :is(.fx-desk, .fx-profile, .fx-lx-overlay) :is(.bg-desk-buy, [class*="bg-desk-buy/9"], .bg-desk-sell, [class*="bg-desk-sell/9"]) * { color: #fff !important; }
 .fx-profile .fx-theme-toggle,
 .fx-desk .fx-theme-toggle { padding: 0 !important; width: 44px !important; height: 44px !important; min-height: 44px !important; min-width: 44px !important; flex: 0 0 44px; }
 /* day theme — third pass: top bar avatar/deposit, soft shadows */

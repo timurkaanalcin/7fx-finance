@@ -58,7 +58,7 @@ export default function ForcePasswordModal({ onDone }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-[120] flex items-center justify-center bg-black/70 p-4"
+      className="fx-lx-overlay fixed inset-0 z-[120] flex items-center justify-center bg-black/70 p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="fx-force-pw-title"

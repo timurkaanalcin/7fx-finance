@@ -170,11 +170,11 @@ export default function LiveSupportPanel() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex w-full items-center justify-between rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] px-4 py-3.5 text-left transition hover:border-[#3a3a3a] hover:bg-[#111]"
+        className="flex w-full items-center justify-between rounded-xl border border-desk-border bg-desk-panel px-4 py-3.5 text-left transition hover:border-desk-border hover:bg-desk-hover"
       >
         <div>
-          <div className="text-sm font-semibold text-slate-100">{t("profile.support.title")}</div>
-          <div className="mt-0.5 text-xs text-slate-500">{t("profile.support.subtitle")}</div>
+          <div className="text-sm font-semibold text-desk-text">{t("profile.support.title")}</div>
+          <div className="mt-0.5 text-xs text-desk-muted">{t("profile.support.subtitle")}</div>
         </div>
         <span className="rounded-full bg-[#26a69a]/15 px-2.5 py-1 text-[11px] font-semibold text-[#26a69a]">
           {t("profile.support.open")}
@@ -184,14 +184,14 @@ export default function LiveSupportPanel() {
       {open && (
         <div className="fx-lx-overlay fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-0 sm:items-center sm:p-4">
           <div
-            className="flex h-[min(90vh,560px)] w-full max-w-md flex-col overflow-hidden rounded-t-2xl border border-[#2a2a2a] bg-[#0a0a0a] shadow-2xl sm:rounded-2xl"
+            className="flex h-[min(90vh,560px)] w-full max-w-md flex-col overflow-hidden rounded-t-2xl border border-desk-border bg-desk-panel shadow-2xl sm:rounded-2xl"
             role="dialog"
             aria-label={t("profile.support.title")}
           >
-            <div className="flex items-center justify-between border-b border-[#2a2a2a] px-4 py-3">
+            <div className="flex items-center justify-between border-b border-desk-border px-4 py-3">
               <div>
                 <div className="text-sm font-semibold">{t("profile.support.title")}</div>
-                <div className="text-[11px] text-slate-500">{t("profile.support.hint")}</div>
+                <div className="text-[11px] text-desk-muted">{t("profile.support.hint")}</div>
                 {(presence?.adminTyping || presence?.adminInChat) && (
                   <ChatStatusLine
                     className="mt-1 !text-[#26a69a]"
@@ -210,7 +210,7 @@ export default function LiveSupportPanel() {
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="rounded-full border border-[#2a2a2a] px-2.5 py-1 text-xs text-slate-400 hover:bg-[#1a1a1a]"
+                className="rounded-full border border-desk-border px-2.5 py-1 text-xs text-desk-muted hover:bg-desk-hover"
               >
                 {t("profile.support.close")}
               </button>
@@ -222,14 +222,14 @@ export default function LiveSupportPanel() {
                   type="button"
                   disabled={olderBusy}
                   onClick={() => void load("older")}
-                  className="w-full rounded-lg border border-[#2a2a2a] px-3 py-2 text-xs font-medium text-slate-300 hover:bg-[#1a1a1a] disabled:opacity-50"
+                  className="w-full rounded-lg border border-desk-border px-3 py-2 text-xs font-medium text-desk-muted hover:bg-desk-hover disabled:opacity-50"
                 >
                   {olderBusy ? t("common.loading") : t("profile.support.older")}
                 </button>
               )}
               {loadFailed && messages.length === 0 ? (
                 <div className="px-2 py-6 text-center" data-fx-support-error="">
-                  <p className="text-sm font-normal text-slate-300">{t("state.supportFailed")}</p>
+                  <p className="text-sm font-normal text-desk-muted">{t("state.supportFailed")}</p>
                   <button
                     type="button"
                     data-fx-desk-retry=""
@@ -246,7 +246,7 @@ export default function LiveSupportPanel() {
                   <span className="fx-skel ml-auto h-10 w-1/2" />
                 </div>
               ) : messages.length === 0 ? (
-                <p className="px-2 py-6 text-center text-xs font-normal text-slate-500" data-fx-support-empty="">{t("profile.support.empty")}</p>
+                <p className="px-2 py-6 text-center text-xs font-normal text-desk-muted" data-fx-support-empty="">{t("profile.support.empty")}</p>
               ) : null}
               {messages.map((m) => {
                 const mine = m.from === "customer";
@@ -260,7 +260,7 @@ export default function LiveSupportPanel() {
                     <div
                       className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
                         mine
-                          ? "bg-[#26a69a] text-white"
+                          ? "bg-desk-buy text-white"
                           : "bg-[#1a1a1a] text-slate-100 ring-1 ring-[#2a2a2a]"
                       }`}
                     >
@@ -277,7 +277,7 @@ export default function LiveSupportPanel() {
                           </button>
                         )}
                       />
-                      <p className={`mt-1 flex items-center justify-end gap-2 text-[10px] ${mine ? "text-white/70" : "text-slate-500"}`}>
+                      <p className={`mt-1 flex items-center justify-end gap-2 text-[10px] ${mine ? "text-white/70" : "text-desk-muted"}`}>
                         {read && <span className="font-medium">{t("profile.support.read")}</span>}
                         <span>{new Date(m.createdAt).toLocaleString(locale)}</span>
                       </p>
@@ -293,7 +293,7 @@ export default function LiveSupportPanel() {
               <div ref={bottomRef} />
             </div>
 
-            <form onSubmit={onSend} className="border-t border-[#2a2a2a] p-3">
+            <form onSubmit={onSend} className="border-t border-desk-border p-3">
               {err && <p className="mb-2 text-xs text-[#ef5350]">{err}</p>}
               <div className="flex gap-2">
                 <textarea
@@ -301,13 +301,13 @@ export default function LiveSupportPanel() {
                   onChange={(e) => onTextChange(e.target.value)}
                   placeholder={t("profile.support.placeholder")}
                   rows={2}
-                  className="min-h-[2.75rem] max-h-28 min-w-0 flex-1 resize-y rounded-xl border border-[#2a2a2a] bg-[#111] px-3 py-2.5 text-sm text-slate-100 outline-none placeholder:text-slate-600 focus:border-[#26a69a]"
+                  className="min-h-[2.75rem] max-h-28 min-w-0 flex-1 resize-y rounded-xl border border-desk-border bg-desk-bg px-3 py-2.5 text-sm text-desk-text outline-none placeholder:text-desk-muted focus:border-desk-buy"
                   maxLength={4000}
                 />
                 <button
                   type="submit"
                   disabled={busy || !text.trim()}
-                  className="shrink-0 rounded-xl bg-[#26a69a] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+                  className="shrink-0 rounded-xl bg-desk-buy px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
                 >
                   {busy ? "…" : t("profile.support.send")}
                 </button>
