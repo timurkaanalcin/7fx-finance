@@ -292,7 +292,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
             data-fx-watchlist-search=""
             aria-label={t("term.watch.search")}
             aria-keyshortcuts="/"
-            className="w-full rounded-[12px] border border-desk-border/80 bg-desk-bg py-2 pl-7 pr-7 text-xs text-desk-text outline-none placeholder:text-desk-muted focus:border-desk-accent md:rounded-control md:py-1.5"
+            className="w-full rounded-[12px] border border-desk-border/80 bg-desk-bg py-2 pl-7 pr-11 text-xs font-normal text-desk-text outline-none placeholder:text-desk-muted focus:border-desk-accent md:rounded-control md:py-1.5 md:pr-7"
           />
           {q && (
             <button
@@ -321,7 +321,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
               onClick={() => setFilter(f.id)}
               aria-pressed={filter === f.id}
               title={f.id === "OPEN" ? t("term.watch.open") : undefined}
-              className={`shrink-0 rounded-[8px] px-2 py-1 text-[10px] font-semibold transition-colors md:rounded-[7px] md:px-1.5 md:py-0.5 md:font-medium ${
+              className={`fx-watch-filter shrink-0 rounded-[8px] px-2 py-1 text-[10px] font-normal transition-colors md:rounded-[7px] md:px-1.5 md:py-0.5 ${
                 filter === f.id
                   ? "bg-desk-accent text-desk-accent-ink shadow-accent-glow-sm"
                   : "bg-desk-elev/80 text-desk-muted hover:bg-desk-hover hover:text-desk-text"
@@ -340,7 +340,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
         <div className="hidden">
         </div>
       </div>
-      <div className="flex items-center justify-between px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.1em] text-desk-muted/80 md:px-2.5 md:py-1 md:font-medium md:tracking-[0.08em]">
+      <div className="flex items-center justify-between px-3 py-1.5 text-[9px] font-normal uppercase tracking-[0.1em] text-desk-muted/80 md:px-2.5 md:py-1 md:tracking-[0.08em]">
         <button
           type="button"
           onClick={cycleSort}
@@ -370,7 +370,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
             <button
               key={s.symbol}
               onClick={() => onSelect(s.symbol)}
-              className={`relative flex w-full items-center gap-2.5 border-b border-desk-border/30 px-3 py-2.5 text-left transition-colors hover:bg-desk-hover/80 md:gap-2 md:px-2.5 md:py-1.5 ${
+              className={`fx-watch-row relative flex w-full items-center gap-2.5 border-b border-desk-border/30 px-3 py-2.5 text-left transition-colors hover:bg-desk-hover/80 md:gap-2 md:px-2.5 md:py-1.5 ${
                 active ? "bg-desk-elev/90" : "bg-transparent"
               }`}
             >
@@ -387,7 +387,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
                 <div className="flex items-center justify-between gap-2">
                   <div className="min-w-0">
                     <span
-                      className={`flex items-center truncate text-[13px] font-semibold tracking-tight md:text-[12px] ${
+                      className={`flex items-center truncate text-[13px] font-normal tracking-tight md:text-[12px] ${
                         active ? "text-desk-accent" : "text-desk-text"
                       }`}
                     >
@@ -435,7 +435,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
                         <span
                           data-fx-watch-open={agg.count}
                           title={openTitle}
-                          className={`mt-0.5 inline-flex max-w-full items-center gap-1 rounded-[6px] px-1 py-px text-[9.5px] font-semibold tabular-nums leading-tight ${
+                          className={`mt-0.5 inline-flex max-w-full items-center gap-1 rounded-[6px] px-1 py-px text-[9.5px] font-normal tabular-nums leading-tight ${
                             agg.profit >= 0 ? "bg-desk-buy/10 text-desk-buy" : "bg-desk-sell/10 text-desk-sell"
                           }`}
                         >
@@ -447,7 +447,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
                     })()}
                   </div>
                   <div className="flex shrink-0 flex-col items-end gap-0.5 tabular-nums">
-                    <div className="flex items-baseline gap-1.5 text-[11px] font-medium text-desk-text/80 md:gap-1 md:text-[10px]">
+                    <div className="flex items-baseline gap-1.5 text-[11px] font-normal tabular-nums text-desk-text/80 md:gap-1 md:text-[10px]">
                       <FlashPrice
                         title={t("term.bid")}
                         value={p?.bid}
@@ -469,7 +469,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
                         : "—"}
                     </span>
                     <span
-                      className={`rounded-[6px] px-1.5 py-0.5 text-[11px] font-semibold md:rounded md:px-1 md:py-px md:text-[10px] ${
+                      className={`rounded-[6px] px-1.5 py-0.5 text-[11px] font-normal tabular-nums md:rounded md:px-1 md:py-px md:text-[10px] ${
                         !p
                           ? "text-desk-muted"
                           : up
@@ -495,7 +495,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
                   <button
                     type="button"
                     onClick={() => setFilter("ALL")}
-                    className="rounded-[8px] bg-desk-elev/80 px-2 py-1 text-[10px] font-semibold text-desk-text hover:bg-desk-hover"
+                    className="fx-watch-filter rounded-[8px] bg-desk-elev/80 px-2 py-1 text-[10px] font-normal text-desk-text hover:bg-desk-hover"
                   >
                     {t("term.watch.searchAll")}
                   </button>
@@ -504,7 +504,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
                   <button
                     type="button"
                     onClick={() => setQ("")}
-                    className="rounded-[8px] bg-desk-elev/80 px-2 py-1 text-[10px] font-semibold text-desk-muted hover:bg-desk-hover hover:text-desk-text"
+                    className="fx-watch-filter rounded-[8px] bg-desk-elev/80 px-2 py-1 text-[10px] font-normal text-desk-muted hover:bg-desk-hover hover:text-desk-text"
                   >
                     {t("term.watch.clear")}
                   </button>

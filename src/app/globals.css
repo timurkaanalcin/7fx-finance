@@ -1306,6 +1306,75 @@ html[data-fx-theme="light"] .fx-account-metric__value.is-warn { color: #9a6b12; 
   .fx-cashier-split { grid-template-columns: minmax(0, 1fr); }
 }
 
+/* Terminal chart, watchlist, and history: thin type, tabular figures, phone targets. */
+.fx-chart-chrome .font-bold,
+.fx-chart-chrome .font-semibold,
+.fx-chart-chrome .font-medium,
+.fx-chart-tools .font-bold,
+.fx-chart-tools .font-semibold,
+.fx-chart-tools .font-medium,
+.fx-watchlist .font-bold,
+.fx-watchlist .font-semibold,
+.fx-watchlist .font-medium,
+.fx-blotter .font-bold,
+.fx-blotter .font-semibold,
+.fx-blotter .font-medium,
+.fx-blotter-tab,
+.fx-blotter-tab .font-bold,
+.fx-blotter-tab .font-semibold,
+.fx-blotter-chip,
+.fx-blotter-chip .font-semibold {
+  font-weight: 400;
+}
+.fx-blotter-open th:nth-child(n + 5):not(:last-child),
+.fx-blotter-open td:nth-child(n + 5):not(:last-child),
+.fx-blotter-closed th:nth-child(n + 5):not(:nth-child(n + 12)),
+.fx-blotter-closed td:nth-child(n + 5):not(:nth-child(n + 12)),
+.fx-blotter-pending th:nth-child(n + 6):not(:last-child),
+.fx-blotter-pending td:nth-child(n + 6):not(:last-child) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 400;
+}
+@media (max-width: 767px) {
+  .fx-desk .fx-chart-tools button,
+  .fx-desk .fx-watchlist [data-fx-watchlist-search],
+  .fx-desk .fx-watchlist .fx-watch-filter,
+  .fx-desk .fx-watchlist .fx-watch-row,
+  .fx-desk .fx-fav,
+  .fx-desk .fx-watchlist [data-fx-watch-clear],
+  .fx-desk .fx-blotter button,
+  .fx-desk .fx-blotter-tab,
+  .fx-desk .fx-blotter-chip {
+    min-height: 40px;
+  }
+  .fx-desk .fx-watchlist [data-fx-watch-clear],
+  .fx-desk .fx-watchlist .fx-watch-filter,
+  .fx-desk .fx-fav,
+  .fx-desk .fx-chart-tools button,
+  .fx-desk .fx-blotter button,
+  .fx-desk .fx-blotter-chip {
+    min-width: 40px;
+  }
+  .fx-desk .fx-blotter {
+    overflow: auto;
+    max-width: 100%;
+  }
+  .fx-desk .fx-blotter table {
+    max-width: none;
+  }
+  /* Markets and history sit under a chart that otherwise keeps a 44vh minimum. */
+  .fx-desk .flex-col:has(> .min-h-\[44vh\]):has(> .md\:hidden) > .min-h-\[44vh\] {
+    flex: 0 0 auto;
+    min-height: 0;
+    max-height: 176px;
+    overflow: hidden;
+  }
+  .fx-desk .flex-col:has(> .min-h-\[44vh\]):has(> .md\:hidden) > .min-h-\[44vh\] .min-h-\[44vh\] {
+    min-height: 0;
+  }
+}
+
 .fx-desk :focus-visible {
   outline: 2px solid #f4f7fb;
   outline-offset: 2px;

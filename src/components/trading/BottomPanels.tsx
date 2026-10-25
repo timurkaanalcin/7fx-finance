@@ -379,7 +379,7 @@ function Chip({
       onClick={onClick}
       title={title}
       aria-pressed={active}
-      className={`rounded-[7px] border px-2 py-0.5 text-[10px] font-semibold transition-colors ${
+      className={`fx-blotter-chip rounded-[7px] border px-2 py-0.5 text-[10px] font-normal transition-colors ${
         active
           ? activeCls
           : "border-desk-border bg-desk-elev/40 text-desk-muted hover:bg-desk-hover hover:text-desk-text"
@@ -1944,7 +1944,7 @@ export default function BottomPanels({
           <button
             key={t.id}
             onClick={() => onTab(t.id)}
-            className={`relative flex items-center gap-1.5 px-3 py-2.5 text-[11px] font-semibold tracking-wide transition-colors ${
+            className={`fx-blotter-tab relative flex items-center gap-1.5 px-3 py-2.5 text-[11px] font-normal tracking-wide transition-colors ${
               tab === t.id
                 ? "text-desk-text"
                 : "text-desk-muted hover:text-desk-text"
@@ -1954,7 +1954,7 @@ export default function BottomPanels({
             <span className="hidden md:inline">{t.label}</span>
             {t.count != null && t.count > 0 && (
               <span
-                className={`rounded-full px-1.5 text-[10px] font-bold ${
+                className={`rounded-full px-1.5 text-[10px] font-normal tabular-nums ${
                   tab === t.id
                     ? "bg-desk-accent text-desk-accent-ink"
                     : "bg-desk-elev text-desk-muted"
@@ -2290,7 +2290,7 @@ export default function BottomPanels({
       />
 
       {/* Mobile card list — elite dense cards */}
-      <div className="flex-1 space-y-2 overflow-auto p-2.5 md:hidden">
+      <div className={`flex-1 space-y-2 overflow-auto p-2.5 md:hidden ${tab === "open" ? "" : "hidden"}`}>
         {tab === "open" && (
           <>
             {openPositions.length === 0 && (
@@ -2353,10 +2353,10 @@ export default function BottomPanels({
       </div>
 
       {/* Desktop tables — unchanged structure */}
-      <div className="fx-blotter hidden flex-1 overflow-auto md:block">
+      <div className={`fx-blotter min-h-0 flex-1 overflow-auto ${tab === "open" ? "hidden md:block" : ""}`}>
         {tab === "open" && (
-          <table className="min-w-full text-left text-[11px]">
-            <thead className="sticky top-0 z-[1] bg-desk-bg/95 text-[9px] font-medium uppercase tracking-wider text-desk-muted backdrop-blur-sm">
+          <table className="fx-blotter-open min-w-full text-left text-[11px]">
+            <thead className="sticky top-0 z-[1] bg-desk-bg/95 text-[9px] font-normal uppercase tracking-wider text-desk-muted backdrop-blur-sm">
               <tr>
                 <th className="px-2 py-2">#</th>
                 <SortTh label={t("term.col.time")} col="time" sort={openSort} onSort={onOpenSort} />
@@ -2475,8 +2475,8 @@ export default function BottomPanels({
         )}
 
         {tab === "closed" && (
-          <table className="min-w-full text-left text-[11px]">
-            <thead className="sticky top-0 z-[1] bg-desk-bg/95 text-[9px] font-medium uppercase tracking-wider text-desk-muted backdrop-blur-sm">
+          <table className="fx-blotter-closed min-w-full text-left text-[11px]">
+            <thead className="sticky top-0 z-[1] bg-desk-bg/95 text-[9px] font-normal uppercase tracking-wider text-desk-muted backdrop-blur-sm">
               <tr>
                 <th className="px-2 py-2">#</th>
                 <SortTh label={t("term.col.time")} col="time" sort={closedSort} onSort={onClosedSort} />
@@ -2598,8 +2598,8 @@ export default function BottomPanels({
         )}
 
         {tab === "pending" && (
-          <table className="min-w-full text-left text-[11px]">
-            <thead className="sticky top-0 z-[1] bg-desk-bg/95 text-[9px] font-medium uppercase tracking-wider text-desk-muted backdrop-blur-sm">
+          <table className="fx-blotter-pending min-w-full text-left text-[11px]">
+            <thead className="sticky top-0 z-[1] bg-desk-bg/95 text-[9px] font-normal uppercase tracking-wider text-desk-muted backdrop-blur-sm">
               <tr>
                 <th className="px-2 py-2">#</th>
                 <SortTh label={t("term.col.time")} col="time" sort={pendingSort} onSort={onPendingSort} />
