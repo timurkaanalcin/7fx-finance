@@ -2093,13 +2093,14 @@ export default function BottomPanels({
               {t("term.calendar")}
             </button>
           ) : null}
-          {tab === "closed" && closedPositions.length > 0 ? (
+          {tab === "closed" ? (
             <button
               type="button"
               onClick={() => setShowStatement(true)}
+              data-fx-statement=""
               aria-label={t("term.stmt.title")}
               title={t("term.stmt.title")}
-              className="rounded-control border border-desk-border px-2.5 py-1 text-[11px] text-desk-muted transition-colors hover:bg-desk-hover hover:text-desk-text"
+              className="min-h-10 rounded-control border border-desk-border px-2.5 py-1 text-[11px] font-medium text-desk-muted transition-colors hover:bg-desk-hover hover:text-desk-text"
             >
               {t("term.stmt.button")}
             </button>
@@ -2371,6 +2372,7 @@ export default function BottomPanels({
         onClose={closeStatement}
         rows={closedLedger}
         currency={currency}
+        partial={Boolean(closedHasMore || calendarPartial)}
       />
 
       {/* Mobile card list — elite dense cards */}
