@@ -247,6 +247,7 @@ export const ar: Dict = {
   "crm.saveProfile": "حفظ الملف",
   "crm.tickets.approveTitle": "اعتماد الإيداع",
   "crm.tickets.approveReason": "سبب الاعتماد",
+  "crm.tickets.optional": "اختياري",
   "crm.tickets.approveReasonPh": "اكتب سبب الاعتماد",
   "crm.tickets.eventScenario": "سيناريو الحدث",
   "crm.tickets.scenarioPh": "سيظهر السيناريو هنا ويمكن تعديله",

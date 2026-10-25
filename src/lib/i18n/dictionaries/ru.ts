@@ -247,6 +247,7 @@ export const ru: Dict = {
   "crm.saveProfile": "Сохранить профиль",
   "crm.tickets.approveTitle": "Одобрить заявку",
   "crm.tickets.approveReason": "Причина одобрения",
+  "crm.tickets.optional": "необязательно",
   "crm.tickets.approveReasonPh": "Напишите причину одобрения",
   "crm.tickets.eventScenario": "Сценарий события",
   "crm.tickets.scenarioPh": "Сценарий появится здесь; его можно править",

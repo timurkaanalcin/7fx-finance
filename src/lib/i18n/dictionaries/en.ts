@@ -330,6 +330,7 @@ export const en: Dict = {
   "crm.saveProfile": "Save profile",
   "crm.tickets.approveTitle": "Approve deposit",
   "crm.tickets.approveReason": "Approval reason",
+  "crm.tickets.optional": "optional",
   "crm.tickets.approveReasonPh": "Write why this is approved",
   "crm.tickets.eventScenario": "Event scenario",
   "crm.tickets.scenarioPh": "The scenario will appear here; you can edit it",

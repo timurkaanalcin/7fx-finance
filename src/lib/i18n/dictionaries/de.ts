@@ -247,6 +247,7 @@ export const de: Dict = {
   "crm.saveProfile": "Profil speichern",
   "crm.tickets.approveTitle": "Einzahlung genehmigen",
   "crm.tickets.approveReason": "Genehmigungsgrund",
+  "crm.tickets.optional": "optional",
   "crm.tickets.approveReasonPh": "Grund der Genehmigung schreiben",
   "crm.tickets.eventScenario": "Ereignisszenario",
   "crm.tickets.scenarioPh": "Das Szenario erscheint hier und kann bearbeitet werden",

@@ -327,6 +327,7 @@ export const tr: Dict = {
   "crm.saveProfile": "Profili kaydet",
   "crm.tickets.approveTitle": "Yatırımı onayla",
   "crm.tickets.approveReason": "Onay nedeni",
+  "crm.tickets.optional": "opsiyonel",
   "crm.tickets.approveReasonPh": "Onaylanma nedenini yazın",
   "crm.tickets.eventScenario": "Olay senaryosu",
   "crm.tickets.scenarioPh": "Senaryo burada görünecek; düzenleyebilirsiniz",

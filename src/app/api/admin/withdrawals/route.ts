@@ -3,7 +3,7 @@ import { requireAdmin, requireAdminPerm } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { refreshAccountMetrics } from "@/lib/trading";
 import { recordLedger } from "@/lib/ledger";
-import { readApprovalPayload } from "@/lib/ticket-scenario";
+import { approvalAuditComment, readApprovalPayload } from "@/lib/ticket-scenario";
 import { FxError, appendFxNote, convertAmountToUsd } from "@/lib/fx-usd";
 import { clientErrorMessage } from "@/lib/security/public-error";
 import { CRM_MONEY_LIST_LEGACY, pagedOrLegacy } from "@/lib/trader-list";
@@ -77,7 +77,7 @@ export async function POST(req: Request) {
   if (!account) return NextResponse.json({ error: "User has no account" }, { status: 404 });
 
   let usdAmount = request.amount;
-  let comment = adminNote || `Withdrawal via ${request.method}`;
+  let comment = approvalAuditComment(approval.adminNote, `Withdrawal via ${request.method}`);
   try {
     const conv = await convertAmountToUsd(request.amount, request.currency);
     usdAmount = conv.usdAmount;

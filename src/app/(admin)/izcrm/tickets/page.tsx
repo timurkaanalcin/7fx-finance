@@ -19,6 +19,7 @@ import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { fmtCrmDate, fmtCrmMoney, fromDatetimeLocalValue, toDatetimeLocalValue } from "@/lib/crm-format";
 import { ACCOUNT_CURRENCIES } from "@/lib/membership";
 import { crmJson, dayEndIso, dayStartIso } from "@/lib/crm-api";
+import { validateApproveDialog } from "@/lib/approve-dialog";
 
 type Ticket = {
   id: string;
@@ -413,13 +414,12 @@ export default function TicketsPage() {
 
   async function confirmApprove() {
     if (!approveTarget) return;
-    if (!reason.trim()) {
-      setDialogErr(i18n("crm.tickets.reasonRequired"));
-      return;
-    }
+    const decision = validateApproveDialog({ reason, scenario, busy });
+    if (decision.buttonDisabled) return;
+    setDialogErr("");
     const ok = await act(approveTarget, "approve", {
-      approvalReason: reason.trim(),
-      eventScenario: scenario.trim(),
+      approvalReason: decision.approvalReason,
+      eventScenario: decision.eventScenario,
     });
     if (ok) {
       setApproveTarget(null);
@@ -1095,18 +1095,24 @@ export default function TicketsPage() {
                 ? `${fmtCrmMoney(approveTarget.amount, 2)} ${approveTarget.currency}`
                 : methodLabel(approveTarget)}
             </p>
-            <label className="mb-1 block text-[11px] font-medium">
-              {i18n("crm.tickets.approveReason")}
+            <label htmlFor="approve-reason" className="mb-1 block text-[11px] font-medium">
+              {i18n("crm.tickets.approveReason")}{" "}
+              <span className="font-normal text-neutral-500">({i18n("crm.tickets.optional")})</span>
             </label>
             <textarea
+              id="approve-reason"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               rows={3}
+              aria-required={false}
               placeholder={i18n("crm.tickets.approveReasonPh")}
               className="mb-3 w-full rounded border border-neutral-300 bg-white px-2 py-1.5 text-xs"
             />
             <div className="mb-1 flex items-center gap-2">
-              <label className="text-[11px] font-medium">{i18n("crm.tickets.eventScenario")}</label>
+              <label htmlFor="approve-scenario" className="text-[11px] font-medium">
+                {i18n("crm.tickets.eventScenario")}{" "}
+                <span className="font-normal text-neutral-500">({i18n("crm.tickets.optional")})</span>
+              </label>
               <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[9px] text-emerald-800">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                 {i18n("crm.tickets.scenarioReady")}
@@ -1121,9 +1127,11 @@ export default function TicketsPage() {
               </button>
             </div>
             <textarea
+              id="approve-scenario"
               value={scenario}
               onChange={(e) => setScenario(e.target.value)}
               rows={7}
+              aria-required={false}
               placeholder={i18n("crm.tickets.scenarioPh")}
               className="mb-3 w-full rounded border border-neutral-300 bg-white px-2 py-1.5 text-xs"
             />
@@ -1138,7 +1146,7 @@ export default function TicketsPage() {
               </button>
               <button
                 type="button"
-                disabled={busy}
+                disabled={validateApproveDialog({ reason, scenario, busy }).buttonDisabled}
                 onClick={confirmApprove}
                 className="rounded bg-emerald-600 px-3 py-1.5 text-xs text-white hover:bg-emerald-500 disabled:opacity-60"
               >
