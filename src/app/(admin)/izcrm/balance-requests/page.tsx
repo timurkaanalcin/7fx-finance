@@ -1,6 +1,8 @@
 "use client";
 
 import { ListPlaceholder, listPhase } from "@/components/crm/CrmStates";
+import { ApproveSaveDialog, ApproveToast, useApproveToast } from "@/components/crm/ApproveSaveDialog";
+import { approveToastLine, patchQueueRow } from "@/lib/approve-dialog";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 import { fmtCrmDate } from "@/lib/crm-format";
@@ -39,6 +41,8 @@ export default function AdminBalanceRequestsPage() {
   const [filter, setFilter] = useState("PENDING");
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState("");
+  const [approveId, setApproveId] = useState<string | null>(null);
+  const approveToast = useApproveToast();
   const [ruleTr, setRuleTr] = useState("");
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
@@ -182,34 +186,67 @@ export default function AdminBalanceRequestsPage() {
     return amount.toLocaleString("en-US", { style: "currency", currency: "USD" });
   }
 
-  async function act(id: string, action: "approve" | "reject") {
+  function amountLabel(row: Row) {
+    return row.type === "ADD" && row.amount != null
+      ? usd(row.amount)
+      : `${DEFAULT_RESET_BALANCE.toLocaleString("en-US")} USD`;
+  }
+
+  async function reject(id: string) {
     const row = rows.find((r) => r.id === id);
-    const what =
-      row?.type === "ADD" && row.amount != null
-        ? `${i18n("crm.bal.add")} · ${usd(row.amount)}`
-        : `${i18n("crm.bal.reset")} → ${DEFAULT_RESET_BALANCE.toLocaleString("en-US")} USD`;
+    const what = row ? amountLabel(row) : "";
     const detail = row ? `\n\n${row.user.name} · ${row.user.email}\n${what}` : "";
-    const question = action === "approve" ? i18n("crm.bal.confirmApprove") : i18n("crm.bal.confirmReject");
-    if (!window.confirm(question + detail)) return;
+    if (!window.confirm(i18n("crm.bal.confirmReject") + detail)) return;
     setBusy(id);
     setMsg("");
     try {
       const res = await fetch("/api/admin/balance-requests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, action }),
+        body: JSON.stringify({ id, action: "reject" }),
       });
       const data = await res.json();
       if (!res.ok) {
         setMsg(data.error || i18n("crm.ui.actionFailed"));
         return;
       }
-      setMsg(action === "approve" ? i18n("crm.bal.approved") : i18n("crm.bal.rejected"));
+      setMsg(i18n("crm.bal.rejected"));
       await load();
     } finally {
       setBusy(null);
     }
   }
+
+  async function submitApprove() {
+    const id = approveId;
+    if (!id || busy) return;
+    const row = rows.find((r) => r.id === id);
+    setBusy(id);
+    setMsg("");
+    try {
+      const res = await fetch("/api/admin/balance-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, action: "approve" }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setMsg(data.error || i18n("crm.ui.actionFailed"));
+        return;
+      }
+      const status = data.request?.status || "APPROVED";
+      rowsRef.current = patchQueueRow(rowsRef.current, id, { status });
+      setRows(rowsRef.current);
+      approveToast.show(
+        approveToastLine(i18n("crm.tickets.approvedToast"), row?.user.name || row?.user.email || "", row ? amountLabel(row) : "")
+      );
+      setApproveId(null);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  const approveRow = rows.find((r) => r.id === approveId) || null;
 
   return (
     <div>
@@ -386,14 +423,16 @@ export default function AdminBalanceRequestsPage() {
                     <div className="flex gap-1">
                       <button
                         disabled={busy === r.id}
-                        onClick={() => act(r.id, "approve")}
+                        type="button"
+                        onClick={() => setApproveId(r.id)}
                         className="rounded bg-emerald-600 px-2 py-1 hover:bg-emerald-500 disabled:opacity-50"
                       >
                         {i18n("crm.ui.approve")}
                       </button>
                       <button
                         disabled={busy === r.id}
-                        onClick={() => act(r.id, "reject")}
+                        type="button"
+                        onClick={() => void reject(r.id)}
                         className="rounded bg-red-600/80 px-2 py-1 hover:bg-red-500 disabled:opacity-50"
                       >
                         {i18n("crm.ui.reject")}
@@ -432,6 +471,17 @@ export default function AdminBalanceRequestsPage() {
           {moreBusy ? i18n("crm.ui.loading") : i18n("crm.ui.loadMore")}
         </button>
       )}
+      <ApproveSaveDialog
+        open={approveId != null}
+        title={i18n("crm.bal.confirmApprove")}
+        detail={approveRow ? `${approveRow.user.name} · ${amountLabel(approveRow)}` : undefined}
+        confirmLabel={i18n("crm.tickets.confirmApprove")}
+        cancelLabel={i18n("crm.tickets.cancel")}
+        busy={busy === approveId}
+        onConfirm={() => void submitApprove()}
+        onCancel={() => setApproveId(null)}
+      />
+      <ApproveToast text={approveToast.text} />
     </div>
   );
 }

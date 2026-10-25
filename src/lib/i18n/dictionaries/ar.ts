@@ -988,4 +988,5 @@ export const ar: Dict = {
   "term.onboard.dismiss": "إغلاق",
   "term.onboard.marketsHint": "تصفح الأسواق",
   "term.onboard.walletHint": "هذه المحفظة فارغة. الإيداع يموّلها بعد الموافقة.",
+  "crm.tickets.approvedToast": "تم اعتماد {amount} لصالح {customer}.",
 };

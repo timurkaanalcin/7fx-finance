@@ -988,4 +988,5 @@ export const tr: Dict = {
   "term.onboard.dismiss": "Kapat",
   "term.onboard.marketsHint": "Piyasalara bak",
   "term.onboard.walletHint": "Bu cüzdan boş. Yatırma, onaydan sonra bakiyeye geçer.",
+  "crm.tickets.approvedToast": "{amount} onaylandı — {customer}.",
 };

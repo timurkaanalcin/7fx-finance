@@ -19,7 +19,8 @@ import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { fmtCrmDate, fmtCrmMoney, fromDatetimeLocalValue, toDatetimeLocalValue } from "@/lib/crm-format";
 import { ACCOUNT_CURRENCIES } from "@/lib/membership";
 import { crmJson, dayEndIso, dayStartIso } from "@/lib/crm-api";
-import { validateApproveDialog } from "@/lib/approve-dialog";
+import { approveToastLine, patchTicketAfterApprove, validateApproveDialog } from "@/lib/approve-dialog";
+import { ApproveSaveDialog, ApproveToast, useApproveToast } from "@/components/crm/ApproveSaveDialog";
 
 type Ticket = {
   id: string;
@@ -136,6 +137,7 @@ export default function TicketsPage() {
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
   const [approveTarget, setApproveTarget] = useState<Ticket | null>(null);
+  const approveToast = useApproveToast();
   const [reason, setReason] = useState("");
   const [scenario, setScenario] = useState("");
   const [scenarioBusy, setScenarioBusy] = useState(false);
@@ -404,7 +406,23 @@ export default function TicketsPage() {
         else setMsg(err);
         return false;
       }
-      setMsg(action === "approve" ? i18n("crm.tickets.approvedMsg") : i18n("crm.dep.rejected"));
+      if (action === "approve") {
+        setTickets((rows) =>
+          patchTicketAfterApprove(rows, ticket, {
+            approvalReason: extra?.approvalReason || "",
+            eventScenario: extra?.eventScenario || "",
+          }, data)
+        );
+        const amount =
+          ticket.amount != null
+            ? `${fmtCrmMoney(ticket.amount, 2)} ${ticket.currency || ""}`.trim()
+            : methodLabel(ticket);
+        approveToast.show(
+          approveToastLine(i18n("crm.tickets.approvedToast"), ticket.customer || ticket.customerEmail, amount)
+        );
+        return true;
+      }
+      setMsg(i18n("crm.dep.rejected"));
       await load();
       return true;
     } finally {
@@ -1085,16 +1103,24 @@ export default function TicketsPage() {
         onCancel={() => setDeleteTarget(null)}
       />
 
-      {approveTarget && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
-          <div className="w-full max-w-lg rounded-lg border border-neutral-200 bg-white p-4 text-neutral-900 shadow-lg">
-            <h2 className="mb-1 text-sm font-semibold">{i18n("crm.tickets.approveTitle")}</h2>
-            <p className="mb-3 text-[11px] text-neutral-500">
-              {approveTarget.customer} · {approveTarget.customerEmail} ·{" "}
-              {approveTarget.amount != null
-                ? `${fmtCrmMoney(approveTarget.amount, 2)} ${approveTarget.currency}`
-                : methodLabel(approveTarget)}
-            </p>
+      <ApproveSaveDialog
+        open={approveTarget != null}
+        title={i18n("crm.tickets.approveTitle")}
+        detail={
+          approveTarget
+            ? `${approveTarget.customer} · ${approveTarget.customerEmail} · ${
+                approveTarget.amount != null
+                  ? `${fmtCrmMoney(approveTarget.amount, 2)} ${approveTarget.currency}`
+                  : methodLabel(approveTarget)
+              }`
+            : undefined
+        }
+        confirmLabel={i18n("crm.tickets.confirmApprove")}
+        cancelLabel={i18n("crm.tickets.cancel")}
+        busy={validateApproveDialog({ reason, scenario, busy }).buttonDisabled}
+        onConfirm={() => void confirmApprove()}
+        onCancel={() => setApproveTarget(null)}
+      >
             <label htmlFor="approve-reason" className="mb-1 block text-[11px] font-medium">
               {i18n("crm.tickets.approveReason")}{" "}
               <span className="font-normal text-neutral-500">({i18n("crm.tickets.optional")})</span>
@@ -1136,26 +1162,8 @@ export default function TicketsPage() {
               className="mb-3 w-full rounded border border-neutral-300 bg-white px-2 py-1.5 text-xs"
             />
             {dialogErr && <p className="mb-2 text-[11px] text-red-600">{dialogErr}</p>}
-            <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setApproveTarget(null)}
-                className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-xs hover:bg-neutral-100"
-              >
-                {i18n("crm.tickets.cancel")}
-              </button>
-              <button
-                type="button"
-                disabled={validateApproveDialog({ reason, scenario, busy }).buttonDisabled}
-                onClick={confirmApprove}
-                className="rounded bg-emerald-600 px-3 py-1.5 text-xs text-white hover:bg-emerald-500 disabled:opacity-60"
-              >
-                {i18n("crm.tickets.confirmApprove")}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      </ApproveSaveDialog>
+      <ApproveToast text={approveToast.text} />
     </div>
   );
 }

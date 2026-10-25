@@ -10,6 +10,8 @@ import { useMoneyQueue, type MoneyQueueRow } from "@/components/crm/use-money-qu
 import Link from "next/link";
 import { useState } from "react";
 import { CRM_ROW_FOCUS, useCrmRowKeys } from "@/components/crm/CrmListRow";
+import { ApproveSaveDialog, ApproveToast, useApproveToast } from "@/components/crm/ApproveSaveDialog";
+import { approveToastLine } from "@/lib/approve-dialog";
 
 type Row = MoneyQueueRow & { method: string };
 
@@ -28,16 +30,18 @@ export default function AdminWithdrawalsPage() {
   const dateLocale = LOCALE_META[locale].htmlLang;
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState("");
+  const [approveId, setApproveId] = useState<string | null>(null);
+  const approveToast = useApproveToast();
 
   function money(amount: number, currency: string) {
     return formatQueueMoney(amount, currency, dateLocale);
   }
 
-  async function act(id: string, action: "approve" | "reject") {
+  async function reject(id: string) {
+    const action = "reject" as const;
     const row = queue.rows.find((r) => r.id === id);
     const detail = row ? `\n\n${row.user.name} · ${row.user.email}\n${money(row.amount, row.currency)}` : "";
-    const question = action === "approve" ? i18n("crm.ui.approve") : i18n("crm.ui.reject");
-    if (!window.confirm(question + detail)) return;
+    if (!window.confirm(i18n("crm.ui.reject") + detail)) return;
     setBusy(id);
     setMsg("");
     try {
@@ -51,12 +55,46 @@ export default function AdminWithdrawalsPage() {
         setMsg(data.error || i18n("crm.ui.actionFailed"));
         return;
       }
-      setMsg(action === "approve" ? i18n("crm.dep.approved") : i18n("crm.dep.rejected"));
+      setMsg(i18n("crm.dep.rejected"));
       await queue.load();
     } finally {
       setBusy(null);
     }
   }
+
+  async function submitApprove() {
+    const id = approveId;
+    if (!id || busy) return;
+    const row = queue.rows.find((r) => r.id === id);
+    setBusy(id);
+    setMsg("");
+    try {
+      const action = "approve" as const;
+      const res = await fetch("/api/admin/withdrawals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, action }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setMsg(data.error || i18n("crm.ui.actionFailed"));
+        return;
+      }
+      queue.patchRow(id, { status: data.request?.status || "APPROVED" });
+      approveToast.show(
+        approveToastLine(
+          i18n("crm.tickets.approvedToast"),
+          row?.user.name || row?.user.email || "",
+          row ? money(row.amount, row.currency) : ""
+        )
+      );
+      setApproveId(null);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  const approveRow = queue.rows.find((r) => r.id === approveId) || null;
 
   return (
     <div>
@@ -159,7 +197,7 @@ export default function AdminWithdrawalsPage() {
                         type="button"
                         data-fx-money="approve"
                         disabled={busy === r.id}
-                        onClick={() => act(r.id, "approve")}
+                        onClick={() => setApproveId(r.id)}
                         className="rounded bg-emerald-600 px-2 py-1 hover:bg-emerald-500 disabled:opacity-50"
                       >
                         {i18n("crm.ui.approve")}
@@ -168,7 +206,7 @@ export default function AdminWithdrawalsPage() {
                         type="button"
                         data-fx-money="reject"
                         disabled={busy === r.id}
-                        onClick={() => act(r.id, "reject")}
+                        onClick={() => void reject(r.id)}
                         className="rounded bg-red-600/80 px-2 py-1 hover:bg-red-500 disabled:opacity-50"
                       >
                         {i18n("crm.ui.reject")}
@@ -198,6 +236,19 @@ export default function AdminWithdrawalsPage() {
         </table>
       </div>
       <MoneyQueuePager queue={queue} />
+      <ApproveSaveDialog
+        open={approveId != null}
+        title={i18n("crm.ui.approve")}
+        detail={
+          approveRow ? `${approveRow.user.name} · ${money(approveRow.amount, approveRow.currency)}` : undefined
+        }
+        confirmLabel={i18n("crm.tickets.confirmApprove")}
+        cancelLabel={i18n("crm.tickets.cancel")}
+        busy={busy === approveId}
+        onConfirm={() => void submitApprove()}
+        onCancel={() => setApproveId(null)}
+      />
+      <ApproveToast text={approveToast.text} />
     </div>
   );
 }

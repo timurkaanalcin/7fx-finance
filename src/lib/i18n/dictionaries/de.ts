@@ -988,4 +988,5 @@ export const de: Dict = {
   "term.onboard.dismiss": "Schließen",
   "term.onboard.marketsHint": "Märkte ansehen",
   "term.onboard.walletHint": "Dieses Wallet ist leer. Eine Einzahlung füllt es nach Freigabe.",
+  "crm.tickets.approvedToast": "{amount} für {customer} genehmigt.",
 };
