@@ -824,7 +824,7 @@ export default function TradingChart({
             </div>
             {legend && (
               <div
-                className="mt-0.5 flex flex-wrap gap-x-2.5 gap-y-0.5 text-[10px] tabular-nums text-desk-muted"
+                className="fx-chart-legend mt-0.5 flex flex-wrap gap-x-2.5 gap-y-0.5 text-[10px] tabular-nums text-desk-muted"
                 aria-live="off"
                 title={hoverBar ? t("term.chart.barUnder") : t("term.chart.latestBar")}
               >

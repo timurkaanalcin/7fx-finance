@@ -1087,7 +1087,7 @@ export default function TerminalShell({
                   width={400}
                   height={250}
                   fetchPriority="high"
-                  decoding="sync"
+                  decoding="async"
                   className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
                 />
                 <TradingChart
@@ -1100,7 +1100,7 @@ export default function TerminalShell({
                   levels={chartLevels}
                 />
                 <PriceAlerts symbol={symbol} prices={prices} />
-                <div className="pointer-events-none absolute bottom-[calc(0.75rem+0.50cm)] right-[1.85cm] z-20 md:bottom-[calc(1rem+0.50cm)] md:right-[1.85cm]">
+                <div className="fx-chart-desktop-actions pointer-events-none absolute bottom-[calc(0.75rem+0.50cm)] right-[1.85cm] z-20 md:bottom-[calc(1rem+0.50cm)] md:right-[1.85cm]">
                   <button
                     type="button"
                     onClick={() => setCalcOpen(true)}

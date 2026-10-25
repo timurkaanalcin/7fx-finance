@@ -36,7 +36,6 @@ function main() {
   assert.equal(/font-weight:\s*(650|700|800|900)/.test(css), false);
   assert.match(css, /letter-spacing:\s*-0\.02em/);
   assert.match(css, /--fx-fs-56:\s*56px/);
-  assert.match(css, /font-weight:\s*300/);
   assert.equal(css.includes("--font-sora"), false);
   assert.match(css, /font-variant-numeric:\s*tabular-nums/);
 
@@ -52,7 +51,10 @@ function main() {
   assert.match(shell, /min-height: 560px/);
   assert.match(shell, /deskWide &&/);
   assert.match(css, /fx-doc-title/);
-  assert.match(css, /min\(1280px/);
+  const landing = read("src/components/landing/landing.css");
+  assert.match(landing, /min\(1280px/);
+  assert.match(landing, /font-weight:\s*300/);
+  assert.equal(landing.includes("--font-sora"), false);
   assert.match(css, /fx-watchlist/);
   assert.match(css, /\[data-fx-chart-quote\][\s\S]*overflow-x:\s*auto/);
   const lang = read("src/components/i18n/LanguageSwitcher.tsx");
