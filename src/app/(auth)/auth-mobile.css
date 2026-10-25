@@ -1,4 +1,70 @@
 /* Phone auth chrome only. Terminal desk styles stay on the trade layout. */
+.fx-auth-page .fx-auth-input,
+.fx-auth-page .fx-auth-panel select.fx-auth-input {
+  font-size: 16px;
+}
+.fx-auth-password {
+  position: relative;
+}
+.fx-auth-password .fx-auth-input {
+  padding-right: 5.5rem;
+}
+.fx-auth-reveal {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  min-height: 40px;
+  min-width: 44px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #d5dce8;
+  font-size: 13px;
+  font-weight: 500;
+}
+.fx-auth-reveal:hover { color: #ffffff; }
+.fx-auth-hint,
+.fx-auth-field-error {
+  margin: 6px 0 0;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+}
+.fx-auth-hint { color: #c5cedd; }
+.fx-auth-field-error { color: #ffb4b4; }
+.fx-auth-alert {
+  border: 1px solid rgba(255, 138, 128, 0.45);
+  background: rgba(90, 18, 22, 0.72);
+  color: #ffd6d6;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.45;
+}
+.fx-auth-alert-title {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.fx-pw-meter {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+}
+.fx-pw-meter span {
+  height: 3px;
+  flex: 1;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.16);
+}
+.fx-pw-meter span.is-on { background: #f4f7fb; }
+.fx-pw-meter.is-short span.is-on { background: #ff8a80; }
+.fx-pw-meter.is-ok span.is-on { background: #f0c36a; }
+.fx-pw-meter.is-strong span.is-on { background: #3ddc97; }
+
 @media (max-width: 767px) {
   .fx-auth-page {
     padding-top: env(safe-area-inset-top, 0px);
