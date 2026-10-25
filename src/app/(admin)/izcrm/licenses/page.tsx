@@ -1,6 +1,8 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { ListPlaceholder, listPhase } from "@/components/crm/CrmStates";
+import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 type L = { id: string; regulator: string; number: string; entity: string; registerUrl: string; logo: string | null; active: boolean; sortOrder: number };
 
@@ -20,7 +22,10 @@ const inp = "mt-1 w-full rounded border border-neutral-200 px-2 py-1.5";
 const cell = "w-full rounded border border-transparent px-1 py-0.5 hover:border-neutral-200";
 
 export default function AdminLicensesPage() {
+  const { i18n } = useCrmLabels();
   const [list, setList] = useState<L[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
   const [form, setForm] = useState({ ...empty });
   const [logo, setLogo] = useState<string | null>(null);
   const [msg, setMsg] = useState("");
@@ -29,11 +34,24 @@ export default function AdminLicensesPage() {
   const dragId = useRef<string | null>(null);
 
   const load = useCallback(async () => {
-    const r = await fetch("/api/admin/licenses", { cache: "no-store" });
-    const d = await r.json().catch(() => ({}));
-    if (!r.ok) return setMsg(d.error || "Yüklenemedi");
-    setList(d.licenses || []);
-  }, []);
+    setLoading(true);
+    try {
+      const r = await fetch("/api/admin/licenses", { cache: "no-store" });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) {
+        setFailed(true);
+        setMsg(d.error || i18n("crm.ui.loadFailed"));
+        return;
+      }
+      setList(d.licenses || []);
+      setFailed(false);
+    } catch {
+      setFailed(true);
+      setMsg(i18n("crm.ui.loadFailed"));
+    } finally {
+      setLoading(false);
+    }
+  }, [i18n]);
   useEffect(() => { load(); }, [load]);
 
   async function call(method: string, body?: unknown, qs = "") {
@@ -117,7 +135,16 @@ export default function AdminLicensesPage() {
       {msg && <p className="mb-3 text-xs text-neutral-600">{msg}</p>}
 
       {list.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-neutral-300 bg-white p-6 text-center text-sm text-neutral-500">Henüz lisans yok. Ana sayfadaki Lisanslar bölümü gizli.</p>
+        <div className="rounded-xl border border-dashed border-neutral-300 bg-white p-6 text-center">
+          <ListPlaceholder
+            phase={listPhase(failed, loading)}
+            empty={i18n("crm.lic.empty")}
+            title={i18n("crm.ui.loadFailed")}
+            retry={i18n("crm.ui.tryAgain")}
+            loading={i18n("crm.ui.loading")}
+            onRetry={() => void load()}
+          />
+        </div>
       ) : (
         <ul className="space-y-2">
           {list.map((s, i) => (

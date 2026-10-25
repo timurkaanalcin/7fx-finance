@@ -1,8 +1,9 @@
 "use client";
 
+import { ListPlaceholder } from "@/components/crm/CrmStates";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type Row = {
   object: string;
@@ -23,13 +24,25 @@ const fmt = (n: number) =>
 export default function ScoreboardPage() {
   const { i18n, deskName } = useCrmLabels();
   const [rows, setRows] = useState<Row[]>([]);
+  const [phase, setPhase] = useState<"loading" | "ready" | "error">("loading");
+
+  const load = useCallback(() => {
+    setPhase("loading");
+    fetch("/api/admin/analytics/scoreboard")
+      .then((r) => {
+        if (!r.ok) throw new Error("load");
+        return r.json();
+      })
+      .then((d) => {
+        setRows(d.rows || []);
+        setPhase("ready");
+      })
+      .catch(() => setPhase("error"));
+  }, []);
 
   useEffect(() => {
-    fetch("/api/admin/analytics/scoreboard")
-      .then((r) => r.json())
-      .then((d) => setRows(d.rows || []))
-      .catch(() => {});
-  }, []);
+    load();
+  }, [load]);
 
   return (
     <div>
@@ -75,7 +88,14 @@ export default function ScoreboardPage() {
             {rows.length === 0 && (
               <tr>
                 <td colSpan={10} className="px-3 py-8 text-center text-neutral-500">
-                  {i18n("crm.ui.noRecords")}
+                  <ListPlaceholder
+                    phase={phase}
+                    empty={i18n("crm.ui.noRecords")}
+                    title={i18n("crm.ui.loadFailed")}
+                    retry={i18n("crm.ui.tryAgain")}
+                    loading={i18n("crm.ui.loading")}
+                    onRetry={load}
+                  />
                 </td>
               </tr>
             )}

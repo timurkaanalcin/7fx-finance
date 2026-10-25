@@ -1,5 +1,6 @@
 "use client";
 
+import { ListPlaceholder, listPhase } from "@/components/crm/CrmStates";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 import { FormEvent, useCallback, useEffect, useState } from "react";
@@ -39,12 +40,25 @@ export default function AdminMethodsPage() {
   const [form, setForm] = useState({ ...emptyForm });
   const [editId, setEditId] = useState<string | null>(null);
   const [msg, setMsg] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
 
   const load = useCallback(async () => {
-    const res = await fetch("/api/admin/methods");
-    if (!res.ok) return;
-    const data = await res.json();
-    setMethods(data.methods || []);
+    setLoading(true);
+    try {
+      const res = await fetch("/api/admin/methods");
+      if (!res.ok) {
+        setFailed(true);
+        return;
+      }
+      const data = await res.json();
+      setMethods(data.methods || []);
+      setFailed(false);
+    } catch {
+      setFailed(true);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -135,7 +149,16 @@ export default function AdminMethodsPage() {
               </div>
             </div>
           ))}
-          {methods.length === 0 && <p className="text-sm text-neutral-500">{i18n("crm.methods.none")}</p>}
+          {methods.length === 0 && (
+            <ListPlaceholder
+              phase={listPhase(failed, loading)}
+              empty={i18n("crm.methods.none")}
+              title={i18n("crm.ui.loadFailed")}
+              retry={i18n("crm.ui.tryAgain")}
+              loading={i18n("crm.ui.loading")}
+              onRetry={() => void load()}
+            />
+          )}
         </div>
       </div>
 

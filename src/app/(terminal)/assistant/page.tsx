@@ -1,17 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
 import ThemeToggle from "@/components/theme/ThemeToggle";
 import { AI_T } from "@/components/ai/ai-i18n";
+import { DeskRetry, DeskSkeleton } from "@/components/system/PanelState";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
 export default function AssistantPage() {
-  const { locale } = useI18n();
-  const L = AI_T[locale] ?? AI_T.tr;
+  const { locale, t } = useI18n();
+  const L = AI_T[locale] ?? AI_T.en;
   const [state, setState] = useState<{ active: boolean; unlimited: boolean } | null>(null);
+  const [boot, setBoot] = useState<"loading" | "ready" | "error">("loading");
   const [cfg, setCfg] = useState(true);
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [text, setText] = useState("");
@@ -19,11 +21,21 @@ export default function AssistantPage() {
   const [err, setErr] = useState("");
   const end = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  const loadAccess = useCallback(() => {
+    setBoot("loading");
     fetch("/api/ai-membership", { cache: "no-store", credentials: "include" })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => { if (d) { setState(d.state); setCfg(!!d.aiConfigured); } });
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error("load"))))
+      .then((d) => {
+        if (!d) throw new Error("load");
+        setState(d.state);
+        setCfg(!!d.aiConfigured);
+        setBoot("ready");
+      })
+      .catch(() => setBoot("error"));
   }, []);
+  useEffect(() => {
+    loadAccess();
+  }, [loadAccess]);
   useEffect(() => { end.current?.scrollIntoView({ behavior: "smooth" }); }, [msgs, busy]);
 
   async function send(e: React.FormEvent) {
@@ -54,7 +66,9 @@ export default function AssistantPage() {
         <ThemeToggle />
       </header>
       <main className="mx-auto w-full max-w-2xl flex-1 overflow-y-auto p-4">
-        {!state ? <p className="text-center text-sm text-slate-500">…</p> : locked ? (
+        {boot === "loading" ? <DeskSkeleton label={t("state.loading")} /> : boot === "error" ? (
+          <DeskRetry title={t("state.assistantFailed")} retry={t("state.retry")} onRetry={loadAccess} />
+        ) : locked ? (
           <div className="mt-10 rounded-2xl border border-[#2a2a2a] bg-[#0a0a0a] p-6 text-center">
             <div className="mb-3 text-4xl">🔒</div>
             <p className="text-sm text-slate-300">{L.aiLocked}</p>

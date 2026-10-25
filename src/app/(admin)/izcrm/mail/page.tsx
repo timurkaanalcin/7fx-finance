@@ -1,5 +1,6 @@
 "use client";
 
+import { ListPlaceholder, listPhase } from "@/components/crm/CrmStates";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 import { useCallback, useEffect, useState } from "react";
@@ -22,12 +23,25 @@ export default function MailPage() {
   const [editId, setEditId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
 
   const load = useCallback(async () => {
-    const res = await fetch("/api/admin/mail");
-    if (!res.ok) return;
-    const data = await res.json();
-    setTemplates(data.templates || []);
+    setLoading(true);
+    try {
+      const res = await fetch("/api/admin/mail");
+      if (!res.ok) {
+        setFailed(true);
+        return;
+      }
+      const data = await res.json();
+      setTemplates(data.templates || []);
+      setFailed(false);
+    } catch {
+      setFailed(true);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -112,9 +126,16 @@ export default function MailPage() {
             </div>
           ))}
           {templates.length === 0 && (
-            <p className="col-span-2 rounded-lg border border-dashed border-neutral-200 px-3 py-8 text-center text-xs text-neutral-500">
-              {i18n("crm.mail.none")}
-            </p>
+            <div className="col-span-2 rounded-lg border border-dashed border-neutral-200 px-3 py-8 text-center">
+              <ListPlaceholder
+                phase={listPhase(failed, loading)}
+                empty={i18n("crm.mail.none")}
+                title={i18n("crm.ui.loadFailed")}
+                retry={i18n("crm.ui.tryAgain")}
+                loading={i18n("crm.ui.loading")}
+                onRetry={() => void load()}
+              />
+            </div>
           )}
         </div>
         <div className="rounded-lg border border-neutral-200 bg-[#ffffff] p-3">

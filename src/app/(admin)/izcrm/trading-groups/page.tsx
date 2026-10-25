@@ -1,5 +1,6 @@
 "use client";
 
+import { ListPlaceholder, listPhase } from "@/components/crm/CrmStates";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
 import { useCallback, useEffect, useState } from "react";
@@ -10,12 +11,25 @@ export default function TradingGroupsPage() {
     { id: string; name: string; customersCount: number; description: string | null }[]
   >([]);
   const [name, setName] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
 
   const load = useCallback(async () => {
-    const res = await fetch("/api/admin/trading-groups");
-    if (!res.ok) return;
-    const data = await res.json();
-    setGroups(data.groups || []);
+    setLoading(true);
+    try {
+      const res = await fetch("/api/admin/trading-groups");
+      if (!res.ok) {
+        setFailed(true);
+        return;
+      }
+      const data = await res.json();
+      setGroups(data.groups || []);
+      setFailed(false);
+    } catch {
+      setFailed(true);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -66,7 +80,14 @@ export default function TradingGroupsPage() {
             {groups.length === 0 && (
               <tr>
                 <td colSpan={2} className="px-3 py-8 text-center text-neutral-500">
-                  {i18n("crm.ui.noGroups")}
+                  <ListPlaceholder
+                    phase={listPhase(failed, loading)}
+                    empty={i18n("crm.ui.noGroups")}
+                    title={i18n("crm.ui.loadFailed")}
+                    retry={i18n("crm.ui.tryAgain")}
+                    loading={i18n("crm.ui.loading")}
+                    onRetry={() => void load()}
+                  />
                 </td>
               </tr>
             )}

@@ -58,6 +58,61 @@ export function TraderSkeleton() {
   );
 }
 
+export type ListPhase = "loading" | "ready" | "error";
+
+export function listPhase(failed: boolean, loading: boolean): ListPhase {
+  if (failed) return "error";
+  if (loading) return "loading";
+  return "ready";
+}
+
+/** Empty list, first-load skeleton, or a retry when the fetch failed. */
+export function ListPlaceholder({
+  phase,
+  empty,
+  onRetry,
+  title,
+  retry,
+  loading,
+}: {
+  phase: ListPhase;
+  empty: string;
+  onRetry: () => void;
+  title: string;
+  retry: string;
+  loading: string;
+}) {
+  if (phase === "loading") {
+    return (
+      <div data-fx-list-skeleton="" aria-busy="true" role="status" className="mx-auto flex max-w-xs flex-col gap-2 py-1">
+        <span className="sr-only">{loading}</span>
+        <span className="fx-skel fx-skel--light h-3 w-full" />
+        <span className="fx-skel fx-skel--light mx-auto h-3 w-2/3" />
+      </div>
+    );
+  }
+  if (phase === "error") {
+    return (
+      <div data-fx-list-error="" role="alert" className="flex flex-col items-center gap-2">
+        <p className="text-sm font-normal text-[#111111]">{title}</p>
+        <button
+          type="button"
+          data-fx-list-retry=""
+          onClick={onRetry}
+          className="min-h-10 rounded-full bg-black px-4 text-xs font-medium text-white"
+        >
+          {retry}
+        </button>
+      </div>
+    );
+  }
+  return (
+    <span data-fx-list-empty="" className="text-sm font-normal">
+      {empty}
+    </span>
+  );
+}
+
 export function CrmNotice({
   title,
   body,

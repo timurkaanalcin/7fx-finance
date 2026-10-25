@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ListPlaceholder } from "@/components/crm/CrmStates";
 import CrmRecordTable, { type CrmColumn } from "@/components/crm/CrmRecordTable";
 import ClientPicker from "@/components/crm/ClientPicker";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
@@ -46,7 +47,8 @@ export default function TransactionsPage() {
   const [traderId, setTraderId] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [listFailed, setListFailed] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [moreBusy, setMoreBusy] = useState(false);
   // Server counts ignore the type chip so the chips stay stable while a type is selected.
@@ -76,7 +78,11 @@ export default function TransactionsPage() {
     else setLoading(true);
     try {
       const res = await fetch(`/api/admin/transactions?${p}`);
-      if (!res.ok || gen !== listGen.current) return;
+      if (gen !== listGen.current) return;
+      if (!res.ok) {
+        if (mode !== "more") setListFailed(true);
+        return;
+      }
       const data = await res.json();
       const list: Row[] = data.transactions || [];
       const next =
@@ -85,6 +91,7 @@ export default function TransactionsPage() {
           : list;
       rowsRef.current = next;
       setRows(next);
+      if (mode !== "more") setListFailed(false);
       setHasMore(Boolean(data.hasMore));
       if (data.counts && mode === "replace") {
         const byKey = (data.counts.byKey || {}) as Record<string, number>;
@@ -93,6 +100,8 @@ export default function TransactionsPage() {
           .sort((a, b) => b[1] - a[1]);
         setBaseCounts({ total: Number(data.counts.total) || 0, byType });
       }
+    } catch {
+      if (gen === listGen.current && mode !== "more") setListFailed(true);
     } finally {
       if (gen !== listGen.current) return;
       if (mode === "more") setMoreBusy(false);
@@ -365,6 +374,18 @@ export default function TransactionsPage() {
           </span>
         ))}
       </div>
+      {listFailed && (
+        <div className="mb-3 rounded-xl border border-black/10 bg-white px-4 py-6 text-center">
+          <ListPlaceholder
+            phase="error"
+            empty={i18n("crm.ui.noRecords")}
+            title={i18n("crm.ui.loadFailed")}
+            retry={i18n("crm.ui.tryAgain")}
+            loading={i18n("crm.ui.loading")}
+            onRetry={() => void load()}
+          />
+        </div>
+      )}
       <CrmRecordTable
         rows={rows}
         columns={columns}

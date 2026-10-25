@@ -2,6 +2,7 @@ import type { Locale } from "../locales";
 import type { Dict } from "../types";
 import { en } from "./en";
 import { FEED_UI } from "./feed-ui";
+import { STATES_UI } from "./states-ui";
 import { CRM_DICTS } from "./crm-registry";
 
 /**
@@ -9,7 +10,7 @@ import { CRM_DICTS } from "./crm-registry";
  * loaded when the visitor's saved language needs them.
  */
 const loaded: Partial<Record<Locale, Dict>> = {
-  en: { ...en, ...FEED_UI.en },
+  en: { ...en, ...FEED_UI.en, ...STATES_UI.en },
 };
 
 export function hasDict(locale: Locale): boolean {
@@ -18,7 +19,7 @@ export function hasDict(locale: Locale): boolean {
 
 /** Merge a locale's public strings. Feed copy for that locale is added here. */
 export function installDict(locale: Locale, dict: Dict) {
-  loaded[locale] = { ...dict, ...FEED_UI[locale] };
+  loaded[locale] = { ...dict, ...FEED_UI[locale], ...STATES_UI[locale] };
 }
 
 const loaders: Record<Exclude<Locale, "en">, () => Promise<Dict>> = {

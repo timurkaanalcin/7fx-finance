@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ConfirmDialog, CrmFormGrid, type CrmColumn } from "@/components/crm/CrmRecordTable";
+import { ListPlaceholder } from "@/components/crm/CrmStates";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { fmtCrmDate } from "@/lib/crm-format";
 import { countryFlag } from "@/lib/presence-shared";
@@ -135,6 +136,9 @@ export default function WorkersPage() {
       if (d.me?.perms) setMyPerms(d.me.perms);
       if (d.counts) setServerCounts(d.counts);
       if (Array.isArray(d.roles)) setRoleChoices(d.roles);
+      setErr("");
+    } catch {
+      if (gen === listGen.current) setErr(i18n("crm.ui.connectionError"));
     } finally {
       if (mode === "more" && gen === listGen.current) setMoreBusy(false);
     }
@@ -360,7 +364,18 @@ export default function WorkersPage() {
       )}
 
       {msg && <p className="mb-2 text-xs text-emerald-700">{msg}</p>}
-      {err && <p className="mb-2 text-xs text-red-600">{err}</p>}
+      {err && (
+        <div className="mb-3">
+          <ListPlaceholder
+            phase="error"
+            empty=""
+            title={err}
+            retry={i18n("crm.ui.tryAgain")}
+            loading={i18n("crm.ui.loading")}
+            onRetry={() => void load()}
+          />
+        </div>
+      )}
 
       <div className="overflow-x-auto rounded-xl border border-[#e5e5e5] bg-white">
         <div className="flex flex-wrap items-center gap-1.5 border-b border-[#e5e5e5] px-3 py-2">

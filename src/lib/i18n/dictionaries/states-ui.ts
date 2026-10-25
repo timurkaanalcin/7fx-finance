@@ -1,0 +1,62 @@
+import type { Locale } from "../locales";
+import type { Dict } from "../types";
+
+/** Empty and failed-load copy for trader pages. English is the default. */
+export const STATES_UI: Record<Locale, Dict> = {
+  en: {
+    "state.loading": "Loading…",
+    "state.retry": "Try again",
+    "state.loadFailed": "We couldn't load this. Try again.",
+    "state.empty": "Nothing here yet.",
+    "state.supportFailed": "Messages didn't load. Try again.",
+    "state.docsFailed": "Documents didn't load. Try again.",
+    "state.membershipFailed": "Membership didn't load. Try again.",
+    "state.membershipEmpty": "No plans are available right now.",
+    "state.assistantFailed": "The assistant didn't load. Try again.",
+    "state.marketsRetry": "Prices didn't load. Try again.",
+  },
+  tr: {
+    "state.loading": "Yükleniyor…",
+    "state.retry": "Yeniden dene",
+    "state.loadFailed": "Bunu yükleyemedik. Yeniden deneyin.",
+    "state.empty": "Henüz bir şey yok.",
+    "state.supportFailed": "Mesajlar yüklenmedi. Yeniden deneyin.",
+    "state.docsFailed": "Belgeler yüklenmedi. Yeniden deneyin.",
+    "state.membershipFailed": "Üyelik yüklenmedi. Yeniden deneyin.",
+    "state.assistantFailed": "Asistan yüklenmedi. Yeniden deneyin.",
+    "state.marketsRetry": "Fiyatlar yüklenmedi. Yeniden deneyin.",
+  },
+  ru: {
+    "state.loading": "Загрузка…",
+    "state.retry": "Повторить",
+    "state.loadFailed": "Не удалось загрузить. Повторите попытку.",
+    "state.empty": "Пока ничего нет.",
+    "state.supportFailed": "Сообщения не загрузились. Повторите попытку.",
+    "state.docsFailed": "Документы не загрузились. Повторите попытку.",
+    "state.membershipFailed": "Подписка не загрузилась. Повторите попытку.",
+    "state.assistantFailed": "Ассистент не загрузился. Повторите попытку.",
+    "state.marketsRetry": "Котировки не загрузились. Повторите попытку.",
+  },
+  de: {
+    "state.loading": "Laden…",
+    "state.retry": "Erneut versuchen",
+    "state.loadFailed": "Das konnten wir nicht laden. Erneut versuchen.",
+    "state.empty": "Hier ist noch nichts.",
+    "state.supportFailed": "Nachrichten wurden nicht geladen. Erneut versuchen.",
+    "state.docsFailed": "Dokumente wurden nicht geladen. Erneut versuchen.",
+    "state.membershipFailed": "Mitgliedschaft wurde nicht geladen. Erneut versuchen.",
+    "state.assistantFailed": "Der Assistent wurde nicht geladen. Erneut versuchen.",
+    "state.marketsRetry": "Kurse wurden nicht geladen. Erneut versuchen.",
+  },
+  ar: {
+    "state.loading": "جارٍ التحميل…",
+    "state.retry": "حاول مرة أخرى",
+    "state.loadFailed": "تعذر التحميل. حاول مرة أخرى.",
+    "state.empty": "لا شيء هنا بعد.",
+    "state.supportFailed": "لم تُحمَّل الرسائل. حاول مرة أخرى.",
+    "state.docsFailed": "لم تُحمَّل المستندات. حاول مرة أخرى.",
+    "state.membershipFailed": "لم تُحمَّل العضوية. حاول مرة أخرى.",
+    "state.assistantFailed": "لم يُحمَّل المساعد. حاول مرة أخرى.",
+    "state.marketsRetry": "لم تُحمَّل الأسعار. حاول مرة أخرى.",
+  },
+};

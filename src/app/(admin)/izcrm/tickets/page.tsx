@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ListPlaceholder, listPhase } from "@/components/crm/CrmStates";
 import { StatusBadge } from "@/components/crm/StubPage";
 import { ConfirmDialog, CrmFormGrid, ReflectBox, type CrmColumn } from "@/components/crm/CrmRecordTable";
 import ClientPicker, { type ClientOption } from "@/components/crm/ClientPicker";
@@ -134,7 +135,8 @@ export default function TicketsPage() {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [err, setErr] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [listFailed, setListFailed] = useState(false);
+  const [loading, setLoading] = useState(true);
   // Per-kind counts from the last load WITHOUT a kind filter, so chips stay stable
   // while a kind chip is active (the API filters by kind server-side).
   const [baseCounts, setBaseCounts] = useState<{ total: number; byKind: Record<string, number> } | null>(null);
@@ -179,13 +181,17 @@ export default function TicketsPage() {
     else setLoading(true);
     try {
       const res = await fetch(`/api/admin/tickets?${params}`);
-      if (!res.ok) return;
+      if (!res.ok) {
+        if (mode !== "more") setListFailed(true);
+        return;
+      }
       const data = await res.json();
       const incoming: Ticket[] = data.tickets || [];
       const seen = new Set(ticketsRef.current.map((row) => `${row.kind}:${row.id}`));
       const list = mode === "more" ? ticketsRef.current.concat(incoming.filter((row) => !seen.has(`${row.kind}:${row.id}`))) : incoming;
       ticketsRef.current = list;
       setTickets(list);
+      if (mode !== "more") setListFailed(false);
       setMethods(data.methods || []);
       if (data.cursors) cursorsRef.current = data.cursors;
       setHasMore(Boolean(data.hasMore));
@@ -197,6 +203,8 @@ export default function TicketsPage() {
         };
         setBaseCounts({ total: byKind.DEPOSIT + byKind.MARGIN + byKind.WITHDRAW, byKind });
       }
+    } catch {
+      if (mode !== "more") setListFailed(true);
     } finally {
       if (mode === "more") setMoreBusy(false);
       else setLoading(false);
@@ -741,6 +749,18 @@ export default function TicketsPage() {
       )}
       {msg && <p className="mb-2 text-xs text-emerald-700">{msg}</p>}
       {err && <p className="mb-2 text-xs text-red-600">{err}</p>}
+      {listFailed && (
+        <div className="mb-3 rounded-xl border border-black/10 bg-white px-4 py-6 text-center">
+          <ListPlaceholder
+            phase="error"
+            empty={i18n("crm.ui.noTickets")}
+            title={i18n("crm.ui.loadFailed")}
+            retry={i18n("crm.ui.tryAgain")}
+            loading={i18n("crm.ui.loading")}
+            onRetry={() => void load()}
+          />
+        </div>
+      )}
       <div className="overflow-x-auto rounded-lg border border-neutral-200">
         <table className="w-full text-left text-[11px]">
           <thead className="bg-[#ffffff] text-neutral-500">
@@ -933,10 +953,17 @@ export default function TicketsPage() {
                 </Fragment>
               );
             })}
-            {tickets.length === 0 && (
+            {tickets.length === 0 && !listFailed && (
               <tr>
                 <td colSpan={8} className="px-3 py-8 text-center text-neutral-500">
-                  {i18n("crm.ui.noTickets")}
+                  <ListPlaceholder
+                    phase={listPhase(false, loading)}
+                    empty={i18n("crm.ui.noTickets")}
+                    title={i18n("crm.ui.loadFailed")}
+                    retry={i18n("crm.ui.tryAgain")}
+                    loading={i18n("crm.ui.loading")}
+                    onRetry={() => void load()}
+                  />
                 </td>
               </tr>
             )}

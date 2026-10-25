@@ -4,6 +4,7 @@ import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { LOCALE_META } from "@/lib/i18n/locales";
 import { fmtCrmDate } from "@/lib/crm-format";
 import { formatQueueMoney, nextMoneySort, queueStatusTone } from "@/lib/crm-money-queue";
+import { ListPlaceholder, listPhase } from "@/components/crm/CrmStates";
 import { MoneyQueueChrome, MoneyQueuePager } from "@/components/crm/MoneyQueueChrome";
 import { useMoneyQueue, type MoneyQueueRow } from "@/components/crm/use-money-queue";
 import Link from "next/link";
@@ -90,6 +91,18 @@ export default function AdminDepositsPage() {
         }
       />
       {msg && <p className="mb-3 text-xs text-emerald-400">{msg}</p>}
+      {queue.failed && (
+        <div className="mb-3 rounded-xl border border-black/10 bg-white px-4 py-6 text-center">
+          <ListPlaceholder
+            phase="error"
+            empty={i18n("crm.ui.noRecords")}
+            title={i18n("crm.ui.loadFailed")}
+            retry={i18n("crm.ui.tryAgain")}
+            loading={i18n("crm.ui.loading")}
+            onRetry={() => void queue.load()}
+          />
+        </div>
+      )}
       <div className="overflow-x-auto rounded-lg border border-[#e5e5e5]">
         <table className="fx-crm-table w-full text-left text-xs">
           <thead className="border-b border-black/10 bg-white text-neutral-500">
@@ -173,10 +186,17 @@ export default function AdminDepositsPage() {
                 </td>
               </tr>
             ))}
-            {queue.rows.length === 0 && (
+            {queue.rows.length === 0 && !queue.failed && (
               <tr>
                 <td colSpan={7} className="px-3 py-8 text-center text-neutral-500">
-                  {i18n("crm.ui.noRecords")}
+                  <ListPlaceholder
+                    phase={listPhase(false, queue.loading)}
+                    empty={i18n("crm.ui.noRecords")}
+                    title={i18n("crm.ui.loadFailed")}
+                    retry={i18n("crm.ui.tryAgain")}
+                    loading={i18n("crm.ui.loading")}
+                    onRetry={() => void queue.load()}
+                  />
                 </td>
               </tr>
             )}

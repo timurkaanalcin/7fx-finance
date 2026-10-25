@@ -23,6 +23,7 @@ export default function MarketsLiveTable({ rows }: { rows: QuoteRow[] }) {
   const { t, locale } = useI18n();
   const [ticks, setTicks] = useState<Record<string, Tick>>({});
   const [status, setStatus] = useState<"loading" | "live" | "unavailable">("loading");
+  const [attempt, setAttempt] = useState(0);
   const key = rows.map((row) => row.symbol).join(",");
 
   useEffect(() => {
@@ -77,7 +78,7 @@ export default function MarketsLiveTable({ rows }: { rows: QuoteRow[] }) {
       disarm();
       io.disconnect();
     };
-  }, [key]);
+  }, [key, attempt]);
 
   const tag = localeTag(locale);
   const px = (n: number, digits: number) =>
@@ -100,9 +101,22 @@ export default function MarketsLiveTable({ rows }: { rows: QuoteRow[] }) {
 
   return (
     <div className="fx-quote" id="fx-quote-table">
-      <p className="fx-quote-status" role="status">
+      <div className="fx-quote-status" role="status">
         {note}
-      </p>
+        {status === "unavailable" && (
+          <button
+            type="button"
+            data-fx-markets-retry=""
+            onClick={() => {
+              setStatus("loading");
+              setAttempt((n) => n + 1);
+            }}
+            className="ml-2 min-h-10 rounded-full border border-[#d7dbe3] bg-white px-3 text-xs font-medium text-[#15161a]"
+          >
+            {t("state.retry")}
+          </button>
+        )}
+      </div>
       <div className="fx-quote-scroll">
         <table>
           <caption>{t("markets.table.caption")}</caption>
