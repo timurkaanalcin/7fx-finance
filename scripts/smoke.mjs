@@ -292,9 +292,9 @@ async function main() {
 }
 
 async function signedIn(browser, baseUrl) {
-  const user = process.env.SMOKE_USER || "";
-  const pass = process.env.SMOKE_PASS || "";
-  if (!user || !pass) {
+  const smokeUser = process.env.SMOKE_USER || "";
+  const smokePass = process.env.SMOKE_PASS || "";
+  if (!smokeUser || !smokePass) {
     pass("signed-in checks skipped (SMOKE_USER/SMOKE_PASS unset)");
     return;
   }
@@ -307,8 +307,8 @@ async function signedIn(browser, baseUrl) {
     const errors = [];
     watchPage(page, errors);
     await page.goto(baseUrl + "/login", { waitUntil: "domcontentloaded" });
-    await page.locator("#fx-login-identifier").fill(user);
-    await page.locator("#fx-login-password").fill(pass);
+    await page.locator("#fx-login-identifier").fill(smokeUser);
+    await page.locator("#fx-login-password").fill(smokePass);
     await page.locator('form[action="/api/auth/login"] button[type="submit"]').click();
     await page.waitForURL((url) => !url.pathname.startsWith("/login"), { timeout: 20000 });
     const path = new URL(page.url()).pathname;

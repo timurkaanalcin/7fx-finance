@@ -24,6 +24,10 @@ function main() {
   assert.match(script, /--base-url/);
   assert.match(script, /SMOKE_USER/);
   assert.match(script, /SMOKE_PASS/);
+  assert.match(script, /const smokeUser = process\.env\.SMOKE_USER/);
+  assert.match(script, /const smokePass = process\.env\.SMOKE_PASS/);
+  assert.match(script, /pass\("signed-in checks skipped \(SMOKE_USER\/SMOKE_PASS unset\)"\)/);
+  assert.equal(/const pass\s*=/.test(script), false);
   assert.match(script, /#fx-login-identifier/);
   assert.match(script, /#fx-login-password/);
   assert.match(script, /readOnly/);
