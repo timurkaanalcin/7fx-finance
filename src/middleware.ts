@@ -5,6 +5,7 @@ import {
   isCrmHostname,
 } from "@/lib/crm-host";
 import { isAllowedApiOrigin } from "@/lib/security/origins";
+import { HSTS_VALUE, PERMISSIONS_POLICY, requestIsHttps } from "@/lib/security/response-headers.cjs";
 import { isIndexableHost, isMarketingPath, isPrivateHtmlPath, shouldNoindex } from "@/lib/seo-hosts";
 
 const STRICT_CSP = [
@@ -56,6 +57,12 @@ export function middleware(req: NextRequest) {
       res.headers.set("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400");
     } else if (isPrivateHtmlPath(pathname)) {
       res.headers.set("Cache-Control", "private, no-store");
+    }
+    // Replaces the camera/microphone/geolocation line above. payment and usb stay off.
+    // HSTS only on HTTPS so local HTTP does not pin the browser.
+    res.headers.set("Permissions-Policy", PERMISSIONS_POLICY);
+    if (requestIsHttps(req.headers.get("x-forwarded-proto"), req.nextUrl.protocol)) {
+      res.headers.set("Strict-Transport-Security", HSTS_VALUE);
     }
     return res;
   };

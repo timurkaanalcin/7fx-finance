@@ -1,3 +1,8 @@
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
+const { staticSecurityHeaders } = require("./src/lib/security/response-headers.cjs");
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   productionBrowserSourceMaps: false,
@@ -60,6 +65,22 @@ const nextConfig = {
         headers: [
           { key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" },
         ],
+      })),
+      ...[
+        "/_next/static/:path*",
+        "/_next/image",
+        "/icons/:path*",
+        "/landing/:path*",
+        "/logos/:path*",
+        "/og/:path*",
+        "/downloads/:path*",
+        "/icon.png",
+        "/apple-icon.png",
+        "/favicon.ico",
+        "/site.webmanifest",
+      ].map((source) => ({
+        source,
+        headers: staticSecurityHeaders(),
       })),
     ];
   },

@@ -6,6 +6,7 @@ import { recordLedger } from "@/lib/ledger";
 import { readApprovalPayload } from "@/lib/ticket-scenario";
 import { DEFAULT_RESET_BALANCE, MARGIN_CALL_LEVEL, MARGIN_CALL_RULE_EN } from "@/lib/margin-call";
 import { FxError, appendFxNote, convertAmountToUsd } from "@/lib/fx-usd";
+import { publicErrorText } from "@/lib/security/public-error";
 import { CRM_MONEY_LIST_LEGACY, pagedOrLegacy } from "@/lib/trader-list";
 
 export const dynamic = "force-dynamic";
@@ -87,7 +88,7 @@ export async function POST(req: Request) {
       usd = conv.usdAmount;
       ledgerComment = appendFxNote(ledgerComment, conv);
     } catch (e) {
-      if (e instanceof FxError) return NextResponse.json({ error: e.message }, { status: 503 });
+      if (e instanceof FxError) return NextResponse.json({ error: publicErrorText(e, "Rate unavailable") }, { status: 503 });
       throw e;
     }
     await applyBalanceAdd(request.userId, usd);
