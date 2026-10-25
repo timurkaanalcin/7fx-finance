@@ -39,7 +39,7 @@ export default function AuthShell({ mode, children }: AuthShellProps) {
             href="/"
             className="inline-flex min-h-11 items-center rounded-full border border-white/10 px-3 text-sm font-medium text-[#c5cedd] transition hover:bg-white/5 hover:text-white"
           >
-            ← {t("common.home")}
+            <span className="fx-rtl-flip" aria-hidden="true">←</span> {t("common.home")}
           </Link>
         </header>
 

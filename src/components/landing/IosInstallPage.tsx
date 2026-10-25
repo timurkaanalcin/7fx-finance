@@ -17,7 +17,7 @@ export default function IosInstallPage() {
     <main className="fx-ios min-h-screen">
       <div className="fx-ios-shell px-1 py-8 sm:py-14">
         <Link href="/" className="fx-ios-back inline-flex min-h-11 items-center text-sm font-medium text-[#9aa3b5] hover:text-white">
-          ← {t("landing.ios.back")}
+          <span className="fx-rtl-flip" aria-hidden="true">←</span> {t("landing.ios.back")}
         </Link>
         <div className="mt-8 flex items-center gap-3">
           <Image

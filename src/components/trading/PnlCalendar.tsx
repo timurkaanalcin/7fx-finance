@@ -176,7 +176,7 @@ export default function PnlCalendar({
             type="button"
             onClick={() => shift(-1)}
             aria-label={t("term.cal.prev")}
-            className="rounded-control border border-desk-border px-1.5 py-0.5 text-[11px] text-desk-muted hover:bg-desk-hover hover:text-desk-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-desk-accent"
+            className="fx-rtl-flip rounded-control border border-desk-border px-1.5 py-0.5 text-[11px] text-desk-muted hover:bg-desk-hover hover:text-desk-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-desk-accent"
           >
             ‹
           </button>
@@ -187,7 +187,7 @@ export default function PnlCalendar({
             type="button"
             onClick={() => shift(1)}
             aria-label={t("term.cal.next")}
-            className="rounded-control border border-desk-border px-1.5 py-0.5 text-[11px] text-desk-muted hover:bg-desk-hover hover:text-desk-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-desk-accent"
+            className="fx-rtl-flip rounded-control border border-desk-border px-1.5 py-0.5 text-[11px] text-desk-muted hover:bg-desk-hover hover:text-desk-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-desk-accent"
           >
             ›
           </button>

@@ -1028,7 +1028,7 @@ export default function ChatPage() {
                       setPicked(false);
                       setSelected(null);
                     }}
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-neutral-200 text-sm font-medium text-neutral-800 lg:hidden"
+                    className="fx-rtl-flip flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-neutral-200 text-sm font-medium text-neutral-800 lg:hidden"
                     aria-label={i18n("crm.chat.back")}
                   >
                     ←

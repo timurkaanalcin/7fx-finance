@@ -62,7 +62,7 @@ export default function AssistantPage() {
         <span className="text-sm font-medium">{L.aiTitle}</span>
         {state?.unlimited && <span className="rounded-full border border-[#c9a54a]/60 px-2 py-0.5 text-[10px] text-[#c9a54a]">∞</span>}
         <Link href="/membership" className="ml-auto rounded-md bg-[#2a2a2a] px-2.5 py-1.5 text-xs">{L.memTitle}</Link>
-        <Link href="/trade" className="rounded-md bg-[#2a2a2a] px-2.5 py-1.5 text-xs">← {L.back}</Link>
+        <Link href="/trade" className="rounded-md bg-[#2a2a2a] px-2.5 py-1.5 text-xs"><span className="fx-rtl-flip" aria-hidden="true">←</span> {L.back}</Link>
         <ThemeToggle />
       </header>
       <main className="mx-auto w-full max-w-2xl flex-1 overflow-y-auto p-4">

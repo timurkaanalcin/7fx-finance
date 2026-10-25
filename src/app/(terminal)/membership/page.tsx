@@ -47,7 +47,7 @@ export default function MembershipPage() {
       <header className="sticky top-0 z-30 flex min-h-12 items-center gap-3 border-b border-[#2a2a2a] bg-[#0a0a0a] px-4" style={{ paddingTop: "env(safe-area-inset-top)", minHeight: "calc(3rem + env(safe-area-inset-top))" }}>
         <span className="min-w-0 truncate text-sm font-medium">{L.memTitle}</span>
         <Link href="/assistant" className="ml-auto rounded-md bg-[#2a2a2a] px-2.5 py-1.5 text-xs">{L.aiTitle}</Link>
-        <Link href="/profile" className="rounded-md bg-[#2a2a2a] px-2.5 py-1.5 text-xs">← {L.back}</Link>
+        <Link href="/profile" className="rounded-md bg-[#2a2a2a] px-2.5 py-1.5 text-xs"><span className="fx-rtl-flip" aria-hidden="true">←</span> {L.back}</Link>
         <ThemeToggle />
       </header>
       <main className="mx-auto max-w-2xl p-4 pb-10 md:p-6">
