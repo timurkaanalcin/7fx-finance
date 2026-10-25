@@ -62,8 +62,14 @@ function main() {
   assert.match(css, /\.fx-desk-mock/);
   assert.match(css, /aspect-ratio:\s*16\s*\/\s*9/);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.fx-ticker-track/);
+  assert.match(css, /\.fx-screen-stage > img/);
+  assert.match(css, /@media \(min-width:\s*768px\)[\s\S]*\.fx-sticky-cta\s*\{\s*display:\s*none/);
   assert.equal(/font-weight:\s*600/.test(css), false);
   assert.equal(/font-weight:\s*700/.test(css), false);
+
+  const base = read("src/app/base.css");
+  assert.match(base, /\.fx-terminal-window \.fx-terminal-bar span/);
+  assert.equal(/^[^\n]*\.fx-terminal-bar span/m.test(base.replace(/\.fx-terminal-window \.fx-terminal-bar span/g, "")), false);
 
   const stage = read("src/components/landing/ProductStage.tsx");
   assert.equal(stage.includes("<video"), false);

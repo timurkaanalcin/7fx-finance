@@ -670,7 +670,7 @@ body:has(.fx-auth-page) {
   gap: 6px;
   padding: 2px 4px 8px;
 }
-.fx-terminal-bar span {
+.fx-terminal-window .fx-terminal-bar span {
   width: 8px;
   height: 8px;
   border-radius: 99px;

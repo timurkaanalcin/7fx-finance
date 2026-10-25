@@ -46,14 +46,17 @@ const DIGITS: Record<string, number> = {
 
 type Tick = { symbol: string; bid: number; ask: number; mid: number; changePct: number };
 
+type Bar = { o: number; h: number; l: number; c: number };
+
 type Feed = {
   status: "loading" | "live" | "delayed" | "unavailable";
   ticks: Record<string, Tick>;
   series: Record<string, number[]>;
+  bars: Record<string, Bar[]>;
   chartStale: boolean;
 };
 
-const EMPTY: Feed = { status: "loading", ticks: {}, series: {}, chartStale: false };
+const EMPTY: Feed = { status: "loading", ticks: {}, series: {}, bars: {}, chartStale: false };
 
 let feed: Feed = EMPTY;
 let timer: ReturnType<typeof setInterval> | null = null;
@@ -90,16 +93,27 @@ function formatPct(n: number, locale: string) {
   return `${body}%`;
 }
 
-async function fetchCloses(symbol: string): Promise<{ closes: number[]; stale: boolean } | null> {
+function asPrice(n: unknown): number | null {
+  return typeof n === "number" && Number.isFinite(n) ? n : null;
+}
+
+async function fetchBars(symbol: string): Promise<{ bars: Bar[]; stale: boolean } | null> {
   const res = await fetch(`/api/candles?symbol=${encodeURIComponent(symbol)}&timeframe=5m`, { cache: "no-store" });
   if (!res.ok) return null;
   const data = await res.json();
   const rows = Array.isArray(data.candles) ? data.candles : [];
-  const closes = rows
-    .map((c: { close?: number }) => c?.close)
-    .filter((n: unknown): n is number => typeof n === "number" && Number.isFinite(n));
-  if (closes.length < 2) return null;
-  return { closes: closes.slice(-90), stale: Boolean(data.stale || data.error) };
+  const bars: Bar[] = [];
+  for (let i = 0; i < rows.length; i += 1) {
+    const row = rows[i] as { open?: number; high?: number; low?: number; close?: number };
+    const c = asPrice(row?.close);
+    if (c === null) continue;
+    const o = asPrice(row?.open) ?? c;
+    const h = asPrice(row?.high) ?? Math.max(o, c);
+    const l = asPrice(row?.low) ?? Math.min(o, c);
+    bars.push({ o, h: Math.max(h, o, c), l: Math.min(l, o, c), c });
+  }
+  if (bars.length < 2) return null;
+  return { bars: bars.slice(-160), stale: Boolean(data.stale || data.error) };
 }
 
 async function refresh() {
@@ -115,7 +129,7 @@ async function refresh() {
     };
     for (let i = 0; i < CHART_SYMS.length; i += 1) take(CHART_SYMS[i]);
     for (const sym of Array.from(extraCharts)) take(sym);
-    const candleTask = Promise.all(wanted.map(async (symbol) => ({ symbol, row: await fetchCloses(symbol) })));
+    const candleTask = Promise.all(wanted.map(async (symbol) => ({ symbol, row: await fetchBars(symbol) })));
     const [symRes, quoteRes] = await Promise.all([
       fetch("/api/symbols", { cache: "no-store" }),
       fetch(`/api/market/quote?live=1&symbols=${QUOTE_SYMS.join(",")}`, { cache: "no-store" }),
@@ -139,36 +153,44 @@ async function refresh() {
     }
     // Paint quotes before the candle history finishes. The chart fills in on the second emit.
     if (Object.keys(ticks).length > 0) {
-      emit({ status: "live", ticks, series: feed.series, chartStale: Object.keys(feed.series).length === 0 });
+      emit({ status: "live", ticks, series: feed.series, bars: feed.bars, chartStale: Object.keys(feed.series).length === 0 });
     }
     const candleRows = await candleTask;
     const series: Record<string, number[]> = {};
+    const bars: Record<string, Bar[]> = {};
     let chartStale = false;
     for (const item of candleRows) {
       if (!item.row) continue;
-      const closes = item.row.closes.slice();
+      const next = item.row.bars.map((bar) => ({ o: bar.o, h: bar.h, l: bar.l, c: bar.c }));
       const live = ticks[item.symbol];
-      if (live) closes[closes.length - 1] = live.mid;
-      series[item.symbol] = closes;
+      const last = next[next.length - 1];
+      if (live && last) {
+        last.c = live.mid;
+        if (live.mid > last.h) last.h = live.mid;
+        if (live.mid < last.l) last.l = live.mid;
+      }
+      bars[item.symbol] = next;
+      series[item.symbol] = next.map((bar) => bar.c);
       if (item.row.stale) chartStale = true;
     }
     const anyTick = Object.keys(ticks).length > 0;
     const anySeries = Object.values(series).some((s) => s.length > 1);
     if (!anyTick && !anySeries) {
-      emit({ status: "unavailable", ticks: {}, series: {}, chartStale: false });
+      emit({ status: "unavailable", ticks: {}, series: {}, bars: {}, chartStale: false });
       return;
     }
     emit({
       status: anyTick ? "live" : "delayed",
       ticks,
       series,
+      bars,
       chartStale: chartStale || !anyTick,
     });
   } catch {
     if (feed.status === "live" || feed.status === "delayed") {
       emit({ ...feed, status: "delayed", chartStale: true });
     } else {
-      emit({ status: "unavailable", ticks: {}, series: {}, chartStale: false });
+      emit({ status: "unavailable", ticks: {}, series: {}, bars: {}, chartStale: false });
     }
   } finally {
     inflight = false;
@@ -202,6 +224,77 @@ function useReducedMotion() {
   return reduce;
 }
 
+function viewRange(low: number, high: number): { min: number; max: number } {
+  const mid = (low + high) / 2;
+  const span = high - low;
+  const floor = Math.max(Math.abs(mid) * 0.0008, 1e-6);
+  if (!(span > floor)) {
+    return { min: mid - floor / 2, max: mid + floor / 2 };
+  }
+  const pad = span * 0.12;
+  return { min: low - pad, max: high + pad };
+}
+
+function smoothCloses(values: number[]): number[] {
+  if (values.length < 5) return values;
+  const out: number[] = [];
+  for (let i = 0; i < values.length; i += 1) {
+    const a = values[Math.max(0, i - 2)];
+    const b = values[Math.max(0, i - 1)];
+    const c = values[i];
+    const d = values[Math.min(values.length - 1, i + 1)];
+    const e = values[Math.min(values.length - 1, i + 2)];
+    out.push((a + b + c + d + e) / 5);
+  }
+  return out;
+}
+
+function strokeMonotone(ctx: CanvasRenderingContext2D, pts: Array<[number, number]>) {
+  const n = pts.length;
+  if (n < 2) return;
+  const dx: number[] = [];
+  const slope: number[] = [];
+  for (let i = 0; i < n - 1; i += 1) {
+    dx[i] = pts[i + 1][0] - pts[i][0];
+    const dy = pts[i + 1][1] - pts[i][1];
+    slope[i] = dx[i] === 0 ? 0 : dy / dx[i];
+  }
+  const tan: number[] = new Array(n);
+  tan[0] = slope[0];
+  tan[n - 1] = slope[n - 2];
+  for (let i = 1; i < n - 1; i += 1) {
+    tan[i] = slope[i - 1] * slope[i] <= 0 ? 0 : (slope[i - 1] + slope[i]) / 2;
+  }
+  for (let i = 0; i < n - 1; i += 1) {
+    if (Math.abs(slope[i]) < 1e-6) {
+      tan[i] = 0;
+      tan[i + 1] = 0;
+      continue;
+    }
+    const a = tan[i] / slope[i];
+    const b = tan[i + 1] / slope[i];
+    const hyp = a * a + b * b;
+    if (hyp > 9) {
+      const tau = 3 / Math.sqrt(hyp);
+      tan[i] = tau * a * slope[i];
+      tan[i + 1] = tau * b * slope[i];
+    }
+  }
+  ctx.beginPath();
+  ctx.moveTo(pts[0][0], pts[0][1]);
+  for (let i = 0; i < n - 1; i += 1) {
+    const h = dx[i];
+    ctx.bezierCurveTo(
+      pts[i][0] + h / 3,
+      pts[i][1] + (tan[i] * h) / 3,
+      pts[i + 1][0] - h / 3,
+      pts[i + 1][1] - (tan[i + 1] * h) / 3,
+      pts[i + 1][0],
+      pts[i + 1][1]
+    );
+  }
+}
+
 function drawSeries(canvas: HTMLCanvasElement, values: number[], pulse: number) {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   const w = canvas.clientWidth || 320;
@@ -212,53 +305,121 @@ function drawSeries(canvas: HTMLCanvasElement, values: number[], pulse: number) 
   if (!ctx || values.length < 2) return;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.clearRect(0, 0, w, h);
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const span = max - min || Math.abs(max) * 0.002 || 1;
+  const smooth = smoothCloses(values);
+  let low = smooth[0];
+  let high = smooth[0];
+  for (let i = 1; i < smooth.length; i += 1) {
+    if (smooth[i] < low) low = smooth[i];
+    if (smooth[i] > high) high = smooth[i];
+  }
+  const range = viewRange(low, high);
+  const span = range.max - range.min || 1;
   const padX = 8;
-  const padY = 16;
-  const pts = values.map((v, i) => {
-    const x = padX + (i / (values.length - 1)) * (w - padX * 2);
-    const y = padY + (1 - (v - min) / span) * (h - padY * 2);
-    return [x, y] as const;
+  const padY = 12;
+  const pts: Array<[number, number]> = smooth.map((v, i) => {
+    const x = padX + (i / (smooth.length - 1)) * (w - padX * 2);
+    const y = padY + (1 - (v - range.min) / span) * (h - padY * 2);
+    return [x, y];
   });
   const up = values[values.length - 1] >= values[0];
   const color = up ? "#3ddc97" : "#ff5d73";
   ctx.strokeStyle = "rgba(255,255,255,0.05)";
   ctx.lineWidth = 1;
-  for (let i = 1; i <= 3; i++) {
+  for (let i = 1; i <= 3; i += 1) {
     const y = padY + ((h - padY * 2) * i) / 4;
     ctx.beginPath();
     ctx.moveTo(padX, y);
     ctx.lineTo(w - padX, y);
     ctx.stroke();
   }
-  ctx.beginPath();
-  pts.forEach(([x, y], i) => (i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)));
+  strokeMonotone(ctx, pts);
   ctx.strokeStyle = color;
-  ctx.lineWidth = 2;
+  ctx.lineWidth = 1.75;
   ctx.lineJoin = "round";
   ctx.stroke();
-  ctx.lineTo(pts[pts.length - 1][0], h - 4);
+  const last = pts[pts.length - 1];
+  ctx.lineTo(last[0], h - 4);
   ctx.lineTo(pts[0][0], h - 4);
   ctx.closePath();
   const g = ctx.createLinearGradient(0, 0, 0, h);
-  g.addColorStop(0, up ? "rgba(61,220,151,0.28)" : "rgba(255,93,115,0.24)");
+  g.addColorStop(0, up ? "rgba(61,220,151,0.22)" : "rgba(255,93,115,0.2)");
   g.addColorStop(1, "rgba(61,220,151,0)");
   ctx.fillStyle = g;
   ctx.fill();
-  const last = pts[pts.length - 1];
   ctx.beginPath();
-  ctx.arc(last[0], last[1], 3 + pulse * 3.2, 0, Math.PI * 2);
+  ctx.arc(last[0], last[1], 3 + pulse * 2.4, 0, Math.PI * 2);
   ctx.fillStyle = up ? "rgba(61,220,151,0.25)" : "rgba(255,93,115,0.25)";
   ctx.fill();
   ctx.beginPath();
-  ctx.arc(last[0], last[1], 3, 0, Math.PI * 2);
+  ctx.arc(last[0], last[1], 2.5, 0, Math.PI * 2);
   ctx.fillStyle = color;
   ctx.fill();
 }
 
-function HeroCanvas({ values, label }: { values: number[]; label: string }) {
+function drawCandles(canvas: HTMLCanvasElement, bars: Bar[], pulse: number) {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = canvas.clientWidth || 320;
+  const h = canvas.clientHeight || 160;
+  canvas.width = Math.max(1, Math.floor(w * dpr));
+  canvas.height = Math.max(1, Math.floor(h * dpr));
+  const ctx = canvas.getContext("2d");
+  if (!ctx || bars.length < 2) return;
+  const shown = bars.length > 96 ? bars.slice(bars.length - 96) : bars;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+  let low = shown[0].l;
+  let high = shown[0].h;
+  for (let i = 1; i < shown.length; i += 1) {
+    if (shown[i].l < low) low = shown[i].l;
+    if (shown[i].h > high) high = shown[i].h;
+  }
+  const range = viewRange(low, high);
+  const span = range.max - range.min || 1;
+  const padX = 8;
+  const padY = 12;
+  const plotW = Math.max(20, w - padX * 2);
+  const plotH = Math.max(20, h - padY * 2);
+  const slot = plotW / shown.length;
+  const yOf = (v: number) => padY + (1 - (v - range.min) / span) * plotH;
+  ctx.strokeStyle = "rgba(255,255,255,0.05)";
+  ctx.lineWidth = 1;
+  for (let i = 1; i <= 3; i += 1) {
+    const y = padY + (plotH * i) / 4;
+    ctx.beginPath();
+    ctx.moveTo(padX, y);
+    ctx.lineTo(w - padX, y);
+    ctx.stroke();
+  }
+  shown.forEach((bar, i) => {
+    const x = padX + i * slot;
+    const up = bar.c >= bar.o;
+    const color = up ? "#3ddc97" : "#ff5d73";
+    const mid = x + slot * 0.5;
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(mid, yOf(bar.h));
+    ctx.lineTo(mid, yOf(bar.l));
+    ctx.stroke();
+    const top = yOf(Math.max(bar.o, bar.c));
+    const bot = yOf(Math.min(bar.o, bar.c));
+    const body = Math.max(1.25, bot - top);
+    ctx.globalAlpha = 0.92;
+    ctx.fillRect(x + slot * 0.22, top, Math.max(1.5, slot * 0.56), body);
+    ctx.globalAlpha = 1;
+  });
+  const last = shown[shown.length - 1];
+  const lx = padX + (shown.length - 0.5) * slot;
+  const ly = yOf(last.c);
+  const up = last.c >= shown[0].o;
+  ctx.beginPath();
+  ctx.arc(lx, ly, 3 + pulse * 2.2, 0, Math.PI * 2);
+  ctx.fillStyle = up ? "rgba(61,220,151,0.22)" : "rgba(255,93,115,0.22)";
+  ctx.fill();
+}
+
+function HeroCanvas({ bars, label }: { bars: Bar[]; label: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const reduce = useReducedMotion();
   useEffect(() => {
@@ -267,8 +428,8 @@ function HeroCanvas({ values, label }: { values: number[]; label: string }) {
     let raf = 0;
     let frame = 0;
     const paint = () => {
-      const pulse = reduce ? 0 : (Math.sin(frame / 16) + 1) / 2;
-      drawSeries(canvas, values, pulse);
+      const pulse = reduce ? 0 : (Math.sin(frame / 18) + 1) / 2;
+      drawCandles(canvas, bars, pulse);
       if (!reduce) {
         frame += 1;
         raf = requestAnimationFrame(paint);
@@ -281,7 +442,7 @@ function HeroCanvas({ values, label }: { values: number[]; label: string }) {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", onResize);
     };
-  }, [values, reduce]);
+  }, [bars, reduce]);
   return <canvas ref={ref} className="fx-hero-canvas" role="img" aria-label={label} />;
 }
 
@@ -347,7 +508,6 @@ export function LiveHeroChart() {
           <i />
         </span>
         <span className="fx-terminal-name">{t("landing.live.terminal")}</span>
-        <FeedDot state={feedState(snap.status)} />
         <span className="fx-terminal-badge">{badge}</span>
       </div>
       <div className="fx-chart-card-head">
@@ -363,8 +523,8 @@ export function LiveHeroChart() {
         ) : null}
       </div>
       <div className="fx-chart-stage">
-        {series && series.length > 1 ? (
-          <HeroCanvas values={series} label={`${t("landing.live.chartAria")} ${symbol}`} />
+        {snap.bars[symbol] && snap.bars[symbol].length > 1 ? (
+          <HeroCanvas bars={snap.bars[symbol]} label={`${t("landing.live.chartAria")} ${symbol}`} />
         ) : (
           <Note status={snap.status === "loading" ? "loading" : "unavailable"} stale={false} t={t} />
         )}
@@ -497,7 +657,6 @@ export function TerminalDesk() {
   const { t, locale } = useI18n();
   const snap = useLiveFeed();
   const symbol = "EURUSD";
-  const series = snap.series[symbol];
   const tick = snap.ticks[symbol];
   return (
     <div className="fx-desk-mock">
@@ -511,7 +670,7 @@ export function TerminalDesk() {
               <li key={sym}>
                 <SymbolIcon symbol={sym} size={16} />
                 <span className="fx-desk-sym">{sym}</span>
-                <span className={up ? "is-up" : "is-down"}>{row ? formatPx(row.mid, sym, locale) : "—"}</span>
+                <span className={`fx-desk-px ${up ? "is-up" : "is-down"}`}>{row ? formatPx(row.mid, sym, locale) : "—"}</span>
               </li>
             );
           })}
@@ -522,8 +681,8 @@ export function TerminalDesk() {
           <span>{symbol}</span>
           <FeedDot state={feedState(snap.status)} />
         </div>
-        {series && series.length > 1 ? (
-          <HeroCanvas values={series} label={`${t("landing.live.chartAria")} ${symbol}`} />
+        {snap.bars[symbol] && snap.bars[symbol].length > 1 ? (
+          <HeroCanvas bars={snap.bars[symbol]} label={`${t("landing.live.chartAria")} ${symbol}`} />
         ) : (
           <Note status={snap.status === "loading" ? "loading" : "unavailable"} stale={false} t={t} />
         )}
