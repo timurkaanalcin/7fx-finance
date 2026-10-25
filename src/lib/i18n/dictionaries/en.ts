@@ -988,4 +988,5 @@ export const en: Dict = {
   "term.onboard.dismiss": "Dismiss",
   "term.onboard.marketsHint": "Browse markets",
   "term.onboard.walletHint": "This wallet is empty. A deposit funds it after approval.",
+  "crm.tickets.approvedToast": "Approved {amount} for {customer}.",
 };

@@ -228,6 +228,9 @@ export function useMoneyQueue<T extends MoneyQueueRow>(path: string, opts: Optio
     searchRef,
     range,
     load,
+    patchRow: (id: string, patch: { status?: string }) => {
+      setRows((list) => list.map((row) => (row.id === id ? { ...row, ...patch } : row)));
+    },
     exportCsv,
   };
 }

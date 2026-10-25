@@ -988,4 +988,5 @@ export const ru: Dict = {
   "term.onboard.dismiss": "Скрыть",
   "term.onboard.marketsHint": "К рынкам",
   "term.onboard.walletHint": "Этот кошелёк пуст. Депозит зачислится после одобрения.",
+  "crm.tickets.approvedToast": "Одобрено {amount} для {customer}.",
 };
