@@ -259,6 +259,8 @@ export const en: Dict = {
   "term.ot.pendingOk": "Pending order created",
   "term.ot.noSession": "No session — please sign in again",
   "term.ot.conn": "Connection error",
+  "term.ot.volDown": "Decrease volume",
+  "term.ot.volUp": "Increase volume",
   "term.ot.halve": "Halve lot",
   "term.ot.double": "Double lot",
   "term.ot.askConfirm": "Ask before sending",

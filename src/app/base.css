@@ -12,7 +12,7 @@
   --bg-hover: #1f1f1f;
   --border: #2a2a2a;
   --text: #d1d4dc;
-  --text-muted: #787b86;
+  --text-muted: #a7b0c0;
   --accent: #111111;
   --accent-strong: #111111;
   --accent-soft: #2a2a2a;
@@ -382,8 +382,13 @@ body:has(.fx-ios) {
   border-color: rgba(255, 255, 255, 0.14) !important;
 }
 
+.fx-auth-page label,
+.fx-auth-page .text-\[\#5c657a\] {
+  color: #c5cedd !important;
+}
+
 .fx-auth-page input::placeholder {
-  color: rgba(244, 247, 251, 0.38);
+  color: rgba(244, 247, 251, 0.72) !important;
 }
 
 .fx-auth-page .fx-auth-accent-text {
@@ -402,7 +407,9 @@ body:has(.fx-ios) {
 
 .fx-auth-page a:focus-visible,
 .fx-auth-page button:focus-visible,
-.fx-auth-page input:focus-visible {
+.fx-auth-page input:focus-visible,
+.fx-auth-page select:focus-visible,
+.fx-auth-page textarea:focus-visible {
   outline: 2px solid #f4f7fb;
   outline-offset: 2px;
 }

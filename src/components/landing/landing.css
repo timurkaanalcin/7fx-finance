@@ -804,7 +804,11 @@ html:has(.fx-landing) {
 
 .fx-landing a:focus-visible,
 .fx-landing button:focus-visible,
-.fx-landing summary:focus-visible {
+.fx-landing summary:focus-visible,
+.fx-landing input:focus-visible,
+.fx-landing select:focus-visible,
+.fx-landing textarea:focus-visible,
+.fx-landing [role="tab"]:focus-visible {
   outline: 2px solid #f4f7fb;
   outline-offset: 2px;
 }

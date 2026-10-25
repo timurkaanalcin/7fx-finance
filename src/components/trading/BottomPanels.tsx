@@ -2091,7 +2091,7 @@ export default function BottomPanels({
               value={symbolFilter}
               onChange={(e) => setSymbolFilter(e.target.value)}
               placeholder="EURUSD…"
-              className="min-w-0 flex-1 rounded-[7px] border border-desk-border bg-desk-bg px-2 py-1 text-[11px] text-desk-text outline-none placeholder:text-desk-muted/60 focus:border-desk-accent/50"
+              className="min-w-0 flex-1 rounded-[7px] border border-desk-border bg-desk-bg px-2 py-1 text-[11px] text-desk-text outline-none placeholder:text-desk-muted focus:border-desk-accent/50"
             />
           </div>
           <div className="flex min-w-[140px] flex-1 items-center gap-1 sm:max-w-[220px]">
@@ -2117,7 +2117,7 @@ export default function BottomPanels({
                 }}
                 placeholder={t("term.ticketPh")}
                 aria-label={t("term.ticketPh")}
-                className="w-full min-w-0 rounded-[7px] border border-desk-border bg-desk-bg py-1 pl-2 pr-6 text-[11px] text-desk-text outline-none placeholder:text-desk-muted/60 focus:border-desk-accent/50 [&::-webkit-search-cancel-button]:hidden"
+                className="w-full min-w-0 rounded-[7px] border border-desk-border bg-desk-bg py-1 pl-2 pr-6 text-[11px] text-desk-text outline-none placeholder:text-desk-muted focus:border-desk-accent/50 [&::-webkit-search-cancel-button]:hidden"
               />
               {textFilter ? (
                 <button

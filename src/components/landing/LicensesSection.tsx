@@ -25,7 +25,7 @@ export default function LicensesSection() {
             <article key={l.id} className="fx-feature-card flex flex-col">
               {l.logo && (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={l.logo} alt={l.regulator} className="mb-4 h-10 w-auto self-start object-contain" loading="lazy" />
+                <img src={l.logo} alt={l.regulator} width={120} height={40} className="mb-4 h-10 w-auto self-start object-contain" loading="lazy" />
               )}
               <p className="text-[15px] font-semibold tracking-tight">{l.regulator}</p>
               <p className="mt-1 text-[13px] text-[#9aa3b5]">{t("landing.licenses.number")} <span className="font-medium text-[#f4f7fb]">{l.number}</span></p>

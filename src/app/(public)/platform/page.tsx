@@ -3,7 +3,7 @@ import Link from "next/link";
 import { cookies, headers } from "next/headers";
 import PublicDoc from "@/components/public/PublicDoc";
 import { publicLocaleFromCookie } from "@/lib/i18n/locales";
-import { localizeMarketingMeta, metaFor, publicBundle } from "@/lib/public-doc-copy";
+import { publicBundle } from "@/lib/public-doc-copy";
 import { marketingMetadata } from "@/lib/seo";
 
 function localeFromCookie() {
@@ -12,14 +12,7 @@ function localeFromCookie() {
 
 export async function generateMetadata(): Promise<Metadata> {
   const h = headers();
-  const locale = localeFromCookie();
-  const copy = metaFor(locale, "/platform");
-  return localizeMarketingMeta(
-    marketingMetadata(h.get("x-forwarded-host") || h.get("host"), "/platform"),
-    locale,
-    copy.title,
-    copy.description
-  );
+  return marketingMetadata(h.get("x-forwarded-host") || h.get("host"), "/platform");
 }
 
 export default function PlatformPage() {

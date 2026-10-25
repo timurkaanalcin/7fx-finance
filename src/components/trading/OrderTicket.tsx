@@ -620,6 +620,7 @@ export default function OrderTicket({
                   return Math.max(0.01, Math.round((base - 0.01) * 100) / 100).toFixed(2);
                 })
               }
+              aria-label={t("term.ot.volDown")}
               className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] border border-desk-border/80 bg-desk-elev text-base font-semibold text-desk-muted hover:bg-desk-hover hover:text-desk-text md:h-9 md:w-9 md:rounded-control md:text-sm"
             >
               −
@@ -627,6 +628,8 @@ export default function OrderTicket({
             <input
               value={volume}
               onChange={(e) => setVolume(e.target.value)}
+              inputMode="decimal"
+              aria-label={t("term.col.volume")}
               className={`${inputCls} text-center text-base font-semibold tabular-nums md:text-sm`}
             />
             <button
@@ -638,6 +641,7 @@ export default function OrderTicket({
                   return (Math.round((base + 0.01) * 100) / 100).toFixed(2);
                 })
               }
+              aria-label={t("term.ot.volUp")}
               className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] border border-desk-border/80 bg-desk-elev text-base font-semibold text-desk-muted hover:bg-desk-hover hover:text-desk-text md:h-9 md:w-9 md:rounded-control md:text-sm"
             >
               +
@@ -680,7 +684,7 @@ export default function OrderTicket({
                 ×2
               </button>
             </div>
-            <span className="fx-order-notional text-[10px] tabular-nums text-desk-muted/80">
+            <span className="fx-order-notional text-[10px] tabular-nums text-desk-muted">
               {t("term.ot.notional")} {fmtTicketMoney(notional, currency)}
             </span>
           </div>
@@ -694,6 +698,8 @@ export default function OrderTicket({
             <input
               value={limitPrice}
               onChange={(e) => setLimitPrice(e.target.value)}
+              inputMode="decimal"
+              aria-label={t("term.col.price")}
               className={`${inputCls} tabular-nums`}
             />
           </div>
@@ -703,6 +709,8 @@ export default function OrderTicket({
           <button
             type="button"
             onClick={enableSl}
+            aria-pressed={showSl}
+            aria-label={t("term.ot.stopLoss")}
             className={`rounded-[12px] border py-2.5 text-xs font-semibold transition md:rounded-control md:py-2 ${
               showSl
                 ? "border-desk-sell/50 bg-desk-sell/90 text-white"
@@ -714,6 +722,8 @@ export default function OrderTicket({
           <button
             type="button"
             onClick={enableTp}
+            aria-pressed={showTp}
+            aria-label={t("term.ot.takeProfit")}
             className={`rounded-[12px] border py-2.5 text-xs font-semibold transition md:rounded-control md:py-2 ${
               showTp
                 ? "border-desk-buy/50 bg-desk-buy/90 text-white"
@@ -749,6 +759,8 @@ export default function OrderTicket({
               value={sl}
               onChange={(e) => setSl(e.target.value)}
               placeholder={t("term.pricePh")}
+              inputMode="decimal"
+              aria-label={t("term.ot.stopLoss")}
               autoFocus
               className="w-full rounded-[12px] border border-desk-sell/40 bg-desk-bg px-3 py-2.5 text-sm tabular-nums text-desk-text outline-none focus:border-desk-sell md:rounded-control md:px-2.5 md:py-2"
             />
@@ -815,6 +827,7 @@ export default function OrderTicket({
                   setRiskError("");
                 }}
                 placeholder={t("term.ot.maxRisk").replace("{currency}", (currency || "USD").trim().toUpperCase() || "USD")}
+                aria-label={t("term.ot.risk")}
                 className={inputCls + " tabular-nums"}
               />
               <div className="flex flex-wrap items-center gap-1" role="group" aria-label={t("term.ot.riskPresets")}>
@@ -896,6 +909,8 @@ export default function OrderTicket({
               value={tp}
               onChange={(e) => setTp(e.target.value)}
               placeholder={t("term.pricePh")}
+              inputMode="decimal"
+              aria-label={t("term.ot.takeProfit")}
               className="w-full rounded-[12px] border border-desk-buy/40 bg-desk-bg px-3 py-2.5 text-sm tabular-nums text-desk-text outline-none focus:border-desk-buy md:rounded-control md:px-2.5 md:py-2"
             />
             <div className="mt-1.5 flex flex-wrap items-center gap-1" role="group" aria-label={t("term.col.distance")}>
