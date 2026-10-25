@@ -980,4 +980,12 @@ export const tr: Dict = {
   "landing.desk.note": "Al ve Sat hesap açar, emir göndermez.",
   "term.watch.closed": "kapalı",
   "term.watch.closedHint": "Son kapanış. Canlı alış ve satış henüz gelmedi.",
+  "term.onboard.title": "İlk adımlar",
+  "term.onboard.lead": "Kısa bir liste. Buradan emir gitmez ve para hareket etmez.",
+  "term.onboard.profile": "E-postayı ve profili doğrula",
+  "term.onboard.deposit": "Yatırma yap",
+  "term.onboard.ticket": "Emir biletine bak",
+  "term.onboard.dismiss": "Kapat",
+  "term.onboard.marketsHint": "Piyasalara bak",
+  "term.onboard.walletHint": "Bu cüzdan boş. Yatırma, onaydan sonra bakiyeye geçer.",
 };

@@ -156,6 +156,7 @@ import { positionMark } from "@/lib/mark-price";
 import { CALENDAR_FOLLOW_CAP, concatUniqueById } from "@/lib/position-pages";
 import { formatPrice, getSymbol } from "@/lib/symbols";
 import { markQuotesSeen } from "./quote-clock";
+import TradeChecklist from "./TradeChecklist";
 import TradeSkeleton, { BlotterSkeleton, WatchlistSkeleton } from "./TradeSkeleton";
 import { normalizeLocale } from "@/lib/i18n/locales";
 import type {
@@ -769,6 +770,17 @@ export default function TerminalShell({
     setOrderOpen(true);
   }
 
+  function browseMarkets() {
+    setMobileTab("markets");
+    window.setTimeout(() => {
+      const inputs = Array.from(
+        document.querySelectorAll<HTMLInputElement>("input[data-fx-watchlist-search]")
+      );
+      const el = inputs.find((i) => i.offsetParent !== null) || null;
+      if (el) el.focus();
+    }, 0);
+  }
+
   const headerChips = useMemo(() => {
     if (!account) return null;
     const delta = displayBookDelta(
@@ -999,6 +1011,13 @@ export default function TerminalShell({
         }}
         depositDisabled={!!user.impersonatedBy}
       />
+      <TradeChecklist
+        onDeposit={() => {
+          if (user.impersonatedBy) return;
+          setDepositOpen(true);
+        }}
+        onPreviewTicket={() => openOrder("BUY")}
+      />
       {user.impersonatedBy && (
         <div
           data-impersonation-banner
@@ -1205,6 +1224,7 @@ export default function TerminalShell({
                 onCancelOrders={onCancelOrders}
                 onSelectSymbol={setSymbol}
                 onReopenTrade={onReopenTrade}
+                onBrowseMarkets={browseMarkets}
               />
             </div>
             )}
@@ -1248,6 +1268,7 @@ export default function TerminalShell({
                 onCancelOrders={onCancelOrders}
                 onSelectSymbol={setSymbol}
                 onReopenTrade={onReopenTrade}
+                onBrowseMarkets={browseMarkets}
               />
             )}
             </div>

@@ -980,4 +980,12 @@ export const en: Dict = {
   "landing.desk.note": "Buy and Sell open an account and do not send an order.",
   "term.watch.closed": "closed",
   "term.watch.closedHint": "Last close. Live bid and ask are not in yet.",
+  "term.onboard.title": "First steps",
+  "term.onboard.lead": "A short checklist. Nothing here sends an order or moves money.",
+  "term.onboard.profile": "Verify email and profile",
+  "term.onboard.deposit": "Make a deposit",
+  "term.onboard.ticket": "Look at the order ticket",
+  "term.onboard.dismiss": "Dismiss",
+  "term.onboard.marketsHint": "Browse markets",
+  "term.onboard.walletHint": "This wallet is empty. A deposit funds it after approval.",
 };

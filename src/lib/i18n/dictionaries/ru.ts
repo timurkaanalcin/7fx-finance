@@ -980,4 +980,12 @@ export const ru: Dict = {
   "landing.desk.note": "Купить и Продать открывают счёт и не отправляют заявку.",
   "term.watch.closed": "закрыт",
   "term.watch.closedHint": "Цена закрытия. Bid и ask ещё не пришли.",
+  "term.onboard.title": "Первые шаги",
+  "term.onboard.lead": "Короткий список. Отсюда не уходит заявка и не двигаются деньги.",
+  "term.onboard.profile": "Проверьте почту и профиль",
+  "term.onboard.deposit": "Сделать депозит",
+  "term.onboard.ticket": "Посмотреть заявку",
+  "term.onboard.dismiss": "Скрыть",
+  "term.onboard.marketsHint": "К рынкам",
+  "term.onboard.walletHint": "Этот кошелёк пуст. Депозит зачислится после одобрения.",
 };
