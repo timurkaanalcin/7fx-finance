@@ -25,6 +25,13 @@ const ProductStage = dynamic(() => import("@/components/landing/ProductStage"), 
 const TerminalLoop = dynamic(() => import("@/components/landing/TerminalLoop"), {
   loading: () => <div className="fx-screen-slot" aria-hidden />,
 });
+const HeroAtmosphere = dynamic(() => import("@/components/landing/HeroAtmosphere"), {
+  ssr: false,
+  loading: () => null,
+});
+const FeatureDeck = dynamic(() => import("@/components/landing/LiveMarkets").then((m) => m.FeatureDeck), {
+  loading: () => <div className="fx-feature-slot" aria-hidden />,
+});
 
 function scrollToId(id: string) {
   const el = document.getElementById(id);
@@ -76,15 +83,6 @@ export default function LandingPage() {
       { n: "01", title: t("landing.step1.t"), body: t("landing.step1.d") },
       { n: "02", title: t("landing.step2.t"), body: t("landing.step2.d") },
       { n: "03", title: t("landing.step3.t"), body: t("landing.step3.d") },
-    ],
-    [t]
-  );
-
-  const features = useMemo(
-    () => [
-      { title: t("landing.card.markets.title"), body: t("landing.card.markets.body") },
-      { title: t("landing.card.orders.title"), body: t("landing.card.orders.body") },
-      { title: t("landing.card.security.title"), body: t("landing.card.security.body") },
     ],
     [t]
   );
@@ -159,6 +157,7 @@ export default function LandingPage() {
 
       <main>
         <section ref={heroRef} className="fx-hero" aria-labelledby="hero-title">
+          <HeroAtmosphere />
           <div className="fx-hero-glow" aria-hidden />
           <div className="fx-shell fx-hero-grid">
             <div className="fx-reveal max-w-[640px]">
@@ -238,13 +237,8 @@ export default function LandingPage() {
               {t("landing.aboutTitle")}
             </h2>
             <p className="fx-section-body mt-4 max-w-[680px]">{t("landing.aboutP1")}</p>
-            <div className="fx-feature-grid">
-              {features.map((card) => (
-                <article key={card.title} className="fx-feature-card" data-fx-feature="">
-                  <h3 className="font-medium">{card.title}</h3>
-                  <p>{card.body}</p>
-                </article>
-              ))}
+            <div className="fx-feature-grid" data-fx-feature="">
+              <FeatureDeck />
             </div>
             <ProductStage />
           </div>
