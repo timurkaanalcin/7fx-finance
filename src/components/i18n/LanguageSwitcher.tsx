@@ -15,7 +15,7 @@ export default function LanguageSwitcher({ compact, className = "", tone = "ligh
 
   const shell =
     tone === "dark"
-      ? "border-[#2a2a2a] bg-[#0a0a0a] text-slate-200"
+      ? "border-desk-border bg-desk-panel text-desk-text"
       : tone === "crm"
         ? "border-black/15 bg-white text-[#111111]"
         : "border-[rgba(16,20,37,0.14)] bg-white text-[#111111]";

@@ -347,18 +347,19 @@ export default function TradingChart({
         if (cancelled || !containerRef.current) return;
         chartsMod.current = lc;
         const host = containerRef.current;
+        const light = themeLightRef.current;
         chart = lc.createChart(host, {
           layout: {
-            background: { type: lc.ColorType.Solid, color: "#000000" },
-            textColor: "#8b97b0",
+            background: { type: lc.ColorType.Solid, color: light ? "#ffffff" : "#000000" },
+            textColor: light ? "#5b5e66" : "#8b97b0",
           },
           grid: {
-            vertLines: { color: "#141414" },
-            horzLines: { color: "#141414" },
+            vertLines: { color: light ? "#f1efe9" : "#141414" },
+            horzLines: { color: light ? "#f1efe9" : "#141414" },
           },
           crosshair: { mode: lc.CrosshairMode.Normal },
-          rightPriceScale: { borderColor: "#2a2a2a" },
-          timeScale: { borderColor: "#2a2a2a", timeVisible: true, secondsVisible: false },
+          rightPriceScale: { borderColor: light ? "#e6e2d8" : "#2a2a2a" },
+          timeScale: { borderColor: light ? "#e6e2d8" : "#2a2a2a", timeVisible: true, secondsVisible: false },
           width: host.clientWidth || 300,
           height: host.clientHeight || 240,
         });

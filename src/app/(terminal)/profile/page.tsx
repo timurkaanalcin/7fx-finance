@@ -70,9 +70,9 @@ type WithdrawalRow = {
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex justify-between gap-4 border-b border-[#2a2a2a] py-2 text-sm">
-      <span className="text-slate-500">{label}</span>
-      <span className="text-right text-slate-100">{value ?? "—"}</span>
+    <div className="flex justify-between gap-4 border-b border-desk-border py-2 text-sm">
+      <span className="text-desk-muted">{label}</span>
+      <span className="text-right text-desk-text">{value ?? "—"}</span>
     </div>
   );
 }
@@ -278,8 +278,8 @@ export default function ProfileePage() {
 
   if (!profile && profileError) {
     return (
-      <div className="fx-profile flex min-h-screen flex-col items-center justify-center gap-3 bg-[#000000] px-6 text-center" data-fx-profile-error="" role="alert">
-        <p className="text-sm font-normal text-slate-100">{t("term.profile.loadFail")}</p>
+      <div className="fx-profile flex min-h-screen flex-col items-center justify-center gap-3 bg-desk-bg px-6 text-center" data-fx-profile-error="" role="alert">
+        <p className="text-sm font-normal text-desk-text">{t("term.profile.loadFail")}</p>
         <button type="button" className="min-h-10 rounded-full bg-white px-4 text-sm font-normal text-black" onClick={() => loadProfile()}>
           {t("term.retry")}
         </button>
@@ -326,8 +326,8 @@ export default function ProfileePage() {
   ];
 
   return (
-    <div className="fx-profile min-h-screen bg-[#000000] text-slate-100">
-      <header className="sticky top-0 z-30 flex h-12 items-center gap-3 border-b border-[#2a2a2a] bg-[#0a0a0a] px-4">
+    <div className="fx-profile min-h-screen bg-desk-bg text-desk-text">
+      <header className="sticky top-0 z-30 flex h-12 items-center gap-3 border-b border-desk-border bg-desk-panel px-4">
         {/* eslint-disable-next-line @next/next/no-img-element -- static bitmap; next/image would change this layout */}
         <img src="/icons/v3/icon-64.png" alt="" className="h-7 w-7 rounded-md object-cover ring-1 ring-[#2a2a2a]" />
         <span className="min-w-0 flex-1 truncate text-sm font-medium">{t("term.profile.membership")}</span>
@@ -341,7 +341,7 @@ export default function ProfileePage() {
         <ThemeToggle />
         <SignOutForm
           label={t("common.signOut")}
-          buttonClassName="rounded-md border border-[#2a2a2a] px-2.5 py-1.5 text-xs text-slate-400 hover:bg-[#1f1f1f] hover:text-slate-200"
+          buttonClassName="rounded-md border border-desk-border px-2.5 py-1.5 text-xs text-desk-muted hover:bg-desk-hover hover:text-desk-text"
         />
       </header>
 
@@ -351,21 +351,21 @@ export default function ProfileePage() {
         </div>
         <Link
           href="/assistant"
-          className="mb-4 flex min-h-[56px] items-center justify-between rounded-xl border border-[#c9a54a]/50 bg-[#0a0a0a] px-4 py-3 no-underline"
+          className="mb-4 flex min-h-[56px] items-center justify-between rounded-xl border border-[#c9a54a]/50 bg-desk-panel px-4 py-3 no-underline"
         >
           <span>
-            <span className="block text-sm font-semibold text-slate-100">7FX AI</span>
-            <span className="block text-xs text-slate-500">{t("profile.aiLine")}</span>
+            <span className="block text-sm font-semibold text-desk-text">7FX AI</span>
+            <span className="block text-xs text-desk-muted">{t("profile.aiLine")}</span>
           </span>
           <span className="text-[#c9a54a]" aria-hidden>›</span>
         </Link>
         <Link
           href="/documents"
-          className="mb-4 flex min-h-[56px] items-center justify-between rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] px-4 py-3 no-underline"
+          className="mb-4 flex min-h-[56px] items-center justify-between rounded-xl border border-desk-border bg-desk-panel px-4 py-3 no-underline"
         >
           <span>
-            <span className="block text-sm font-semibold text-slate-100">{t("docs.title")}</span>
-            <span className="block text-xs text-slate-500">{t("docs.subtitle")}</span>
+            <span className="block text-sm font-semibold text-desk-text">{t("docs.title")}</span>
+            <span className="block text-xs text-desk-muted">{t("docs.subtitle")}</span>
           </span>
           <span className="flex items-center gap-2">
             {newDocs > 0 && (
@@ -376,16 +376,16 @@ export default function ProfileePage() {
                 {newDocs}
               </span>
             )}
-            <span className="text-slate-400" aria-hidden>›</span>
+            <span className="text-desk-muted" aria-hidden>›</span>
           </span>
         </Link>
-        <div className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
+        <div className="mb-4 rounded-xl border border-desk-border bg-desk-panel p-4">
           <div className="mb-1 text-lg font-semibold">{profile.name}</div>
-          <div className="text-xs text-slate-500">{profile.email}</div>
+          <div className="text-xs text-desk-muted">{profile.email}</div>
           {profile.accountLoginId && (
-            <div className="mt-1 text-xs text-slate-400">
+            <div className="mt-1 text-xs text-desk-muted">
               {t("term.profile.accountId")}:{" "}
-              <span className="font-mono tracking-wider text-slate-200">{profile.accountLoginId}</span>
+              <span className="font-mono tracking-wider text-desk-text">{profile.accountLoginId}</span>
             </div>
           )}
           <div className="mt-2 flex flex-wrap gap-1 text-[10px]">
@@ -412,8 +412,8 @@ export default function ProfileePage() {
           </div>
         </div>
 
-        <section className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
-          <h2 className="mb-2 text-sm font-medium text-slate-300">{t("term.profile.idAccount")}</h2>
+        <section className="mb-4 rounded-xl border border-desk-border bg-desk-panel p-4">
+          <h2 className="mb-2 text-sm font-medium text-desk-muted">{t("term.profile.idAccount")}</h2>
           <Row label={t("term.profile.accountId")} value={profile.accountLoginId || "—"} />
           <Row label={t("term.profile.firstName")} value={profile.firstName} />
           <Row label={t("term.profile.lastName")} value={profile.lastName} />
@@ -443,26 +443,26 @@ export default function ProfileePage() {
           <Row label={t("term.profile.server")} value={profile.tradingServer || "—"} />
         </section>
 
-        <section className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
-          <h2 className="mb-3 text-sm font-medium text-slate-300">{t("term.profile.finance")}</h2>
+        <section className="mb-4 rounded-xl border border-desk-border bg-desk-panel p-4">
+          <h2 className="mb-3 text-sm font-medium text-desk-muted">{t("term.profile.finance")}</h2>
           <AccountMetricStrip variant="panel" items={financeItems} />
         </section>
 
 
-        <form onSubmit={save} className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
-          <h2 className="mb-3 text-sm font-medium text-slate-300">{t("term.profile.editable")}</h2>
+        <form onSubmit={save} className="mb-4 rounded-xl border border-desk-border bg-desk-panel p-4">
+          <h2 className="mb-3 text-sm font-medium text-desk-muted">{t("term.profile.editable")}</h2>
           {msg && <p className="mb-2 text-xs text-emerald-400">{msg}</p>}
           <div className="grid gap-3 text-xs sm:grid-cols-2">
             <label className="flex flex-col gap-1">
-              <span className="text-slate-500">{t("common.phone")}</span>
+              <span className="text-desk-muted">{t("common.phone")}</span>
               <input
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="rounded border border-[#2a2a2a] bg-[#000000] px-2 py-1.5"
+                className="rounded border border-desk-border bg-desk-bg px-2 py-1.5"
               />
             </label>
             <label className="flex flex-col gap-1">
-              <span className="text-slate-500">{t("common.language")}</span>
+              <span className="text-desk-muted">{t("common.language")}</span>
               <select
                 value={language}
                 onChange={(e) => {
@@ -470,7 +470,7 @@ export default function ProfileePage() {
                   setLanguage(v);
                   setLocale(normalizeLocale(v, "public"));
                 }}
-                className="rounded border border-[#2a2a2a] bg-[#000000] px-2 py-1.5"
+                className="rounded border border-desk-border bg-desk-bg px-2 py-1.5"
               >
                 {LOCALES.map((code) => (
                   <option key={code} value={code}>
@@ -478,25 +478,25 @@ export default function ProfileePage() {
                   </option>
                 ))}
               </select>
-              <span className="mt-1 text-[10px] text-slate-500">
+              <span className="mt-1 text-[10px] text-desk-muted">
                 {t("term.profile.siteLang")}:{' '}
                 <LanguageSwitcher compact tone="dark" />
               </span>
             </label>
             <label className="flex flex-col gap-1">
-              <span className="text-slate-500">{t("common.timezone")}</span>
+              <span className="text-desk-muted">{t("common.timezone")}</span>
               <input
                 value={timezone}
                 onChange={(e) => setTimezone(e.target.value)}
-                className="rounded border border-[#2a2a2a] bg-[#000000] px-2 py-1.5"
+                className="rounded border border-desk-border bg-desk-bg px-2 py-1.5"
               />
             </label>
             <label className="flex flex-col gap-1 sm:col-span-2">
-              <span className="text-slate-500">{t("common.address")}</span>
+              <span className="text-desk-muted">{t("common.address")}</span>
               <input
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className="rounded border border-[#2a2a2a] bg-[#000000] px-2 py-1.5"
+                className="rounded border border-desk-border bg-desk-bg px-2 py-1.5"
               />
             </label>
           </div>
@@ -511,44 +511,44 @@ export default function ProfileePage() {
 
         <form
           onSubmit={changePassword}
-          className="mb-4 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4"
+          className="mb-4 rounded-xl border border-desk-border bg-desk-panel p-4"
         >
-          <h2 className="mb-1 text-sm font-medium text-slate-300">{t("term.profile.password")}</h2>
-          <p className="mb-3 text-[11px] text-slate-500">
+          <h2 className="mb-1 text-sm font-medium text-desk-muted">{t("term.profile.password")}</h2>
+          <p className="mb-3 text-[11px] text-desk-muted">
             {t("term.profile.pwHint")}
           </p>
           {pwMsg && <p className="mb-2 text-xs text-emerald-400">{pwMsg}</p>}
           {pwErr && <p className="mb-2 text-xs text-red-400">{pwErr}</p>}
           <div className="grid gap-3 text-xs sm:grid-cols-1">
             <label className="flex flex-col gap-1">
-              <span className="text-slate-500">{t("term.profile.pwCurrent")}</span>
+              <span className="text-desk-muted">{t("term.profile.pwCurrent")}</span>
               <input
                 type="password"
                 autoComplete="current-password"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                className="rounded border border-[#2a2a2a] bg-[#000000] px-2 py-1.5"
+                className="rounded border border-desk-border bg-desk-bg px-2 py-1.5"
               />
             </label>
             <label className="flex flex-col gap-1">
-              <span className="text-slate-500">{t("term.profile.pwNew")}</span>
+              <span className="text-desk-muted">{t("term.profile.pwNew")}</span>
               <input
                 type="password"
                 autoComplete="new-password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="rounded border border-[#2a2a2a] bg-[#000000] px-2 py-1.5"
+                className="rounded border border-desk-border bg-desk-bg px-2 py-1.5"
                 minLength={8}
               />
             </label>
             <label className="flex flex-col gap-1">
-              <span className="text-slate-500">{t("term.profile.pwConfirm")}</span>
+              <span className="text-desk-muted">{t("term.profile.pwConfirm")}</span>
               <input
                 type="password"
                 autoComplete="new-password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="rounded border border-[#2a2a2a] bg-[#000000] px-2 py-1.5"
+                className="rounded border border-desk-border bg-desk-bg px-2 py-1.5"
                 minLength={8}
               />
             </label>
@@ -565,10 +565,10 @@ export default function ProfileePage() {
         {/* Withdraw funds — bottom of profile */}
         <section
           id="para-cekme"
-          className="fx-cashier rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4"
+          className="fx-cashier rounded-xl border border-desk-border bg-desk-panel p-4"
         >
-          <h2 className="mb-1 text-sm font-normal text-slate-300">{t("term.profile.withdraw")}</h2>
-          <p className="mb-3 text-[11px] text-slate-500">
+          <h2 className="mb-1 text-sm font-normal text-desk-muted">{t("term.profile.withdraw")}</h2>
+          <p className="mb-3 text-[11px] text-desk-muted">
             {t("term.profile.wdLead").replace("{amount}", money(profile.balance))}
           </p>
           {profile.withdrawalsEnabled === false && (
@@ -578,7 +578,7 @@ export default function ProfileePage() {
           )}
 
           <form onSubmit={onWithdraw} className="fx-wd-fields">
-            <div className="fx-wd-note flex gap-1 rounded-lg border border-[#2a2a2a] bg-[#000000] p-1">
+            <div className="fx-wd-note flex gap-1 rounded-lg border border-desk-border bg-desk-bg p-1">
               {(["BANK", "CRYPTO"] as const).map((m) => (
                 <button
                   key={m}
@@ -587,7 +587,7 @@ export default function ProfileePage() {
                   className={`flex-1 rounded-md py-1.5 text-xs font-medium ${
                     wdMethod === m
                       ? "bg-white text-black shadow-sm"
-                      : "text-slate-400 hover:bg-[#1f1f1f]"
+                      : "text-desk-muted hover:bg-desk-hover"
                   }`}
                 >
                   {m === "BANK" ? t("term.profile.wdBank") : t("term.profile.wdCrypto")}
@@ -596,7 +596,7 @@ export default function ProfileePage() {
             </div>
 
             <label className="flex flex-col gap-1 text-xs">
-              <span className="text-slate-500">{t("term.profile.amount").replace("{currency}", profile.currency || "USD")}</span>
+              <span className="text-desk-muted">{t("term.profile.amount").replace("{currency}", profile.currency || "USD")}</span>
               <input
                 type="number"
                 min={1}
@@ -604,12 +604,12 @@ export default function ProfileePage() {
                 required
                 value={wdAmount}
                 onChange={(e) => setWdAmount(e.target.value)}
-                className="rounded border border-[#2a2a2a] bg-[#000000] px-3 py-2 text-sm font-normal tabular-nums"
+                className="rounded border border-desk-border bg-desk-bg px-3 py-2 text-sm font-normal tabular-nums"
               />
             </label>
 
             <label className="flex flex-col gap-1 text-xs">
-              <span className="text-slate-500">
+              <span className="text-desk-muted">
                 {wdMethod === "BANK" ? t("term.profile.wdIban") : t("term.profile.wdWallet")}
               </span>
               <input
@@ -619,17 +619,17 @@ export default function ProfileePage() {
                 placeholder={
                   wdMethod === "BANK" ? t("term.profile.ibanPh") : t("term.profile.walletPh")
                 }
-                className="rounded border border-[#2a2a2a] bg-[#000000] px-3 py-2 text-sm"
+                className="rounded border border-desk-border bg-desk-bg px-3 py-2 text-sm"
               />
             </label>
 
             <label className="fx-wd-note flex flex-col gap-1 text-xs">
-              <span className="text-slate-500">{t("term.profile.wdNote")}</span>
+              <span className="text-desk-muted">{t("term.profile.wdNote")}</span>
               <input
                 value={wdNote}
                 onChange={(e) => setWdNote(e.target.value)}
                 placeholder={t("term.profile.wdNotePh")}
-                className="rounded border border-[#2a2a2a] bg-[#000000] px-3 py-2 text-sm"
+                className="rounded border border-desk-border bg-desk-bg px-3 py-2 text-sm"
               />
             </label>
 
@@ -652,25 +652,25 @@ export default function ProfileePage() {
           </form>
 
           {withdrawals.length === 0 ? (
-            <p className="fx-empty mt-4 border-t border-[#2a2a2a] pt-3 text-xs font-normal text-slate-500" data-fx-wd-empty="">
+            <p className="fx-empty mt-4 border-t border-desk-border pt-3 text-xs font-normal text-desk-muted" data-fx-wd-empty="">
               {t("term.profile.wdEmpty")}
             </p>
           ) : (
-            <div className="mt-4 border-t border-[#2a2a2a] pt-3">
-              <h3 className="mb-2 text-xs font-normal uppercase tracking-wide text-slate-500">
+            <div className="mt-4 border-t border-desk-border pt-3">
+              <h3 className="mb-2 text-xs font-normal uppercase tracking-wide text-desk-muted">
                 {t("term.wd.recent")}
               </h3>
               <ul className="space-y-2 text-xs">
                 {withdrawals.map((w) => (
                     <li
                     key={w.id}
-                    className="flex items-center justify-between gap-2 rounded-lg border border-[#2a2a2a] bg-[#000000] px-3 py-2"
+                    className="flex items-center justify-between gap-2 rounded-lg border border-desk-border bg-desk-bg px-3 py-2"
                   >
                     <div className="min-w-0">
-                      <div className="font-normal tabular-nums text-slate-200">
+                      <div className="font-normal tabular-nums text-desk-text">
                         {money(w.amount)} · {w.method}
                       </div>
-                      <div className="text-[10px] text-slate-500">
+                      <div className="text-[10px] text-desk-muted">
                         {new Date(w.createdAt).toLocaleString(locale)}
                       </div>
                     </div>
@@ -699,7 +699,7 @@ export default function ProfileePage() {
                   type="button"
                   disabled={wdMoreBusy}
                   onClick={() => void loadWithdrawals("more")}
-                  className="mt-2 w-full rounded-lg border border-[#2a2a2a] px-3 py-2 text-xs font-medium text-slate-300 hover:bg-white/5 disabled:opacity-50"
+                  className="mt-2 w-full rounded-lg border border-desk-border px-3 py-2 text-xs font-medium text-desk-muted hover:bg-white/5 disabled:opacity-50"
                 >
                   {wdMoreBusy ? t("common.loading") : t("term.loadMore")}
                 </button>

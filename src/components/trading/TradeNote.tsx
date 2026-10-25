@@ -98,7 +98,7 @@ export default function TradeNote({ id, symbol, variant = "card" }: { id: string
       </button>
       {open && (
         <div
-          className="fixed inset-0 z-[80] flex items-end justify-center bg-black/60 p-3 sm:items-center"
+          className="fx-lx-overlay fixed inset-0 z-[80] flex items-end justify-center bg-black/60 p-3 sm:items-center"
           role="dialog"
           aria-modal="true"
           aria-label={t("term.note.title")}

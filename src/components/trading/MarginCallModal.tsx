@@ -115,7 +115,7 @@ export default function MarginCallModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4 backdrop-blur-[2px]">
+    <div className="fx-lx-overlay fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4 backdrop-blur-[2px]">
       <div
         ref={panelRef}
         dir={dir}

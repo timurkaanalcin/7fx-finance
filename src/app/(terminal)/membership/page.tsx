@@ -43,8 +43,8 @@ export default function MembershipPage() {
   }
   const s = d?.state;
   return (
-    <div className="fx-profile min-h-screen bg-[#000000] text-slate-100">
-      <header className="sticky top-0 z-30 flex min-h-12 items-center gap-3 border-b border-[#2a2a2a] bg-[#0a0a0a] px-4" style={{ paddingTop: "env(safe-area-inset-top)", minHeight: "calc(3rem + env(safe-area-inset-top))" }}>
+    <div className="fx-profile min-h-screen bg-desk-bg text-slate-100">
+      <header className="sticky top-0 z-30 flex min-h-12 items-center gap-3 border-b border-desk-border bg-desk-panel px-4" style={{ paddingTop: "env(safe-area-inset-top)", minHeight: "calc(3rem + env(safe-area-inset-top))" }}>
         <span className="min-w-0 truncate text-sm font-medium">{L.memTitle}</span>
         <Link href="/assistant" className="ml-auto rounded-md bg-[#2a2a2a] px-2.5 py-1.5 text-xs">{L.aiTitle}</Link>
         <Link href="/profile" className="rounded-md bg-[#2a2a2a] px-2.5 py-1.5 text-xs"><span className="fx-rtl-flip" aria-hidden="true">←</span> {L.back}</Link>
@@ -62,7 +62,7 @@ export default function MembershipPage() {
         {buyErr && <p className="mb-3 text-center text-sm font-normal text-red-400" role="alert">{buyErr}</p>}
         {phase === "ready" && (
           <>
-            <div className="mb-5 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] p-4">
+            <div className="mb-5 rounded-xl border border-desk-border bg-desk-panel p-4">
               {!s ? "…" : s.unlimited ? (
                 <p className="font-medium text-[#c9a54a]">∞ {L.memUnlimited}</p>
               ) : s.active ? (
@@ -78,7 +78,7 @@ export default function MembershipPage() {
             {!s?.unlimited && (
               <div className="grid gap-3">
                 {(d?.plans || []).map((p) => (
-                  <div key={p.id} className="rounded-2xl border border-[#c9a54a]/70 bg-[#0a0a0a] p-4">
+                  <div key={p.id} className="rounded-2xl border border-[#c9a54a]/70 bg-desk-panel p-4">
                     <div className="text-sm font-medium">{L[p.id]}</div>
                     <div className="mt-1 text-3xl font-medium text-[#c9a54a]">${p.priceUsd.toLocaleString("en-US")} <span className="text-sm font-normal text-slate-400">/ {p.days} {L.days}</span></div>
                     <div className="text-xs text-slate-500">{p.days} {L.days}</div>
