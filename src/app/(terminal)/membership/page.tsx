@@ -44,8 +44,8 @@ export default function MembershipPage() {
   const s = d?.state;
   return (
     <div className="fx-profile min-h-screen bg-[#000000] text-slate-100">
-      <header className="sticky top-0 z-30 flex h-12 items-center gap-3 border-b border-[#2a2a2a] bg-[#0a0a0a] px-4" style={{ paddingTop: "env(safe-area-inset-top)" }}>
-        <span className="text-sm font-semibold">{L.memTitle}</span>
+      <header className="sticky top-0 z-30 flex min-h-12 items-center gap-3 border-b border-[#2a2a2a] bg-[#0a0a0a] px-4" style={{ paddingTop: "env(safe-area-inset-top)", minHeight: "calc(3rem + env(safe-area-inset-top))" }}>
+        <span className="min-w-0 truncate text-sm font-medium">{L.memTitle}</span>
         <Link href="/assistant" className="ml-auto rounded-md bg-[#2a2a2a] px-2.5 py-1.5 text-xs">{L.aiTitle}</Link>
         <Link href="/profile" className="rounded-md bg-[#2a2a2a] px-2.5 py-1.5 text-xs">← {L.back}</Link>
         <ThemeToggle />

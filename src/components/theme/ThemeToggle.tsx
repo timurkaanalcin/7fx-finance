@@ -26,7 +26,7 @@ export default function ThemeToggle({ className = "" }: { className?: string }) 
   return (
     <button
       type="button"
-      className={`fx-theme-toggle inline-flex h-9 w-9 min-h-[36px] shrink-0 items-center justify-center rounded-full border ${className}`}
+      className={`fx-theme-toggle inline-flex h-11 w-11 min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full border ${className}`}
       aria-label={theme === "dark" ? "Switch to day theme" : "Switch to night theme"}
       title={theme === "dark" ? "Day" : "Night"}
       onClick={() => {

@@ -36,22 +36,22 @@ export default function PublicDoc({
       </a>
       <header className="border-b border-black/10">
         <div className="fx-doc-shell flex flex-wrap items-center justify-between gap-3 px-1 py-3">
-          <Link href="/" aria-label={nav.home}>
+          <Link href="/" aria-label={nav.home} className="inline-flex min-h-11 min-w-11 items-center">
             <BrandLogo height={32} />
           </Link>
-          <nav aria-label={nav.nav} className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-semibold">
+          <nav aria-label={nav.nav} className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-medium">
             {NAV_HREFS.map((item) => (
-              <Link key={item.href} href={item.href} className="underline-offset-4 hover:underline">
+              <Link key={item.href} href={item.href} className="inline-flex min-h-11 min-w-11 items-center px-2 underline-offset-4 hover:underline">
                 {nav[item.key]}
               </Link>
             ))}
             {signedIn ? (
               <SignOutForm
                 label={nav.signOut}
-                buttonClassName="text-sm font-semibold underline-offset-4 hover:underline"
+                buttonClassName="inline-flex min-h-11 items-center text-sm font-medium underline-offset-4 hover:underline"
               />
             ) : (
-              <Link href="/login" className="underline-offset-4 hover:underline">
+              <Link href="/login" className="inline-flex min-h-11 items-center px-2 underline-offset-4 hover:underline">
                 {nav.signIn}
               </Link>
             )}
@@ -61,7 +61,7 @@ export default function PublicDoc({
       </header>
       <main id="content" className="fx-doc-shell px-1 py-8 sm:py-12">
         <article>
-          <h1 className="fx-doc-title font-semibold">{title}</h1>
+          <h1 className="fx-doc-title font-medium">{title}</h1>
           <p className="mt-3 text-base leading-7 text-[#3f4248]">{lede}</p>
           <div className="mt-8 space-y-6 text-base leading-7 text-[#1c1e22]">{children}</div>
         </article>

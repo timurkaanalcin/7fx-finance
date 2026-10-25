@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import "./install-banner.css";
 import { usePathname } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
 
@@ -86,24 +87,26 @@ export default function InstallBanner() {
       )}
       <div className="fx-install-card relative overflow-hidden rounded-[20px] border border-black/[0.06] bg-white p-3 shadow-[0_20px_45px_-15px_rgba(0,0,0,0.35),0_2px_6px_rgba(0,0,0,0.06)]">
         <span className="fx-install-shine pointer-events-none absolute inset-y-0 -left-1/2 w-1/2" aria-hidden />
-        <button type="button" onClick={close} aria-label={t("install.close")} className="absolute right-1.5 top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-full text-[14px] leading-none text-neutral-400 transition hover:bg-neutral-100 hover:text-black">
-          ×
-        </button>
-        <div className="flex items-center gap-3 pr-5">
+        <div className="flex items-center gap-2">
           <span className="fx-install-icon relative shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/icons/v3/icon-64.png" alt="" width={24} height={24} loading="lazy" decoding="async" className="h-6 w-6 rounded-[8px] shadow-[0_6px_14px_rgba(0,0,0,0.25)] ring-1 ring-black/5" />
           </span>
-          <button type="button" onClick={onClick} className="min-w-0 flex-1 text-left">
-            <span className="block text-[13px] font-bold leading-tight tracking-tight text-[#111111]">{t("install.title")}</span>
+          <button type="button" onClick={onClick} className="inline-flex min-h-11 min-w-0 flex-1 items-center text-left">
+            <span>
+            <span className="block text-[13px] font-medium leading-tight tracking-tight text-[#111111]">{t("install.title")}</span>
             <span className="mt-0.5 block text-xs text-neutral-600">{t("install.subtitle")}</span>
+            </span>
           </button>
           <button
             type="button"
             onClick={onClick}
-            className="fx-install-cta shrink-0 rounded-full bg-[#111111] px-4 py-2 text-[12.5px] font-semibold text-white shadow-[0_6px_16px_rgba(0,0,0,0.3)] transition active:scale-95 hover:bg-black"
+            className="fx-install-cta inline-flex min-h-11 shrink-0 items-center rounded-full bg-[#111111] px-4 text-[12.5px] font-medium text-white shadow-[0_6px_16px_rgba(0,0,0,0.3)] transition active:scale-95 hover:bg-black"
           >
             {t("install.action")}
+          </button>
+          <button type="button" onClick={close} aria-label={t("install.close")} className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[16px] leading-none text-neutral-400 transition hover:bg-neutral-100 hover:text-black">
+            ×
           </button>
         </div>
       </div>

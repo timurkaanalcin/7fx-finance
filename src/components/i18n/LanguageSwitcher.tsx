@@ -31,7 +31,7 @@ export default function LanguageSwitcher({ compact, className = "", tone = "ligh
         aria-label={t("common.language")}
         value={locale}
         onChange={(e) => setLocale(e.target.value as Locale)}
-        className={`fx-lang-select rounded-full border px-3 py-1.5 text-xs font-semibold outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+        className={`fx-lang-select rounded-full border px-3 py-1.5 text-xs font-medium outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
           tone === "dark" ? "focus-visible:outline-[#f4f7fb]" : "focus-visible:outline-[#111111]"
         } ${shell}`}
       >

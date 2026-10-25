@@ -16,7 +16,7 @@ export default function IosInstallPage() {
   return (
     <main className="fx-ios min-h-screen">
       <div className="fx-ios-shell px-1 py-8 sm:py-14">
-        <Link href="/" className="fx-ios-back inline-flex items-center text-sm font-medium text-[#9aa3b5] hover:text-white">
+        <Link href="/" className="fx-ios-back inline-flex min-h-11 items-center text-sm font-medium text-[#9aa3b5] hover:text-white">
           ← {t("landing.ios.back")}
         </Link>
         <div className="mt-8 flex items-center gap-3">
@@ -29,7 +29,7 @@ export default function IosInstallPage() {
             className="h-14 w-14 rounded-[14px] shadow"
           />
           <div>
-            <h1 className="fx-ios-title font-semibold">{t("landing.ios.pageTitle")}</h1>
+            <h1 className="fx-ios-title font-medium">{t("landing.ios.pageTitle")}</h1>
             <p className="mt-1 text-[14px] text-[#9aa3b5]">{t("landing.ios.devices")}</p>
           </div>
         </div>
@@ -67,10 +67,10 @@ export default function IosInstallPage() {
         </div>
 
         <div className="fx-cta-row mt-8">
-          <Link href="/trade" className="fx-btn-primary inline-flex min-h-12 items-center justify-center rounded-full px-6 text-[14px] font-semibold">
+          <Link href="/trade" className="fx-btn-primary inline-flex min-h-12 items-center justify-center rounded-full px-6 text-[14px] font-medium">
             {t("landing.ios.openTerminal")}
           </Link>
-          <Link href="/register" className="fx-btn-secondary inline-flex min-h-12 items-center justify-center rounded-full px-6 text-[14px] font-semibold">
+          <Link href="/register" className="fx-btn-secondary inline-flex min-h-12 items-center justify-center rounded-full px-6 text-[14px] font-medium">
             {t("landing.openAccount")}
           </Link>
         </div>

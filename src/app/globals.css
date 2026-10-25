@@ -150,6 +150,13 @@ input, select, button { font: inherit; }
   content: none;
 }
 
+/* Keep the terminal under the notch and side insets on every width. */
+.fx-desk {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
 /* Mobile bottom nav — home-indicator and side insets */
 .fx-desk-mobile-nav {
   padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
@@ -193,9 +200,12 @@ input, select, button { font: inherit; }
     -webkit-font-smoothing: antialiased;
   }
   .fx-desk img,
-  .fx-desk canvas,
-  .fx-desk table {
+  .fx-desk canvas {
     max-width: 100%;
+  }
+  /* Tables scroll inside the blotter. A 100% cap squashes columns and clips figures. */
+  .fx-desk table {
+    max-width: none;
   }
   /* 44px minimum tap targets on phone */
   .fx-desk button,
@@ -211,7 +221,8 @@ input, select, button { font: inherit; }
     min-width: 44px;
   }
   .fx-desk .fx-tap-compact {
-    min-height: 0;
+    min-height: 44px;
+    min-width: 44px;
   }
   .fx-desk-seg__btn {
     min-height: 44px;
@@ -245,7 +256,7 @@ input, select, button { font: inherit; }
     min-height: 46px;
     border-radius: 12px;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 500;
     letter-spacing: 0.08em;
   }
 
@@ -700,7 +711,7 @@ body:has(.fx-crm) {
   max-width: 840px;
 }
 .fx-lang-select {
-  min-height: 36px;
+  min-height: 44px;
   font-size: var(--fx-fs-12);
 }
 .fx-profile h2 {
@@ -779,7 +790,7 @@ body:has(.fx-crm) {
 }
 
 @media (max-width: 767px), (max-height: 520px) {
-  .fx-landing .fx-chip { min-height: 40px; }
+  .fx-landing .fx-chip { min-height: 44px; }
   .fx-landing .fx-footer a,
   .fx-landing .fx-mobile-menu button,
   .fx-landing .fx-mobile-menu a {
@@ -812,11 +823,11 @@ body:has(.fx-crm) {
     min-width: 44px;
   }
   .fx-desk .fx-tap-compact {
-    min-height: 40px;
-    min-width: 40px;
+    min-height: 44px;
+    min-width: 44px;
   }
   .fx-crm button {
-    min-height: 40px;
+    min-height: 44px;
   }
   .fx-doc header a,
   .fx-doc nav a,
@@ -833,7 +844,7 @@ body:has(.fx-crm) {
   .fx-crm header a,
   .fx-crm header button,
   .fx-crm header select {
-    min-height: 40px;
+    min-height: 44px;
   }
 }
 
@@ -858,7 +869,7 @@ body:has(.fx-crm) {
   }
   .fx-crm aside a,
   .fx-crm aside button {
-    min-height: 40px;
+    min-height: 44px;
   }
 }
 
@@ -1038,10 +1049,11 @@ html[data-fx-theme="light"] .fx-account-metric__value.is-warn { color: #9a6b12; 
 .fx-crm header a,
 .fx-crm header select {
   box-sizing: border-box;
-  min-height: 40px;
+  min-height: 44px;
 }
-.fx-crm header button {
-  min-width: 40px;
+.fx-crm header button,
+.fx-crm header a {
+  min-width: 44px;
 }
 @media (max-width: 480px) {
   .fx-crm-root > .flex > header {
@@ -1418,7 +1430,7 @@ html[data-fx-theme="light"] .fx-account-metric__value.is-warn { color: #9a6b12; 
   .fx-desk .fx-blotter button,
   .fx-desk .fx-blotter-tab,
   .fx-desk .fx-blotter-chip {
-    min-height: 40px;
+    min-height: 44px;
   }
   .fx-desk .fx-watchlist [data-fx-watch-clear],
   .fx-desk .fx-watchlist .fx-watch-filter,
@@ -1426,7 +1438,7 @@ html[data-fx-theme="light"] .fx-account-metric__value.is-warn { color: #9a6b12; 
   .fx-desk .fx-chart-tools button,
   .fx-desk .fx-blotter button,
   .fx-desk .fx-blotter-chip {
-    min-width: 40px;
+    min-width: 44px;
   }
   .fx-desk .fx-blotter {
     overflow: auto;
@@ -1478,6 +1490,87 @@ html[data-fx-theme="light"] .fx-desk .focus\:outline-none:focus-visible {
   to { opacity: 1; }
 }
 .fx-toast { animation: fx-toast-in 0.18s ease; }
+
+/* Phone and tablet QA: scroll wide CRM tables, keep sticky account chrome below the notch,
+   and keep support sheets off the home indicator. Desktop 1440px table width stays above. */
+.fx-crm-root {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+.fx-profile {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+.fx-desk > header button,
+.fx-desk > header a,
+.fx-desk > header select,
+.fx-desk > header summary {
+  min-height: 44px;
+  min-width: 44px;
+  font-weight: 500;
+}
+.fx-profile > header {
+  height: auto;
+  min-height: calc(3rem + env(safe-area-inset-top, 0px));
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.fx-profile > header a,
+.fx-profile > header button,
+.fx-profile .fx-lx-overlay button {
+  min-height: 44px;
+}
+@media (max-width: 420px) {
+  .fx-profile > header {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+}
+@media (max-width: 639px) {
+  .fx-profile .fx-lx-overlay {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+}
+@media (min-width: 640px) {
+  .fx-profile .fx-lx-overlay {
+    padding-top: max(1rem, env(safe-area-inset-top, 0px));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+    padding-left: max(1rem, env(safe-area-inset-left, 0px));
+    padding-right: max(1rem, env(safe-area-inset-right, 0px));
+  }
+}
+@media (max-width: 1024px) {
+  .fx-crm header {
+    height: auto;
+    min-height: 44px;
+  }
+  .fx-crm aside a,
+  .fx-crm aside button,
+  .fx-crm main button {
+    min-height: 44px;
+  }
+}
+@media (max-width: 1439px) {
+  .fx-crm main .overflow-x-auto {
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+  .fx-crm main .overflow-x-auto > table {
+    width: max-content;
+    min-width: 100%;
+  }
+  .fx-crm main .overflow-x-auto > table :is(th, td) {
+    white-space: nowrap;
+  }
+  .fx-crm main .overflow-x-auto > table :is(th, td) :is(input, select, textarea) {
+    white-space: normal;
+    max-width: min(100%, 16rem);
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .ticker-track,

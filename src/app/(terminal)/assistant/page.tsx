@@ -57,9 +57,9 @@ export default function AssistantPage() {
   const locked = state && !state.active;
   return (
     <div className="fx-profile flex h-[100dvh] flex-col bg-[#000000] text-slate-100">
-      <header className="flex h-12 shrink-0 items-center gap-3 border-b border-[#2a2a2a] bg-[#0a0a0a] px-4" style={{ paddingTop: "env(safe-area-inset-top)" }}>
-        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-[#b8923a] to-[#e0c27a] text-xs font-bold text-black">AI</span>
-        <span className="text-sm font-semibold">{L.aiTitle}</span>
+      <header className="flex min-h-12 shrink-0 items-center gap-3 border-b border-[#2a2a2a] bg-[#0a0a0a] px-4" style={{ paddingTop: "env(safe-area-inset-top)", minHeight: "calc(3rem + env(safe-area-inset-top))" }}>
+        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-[#b8923a] to-[#e0c27a] text-xs font-medium text-black">AI</span>
+        <span className="text-sm font-medium">{L.aiTitle}</span>
         {state?.unlimited && <span className="rounded-full border border-[#c9a54a]/60 px-2 py-0.5 text-[10px] text-[#c9a54a]">∞</span>}
         <Link href="/membership" className="ml-auto rounded-md bg-[#2a2a2a] px-2.5 py-1.5 text-xs">{L.memTitle}</Link>
         <Link href="/trade" className="rounded-md bg-[#2a2a2a] px-2.5 py-1.5 text-xs">← {L.back}</Link>
@@ -92,7 +92,7 @@ export default function AssistantPage() {
         <form onSubmit={send} className="flex shrink-0 gap-2 border-t border-[#2a2a2a] bg-[#0a0a0a] p-3" style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}>
           <input value={text} onChange={(e) => setText(e.target.value)} placeholder={L.aiPh} maxLength={2000}
             className="min-h-[46px] flex-1 rounded-xl border border-[#2a2a2a] bg-[#1f1f1f] px-4 text-base text-slate-100 outline-none focus:border-[#c9a54a]" />
-          <button disabled={busy || !text.trim()} className="min-h-[46px] rounded-xl bg-gradient-to-r from-[#b8923a] to-[#e0c27a] px-5 text-sm font-semibold text-black disabled:opacity-50">{L.aiSend}</button>
+          <button disabled={busy || !text.trim()} className="min-h-[46px] rounded-xl bg-gradient-to-r from-[#b8923a] to-[#e0c27a] px-5 text-sm font-medium text-black disabled:opacity-50">{L.aiSend}</button>
         </form>
       )}
     </div>

@@ -191,9 +191,12 @@ input, select, button { font: inherit; }
     -webkit-font-smoothing: antialiased;
   }
   .fx-desk img,
-  .fx-desk canvas,
-  .fx-desk table {
+  .fx-desk canvas {
     max-width: 100%;
+  }
+  /* Tables scroll inside the blotter. A 100% cap squashes columns and clips figures. */
+  .fx-desk table {
+    max-width: none;
   }
   /* 44px minimum tap targets on phone */
   .fx-desk button,
@@ -209,7 +212,8 @@ input, select, button { font: inherit; }
     min-width: 44px;
   }
   .fx-desk .fx-tap-compact {
-    min-height: 0;
+    min-height: 44px;
+    min-width: 44px;
   }
   .fx-desk-seg__btn {
     min-height: 44px;
@@ -328,6 +332,9 @@ body:has(.fx-ios) {
   margin-top: 18px;
 }
 .fx-ios-note a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-weight: 500;
   color: #f4f7fb;
   text-decoration: underline;
@@ -456,6 +463,22 @@ body:has(.fx-auth-page) {
 .fx-doc {
   background: #fff;
   color: #15161a;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+.fx-doc header a,
+.fx-doc nav a,
+.fx-doc header button,
+.fx-doc main a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  min-width: 44px;
+}
+.fx-doc :is(h1, h2, h3) {
+  font-weight: 500;
 }
 .fx-doc-shell {
   width: min(920px, calc(100% - 32px));
@@ -496,7 +519,7 @@ body:has(.fx-auth-page) {
 }
 
 .fx-lang-select {
-  min-height: 36px;
+  min-height: 44px;
   font-size: var(--fx-fs-12);
 }
 
@@ -506,6 +529,9 @@ body:has(.fx-auth-page) {
   color: #3f4248;
   font-size: 13px;
   font-weight: 400;
+}
+.fx-quote-status button {
+  min-height: 44px;
 }
 .fx-quote-scroll {
   max-width: 100%;
@@ -589,6 +615,12 @@ body:has(.fx-auth-page) {
 .fx-quote a:focus-visible {
   outline: 2px solid #15161a;
   outline-offset: 2px;
+}
+.fx-quote a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  min-width: 44px;
 }
 @media (min-width: 1024px) {
   .fx-quote table { min-width: 0; }

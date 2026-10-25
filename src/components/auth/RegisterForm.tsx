@@ -490,7 +490,7 @@ export default function RegisterForm() {
 
       <div className="mt-7 border-t border-[rgba(16,20,37,0.08)] pt-5 text-center text-sm text-[#5c657a]">
         {t("auth.hasAccount")}{" "}
-        <Link href="/login" className="font-semibold text-[#111111] underline-offset-2 transition hover:underline">
+        <Link href="/login" className="inline-flex min-h-11 items-center font-medium text-[#111111] underline-offset-2 transition hover:underline">
           {t("common.signIn")}
         </Link>
       </div>

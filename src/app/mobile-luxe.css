@@ -149,7 +149,7 @@
     min-height: 50px !important;
     border-radius: 14px !important;
     font-size: 13px !important;
-    font-weight: 600 !important;
+    font-weight: 500 !important;
     letter-spacing: 0.14em !important;
     transition: transform 0.15s var(--lx-ease), filter 0.2s;
   }
@@ -184,7 +184,7 @@
     min-height: 46px !important;
     border-radius: 13px !important;
     font-size: 12px !important;
-    font-weight: 600 !important;
+    font-weight: 500 !important;
     letter-spacing: 0.03em !important;
     color: var(--lx-text-3) !important;
     transition: color 0.2s, background 0.25s var(--lx-ease);
@@ -214,8 +214,8 @@
 
   /* chart timeframe pill */
   .fx-desk .fx-tap-compact {
-    min-height: 40px !important;
-    min-width: 40px !important;
+    min-height: 44px !important;
+    min-width: 44px !important;
     border-radius: 9px !important;
     font-size: 12px !important;
   }
@@ -286,7 +286,7 @@
   }
   .fx-profile > header {
     height: auto !important;
-    min-height: 56px;
+    min-height: calc(56px + var(--lx-safe-t));
     padding: calc(8px + var(--lx-safe-t)) 14px 8px !important;
     background: rgba(5, 5, 6, 0.88) !important;
     backdrop-filter: blur(18px);
@@ -515,7 +515,7 @@ html[data-fx-theme="light"] .fx-desk .fx-desk-tradebar button * { color: #fff !i
 html[data-fx-theme="light"] :is(.fx-desk, .fx-lx-overlay) :is(.bg-desk-buy, [class*="bg-desk-buy/9"], .bg-desk-sell, [class*="bg-desk-sell/9"]),
 html[data-fx-theme="light"] :is(.fx-desk, .fx-lx-overlay) :is(.bg-desk-buy, [class*="bg-desk-buy/9"], .bg-desk-sell, [class*="bg-desk-sell/9"]) * { color: #fff !important; }
 .fx-profile .fx-theme-toggle,
-.fx-desk .fx-theme-toggle { padding: 0 !important; width: 40px !important; height: 40px !important; min-height: 40px !important; flex: 0 0 40px; }
+.fx-desk .fx-theme-toggle { padding: 0 !important; width: 44px !important; height: 44px !important; min-height: 44px !important; min-width: 44px !important; flex: 0 0 44px; }
 /* day theme — third pass: top bar avatar/deposit, soft shadows */
 html[data-fx-theme="light"] .fx-desk .fx-deposit-btn {
   background: linear-gradient(180deg, #d8bb7e 0%, #b8944f 100%) !important;

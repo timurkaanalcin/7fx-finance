@@ -111,7 +111,7 @@ export default function MarketsLiveTable({ rows }: { rows: QuoteRow[] }) {
               setStatus("loading");
               setAttempt((n) => n + 1);
             }}
-            className="ml-2 min-h-10 rounded-full border border-[#d7dbe3] bg-white px-3 text-xs font-medium text-[#15161a]"
+            className="ml-2 inline-flex min-h-11 items-center rounded-full border border-[#d7dbe3] bg-white px-3 text-xs font-medium text-[#15161a]"
           >
             {t("state.retry")}
           </button>
