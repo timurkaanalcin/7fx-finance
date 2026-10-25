@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ReactNode, useEffect, useState } from "react";
 import BrandLogo from "@/components/landing/BrandLogo";
+import TerminalWindow from "@/components/public/TerminalWindow";
 import { useI18n } from "@/lib/i18n/context";
 
 type AuthShellProps = {
@@ -26,7 +27,11 @@ export default function AuthShell({ mode, children }: AuthShellProps) {
           <div className="absolute left-1/2 top-0 h-[420px] w-[680px] -translate-x-1/2 rounded-full bg-[#3ddc97]/10 blur-[120px]" />
         </div>
 
-        <header className="relative z-10 mx-auto flex w-full max-w-lg items-center justify-between px-4 pb-2 pt-6 sm:max-w-xl sm:px-6 sm:pt-8">
+        <header
+          className={`relative z-10 mx-auto flex w-full items-center justify-between px-4 pb-2 pt-6 sm:px-6 sm:pt-8 ${
+            isLogin ? "max-w-lg sm:max-w-xl" : "fx-auth-wide"
+          }`}
+        >
           <Link href="/" className="inline-flex items-center no-underline" aria-label={t("landing.homeAria")}>
             <BrandLogo priority className="fx-nav-logo h-10 w-auto sm:h-11" height={44} />
           </Link>
@@ -39,46 +44,59 @@ export default function AuthShell({ mode, children }: AuthShellProps) {
         </header>
 
         <main className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-6 sm:px-6 sm:py-10">
-          <div className="w-full max-w-[440px]">
-            <div className="mb-6 text-center sm:mb-8">
-              <p className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-[#d7ffe9]">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#3ddc97] shadow-[0_0_8px_rgba(61,220,151,0.8)]" />
-                {isLogin ? t("auth.badge.login") : t("auth.badge.register")}
-              </p>
-              <h1 className="mt-4 text-[1.7rem] font-semibold leading-tight tracking-tight sm:text-[2rem]">
-                {isLogin ? (
-                  <>
-                    {t("auth.loginLead")}{" "}
-                    <span className="fx-auth-accent-text">{t("auth.loginAccent")}</span>
-                  </>
-                ) : (
-                  <>
-                    {t("auth.registerLead")}{" "}
-                    <span className="fx-auth-accent-text">{t("auth.registerAccent")}</span>
-                  </>
-                )}
-              </h1>
-              <p className="mx-auto mt-2.5 max-w-sm text-sm leading-relaxed text-[#9aa3b5]">
-                {isLogin ? t("auth.loginBody") : t("auth.registerBody")}
-              </p>
-            </div>
+          <div className={isLogin ? "w-full max-w-[440px]" : "fx-auth-register w-full"}>
+            <div className={isLogin ? "" : "fx-auth-register-grid"}>
+              <div className="min-w-0">
+                <div className="mb-6 text-center sm:mb-8">
+                  <p
+                    className={`inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.14em] text-[#d7ffe9] ${
+                      isLogin ? "font-semibold" : "font-normal"
+                    }`}
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#3ddc97] shadow-[0_0_8px_rgba(61,220,151,0.8)]" />
+                    {isLogin ? t("auth.badge.login") : t("auth.badge.register")}
+                  </p>
+                  <h1
+                    className={`mt-4 text-[1.7rem] leading-tight tracking-tight sm:text-[2rem] ${
+                      isLogin ? "font-semibold" : "font-normal"
+                    }`}
+                  >
+                    {isLogin ? (
+                      <>
+                        {t("auth.loginLead")}{" "}
+                        <span className="fx-auth-accent-text">{t("auth.loginAccent")}</span>
+                      </>
+                    ) : (
+                      <>
+                        {t("auth.registerLead")}{" "}
+                        <span className="fx-auth-accent-text">{t("auth.registerAccent")}</span>
+                      </>
+                    )}
+                  </h1>
+                  <p className="mx-auto mt-2.5 max-w-sm text-sm leading-relaxed text-[#9aa3b5]">
+                    {isLogin ? t("auth.loginBody") : t("auth.registerBody")}
+                  </p>
+                </div>
 
-            <div className="fx-auth-panel relative overflow-hidden rounded-2xl border border-white/10 p-5 sm:rounded-[1.35rem] sm:p-8">
-              <div
-                className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#3ddc97]/70 to-transparent"
-                aria-hidden
-              />
-              <div className="relative">{children}</div>
-            </div>
+                <div className="fx-auth-panel relative overflow-hidden rounded-2xl border border-white/10 p-5 sm:rounded-[1.35rem] sm:p-8">
+                  <div
+                    className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#3ddc97]/70 to-transparent"
+                    aria-hidden
+                  />
+                  <div className="relative">{children}</div>
+                </div>
 
-            <p className="mt-6 text-center text-xs leading-relaxed text-[#b7c0d0]">
-              {t("auth.terms")}
-              <br />
-              {t("auth.sessionNote")}
-            </p>
-            <p className="mt-4 text-center text-xs text-[#b7c0d0]">
-              © {new Date().getFullYear()} 7FX{host ? ` · ${host}` : ""}
-            </p>
+                <p className="mt-6 text-center text-xs leading-relaxed text-[#b7c0d0]">
+                  {t("auth.terms")}
+                  <br />
+                  {t("auth.sessionNote")}
+                </p>
+                <p className="mt-4 text-center text-xs text-[#b7c0d0]">
+                  © {new Date().getFullYear()} 7FX{host ? ` · ${host}` : ""}
+                </p>
+              </div>
+              {!isLogin ? <TerminalWindow /> : null}
+            </div>
           </div>
         </main>
       </div>

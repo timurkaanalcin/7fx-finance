@@ -183,10 +183,10 @@ export default function RegisterForm() {
     <>
       <div className="mb-6">
         <div className="mb-2 flex items-start justify-between gap-3">
-          <h2 className="text-xl font-semibold tracking-tight text-[#111111]">{t("auth.registerTitle")}</h2>
+          <h2 className="text-xl font-normal tracking-tight text-[#111111]">{t("auth.registerTitle")}</h2>
           <LanguageSwitcher compact tone="dark" />
         </div>
-        <p className="mt-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-[#8b93a7]">
+        <p className="fx-auth-step mt-1 text-[12px] font-normal uppercase tracking-[0.08em] text-[#8b93a7]">
           {step}/2 · {step === 1 ? t("auth.stepCredentials") : t("auth.stepProfile")}
         </p>
         <p className="mt-1 text-sm text-[#5c657a]">{t("auth.registerSubtitle")}</p>
@@ -320,7 +320,7 @@ export default function RegisterForm() {
 
         {/* Prominent required referral — light charcoal, not red */}
         <div className="rounded-xl border border-[rgba(16,20,37,0.1)] bg-[#ffffff] p-3.5 sm:p-4">
-          <label htmlFor="fx-reg-referral" className="mb-1.5 flex items-center gap-1.5 text-[13px] font-semibold text-[#111111]">
+          <label htmlFor="fx-reg-referral" className="mb-1.5 flex items-center gap-1.5 text-[13px] font-normal text-[#111111]">
             {t("auth.referralCode")}
             {referralRequired ? (
               <>
