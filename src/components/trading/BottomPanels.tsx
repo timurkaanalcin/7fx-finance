@@ -1999,7 +1999,7 @@ export default function BottomPanels({
     ) : null;
 
   const emptyFiltered = (
-    <div className="px-3 py-10 text-center text-xs text-desk-muted">
+    <div className="fx-blotter-empty px-3 py-10 text-center text-xs text-desk-muted">
       <div>{t("term.emptyFilter")}</div>
       <button
         type="button"
@@ -2370,7 +2370,7 @@ export default function BottomPanels({
         {tab === "open" && (
           <>
             {openPositions.length === 0 && (
-              <div className="px-3 py-10 text-center text-xs text-desk-muted">{t("term.emptyOpen")}</div>
+              <div className="fx-blotter-empty px-3 py-10 text-center text-xs text-desk-muted">{t("term.emptyOpen")}</div>
             )}
             {openPositions.length > 0 && filteredOpen.length === 0 && emptyFiltered}
             {sortedOpen.map((p) => (
@@ -2393,7 +2393,7 @@ export default function BottomPanels({
         {tab === "closed" && (
           <>
             {closedPositions.length === 0 && (
-              <div className="px-3 py-10 text-center text-xs text-desk-muted">
+              <div className="fx-blotter-empty px-3 py-10 text-center text-xs text-desk-muted">
                 {t("term.emptyClosed")}
               </div>
             )}
@@ -2418,7 +2418,7 @@ export default function BottomPanels({
         {tab === "pending" && (
           <>
             {pendingOrders.length === 0 && (
-              <div className="px-3 py-10 text-center text-xs text-desk-muted">{t("term.emptyPending")}</div>
+              <div className="fx-blotter-empty px-3 py-10 text-center text-xs text-desk-muted">{t("term.emptyPending")}</div>
             )}
             {pendingOrders.length > 0 && filteredPending.length === 0 && emptyFiltered}
             {sortedPending.map((o) => (
@@ -2455,14 +2455,14 @@ export default function BottomPanels({
             <tbody>
               {openPositions.length === 0 && (
                 <tr>
-                  <td colSpan={16} className="px-3 py-8 text-center text-desk-muted">
+                  <td colSpan={16} className="fx-empty-cell px-3 py-8 text-center text-desk-muted">
                     {t("term.emptyOpen")}
                   </td>
                 </tr>
               )}
               {openPositions.length > 0 && filteredOpen.length === 0 && (
                 <tr>
-                  <td colSpan={16} className="px-3 py-8 text-center text-desk-muted">
+                  <td colSpan={16} className="fx-empty-cell px-3 py-8 text-center text-desk-muted">
                     {t("term.emptyFilter")}
                   </td>
                 </tr>
@@ -2517,14 +2517,14 @@ export default function BottomPanels({
             <tbody>
               {closedPositions.length === 0 && (
                 <tr>
-                  <td colSpan={13} className="px-3 py-8 text-center text-desk-muted">
+                  <td colSpan={13} className="fx-empty-cell px-3 py-8 text-center text-desk-muted">
                     {t("term.emptyClosed")}
                   </td>
                 </tr>
               )}
               {closedPositions.length > 0 && filteredClosed.length === 0 && (
                 <tr>
-                  <td colSpan={13} className="px-3 py-8 text-center text-desk-muted">
+                  <td colSpan={13} className="fx-empty-cell px-3 py-8 text-center text-desk-muted">
                     {t("term.emptyFilter")}
                   </td>
                 </tr>
@@ -2638,14 +2638,14 @@ export default function BottomPanels({
             <tbody>
               {pendingOrders.length === 0 && (
                 <tr>
-                  <td colSpan={11} className="px-3 py-8 text-center text-desk-muted">
+                  <td colSpan={11} className="fx-empty-cell px-3 py-8 text-center text-desk-muted">
                     {t("term.emptyPending")}
                   </td>
                 </tr>
               )}
               {pendingOrders.length > 0 && filteredPending.length === 0 && (
                 <tr>
-                  <td colSpan={11} className="px-3 py-8 text-center text-desk-muted">
+                  <td colSpan={11} className="fx-empty-cell px-3 py-8 text-center text-desk-muted">
                     {t("term.emptyFilter")}
                   </td>
                 </tr>

@@ -156,7 +156,7 @@ import { positionMark } from "@/lib/mark-price";
 import { CALENDAR_FOLLOW_CAP, concatUniqueById } from "@/lib/position-pages";
 import { formatPrice, getSymbol } from "@/lib/symbols";
 import { markQuotesSeen } from "./quote-clock";
-import BrandLoader from "@/components/ui/BrandLoader";
+import TradeSkeleton, { BlotterSkeleton, WatchlistSkeleton } from "./TradeSkeleton";
 import { normalizeLocale } from "@/lib/i18n/locales";
 import type {
   AccountMetrics,
@@ -171,8 +171,8 @@ const TradingChart = dynamic(() => import("./TradingChart"), {
   ssr: false,
   loading: () => <div className="min-h-[44vh] flex-1 md:min-h-0" aria-hidden />,
 });
-const Watchlist = dynamic(() => import("./Watchlist"));
-const BottomPanels = dynamic(() => import("./BottomPanels"));
+const Watchlist = dynamic(() => import("./Watchlist"), { loading: () => <WatchlistSkeleton /> });
+const BottomPanels = dynamic(() => import("./BottomPanels"), { loading: () => <BlotterSkeleton /> });
 const OrderTicket = dynamic(() => import("./OrderTicket"));
 const DepositModal = dynamic(() => import("./DepositModal"));
 const MarginCallModal = dynamic(() => import("./MarginCallModal"));
@@ -956,14 +956,15 @@ export default function TerminalShell({
   }
 
   if (!user) {
-    return <BrandLoader variant="desk" label={t("common.loading") || "Loading…"} />;
+    return <TradeSkeleton />;
   }
 
   if (symbolsError && symbols.length === 0) {
     return (
-      <div className="fx-desk flex h-[100dvh] flex-col items-center justify-center gap-3 bg-desk-bg px-6 text-center text-desk-text">
-        <p className="text-sm text-desk-muted">{t("term.symbolsError")}</p>
-        <button type="button" className="rounded-full bg-desk-accent px-4 py-2 text-sm font-semibold text-desk-accent-ink" onClick={() => { setReady(false); setBootNonce((n) => n + 1); }}>
+      <div className="fx-desk flex h-[100dvh] flex-col items-center justify-center gap-3 bg-desk-bg px-6 text-center text-desk-text" data-fx-symbols-error="" role="alert">
+        <p className="max-w-sm text-sm font-normal text-desk-text">We couldn&apos;t load the symbol list.</p>
+        <p className="max-w-sm text-xs font-normal text-desk-muted">{t("term.symbolsError")}</p>
+        <button type="button" className="min-h-10 rounded-full bg-desk-accent px-4 text-sm font-normal text-desk-accent-ink" onClick={() => { setReady(false); setBootNonce((n) => n + 1); }}>
           {t("term.retry")}
         </button>
       </div>
@@ -1018,8 +1019,19 @@ export default function TerminalShell({
         }}
       />
       {priceError && feed.state === "live" && (
-        <div className="border-b border-desk-warn/30 bg-desk-warn/90 px-3 py-1.5 text-center text-[11px] font-medium text-black">
-          Market data warning: {priceError} (showing last known prices)
+        <div role="status" data-fx-price-error="" className="flex flex-wrap items-center justify-center gap-3 border-b border-desk-warn/30 bg-desk-warn/90 px-3 py-1.5 text-center text-[11px] font-normal text-black">
+          <span>{t("term.err.priceLive")}</span>
+          <button
+            type="button"
+            className="min-h-8 rounded bg-black/10 px-2 py-0.5 hover:bg-black/20"
+            onClick={() => {
+              setPriceError(null);
+              feed.kick();
+              void refreshAll();
+            }}
+          >
+            {t("term.retry")}
+          </button>
         </div>
       )}
       {positionsError && (

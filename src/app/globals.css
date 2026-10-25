@@ -1306,6 +1306,42 @@ html[data-fx-theme="light"] .fx-account-metric__value.is-warn { color: #9a6b12; 
   .fx-cashier-split { grid-template-columns: minmax(0, 1fr); }
 }
 
+/* Loading skeletons keep the desk, profile, and CRM from jumping when data arrives. */
+.fx-skel {
+  display: block;
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.12) 50%, rgba(255, 255, 255, 0.04) 100%);
+  background-size: 200% 100%;
+  animation: fx-skel 1.3s ease-in-out infinite;
+}
+.fx-skel--light {
+  background-image: linear-gradient(90deg, #f3f3f3 0%, #e6e6e6 50%, #f3f3f3 100%);
+}
+.fx-watch-skel,
+.fx-blotter-skel {
+  width: 100%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.03) 100%);
+  background-size: 200% 100%;
+  animation: fx-skel 1.3s ease-in-out infinite;
+}
+.fx-watch-skel { height: 100%; min-height: 240px; }
+.fx-blotter-skel { height: clamp(200px, 22vh, 280px); border-top: 1px solid #2a2a2a; }
+.fx-blotter-empty {
+  display: flex;
+  min-height: 132px;
+  align-items: center;
+  justify-content: center;
+}
+.fx-empty-cell { height: 132px; }
+.fx-empty { min-height: 44px; }
+@keyframes fx-skel {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-skel, .fx-watch-skel, .fx-blotter-skel { animation: none; }
+}
+
 /* Terminal chart, watchlist, and history: thin type, tabular figures, phone targets. */
 .fx-chart-chrome .font-bold,
 .fx-chart-chrome .font-semibold,

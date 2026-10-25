@@ -12,7 +12,8 @@ import { LOCALES, LOCALE_META, type Locale } from "@/lib/i18n/locales";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 import LiveSupportPanel from "@/components/profile/LiveSupportPanel";
 import NotificationBell from "@/components/notifications/NotificationBell";
-import BrandLoader from "@/components/ui/BrandLoader";
+import ProfileSkeleton from "@/components/profile/ProfileSkeleton";
+import { friendlyError } from "@/components/system/friendly-error";
 import { getSeenDocs } from "@/lib/docs-seen";
 import { normalizeLocale, PUBLIC_DEFAULT_LOCALE } from "@/lib/i18n/locales";
 import { fmtMoney, fmtPct } from "@/lib/format";
@@ -80,6 +81,7 @@ export default function ProfileePage() {
   const router = useRouter();
   const { t, locale, setLocale } = useI18n();
   const [profile, setProfilee] = useState<Profilee | null>(null);
+  const [profileError, setProfileError] = useState("");
   const [phone, setPhone] = useState("");
   const [newDocs, setNewDocs] = useState(0);
   useEffect(() => {
@@ -138,14 +140,20 @@ export default function ProfileePage() {
     }
   }, []);
 
-  useEffect(() => {
+  const loadProfile = useCallback(() => {
+    setProfileError("");
     fetch("/api/profile")
       .then(async (r) => {
         if (r.status === 401) {
           router.push("/login");
           return null;
         }
-        return r.json();
+        const data = await r.json().catch(() => null);
+        if (!r.ok || !data?.profile) {
+          setProfileError("fail");
+          return null;
+        }
+        return data;
       })
       .then((d) => {
         if (!d?.profile) return;
@@ -157,9 +165,13 @@ export default function ProfileePage() {
         setTimezone(d.profile.timezone || "Europe/Istanbul");
         setAddress(d.profile.address || "");
       })
-      .catch(() => router.push("/login"));
+      .catch(() => setProfileError("fail"));
+  }, [router, setLocale]);
+
+  useEffect(() => {
+    loadProfile();
     loadWithdrawals();
-  }, [router, loadWithdrawals]);
+  }, [loadProfile, loadWithdrawals]);
 
   async function save(e: FormEvent) {
     e.preventDefault();
@@ -173,7 +185,7 @@ export default function ProfileePage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMsg(data.error || t("term.profile.saveFailed"));
+        setMsg(friendlyError(data.error, t("term.profile.saveFailed")));
         return;
       }
       setMsg(t("term.profile.saved"));
@@ -214,7 +226,7 @@ export default function ProfileePage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setPwErr(data.error || t("term.profile.pwFail"));
+        setPwErr(friendlyError(data.error, t("term.profile.pwFail")));
         return;
       }
       setPwMsg(t("term.profile.pwOk"));
@@ -250,7 +262,7 @@ export default function ProfileePage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setWdErr(data.error || t("term.profile.wdFail"));
+        setWdErr(friendlyError(data.error, t("term.profile.wdFail")));
         return;
       }
       setWdMsg(t("term.profile.wdOk"));
@@ -264,8 +276,19 @@ export default function ProfileePage() {
     }
   }
 
+  if (!profile && profileError) {
+    return (
+      <div className="fx-profile flex min-h-screen flex-col items-center justify-center gap-3 bg-[#000000] px-6 text-center" data-fx-profile-error="" role="alert">
+        <p className="text-sm font-normal text-slate-100">{t("term.profile.loadFail")}</p>
+        <button type="button" className="min-h-10 rounded-full bg-white px-4 text-sm font-normal text-black" onClick={() => loadProfile()}>
+          {t("term.retry")}
+        </button>
+      </div>
+    );
+  }
+
   if (!profile) {
-    return <BrandLoader variant="desk" label={t("common.loading") || "Loading…"} />;
+    return <ProfileSkeleton />;
   }
 
   const money = (n: number) =>
@@ -621,7 +644,11 @@ export default function ProfileePage() {
             </button>
           </form>
 
-          {withdrawals.length > 0 && (
+          {withdrawals.length === 0 ? (
+            <p className="fx-empty mt-4 border-t border-[#2a2a2a] pt-3 text-xs font-normal text-slate-500" data-fx-wd-empty="">
+              {t("term.profile.wdEmpty")}
+            </p>
+          ) : (
             <div className="mt-4 border-t border-[#2a2a2a] pt-3">
               <h3 className="mb-2 text-xs font-normal uppercase tracking-wide text-slate-500">
                 {t("term.wd.recent")}

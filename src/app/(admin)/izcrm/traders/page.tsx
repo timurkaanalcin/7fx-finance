@@ -22,6 +22,8 @@ import {
   removeRecentClient,
   type RecentClient,
 } from "@/lib/crm-recent-clients";
+import { CrmNotice } from "@/components/crm/CrmStates";
+import Skeleton from "@/components/ui/Skeleton";
 
 type DeskOpt = { id: string; name: string; code: string | null };
 
@@ -143,6 +145,7 @@ const emptyCreate = {
 export default function AdminUsersPage() {
   const { i18n, code, deskName } = useCrmLabels();
   const [rows, setRows] = useState<UserRow[]>([]);
+  const [listPhase, setListPhase] = useState<"loading" | "ready" | "error">("loading");
   const [hasMore, setHasMore] = useState(false);
   const [moreBusy, setMoreBusy] = useState(false);
   const rowsRef = useRef<UserRow[]>([]);
@@ -309,7 +312,11 @@ export default function AdminUsersPage() {
     params.set("view", "table");
     try {
       const res = await fetch(`/api/admin/users?${params}`, { cache: "no-store" });
-      if (!res.ok || gen !== listGen.current) return;
+      if (gen !== listGen.current) return;
+      if (!res.ok) {
+        if (mode !== "more") setListPhase("error");
+        return;
+      }
       const data = await res.json();
       const st = new Date(data.serverTime).getTime();
       if (Number.isFinite(st)) skew.current = st - Date.now();
@@ -340,6 +347,9 @@ export default function AdminUsersPage() {
         setRetentionCounts(data.retentionCounts as Record<string, number>);
         countsSeen.current = true;
       }
+      if (mode !== "more") setListPhase("ready");
+    } catch {
+      if (gen === listGen.current && mode !== "more") setListPhase("error");
     } finally {
       if (mode === "more" && gen === listGen.current) setMoreBusy(false);
     }
@@ -1023,8 +1033,26 @@ export default function AdminUsersPage() {
       )}
 
       {msg && <p className="mb-3 text-xs text-emerald-400">{msg}</p>}
+      {listPhase === "error" && (
+        <CrmNotice
+          title={i18n("crm.ui.loadFailed")}
+          body={i18n("crm.ui.loadFailedBody", "Check your connection and try again.")}
+          action={i18n("crm.ui.tryAgain")}
+          onAction={() => {
+            setListPhase("loading");
+            void load();
+          }}
+        />
+      )}
 
-      <div className="overflow-x-auto rounded-xl border border-[#e5e5e5]">
+      {listPhase === "loading" && rows.length === 0 && (
+        <div className="mb-3 space-y-2 rounded-xl border border-[#e5e5e5] p-3" data-fx-traders-skeleton="" aria-busy="true">
+          {Array.from({ length: 8 }, (_, i) => (
+            <Skeleton key={i} light className="h-8 w-full" />
+          ))}
+        </div>
+      )}
+      <div className={`overflow-x-auto rounded-xl border border-[#e5e5e5] ${listPhase === "loading" && rows.length === 0 ? "hidden" : ""}`}>
         <table className="w-full text-left text-xs">
           <thead className="bg-[#ffffff] text-neutral-500">
             <tr>
