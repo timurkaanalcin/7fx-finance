@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useI18n } from "@/lib/i18n/context";
 import SymbolIcon from "@/components/ui/SymbolIcon";
 import { FeedDot, type FeedState } from "@/components/trading/FeedStatus";
+import { paintCandles, paintLine, type PaintBar } from "@/components/charts/price-paint";
 
 const QUOTE_SYMS = [
   "EURUSD",
@@ -46,7 +47,7 @@ const DIGITS: Record<string, number> = {
 
 type Tick = { symbol: string; bid: number; ask: number; mid: number; changePct: number };
 
-type Bar = { o: number; h: number; l: number; c: number };
+type Bar = PaintBar;
 
 type Feed = {
   status: "loading" | "live" | "delayed" | "unavailable";
@@ -224,201 +225,6 @@ function useReducedMotion() {
   return reduce;
 }
 
-function viewRange(low: number, high: number): { min: number; max: number } {
-  const mid = (low + high) / 2;
-  const span = high - low;
-  const floor = Math.max(Math.abs(mid) * 0.0008, 1e-6);
-  if (!(span > floor)) {
-    return { min: mid - floor / 2, max: mid + floor / 2 };
-  }
-  const pad = span * 0.12;
-  return { min: low - pad, max: high + pad };
-}
-
-function smoothCloses(values: number[]): number[] {
-  if (values.length < 5) return values;
-  const out: number[] = [];
-  for (let i = 0; i < values.length; i += 1) {
-    const a = values[Math.max(0, i - 2)];
-    const b = values[Math.max(0, i - 1)];
-    const c = values[i];
-    const d = values[Math.min(values.length - 1, i + 1)];
-    const e = values[Math.min(values.length - 1, i + 2)];
-    out.push((a + b + c + d + e) / 5);
-  }
-  return out;
-}
-
-function strokeMonotone(ctx: CanvasRenderingContext2D, pts: Array<[number, number]>) {
-  const n = pts.length;
-  if (n < 2) return;
-  const dx: number[] = [];
-  const slope: number[] = [];
-  for (let i = 0; i < n - 1; i += 1) {
-    dx[i] = pts[i + 1][0] - pts[i][0];
-    const dy = pts[i + 1][1] - pts[i][1];
-    slope[i] = dx[i] === 0 ? 0 : dy / dx[i];
-  }
-  const tan: number[] = new Array(n);
-  tan[0] = slope[0];
-  tan[n - 1] = slope[n - 2];
-  for (let i = 1; i < n - 1; i += 1) {
-    tan[i] = slope[i - 1] * slope[i] <= 0 ? 0 : (slope[i - 1] + slope[i]) / 2;
-  }
-  for (let i = 0; i < n - 1; i += 1) {
-    if (Math.abs(slope[i]) < 1e-6) {
-      tan[i] = 0;
-      tan[i + 1] = 0;
-      continue;
-    }
-    const a = tan[i] / slope[i];
-    const b = tan[i + 1] / slope[i];
-    const hyp = a * a + b * b;
-    if (hyp > 9) {
-      const tau = 3 / Math.sqrt(hyp);
-      tan[i] = tau * a * slope[i];
-      tan[i + 1] = tau * b * slope[i];
-    }
-  }
-  ctx.beginPath();
-  ctx.moveTo(pts[0][0], pts[0][1]);
-  for (let i = 0; i < n - 1; i += 1) {
-    const h = dx[i];
-    ctx.bezierCurveTo(
-      pts[i][0] + h / 3,
-      pts[i][1] + (tan[i] * h) / 3,
-      pts[i + 1][0] - h / 3,
-      pts[i + 1][1] - (tan[i + 1] * h) / 3,
-      pts[i + 1][0],
-      pts[i + 1][1]
-    );
-  }
-}
-
-function drawSeries(canvas: HTMLCanvasElement, values: number[], pulse: number) {
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const w = canvas.clientWidth || 320;
-  const h = canvas.clientHeight || 160;
-  canvas.width = Math.max(1, Math.floor(w * dpr));
-  canvas.height = Math.max(1, Math.floor(h * dpr));
-  const ctx = canvas.getContext("2d");
-  if (!ctx || values.length < 2) return;
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.clearRect(0, 0, w, h);
-  const smooth = smoothCloses(values);
-  let low = smooth[0];
-  let high = smooth[0];
-  for (let i = 1; i < smooth.length; i += 1) {
-    if (smooth[i] < low) low = smooth[i];
-    if (smooth[i] > high) high = smooth[i];
-  }
-  const range = viewRange(low, high);
-  const span = range.max - range.min || 1;
-  const padX = 8;
-  const padY = 12;
-  const pts: Array<[number, number]> = smooth.map((v, i) => {
-    const x = padX + (i / (smooth.length - 1)) * (w - padX * 2);
-    const y = padY + (1 - (v - range.min) / span) * (h - padY * 2);
-    return [x, y];
-  });
-  const up = values[values.length - 1] >= values[0];
-  const color = up ? "#3ddc97" : "#ff5d73";
-  ctx.strokeStyle = "rgba(255,255,255,0.05)";
-  ctx.lineWidth = 1;
-  for (let i = 1; i <= 3; i += 1) {
-    const y = padY + ((h - padY * 2) * i) / 4;
-    ctx.beginPath();
-    ctx.moveTo(padX, y);
-    ctx.lineTo(w - padX, y);
-    ctx.stroke();
-  }
-  strokeMonotone(ctx, pts);
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 1.75;
-  ctx.lineJoin = "round";
-  ctx.stroke();
-  const last = pts[pts.length - 1];
-  ctx.lineTo(last[0], h - 4);
-  ctx.lineTo(pts[0][0], h - 4);
-  ctx.closePath();
-  const g = ctx.createLinearGradient(0, 0, 0, h);
-  g.addColorStop(0, up ? "rgba(61,220,151,0.22)" : "rgba(255,93,115,0.2)");
-  g.addColorStop(1, "rgba(61,220,151,0)");
-  ctx.fillStyle = g;
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(last[0], last[1], 3 + pulse * 2.4, 0, Math.PI * 2);
-  ctx.fillStyle = up ? "rgba(61,220,151,0.25)" : "rgba(255,93,115,0.25)";
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(last[0], last[1], 2.5, 0, Math.PI * 2);
-  ctx.fillStyle = color;
-  ctx.fill();
-}
-
-function drawCandles(canvas: HTMLCanvasElement, bars: Bar[], pulse: number) {
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const w = canvas.clientWidth || 320;
-  const h = canvas.clientHeight || 160;
-  canvas.width = Math.max(1, Math.floor(w * dpr));
-  canvas.height = Math.max(1, Math.floor(h * dpr));
-  const ctx = canvas.getContext("2d");
-  if (!ctx || bars.length < 2) return;
-  const shown = bars.length > 96 ? bars.slice(bars.length - 96) : bars;
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.clearRect(0, 0, w, h);
-  let low = shown[0].l;
-  let high = shown[0].h;
-  for (let i = 1; i < shown.length; i += 1) {
-    if (shown[i].l < low) low = shown[i].l;
-    if (shown[i].h > high) high = shown[i].h;
-  }
-  const range = viewRange(low, high);
-  const span = range.max - range.min || 1;
-  const padX = 8;
-  const padY = 12;
-  const plotW = Math.max(20, w - padX * 2);
-  const plotH = Math.max(20, h - padY * 2);
-  const slot = plotW / shown.length;
-  const yOf = (v: number) => padY + (1 - (v - range.min) / span) * plotH;
-  ctx.strokeStyle = "rgba(255,255,255,0.05)";
-  ctx.lineWidth = 1;
-  for (let i = 1; i <= 3; i += 1) {
-    const y = padY + (plotH * i) / 4;
-    ctx.beginPath();
-    ctx.moveTo(padX, y);
-    ctx.lineTo(w - padX, y);
-    ctx.stroke();
-  }
-  shown.forEach((bar, i) => {
-    const x = padX + i * slot;
-    const up = bar.c >= bar.o;
-    const color = up ? "#3ddc97" : "#ff5d73";
-    const mid = x + slot * 0.5;
-    ctx.strokeStyle = color;
-    ctx.fillStyle = color;
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(mid, yOf(bar.h));
-    ctx.lineTo(mid, yOf(bar.l));
-    ctx.stroke();
-    const top = yOf(Math.max(bar.o, bar.c));
-    const bot = yOf(Math.min(bar.o, bar.c));
-    const body = Math.max(1.25, bot - top);
-    ctx.globalAlpha = 0.92;
-    ctx.fillRect(x + slot * 0.22, top, Math.max(1.5, slot * 0.56), body);
-    ctx.globalAlpha = 1;
-  });
-  const last = shown[shown.length - 1];
-  const lx = padX + (shown.length - 0.5) * slot;
-  const ly = yOf(last.c);
-  const up = last.c >= shown[0].o;
-  ctx.beginPath();
-  ctx.arc(lx, ly, 3 + pulse * 2.2, 0, Math.PI * 2);
-  ctx.fillStyle = up ? "rgba(61,220,151,0.22)" : "rgba(255,93,115,0.22)";
-  ctx.fill();
-}
-
 function HeroCanvas({ bars, label }: { bars: Bar[]; label: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const reduce = useReducedMotion();
@@ -429,7 +235,7 @@ function HeroCanvas({ bars, label }: { bars: Bar[]; label: string }) {
     let frame = 0;
     const paint = () => {
       const pulse = reduce ? 0 : (Math.sin(frame / 18) + 1) / 2;
-      drawCandles(canvas, bars, pulse);
+      paintCandles(canvas, bars, pulse);
       if (!reduce) {
         frame += 1;
         raf = requestAnimationFrame(paint);
@@ -451,7 +257,7 @@ function MiniCanvas({ values }: { values: number[] }) {
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
-    drawSeries(canvas, values, 0);
+    paintLine(canvas, values, 0);
   }, [values]);
   return <canvas ref={ref} className="fx-mini-canvas" aria-hidden />;
 }
@@ -463,7 +269,7 @@ function Spark({ values }: { values: number[] }) {
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
-    drawSeries(canvas, values, 0);
+    paintLine(canvas, values, 0);
   }, [values]);
   return <canvas ref={ref} className="fx-spark" aria-hidden />;
 }

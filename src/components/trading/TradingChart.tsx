@@ -15,6 +15,7 @@ import { chartReconcilePlan, type OhlcBar } from "@/lib/chart-reconcile";
 import { formatPrice, getSymbol } from "@/lib/symbols";
 import SymbolIcon from "@/components/ui/SymbolIcon";
 import { useI18n } from "@/lib/i18n/context";
+import { HIDDEN_CANDLE, HIDDEN_LINE, paintChartOverlay } from "./chart-paint";
 
 const TIMEFRAMES = [
   { id: "1m", label: "1′" },
@@ -141,6 +142,7 @@ export default function TradingChart({
 }: Props) {
   const { t } = useI18n();
   const containerRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLCanvasElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
   const lineRef = useRef<ISeriesApi<"Line"> | null>(null);
@@ -178,9 +180,28 @@ export default function TradingChart({
   const [livePulse, setLivePulse] = useState(false);
   const [liveFresh, setLiveFresh] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const chartTypeRef = useRef(chartType);
+  const themeLightRef = useRef(false);
+  const paintOverlayRef = useRef<() => void>(() => {});
 
   timeframeRef.current = timeframe;
   priceRef.current = price;
+  chartTypeRef.current = chartType;
+  paintOverlayRef.current = () => {
+    const canvas = overlayRef.current;
+    const chart = chartRef.current;
+    const candle = seriesRef.current;
+    const line = lineRef.current;
+    if (!canvas || !chart || !candle || !line) return;
+    paintChartOverlay({
+      canvas,
+      chart,
+      candle,
+      line,
+      mode: chartTypeRef.current,
+      light: themeLightRef.current,
+    });
+  };
 
   /** True when the last bar is more than one timeframe behind the clock (a hidden-tab gap). */
   const candleGap = () => {
@@ -227,6 +248,7 @@ export default function TradingChart({
           ? prev
           : { o: bar.open, h: bar.high, l: bar.low, c: bar.close }
       );
+      paintOverlayRef.current();
       return true;
     } catch {
       return false;
@@ -289,6 +311,7 @@ export default function TradingChart({
   }, []);
 
   const fxTheme = useFxTheme();
+  themeLightRef.current = fxTheme === "light";
   const [chartGen, setChartGen] = useState(0);
   useEffect(() => {
     const c = chartRef.current;
@@ -301,12 +324,8 @@ export default function TradingChart({
       rightPriceScale: { borderColor: L ? "#e6e2d8" : "#2a2a2a" },
       timeScale: { borderColor: L ? "#e6e2d8" : "#2a2a2a" },
     });
-    seriesRef.current?.applyOptions({
-      upColor: L ? "#0f9d76" : "#26a69a", downColor: L ? "#d63c34" : "#ef5350",
-      borderUpColor: L ? "#0f9d76" : "#26a69a", borderDownColor: L ? "#d63c34" : "#ef5350",
-      wickUpColor: L ? "#0f9d76" : "#26a69a", wickDownColor: L ? "#d63c34" : "#ef5350",
-    });
-    lineRef.current?.applyOptions({ color: L ? "#111111" : "#ffffff" });
+    seriesRef.current?.applyOptions(HIDDEN_CANDLE);
+    lineRef.current?.applyOptions(HIDDEN_LINE);
   }, [fxTheme, mounted, chartGen]);
 
   useEffect(() => {
@@ -345,18 +364,11 @@ export default function TradingChart({
         });
         chartRef.current = chart;
 
-        const candle = chart.addSeries(lc.CandlestickSeries, {
-          upColor: "#26a69a",
-          downColor: "#ef5350",
-          borderUpColor: "#26a69a",
-          borderDownColor: "#ef5350",
-          wickUpColor: "#26a69a",
-          wickDownColor: "#ef5350",
-        });
+        const candle = chart.addSeries(lc.CandlestickSeries, HIDDEN_CANDLE);
         seriesRef.current = candle;
 
         const line = chart.addSeries(lc.LineSeries, {
-          color: "#ffffff",
+          ...HIDDEN_LINE,
           lineWidth: 2,
           visible: false,
         });
@@ -389,6 +401,7 @@ export default function TradingChart({
           } catch {
             /* ignore */
           }
+          paintOverlayRef.current();
         };
         chart.timeScale().subscribeVisibleLogicalRangeChange(onRange);
 
@@ -400,6 +413,7 @@ export default function TradingChart({
                     width: containerRef.current.clientWidth,
                     height: containerRef.current.clientHeight,
                   });
+                  paintOverlayRef.current();
                 }
               })
             : null;
@@ -558,6 +572,7 @@ export default function TradingChart({
             if (fit) ts?.fitContent();
             else if (restore) ts?.setVisibleLogicalRange(restore);
             else ts?.scrollToPosition(0, false);
+            paintOverlayRef.current();
           };
           try {
             if (plan.kind === "patch") {
@@ -572,6 +587,7 @@ export default function TradingChart({
                 lineRef.current?.update({ time: bar.time as Time, value: bar.close });
               }
               paintLast();
+              paintOverlayRef.current();
             } else {
               replaceSeries();
             }
@@ -698,7 +714,8 @@ export default function TradingChart({
   useEffect(() => {
     if (seriesRef.current) seriesRef.current.applyOptions({ visible: chartType === "candle" });
     if (lineRef.current) lineRef.current.applyOptions({ visible: chartType === "line" });
-  }, [chartType]);
+    paintOverlayRef.current();
+  }, [chartType, fxTheme, chartGen]);
 
   // Open-position entry / SL / TP price lines for the current symbol.
   useEffect(() => {
@@ -981,7 +998,10 @@ export default function TradingChart({
         </button>
       )}
 
-      <div ref={containerRef} className="min-h-0 flex-1" />
+      <div className="relative min-h-0 flex-1">
+        <div ref={containerRef} className="absolute inset-0" />
+        <canvas ref={overlayRef} className="pointer-events-none absolute inset-0 z-[1] h-full w-full" aria-hidden="true" />
+      </div>
     </div>
   );
 }
