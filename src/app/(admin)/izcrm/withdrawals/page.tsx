@@ -9,6 +9,7 @@ import { MoneyQueueChrome, MoneyQueuePager } from "@/components/crm/MoneyQueueCh
 import { useMoneyQueue, type MoneyQueueRow } from "@/components/crm/use-money-queue";
 import Link from "next/link";
 import { useState } from "react";
+import { CRM_ROW_FOCUS, useCrmRowKeys } from "@/components/crm/CrmListRow";
 
 type Row = MoneyQueueRow & { method: string };
 
@@ -22,6 +23,7 @@ function sortMark(sort: string, field: string): string {
 /** Withdrawal queue. Approve and reject stay on the existing POST. */
 export default function AdminWithdrawalsPage() {
   const { i18n, code, locale } = useCrmLabels();
+  const onRowKey = useCrmRowKeys();
   const queue = useMoneyQueue<Row>("/api/admin/withdrawals", { take: "50", kind: "withdrawal" });
   const dateLocale = LOCALE_META[locale].htmlLang;
   const [busy, setBusy] = useState<string | null>(null);
@@ -122,7 +124,13 @@ export default function AdminWithdrawalsPage() {
           </thead>
           <tbody>
             {queue.rows.map((r) => (
-              <tr key={r.id} className="border-t border-[#e5e5e5]">
+              <tr
+                key={r.id}
+                tabIndex={0}
+                data-fx-list-row=""
+                onKeyDown={onRowKey(`/izcrm/traders/${r.user.id}`)}
+                className={`border-t border-[#e5e5e5] ${CRM_ROW_FOCUS}`}
+              >
                 <td className="whitespace-nowrap px-3 py-2">{fmtCrmDate(r.createdAt)}</td>
                 <td className="px-3 py-2">
                   <Link href={`/izcrm/traders/${r.user.id}`} className="text-sky-600 hover:underline">
@@ -148,6 +156,8 @@ export default function AdminWithdrawalsPage() {
                   {r.status === "PENDING" ? (
                     <div className="flex gap-1">
                       <button
+                        type="button"
+                        data-fx-money="approve"
                         disabled={busy === r.id}
                         onClick={() => act(r.id, "approve")}
                         className="rounded bg-emerald-600 px-2 py-1 hover:bg-emerald-500 disabled:opacity-50"
@@ -155,6 +165,8 @@ export default function AdminWithdrawalsPage() {
                         {i18n("crm.ui.approve")}
                       </button>
                       <button
+                        type="button"
+                        data-fx-money="reject"
                         disabled={busy === r.id}
                         onClick={() => act(r.id, "reject")}
                         className="rounded bg-red-600/80 px-2 py-1 hover:bg-red-500 disabled:opacity-50"

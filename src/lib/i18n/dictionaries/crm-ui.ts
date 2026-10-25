@@ -1057,6 +1057,14 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.list.page", "Page {page}", "Sayfa {page}", "Страница {page}", "Seite {page}", "صفحة {page}"],
   ["crm.list.prev", "Previous", "Önceki", "Назад", "Zurück", "السابق"],
   ["crm.list.next", "Next", "Sonraki", "Далее", "Weiter", "التالي"],
+  ["crm.list.none", "No results", "Sonuç yok", "Ничего не найдено", "Keine Ergebnisse", "لا نتائج"],
+  ["crm.kb.title", "Keyboard shortcuts", "Klavye kısayolları", "Сочетания клавиш", "Tastenkürzel", "اختصارات لوحة المفاتيح"],
+  ["crm.kb.search", "Focus search", "Aramaya odaklan", "Фокус на поиске", "Suche fokussieren", "التركيز على البحث"],
+  ["crm.kb.open", "Open the focused row", "Odaktaki satırı aç", "Открыть строку в фокусе", "Fokussierte Zeile öffnen", "فتح الصف في التركيز"],
+  ["crm.kb.esc", "Close the filter menu", "Filtre menüsünü kapat", "Закрыть меню фильтра", "Filtermenü schließen", "إغلاق قائمة التصفية"],
+  ["crm.kb.help", "Show this help", "Bu yardımı göster", "Показать эту справку", "Diese Hilfe zeigen", "إظهار هذه المساعدة"],
+  ["crm.kb.jump", "Quick jump", "Hızlı geçiş", "Быстрый переход", "Schnellsprung", "انتقال سريع"],
+  ["crm.kb.safe", "Shortcuts pause while you type. They never approve, reject, or move money.", "Yazarken kısayollar durur. Onay, red veya para hareketi tetiklemezler.", "Пока вы печатаете, сочетания молчат. Они не подтверждают, не отклоняют и не двигают деньги.", "Kürzel pausieren beim Tippen. Sie genehmigen, lehnen ab oder bewegen kein Geld.", "تتوقف الاختصارات أثناء الكتابة. لا توافق ولا ترفض ولا تحرّك المال."],
 ];
 
 function pack(index: 1|2|3|4|5): Dict {

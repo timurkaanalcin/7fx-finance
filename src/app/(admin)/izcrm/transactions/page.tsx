@@ -308,6 +308,7 @@ export default function TransactionsPage() {
                 if (e.key === "Escape") setQ("");
               }}
               placeholder={i18n("crm.edit.searchClient")}
+              data-fx-list-search=""
               className={ctl + " w-56 pr-6"}
             />
             {q && (
@@ -402,10 +403,11 @@ export default function TransactionsPage() {
               : type
                 ? baseCounts.byType.find(([k]) => k === type)?.[1] ?? 0
                 : baseCounts.total;
+            if (span.from <= 0) return i18n("crm.list.none");
             if (filtered != null) {
               return i18n("crm.list.showing")
-                .replace("{from}", String(span.from > 0 ? span.from : 0))
-                .replace("{to}", String(span.from > 0 ? span.to : 0))
+                .replace("{from}", String(span.from))
+                .replace("{to}", String(span.to))
                 .replace("{total}", String(filtered));
             }
             return `${rows.length} ${i18n("crm.ui.records")}`;

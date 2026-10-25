@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CrmListPager, useListQueryUrl } from "@/components/crm/CrmListBar";
+import { CRM_ROW_FOCUS, useCrmRowKeys } from "@/components/crm/CrmListRow";
 import {
   CRM_LIST_TAKES,
   parseTicketListQuery,
@@ -127,6 +128,7 @@ function draftBody(d: Draft, orig: Draft | null): Record<string, unknown> {
 
 export default function TicketsPage() {
   const { i18n, code } = useCrmLabels();
+  const onRowKey = useCrmRowKeys();
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [status, setStatus] = useState("PENDING");
   const [kind, setKind] = useState("all");
@@ -674,6 +676,7 @@ export default function TicketsPage() {
               if (e.key === "Escape") setQ("");
             }}
             placeholder={i18n("crm.edit.searchClient")}
+            data-fx-list-search=""
             className="w-52 rounded border border-neutral-300 bg-white px-2 py-1.5 pr-6"
           />
           {q && (
@@ -769,7 +772,7 @@ export default function TicketsPage() {
       </div>
       <div className="mb-3 flex flex-wrap gap-3 text-[11px] text-neutral-600">
         <span>
-          {tickets.length} {i18n("crm.ui.records")}
+          {tickets.length === 0 ? i18n("crm.list.none") : `${tickets.length} ${i18n("crm.ui.records")}`}
         </span>
         {totals.map((t) => (
           <span key={`${t.kind}|${t.currency}`} className="tabular-nums" title={`${t.n}`}>
@@ -843,7 +846,12 @@ export default function TicketsPage() {
               const hasRecord = Boolean(ticket.approvalReason || ticket.eventScenario || ticket.riskAcknowledged);
               return (
                 <Fragment key={rowKey}>
-                  <tr className={`border-t border-neutral-200 ${isEdit ? "bg-amber-50/70" : ""}`}>
+                  <tr
+                    tabIndex={0}
+                    data-fx-list-row=""
+                    onKeyDown={onRowKey(`/izcrm/traders/${ticket.customerId}`)}
+                    className={`border-t border-neutral-200 ${CRM_ROW_FOCUS} ${isEdit ? "bg-amber-50/70" : ""}`}
+                  >
                     <td className="px-2 py-1.5">
                       <span
                         className={`whitespace-nowrap rounded px-1.5 py-0.5 text-[10px] font-semibold ${
@@ -947,6 +955,8 @@ export default function TicketsPage() {
                       {ticket.status === "PENDING" && !isEdit && (
                         <div className="mt-1 flex gap-1">
                           <button
+                            type="button"
+                            data-fx-money="approve"
                             disabled={busy}
                             onClick={() => openApprove(ticket)}
                             className="rounded bg-emerald-600/80 px-2 py-0.5 text-white hover:bg-emerald-500"
@@ -954,6 +964,8 @@ export default function TicketsPage() {
                             {i18n("crm.ui.approve")}
                           </button>
                           <button
+                            type="button"
+                            data-fx-money="reject"
                             disabled={busy}
                             onClick={() => act(ticket, "reject")}
                             className="rounded bg-red-600/80 px-2 py-0.5 text-white hover:bg-red-500"
