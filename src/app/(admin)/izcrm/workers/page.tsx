@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ConfirmDialog, CrmFormGrid, type CrmColumn } from "@/components/crm/CrmRecordTable";
+import { ConfirmDialog, CrmFormGrid } from "@/components/crm/crm-record-lazy";
+import type { CrmColumn } from "@/components/crm/CrmRecordTable";
 import { ListPlaceholder } from "@/components/crm/CrmStates";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { fmtCrmDate } from "@/lib/crm-format";

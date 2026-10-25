@@ -1,6 +1,7 @@
 "use client";
 
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { positionTickKey } from "./tick-key";
 import { useI18n } from "@/lib/i18n/context";
 import { formatPrice } from "@/lib/symbols";
 import { displayOpenProfit } from "@/lib/display-profit";
@@ -243,10 +244,25 @@ function fmtSignedMoney(n: number): string {
 export default function Watchlist({ symbols, prices, selected, onSelect, className = "", openPositions }: Props) {
   const { t } = useI18n();
   const [q, setQ] = useState("");
+  const [qFilter, setQFilter] = useState("");
   const [filter, setFilter] = useState("ALL");
+  useEffect(() => {
+    if (q === "") {
+      setQFilter("");
+      return;
+    }
+    const timer = window.setTimeout(() => setQFilter(q), 150);
+    return () => window.clearTimeout(timer);
+  }, [q]);
 
+  const pricesRef = useRef(prices);
+  pricesRef.current = prices;
   /** Open positions grouped by catalog symbol (matches both symbol and chartSymbol). */
+  const openTickKey = positionTickKey(openPositions ?? [], prices);
   const openBySymbol = useMemo(() => {
+    // openTickKey changes only when a displayed open-row quote changes.
+    void openTickKey;
+    const livePrices = pricesRef.current;
     const m = new Map<string, OpenAgg>();
     if (!openPositions?.length) return m;
     const known = new Set(symbols.map((s) => s.symbol.toUpperCase()));
@@ -257,7 +273,7 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
       if (!key) continue;
       const cur = m.get(key) || { count: 0, profit: 0, buyLots: 0, sellLots: 0 };
       cur.count += 1;
-      const tick = prices[key] || prices[a] || prices[b];
+      const tick = livePrices[key] || livePrices[a] || livePrices[b];
       const quoted = tick ? (p.side === "SELL" ? tick.ask : tick.bid) : Number.NaN;
       const live = Number.isFinite(quoted) && quoted > 0 ? quoted : tick?.mid;
       const mark = Number.isFinite(live) && live > 0 ? live : Number(p.currentPrice) || Number(p.openPrice);
@@ -269,8 +285,10 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
       m.set(key, cur);
     }
     return m;
-  }, [openPositions, symbols, prices]);
-  const hasOpen = openBySymbol.size > 0;
+  }, [openPositions, symbols, openTickKey]);
+  /** Membership only — profit ticks must not rebuild the row list. */
+  const openMembers = useMemo(() => Array.from(openBySymbol.keys()).sort().join("|"), [openBySymbol]);
+  const hasOpen = openMembers.length > 0;
   useEffect(() => {
     if (filter === "OPEN" && !hasOpen) setFilter("ALL");
   }, [filter, hasOpen]);
@@ -339,8 +357,6 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
       return next;
     });
   };
-  const pricesRef = useRef(prices);
-  pricesRef.current = prices;
   const [pctSnap, setPctSnap] = useState<Record<string, number>>({});
   useEffect(() => {
     if (sortMode !== "GAIN" && sortMode !== "LOSS") return;
@@ -358,8 +374,9 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
   }, [sortMode]);
 
   const baseList = useMemo(() => {
-    const qq = q.toLowerCase();
-    const match = (s: SymbolDef) => !q || s.symbol.toLowerCase().includes(qq) || s.name.toLowerCase().includes(qq);
+    const qq = qFilter.toLowerCase();
+    const match = (s: SymbolDef) => !qFilter || s.symbol.toLowerCase().includes(qq) || s.name.toLowerCase().includes(qq);
+    const openSet = new Set(openMembers ? openMembers.split("|") : []);
     if (filter === "RECENT") {
       const bySym = new Map(symbols.map((s) => [s.symbol, s] as const));
       return recent.map((r) => bySym.get(r)).filter((s): s is SymbolDef => !!s && match(s));
@@ -368,13 +385,13 @@ export default function Watchlist({ symbols, prices, selected, onSelect, classNa
       if (filter === "FAV") {
         if (!favs.includes(s.symbol)) return false;
       } else if (filter === "OPEN") {
-        if (!openBySymbol.has(s.symbol.toUpperCase())) return false;
+        if (!openSet.has(s.symbol.toUpperCase())) return false;
       } else if (filter !== "ALL" && s.class !== filter) return false;
       return match(s);
     });
     if (!favs.length) return out;
     return [...out.filter((s) => favs.includes(s.symbol)), ...out.filter((s) => !favs.includes(s.symbol))];
-  }, [symbols, q, filter, favs, recent, openBySymbol]);
+  }, [symbols, qFilter, filter, favs, recent, openMembers]);
 
   const list = useMemo(() => {
     // Favourites always float to the top; sortMode applies within fav / non-fav groups.
