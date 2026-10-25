@@ -192,12 +192,30 @@ Signed-out, the script records `ok   signed-in checks skipped (SMOKE_USER/SMOKE_
 
 `crm7fx.customer.org.tr` DNS currently points at a cPanel server, `94.73.150.188`. The certificate common name is `cpls12.srvpanel.com`. That host is not the Vercel app. The mismatch is infrastructure outside this repository. The smoke script reads the certificate, prints `infra CRM host cert/DNS mismatch` with the resolved IP when DNS answers, and does not count it as a failed check. `SMOKE_IGNORE_HTTPS=1` skips that probe for a local self-signed certificate. `vercel alias set` on `7fx.customer.org.tr` does not change this DNS record or certificate.
 
+## Upload
+
+Hobby blocks a git deployment when the commit author is not on the team. Deploy from a copy of the tree that has no `.git` directory. `npm run build` is the Vercel build command: it runs `prisma generate`, `next build`, and `scripts/publish-deferred-css.mjs`, which writes `/fx-public-utilities.css` and `/fx-landing.css`.
+
+```
+rm -rf /tmp/7fx-deploy
+mkdir -p /tmp/7fx-deploy
+rsync -a --exclude .git --exclude node_modules --exclude .next --exclude '.env*' ./ /tmp/7fx-deploy/
+cd /tmp/7fx-deploy
+npx vercel deploy --prod
+```
+
 ## Rollback
 
 Before the first merge, record the deployment that currently serves production (`vercel inspect 7fx.customer.org.tr`, or the production row in the Vercel dashboard). To send traffic back to that deployment:
 
 ```
 vercel alias set <previous-deployment-url-or-id> 7fx.customer.org.tr
+```
+
+The rollback target for the production alias now on `7fx.customer.org.tr` (`dpl_CmBUznKxub1TxFvnyTKZQy8x7wCM`) is the previous production deployment `dpl_Z5Wgvb247KcqbX9QncEYpamENfr1`:
+
+```
+vercel alias set 7fx-finance-3ajnsb205-llvad-1323.vercel.app 7fx.customer.org.tr
 ```
 
 `<previous-deployment-url-or-id>` is the deployment id or hostname saved before the new deployment was aliased. The command updates the `7fx.customer.org.tr` alias. `crm7fx.customer.org.tr` is a separate host (`docs/CRM7FX-DNS-REQUIRED.txt`). This alias command does not change that host's DNS or certificate.
