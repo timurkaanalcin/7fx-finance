@@ -100,7 +100,7 @@ export default function PositionsPage() {
     } finally {
       if (mode === "more" && gen === listGen.current) setMoreBusy(false);
     }
-  }, [tab, qDebounced]);
+  }, [tab, qDebounced, i18n]);
 
   useEffect(() => {
     load();

@@ -55,7 +55,7 @@ export default function AdminSettingsPage() {
       });
     }
     setLoaded(true);
-  }, []);
+  }, [i18n]);
 
   useEffect(() => {
     load();
