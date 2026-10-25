@@ -248,7 +248,7 @@
     box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.6) !important;
     padding-bottom: var(--lx-safe-b);
     animation: lx-sheet 0.32s var(--lx-ease);
-    max-height: calc(100dvh - 24px);
+    max-height: calc(100dvh - 24px - var(--fx-kb, 0px));
     overflow-y: auto;
   }
   .fx-lx-overlay > div::before,

@@ -46,14 +46,14 @@ export default function ShortcutsHelp({ open, onClose }: Props) {
         className="fx-lx-modal w-full max-w-sm rounded-modal border border-desk-border bg-desk-panel text-desk-text shadow-desk-panel"
       >
         <div className="flex items-center justify-between border-b border-desk-border/80 px-4 py-3">
-          <h2 id="fx-kb-title" className="text-sm font-semibold tracking-wide">
+          <h2 id="fx-kb-title" className="text-sm font-medium tracking-wide">
             {t("term.kb.title")}
           </h2>
           <button
             type="button"
             onClick={onClose}
             aria-label={t("common.close")}
-            className="flex h-7 w-7 items-center justify-center rounded-[7px] text-desk-muted transition-colors hover:bg-desk-elev hover:text-desk-text focus:outline-none focus-visible:ring-1 focus-visible:ring-desk-accent"
+            className="flex h-11 w-11 items-center justify-center rounded-[7px] text-desk-muted transition-colors hover:bg-desk-elev hover:text-desk-text focus:outline-none focus-visible:ring-1 focus-visible:ring-desk-accent"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M6 6l12 12M18 6L6 18" />

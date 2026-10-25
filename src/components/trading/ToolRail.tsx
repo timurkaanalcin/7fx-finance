@@ -13,7 +13,7 @@ export default function ToolRail({
   const calc = calcLabel || t("term.calc.button");
   const help = helpLabel || t("term.kb.button");
   return (
-    <div className="hidden w-9 shrink-0 flex-col items-center gap-0.5 border-l border-desk-border/80 bg-desk-bg py-2 md:flex">
+    <div className="hidden w-14 shrink-0 flex-col items-center gap-0.5 border-l border-desk-border/80 bg-desk-bg py-2 md:flex">
       {onCalc && (
         <button
           type="button"
@@ -21,7 +21,7 @@ export default function ToolRail({
           title={calc}
           aria-label={calc}
           aria-keyshortcuts="C"
-          className="flex h-7 w-7 items-center justify-center rounded-[7px] text-desk-muted/70 transition-colors hover:bg-desk-elev hover:text-desk-accent"
+          className="flex h-11 w-11 items-center justify-center rounded-[7px] text-desk-muted/70 transition-colors hover:bg-desk-elev hover:text-desk-accent"
         >
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
             <rect x="5" y="3" width="14" height="18" rx="2" />
@@ -36,7 +36,7 @@ export default function ToolRail({
           title={help}
           aria-label={help}
           aria-keyshortcuts="?"
-          className="mt-auto flex h-7 w-7 items-center justify-center rounded-[7px] text-[12px] font-bold text-desk-muted/70 transition-colors hover:bg-desk-elev hover:text-desk-text"
+          className="mt-auto flex h-11 w-11 items-center justify-center rounded-[7px] text-[12px] font-medium text-desk-muted/70 transition-colors hover:bg-desk-elev hover:text-desk-text"
         >
           ?
         </button>
