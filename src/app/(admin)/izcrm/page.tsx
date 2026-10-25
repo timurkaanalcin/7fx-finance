@@ -2,11 +2,15 @@
 
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
+import dynamic from "next/dynamic";
 import { useCallback, useEffect, useState } from "react";
 import { CRM_IDLE_POLL_MS, useVisiblePoll } from "@/lib/use-visible-poll";
 import Link from "next/link";
-import LeadDashboard from "@/components/crm/LeadDashboard";
 import { CrmNotice, DashSkeleton } from "@/components/crm/CrmStates";
+
+const LeadDashboard = dynamic(() => import("@/components/crm/LeadDashboard"), {
+  loading: () => <DashSkeleton />,
+});
 
 type Kpis = {
   users: number;

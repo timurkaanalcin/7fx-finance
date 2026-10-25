@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
 
 /**
@@ -61,7 +61,7 @@ function formatCountdown(mins: number): string {
   return `${h}h${m}m`;
 }
 
-export default function MarketSessions({ className = "" }: { className?: string }) {
+function MarketSessions({ className = "" }: { className?: string }) {
   const { t } = useI18n();
   const [now, setNow] = useState<Date | null>(null);
 
@@ -122,3 +122,5 @@ export default function MarketSessions({ className = "" }: { className?: string 
     </div>
   );
 }
+
+export default memo(MarketSessions);

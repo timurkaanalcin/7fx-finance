@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ListPlaceholder } from "@/components/crm/CrmStates";
-import CrmRecordTable, { type CrmColumn } from "@/components/crm/CrmRecordTable";
+import CrmRecordTable from "@/components/crm/crm-record-lazy";
+import type { CrmColumn } from "@/components/crm/CrmRecordTable";
 import ClientPicker from "@/components/crm/ClientPicker";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { fmtCrmMoney } from "@/lib/crm-format";

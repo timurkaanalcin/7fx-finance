@@ -1,15 +1,19 @@
 "use client";
 
-import { memo, useEffect, useMemo, useState, useCallback, type ReactNode, type ReactElement, type MouseEvent as ReactMouseEvent } from "react";
+import dynamic from "next/dynamic";
+import { memo, useEffect, useMemo, useRef, useState, useCallback, type ReactNode, type ReactElement, type MouseEvent as ReactMouseEvent } from "react";
 import { calcPipDistance, formatPrice, getSymbol } from "@/lib/symbols";
 import { displayOpenProfit } from "@/lib/display-profit";
 import { positionMark } from "@/lib/mark-price";
 import { fmtDateTime, fmtNum } from "@/lib/format";
 import type { OrderRow, PositionRow, PriceTick } from "./types";
-import PnlCalendar, { closedDayKey } from "./PnlCalendar";
-import AccountStatement from "./AccountStatement";
+import { closedDayKey } from "./pnl-day";
+import { positionTickKey } from "./tick-key";
 import { useI18n } from "@/lib/i18n/context";
 import TradeNote from "./TradeNote";
+
+const PnlCalendar = dynamic(() => import("./PnlCalendar"));
+const AccountStatement = dynamic(() => import("./AccountStatement"));
 
 type Tab = "open" | "closed" | "pending";
 type SideFilter = "ALL" | "BUY" | "SELL";
@@ -1593,6 +1597,7 @@ export default function BottomPanels({
   const reopenTitle = t("term.reopenTitle");
   // Monthly account statement — client-only, from closed trades
   const [showStatement, setShowStatement] = useState(false);
+  const [statementReady, setStatementReady] = useState(false);
   const closeStatement = useCallback(() => setShowStatement(false), []);
   const [showFilters, setShowFilters] = useState(false);
   const [sideFilter, setSideFilter] = useState<SideFilter>("ALL");
@@ -1600,6 +1605,24 @@ export default function BottomPanels({
   const [resultFilter, setResultFilter] = useState<ResultFilter>("ALL");
   const [periodFilter, setPeriodFilter] = useState<PeriodFilter>("ALL");
   const [textFilter, setTextFilter] = useState("");
+  const [symbolQuery, setSymbolQuery] = useState("");
+  const [textQuery, setTextQuery] = useState("");
+  useEffect(() => {
+    if (symbolFilter === "") {
+      setSymbolQuery("");
+      return;
+    }
+    const timer = window.setTimeout(() => setSymbolQuery(symbolFilter), 150);
+    return () => window.clearTimeout(timer);
+  }, [symbolFilter]);
+  useEffect(() => {
+    if (textFilter === "") {
+      setTextQuery("");
+      return;
+    }
+    const timer = window.setTimeout(() => setTextQuery(textFilter), 150);
+    return () => window.clearTimeout(timer);
+  }, [textFilter]);
   const [bulkBusy, setBulkBusy] = useState(false);
   const [openSort, setOpenSort] = useState<SortState>(null);
   const [closedSort, setClosedSort] = useState<SortState>(null);
@@ -1639,8 +1662,8 @@ export default function BottomPanels({
   ];
 
   const filterOpts = useMemo(
-    () => ({ side: sideFilter, symbolQ: symbolFilter, period: periodFilter, textQ: textFilter }),
-    [sideFilter, symbolFilter, periodFilter, textFilter]
+    () => ({ side: sideFilter, symbolQ: symbolQuery, period: periodFilter, textQ: textQuery }),
+    [sideFilter, symbolQuery, periodFilter, textQuery]
   );
 
   // Distinct symbols across all open positions (independent of other filters), most positions first
@@ -1716,9 +1739,15 @@ export default function BottomPanels({
     return pendingSymbolChip ? rows.filter((o) => o.symbol === pendingSymbolChip) : rows;
   }, [pendingOrders, filterOpts, pendingSymbolChip]);
 
+  const pricesRef = useRef(prices);
+  pricesRef.current = prices;
+  const openTickKey = positionTickKey(filteredOpen, prices ?? {});
   const openShownProfit = useCallback(
-    (p: PositionRow) => displayOpenProfit(p, markPrice(p, prices), getSymbol(p.symbol)?.contractSize),
-    [prices]
+    (p: PositionRow) => {
+      void openTickKey;
+      return displayOpenProfit(p, markPrice(p, pricesRef.current), getSymbol(p.symbol)?.contractSize);
+    },
+    [openTickKey]
   );
   const sortedOpen = useMemo(
     () => sortPositions(filteredOpen, openSort, "open", openShownProfit),
@@ -2096,7 +2125,10 @@ export default function BottomPanels({
           {tab === "closed" ? (
             <button
               type="button"
-              onClick={() => setShowStatement(true)}
+              onClick={() => {
+                setStatementReady(true);
+                setShowStatement(true);
+              }}
               data-fx-statement=""
               aria-label={t("term.stmt.title")}
               title={t("term.stmt.title")}
@@ -2367,13 +2399,15 @@ export default function BottomPanels({
         <PnlCalendar rows={calendarClosed} partial={calendarPartial} selectedDay={closedDay} onSelectDay={setClosedDay} />
       )}
 
-      <AccountStatement
-        open={showStatement}
-        onClose={closeStatement}
-        rows={closedLedger}
-        currency={currency}
-        partial={Boolean(closedHasMore || calendarPartial)}
-      />
+      {statementReady && (
+        <AccountStatement
+          open={showStatement}
+          onClose={closeStatement}
+          rows={closedLedger}
+          currency={currency}
+          partial={Boolean(closedHasMore || calendarPartial)}
+        />
+      )}
 
       {/* Mobile card list — elite dense cards */}
       <div className={`flex-1 space-y-2 overflow-auto p-2.5 md:hidden ${tab === "open" ? "" : "hidden"}`}>

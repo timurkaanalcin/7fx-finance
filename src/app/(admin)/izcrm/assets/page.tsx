@@ -4,7 +4,8 @@ import Link from "next/link";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { ListPlaceholder, listPhase } from "@/components/crm/CrmStates";
 import { StatusBadge } from "@/components/crm/StubPage";
-import { ConfirmDialog, CrmFormGrid, type CrmColumn } from "@/components/crm/CrmRecordTable";
+import { ConfirmDialog, CrmFormGrid } from "@/components/crm/crm-record-lazy";
+import type { CrmColumn } from "@/components/crm/CrmRecordTable";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 import { crmJson } from "@/lib/crm-api";
 

@@ -3,11 +3,14 @@
 import { ListPlaceholder } from "@/components/crm/CrmStates";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
+import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CRM_IDLE_POLL_MS, useVisiblePoll } from "@/lib/use-visible-poll";
 import { fmtCrmDate, fmtCrmMoney } from "@/lib/crm-format";
-import EditableOrdersTable from "@/components/crm/EditableOrdersTable";
-import EditablePositionsTable from "@/components/crm/EditablePositionsTable";
+
+const tableFallback = () => <div className="h-16 rounded bg-neutral-100" role="status" aria-busy="true" />;
+const EditableOrdersTable = dynamic(() => import("@/components/crm/EditableOrdersTable"), { loading: tableFallback });
+const EditablePositionsTable = dynamic(() => import("@/components/crm/EditablePositionsTable"), { loading: tableFallback });
 import { CRM_LIST_PAGE, CRM_LIST_TAKE_CAP } from "@/lib/trader-list";
 
 

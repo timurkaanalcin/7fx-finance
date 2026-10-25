@@ -6,36 +6,42 @@
  * Renders nothing.
  */
 import { useEffect } from "react";
-import { replaceSymbolCatalog, type SymbolDef } from "@/lib/symbols";
 
 const REFRESH_MS = 60_000;
 
 export default function SymbolCatalogSync() {
   useEffect(() => {
     let stop = false;
-    async function sync() {
-      try {
-        const res = await fetch("/api/symbols", { cache: "no-store" });
-        if (!res.ok) return;
-        const list = (await res.json()) as SymbolDef[];
-        if (!stop && Array.isArray(list) && list.length) replaceSymbolCatalog(list);
-      } catch {
-        /* keep built-ins */
+    let timer = 0;
+    let onVis = () => {};
+    void import("@/lib/symbols").then(({ replaceSymbolCatalog }) => {
+      if (stop) return;
+      async function sync() {
+        try {
+          const res = await fetch("/api/symbols", { cache: "no-store" });
+          if (!res.ok) return;
+          const list = await res.json();
+          if (!stop && Array.isArray(list) && list.length) {
+            replaceSymbolCatalog(list as Parameters<typeof replaceSymbolCatalog>[0]);
+          }
+        } catch {
+          /* keep built-ins */
+        }
       }
-    }
-    void sync();
-    const tick = () => {
-      if (document.hidden) return;
       void sync();
-    };
-    const t = setInterval(tick, REFRESH_MS);
-    const onVis = () => {
-      if (!document.hidden) void sync();
-    };
-    document.addEventListener("visibilitychange", onVis);
+      const tick = () => {
+        if (document.hidden) return;
+        void sync();
+      };
+      timer = window.setInterval(tick, REFRESH_MS);
+      onVis = () => {
+        if (!document.hidden) void sync();
+      };
+      document.addEventListener("visibilitychange", onVis);
+    });
     return () => {
       stop = true;
-      clearInterval(t);
+      window.clearInterval(timer);
       document.removeEventListener("visibilitychange", onVis);
     };
   }, []);

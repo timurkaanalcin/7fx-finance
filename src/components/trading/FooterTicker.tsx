@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef } from "react";
+import { memo, useLayoutEffect, useRef } from "react";
 import { formatPrice } from "@/lib/symbols";
 import type { PriceTick, SymbolDef } from "./types";
 import SymbolIcon from "@/components/ui/SymbolIcon";
@@ -14,6 +14,43 @@ type Props = {
   className?: string;
   feedState?: FeedState;
 };
+
+/** One quote. Skips render when that symbol's tick object is unchanged. */
+const TickQuote = memo(function TickQuote({
+  symbol,
+  flag,
+  price,
+  hidden,
+  onSelect,
+}: {
+  symbol: string;
+  flag: string;
+  price: PriceTick | undefined;
+  hidden: boolean;
+  onSelect: (symbol: string) => void;
+}) {
+  const up = (price?.change ?? 0) >= 0;
+  return (
+    <button
+      type="button"
+      tabIndex={hidden ? -1 : undefined}
+      onClick={() => onSelect(symbol)}
+      className="mx-2.5 inline-flex items-center gap-1.5 text-[10px] text-desk-muted/80 transition-colors hover:text-desk-text"
+    >
+      <SymbolIcon symbol={symbol} fallback={flag} size={14} />
+      <span className="font-medium text-desk-text/75">{symbol}</span>
+      <span className={`tabular-nums ${up ? "text-desk-buy" : "text-desk-sell"}`}>
+        {price ? formatPrice(symbol, price.mid) : "—"}
+      </span>
+      {price && (
+        <span className={`tabular-nums ${up ? "text-desk-buy/70" : "text-desk-sell/70"}`}>
+          {up ? "+" : ""}
+          {price.changePct.toFixed(2)}%
+        </span>
+      )}
+    </button>
+  );
+});
 
 export default function FooterTicker({ symbols, prices, onSelect, className = "", feedState }: Props) {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -35,31 +72,16 @@ export default function FooterTicker({ symbols, prices, onSelect, className = ""
   }, [symbols]);
 
   const row = (list: SymbolDef[], hidden: boolean) =>
-    list.map((s, idx) => {
-      const p = prices[s.symbol];
-      const up = (p?.change ?? 0) >= 0;
-      return (
-        <button
-          key={`${s.symbol}-${idx}`}
-          type="button"
-          tabIndex={hidden ? -1 : undefined}
-          onClick={() => onSelect(s.symbol)}
-          className="mx-2.5 inline-flex items-center gap-1.5 text-[10px] text-desk-muted/80 transition-colors hover:text-desk-text"
-        >
-          <SymbolIcon symbol={s.symbol} fallback={s.flag || "•"} size={14} />
-          <span className="font-medium text-desk-text/75">{s.symbol}</span>
-          <span className={`tabular-nums ${up ? "text-desk-buy" : "text-desk-sell"}`}>
-            {p ? formatPrice(s.symbol, p.mid) : "—"}
-          </span>
-          {p && (
-            <span className={`tabular-nums ${up ? "text-desk-buy/70" : "text-desk-sell/70"}`}>
-              {up ? "+" : ""}
-              {p.changePct.toFixed(2)}%
-            </span>
-          )}
-        </button>
-      );
-    });
+    list.map((s, idx) => (
+      <TickQuote
+        key={`${s.symbol}-${idx}`}
+        symbol={s.symbol}
+        flag={s.flag || "•"}
+        price={prices[s.symbol]}
+        hidden={hidden}
+        onSelect={onSelect}
+      />
+    ));
 
   return (
     <footer
