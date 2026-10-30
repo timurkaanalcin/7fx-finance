@@ -35,7 +35,7 @@ export default function LicensesChrome({
       <header className="fx-lic-chrome">
         <div className="fx-lic-bar">
           <Link href="/" aria-label={nav.home} className="fx-lic-brand-link">
-            <BrandLogo className="fx-lic-brand" height={32} />
+            <BrandLogo tone="theme" className="fx-lic-brand" height={32} />
           </Link>
           <nav aria-label={nav.nav} className="fx-lic-nav">
             {LINKS.map((item) => (

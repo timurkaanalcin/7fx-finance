@@ -1334,6 +1334,9 @@ export default function TerminalShell({
               <a href="/profile" className="block px-3 py-3 text-xs text-desk-text hover:bg-desk-hover">
                 {t("term.profile.membership")}
               </a>
+              <a href="/tw" className="block px-3 py-3 text-xs text-desk-text hover:bg-desk-hover">
+                {t("tw.terminal")}
+              </a>
               <SignOutForm
                 label={t("common.signOut")}
                 className="border-t border-desk-border"

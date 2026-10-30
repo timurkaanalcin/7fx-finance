@@ -2,6 +2,7 @@
 
 import { ListPlaceholder, listPhase } from "@/components/crm/CrmStates";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
+import { emailHtml } from "@/lib/email-brand";
 
 import { useCallback, useEffect, useState } from "react";
 import { StatusBadge } from "@/components/crm/StubPage";
@@ -108,6 +109,8 @@ export default function MailPage() {
                 <StatusBadge status={t.active ? "ACTIVE" : "CLOSED"} />
               </div>
               <p className="text-[11px] text-neutral-500">{i18n("crm.mail.subject")}: {t.subject}</p>
+              {/* eslint-disable-next-line @next/next/no-img-element -- email bitmap, same file the message uses */}
+              <img src="/email/7fx-logo.png" alt="7FX" width={120} height={54} className="mb-2 h-10 w-auto" />
               <p className="mt-2 line-clamp-4 whitespace-pre-wrap text-[11px] text-neutral-600">{t.body}</p>
               <p className="mt-2 text-[10px] text-neutral-400">{i18n("crm.mail.desk")}: {deskName(t.deskName) === "—" ? (t.deskName || "—") : deskName(t.deskName)}</p>
               <div className="mt-2 flex gap-2 text-[10px]">
@@ -189,6 +192,16 @@ export default function MailPage() {
               </button>
             )}
             {msg && <p className="text-[11px] text-neutral-500">{msg}</p>}
+            <p className="pt-2 text-[11px] text-neutral-500">{i18n("crm.mail.preview")}</p>
+            <iframe
+              title={i18n("crm.mail.preview")}
+              className="h-48 w-full rounded border border-neutral-200 bg-white"
+              srcDoc={emailHtml({
+                subject: form.subject || "7FX",
+                body: form.body,
+                logoUrl: "/email/7fx-logo.png",
+              })}
+            />
           </div>
         </div>
       </div>

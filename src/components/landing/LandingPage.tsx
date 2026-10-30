@@ -96,7 +96,7 @@ export default function LandingPage() {
       <header className="fx-nav sticky top-0 z-50">
         <div className="fx-shell flex h-14 items-center justify-between gap-3 sm:h-16">
           <Link href="/" className="fx-logo-lockup flex items-center no-underline" aria-label={t("landing.homeAria")}>
-            <BrandLogo priority className="fx-nav-logo h-8 w-auto sm:h-9" height={36} />
+            <BrandLogo priority tone="paper" className="fx-nav-logo h-8 w-auto sm:h-9" height={36} />
           </Link>
 
           <nav className="hidden items-center gap-0.5 lg:flex" aria-label={t("landing.mainMenu")}>
@@ -325,7 +325,7 @@ export default function LandingPage() {
               {[
                 { name: "Railway", role: t("landing.role.hosting") },
                 { name: "Yahoo Finance", role: t("landing.role.data") },
-                { name: "TradingView Lightweight Charts", role: t("landing.role.charts") },
+                { name: "Lightweight Charts", role: t("landing.role.charts") },
                 { name: "MySQL", role: t("landing.role.db") },
                 { name: "Prisma", role: t("landing.role.orm") },
                 { name: "Next.js", role: t("landing.webApp") },
@@ -365,7 +365,7 @@ export default function LandingPage() {
       <footer className="fx-footer">
         <div className="fx-shell fx-footer-grid">
           <div>
-            <BrandLogo className="fx-nav-logo h-7 w-auto" height={28} />
+            <BrandLogo tone="paper" className="fx-nav-logo h-7 w-auto" height={28} />
             <p className="mt-3 max-w-sm text-[13px] leading-relaxed">{t("landing.footer.blurb")}</p>
             <p className="fx-ing-pill mt-4">
               <IngMark className="h-4 w-auto object-contain" height={16} />

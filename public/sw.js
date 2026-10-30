@@ -10,7 +10,7 @@
  * Navigations are fetched with cache: "no-store". /_next and /api are not intercepted
  * and are never stored. Only the offline page and a few icons stay in this cache.
  */
-const VERSION = "2026-10-25-v5-network";
+const VERSION = "2026-10-30-v6-mono";
 const CACHE = `7fx-static-${VERSION}`;
 const OFFLINE_URL = "/offline.html";
 const PRECACHE = [

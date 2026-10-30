@@ -9,6 +9,7 @@ import { useI18n } from "@/lib/i18n/context";
 import { crmv2Text, type CrmV2CopyKey } from "@/lib/crmv2/copy";
 import { approvalBody, approvalEndpoint, ledgerBody } from "@/lib/crmv2/payload";
 import { CRM_V2_SECTIONS, crmv2Href, type CrmV2SectionId } from "@/lib/crmv2/sections";
+import BrandLogo from "@/components/landing/BrandLogo";
 
 type Props = { base: string; section: string[]; name: string };
 
@@ -37,9 +38,7 @@ function Shell({ base, section, name }: Props) {
       <div className="mx-auto flex min-h-screen max-w-[1440px]">
         <aside className="hidden w-56 shrink-0 flex-col border-r border-white/10 bg-neutral-950 md:flex">
           <div className="flex items-center gap-2 px-4 py-5">
-            <span className="flex h-8 w-8 items-center justify-center rounded border border-white/20 text-[11px] font-medium tracking-tight text-white">
-              7FX
-            </span>
+            <BrandLogo tone="paper" height={32} className="h-8 w-8" />
             <span className="text-sm font-normal tracking-tight text-white">CRM</span>
           </div>
           <nav className="flex flex-1 flex-col gap-1 px-2">
@@ -68,6 +67,7 @@ function Shell({ base, section, name }: Props) {
 
         <div className="flex min-w-0 flex-1 flex-col pb-16 md:pb-0">
           <header className="flex h-14 items-center gap-3 border-b border-white/10 px-4">
+            <BrandLogo tone="paper" height={28} className="h-7 w-7 shrink-0 md:hidden" />
             <h1 className="hidden text-base font-normal text-white sm:block">{tx("panel")}</h1>
             <form action={crmv2Href(base, "customers")} className="relative min-w-0 flex-1 md:max-w-sm">
               <input

@@ -1,0 +1,387 @@
+/* /tw chart terminal. Tokens follow the desk palette. Type stays at 400. */
+
+.tw {
+  --tw-bg: #000000;
+  --tw-panel: #0a0a0a;
+  --tw-line: #2a2a2a;
+  --tw-text: #d1d4dc;
+  --tw-muted: #787b86;
+  --tw-buy: #26a69a;
+  --tw-sell: #ef5350;
+  height: 100dvh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--tw-bg);
+  color: var(--tw-text);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.tw button,
+.tw input,
+.tw a {
+  font-weight: 400;
+}
+
+.tw-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 4px 8px;
+  padding-left: max(8px, env(safe-area-inset-left));
+  padding-right: max(8px, env(safe-area-inset-right));
+  border-bottom: 1px solid var(--tw-line);
+  background: var(--tw-panel);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  flex-shrink: 0;
+}
+
+.tw-toolbar::-webkit-scrollbar {
+  display: none;
+}
+
+.tw-body {
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.tw-stage {
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.tw-rail,
+.tw-watch,
+.tw-book {
+  display: none;
+}
+
+.tw-chart {
+  position: relative;
+  min-height: 180px;
+  flex: 1;
+  background: var(--tw-bg);
+}
+
+.tw-chart-host,
+.tw-draw {
+  position: absolute;
+  inset: 0;
+}
+
+.tw-draw {
+  z-index: 2;
+  touch-action: none;
+}
+
+.tw-draw.is-idle {
+  pointer-events: none;
+}
+
+.tw-credit {
+  position: absolute;
+  z-index: 3;
+  left: 8px;
+  bottom: 28px;
+  color: var(--tw-muted);
+  font-size: 11px;
+  line-height: 1.4;
+  text-decoration: none;
+}
+
+.tw-credit:hover {
+  color: var(--tw-text);
+}
+
+.tw-chip,
+.tw-seg button,
+.tw-tool,
+.tw-iconbtn {
+  min-height: 36px;
+  min-width: 36px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--tw-muted);
+  font-size: 12px;
+  line-height: 1.2;
+  padding: 0 8px;
+}
+
+.tw-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--tw-text);
+  background: #141414;
+  white-space: nowrap;
+}
+
+.tw-seg {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 10px;
+  background: #141414;
+  flex-shrink: 0;
+}
+
+.tw-seg button[aria-pressed="true"],
+.tw-tool[aria-pressed="true"],
+.tw-iconbtn[aria-pressed="true"] {
+  background: #ffffff;
+  color: #000000;
+}
+
+.tw-quote {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--tw-muted);
+}
+
+.tw-quote .up {
+  color: var(--tw-buy);
+}
+
+.tw-quote .down {
+  color: var(--tw-sell);
+}
+
+.tw-pop {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 4px);
+  left: 0;
+  width: min(320px, calc(100vw - 16px));
+  max-height: min(360px, 60dvh);
+  overflow: auto;
+  border: 1px solid var(--tw-line);
+  border-radius: 12px;
+  background: #0a0a0a;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+}
+
+.tw-pop input {
+  width: 100%;
+  min-height: 44px;
+  border: 0;
+  border-bottom: 1px solid var(--tw-line);
+  background: transparent;
+  color: var(--tw-text);
+  font-size: 16px;
+  padding: 0 12px;
+  outline: none;
+}
+
+.tw-pop button {
+  display: flex;
+  width: 100%;
+  min-height: 44px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 12px;
+  border: 0;
+  background: transparent;
+  color: var(--tw-text);
+  text-align: start;
+  font-size: 13px;
+}
+
+.tw-pop button:hover,
+.tw-pop button[aria-current="true"] {
+  background: #141414;
+}
+
+.tw-search {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.tw-tabs {
+  display: flex;
+  flex-shrink: 0;
+  border-top: 1px solid var(--tw-line);
+  background: var(--tw-panel);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+.tw-tabs button {
+  flex: 1;
+  min-height: 48px;
+  border: 0;
+  background: transparent;
+  color: var(--tw-muted);
+  font-size: 12px;
+}
+
+.tw-tabs button[aria-current="page"] {
+  color: var(--tw-text);
+  box-shadow: inset 0 -2px 0 #ffffff;
+}
+
+.tw-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.tw-sheet-back {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.tw-sheet-panel {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: min(640px, 100%);
+  max-height: min(78dvh, 720px);
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--tw-line);
+  border-bottom: 0;
+  border-radius: 16px 16px 0 0;
+  background: var(--tw-panel);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.tw-sheet-head {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 8px 0 14px;
+  border-bottom: 1px solid var(--tw-line);
+  font-size: 14px;
+}
+
+.tw-sheet-body {
+  min-height: 0;
+  flex: 1;
+  overflow: auto;
+}
+
+.tw-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+}
+
+.tw-banner {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 4px 12px;
+  background: #141414;
+  color: var(--tw-text);
+  font-size: 12px;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .tw-tabs,
+  .tw-only-mobile {
+    display: none;
+  }
+
+  .tw-body {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr) clamp(200px, 18vw, 300px);
+    grid-template-rows: minmax(0, 1fr) clamp(156px, 26vh, 248px);
+  }
+
+  .tw-stage {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .tw-rail {
+    display: flex;
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 6px 0;
+    border-right: 1px solid var(--tw-line);
+    background: var(--tw-bg);
+  }
+
+  .tw-watch {
+    display: flex;
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    min-width: 0;
+    min-height: 0;
+    flex-direction: column;
+    overflow: hidden;
+    border-left: 1px solid var(--tw-line);
+  }
+
+  .tw-book {
+    display: flex;
+    grid-column: 2;
+    grid-row: 2;
+    min-width: 0;
+    min-height: 0;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .tw-chip,
+  .tw-seg button,
+  .tw-tool,
+  .tw-iconbtn {
+    min-height: 32px;
+  }
+
+  .tw-rail .tw-tool {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    padding: 0;
+  }
+}
+
+@media (min-width: 1440px) {
+  .tw-body {
+    grid-template-columns: 48px minmax(0, 1fr) 280px;
+  }
+}
+
+@media (max-width: 359px) {
+  .tw-quote {
+    display: none;
+  }
+}

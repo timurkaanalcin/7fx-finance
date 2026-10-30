@@ -389,7 +389,19 @@ body:has(.fx-ios) {
   color: #f4f7fb !important;
 }
 
-.fx-auth-page .fx-nav-logo {
+.fx-logo-paper {
+  filter: none;
+}
+
+.fx-logo-ink {
+  filter: brightness(0);
+}
+
+.fx-logo-theme {
+  filter: brightness(0);
+}
+
+html[data-fx-theme="dark"] .fx-logo-theme {
   filter: brightness(0) invert(1);
 }
 

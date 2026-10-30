@@ -38,7 +38,7 @@ export default function PublicDoc({
       <header className="border-b border-black/10">
         <div className="fx-doc-shell flex flex-wrap items-center justify-between gap-3 px-1 py-3">
           <Link href="/" aria-label={nav.home} className="inline-flex min-h-11 min-w-11 items-center">
-            <BrandLogo height={32} />
+            <BrandLogo tone="ink" height={32} />
           </Link>
           <nav aria-label={nav.nav} className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-medium">
             {NAV_HREFS.map((item) => (

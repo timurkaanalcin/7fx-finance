@@ -37,7 +37,9 @@ function main() {
     assert.ok(fs.existsSync(path.join(ROOT, "public", icon.src.replace(/^\//, ""))), icon.src);
   }
   assert.match(read("src/app/layout.tsx"), /themeColor: "#07090d"/);
-  assert.match(read("public/icons/v3/icon.svg"), /#07090d/);
+  assert.match(read("public/icons/v3/icon.svg"), /#000000/);
+  assert.match(read("public/icons/v3/icon.svg"), /#ffffff/);
+  assert.equal(read("public/icons/v3/icon.svg").includes("#68F848"), false);
   assert.match(read("public/icons/v3/icon-maskable.svg"), /scale\(0\.62\)/);
 
   const enLead = dictValue("src/lib/i18n/dictionaries/en.ts", "landing.ios.lead");
@@ -78,7 +80,7 @@ function main() {
   assert.match(sw, /fetch\(url\.href, \{ cache: "no-store"/);
   assert.match(sw, /\.catch\(async \(\) => \{/);
   assert.equal(sw.includes("caches.put"), false);
-  assert.match(sw, /2026-10-25-v5-network/);
+  assert.match(sw, /2026-10-30-v6-mono/);
 
   const shell = read("src/components/trading/TerminalShell.tsx");
   assert.match(

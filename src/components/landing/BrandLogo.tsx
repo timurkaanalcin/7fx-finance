@@ -1,11 +1,19 @@
 import Image from "next/image";
 
+type LogoTone = "paper" | "ink" | "theme";
+
 type LogoProps = {
   alt?: string;
   priority?: boolean;
   className?: string;
   /** CSS pixel height. The mark is square. */
   height?: number;
+  /**
+   * paper: white mark for dark surfaces.
+   * ink: black mark for light surfaces.
+   * theme: black in light theme, white in dark theme.
+   */
+  tone?: LogoTone;
 };
 
 export default function BrandLogo({
@@ -13,7 +21,9 @@ export default function BrandLogo({
   priority = false,
   className = "h-9 w-auto",
   height = 36,
+  tone = "paper",
 }: LogoProps) {
+  const toneClass = tone === "ink" ? "fx-logo-ink" : tone === "theme" ? "fx-logo-theme" : "fx-logo-paper";
   return (
     <Image
       src="/7fx-logo.png"
@@ -22,7 +32,7 @@ export default function BrandLogo({
       height={height}
       priority={priority}
       sizes={`${height * 3}px`}
-      className={className}
+      className={`${toneClass} ${className}`}
       style={{ width: "auto", height }}
     />
   );
