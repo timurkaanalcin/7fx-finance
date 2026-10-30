@@ -64,6 +64,8 @@ export function isPrivateHtmlPath(pathname: string): boolean {
     pathname.startsWith("/izcrm") ||
     pathname === "/crmv2" ||
     pathname.startsWith("/crmv2/") ||
+    pathname === "/crmv3" ||
+    pathname.startsWith("/crmv3/") ||
     pathname.startsWith("/admin")
   );
 }

@@ -1,0 +1,31 @@
+export const CRM_V3_SECTIONS = [
+  { id: "overview", path: "" },
+  { id: "customers", path: "customers" },
+  { id: "finance", path: "finance" },
+  { id: "positions", path: "positions" },
+  { id: "support", path: "support" },
+  { id: "marketing", path: "marketing" },
+  { id: "settings", path: "settings" },
+  { id: "logs", path: "logs" },
+  { id: "control", path: "control" },
+] as const;
+
+export type CrmV3SectionId = (typeof CRM_V3_SECTIONS)[number]["id"];
+
+/** Campaign send has no outbound mail transport. Lead mapping uses the settings API. */
+export const CRM_V3_COMING_SOON = ["campaignSend"] as const;
+
+/** Bottom bar on phones and tablets. Finance is labeled Money in the chrome. */
+export const CRM_V3_TABS = ["overview", "customers", "finance", "support"] as const;
+
+export const CRM_V3_MORE = ["positions", "marketing", "settings", "logs", "control"] as const;
+
+export function crmv3Href(base: string, path: string, query?: Record<string, string>): string {
+  const root = base.replace(/\/+$/, "") || "/crmv3";
+  const url = path ? `${root}/${path}` : root;
+  if (!query) return url;
+  const params = new URLSearchParams();
+  for (const [k, v] of Object.entries(query)) if (v) params.set(k, v);
+  const s = params.toString();
+  return s ? `${url}?${s}` : url;
+}
