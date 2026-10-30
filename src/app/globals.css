@@ -32,6 +32,12 @@
   /* 0.15cm chrome inset. 1cm = 37.8px, so 0.15cm rounds to 6px. */
   --chrome-pad: 6px;
 }
+/* CRM only: 0.15cm + 0.10cm = 0.25cm. 9.45px rounds to 10px. Other pages stay at 6px. */
+.fx-crm,
+.fx-crm-root,
+[data-crmv2-root] {
+  --chrome-pad: 10px;
+}
 
 * { box-sizing: border-box; }
 
@@ -2031,6 +2037,13 @@ html[dir="rtl"] input[inputmode="tel"] {
   padding-right: calc(env(safe-area-inset-right, 0px) + var(--chrome-pad)) !important;
   margin-top: var(--chrome-pad);
 }
+.fx-crm-tabbar a,
+.fx-crm-tabbar button,
+[data-crmv2-root] > nav a,
+[data-crmv2-root] > nav button {
+  box-sizing: border-box;
+  min-height: 44px;
+}
 
 /* CRM measure: one bar, one gap, one card height from 320px through 1920px. */
 .fx-crm {
@@ -2614,4 +2627,11 @@ html[dir="rtl"] input[inputmode="tel"] {
   padding-left: calc(env(safe-area-inset-left, 0px) + var(--chrome-pad)) !important;
   padding-right: calc(env(safe-area-inset-right, 0px) + var(--chrome-pad)) !important;
   margin-top: var(--chrome-pad);
+}
+.fx-crm-tabbar a,
+.fx-crm-tabbar button,
+[data-crmv2-root] > nav a,
+[data-crmv2-root] > nav button {
+  box-sizing: border-box;
+  min-height: 44px;
 }

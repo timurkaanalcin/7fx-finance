@@ -31,6 +31,8 @@ function main() {
   assert.match(auth, /\.fx-auth-page header \{[^}]*var\(--chrome-pad,\s*6px\)/);
 
   const globals = read("src/app/globals.css");
+  assert.match(globals, /:root \{[^}]*--chrome-pad:\s*6px/);
+  assert.match(globals, /\.fx-crm,\s*\n\.fx-crm-root,\s*\n\[data-crmv2-root\] \{\s*\n\s*--chrome-pad:\s*10px;/);
   assert.match(globals, /\.fx-crm-topbar[\s\S]*padding:\s*var\(--chrome-pad\)/);
   assert.match(globals, /\.fx-crm-tabbar \{[^}]*padding-bottom:\s*calc\(env\(safe-area-inset-bottom, 0px\) \+ var\(--chrome-pad\)\)/);
   assert.match(globals, /\[data-crmv2-root\] header \{[^}]*safe-area-inset-top/);
