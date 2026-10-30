@@ -18,11 +18,34 @@ function isCrmV2Path(pathname: string): boolean {
   );
 }
 
+function isCrmV3Path(pathname: string): boolean {
+  return (
+    pathname === "/crmv3" ||
+    pathname.startsWith("/crmv3/") ||
+    pathname === "/izcrm/crmv3" ||
+    pathname.startsWith("/izcrm/crmv3/")
+  );
+}
+
+function isCrmAppPath(pathname: string): boolean {
+  return isCrmV2Path(pathname) || isCrmV3Path(pathname);
+}
+
 /** Trailing-slash aliases that return the dashboard instead of a 308. */
 function crmv2SlashTarget(pathname: string): string | null {
   if (pathname === "/crmv2/") return "/crmv2";
   if (pathname === "/izcrm/crmv2/") return "/izcrm/crmv2";
   return null;
+}
+
+function crmv3SlashTarget(pathname: string): string | null {
+  if (pathname === "/crmv3/") return "/crmv3";
+  if (pathname === "/izcrm/crmv3/") return "/izcrm/crmv3";
+  return null;
+}
+
+function crmSlashTarget(pathname: string): string | null {
+  return crmv2SlashTarget(pathname) || crmv3SlashTarget(pathname);
 }
 
 function contentSecurityPolicy(req: NextRequest): string {
@@ -67,9 +90,9 @@ export function middleware(req: NextRequest) {
     return NextResponse.next({ request: { headers: h } });
   };
 
-  // /crmv2/ and /izcrm/crmv2/ are the same documents as the no-slash paths.
+  // /crmv2/ and /crmv3/ (and the /izcrm copies) are the same documents as the no-slash paths.
   const passCrmV2 = () => {
-    const target = crmv2SlashTarget(pathname);
+    const target = crmSlashTarget(pathname);
     if (!target) return passNext();
     // NextURL keeps a trailing slash in href after pathname is cleared, so build a plain URL.
     const url = new URL(req.url);
@@ -116,7 +139,7 @@ export function middleware(req: NextRequest) {
 
   // Next's built-in trailing-slash redirect is off so the CRM v2 URLs can return this document.
   // Every other slash URL still 308s to the no-slash path.
-  if (pathname.length > 1 && pathname.endsWith("/") && !crmv2SlashTarget(pathname)) {
+  if (pathname.length > 1 && pathname.endsWith("/") && !crmSlashTarget(pathname)) {
     const url = new URL(req.url);
     url.pathname = pathname.replace(/\/+$/, "") || "/";
     return applyHeaders(NextResponse.redirect(url, 308));
@@ -169,7 +192,7 @@ export function middleware(req: NextRequest) {
       return applyHeaders(passNext());
     }
 
-    if (pathname === "/izcrm" || pathname.startsWith("/izcrm/") || isCrmV2Path(pathname)) {
+    if (pathname === "/izcrm" || pathname.startsWith("/izcrm/") || isCrmAppPath(pathname)) {
       if (!token) {
         return applyHeaders(NextResponse.redirect(locationForRequest(req, "/login")));
       }
@@ -223,7 +246,7 @@ export function middleware(req: NextRequest) {
       pathname.startsWith("/tw/") ||
       pathname === "/izcrm" ||
       pathname.startsWith("/izcrm/") ||
-      isCrmV2Path(pathname) ||
+      isCrmAppPath(pathname) ||
       pathname.startsWith("/profile") ||
       pathname.startsWith("/documents") ||
       pathname.startsWith("/assistant") ||

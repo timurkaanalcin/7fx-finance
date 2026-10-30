@@ -213,6 +213,7 @@ export const de: Dict = {
   "crm.group.analytics": "Analytik",
   "crm.nav.dashboard": "Übersicht",
   "crm.nav.crmv2": "CRM v2",
+  "crm.nav.crmv3": "CRM v3",
   "crm.nav.traders": "Trader",
   "crm.nav.tickets": "Tickets / Einzahlungen",
   "crm.nav.positions": "Positionen",
