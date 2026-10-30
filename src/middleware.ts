@@ -9,19 +9,30 @@ import { isAllowedApiOrigin } from "@/lib/security/origins";
 import { HSTS_VALUE, PERMISSIONS_POLICY, requestIsHttps } from "@/lib/security/response-headers.cjs";
 import { isMarketingPath, isPrivateHtmlPath, shouldNoindex } from "@/lib/seo-hosts";
 
+function isCrmV2Path(pathname: string): boolean {
+  return pathname === "/crmv2" || pathname.startsWith("/crmv2/");
+}
+
 function contentSecurityPolicy(req: NextRequest): string {
   const forwarded = (req.headers.get("x-forwarded-proto") || "").split(",")[0].trim().toLowerCase();
   const proto = forwarded || req.nextUrl.protocol.replace(":", "");
-  const scriptSrc =
-    process.env.NODE_ENV === "production"
+  const crmv2 = isCrmV2Path(req.nextUrl.pathname);
+  // Tailwind's CDN compiler uses new Function(), so this route also needs unsafe-eval.
+  const scriptSrc = crmv2
+    ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com"
+    : process.env.NODE_ENV === "production"
       ? "script-src 'self' 'unsafe-inline'"
       : "script-src 'self' 'unsafe-inline' 'unsafe-eval'";
+  const styleSrc = crmv2
+    ? "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com"
+    : "style-src 'self' 'unsafe-inline'";
+  const fontSrc = crmv2 ? "font-src 'self' data: https://cdnjs.cloudflare.com" : "font-src 'self' data:";
   const directives = [
     "default-src 'self'",
     scriptSrc,
-    "style-src 'self' 'unsafe-inline'",
+    styleSrc,
     "img-src 'self' data: blob: https:",
-    "font-src 'self' data:",
+    fontSrc,
     "connect-src 'self' https://query1.finance.yahoo.com https://query2.finance.yahoo.com",
     "frame-ancestors 'none'",
     "base-uri 'self'",
@@ -47,6 +58,18 @@ export function middleware(req: NextRequest) {
     h.set("x-7fx-url", pathname + (req.nextUrl.search || ""));
     h.set("x-7fx-method", req.method.toUpperCase());
     return NextResponse.next({ request: { headers: h } });
+  };
+
+  // /crmv2/ is the same document as /crmv2. Every other path passes through.
+  const passCrmV2 = () => {
+    if (pathname !== "/crmv2/") return passNext();
+    // NextURL keeps a trailing slash in href after pathname is cleared, so build a plain URL.
+    const url = new URL(req.url);
+    url.pathname = "/crmv2";
+    const h = new Headers(req.headers);
+    h.set("x-7fx-url", "/crmv2" + (req.nextUrl.search || ""));
+    h.set("x-7fx-method", req.method.toUpperCase());
+    return NextResponse.rewrite(url, { request: { headers: h } });
   };
 
   const applyHeaders = (res: NextResponse) => {
@@ -82,6 +105,14 @@ export function middleware(req: NextRequest) {
     }
     return res;
   };
+
+  // Next's built-in trailing-slash redirect is off so /crmv2/ can return this document.
+  // Every other slash URL still 308s to the no-slash path.
+  if (pathname.length > 1 && pathname.endsWith("/") && pathname !== "/crmv2/") {
+    const url = new URL(req.url);
+    url.pathname = pathname.replace(/\/+$/, "") || "/";
+    return applyHeaders(NextResponse.redirect(url, 308));
+  }
 
   // API origin allowlist (credentialed browser calls). Missing Origin allowed (native / same-origin).
   // Auto-login is a top-level GET navigation. The token is the secret. Email clients,
@@ -130,11 +161,11 @@ export function middleware(req: NextRequest) {
       return applyHeaders(passNext());
     }
 
-    if (pathname === "/izcrm" || pathname.startsWith("/izcrm/")) {
+    if (pathname === "/izcrm" || pathname.startsWith("/izcrm/") || isCrmV2Path(pathname)) {
       if (!token) {
         return applyHeaders(NextResponse.redirect(locationForRequest(req, "/login")));
       }
-      return applyHeaders(passNext());
+      return applyHeaders(passCrmV2());
     }
 
     if (pathname === "/admin" || pathname.startsWith("/admin/")) {
@@ -182,6 +213,7 @@ export function middleware(req: NextRequest) {
     (pathname.startsWith("/trade") ||
       pathname === "/izcrm" ||
       pathname.startsWith("/izcrm/") ||
+      isCrmV2Path(pathname) ||
       pathname.startsWith("/profile") ||
       pathname.startsWith("/documents") ||
       pathname.startsWith("/assistant") ||
@@ -191,7 +223,7 @@ export function middleware(req: NextRequest) {
     return applyHeaders(NextResponse.redirect(locationForRequest(req, "/login")));
   }
 
-  return applyHeaders(passNext());
+  return applyHeaders(passCrmV2());
 }
 
 /** Session or a chosen public language. Those responses must not enter the shared cache. */
