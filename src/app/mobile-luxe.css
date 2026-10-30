@@ -542,6 +542,89 @@ html[data-fx-theme] body .fx-doc-viewer.fx-doc-viewer.fx-doc-viewer { background
 html[data-fx-theme] body .fx-doc-viewer button { background: rgba(255, 255, 255, 0.15) !important; color: #fff !important; border: 0 !important; }
 html[data-fx-theme] body .fx-doc-viewer span, html[data-fx-theme] body .fx-doc-viewer p { color: rgba(255, 255, 255, 0.75) !important; }
 /* Daily P&L calendar — accent (white in night) → gold in day theme so selection/focus stay visible */
+/* Phone and tablet day theme uses the CRM monochrome, not the cream/gold desktop skin. */
+@media (max-width: 1023px) {
+  html[data-fx-theme="light"] {
+    --lx-bg: #ffffff;
+    --lx-bg-2: #ffffff;
+    --lx-card: #ffffff;
+    --lx-card-solid: #ffffff;
+    --lx-elev: #f7f7f7;
+    --lx-line: rgba(0, 0, 0, 0.1);
+    --lx-line-strong: rgba(0, 0, 0, 0.16);
+    --lx-text: #111111;
+    --lx-text-2: #333333;
+    --lx-text-3: #525252;
+    --lx-gold: #111111;
+    --lx-gold-2: #111111;
+    --lx-gold-soft: rgba(0, 0, 0, 0.04);
+  }
+  html[data-fx-theme="light"] .fx-desk,
+  html[data-fx-theme="light"] .fx-profile {
+    background: #ffffff !important;
+    color: #111111 !important;
+  }
+  html[data-fx-theme="light"] .fx-desk > header,
+  html[data-fx-theme="light"] .fx-desk .fx-desk-glass,
+  html[data-fx-theme="light"] .fx-profile > header {
+    background: #ffffff !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+  }
+  html[data-fx-theme="light"] .fx-desk > header img {
+    filter: grayscale(1) contrast(1.15);
+  }
+  html[data-fx-theme="light"] .fx-desk-mobile-nav {
+    background: #0a0a0a !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  html[data-fx-theme="light"] .fx-desk-seg {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+  html[data-fx-theme="light"] .fx-desk-seg__btn {
+    color: #a3a3a3 !important;
+    font-weight: 400 !important;
+    background: transparent !important;
+  }
+  html[data-fx-theme="light"] .fx-desk-seg__btn--active {
+    color: #ffffff !important;
+    background: transparent !important;
+    box-shadow: inset 0 -2px 0 #ffffff !important;
+  }
+  html[data-fx-theme="light"] .fx-desk .fx-deposit-btn {
+    background: #111111 !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+  }
+  html[data-fx-theme="light"] .fx-desk .fx-deposit-btn * {
+    color: #ffffff !important;
+    background: transparent !important;
+  }
+  html[data-fx-theme="light"] .fx-desk .fx-avatar {
+    background: transparent !important;
+    color: #111111 !important;
+    border: 1px solid rgba(0, 0, 0, 0.22);
+  }
+  html[data-fx-theme="light"] :is(.fx-lx-overlay > div, .fx-lx-modal),
+  html[data-fx-theme="light"] .fx-order-sheet {
+    background: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    box-shadow: none !important;
+  }
+  html[data-fx-theme="light"] .fx-account-metric {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+  html[data-fx-theme="light"] .fx-pos-card {
+    background: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    border-radius: 16px;
+  }
+}
+
 html[data-fx-theme="light"] .fx-desk .fx-pnlcal [class*="border-desk-accent"] { border-color: var(--lx-gold) !important; }
 html[data-fx-theme="light"] .fx-desk .fx-pnlcal [class*="ring-desk-accent"] { --tw-ring-color: var(--lx-gold) !important; }
 html[data-fx-theme="light"] .fx-desk .fx-pnlcal :focus-visible { outline-color: var(--lx-gold) !important; }
