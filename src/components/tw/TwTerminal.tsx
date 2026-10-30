@@ -104,6 +104,7 @@ export default function TwTerminal() {
   const [bars, setBars] = useState<TwBar[]>([]);
   const [chartError, setChartError] = useState(false);
   const [user, setUser] = useState<UserInfo | null>(null);
+  const [session, setSession] = useState<"unknown" | "in" | "out">("unknown");
   const [openPositions, setOpenPositions] = useState<PositionRow[]>([]);
   const [closedPositions, setClosedPositions] = useState<PositionRow[]>([]);
   const [pendingOrders, setPendingOrders] = useState<OrderRow[]>([]);
@@ -190,9 +191,13 @@ export default function TwTerminal() {
     }
     if (me.ok) {
       const body = await me.json();
-      if (body.user) setUser(body.user as UserInfo);
+      if (body.user) {
+        setUser(body.user as UserInfo);
+        setSession("in");
+      } else setSession("out");
     } else {
       setUser(null);
+      setSession("out");
     }
     if (openRes.ok) {
       const body = await openRes.json();
@@ -520,7 +525,7 @@ export default function TwTerminal() {
         </button>
       </header>
 
-      {!user && (
+      {session === "out" && (
         <div className="tw-banner" role="status">
           <span>{t("tw.signIn")}</span>
           <Link href="/login" className="underline">

@@ -129,7 +129,7 @@ export default function TwChart({ bars, chartType, indicators, tool, drawings, o
       appliedRef.current = null;
     };
     // Chart instance is created once. Series type swaps in the next effect.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- create the chart once; series swaps do not rebuild it
   }, []);
 
   useEffect(() => {
@@ -166,14 +166,14 @@ export default function TwChart({ bars, chartType, indicators, tool, drawings, o
     applySeries(true);
     paintDrawings();
     // applySeries and paintDrawings close over the latest refs.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- swap the price series when the chart type changes
   }, [chartType, ready]);
 
   useEffect(() => {
     if (!ready) return;
     applySeries(false);
     paintDrawings();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- paint reads the latest series through refs
   }, [bars, indicators, drawings, draft, ready]);
 
   function applySeries(fit: boolean) {
