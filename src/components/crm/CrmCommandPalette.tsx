@@ -21,7 +21,15 @@ import {
   type RecentClient,
 } from "@/lib/crm-recent-clients";
 
-type Item = { kind: "page" | "client"; href: string; title: string; sub?: string; section?: "pinned" | "recent"; baseSub?: string };
+type Item = {
+  kind: "page" | "client";
+  href: string;
+  title: string;
+  sub?: string;
+  section?: "pinned" | "recent";
+  baseSub?: string;
+  document?: boolean;
+};
 type PinnedClient = { href: string; title: string; sub?: string };
 
 const RECENT_KEY = "fx-crm-recent-pages";
@@ -84,7 +92,13 @@ export default function CrmCommandPalette({ readOnly }: { readOnly?: boolean }) 
   const pages = useMemo(
     () =>
       CRM_NAV_GROUPS.flatMap((g) =>
-        g.items.map((n) => ({ kind: "page" as const, href: n.href, title: t(n.labelKey), sub: t(g.labelKey) })),
+        g.items.map((n) => ({
+          kind: "page" as const,
+          href: n.href,
+          title: t(n.labelKey),
+          sub: t(g.labelKey),
+          document: n.document,
+        })),
       ),
     [t],
   );
@@ -245,6 +259,10 @@ export default function CrmCommandPalette({ readOnly }: { readOnly?: boolean }) 
   function go(it: Item | undefined) {
     if (!it) return;
     setOpen(false);
+    if (it.document) {
+      window.location.assign(it.href);
+      return;
+    }
     router.push(it.href);
   }
 

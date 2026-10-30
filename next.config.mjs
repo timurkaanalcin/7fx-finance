@@ -13,6 +13,7 @@ const nextConfig = {
     serverComponentsExternalPackages: ["pdf-parse", "mammoth", "xlsx", "geoip-country"],
     outputFileTracingIncludes: {
       "/crmv2": ["./src/crmv2/index.html"],
+      "/izcrm/crmv2": ["./src/crmv2/index.html"],
     },
   },
   poweredByHeader: false,

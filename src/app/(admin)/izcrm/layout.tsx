@@ -121,16 +121,20 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
                 <div className="space-y-0.5">
                   {g.items.map((n) => {
                     const active = isActive(n.href, n.exact);
+                    const className = `block rounded px-2.5 py-1.5 font-medium transition ${
+                      active
+                        ? "bg-black text-white"
+                        : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900"
+                    }`;
+                    if (n.document) {
+                      return (
+                        <a key={n.href} href={n.href} className={className}>
+                          {t(n.labelKey)}
+                        </a>
+                      );
+                    }
                     return (
-                      <Link
-                        key={n.href}
-                        href={n.href}
-                        className={`block rounded px-2.5 py-1.5 font-medium transition ${
-                          active
-                            ? "bg-black text-white"
-                            : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900"
-                        }`}
-                      >
+                      <Link key={n.href} href={n.href} className={className}>
                         {t(n.labelKey)}
                       </Link>
                     );
@@ -171,17 +175,23 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
       <div className="flex min-w-0 flex-1 flex-col bg-white">
         <header className="flex h-11 items-center gap-2 border-b border-black/10 bg-white px-3">
           <div className="fx-crm-mobile-nav flex max-w-[50%] gap-1 overflow-x-auto md:hidden">
-            {flatMobile.slice(0, 8).map((n) => (
-              <Link
-                key={n.href}
-                href={n.href}
-                className={`whitespace-nowrap rounded px-2 py-1 text-[10px] ${
-                  isActive(n.href, n.exact) ? "bg-black text-white" : "bg-neutral-100 text-black"
-                }`}
-              >
-                {t(n.labelKey)}
-              </Link>
-            ))}
+            {[...flatMobile.filter((n) => !n.document).slice(0, 8), ...flatMobile.filter((n) => n.document)].map((n) => {
+              const className = `whitespace-nowrap rounded px-2 py-1 text-[10px] ${
+                isActive(n.href, n.exact) ? "bg-black text-white" : "bg-neutral-100 text-black"
+              }`;
+              if (n.document) {
+                return (
+                  <a key={n.href} href={n.href} className={className}>
+                    {t(n.labelKey)}
+                  </a>
+                );
+              }
+              return (
+                <Link key={n.href} href={n.href} className={className}>
+                  {t(n.labelKey)}
+                </Link>
+              );
+            })}
           </div>
           <div className="fx-crm-actions ml-auto flex items-center gap-2 text-[11px] text-neutral-500">
             <button

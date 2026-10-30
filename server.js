@@ -23,7 +23,11 @@ app
         const forwardedProto = Array.isArray(forwarded) ? forwarded[0] : forwarded;
         const https = requestIsHttps(forwardedProto, req.socket && req.socket.encrypted ? "https" : "");
         const pathname = (req.url || "/").split("?")[0];
-        const crmv2 = pathname === "/crmv2" || pathname.startsWith("/crmv2/");
+        const crmv2 =
+          pathname === "/crmv2" ||
+          pathname.startsWith("/crmv2/") ||
+          pathname === "/izcrm/crmv2" ||
+          pathname.startsWith("/izcrm/crmv2/");
         applyNodeSecurityHeaders(res, { https, dev, crmv2 });
         const parsedUrl = parse(req.url, true);
         await handle(req, res, parsedUrl);

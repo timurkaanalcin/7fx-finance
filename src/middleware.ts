@@ -10,7 +10,19 @@ import { HSTS_VALUE, PERMISSIONS_POLICY, requestIsHttps } from "@/lib/security/r
 import { isMarketingPath, isPrivateHtmlPath, shouldNoindex } from "@/lib/seo-hosts";
 
 function isCrmV2Path(pathname: string): boolean {
-  return pathname === "/crmv2" || pathname.startsWith("/crmv2/");
+  return (
+    pathname === "/crmv2" ||
+    pathname.startsWith("/crmv2/") ||
+    pathname === "/izcrm/crmv2" ||
+    pathname.startsWith("/izcrm/crmv2/")
+  );
+}
+
+/** Trailing-slash aliases that return the dashboard instead of a 308. */
+function crmv2SlashTarget(pathname: string): string | null {
+  if (pathname === "/crmv2/") return "/crmv2";
+  if (pathname === "/izcrm/crmv2/") return "/izcrm/crmv2";
+  return null;
 }
 
 function contentSecurityPolicy(req: NextRequest): string {
@@ -60,14 +72,15 @@ export function middleware(req: NextRequest) {
     return NextResponse.next({ request: { headers: h } });
   };
 
-  // /crmv2/ is the same document as /crmv2. Every other path passes through.
+  // /crmv2/ and /izcrm/crmv2/ are the same documents as the no-slash paths.
   const passCrmV2 = () => {
-    if (pathname !== "/crmv2/") return passNext();
+    const target = crmv2SlashTarget(pathname);
+    if (!target) return passNext();
     // NextURL keeps a trailing slash in href after pathname is cleared, so build a plain URL.
     const url = new URL(req.url);
-    url.pathname = "/crmv2";
+    url.pathname = target;
     const h = new Headers(req.headers);
-    h.set("x-7fx-url", "/crmv2" + (req.nextUrl.search || ""));
+    h.set("x-7fx-url", target + (req.nextUrl.search || ""));
     h.set("x-7fx-method", req.method.toUpperCase());
     return NextResponse.rewrite(url, { request: { headers: h } });
   };
@@ -106,9 +119,9 @@ export function middleware(req: NextRequest) {
     return res;
   };
 
-  // Next's built-in trailing-slash redirect is off so /crmv2/ can return this document.
+  // Next's built-in trailing-slash redirect is off so the CRM v2 URLs can return this document.
   // Every other slash URL still 308s to the no-slash path.
-  if (pathname.length > 1 && pathname.endsWith("/") && pathname !== "/crmv2/") {
+  if (pathname.length > 1 && pathname.endsWith("/") && !crmv2SlashTarget(pathname)) {
     const url = new URL(req.url);
     url.pathname = pathname.replace(/\/+$/, "") || "/";
     return applyHeaders(NextResponse.redirect(url, 308));

@@ -9,7 +9,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { NextRequest } from "next/server";
 import { middleware } from "../src/middleware";
-import { crmv2Response } from "../src/crmv2/respond";
+import { crmv2Document, crmv2Response } from "../src/crmv2/respond";
 
 const require = createRequire(import.meta.url);
 const headers = require("../src/lib/security/response-headers.cjs") as {
@@ -62,6 +62,19 @@ async function main() {
   assert.equal(faqSlash.status, 308);
   assert.equal(faqSlash.headers.get("location"), "https://7fx.customer.org.tr/faq");
 
+  const izSignedOut = ask("/izcrm/crmv2");
+  const izSlash = ask("/izcrm/crmv2/");
+  assert.equal(izSignedOut.status, 307);
+  assert.equal(izSignedOut.headers.get("location"), izcrm.headers.get("location"));
+  assert.equal(izSlash.status, 307);
+  assert.equal(izSlash.headers.get("location"), "https://7fx.customer.org.tr/login");
+  const izHost = ask("/izcrm/crmv2", { host: "crm7fx.customer.org.tr" });
+  assert.equal(izHost.status, 307);
+  assert.equal(izHost.headers.get("location"), "https://crm7fx.customer.org.tr/login");
+  const tradersSlash = ask("/izcrm/traders/");
+  assert.equal(tradersSlash.status, 308);
+  assert.equal(tradersSlash.headers.get("location"), "https://7fx.customer.org.tr/izcrm/traders");
+
   const crmHost = ask("/crmv2", { host: "crm7fx.customer.org.tr" });
   const crmIz = ask("/izcrm", { host: "crm7fx.customer.org.tr" });
   assert.equal(crmHost.status, 307);
@@ -72,19 +85,27 @@ async function main() {
   assert.equal(trader.headers.get("x-middleware-next"), "1");
   const adminCookie = ask("/crmv2/", { cookie: "7fx_session=admin-token" });
   assert.equal(adminCookie.headers.get("x-middleware-rewrite"), "https://7fx.customer.org.tr/crmv2");
+  const izAdminSlash = ask("/izcrm/crmv2/", { cookie: "7fx_session=admin-token" });
+  assert.equal(izAdminSlash.headers.get("x-middleware-rewrite"), "https://7fx.customer.org.tr/izcrm/crmv2");
+  assert.equal(ask("/izcrm/traders", { cookie: "7fx_session=admin-token" }).headers.get("x-middleware-next"), "1");
 
   const env = process.env as { NODE_ENV?: string };
   const prev = env.NODE_ENV;
   env.NODE_ENV = "production";
   try {
     const open = ask("/izcrm", { cookie: "7fx_session=admin-token" }).headers.get("content-security-policy") || "";
+    const traders = ask("/izcrm/traders", { cookie: "7fx_session=admin-token" }).headers.get("content-security-policy") || "";
     const gated = ask("/crmv2", { cookie: "7fx_session=admin-token" }).headers.get("content-security-policy") || "";
     const slashCsp = ask("/crmv2/", { cookie: "7fx_session=admin-token" }).headers.get("content-security-policy") || "";
+    const izGated = ask("/izcrm/crmv2", { cookie: "7fx_session=admin-token" }).headers.get("content-security-policy") || "";
+    const izSlashCsp = ask("/izcrm/crmv2/", { cookie: "7fx_session=admin-token" }).headers.get("content-security-policy") || "";
     assert.equal(open.includes("cdn.tailwindcss.com"), false);
     assert.equal(open.includes("cdnjs.cloudflare.com"), false);
     assert.equal(open.includes("unsafe-eval"), false);
     assert.match(open, /style-src 'self' 'unsafe-inline'/);
-    for (const csp of [gated, slashCsp]) {
+    assert.equal(traders.includes("cdn.tailwindcss.com"), false);
+    assert.equal(traders.includes("cdnjs.cloudflare.com"), false);
+    for (const csp of [gated, slashCsp, izGated, izSlashCsp]) {
       assert.match(csp, /script-src 'self' 'unsafe-inline' 'unsafe-eval' https:\/\/cdn\.tailwindcss\.com/);
       assert.match(csp, /style-src 'self' 'unsafe-inline' https:\/\/cdnjs\.cloudflare\.com/);
       assert.match(csp, /font-src 'self' data: https:\/\/cdnjs\.cloudflare\.com/);
@@ -118,14 +139,44 @@ async function main() {
   assert.equal(notAdmin.headers.get("location"), "https://7fx.customer.org.tr/login");
 
   const routeSrc = fs.readFileSync(path.join(ROOT, "src/app/crmv2/route.ts"), "utf8");
-  assert.match(routeSrc, /crmv2Response\(req, requireAdmin\)/);
-  assert.match(routeSrc, /from "@\/lib\/auth"/);
+  const izRouteSrc = fs.readFileSync(path.join(ROOT, "src/app/(admin)/izcrm/crmv2/route.ts"), "utf8");
+  for (const src of [routeSrc, izRouteSrc]) {
+    assert.match(src, /crmv2Response\(req, requireAdmin\)/);
+    assert.match(src, /from "@\/lib\/auth"/);
+    assert.match(src, /from "@\/crmv2\/respond"/);
+  }
+  assert.equal(fs.readdirSync(path.join(ROOT, "src/crmv2")).filter((name) => name.endsWith(".html")).length, 1);
+
+  const nav = fs.readFileSync(path.join(ROOT, "src/lib/crm-nav.ts"), "utf8");
+  assert.match(nav, /href: "\/izcrm", labelKey: "crm.nav.dashboard", exact: true/);
+  assert.match(nav, /href: "\/izcrm\/crmv2", labelKey: "crm.nav.crmv2"/);
+  assert.match(nav, /href: "\/izcrm\/traders", labelKey: "crm.nav.traders"/);
 
   const ok = await crmv2Response(req, async () => ({ role: "ADMIN" }));
   assert.equal(ok.status, 200);
   assert.equal(ok.headers.get("content-type"), "text/html; charset=utf-8");
   assert.equal(ok.headers.get("cache-control"), "private, no-store");
   assert.equal(await ok.text(), HTML);
+  assert.equal(crmv2Document("/crmv2"), HTML);
+
+  const izReq = new Request("https://7fx.customer.org.tr/izcrm/crmv2", {
+    headers: { host: "7fx.customer.org.tr", "x-forwarded-host": "7fx.customer.org.tr", "x-forwarded-proto": "https" },
+  });
+  const izDenied = await crmv2Response(izReq, async () => null);
+  assert.equal(izDenied.status, 307);
+  assert.equal(izDenied.headers.get("location"), "https://7fx.customer.org.tr/login");
+  const izTrader = await crmv2Response(izReq, async () => ({ role: "TRADER" }));
+  assert.equal(izTrader.status, 307);
+  const izOk = await crmv2Response(izReq, async () => ({ role: "ADMIN" }));
+  assert.equal(izOk.status, 200);
+  assert.equal(izOk.headers.get("content-type"), "text/html; charset=utf-8");
+  const izHtml = await izOk.text();
+  assert.equal(izHtml, crmv2Document("/izcrm/crmv2"));
+  assert.match(izHtml, /href="\/izcrm\/crmv2"/);
+  assert.equal(izHtml.includes('href="/crmv2"'), false);
+  assert.match(izHtml, /12,482/);
+  assert.match(izHtml, /Murat Kaya/);
+  assert.match(izHtml, /action="\/api\/auth\/logout"/);
 
   console.log("crmv2-route tests passed");
 }
