@@ -41,8 +41,22 @@ function iosNeedsHomeScreen(): boolean {
   return ios && !standalone;
 }
 
+const SUPPORT_REPLY_TITLES = new Set([
+  "New message from support",
+  "Destek ekibinden yeni mesaj",
+  "Neue Nachricht vom Support",
+  "Новое сообщение от поддержки",
+  "رسالة جديدة من الدعم",
+]);
+
 function isLiveAlert(n: N): boolean {
-  return n.kind === "chat" || n.kind === "handoff" || n.title === "Live support: new message";
+  return n.kind === "chat" || n.kind === "handoff" || n.title === "Live support: new message" || SUPPORT_REPLY_TITLES.has(n.title);
+}
+
+function notificationTitle(n: N, translate: (key: string) => string): string {
+  if (SUPPORT_REPLY_TITLES.has(n.title)) return translate("term.notify.chatFromSupport");
+  if (n.title === "Live support: new message") return translate("term.notify.liveSupport");
+  return n.title;
 }
 
 export default function NotificationBell({
@@ -162,15 +176,15 @@ export default function NotificationBell({
   async function subscribe(ask: boolean) {
     setHint("");
     if (iosNeedsHomeScreen()) {
-      setHint("On iPhone, install 7FX from /ios (Add to Home Screen), open that icon, then enable notifications.");
+      setHint(t("term.notify.iosInstall"));
       return;
     }
     if (!vapid) {
-      setHint("Push is not configured on this server. In-app alerts still work. Set VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY and VAPID_SUBJECT.");
+      setHint(t("term.notify.noPush"));
       return;
     }
     if (pushState === "unsupported") {
-      setHint("This browser cannot show push notifications.");
+      setHint(t("term.notify.unsupported"));
       return;
     }
     try {
@@ -189,12 +203,12 @@ export default function NotificationBell({
         (await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64ToU8(vapid) }));
       const res = await fetch("/api/notifications/push", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(sub.toJSON()) });
       if (!res.ok) {
-        setHint("Could not save this device for push.");
+        setHint(t("term.notify.saveFailed"));
         return;
       }
-      if (ask) setHint("Notifications on for this device.");
+      if (ask) setHint(t("term.notify.enabledDevice"));
     } catch {
-      if (ask) setHint("Could not enable notifications in this browser.");
+      if (ask) setHint(t("term.notify.enableFailed"));
     }
   }
 
@@ -231,7 +245,7 @@ export default function NotificationBell({
 
   const dark = tone === "dark";
   const enableLabel =
-    pushState === "granted" && vapid ? "Notifications on" : "Enable notifications";
+    pushState === "granted" && vapid ? t("term.notify.on") : t("term.notify.enableBtn");
 
   return (
     <div className="flex items-center gap-2">
@@ -251,7 +265,7 @@ export default function NotificationBell({
               ? "border-[#26a69a]/40 bg-[#26a69a]/10 text-[#0f766e]"
               : "border-black/10 bg-white text-neutral-800 hover:bg-neutral-100"
           }`}
-          aria-label="Enable notifications"
+          aria-label={t("term.notify.enableBtn")}
         >
           {enableLabel}
         </button>
@@ -289,7 +303,7 @@ export default function NotificationBell({
             )}
             {!vapid && enableButton && (
               <p className="border-b border-black/5 bg-neutral-50 px-3 py-2 text-[11px] text-neutral-500">
-                Push is off until VAPID keys are set. In-app alerts still work.
+                {t("term.notify.vapidOff")}
               </p>
             )}
             <ul className="max-h-[360px] overflow-auto">
@@ -299,7 +313,7 @@ export default function NotificationBell({
                   <button type="button" onClick={() => openItem(n)} className={`flex w-full gap-2 px-3 py-2.5 text-left hover:bg-neutral-50 ${n.readAt ? "" : "bg-neutral-50/70"}`}>
                     <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${n.readAt ? "bg-transparent" : n.kind === "handoff" ? "bg-[#e5484d]" : "bg-[#111111]"}`} />
                     <span className="min-w-0 flex-1">
-                      <span className={`block truncate text-[12.5px] ${n.readAt ? "font-medium text-neutral-600" : "font-semibold"}`}>{n.title}</span>
+                      <span className={`block truncate text-[12.5px] ${n.readAt ? "font-medium text-neutral-600" : "font-semibold"}`}>{notificationTitle(n, t)}</span>
                       <span className="mt-0.5 line-clamp-2 block text-[11.5px] text-neutral-500">{n.body}</span>
                     </span>
                     <span className="shrink-0 text-[10px] text-neutral-400">{ago(n.createdAt, locale)}</span>
@@ -326,7 +340,7 @@ export default function NotificationBell({
             <div className="pointer-events-auto rounded-xl border border-black/10 bg-white p-3 text-[12px] text-neutral-800 shadow-xl" role="status">
               <div className="flex items-start justify-between gap-2">
                 <p>{hint}</p>
-                <button type="button" className="text-neutral-400" onClick={() => setHint("")} aria-label="Dismiss">×</button>
+                <button type="button" className="text-neutral-400" onClick={() => setHint("")} aria-label={t("term.notify.dismiss")}>×</button>
               </div>
             </div>
           )}
@@ -337,7 +351,7 @@ export default function NotificationBell({
               onClick={() => openItem(n)}
               className="pointer-events-auto rounded-xl border border-black/10 bg-[#111111] p-3 text-left text-white shadow-xl"
             >
-              <div className="text-[12px] font-semibold">{n.title}</div>
+              <div className="text-[12px] font-semibold">{notificationTitle(n, t)}</div>
               <div className="mt-1 line-clamp-3 text-[11.5px] text-white/80">{n.body}</div>
             </button>
           ))}

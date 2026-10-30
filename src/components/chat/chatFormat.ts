@@ -27,21 +27,26 @@ export function wrapTextareaSelection(
   });
 }
 
+export type FormatSamples = { bold: string; italic: string; underline: string };
+
+const ENGLISH_SAMPLES: FormatSamples = { bold: "bold", italic: "italic", underline: "underline" };
+
 export function applyFormatAction(
   el: HTMLTextAreaElement | null,
   value: string,
   setValue: (next: string) => void,
-  action: FormatAction
+  action: FormatAction,
+  samples: FormatSamples = ENGLISH_SAMPLES
 ): void {
   switch (action) {
     case "bold":
-      wrapTextareaSelection(el, value, setValue, "**", "**", "kalın");
+      wrapTextareaSelection(el, value, setValue, "**", "**", samples.bold);
       break;
     case "italic":
-      wrapTextareaSelection(el, value, setValue, "*", "*", "italik");
+      wrapTextareaSelection(el, value, setValue, "*", "*", samples.italic);
       break;
     case "underline":
-      wrapTextareaSelection(el, value, setValue, "__", "__", "altı çizili");
+      wrapTextareaSelection(el, value, setValue, "__", "__", samples.underline);
       break;
     case "bullet": {
       if (!el) {

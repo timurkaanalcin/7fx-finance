@@ -22,7 +22,25 @@ export const AUTO_REPLY_TR =
 export const AUTO_REPLY_EN =
   "A customer representative will reply to you as soon as possible.\n\n7FX";
 
+export const AUTO_REPLY_DE =
+  "Ein Kundenbetreuer antwortet Ihnen so bald wie möglich.\n\n7FX";
+
+export const AUTO_REPLY_RU =
+  "Представитель службы поддержки ответит вам в ближайшее время.\n\n7FX";
+
+export const AUTO_REPLY_AR =
+  "سيرد عليك ممثل خدمة العملاء في أقرب وقت.\n\n7FX";
+
 export const LIVE_SUPPORT_NOTIFY_TITLE = "Live support: new message";
+
+/** Customer push title when a human agent sends a chat message. English if the account language is unset. */
+export const SUPPORT_REPLY_TITLE: Record<string, string> = {
+  en: "New message from support",
+  tr: "Destek ekibinden yeni mesaj",
+  de: "Neue Nachricht vom Support",
+  ru: "Новое сообщение от поддержки",
+  ar: "رسالة جديدة من الدعم",
+};
 
 const NON_HUMAN_WORKER_IDS = new Set([SYSTEM_WORKER_ID, "ai"]);
 
@@ -32,13 +50,29 @@ export type ChatStamp = {
   workerName?: string | null;
 };
 
-/** Account language: Turkish gets the exact TR copy. Every other language, including unset, is English. */
+const AUTO_REPLY_BY_LANG: Record<string, string> = {
+  tr: AUTO_REPLY_TR,
+  de: AUTO_REPLY_DE,
+  ru: AUTO_REPLY_RU,
+  ar: AUTO_REPLY_AR,
+  en: AUTO_REPLY_EN,
+};
+
+/** Account language. Unset or unknown languages stay English. */
 export function autoReplyText(language: string | null | undefined): string {
   const base = String(language || "")
     .trim()
     .toLowerCase()
     .split("-")[0];
-  return base === "tr" ? AUTO_REPLY_TR : AUTO_REPLY_EN;
+  return AUTO_REPLY_BY_LANG[base] || AUTO_REPLY_EN;
+}
+
+export function supportReplyTitle(language: string | null | undefined): string {
+  const base = String(language || "")
+    .trim()
+    .toLowerCase()
+    .split("-")[0];
+  return SUPPORT_REPLY_TITLE[base] || SUPPORT_REPLY_TITLE.en;
 }
 
 export function isSystemAutoReply(m: { workerId?: string | null; automatic?: boolean | null }): boolean {

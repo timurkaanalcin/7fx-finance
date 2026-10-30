@@ -107,8 +107,8 @@ export default function TeamComments({
   const segs: { v: View; label: string }[] = (
     [
       { v: "ALL", label: i18n("crm.ui.all", "Tümü") },
-      { v: "SALE", label: "Sale" },
-      { v: "RET", label: "Retention" },
+      { v: "SALE", label: i18n("crm.team.sale") },
+      { v: "RET", label: i18n("crm.team.ret") },
     ] as { v: View; label: string }[]
   ).filter((x) => (x.v === "ALL" ? visible.length > 1 : visible.includes(x.v as Team)));
   const allTargets: { t: Team; icon: string; desc: string }[] = [
@@ -232,7 +232,7 @@ export default function TeamComments({
                     n.team === "SALE" ? "bg-[#dbeafe] text-[#1d4ed8]" : "bg-[#ede9fe] text-[#6d28d9]"
                   }`}
                 >
-                  {n.team === "SALE" ? "Sale" : "Retention"}
+                  {n.team === "SALE" ? i18n("crm.team.sale") : i18n("crm.team.ret")}
                 </span>
                 <span className="text-[12px] font-semibold text-neutral-800">{String(n.authorName || "—")}</span>
                 <span className="ml-auto text-[11px] text-neutral-400">{fmtCrmDate(String(n.createdAt || ""))}</span>

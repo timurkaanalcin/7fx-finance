@@ -25,11 +25,11 @@ const LABELS: Record<JobTitle, Record<L, string>> = {
   it_specialist: { en: "IT / Technical Specialist", tr: "IT / Teknik Uzman", ru: "IT / Технический специалист", ar: "أخصائي تقنية المعلومات / تقني", de: "IT / Technischer Spezialist" },
   project_manager: { en: "Project Manager / PM", tr: "Proje Yöneticisi / PM", ru: "Менеджер проектов / PM", ar: "مدير المشروع / PM", de: "Projektmanager / PM" },
   analyst: { en: "Analyst", tr: "Analist", ru: "Аналитик", ar: "محلل", de: "Analyst" },
-  sales_manager: { en: "Sales Manager", tr: "Satış Temsilcisi", ru: "Менеджер по продажам", ar: "مدير مبيعات", de: "Vertriebsmitarbeiter" },
-  marketer: { en: "Marketer", tr: "Pazarlamacı", ru: "Маркетолог", ar: "مسوق", de: "Marketer" },
+  sales_manager: { en: "Sales Manager", tr: "Satış yöneticisi", ru: "Менеджер по продажам", ar: "مدير مبيعات", de: "Vertriebsmanager" },
+  marketer: { en: "Marketer", tr: "Pazarlamacı", ru: "Маркетолог", ar: "مسوق", de: "Marketingfachkraft" },
   administrator: { en: "Administrator", tr: "Yönetici", ru: "Администратор", ar: "مسؤول", de: "Administrator" },
-  sales_mgr: { en: "Sales Manager", tr: "Sales Manager", ru: "Sales Manager", ar: "Sales Manager", de: "Sales Manager" },
-  retention_manager: { en: "Retention Manager", tr: "Retention Manager", ru: "Retention Manager", ar: "Retention Manager", de: "Retention Manager" },
+  sales_mgr: { en: "Sales Manager", tr: "Satış yöneticisi", ru: "Менеджер по продажам", ar: "مدير المبيعات", de: "Vertriebsmanager" },
+  retention_manager: { en: "Retention Manager", tr: "Retansiyon yöneticisi", ru: "Менеджер по удержанию", ar: "مدير الاحتفاظ", de: "Bindungsmanager" },
   other: { en: "Other", tr: "Diğer", ru: "Другое", ar: "أخرى", de: "Sonstiges" },
 };
 
@@ -38,7 +38,7 @@ export const JOB_TITLE_UI: Record<string, { field: string; register: string; pla
   tr: { field: "Görev / Unvan", register: "Şirketteki rolünüz", placeholder: "Rolünüzü seçin", none: "—" },
   ru: { field: "Должность", register: "Ваша роль в компании", placeholder: "Выберите роль", none: "—" },
   ar: { field: "المسمى الوظيفي", register: "دورك في الشركة", placeholder: "اختر دورك", none: "—" },
-  de: { field: "Position", register: "Ihre Rolle im Unternehmen", placeholder: "Rolle auswählen", none: "—" },
+  de: { field: "Funktion", register: "Ihre Rolle im Unternehmen", placeholder: "Rolle auswählen", none: "—" },
 };
 
 export function jobTitleUi(locale: string): { field: string; register: string; placeholder: string; none: string } {

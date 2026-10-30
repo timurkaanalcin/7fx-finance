@@ -383,8 +383,8 @@ export default function AdminImportPage() {
                       {d.name}
                     </option>
                   ))}
-                  <option value="Retention">Retention</option>
-                  <option value="Sale">Sale</option>
+                  <option value="Retention">{t("crm.team.ret")}</option>
+                  <option value="Sale">{t("crm.team.sale")}</option>
                   <option value="TR">TR</option>
                 </select>
               </label>
@@ -431,7 +431,7 @@ export default function AdminImportPage() {
                   className="mt-0.5 w-full rounded border border-neutral-200 px-2 py-1.5 text-xs"
                   value={defaults.source}
                   onChange={(e) => setDefaults((d) => ({ ...d, source: e.target.value }))}
-                  placeholder="affiliate / campaign"
+                  placeholder={t("crm.import.sourcePh")}
                 />
               </label>
               <label className="text-[11px]">

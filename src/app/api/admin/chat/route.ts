@@ -7,14 +7,15 @@ import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { serializeChatPresence } from "@/lib/chat-presence";
 import type { Prisma } from "@prisma/client";
 import { chatMessageWindow, chatThreadWindow } from "@/lib/trader-list";
-import { SYSTEM_WORKER_ID, isSystemAutoReply } from "@/lib/support-autoreply";
+import { crmApiText } from "@/lib/i18n/request-text";
+import { SYSTEM_WORKER_ID, isSystemAutoReply, supportReplyTitle } from "@/lib/support-autoreply";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
   await ensureDemoSeed();
   const admin = await requireAdmin();
-  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: crmApiText(req, "crm.api.unauthorized") }, { status: 403 });
 
   const { searchParams } = new URL(req.url);
   const userId = (searchParams.get("userId") || "").trim();
@@ -320,18 +321,18 @@ function threadFromMessages(
 export async function POST(req: Request) {
   await ensureDemoSeed();
   const admin = await requireAdminWrite();
-  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: crmApiText(req, "crm.api.unauthorized") }, { status: 403 });
 
   const body = await req.json().catch(() => ({}));
   const userId = String(body.userId || "").trim();
   const message = String(body.message || body.description || "").trim();
   const title = body.title != null ? String(body.title).trim() : "Chat";
   if (!userId || !message) {
-    return NextResponse.json({ error: "userId ve message zorunlu" }, { status: 400 });
+    return NextResponse.json({ error: crmApiText(req, "crm.api.userMessageRequired") }, { status: 400 });
   }
-  if (!(await canAccessUser(admin, userId))) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!(await canAccessUser(admin, userId))) return NextResponse.json({ error: crmApiText(req, "crm.api.forbidden") }, { status: 403 });
   const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (!user) return NextResponse.json({ error: "Trader not found" }, { status: 404 });
+  if (!user) return NextResponse.json({ error: crmApiText(req, "crm.api.traderMissing") }, { status: 404 });
 
   const row = await prisma.communication.create({
     data: {
@@ -353,36 +354,36 @@ export async function POST(req: Request) {
   // A human replied: AI stays off for this thread; notify the customer.
   await prisma.chatThreadState.update({ where: { userId }, data: { supportMode: "HUMAN" } }).catch(() => {});
   const { notifyUsers } = await import("@/lib/notify");
-  await notifyUsers([userId], { kind: "chat", title: "Destek ekibinden yeni mesaj", body: message, href: "/profile#destek" });
+  await notifyUsers([userId], { kind: "chat", title: supportReplyTitle(user.language), body: message, href: "/profile#destek" });
   return NextResponse.json({ ok: true, id: row.id });
 }
 
 export async function PATCH(req: Request) {
   await ensureDemoSeed();
   const admin = await requireAdminWrite();
-  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: crmApiText(req, "crm.api.unauthorized") }, { status: 403 });
 
   const body = await req.json().catch(() => ({}));
   const id = String(body.id || body.messageId || "").trim();
   const message = String(body.message || body.description || "").trim();
   if (!id || !message) {
-    return NextResponse.json({ error: "id ve message zorunlu" }, { status: 400 });
+    return NextResponse.json({ error: crmApiText(req, "crm.api.idMessageRequired") }, { status: 400 });
   }
 
   const existing = await prisma.communication.findUnique({ where: { id } });
-  if (existing && !(await canAccessUser(admin, existing.userId))) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (existing && !(await canAccessUser(admin, existing.userId))) return NextResponse.json({ error: crmApiText(req, "crm.api.forbidden") }, { status: 403 });
   if (!existing || existing.type !== "CHAT") {
-    return NextResponse.json({ error: "Message not found" }, { status: 404 });
+    return NextResponse.json({ error: crmApiText(req, "crm.api.messageMissing") }, { status: 404 });
   }
 
   if (existing.workerId === SYSTEM_WORKER_ID) {
-    return NextResponse.json({ error: "Automatic messages cannot be edited" }, { status: 403 });
+    return NextResponse.json({ error: crmApiText(req, "crm.api.autoEdit") }, { status: 403 });
   }
 
   // Admins may edit any agent (worker) chat bubble; customer-origin notes stay read-only.
   if (!existing.workerId && !existing.workerName) {
     return NextResponse.json(
-      { error: "Only admin/agent messages can be edited" },
+      { error: crmApiText(req, "crm.api.agentEdit") },
       { status: 403 }
     );
   }
