@@ -29,6 +29,8 @@
   --crm-border: rgba(0, 0, 0, 0.12);
   --radius-card: 14px;
   --radius-control: 10px;
+  /* 0.15cm chrome inset. 1cm = 37.8px, so 0.15cm rounds to 6px. */
+  --chrome-pad: 6px;
 }
 
 * { box-sizing: border-box; }
@@ -1212,8 +1214,8 @@ html[data-fx-theme="light"] .fx-account-metric__value.is-warn { color: #9a6b12; 
   .fx-crm-root > .flex > header {
     flex-wrap: wrap;
     height: auto;
-    row-gap: 8px;
-    padding-block: 8px;
+    row-gap: var(--chrome-pad);
+    padding: var(--chrome-pad);
   }
   .fx-crm-mobile-nav {
     order: 2;
@@ -1736,8 +1738,12 @@ html[data-fx-theme="light"] :is(.fx-desk, .fx-lx-overlay) .text-desk-warn {
 }
 .fx-profile > header {
   height: auto;
-  min-height: calc(3rem + env(safe-area-inset-top, 0px));
-  padding-top: env(safe-area-inset-top, 0px);
+  min-height: calc(3rem + env(safe-area-inset-top, 0px) + (2 * var(--chrome-pad, 6px)));
+  padding-top: calc(env(safe-area-inset-top, 0px) + var(--chrome-pad, 6px));
+  padding-bottom: var(--chrome-pad, 6px);
+  padding-left: calc(env(safe-area-inset-left, 0px) + var(--chrome-pad, 6px));
+  padding-right: calc(env(safe-area-inset-right, 0px) + var(--chrome-pad, 6px));
+  margin-bottom: var(--chrome-pad, 6px);
 }
 .fx-profile > header a,
 .fx-profile > header button,
@@ -1936,6 +1942,96 @@ html[dir="rtl"] input[inputmode="tel"] {
   unicode-bidi: isolate;
 }
 
+/* 0.15cm (6px) inner padding on every header and footer, plus the same gap before content.
+   Safe-area insets stay, and the token is added on top of them. Tap targets stay 44px. */
+.fx-crm-topbar,
+.fx-crm-brand,
+.fx-account-bar,
+.fx-desk > footer {
+  box-sizing: border-box;
+  height: auto;
+  min-height: calc(44px + (2 * var(--chrome-pad)));
+  padding: var(--chrome-pad);
+}
+.fx-desk > footer {
+  min-height: calc(28px + (2 * var(--chrome-pad)));
+  margin-top: var(--chrome-pad);
+}
+.fx-crm-topbar,
+.fx-account-bar {
+  margin-bottom: var(--chrome-pad);
+}
+.fx-crm-tabbar {
+  box-sizing: border-box;
+}
+@media (max-width: 1023px) {
+  .fx-crm-tabbar {
+    padding-top: var(--chrome-pad);
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--chrome-pad));
+    padding-left: calc(env(safe-area-inset-left, 0px) + var(--chrome-pad));
+    padding-right: calc(env(safe-area-inset-right, 0px) + var(--chrome-pad));
+  }
+  .fx-crm-main {
+    padding-bottom: calc(44px + (3 * var(--chrome-pad)) + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+.fx-desk-mobile-nav {
+  box-sizing: border-box;
+  padding-top: var(--chrome-pad);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--chrome-pad));
+  padding-left: calc(env(safe-area-inset-left, 0px) + var(--chrome-pad));
+  padding-right: calc(env(safe-area-inset-right, 0px) + var(--chrome-pad));
+  margin-top: var(--chrome-pad);
+}
+.fx-desk-tradebar {
+  box-sizing: border-box;
+  padding-top: var(--chrome-pad);
+  padding-bottom: var(--chrome-pad);
+  padding-left: calc(env(safe-area-inset-left, 0px) + var(--chrome-pad));
+  padding-right: calc(env(safe-area-inset-right, 0px) + var(--chrome-pad));
+}
+[data-crmv2-root] header {
+  box-sizing: border-box;
+  height: auto;
+  min-height: calc(44px + (2 * var(--chrome-pad)));
+  padding: var(--chrome-pad);
+  padding-top: calc(env(safe-area-inset-top, 0px) + var(--chrome-pad));
+  padding-left: calc(env(safe-area-inset-left, 0px) + var(--chrome-pad));
+  padding-right: calc(env(safe-area-inset-right, 0px) + var(--chrome-pad));
+  margin-bottom: var(--chrome-pad);
+}
+[data-crmv2-root] > nav {
+  box-sizing: border-box;
+  padding-top: var(--chrome-pad);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--chrome-pad));
+  padding-left: calc(env(safe-area-inset-left, 0px) + var(--chrome-pad));
+  padding-right: calc(env(safe-area-inset-right, 0px) + var(--chrome-pad));
+}
+@media (max-width: 767px) {
+  [data-crmv2-root] .pb-16 {
+    padding-bottom: calc(44px + (3 * var(--chrome-pad)) + env(safe-area-inset-bottom, 0px));
+  }
+}
+.tw-toolbar,
+.tw-tabs {
+  box-sizing: border-box;
+}
+.tw-toolbar {
+  min-height: calc(44px + (2 * var(--chrome-pad))) !important;
+  padding: var(--chrome-pad) !important;
+  padding-top: calc(env(safe-area-inset-top, 0px) + var(--chrome-pad)) !important;
+  padding-left: calc(env(safe-area-inset-left, 0px) + var(--chrome-pad)) !important;
+  padding-right: calc(env(safe-area-inset-right, 0px) + var(--chrome-pad)) !important;
+  margin-bottom: var(--chrome-pad);
+}
+.tw-tabs {
+  padding-top: var(--chrome-pad) !important;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--chrome-pad)) !important;
+  padding-left: calc(env(safe-area-inset-left, 0px) + var(--chrome-pad)) !important;
+  padding-right: calc(env(safe-area-inset-right, 0px) + var(--chrome-pad)) !important;
+  margin-top: var(--chrome-pad);
+}
+
 /* CRM measure: one bar, one gap, one card height from 320px through 1920px. */
 .fx-crm {
   --fx-crm-bar: 44px;
@@ -2125,11 +2221,11 @@ html[dir="rtl"] input[inputmode="tel"] {
 @media (min-width: 1024px) {
   .fx-crm-root > .flex > header.fx-crm-topbar,
   .fx-crm-brand {
-    height: var(--fx-crm-bar);
-    min-height: var(--fx-crm-bar);
+    height: auto;
+    min-height: calc(44px + (2 * var(--chrome-pad)));
     flex-wrap: nowrap;
-    gap: 12px;
-    padding: 0 12px;
+    gap: var(--chrome-pad);
+    padding: var(--chrome-pad);
   }
   .fx-crm .fx-dash-split,
   .fx-crm .fx-dash-charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -2217,10 +2313,10 @@ html[dir="rtl"] input[inputmode="tel"] {
   .fx-crm-mobile-nav { display: none; }
   .fx-crm-root > .flex > header.fx-crm-topbar {
     height: auto;
-    min-height: var(--fx-crm-bar);
+    min-height: calc(44px + (2 * var(--chrome-pad)));
     flex-wrap: wrap;
-    row-gap: 8px;
-    padding: 8px 12px;
+    row-gap: var(--chrome-pad);
+    padding: var(--chrome-pad);
   }
   .fx-crm-actions {
     width: 100%;
@@ -2428,4 +2524,94 @@ html[dir="rtl"] input[inputmode="tel"] {
     width: max-content;
     min-width: 6.75rem;
   }
+}
+
+/* 0.15cm (6px) inner padding on every header and footer, plus the same gap before content.
+   Safe-area insets stay, and the token is added on top of them. Tap targets stay 44px. */
+.fx-crm-topbar,
+.fx-crm-brand,
+.fx-account-bar,
+.fx-desk > footer {
+  box-sizing: border-box;
+  height: auto;
+  min-height: calc(44px + (2 * var(--chrome-pad)));
+  padding: var(--chrome-pad);
+}
+.fx-desk > footer {
+  min-height: calc(28px + (2 * var(--chrome-pad)));
+  margin-top: var(--chrome-pad);
+}
+.fx-crm-topbar,
+.fx-account-bar {
+  margin-bottom: var(--chrome-pad);
+}
+.fx-crm-tabbar {
+  box-sizing: border-box;
+}
+@media (max-width: 1023px) {
+  .fx-crm-tabbar {
+    padding-top: var(--chrome-pad);
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--chrome-pad));
+    padding-left: calc(env(safe-area-inset-left, 0px) + var(--chrome-pad));
+    padding-right: calc(env(safe-area-inset-right, 0px) + var(--chrome-pad));
+  }
+  .fx-crm-main {
+    padding-bottom: calc(44px + (3 * var(--chrome-pad)) + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+.fx-desk-mobile-nav {
+  box-sizing: border-box;
+  padding-top: var(--chrome-pad);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--chrome-pad));
+  padding-left: calc(env(safe-area-inset-left, 0px) + var(--chrome-pad));
+  padding-right: calc(env(safe-area-inset-right, 0px) + var(--chrome-pad));
+  margin-top: var(--chrome-pad);
+}
+.fx-desk-tradebar {
+  box-sizing: border-box;
+  padding-top: var(--chrome-pad);
+  padding-bottom: var(--chrome-pad);
+  padding-left: calc(env(safe-area-inset-left, 0px) + var(--chrome-pad));
+  padding-right: calc(env(safe-area-inset-right, 0px) + var(--chrome-pad));
+}
+[data-crmv2-root] header {
+  box-sizing: border-box;
+  height: auto;
+  min-height: calc(44px + (2 * var(--chrome-pad)));
+  padding: var(--chrome-pad);
+  padding-top: calc(env(safe-area-inset-top, 0px) + var(--chrome-pad));
+  padding-left: calc(env(safe-area-inset-left, 0px) + var(--chrome-pad));
+  padding-right: calc(env(safe-area-inset-right, 0px) + var(--chrome-pad));
+  margin-bottom: var(--chrome-pad);
+}
+[data-crmv2-root] > nav {
+  box-sizing: border-box;
+  padding-top: var(--chrome-pad);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--chrome-pad));
+  padding-left: calc(env(safe-area-inset-left, 0px) + var(--chrome-pad));
+  padding-right: calc(env(safe-area-inset-right, 0px) + var(--chrome-pad));
+}
+@media (max-width: 767px) {
+  [data-crmv2-root] .pb-16 {
+    padding-bottom: calc(44px + (3 * var(--chrome-pad)) + env(safe-area-inset-bottom, 0px));
+  }
+}
+.tw-toolbar,
+.tw-tabs {
+  box-sizing: border-box;
+}
+.tw-toolbar {
+  min-height: calc(44px + (2 * var(--chrome-pad))) !important;
+  padding: var(--chrome-pad) !important;
+  padding-top: calc(env(safe-area-inset-top, 0px) + var(--chrome-pad)) !important;
+  padding-left: calc(env(safe-area-inset-left, 0px) + var(--chrome-pad)) !important;
+  padding-right: calc(env(safe-area-inset-right, 0px) + var(--chrome-pad)) !important;
+  margin-bottom: var(--chrome-pad);
+}
+.tw-tabs {
+  padding-top: var(--chrome-pad) !important;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--chrome-pad)) !important;
+  padding-left: calc(env(safe-area-inset-left, 0px) + var(--chrome-pad)) !important;
+  padding-right: calc(env(safe-area-inset-right, 0px) + var(--chrome-pad)) !important;
+  margin-top: var(--chrome-pad);
 }

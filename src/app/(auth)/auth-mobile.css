@@ -75,6 +75,12 @@
   padding-left: env(safe-area-inset-left, 0px);
   padding-right: env(safe-area-inset-right, 0px);
 }
+.fx-auth-page header {
+  box-sizing: border-box;
+  min-height: calc(44px + (2 * var(--chrome-pad, 6px)));
+  padding: var(--chrome-pad, 6px);
+  margin-bottom: var(--chrome-pad, 6px);
+}
 
 @media (max-width: 767px) {
   .fx-auth-page {
