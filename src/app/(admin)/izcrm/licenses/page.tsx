@@ -4,7 +4,28 @@ import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { ListPlaceholder, listPhase } from "@/components/crm/CrmStates";
 import { useCrmLabels } from "@/lib/i18n/crm-labels";
 
-type L = { id: string; regulator: string; number: string; entity: string; registerUrl: string; logo: string | null; active: boolean; sortOrder: number };
+type L = {
+  id: string;
+  regulator: string;
+  number: string;
+  entity: string;
+  registerUrl: string;
+  logo: string | null;
+  active: boolean;
+  sortOrder: number;
+  licenseType: string | null;
+  jurisdiction: string | null;
+  status: string | null;
+  issuedOn: string | null;
+  expiresOn: string | null;
+  scope: string | null;
+  address: string | null;
+};
+
+function day(value: string | null | undefined): string {
+  if (!value) return "";
+  return String(value).slice(0, 10);
+}
 
 function readImage(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -24,7 +45,19 @@ function imgMessage(i18n: (key: string) => string, code: string): string {
   return i18n("gap.err");
 }
 
-const empty = { regulator: "", number: "", entity: "", registerUrl: "" };
+const empty = {
+  regulator: "",
+  number: "",
+  entity: "",
+  registerUrl: "",
+  licenseType: "",
+  jurisdiction: "",
+  status: "",
+  issuedOn: "",
+  expiresOn: "",
+  scope: "",
+  address: "",
+};
 const inp = "mt-1 w-full rounded border border-neutral-200 px-2 py-1.5";
 const cell = "w-full rounded border border-transparent px-1 py-0.5 hover:border-neutral-200";
 
@@ -118,22 +151,41 @@ export default function AdminLicensesPage() {
       <h1 className="text-lg font-semibold">{i18n("gap.lic.title")}</h1>
       <p className="mb-4 text-xs text-neutral-500">{i18n("gap.lic.lead")}</p>
 
-      <form onSubmit={onAdd} className="mb-6 grid gap-3 rounded-xl border border-neutral-200 bg-white p-4 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1.3fr_1fr_auto] lg:items-end">
-        <label className="text-xs"><span className="text-neutral-500">{i18n("gap.lic.regulator")}</span>
-          <input value={form.regulator} onChange={(e) => setForm({ ...form, regulator: e.target.value })} className={inp} /></label>
-        <label className="text-xs"><span className="text-neutral-500">{i18n("gap.lic.number")}</span>
-          <input value={form.number} onChange={(e) => setForm({ ...form, number: e.target.value })} className={inp} /></label>
-        <label className="text-xs"><span className="text-neutral-500">{i18n("gap.lic.entity")}</span>
-          <input value={form.entity} onChange={(e) => setForm({ ...form, entity: e.target.value })} className={inp} /></label>
-        <label className="text-xs"><span className="text-neutral-500">{i18n("gap.lic.url")}</span>
-          <input value={form.registerUrl} onChange={(e) => setForm({ ...form, registerUrl: e.target.value })} placeholder="https://" className={inp} /></label>
-        <label className="text-xs"><span className="text-neutral-500">{i18n("gap.lic.logo")}</span>
-          <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="mt-1 w-full text-xs"
-            onChange={async (e) => {
-              const f = e.target.files?.[0];
-              if (!f) return setLogo(null);
-              try { setLogo(await readImage(f)); setMsg(""); } catch (err) { setLogo(null); setMsg(imgMessage(i18n, (err as Error).message)); }
-            }} /></label>
+      <form onSubmit={onAdd} className="mb-6 space-y-3 rounded-xl border border-neutral-200 bg-white p-4">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <label className="text-xs"><span className="text-neutral-500">{i18n("gap.lic.regulator")}</span>
+            <input value={form.regulator} onChange={(e) => setForm({ ...form, regulator: e.target.value })} className={inp} /></label>
+          <label className="text-xs"><span className="text-neutral-500">{i18n("gap.lic.number")}</span>
+            <input value={form.number} onChange={(e) => setForm({ ...form, number: e.target.value })} className={inp} /></label>
+          <label className="text-xs"><span className="text-neutral-500">{i18n("gap.lic.entity")}</span>
+            <input value={form.entity} onChange={(e) => setForm({ ...form, entity: e.target.value })} className={inp} /></label>
+          <label className="text-xs sm:col-span-2"><span className="text-neutral-500">{i18n("gap.lic.url")}</span>
+            <input value={form.registerUrl} onChange={(e) => setForm({ ...form, registerUrl: e.target.value })} placeholder="https://" className={inp} /></label>
+          <label className="text-xs"><span className="text-neutral-500">{i18n("gap.lic.logo")}</span>
+            <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="mt-1 w-full text-xs"
+              onChange={async (e) => {
+                const f = e.target.files?.[0];
+                if (!f) return setLogo(null);
+                try { setLogo(await readImage(f)); setMsg(""); } catch (err) { setLogo(null); setMsg(imgMessage(i18n, (err as Error).message)); }
+              }} /></label>
+        </div>
+        <p className="text-xs text-neutral-500">{i18n("gap.lic.optional")}</p>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <label className="text-xs"><span className="text-neutral-500">{i18n("gap.lic.status")}</span>
+            <input value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className={inp} /></label>
+          <label className="text-xs"><span className="text-neutral-500">{i18n("gap.lic.type")}</span>
+            <input value={form.licenseType} onChange={(e) => setForm({ ...form, licenseType: e.target.value })} className={inp} /></label>
+          <label className="text-xs"><span className="text-neutral-500">{i18n("gap.lic.jurisdiction")}</span>
+            <input value={form.jurisdiction} onChange={(e) => setForm({ ...form, jurisdiction: e.target.value })} className={inp} /></label>
+          <label className="text-xs"><span className="text-neutral-500">{i18n("gap.lic.issued")}</span>
+            <input type="date" value={form.issuedOn} onChange={(e) => setForm({ ...form, issuedOn: e.target.value })} className={inp} /></label>
+          <label className="text-xs"><span className="text-neutral-500">{i18n("gap.lic.expires")}</span>
+            <input type="date" value={form.expiresOn} onChange={(e) => setForm({ ...form, expiresOn: e.target.value })} className={inp} /></label>
+          <label className="text-xs sm:col-span-2 lg:col-span-3"><span className="text-neutral-500">{i18n("gap.lic.scope")}</span>
+            <textarea value={form.scope} onChange={(e) => setForm({ ...form, scope: e.target.value })} rows={2} className={inp} /></label>
+          <label className="text-xs sm:col-span-2 lg:col-span-3"><span className="text-neutral-500">{i18n("gap.lic.address")}</span>
+            <textarea value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} rows={2} className={inp} /></label>
+        </div>
         <button disabled={busy} className="rounded-full bg-[#111111] px-4 py-2 text-xs font-semibold text-white disabled:opacity-40">{i18n("gap.spon.add")}</button>
       </form>
 
@@ -168,6 +220,15 @@ export default function AdminLicensesPage() {
                 <input defaultValue={s.number} onBlur={(e) => e.target.value.trim() !== s.number && patch(s.id, { number: e.target.value })} className={`${cell} text-sm`} />
                 <input defaultValue={s.entity} onBlur={(e) => e.target.value.trim() !== s.entity && patch(s.id, { entity: e.target.value })} className={`${cell} text-sm`} />
                 <input defaultValue={s.registerUrl} onBlur={(e) => e.target.value.trim() !== s.registerUrl && patch(s.id, { registerUrl: e.target.value })} className={`${cell} text-xs text-neutral-500 sm:col-span-3`} />
+                <input defaultValue={s.status ?? ""} placeholder={i18n("gap.lic.status")} onBlur={(e) => e.target.value.trim() !== (s.status ?? "") && patch(s.id, { status: e.target.value })} className={`${cell} text-sm`} />
+                <input defaultValue={s.licenseType ?? ""} placeholder={i18n("gap.lic.type")} onBlur={(e) => e.target.value.trim() !== (s.licenseType ?? "") && patch(s.id, { licenseType: e.target.value })} className={`${cell} text-sm`} />
+                <input defaultValue={s.jurisdiction ?? ""} placeholder={i18n("gap.lic.jurisdiction")} onBlur={(e) => e.target.value.trim() !== (s.jurisdiction ?? "") && patch(s.id, { jurisdiction: e.target.value })} className={`${cell} text-sm`} />
+                <label className="text-[11px] text-neutral-500">{i18n("gap.lic.issued")}
+                  <input type="date" defaultValue={day(s.issuedOn)} onBlur={(e) => e.target.value !== day(s.issuedOn) && patch(s.id, { issuedOn: e.target.value })} className={cell} /></label>
+                <label className="text-[11px] text-neutral-500">{i18n("gap.lic.expires")}
+                  <input type="date" defaultValue={day(s.expiresOn)} onBlur={(e) => e.target.value !== day(s.expiresOn) && patch(s.id, { expiresOn: e.target.value })} className={cell} /></label>
+                <textarea defaultValue={s.scope ?? ""} placeholder={i18n("gap.lic.scope")} rows={2} onBlur={(e) => e.target.value.trim() !== (s.scope ?? "") && patch(s.id, { scope: e.target.value })} className={`${cell} text-sm sm:col-span-3`} />
+                <textarea defaultValue={s.address ?? ""} placeholder={i18n("gap.lic.address")} rows={2} onBlur={(e) => e.target.value.trim() !== (s.address ?? "") && patch(s.id, { address: e.target.value })} className={`${cell} text-sm sm:col-span-3`} />
               </div>
               {s.logo && <button type="button" onClick={() => patch(s.id, { logo: null })} className="text-[11px] text-neutral-500 underline">{i18n("gap.lic.removeLogo")}</button>}
               <label className="flex items-center gap-1.5 text-xs"><input type="checkbox" checked={s.active} onChange={(e) => patch(s.id, { active: e.target.checked })} />{i18n("gap.spon.active")}</label>
