@@ -18,6 +18,20 @@ function read(rel: string): string {
   return fs.readFileSync(path.join(ROOT, rel), "utf8");
 }
 
+function readTree(rel: string): string {
+  const dir = path.join(ROOT, rel);
+  const files: string[] = [];
+  const walk = (current: string) => {
+    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+      const next = path.join(current, entry.name);
+      if (entry.isDirectory()) walk(next);
+      else if (/\.(tsx|ts)$/.test(entry.name)) files.push(fs.readFileSync(next, "utf8"));
+    }
+  };
+  walk(dir);
+  return files.join("\n");
+}
+
 function ask(pathname: string, opts?: { cookie?: string; host?: string }) {
   const host = opts?.host || "7fx.customer.org.tr";
   return middleware(
@@ -76,7 +90,7 @@ function main() {
   assert.match(layout, /\/izcrm\/crmv2/);
   assert.match(layout, /AdminChrome/);
 
-  const app = read("src/components/crmv2/CrmV2App.tsx");
+  const app = readTree("src/components/crmv2");
   for (const sample of ["Murat Kaya", "Finance_Admin_01", "12,482", "$42.1M"]) {
     assert.equal(app.includes(sample), false, sample);
   }
@@ -86,6 +100,7 @@ function main() {
   assert.match(app, /aria-required=\{false\}/);
   assert.match(app, /sourceUserId/);
   assert.match(app, /data-coming-soon/);
+  assert.match(app, /leadStatusMapping/);
   assert.match(app, /md:hidden/);
   assert.match(app, /font-normal/);
 
@@ -99,8 +114,7 @@ function main() {
   assert.equal(crmv2Text("en", "overview"), "Overview");
   assert.equal(crmv2Text("tr", "customers"), "Müşteriler");
   assert.equal(crmv2Text("xx", "overview"), "Overview");
-  assert.ok(CRM_V2_COMING_SOON.includes("campaignSend"));
-  assert.ok(CRM_V2_COMING_SOON.includes("leadMapping"));
+  assert.deepEqual([...CRM_V2_COMING_SOON], ["campaignSend"]);
 
   const approved = approvalBody("d1", "approve", "   ");
   assert.deepEqual(approved, { id: "d1", action: "approve" });

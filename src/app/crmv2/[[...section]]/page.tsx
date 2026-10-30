@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import CrmV2App from "@/components/crmv2/CrmV2App";
 import "../../globals.css";
+import "@/components/crmv2/crmv2.css";
 
 export const dynamic = "force-dynamic";
 
