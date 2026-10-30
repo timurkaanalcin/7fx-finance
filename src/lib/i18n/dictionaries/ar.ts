@@ -989,4 +989,7 @@ export const ar: Dict = {
   "term.onboard.marketsHint": "تصفح الأسواق",
   "term.onboard.walletHint": "هذه المحفظة فارغة. الإيداع يموّلها بعد الموافقة.",
   "crm.tickets.approvedToast": "تم اعتماد {amount} لصالح {customer}.",
+  "gap.err.chunkTitle": "هذه الصفحة غير محدثة",
+  "gap.err.chunkBody": "تعذر تحميل ملف. أعد التحميل لفتح أحدث نسخة.",
+  "gap.err.reload": "إعادة التحميل",
 };

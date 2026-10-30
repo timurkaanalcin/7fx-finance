@@ -989,4 +989,7 @@ export const tr: Dict = {
   "term.onboard.marketsHint": "Piyasalara bak",
   "term.onboard.walletHint": "Bu cüzdan boş. Yatırma, onaydan sonra bakiyeye geçer.",
   "crm.tickets.approvedToast": "{amount} onaylandı — {customer}.",
+  "gap.err.chunkTitle": "Bu sayfa güncel değil",
+  "gap.err.chunkBody": "Bir dosya yüklenemedi. En son sürümü açmak için yeniden yükleyin.",
+  "gap.err.reload": "Yeniden yükle",
 };

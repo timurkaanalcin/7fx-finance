@@ -989,4 +989,7 @@ export const en: Dict = {
   "term.onboard.marketsHint": "Browse markets",
   "term.onboard.walletHint": "This wallet is empty. A deposit funds it after approval.",
   "crm.tickets.approvedToast": "Approved {amount} for {customer}.",
+  "gap.err.chunkTitle": "This page is out of date",
+  "gap.err.chunkBody": "A file failed to load. Reload to open the latest version.",
+  "gap.err.reload": "Reload",
 };

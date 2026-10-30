@@ -57,14 +57,15 @@ Each pull request in the polish stack is based on the previous head. Land them o
 #98
 #99
 #101
+#102
 #52
 #56
 #48
 <!-- merge-order:end -->
 
-#89 adds this file. Its base is `cursor/round62-smoke-b495` (#88). #90 (`cursor/round64-quality-infra-b495`) is stacked on #89. #91 (`cursor/round65-landing-visual-b495`) is stacked on #90. #92 (`cursor/round66-trade-candles-b495`) is stacked on #91. #93 (`cursor/round67-trade-theme-b495`) is stacked on #92. #94 (`cursor/round68-theme-grid-b495`) is stacked on #93. #95 (`cursor/round69-crm-lists-b495`) is stacked on #94. #96 (`cursor/round70-crm-keys-b495`) is stacked on #95. #98 (`cursor/round71-onboarding-b495`) is based on `main` after #97. #99 (`cursor/round72-approve-ux-b495`) is stacked on #98. #101 (`cursor/round73-a11y-mobile-b495`) is stacked on #99. Merge #89, then #90, then #91, then #92, then #93, then #94, then #95, then #96, then #98, then #99, then #101, before #52.
+#89 adds this file. Its base is `cursor/round62-smoke-b495` (#88). #90 (`cursor/round64-quality-infra-b495`) is stacked on #89. #91 (`cursor/round65-landing-visual-b495`) is stacked on #90. #92 (`cursor/round66-trade-candles-b495`) is stacked on #91. #93 (`cursor/round67-trade-theme-b495`) is stacked on #92. #94 (`cursor/round68-theme-grid-b495`) is stacked on #93. #95 (`cursor/round69-crm-lists-b495`) is stacked on #94. #96 (`cursor/round70-crm-keys-b495`) is stacked on #95. #98 (`cursor/round71-onboarding-b495`) is based on `main` after #97. #99 (`cursor/round72-approve-ux-b495`) is stacked on #98. #101 (`cursor/round73-a11y-mobile-b495`) is stacked on #99. #102 (`cursor/round74-chunk-cache-b495`) is stacked on #101. Merge #89, then #90, then #91, then #92, then #93, then #94, then #95, then #96, then #98, then #99, then #101, then #102, before #52.
 
-After #88, #89, #90, #91, #92, #93, #94, #95, #96, #98, #99, and #101 are on `main`:
+After #88, #89, #90, #91, #92, #93, #94, #95, #96, #98, #99, #101, and #102 are on `main`:
 
 1. Retarget #52 (`cursor/auto-login-impersonation-f020`) from `cursor/round33-register-platform-b495` to `main`, then merge #52.
 2. Set the #56 variables on the Vercel project (below), then merge #56 (`cursor/live-support-autoreply-push-61c4`, base `main`).
@@ -122,6 +123,7 @@ Heads, for the same order:
 | #98 | `cursor/round71-onboarding-b495` |
 | #99 | `cursor/round72-approve-ux-b495` |
 | #101 | `cursor/round73-a11y-mobile-b495` |
+| #102 | `cursor/round74-chunk-cache-b495` |
 | #52 | `cursor/auto-login-impersonation-f020` |
 | #56 | `cursor/live-support-autoreply-push-61c4` |
 | #48 | `cursor/optional-source-account-f34f` |
@@ -159,7 +161,7 @@ Per pull request, new Vercel variables:
 
 | PRs | New Vercel variables |
 | --- | --- |
-| #46 through #101 | none |
+| #46 through #102 | none |
 | #52 | none |
 | #56 | `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` |
 | #48 | none |

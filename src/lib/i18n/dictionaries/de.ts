@@ -989,4 +989,7 @@ export const de: Dict = {
   "term.onboard.marketsHint": "Märkte ansehen",
   "term.onboard.walletHint": "Dieses Wallet ist leer. Eine Einzahlung füllt es nach Freigabe.",
   "crm.tickets.approvedToast": "{amount} für {customer} genehmigt.",
+  "gap.err.chunkTitle": "Diese Seite ist veraltet",
+  "gap.err.chunkBody": "Eine Datei konnte nicht geladen werden. Laden Sie neu, um die aktuelle Version zu öffnen.",
+  "gap.err.reload": "Neu laden",
 };
