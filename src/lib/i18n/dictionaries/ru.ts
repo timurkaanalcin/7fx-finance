@@ -212,6 +212,7 @@ export const ru: Dict = {
   "crm.group.comms": "Коммуникации",
   "crm.group.analytics": "Аналитика",
   "crm.nav.dashboard": "Панель",
+  "crm.nav.crmv2": "CRM v2",
   "crm.nav.traders": "Трейдеры",
   "crm.nav.tickets": "Тикеты / Депозиты",
   "crm.nav.positions": "Позиции",

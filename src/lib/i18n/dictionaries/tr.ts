@@ -292,6 +292,7 @@ export const tr: Dict = {
   "crm.group.comms": "İletişim",
   "crm.group.analytics": "Analitik",
   "crm.nav.dashboard": "Gösterge paneli",
+  "crm.nav.crmv2": "CRM v2",
   "crm.nav.traders": "Traderlar",
   "crm.nav.tickets": "Biletler / Yatırımlar",
   "crm.nav.positions": "Pozisyonlar",

@@ -212,6 +212,7 @@ export const ar: Dict = {
   "crm.group.comms": "التواصل",
   "crm.group.analytics": "التحليلات",
   "crm.nav.dashboard": "لوحة التحكم",
+  "crm.nav.crmv2": "CRM v2",
   "crm.nav.traders": "المتداولون",
   "crm.nav.tickets": "التذاكر / الإيداعات",
   "crm.nav.positions": "المراكز",

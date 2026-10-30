@@ -295,6 +295,7 @@ export const en: Dict = {
   "crm.group.comms": "Communications",
   "crm.group.analytics": "Analytics",
   "crm.nav.dashboard": "Dashboard",
+  "crm.nav.crmv2": "CRM v2",
   "crm.nav.traders": "Traders",
   "crm.nav.tickets": "Tickets / Deposits",
   "crm.nav.positions": "Positions",

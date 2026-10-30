@@ -6,8 +6,15 @@ const { staticSecurityHeaders } = require("./src/lib/security/response-headers.c
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   productionBrowserSourceMaps: false,
+  // /crmv2/ must reach middleware so it can serve the same HTML as /crmv2.
+  // Other trailing-slash URLs are redirected in middleware, matching Next's default.
+  skipTrailingSlashRedirect: true,
   experimental: {
     serverComponentsExternalPackages: ["pdf-parse", "mammoth", "xlsx", "geoip-country"],
+    outputFileTracingIncludes: {
+      "/crmv2": ["./src/crmv2/index.html"],
+      "/izcrm/crmv2": ["./src/crmv2/index.html"],
+    },
   },
   poweredByHeader: false,
   webpack: (config) => {
@@ -44,6 +51,18 @@ const nextConfig = {
       },
       {
         source: "/izcrm/:path*",
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" },
+        ],
+      },
+      {
+        source: "/crmv2",
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" },
+        ],
+      },
+      {
+        source: "/crmv2/",
         headers: [
           { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" },
         ],

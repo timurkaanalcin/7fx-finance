@@ -6,16 +6,22 @@ const REFERRER_POLICY = "strict-origin-when-cross-origin";
 const PERMISSIONS_POLICY = "camera=(), microphone=(), geolocation=(), payment=(), usb=()";
 const HSTS_VALUE = "max-age=15552000; includeSubDomains";
 
-function contentSecurityPolicy({ https, dev }) {
-  const scriptSrc = dev
-    ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
-    : "script-src 'self' 'unsafe-inline'";
+function contentSecurityPolicy({ https, dev, crmv2 }) {
+  const scriptSrc = crmv2
+    ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com"
+    : dev
+      ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
+      : "script-src 'self' 'unsafe-inline'";
+  const styleSrc = crmv2
+    ? "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com"
+    : "style-src 'self' 'unsafe-inline'";
+  const fontSrc = crmv2 ? "font-src 'self' data: https://cdnjs.cloudflare.com" : "font-src 'self' data:";
   const directives = [
     "default-src 'self'",
     scriptSrc,
-    "style-src 'self' 'unsafe-inline'",
+    styleSrc,
     "img-src 'self' data: blob: https:",
-    "font-src 'self' data:",
+    fontSrc,
     "connect-src 'self' https://query1.finance.yahoo.com https://query2.finance.yahoo.com",
     "frame-ancestors 'none'",
     "base-uri 'self'",
@@ -45,13 +51,13 @@ function staticSecurityHeaders() {
   ];
 }
 
-function applyNodeSecurityHeaders(res, { https, dev }) {
+function applyNodeSecurityHeaders(res, { https, dev, crmv2 }) {
   res.removeHeader("X-Powered-By");
   res.setHeader("X-Frame-Options", FRAME_OPTIONS);
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("Referrer-Policy", REFERRER_POLICY);
   res.setHeader("Permissions-Policy", PERMISSIONS_POLICY);
-  res.setHeader("Content-Security-Policy", contentSecurityPolicy({ https, dev }));
+  res.setHeader("Content-Security-Policy", contentSecurityPolicy({ https, dev, crmv2: !!crmv2 }));
   if (https) res.setHeader("Strict-Transport-Security", HSTS_VALUE);
 }
 

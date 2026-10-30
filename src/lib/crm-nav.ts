@@ -6,6 +6,8 @@ export type CrmNavItem = {
   labelKey: string;
   exact?: boolean;
   group?: string;
+  /** Full document navigation. This href is a route handler, not an App Router page. */
+  document?: boolean;
 };
 
 export type CrmNavGroup = {
@@ -20,6 +22,7 @@ export const CRM_NAV_GROUPS: CrmNavGroup[] = [
     labelKey: "crm.group.main",
     items: [
       { href: "/izcrm", labelKey: "crm.nav.dashboard", exact: true },
+      { href: "/izcrm/crmv2", labelKey: "crm.nav.crmv2", document: true },
       { href: "/izcrm/traders", labelKey: "crm.nav.traders" },
       { href: "/izcrm/import", labelKey: "crm.nav.import" },
       { href: "/izcrm/tickets", labelKey: "crm.nav.tickets" },
