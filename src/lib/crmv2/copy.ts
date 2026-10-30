@@ -1,3 +1,5 @@
+import { CRM_V2_EXTRA } from "@/lib/crmv2/copy-extra";
+
 const en = {
   overview: "Overview",
   customers: "Customers",
@@ -473,14 +475,20 @@ const ar: typeof en = {
   description: "الوصف",
 };
 
-const tables = { en, tr, de, ru, ar };
+const tables = {
+  en: { ...en, ...CRM_V2_EXTRA.en },
+  tr: { ...tr, ...CRM_V2_EXTRA.tr },
+  de: { ...de, ...CRM_V2_EXTRA.de },
+  ru: { ...ru, ...CRM_V2_EXTRA.ru },
+  ar: { ...ar, ...CRM_V2_EXTRA.ar },
+};
 
 export const CRM_V2_COPY = tables;
 
-export type CrmV2CopyKey = keyof typeof en;
+export type CrmV2CopyKey = keyof typeof tables.en;
 
 export function crmv2Text(locale: string, key: CrmV2CopyKey): string {
   const base = locale.toLowerCase().split("-")[0];
-  const table = tables[base as keyof typeof tables] || en;
-  return table[key] || en[key];
+  const table = tables[base as keyof typeof tables] || tables.en;
+  return table[key] || tables.en[key];
 }
