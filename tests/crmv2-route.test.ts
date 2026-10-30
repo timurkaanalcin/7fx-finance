@@ -1,24 +1,22 @@
 /**
- * /crmv2 is admin-only HTML. Signed-out visitors redirect like /izcrm.
- * An admin (mocked) receives the dashboard document.
+ * CRM v2 is an admin app on both /crmv2 and /izcrm/crmv2.
+ * Signed-out visitors redirect like /izcrm. Live views do not ship sample rows.
  * Run: npx tsx tests/crmv2-route.test.ts
  */
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
-import { createRequire } from "node:module";
 import { NextRequest } from "next/server";
 import { middleware } from "../src/middleware";
-import { crmv2Document, crmv2Response } from "../src/crmv2/respond";
-
-const require = createRequire(import.meta.url);
-const headers = require("../src/lib/security/response-headers.cjs") as {
-  contentSecurityPolicy: (opts: { https: boolean; dev: boolean; crmv2?: boolean }) => string;
-  staticSecurityHeaders: () => { key: string; value: string }[];
-};
+import { approvalBody, approvalEndpoint, ledgerBody } from "../src/lib/crmv2/payload";
+import { CRM_V2_COMING_SOON, CRM_V2_SECTIONS, crmv2Href } from "../src/lib/crmv2/sections";
+import { crmv2Text } from "../src/lib/crmv2/copy";
 
 const ROOT = path.resolve(__dirname, "..");
-const HTML = fs.readFileSync(path.join(ROOT, "src/crmv2/index.html"), "utf8");
+
+function read(rel: string): string {
+  return fs.readFileSync(path.join(ROOT, rel), "utf8");
+}
 
 function ask(pathname: string, opts?: { cookie?: string; host?: string }) {
   const host = opts?.host || "7fx.customer.org.tr";
@@ -34,154 +32,92 @@ function ask(pathname: string, opts?: { cookie?: string; host?: string }) {
   );
 }
 
-async function main() {
+function main() {
   assert.equal(fs.existsSync(path.join(ROOT, "public/crmv2")), false);
-  assert.equal(fs.existsSync(path.join(ROOT, "public/crmv2/index.html")), false);
-  assert.match(HTML, /12,482/);
-  assert.match(HTML, /Murat Kaya/);
-  assert.match(HTML, /Finance_Admin_01/);
-  assert.match(HTML, /href="\/crmv2"/);
-  assert.match(HTML, /action="\/api\/auth\/logout"/);
-  assert.match(HTML, /name="nav" value="1"/);
-  assert.equal(HTML.includes('href="/api/auth/logout"'), false);
-  const otherHrefs = HTML.match(/href="#"/g) || [];
-  assert.equal(otherHrefs.length, 5);
+  assert.equal(fs.existsSync(path.join(ROOT, "src/crmv2/index.html")), false);
+  assert.equal(fs.existsSync(path.join(ROOT, "src/app/crmv2/route.ts")), false);
 
   const signedOut = ask("/crmv2");
   const izcrm = ask("/izcrm");
   assert.equal(signedOut.status, 307);
-  assert.equal(signedOut.status, izcrm.status);
-  assert.equal(signedOut.headers.get("location"), "https://7fx.customer.org.tr/login");
   assert.equal(signedOut.headers.get("location"), izcrm.headers.get("location"));
+  assert.equal(ask("/crmv2/").status, 307);
+  assert.equal(ask("/crmv2/").headers.get("location"), "https://7fx.customer.org.tr/login");
+  assert.equal(ask("/izcrm/crmv2").status, 307);
+  assert.equal(ask("/izcrm/crmv2/").status, 307);
+  assert.equal(ask("/izcrm/crmv2/", { host: "crm7fx.customer.org.tr" }).headers.get("location"), "https://crm7fx.customer.org.tr/login");
+  assert.equal(ask("/crmv2", { host: "crm7fx.customer.org.tr" }).headers.get("location"), "https://crm7fx.customer.org.tr/login");
 
-  const slash = ask("/crmv2/");
-  assert.equal(slash.status, 307);
-  assert.equal(slash.headers.get("location"), "https://7fx.customer.org.tr/login");
-
-  const faqSlash = ask("/faq/");
-  assert.equal(faqSlash.status, 308);
-  assert.equal(faqSlash.headers.get("location"), "https://7fx.customer.org.tr/faq");
-
-  const izSignedOut = ask("/izcrm/crmv2");
-  const izSlash = ask("/izcrm/crmv2/");
-  assert.equal(izSignedOut.status, 307);
-  assert.equal(izSignedOut.headers.get("location"), izcrm.headers.get("location"));
-  assert.equal(izSlash.status, 307);
-  assert.equal(izSlash.headers.get("location"), "https://7fx.customer.org.tr/login");
-  const izHost = ask("/izcrm/crmv2", { host: "crm7fx.customer.org.tr" });
-  assert.equal(izHost.status, 307);
-  assert.equal(izHost.headers.get("location"), "https://crm7fx.customer.org.tr/login");
-  const tradersSlash = ask("/izcrm/traders/");
-  assert.equal(tradersSlash.status, 308);
-  assert.equal(tradersSlash.headers.get("location"), "https://7fx.customer.org.tr/izcrm/traders");
-
-  const crmHost = ask("/crmv2", { host: "crm7fx.customer.org.tr" });
-  const crmIz = ask("/izcrm", { host: "crm7fx.customer.org.tr" });
-  assert.equal(crmHost.status, 307);
-  assert.equal(crmHost.headers.get("location"), crmIz.headers.get("location"));
-  assert.equal(crmHost.headers.get("location"), "https://crm7fx.customer.org.tr/login");
-
-  const trader = ask("/crmv2", { cookie: "7fx_session=trader-token" });
-  assert.equal(trader.headers.get("x-middleware-next"), "1");
-  const adminCookie = ask("/crmv2/", { cookie: "7fx_session=admin-token" });
-  assert.equal(adminCookie.headers.get("x-middleware-rewrite"), "https://7fx.customer.org.tr/crmv2");
-  const izAdminSlash = ask("/izcrm/crmv2/", { cookie: "7fx_session=admin-token" });
-  assert.equal(izAdminSlash.headers.get("x-middleware-rewrite"), "https://7fx.customer.org.tr/izcrm/crmv2");
-  assert.equal(ask("/izcrm/traders", { cookie: "7fx_session=admin-token" }).headers.get("x-middleware-next"), "1");
+  assert.equal(ask("/crmv2/", { cookie: "7fx_session=admin" }).headers.get("x-middleware-rewrite"), "https://7fx.customer.org.tr/crmv2");
+  assert.equal(ask("/izcrm/crmv2/", { cookie: "7fx_session=admin" }).headers.get("x-middleware-rewrite"), "https://7fx.customer.org.tr/izcrm/crmv2");
+  assert.equal(ask("/izcrm/traders/", { cookie: "7fx_session=admin" }).status, 308);
 
   const env = process.env as { NODE_ENV?: string };
   const prev = env.NODE_ENV;
   env.NODE_ENV = "production";
   try {
-    const open = ask("/izcrm", { cookie: "7fx_session=admin-token" }).headers.get("content-security-policy") || "";
-    const traders = ask("/izcrm/traders", { cookie: "7fx_session=admin-token" }).headers.get("content-security-policy") || "";
-    const gated = ask("/crmv2", { cookie: "7fx_session=admin-token" }).headers.get("content-security-policy") || "";
-    const slashCsp = ask("/crmv2/", { cookie: "7fx_session=admin-token" }).headers.get("content-security-policy") || "";
-    const izGated = ask("/izcrm/crmv2", { cookie: "7fx_session=admin-token" }).headers.get("content-security-policy") || "";
-    const izSlashCsp = ask("/izcrm/crmv2/", { cookie: "7fx_session=admin-token" }).headers.get("content-security-policy") || "";
-    assert.equal(open.includes("cdn.tailwindcss.com"), false);
-    assert.equal(open.includes("cdnjs.cloudflare.com"), false);
-    assert.equal(open.includes("unsafe-eval"), false);
-    assert.match(open, /style-src 'self' 'unsafe-inline'/);
-    assert.equal(traders.includes("cdn.tailwindcss.com"), false);
-    assert.equal(traders.includes("cdnjs.cloudflare.com"), false);
-    for (const csp of [gated, slashCsp, izGated, izSlashCsp]) {
-      assert.match(csp, /script-src 'self' 'unsafe-inline' 'unsafe-eval' https:\/\/cdn\.tailwindcss\.com/);
-      assert.match(csp, /style-src 'self' 'unsafe-inline' https:\/\/cdnjs\.cloudflare\.com/);
-      assert.match(csp, /font-src 'self' data: https:\/\/cdnjs\.cloudflare\.com/);
+    for (const pathName of ["/crmv2", "/crmv2/", "/izcrm/crmv2", "/izcrm", "/izcrm/traders", "/"]) {
+      const csp = ask(pathName, { cookie: "7fx_session=admin" }).headers.get("content-security-policy") || "";
+      assert.equal(csp.includes("cdn.tailwindcss.com"), false, pathName);
+      assert.equal(csp.includes("cdnjs.cloudflare.com"), false, pathName);
+      assert.match(csp, /style-src 'self' 'unsafe-inline'/);
     }
-    const home = ask("/").headers.get("content-security-policy") || "";
-    assert.equal(home.includes("cdn.tailwindcss.com"), false);
-    assert.equal(home.includes("cdnjs.cloudflare.com"), false);
   } finally {
     env.NODE_ENV = prev;
   }
 
-  const strict = headers.contentSecurityPolicy({ https: true, dev: false });
-  const loose = headers.contentSecurityPolicy({ https: true, dev: false, crmv2: true });
-  assert.equal(strict.includes("cdn.tailwindcss.com"), false);
-  assert.equal(strict.includes("cdnjs.cloudflare.com"), false);
-  assert.match(loose, /https:\/\/cdn\.tailwindcss\.com/);
-  assert.match(loose, /https:\/\/cdnjs\.cloudflare\.com/);
-  assert.match(loose, /unsafe-inline/);
-  const staticCsp = headers.staticSecurityHeaders().find((h) => h.key === "Content-Security-Policy")?.value || "";
-  assert.equal(staticCsp.includes("cdn.tailwindcss.com"), false);
-
-  const req = new Request("https://7fx.customer.org.tr/crmv2", {
-    headers: { host: "7fx.customer.org.tr", "x-forwarded-host": "7fx.customer.org.tr", "x-forwarded-proto": "https" },
-  });
-  const denied = await crmv2Response(req, async () => null);
-  assert.equal(denied.status, 307);
-  assert.equal(denied.headers.get("location"), "https://7fx.customer.org.tr/login");
-
-  const notAdmin = await crmv2Response(req, async () => ({ role: "TRADER" }));
-  assert.equal(notAdmin.status, 307);
-  assert.equal(notAdmin.headers.get("location"), "https://7fx.customer.org.tr/login");
-
-  const routeSrc = fs.readFileSync(path.join(ROOT, "src/app/crmv2/route.ts"), "utf8");
-  const izRouteSrc = fs.readFileSync(path.join(ROOT, "src/app/(admin)/izcrm/crmv2/route.ts"), "utf8");
-  for (const src of [routeSrc, izRouteSrc]) {
-    assert.match(src, /crmv2Response\(req, requireAdmin\)/);
-    assert.match(src, /from "@\/lib\/auth"/);
-    assert.match(src, /from "@\/crmv2\/respond"/);
+  for (const file of ["src/app/crmv2/[[...section]]/page.tsx", "src/app/(admin)/izcrm/crmv2/[[...section]]/page.tsx"]) {
+    const src = read(file);
+    assert.match(src, /requireAdmin/);
+    assert.match(src, /redirect\("\/login"\)/);
+    assert.match(src, /CrmV2App/);
   }
-  assert.equal(fs.readdirSync(path.join(ROOT, "src/crmv2")).filter((name) => name.endsWith(".html")).length, 1);
+  const layout = read("src/app/(admin)/izcrm/layout.tsx");
+  assert.match(layout, /\/izcrm\/crmv2/);
+  assert.match(layout, /AdminChrome/);
 
-  const nav = fs.readFileSync(path.join(ROOT, "src/lib/crm-nav.ts"), "utf8");
+  const app = read("src/components/crmv2/CrmV2App.tsx");
+  for (const sample of ["Murat Kaya", "Finance_Admin_01", "12,482", "$42.1M"]) {
+    assert.equal(app.includes(sample), false, sample);
+  }
+  for (const section of CRM_V2_SECTIONS) assert.match(app, new RegExp(`view === "${section.id}"`));
+  assert.match(app, /approvalBody/);
+  assert.match(app, /ledgerBody/);
+  assert.match(app, /aria-required=\{false\}/);
+  assert.match(app, /sourceUserId/);
+  assert.match(app, /data-coming-soon/);
+  assert.match(app, /md:hidden/);
+  assert.match(app, /font-normal/);
+
+  const nav = read("src/lib/crm-nav.ts");
   assert.match(nav, /href: "\/izcrm", labelKey: "crm.nav.dashboard", exact: true/);
-  assert.match(nav, /href: "\/izcrm\/crmv2", labelKey: "crm.nav.crmv2"/);
-  assert.match(nav, /href: "\/izcrm\/traders", labelKey: "crm.nav.traders"/);
+  assert.match(nav, /href: "\/izcrm\/traders"/);
+  assert.match(nav, /href: "\/izcrm\/crmv2"/);
 
-  const ok = await crmv2Response(req, async () => ({ role: "ADMIN" }));
-  assert.equal(ok.status, 200);
-  assert.equal(ok.headers.get("content-type"), "text/html; charset=utf-8");
-  assert.equal(ok.headers.get("cache-control"), "private, no-store");
-  assert.equal(await ok.text(), HTML);
-  assert.equal(crmv2Document("/crmv2"), HTML);
+  assert.equal(crmv2Href("/crmv2", ""), "/crmv2");
+  assert.equal(crmv2Href("/izcrm/crmv2", "customers", { q: "ada" }), "/izcrm/crmv2/customers?q=ada");
+  assert.equal(crmv2Text("en", "overview"), "Overview");
+  assert.equal(crmv2Text("tr", "customers"), "Müşteriler");
+  assert.equal(crmv2Text("xx", "overview"), "Overview");
+  assert.ok(CRM_V2_COMING_SOON.includes("campaignSend"));
+  assert.ok(CRM_V2_COMING_SOON.includes("leadMapping"));
 
-  const izReq = new Request("https://7fx.customer.org.tr/izcrm/crmv2", {
-    headers: { host: "7fx.customer.org.tr", "x-forwarded-host": "7fx.customer.org.tr", "x-forwarded-proto": "https" },
-  });
-  const izDenied = await crmv2Response(izReq, async () => null);
-  assert.equal(izDenied.status, 307);
-  assert.equal(izDenied.headers.get("location"), "https://7fx.customer.org.tr/login");
-  const izTrader = await crmv2Response(izReq, async () => ({ role: "TRADER" }));
-  assert.equal(izTrader.status, 307);
-  const izOk = await crmv2Response(izReq, async () => ({ role: "ADMIN" }));
-  assert.equal(izOk.status, 200);
-  assert.equal(izOk.headers.get("content-type"), "text/html; charset=utf-8");
-  const izHtml = await izOk.text();
-  assert.equal(izHtml, crmv2Document("/izcrm/crmv2"));
-  assert.match(izHtml, /href="\/izcrm\/crmv2"/);
-  assert.equal(izHtml.includes('href="/crmv2"'), false);
-  assert.match(izHtml, /12,482/);
-  assert.match(izHtml, /Murat Kaya/);
-  assert.match(izHtml, /action="\/api\/auth\/logout"/);
+  const approved = approvalBody("d1", "approve", "   ");
+  assert.deepEqual(approved, { id: "d1", action: "approve" });
+  assert.equal("approvalReason" in approved, false);
+  assert.equal(approvalBody("d1", "approve", "checked").approvalReason, "checked");
+  assert.equal(approvalEndpoint("WITHDRAW"), "/api/admin/withdrawals");
+  assert.equal(approvalEndpoint("MARGIN"), "/api/admin/balance-requests");
+  assert.equal(approvalEndpoint("DEPOSIT"), "/api/admin/deposits");
+
+  const noSource = ledgerBody({ type: "TRANSFER", amount: "10", sourceUserId: "  ", comment: "" });
+  assert.equal("sourceUserId" in noSource, false);
+  assert.equal("comment" in noSource, false);
+  const withSource = ledgerBody({ type: "TRANSFER", amount: "10", sourceUserId: "src-1", comment: "move" });
+  assert.equal(withSource.sourceUserId, "src-1");
+  assert.equal(withSource.comment, "move");
 
   console.log("crmv2-route tests passed");
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+main();

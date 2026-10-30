@@ -28,17 +28,12 @@ function crmv2SlashTarget(pathname: string): string | null {
 function contentSecurityPolicy(req: NextRequest): string {
   const forwarded = (req.headers.get("x-forwarded-proto") || "").split(",")[0].trim().toLowerCase();
   const proto = forwarded || req.nextUrl.protocol.replace(":", "");
-  const crmv2 = isCrmV2Path(req.nextUrl.pathname);
-  // Tailwind's CDN compiler uses new Function(), so this route also needs unsafe-eval.
-  const scriptSrc = crmv2
-    ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com"
-    : process.env.NODE_ENV === "production"
+  const scriptSrc =
+    process.env.NODE_ENV === "production"
       ? "script-src 'self' 'unsafe-inline'"
       : "script-src 'self' 'unsafe-inline' 'unsafe-eval'";
-  const styleSrc = crmv2
-    ? "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com"
-    : "style-src 'self' 'unsafe-inline'";
-  const fontSrc = crmv2 ? "font-src 'self' data: https://cdnjs.cloudflare.com" : "font-src 'self' data:";
+  const styleSrc = "style-src 'self' 'unsafe-inline'";
+  const fontSrc = "font-src 'self' data:";
   const directives = [
     "default-src 'self'",
     scriptSrc,
