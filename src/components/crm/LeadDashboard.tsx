@@ -54,7 +54,7 @@ function AffiliateCharts({ rows }: { rows: AffiliateRow[] }) {
   const max = Math.max(1, ...top.map((r) => r.total));
   const pieTotal = Math.max(1, top.reduce((s, r) => s + r.total, 0));
   let acc = 0;
-  const colors = ["#111111", "#2563eb", "#16a34a", "#dc2626", "#ca8a04", "#7c3aed", "#0891b2", "#db2777"];
+  const colors = ["#111111", "#3a3a3a", "#5c5c5c", "#7a7a7a", "#9a9a9a", "#222222", "#4e4e4e", "#6e6e6e"];
   const segments = top.map((r, i) => {
     const start = acc / pieTotal;
     acc += r.total;
@@ -68,32 +68,29 @@ function AffiliateCharts({ rows }: { rows: AffiliateRow[] }) {
     : "#e5e5e5";
 
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
-      <div className="fx-dash-panel p-3">
-        <div className="mb-2 text-[11px] font-semibold text-neutral-700">{i18n("crm.leads.chartBar")}</div>
-        <div className="space-y-2">
+    <div className="fx-dash-charts">
+      <div className="fx-dash-panel fx-dash-chart">
+        <div className="fx-dash-chart-title">{i18n("crm.leads.chartBar")}</div>
+        <div className="fx-dash-chart-body">
           {top.map((r, i) => (
-            <div key={r.name} className="flex items-center gap-2 text-[11px]">
-              <span className="w-24 truncate text-neutral-600" title={r.name}>
+            <div key={r.name} className="fx-dash-bar">
+              <span className="truncate text-neutral-600" title={r.name}>
                 {r.name}
               </span>
-              <div className="h-3 flex-1 overflow-hidden rounded bg-neutral-100">
-                <div
-                  className="h-full rounded"
-                  style={{ width: `${(r.total / max) * 100}%`, background: colors[i % colors.length] }}
-                />
+              <div className="fx-dash-bar-track">
+                <div style={{ width: `${(r.total / max) * 100}%`, background: colors[i % colors.length] }} />
               </div>
-              <span className="w-8 text-right tabular-nums font-medium">{r.total}</span>
+              <span className="tabular-nums">{r.total}</span>
             </div>
           ))}
-          {!top.length && <p className="text-[11px] text-neutral-400">{i18n("crm.leads.noAffiliates")}</p>}
+          {!top.length && <p className="text-[12px] text-neutral-400">{i18n("crm.leads.noAffiliates")}</p>}
         </div>
       </div>
-      <div className="fx-dash-panel p-3">
-        <div className="mb-2 text-[11px] font-semibold text-neutral-700">{i18n("crm.leads.chartPie")}</div>
-        <div className="flex items-center gap-4">
-          <div className="h-28 w-28 shrink-0 rounded-full" style={{ background: gradient }} />
-          <ul className="max-h-32 space-y-1 overflow-y-auto text-[10px] text-neutral-600">
+      <div className="fx-dash-panel fx-dash-chart">
+        <div className="fx-dash-chart-title">{i18n("crm.leads.chartPie")}</div>
+        <div className="fx-dash-chart-body fx-dash-pie">
+          <div className="fx-dash-pie-disc" style={{ background: gradient }} />
+          <ul className="min-w-0 space-y-1 overflow-y-auto text-[12px] text-neutral-600">
             {segments.map((s) => (
               <li key={s.name} className="flex items-center gap-1.5">
                 <span className="inline-block h-2 w-2 rounded-sm" style={{ background: s.color }} />
@@ -165,7 +162,7 @@ export default function LeadDashboard() {
     <section className="mb-6">
       <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
         <div>
-          <h2 className="text-base font-semibold text-neutral-900">{i18n("crm.leads.title")}</h2>
+          <h2 className="text-base font-normal text-neutral-900">{i18n("crm.leads.title")}</h2>
           <p className="text-[11px] text-neutral-500">
             {i18n("crm.leads.subtitle")}
             {updatedAt
@@ -248,8 +245,8 @@ export default function LeadDashboard() {
 
       <AffiliateCharts rows={affiliates} />
 
-      <div className="fx-dash-panel mt-4 overflow-x-auto">
-        <table className="min-w-full text-left text-[11px]">
+      <div className="fx-dash-panel fx-dash-table-wrap">
+        <table className="fx-dash-table min-w-full text-left text-[12px]">
           <thead className="border-b border-neutral-200 bg-neutral-50 text-neutral-500">
             <tr>
               <th className="px-3 py-2 font-medium">{i18n("crm.leads.affName")}</th>
