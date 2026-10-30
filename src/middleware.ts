@@ -27,8 +27,17 @@ function isCrmV3Path(pathname: string): boolean {
   );
 }
 
+function isCrmV4Path(pathname: string): boolean {
+  return (
+    pathname === "/crmv4" ||
+    pathname.startsWith("/crmv4/") ||
+    pathname === "/izcrm/crmv4" ||
+    pathname.startsWith("/izcrm/crmv4/")
+  );
+}
+
 function isCrmAppPath(pathname: string): boolean {
-  return isCrmV2Path(pathname) || isCrmV3Path(pathname);
+  return isCrmV2Path(pathname) || isCrmV3Path(pathname) || isCrmV4Path(pathname);
 }
 
 /** Trailing-slash aliases that return the dashboard instead of a 308. */
@@ -44,8 +53,14 @@ function crmv3SlashTarget(pathname: string): string | null {
   return null;
 }
 
+function crmv4SlashTarget(pathname: string): string | null {
+  if (pathname === "/crmv4/") return "/crmv4";
+  if (pathname === "/izcrm/crmv4/") return "/izcrm/crmv4";
+  return null;
+}
+
 function crmSlashTarget(pathname: string): string | null {
-  return crmv2SlashTarget(pathname) || crmv3SlashTarget(pathname);
+  return crmv2SlashTarget(pathname) || crmv3SlashTarget(pathname) || crmv4SlashTarget(pathname);
 }
 
 function contentSecurityPolicy(req: NextRequest): string {
@@ -90,7 +105,7 @@ export function middleware(req: NextRequest) {
     return NextResponse.next({ request: { headers: h } });
   };
 
-  // /crmv2/ and /crmv3/ (and the /izcrm copies) are the same documents as the no-slash paths.
+  // /crmv2/, /crmv3/ and /crmv4/ (and the /izcrm copies) are the same documents as the no-slash paths.
   const passCrmV2 = () => {
     const target = crmSlashTarget(pathname);
     if (!target) return passNext();

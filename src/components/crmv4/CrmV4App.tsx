@@ -1,0 +1,556 @@
+"use client";
+
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { ReactNode, useCallback, useEffect, useState } from "react";
+import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
+import CrmI18n from "@/components/i18n/CrmI18n";
+import BrandLogo from "@/components/landing/BrandLogo";
+import { useI18n } from "@/lib/i18n/context";
+import { crmv2Text, type CrmV2CopyKey } from "@/lib/crmv2/copy";
+import { crmv4Text, type CrmV4CopyKey } from "@/lib/crmv4/copy";
+import { readJson, writeJson } from "@/lib/crmv4/local";
+import { CRM_V4_MORE, CRM_V4_NAV, CRM_V4_SECTIONS, CRM_V4_TABS, crmv4Href, type CrmV4SectionId } from "@/lib/crmv4/sections";
+import { Sheet, sendJson, useJson, when } from "./kit";
+import Overview from "./views/Overview";
+import { CustomerDetail, Customers } from "./views/Customers";
+import Finance from "./views/Finance";
+import Positions from "./views/Positions";
+import Support from "./views/Support";
+import Marketing from "./views/Marketing";
+import Settings from "./views/Settings";
+import Logs from "./views/Logs";
+import Control from "./views/Control";
+
+type Props = { base: string; section: string[]; name: string };
+type Toast = { id: number; ok: boolean; text: string };
+type Scratch = { id: string; body: string };
+type Reminder = { id: string; body?: string; remindAt?: string; trader?: string | null };
+
+const FINANCE_LINKS = [
+  { tab: "", key: "deposits" },
+  { tab: "withdrawals", key: "withdrawals" },
+  { tab: "balance", key: "balanceRequests" },
+  { tab: "ledger", key: "ledger" },
+] as const;
+
+const NOTES_KEY = "crmv4-scratch-notes";
+
+export default function CrmV4App(props: Props) {
+  return (
+    <CrmI18n>
+      <Shell {...props} />
+    </CrmI18n>
+  );
+}
+
+function Shell({ base, section, name }: Props) {
+  const { locale } = useI18n();
+  const tx = useCallback((key: CrmV2CopyKey) => crmv2Text(locale, key), [locale]);
+  const v4 = useCallback((key: CrmV4CopyKey) => crmv4Text(locale, key), [locale]);
+  const view = (section[0] || "overview") as CrmV4SectionId | string;
+  const id = section[1] || "";
+  const [more, setMore] = useState(false);
+  const [notesOpen, setNotesOpen] = useState(false);
+  const [padOpen, setPadOpen] = useState(false);
+  const [remindersOpen, setRemindersOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
+  const [financeOpen, setFinanceOpen] = useState(false);
+  const [gearOpen, setGearOpen] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">("light");
+  const [pull, setPull] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
+  const [toasts, setToasts] = useState<Toast[]>([]);
+  const [scratch, setScratch] = useState<Scratch[]>([]);
+  const params = useSearchParams();
+  const q = params.get("q") || "";
+  const notes = useJson<{ items?: { id: string; title?: string; body?: string; readAt?: string | null; createdAt?: string }[]; unread?: number }>("/api/notifications?take=20");
+  const stats = useJson<{ kpis?: { pendingDeposits?: number; pendingBalanceRequests?: number } }>("/api/admin/stats");
+  const reminders = useJson<{ reminders?: Reminder[] }>(remindersOpen ? "/api/admin/calendar?take=80" : null);
+  const pending = (stats.data?.kpis?.pendingDeposits || 0) + (stats.data?.kpis?.pendingBalanceRequests || 0);
+  const unread = notes.data?.unread || 0;
+
+  useEffect(() => {
+    const saved = window.localStorage.getItem("crmv4-theme");
+    if (saved === "light" || saved === "dark") setTheme(saved);
+    setScratch(readJson<Scratch[]>(NOTES_KEY, []));
+  }, []);
+
+  useEffect(() => {
+    const onToast = (event: Event) => {
+      const detail = (event as CustomEvent<{ ok: boolean; error: string }>).detail;
+      if (!detail) return;
+      const item = { id: Date.now(), ok: detail.ok, text: detail.ok ? tx("saved") : detail.error || tx("failed") };
+      setToasts((list) => [...list.slice(-2), item]);
+      window.setTimeout(() => setToasts((list) => list.filter((row) => row.id !== item.id)), 2400);
+    };
+    window.addEventListener("crmv4:toast", onToast);
+    return () => window.removeEventListener("crmv4:toast", onToast);
+  }, [tx]);
+
+  useEffect(() => {
+    if (!financeOpen && !gearOpen) return;
+    const close = () => {
+      setFinanceOpen(false);
+      setGearOpen(false);
+    };
+    window.addEventListener("click", close);
+    return () => window.removeEventListener("click", close);
+  }, [financeOpen, gearOpen]);
+
+  function toggleTheme() {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    window.localStorage.setItem("crmv4-theme", next);
+  }
+
+  function label(tab: string) {
+    if (tab === "finance") return v4("financeNav");
+    if (tab === "more") return tx("more");
+    return tx(tab as CrmV2CopyKey);
+  }
+
+  function subtitle(tab: string) {
+    if (tab === "overview") return v4("subOverview");
+    if (tab === "customers") return v4("subCustomers");
+    if (tab === "finance") return v4("subFinance");
+    if (tab === "positions") return v4("subPositions");
+    if (tab === "support") return v4("subSupport");
+    if (tab === "marketing") return v4("subMarketing");
+    if (tab === "logs") return v4("subLogs");
+    if (tab === "settings") return v4("subSettings");
+    if (tab === "control") return v4("subControl");
+    return "";
+  }
+
+  const known = CRM_V4_SECTIONS.some((item) => item.id === view);
+  const heading = known ? label(view) : tx("comingSoon");
+  const tone = theme === "light" ? "ink" : "paper";
+
+  return (
+    <div data-crmv4-root="" data-theme={theme} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
+      <header className="c4-top">
+        <Link href={crmv4Href(base, "")} className="c4-brand" aria-label={v4("v4mark")}>
+          <BrandLogo tone={tone} height={26} className="c4-logo" />
+        </Link>
+        <nav className="c4-nav" aria-label={tx("panel")}>
+          {CRM_V4_NAV.map((item) => item.id === "finance" ? (
+            <div key={item.id} className="c4-drop" data-open={financeOpen ? "1" : "0"} onClick={(event) => event.stopPropagation()}>
+              <button
+                type="button"
+                className="c4-nav-item"
+                data-nav={item.id}
+                data-on={view === "finance" ? "1" : "0"}
+                aria-expanded={financeOpen}
+                onClick={() => { setFinanceOpen((open) => !open); setGearOpen(false); }}
+              >
+                <span className="c4-nav-title">{v4("financeNav")}</span>
+                <span className="c4-nav-sub">{v4(item.sub)}</span>
+                {pending > 0 && <span className="c4-count">{pending}</span>}
+              </button>
+              <div className="c4-drop-menu" role="menu">
+                {FINANCE_LINKS.map((link) => (
+                  <Link key={link.key} href={crmv4Href(base, "finance", link.tab ? { tab: link.tab } : undefined)} onClick={() => setFinanceOpen(false)}>
+                    {tx(link.key)}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <Link key={item.id} href={crmv4Href(base, item.path)} data-nav={item.id} data-on={view === item.id ? "1" : "0"} className="c4-nav-item">
+              <span className="c4-nav-title">{label(item.id)}</span>
+              <span className="c4-nav-sub">{v4(item.sub)}</span>
+            </Link>
+          ))}
+          <div className="c4-drop" data-open={gearOpen ? "1" : "0"} onClick={(event) => event.stopPropagation()}>
+            <button
+              type="button"
+              className="c4-nav-item c4-gear"
+              data-nav="settings"
+              data-on={view === "settings" || view === "control" ? "1" : "0"}
+              aria-label={tx("settings")}
+              aria-expanded={gearOpen}
+              onClick={() => { setGearOpen((open) => !open); setFinanceOpen(false); }}
+            >
+              <span className="c4-nav-title"><GearIcon /></span>
+              <span className="c4-nav-sub">{v4("gear")}</span>
+            </button>
+            <div className="c4-drop-menu" role="menu">
+              <Link href={crmv4Href(base, "settings")} data-on={view === "settings" ? "1" : "0"} onClick={() => setGearOpen(false)}>{tx("settings")}</Link>
+              <Link href={crmv4Href(base, "control")} data-on={view === "control" ? "1" : "0"} onClick={() => setGearOpen(false)}>{tx("control")}</Link>
+            </div>
+          </div>
+        </nav>
+        <div className="c4-top-tools">
+          <button type="button" className="c4-rail-btn" aria-label={tx("notifications")} onClick={() => setNotesOpen(true)}>
+            <BellIcon />
+            {unread > 0 && <span className="c4-rail-badge">{unread}</span>}
+          </button>
+          <button type="button" className="c4-rail-btn" aria-label={v4("openMenu")} onClick={() => setMore(true)}>
+            <MenuIcon />
+          </button>
+        </div>
+      </header>
+
+      <div className="c4-frame">
+        <div className="c4-panel">
+          {!id && (
+            <div className="c4-pagehead">
+              <div>
+                <h1 className="c4-page-title">{heading}</h1>
+                <p className="c4-page-sub">{known ? subtitle(view) : tx("comingSoonBody")}</p>
+              </div>
+              <form action={crmv4Href(base, "customers")} className="c4-page-search" role="search">
+                <input name="q" defaultValue={q} placeholder={tx("search")} aria-label={tx("search")} className="c4-field" />
+              </form>
+            </div>
+          )}
+          <main
+            className="c4-stage"
+            onTouchStart={(event) => {
+              if (event.currentTarget.scrollTop > 0) return;
+              event.currentTarget.dataset.y = String(event.touches[0].clientY);
+            }}
+            onTouchMove={(event) => {
+              const start = Number(event.currentTarget.dataset.y || "");
+              if (!start || event.currentTarget.scrollTop > 0) return;
+              setPull(Math.max(0, Math.min(64, event.touches[0].clientY - start)));
+            }}
+            onTouchEnd={() => {
+              if (pull >= 56) {
+                setRefreshing(true);
+                window.dispatchEvent(new Event("crmv4:refresh"));
+                window.setTimeout(() => setRefreshing(false), 700);
+              }
+              setPull(0);
+            }}
+          >
+            <div className="c4-pull" data-on={pull > 8 || refreshing ? "1" : "0"}>{refreshing ? v4("refreshing") : v4("pullHint")}</div>
+            {view === "overview" && <Overview base={base} tx={tx} locale={locale} />}
+            {view === "customers" && !id && <Customers base={base} tx={tx} locale={locale} q={q} />}
+            {view === "customers" && id && <CustomerDetail base={base} id={id} tx={tx} locale={locale} />}
+            {view === "finance" && <Finance tx={tx} locale={locale} q={q} />}
+            {view === "positions" && <Positions tx={tx} locale={locale} q={q} />}
+            {view === "support" && <Support tx={tx} locale={locale} q={q} />}
+            {view === "marketing" && <Marketing tx={tx} />}
+            {view === "settings" && <Settings tx={tx} />}
+            {view === "logs" && <Logs tx={tx} locale={locale} q={q} />}
+            {view === "control" && <Control tx={tx} locale={locale} />}
+            {!known && (
+              <section className="c4-card c4-soon" data-coming-soon="">
+                <h2 className="c4-title c4-pad">{tx("comingSoon")}</h2>
+                <p className="c4-muted c4-pad">{tx("comingSoonBody")}</p>
+              </section>
+            )}
+          </main>
+          <footer className="c4-foot">{v4("footer")}</footer>
+        </div>
+      </div>
+
+      <aside className="c4-rail" aria-label={v4("admin")}>
+        <button type="button" className="c4-rail-btn" aria-label={name}>
+          <span className="c4-avatar">{initials(name)}</span>
+          <span>{v4("admin")}</span>
+        </button>
+        <button type="button" className="c4-rail-btn" aria-label={tx("notifications")} onClick={() => setNotesOpen(true)}>
+          <BellIcon />
+          {unread > 0 && <span className="c4-rail-badge">{unread}</span>}
+          <span>{tx("notifications")}</span>
+        </button>
+        <button type="button" className="c4-rail-btn" aria-label={v4("reminders")} onClick={() => setRemindersOpen(true)}>
+          <ClockIcon />
+          <span>{v4("reminders")}</span>
+        </button>
+        <button type="button" className="c4-rail-btn" aria-label={v4("notes")} onClick={() => setPadOpen(true)}>
+          <NoteIcon />
+          <span>{v4("notes")}</span>
+        </button>
+        <button type="button" className="c4-rail-btn" aria-label={v4("language")} onClick={() => setLangOpen(true)}>
+          <LangIcon />
+          <span>{locale.toUpperCase()}</span>
+        </button>
+        <button type="button" className="c4-rail-btn" aria-label={theme === "dark" ? tx("themeLight") : tx("themeDark")} onClick={toggleTheme}>
+          <SunIcon />
+          <span>{theme === "dark" ? tx("themeLight") : tx("themeDark")}</span>
+        </button>
+        <form method="post" action="/api/auth/logout" style={{ marginTop: "auto", width: "100%" }}>
+          <input type="hidden" name="nav" value="1" />
+          <button type="submit" className="c4-rail-btn" aria-label={tx("signOut")}>
+            <OutIcon />
+            <span>{tx("signOut")}</span>
+          </button>
+        </form>
+      </aside>
+
+      <nav className="c4-tabs" aria-label={tx("panel")}>
+        {CRM_V4_TABS.map((tab) => (
+          <Link key={tab} href={crmv4Href(base, tab === "overview" ? "" : tab)} data-on={view === tab ? "1" : "0"} className="c4-tab">
+            {label(tab)}
+          </Link>
+        ))}
+        <button type="button" className="c4-tab" data-on={more ? "1" : "0"} onClick={() => setMore(true)}>
+          {tx("more")}
+        </button>
+      </nav>
+
+      <div className="c4-toasts" aria-live="polite">
+        {toasts.map((item) => (
+          <div key={item.id} className="c4-toast" data-ok={item.ok ? "1" : "0"}>{item.text}</div>
+        ))}
+      </div>
+
+      {more && (
+        <Sheet title={tx("more")} onClose={() => setMore(false)} closeLabel={tx("close")}>
+          <div className="c4-stack">
+            {CRM_V4_MORE.map((tab) => (
+              <Link key={tab} href={crmv4Href(base, tab)} onClick={() => setMore(false)} className="c4-btn">{label(tab)}</Link>
+            ))}
+            <button type="button" className="c4-btn" onClick={() => { setMore(false); setNotesOpen(true); }}>{tx("notifications")}</button>
+            <button type="button" className="c4-btn" onClick={() => { setMore(false); setRemindersOpen(true); }}>{v4("reminders")}</button>
+            <button type="button" className="c4-btn" onClick={() => { setMore(false); setPadOpen(true); }}>{v4("notes")}</button>
+            <LanguageSwitcher compact tone={theme === "dark" ? "dark" : "crm"} />
+            <button type="button" className="c4-btn" onClick={toggleTheme}>{theme === "dark" ? tx("themeLight") : tx("themeDark")}</button>
+            <p className="c4-muted c4-meta">{tx("signedInAs")} {name}</p>
+            <form method="post" action="/api/auth/logout">
+              <input type="hidden" name="nav" value="1" />
+              <button type="submit" className="c4-btn">{tx("signOut")}</button>
+            </form>
+          </div>
+        </Sheet>
+      )}
+
+      {notesOpen && (
+        <Drawer title={tx("notifications")} onClose={() => setNotesOpen(false)} closeLabel={tx("close")}>
+          <div className="c4-stack">
+            <button
+              type="button"
+              className="c4-btn c4-btn-hot"
+              onClick={async () => {
+                await sendJson("/api/notifications", "PATCH", { all: true });
+                notes.reload();
+              }}
+            >
+              {tx("markRead")}{typeof notes.data?.unread === "number" ? ` · ${notes.data.unread}` : ""}
+            </button>
+            {(notes.data?.items || []).map((item) => (
+              <div key={item.id} className="c4-note">
+                <div>{item.title || tx("notifications")}</div>
+                <div className="c4-muted">{item.body}</div>
+                <div className="c4-muted c4-meta">{when(item.createdAt, locale)}{item.readAt ? "" : ` · ${tx("unread")}`}</div>
+              </div>
+            ))}
+            {!notes.loading && !(notes.data?.items || []).length && <p className="c4-muted">{tx("noneYet")}</p>}
+          </div>
+        </Drawer>
+      )}
+
+      {remindersOpen && (
+        <Drawer title={v4("reminders")} onClose={() => setRemindersOpen(false)} closeLabel={tx("close")}>
+          <ReminderForm tx={tx} v4={v4} onDone={reminders.reload} />
+          <div className="c4-stack">
+            {(reminders.data?.reminders || []).map((row) => (
+              <div key={row.id} className="c4-note">
+                <div>{row.body}</div>
+                <div className="c4-muted c4-meta">{when(row.remindAt, locale)}{row.trader ? ` · ${row.trader}` : ""}</div>
+              </div>
+            ))}
+            {!reminders.loading && !(reminders.data?.reminders || []).length && <p className="c4-muted">{v4("noReminders")}</p>}
+          </div>
+        </Drawer>
+      )}
+
+      {padOpen && (
+        <Drawer title={v4("notes")} onClose={() => setPadOpen(false)} closeLabel={tx("close")}>
+          <ScratchNotes tx={tx} v4={v4} notes={scratch} setNotes={setScratch} />
+        </Drawer>
+      )}
+      {langOpen && (
+        <Sheet title={v4("language")} onClose={() => setLangOpen(false)} closeLabel={tx("close")}>
+          <LanguageSwitcher tone={theme === "dark" ? "dark" : "crm"} />
+        </Sheet>
+      )}
+    </div>
+  );
+}
+
+function initials(name: string) {
+  const parts = name.trim().split(/\s+/).slice(0, 2);
+  const mark = parts.map((part) => part.slice(0, 1)).join("").toUpperCase();
+  return mark || "A";
+}
+
+function Drawer({ title, onClose, closeLabel, children }: { title: string; onClose: () => void; closeLabel: string; children: ReactNode }) {
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [onClose]);
+  return (
+    <div className="c4-drawer-back" role="presentation" onClick={onClose}>
+      <div role="dialog" aria-modal="true" aria-label={title} className="c4-drawer" onClick={(event) => event.stopPropagation()}>
+        <div className="c4-grab" aria-hidden />
+        <div className="c4-row c4-between">
+          <h2 className="c4-title">{title}</h2>
+          <button type="button" className="c4-btn" onClick={onClose}>{closeLabel}</button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function ScratchNotes({ tx, v4, notes, setNotes }: { tx: (key: CrmV2CopyKey) => string; v4: (key: CrmV4CopyKey) => string; notes: Scratch[]; setNotes: (rows: Scratch[]) => void }) {
+  const [body, setBody] = useState("");
+  return (
+    <div className="c4-stack">
+      <p className="c4-muted c4-meta">{v4("scratchHint")}</p>
+      <form
+        className="c4-form"
+        onSubmit={(event) => {
+          event.preventDefault();
+          const text = body.trim();
+          if (!text) return;
+          const next = [{ id: String(Date.now()), body: text }, ...notes].slice(0, 40);
+          setNotes(next);
+          writeJson(NOTES_KEY, next);
+          setBody("");
+        }}
+      >
+        <label className="c4-lab">
+          <span>{v4("notes")}</span>
+          <textarea value={body} onChange={(event) => setBody(event.target.value)} className="c4-field" rows={3} />
+        </label>
+        <button type="submit" className="c4-btn c4-btn-hot">{v4("addScratch")}</button>
+        <p className="c4-muted c4-meta">{v4("localOnly")}</p>
+      </form>
+      {notes.map((row) => (
+        <div key={row.id} className="c4-note">
+          <div>{row.body}</div>
+          <button
+            type="button"
+            className="c4-btn c4-btn-coral"
+            onClick={() => {
+              const next = notes.filter((item) => item.id !== row.id);
+              setNotes(next);
+              writeJson(NOTES_KEY, next);
+            }}
+          >
+            {tx("close")}
+          </button>
+        </div>
+      ))}
+      {!notes.length && <p className="c4-muted">{v4("noScratch")}</p>}
+    </div>
+  );
+}
+
+function ReminderForm({ tx, v4, onDone }: { tx: (key: CrmV2CopyKey) => string; v4: (key: CrmV4CopyKey) => string; onDone: () => void }) {
+  const [msg, setMsg] = useState("");
+  return (
+    <form
+      className="c4-form"
+      onSubmit={async (event) => {
+        event.preventDefault();
+        const fd = new FormData(event.currentTarget);
+        const res = await sendJson("/api/admin/calendar", "POST", {
+          action: "create",
+          body: fd.get("body"),
+          remindAt: fd.get("remindAt"),
+        });
+        setMsg(res.ok ? tx("saved") : res.error || tx("failed"));
+        if (res.ok) {
+          event.currentTarget.reset();
+          onDone();
+        }
+      }}
+    >
+      <label className="c4-lab">
+        <span>{v4("reminderBody")}</span>
+        <input name="body" required className="c4-field" />
+      </label>
+      <label className="c4-lab">
+        <span>{v4("reminderWhen")}</span>
+        <input name="remindAt" type="datetime-local" required className="c4-field" />
+      </label>
+      <button type="submit" className="c4-btn c4-btn-hot">{v4("addReminder")}</button>
+      {msg && <p className="c4-muted c4-meta">{msg}</p>}
+    </form>
+  );
+}
+
+function GearIcon() {
+  return (
+    <svg className="c4-ico" viewBox="0 0 24 24" aria-hidden>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 3.5v2.2M12 18.3v2.2M4.9 6.4l1.6 1.6M17.5 16l1.6 1.6M3.5 12h2.2M18.3 12h2.2M4.9 17.6l1.6-1.6M17.5 8l1.6-1.6" />
+    </svg>
+  );
+}
+
+function BellIcon() {
+  return (
+    <svg className="c4-ico" viewBox="0 0 24 24" aria-hidden>
+      <path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15z" />
+      <path d="M10 19a2 2 0 0 0 4 0" />
+    </svg>
+  );
+}
+
+function ClockIcon() {
+  return (
+    <svg className="c4-ico" viewBox="0 0 24 24" aria-hidden>
+      <circle cx="12" cy="12" r="8" />
+      <path d="M12 8v5l3 2" />
+    </svg>
+  );
+}
+
+function NoteIcon() {
+  return (
+    <svg className="c4-ico" viewBox="0 0 24 24" aria-hidden>
+      <path d="M7 4h8l4 4v12H7z" />
+      <path d="M15 4v4h4M9 12h6M9 16h4" />
+    </svg>
+  );
+}
+
+function LangIcon() {
+  return (
+    <svg className="c4-ico" viewBox="0 0 24 24" aria-hidden>
+      <circle cx="12" cy="12" r="8" />
+      <path d="M4 12h16M12 4c2.5 2.6 2.5 13.4 0 16M12 4c-2.5 2.6-2.5 13.4 0 16" />
+    </svg>
+  );
+}
+
+function SunIcon() {
+  return (
+    <svg className="c4-ico" viewBox="0 0 24 24" aria-hidden>
+      <circle cx="12" cy="12" r="3.5" />
+      <path d="M12 3.5v2M12 18.5v2M4.8 4.8l1.4 1.4M17.8 17.8l1.4 1.4M3.5 12h2M18.5 12h2M4.8 19.2l1.4-1.4M17.8 6.2l1.4-1.4" />
+    </svg>
+  );
+}
+
+function OutIcon() {
+  return (
+    <svg className="c4-ico" viewBox="0 0 24 24" aria-hidden>
+      <path d="M9 6H6v12h3M10 12h9M15 8l4 4-4 4" />
+    </svg>
+  );
+}
+
+function MenuIcon() {
+  return (
+    <svg className="c4-ico" viewBox="0 0 24 24" aria-hidden>
+      <path d="M5 7h14M5 12h14M5 17h14" />
+    </svg>
+  );
+}
