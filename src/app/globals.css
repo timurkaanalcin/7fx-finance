@@ -41,6 +41,9 @@
 [data-crmv3-root] {
   --chrome-pad: 10px;
 }
+[data-crmv4-root] {
+  --chrome-pad: 10px;
+}
 
 * { box-sizing: border-box; }
 

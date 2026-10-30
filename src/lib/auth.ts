@@ -257,6 +257,7 @@ function prefersAdminSession(): boolean {
     if (path === "/izcrm" || path.startsWith("/izcrm/")) return true;
     if (path === "/crmv2" || path.startsWith("/crmv2/")) return true;
     if (path === "/crmv3" || path.startsWith("/crmv3/")) return true;
+    if (path === "/crmv4" || path.startsWith("/crmv4/")) return true;
     if (path === "/api/auth/me" && url.includes("scope=admin")) return true;
     return false;
   } catch {

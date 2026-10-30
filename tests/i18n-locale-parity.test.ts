@@ -9,6 +9,7 @@ import path from "node:path";
 import { AI_T } from "../src/components/ai/ai-i18n";
 import { CRM_V2_COPY } from "../src/lib/crmv2/copy";
 import { CRM_V3_COPY } from "../src/lib/crmv3/copy";
+import { CRM_V4_COPY } from "../src/lib/crmv4/copy";
 import { ar } from "../src/lib/i18n/dictionaries/ar";
 import { CRM_UI } from "../src/lib/i18n/dictionaries/crm-ui";
 import { de } from "../src/lib/i18n/dictionaries/de";
@@ -72,7 +73,7 @@ function main() {
   const publicDicts: Record<Locale, Record<string, string>> = { en, tr, de, ru, ar };
   for (const locale of OTHERS) assertDict("dictionary", en, publicDicts[locale], locale);
 
-  for (const table of [FEED_UI, STATES_UI, TW_UI, CRM_UI, CRM_V2_COPY, CRM_V3_COPY]) {
+  for (const table of [FEED_UI, STATES_UI, TW_UI, CRM_UI, CRM_V2_COPY, CRM_V3_COPY, CRM_V4_COPY]) {
     for (const locale of OTHERS) assertDict("ui", table.en, table[locale], locale);
   }
 

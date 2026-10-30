@@ -214,6 +214,7 @@ export const ru: Dict = {
   "crm.nav.dashboard": "Панель",
   "crm.nav.crmv2": "CRM v2",
   "crm.nav.crmv3": "CRM v3",
+  "crm.nav.crmv4": "CRM v4",
   "crm.nav.traders": "Трейдеры",
   "crm.nav.tickets": "Тикеты / Депозиты",
   "crm.nav.positions": "Позиции",

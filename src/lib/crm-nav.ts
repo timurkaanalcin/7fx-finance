@@ -24,6 +24,7 @@ export const CRM_NAV_GROUPS: CrmNavGroup[] = [
       { href: "/izcrm", labelKey: "crm.nav.dashboard", exact: true },
       { href: "/izcrm/crmv2", labelKey: "crm.nav.crmv2" },
       { href: "/izcrm/crmv3", labelKey: "crm.nav.crmv3" },
+      { href: "/izcrm/crmv4", labelKey: "crm.nav.crmv4" },
       { href: "/izcrm/traders", labelKey: "crm.nav.traders" },
       { href: "/izcrm/import", labelKey: "crm.nav.import" },
       { href: "/izcrm/tickets", labelKey: "crm.nav.tickets" },

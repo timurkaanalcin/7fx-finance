@@ -237,6 +237,7 @@ function AdminLayoutBody({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   if (pathname === "/izcrm/crmv2" || pathname?.startsWith("/izcrm/crmv2/")) return <>{children}</>;
   if (pathname === "/izcrm/crmv3" || pathname?.startsWith("/izcrm/crmv3/")) return <>{children}</>;
+  if (pathname === "/izcrm/crmv4" || pathname?.startsWith("/izcrm/crmv4/")) return <>{children}</>;
   return (
     <>
       <SymbolCatalogSync />
