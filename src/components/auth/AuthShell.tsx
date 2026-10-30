@@ -28,7 +28,7 @@ export default function AuthShell({ mode, children }: AuthShellProps) {
         </div>
 
         <header
-          className={`relative z-10 mx-auto flex w-full items-center justify-between px-4 pb-2 pt-6 sm:px-6 sm:pt-8 ${
+          className={`fx-auth-head relative z-10 mx-auto flex w-full items-center justify-between ${
             isLogin ? "max-w-lg sm:max-w-xl" : "fx-auth-wide"
           }`}
         >

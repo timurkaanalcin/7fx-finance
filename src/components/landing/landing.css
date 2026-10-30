@@ -111,9 +111,11 @@ html:has(.fx-landing) {
   background: rgba(7, 9, 13, 0.82);
   border-bottom: 1px solid var(--fx-line);
   backdrop-filter: blur(16px);
-  padding-top: env(safe-area-inset-top, 0px);
-  padding-left: env(safe-area-inset-left, 0px);
-  padding-right: env(safe-area-inset-right, 0px);
+  padding-top: calc(env(safe-area-inset-top, 0px) + var(--chrome-pad, 6px));
+  padding-bottom: var(--chrome-pad, 6px);
+  padding-left: calc(env(safe-area-inset-left, 0px) + var(--chrome-pad, 6px));
+  padding-right: calc(env(safe-area-inset-right, 0px) + var(--chrome-pad, 6px));
+  margin-bottom: var(--chrome-pad, 6px);
 }
 .fx-landing .fx-nav > .fx-shell {
   height: auto;
@@ -983,11 +985,15 @@ html:has(.fx-landing) {
 
 .fx-landing .fx-footer {
   border-top: 1px solid var(--fx-line);
-  padding: 40px 0 calc(108px + env(safe-area-inset-bottom, 0px));
+  margin-top: var(--chrome-pad, 6px);
+  padding-top: calc(40px + var(--chrome-pad, 6px));
+  padding-left: calc(env(safe-area-inset-left, 0px) + var(--chrome-pad, 6px));
+  padding-right: calc(env(safe-area-inset-right, 0px) + var(--chrome-pad, 6px));
+  padding-bottom: calc(108px + env(safe-area-inset-bottom, 0px) + var(--chrome-pad, 6px));
   color: #9aa3b5;
 }
 @media (min-width: 768px) {
-  .fx-landing .fx-footer { padding-bottom: 40px; }
+  .fx-landing .fx-footer { padding-bottom: calc(40px + var(--chrome-pad, 6px)); }
 }
 .fx-landing .fx-footer-grid {
   display: flex;
@@ -1040,7 +1046,10 @@ html:has(.fx-landing) {
   z-index: 50;
   display: flex;
   gap: 8px;
-  padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px));
+  padding-top: var(--chrome-pad, 6px);
+  padding-bottom: calc(var(--chrome-pad, 6px) + env(safe-area-inset-bottom, 0px));
+  padding-left: calc(var(--chrome-pad, 6px) + env(safe-area-inset-left, 0px));
+  padding-right: calc(var(--chrome-pad, 6px) + env(safe-area-inset-right, 0px));
   background: rgba(7, 9, 13, 0.94);
   border-top: 1px solid var(--fx-line);
   backdrop-filter: blur(16px);

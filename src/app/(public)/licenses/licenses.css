@@ -90,7 +90,11 @@ html[data-fx-theme="dark"]:has(.fx-licenses) {
   background: var(--lic-chrome);
   border-bottom: 1px solid var(--lic-line);
   backdrop-filter: blur(16px);
-  padding-top: env(safe-area-inset-top, 0px);
+  padding-top: calc(env(safe-area-inset-top, 0px) + var(--chrome-pad, 6px));
+  padding-bottom: var(--chrome-pad, 6px);
+  padding-left: calc(env(safe-area-inset-left, 0px) + var(--chrome-pad, 6px));
+  padding-right: calc(env(safe-area-inset-right, 0px) + var(--chrome-pad, 6px));
+  margin-bottom: var(--chrome-pad, 6px);
 }
 
 .fx-lic-bar,
@@ -433,8 +437,11 @@ html[data-fx-theme="dark"] .fx-lic-mark {
 
 .fx-lic-foot {
   border-top: 1px solid var(--lic-line);
-  padding-top: 12px;
-  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  margin-top: var(--chrome-pad, 6px);
+  padding-top: calc(12px + var(--chrome-pad, 6px));
+  padding-bottom: calc(12px + var(--chrome-pad, 6px) + env(safe-area-inset-bottom, 0px));
+  padding-left: calc(env(safe-area-inset-left, 0px) + var(--chrome-pad, 6px));
+  padding-right: calc(env(safe-area-inset-right, 0px) + var(--chrome-pad, 6px));
 }
 
 .fx-lic-foot-inner {
