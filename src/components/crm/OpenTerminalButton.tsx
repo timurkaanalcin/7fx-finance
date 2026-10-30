@@ -51,7 +51,7 @@ export default function OpenTerminalButton({
         data-open-terminal={userId}
         className={
           className ||
-          "rounded bg-sky-600 px-2 py-1 text-[10px] font-semibold text-white hover:bg-sky-500 disabled:opacity-50"
+          "fx-btn fx-btn--secondary fx-btn--sm"
         }
       >
         {i18n("crm.ui.openTerminal")}

@@ -1,9 +1,10 @@
 import "../base.css";
+import "@/styles/luxury.css";
 import DeferredSheets from "@/components/styles/DeferredSheets";
 
 const heroCritical = `
-.fx-landing{background:#07090d;color:#f4f7fb}
-.fx-landing .fx-h1{margin:1.25rem 0 0;font-size:clamp(32px,10vw,44px);font-weight:400;line-height:1.08;letter-spacing:-0.02em;color:#f4f7fb}
+.fx-landing{background:#0c0b0a;color:#f6f1e8}
+.fx-landing .fx-h1{margin:1.25rem 0 0;font-size:clamp(32px,10vw,44px);font-weight:400;line-height:1.08;letter-spacing:-0.02em;color:#f6f1e8}
 .fx-chart-slot{min-height:460px}
 @media (min-width:768px){.fx-landing .fx-h1{font-size:clamp(32px,6.4vw,56px)}.fx-chart-slot{min-height:440px}}
 `;

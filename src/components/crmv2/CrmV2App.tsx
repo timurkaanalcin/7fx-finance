@@ -34,7 +34,7 @@ function Shell({ base, section, name }: Props) {
   const moreTabs: CrmV2SectionId[] = ["positions", "marketing", "settings", "logs"];
 
   return (
-    <div data-crmv2-root="" data-crmv2-view={id ? `${view}/${id}` : view} className="min-h-screen bg-black font-normal text-neutral-200">
+    <div data-crmv2-root="" data-crmv2-view={id ? `${view}/${id}` : view} className="fx-lux min-h-screen bg-black font-normal text-neutral-200">
       <div className="mx-auto flex min-h-screen max-w-[1440px]">
         <aside className="hidden w-56 shrink-0 flex-col border-r border-white/10 bg-neutral-950 md:flex">
           <div className="flex items-center gap-2 px-4 py-5">
@@ -55,7 +55,7 @@ function Shell({ base, section, name }: Props) {
           </nav>
           <form method="post" action="/api/auth/logout" className="m-3">
             <input type="hidden" name="nav" value="1" />
-            <button type="submit" className="w-full rounded px-3 py-2 text-left text-sm text-red-300 hover:bg-white/5">
+            <button type="submit" className="fx-btn fx-btn--ghost fx-btn--danger w-full justify-start px-3">
               {tx("signOut")}
             </button>
           </form>
@@ -75,7 +75,7 @@ function Shell({ base, section, name }: Props) {
                 defaultValue={q}
                 placeholder={tx("search")}
                 aria-label={tx("search")}
-                className="w-full rounded-full border border-white/10 bg-white/5 py-1.5 pl-3 pr-3 text-sm font-normal text-white outline-none placeholder:text-neutral-500 focus:border-white/30"
+                className="fx-control w-full rounded-full border border-white/10 bg-white/5 py-1.5 pl-3 pr-3 text-sm font-normal text-white outline-none placeholder:text-neutral-500 focus:border-white/30"
               />
             </form>
             <LanguageSwitcher compact tone="crm" />
@@ -115,7 +115,7 @@ function Shell({ base, section, name }: Props) {
             ))}
             <form method="post" action="/api/auth/logout">
               <input type="hidden" name="nav" value="1" />
-              <button type="submit" className="w-full rounded px-3 py-3 text-left text-sm text-red-300">
+              <button type="submit" className="fx-btn fx-btn--ghost fx-btn--danger w-full justify-start px-3">
                 {tx("signOut")}
               </button>
             </form>

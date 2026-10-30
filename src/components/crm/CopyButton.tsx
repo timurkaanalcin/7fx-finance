@@ -72,8 +72,8 @@ export default function CopyButton({
       aria-label={copied ? done : label}
       className={`inline-flex items-center gap-0.5 rounded border px-1 py-px align-middle text-[9px] font-sans font-medium leading-none transition-colors ${
         copied
-          ? "border-emerald-300 bg-emerald-50 text-emerald-700"
-          : "border-sky-200 bg-white text-sky-600 hover:bg-sky-50"
+          ? "border-emerald-300 bg-emerald-50 text-emerald-800"
+          : "border-[rgba(141,104,64,0.35)] bg-[#fbf8f2] text-[#6b5326] hover:bg-[#f3eee4]"
       } ${className}`}
     >
       {copied ? (

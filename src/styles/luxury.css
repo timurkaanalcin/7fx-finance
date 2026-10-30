@@ -1,0 +1,614 @@
+/* ==========================================================================
+   7FX luxury system — private-banking chrome.
+   One palette and one button scale for landing, auth, trade, /tw, licenses,
+   customer pages, CRM v1 and CRM v2.
+
+   CRM v2 after the unmerged full-control work (PR #112) should keep
+   [data-crmv2-root] and put these classes on new controls:
+     .fx-btn.fx-btn--primary | --secondary | --ghost | --icon | --danger | --pill
+     .fx-btn--sm (36px). Default height is --fx-btn-h (40px). Touch bars stay 44px.
+   Tokens live on :root and html[data-fx-theme]. Do not retint the monochrome
+   logo filters or the buy/sell greens and reds.
+   ========================================================================== */
+
+:root,
+html[data-fx-theme="dark"] {
+  --fx-lux-bg: #0c0b0a;
+  --fx-lux-paper: #141210;
+  --fx-lux-elev: #1c1916;
+  --fx-lux-ink: #f6f1e8;
+  --fx-lux-muted: #b3a89a;
+  --fx-lux-line: rgba(214, 186, 140, 0.22);
+  --fx-lux-line-strong: rgba(214, 186, 140, 0.4);
+  --fx-lux-gold: #c6a56a;
+  --fx-lux-gold-2: #ead9b4;
+  --fx-lux-gold-ink: #1a140c;
+  --fx-lux-gold-soft: rgba(198, 165, 106, 0.16);
+  --fx-lux-danger: #e06a62;
+  --fx-lux-danger-ink: #ffd8d4;
+  --fx-lux-buy: #1fb58f;
+  --fx-lux-sell: #ef5350;
+  --fx-lux-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  --fx-lux-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --fx-btn-h: 40px;
+  --fx-btn-h-sm: 36px;
+  --fx-btn-radius: 10px;
+  --fx-btn-ease: cubic-bezier(0.22, 0.8, 0.24, 1);
+}
+
+html[data-fx-theme="light"] {
+  --fx-lux-bg: #f3eee4;
+  --fx-lux-paper: #fbf8f2;
+  --fx-lux-elev: #ffffff;
+  --fx-lux-ink: #1a1714;
+  --fx-lux-muted: #6d6458;
+  --fx-lux-line: rgba(26, 23, 20, 0.12);
+  --fx-lux-line-strong: rgba(26, 23, 20, 0.22);
+  --fx-lux-gold: #8d6840;
+  --fx-lux-gold-2: #c6a56a;
+  --fx-lux-gold-ink: #1a140c;
+  --fx-lux-gold-soft: rgba(141, 104, 64, 0.12);
+  --fx-lux-danger: #9d3b34;
+  --fx-lux-danger-ink: #9d3b34;
+  --fx-lux-shadow: 0 16px 36px rgba(60, 45, 15, 0.08);
+  --fx-lux-inset: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+/* ——— buttons ——— */
+.fx-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-sizing: border-box;
+  height: var(--fx-btn-h);
+  min-height: var(--fx-btn-h);
+  padding: 0 14px;
+  border-radius: var(--fx-btn-radius);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--fx-lux-ink);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 160ms var(--fx-btn-ease),
+    border-color 160ms var(--fx-btn-ease),
+    box-shadow 160ms var(--fx-btn-ease),
+    color 160ms var(--fx-btn-ease),
+    transform 120ms var(--fx-btn-ease);
+}
+.fx-btn--sm {
+  height: var(--fx-btn-h-sm);
+  min-height: var(--fx-btn-h-sm);
+  padding: 0 12px;
+  font-size: 12px;
+  border-radius: 9px;
+}
+.fx-btn--primary {
+  background: linear-gradient(180deg, #ead9b4 0%, #c6a56a 100%);
+  color: var(--fx-lux-gold-ink);
+  border-color: rgba(255, 236, 204, 0.45);
+  box-shadow: var(--fx-lux-inset), 0 8px 20px rgba(198, 165, 106, 0.22);
+}
+.fx-btn--primary:hover {
+  background: linear-gradient(180deg, #f3e6c8 0%, #d4b57a 100%);
+}
+.fx-btn--secondary {
+  background: color-mix(in srgb, var(--fx-lux-paper) 88%, transparent);
+  color: var(--fx-lux-ink);
+  border-color: var(--fx-lux-line-strong);
+  box-shadow: var(--fx-lux-inset);
+}
+.fx-btn--secondary:hover {
+  border-color: var(--fx-lux-gold-2);
+  background: var(--fx-lux-gold-soft);
+}
+.fx-btn--ghost {
+  background: transparent;
+  color: var(--fx-lux-muted);
+  border-color: transparent;
+}
+.fx-btn--ghost:hover {
+  color: var(--fx-lux-ink);
+  background: var(--fx-lux-gold-soft);
+}
+.fx-btn--icon {
+  width: var(--fx-btn-h);
+  min-width: var(--fx-btn-h);
+  padding: 0;
+}
+.fx-btn--icon.fx-btn--sm {
+  width: var(--fx-btn-h-sm);
+  min-width: var(--fx-btn-h-sm);
+}
+.fx-btn--danger {
+  color: var(--fx-lux-danger-ink);
+  border-color: color-mix(in srgb, var(--fx-lux-danger) 45%, transparent);
+  background: color-mix(in srgb, var(--fx-lux-danger) 10%, transparent);
+}
+.fx-btn--danger:hover {
+  background: color-mix(in srgb, var(--fx-lux-danger) 16%, transparent);
+  color: var(--fx-lux-danger);
+}
+.fx-btn--pill {
+  border-radius: 999px;
+}
+.fx-btn:active {
+  transform: translateY(1px);
+}
+.fx-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+.fx-btn:focus-visible {
+  outline: 2px solid var(--fx-lux-gold);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-btn {
+    transition: none;
+  }
+  .fx-btn:active {
+    transform: none;
+  }
+}
+
+.fx-kbd {
+  display: inline-flex;
+  align-items: center;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 5px;
+  border: 1px solid var(--fx-lux-line);
+  background: var(--fx-lux-gold-soft);
+  color: var(--fx-lux-muted);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+.fx-badge {
+  position: absolute;
+  top: -4px;
+  inset-inline-end: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--fx-lux-sell);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  text-align: center;
+  box-shadow: 0 0 0 2px var(--fx-lux-paper);
+}
+.fx-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 999px;
+  border: 1px solid var(--fx-lux-line-strong);
+  background: var(--fx-lux-gold-soft);
+  color: var(--fx-lux-gold);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.fx-pill--ok {
+  border-color: color-mix(in srgb, var(--fx-lux-buy) 45%, transparent);
+  background: color-mix(in srgb, var(--fx-lux-buy) 12%, transparent);
+  color: var(--fx-lux-buy);
+}
+
+.fx-userchip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--fx-btn-h);
+  min-height: var(--fx-btn-h);
+  padding: 0 12px 0 4px;
+  border-radius: 999px;
+  border: 1px solid var(--fx-lux-line-strong);
+  background: var(--fx-lux-paper);
+  color: var(--fx-lux-ink);
+  box-shadow: var(--fx-lux-inset);
+}
+.fx-userchip__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  background: linear-gradient(160deg, #ead9b4, #c6a56a);
+  color: #1a140c;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+.fx-userchip__name {
+  max-width: 9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 500;
+}
+.fx-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+  min-width: 0;
+}
+.fx-toolbar__sep {
+  width: 1px;
+  height: 18px;
+  flex: 0 0 1px;
+  background: var(--fx-lux-line-strong);
+}
+.fx-toolbar__slot {
+  display: inline-flex;
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .fx-crm .fx-crm-actions :is(button, a, select, .fx-userchip) {
+    height: var(--fx-btn-h);
+    min-height: var(--fx-btn-h);
+  }
+  .fx-crm .fx-crm-actions .fx-btn--icon {
+    width: var(--fx-btn-h);
+    min-width: var(--fx-btn-h);
+  }
+}
+@media (max-width: 767px) {
+  .fx-crm .fx-crm-actions :is(button, a, select, .fx-userchip) {
+    height: 44px;
+    min-height: 44px;
+  }
+  .fx-crm .fx-crm-actions .fx-btn--icon {
+    width: 44px;
+    min-width: 44px;
+  }
+  .fx-toolbar__sep {
+    display: none;
+  }
+}
+
+/* ——— fields, selects, panels ——— */
+.fx-control,
+.fx-lang-select.fx-control {
+  height: var(--fx-btn-h);
+  min-height: var(--fx-btn-h);
+  border-radius: 999px;
+  border: 1px solid var(--fx-lux-line-strong);
+  background: var(--fx-lux-paper);
+  color: var(--fx-lux-ink);
+  box-shadow: var(--fx-lux-inset);
+}
+.fx-note-panel {
+  border: 1px solid var(--fx-lux-line) !important;
+  border-radius: 16px !important;
+  background: var(--fx-lux-paper) !important;
+  color: var(--fx-lux-ink) !important;
+  box-shadow: var(--fx-lux-shadow) !important;
+}
+
+/* ——— CRM light: ivory paper, hairline gold, one control height ——— */
+html[data-fx-theme="light"]:has(.fx-crm),
+html[data-fx-theme="light"] body:has(.fx-crm) {
+  background: var(--fx-lux-bg) !important;
+  color: var(--fx-lux-ink) !important;
+}
+html[data-fx-theme="light"] .fx-crm.fx-crm-root {
+  --background: var(--fx-lux-bg);
+  --foreground: var(--fx-lux-ink);
+  --card: var(--fx-lux-paper);
+  --border: var(--fx-lux-line);
+  background:
+    radial-gradient(900px 240px at 100% -10%, rgba(198, 165, 106, 0.16), transparent 55%),
+    var(--fx-lux-bg) !important;
+  color: var(--fx-lux-ink) !important;
+}
+html[data-fx-theme="light"] .fx-crm :is(aside, header.fx-crm-topbar) {
+  background: color-mix(in srgb, var(--fx-lux-paper) 92%, transparent) !important;
+  border-color: var(--fx-lux-line) !important;
+  backdrop-filter: blur(16px);
+}
+html[data-fx-theme="light"] .fx-crm main {
+  background: transparent !important;
+}
+html[data-fx-theme="light"] .fx-crm .fx-crm-mark {
+  border-color: var(--fx-lux-line-strong);
+  background: var(--fx-lux-paper);
+}
+html[data-fx-theme="light"] .fx-crm aside a.bg-black,
+html[data-fx-theme="light"] .fx-crm .fx-crm-mobile-nav a.bg-black {
+  background: #1a1714 !important;
+  color: #f6f1e8 !important;
+  box-shadow: inset 2px 0 0 var(--fx-lux-gold-2);
+}
+html[data-fx-theme="light"] .fx-crm input:not([type="checkbox"]):not([type="radio"]),
+html[data-fx-theme="light"] .fx-crm select,
+html[data-fx-theme="light"] .fx-crm textarea {
+  background: var(--fx-lux-paper) !important;
+  color: var(--fx-lux-ink) !important;
+  border: 1px solid var(--fx-lux-line-strong) !important;
+  border-radius: var(--fx-btn-radius);
+}
+html[data-fx-theme="light"] .fx-crm input:not([type="checkbox"]):not([type="radio"]):focus,
+html[data-fx-theme="light"] .fx-crm select:focus,
+html[data-fx-theme="light"] .fx-crm textarea:focus {
+  border-color: var(--fx-lux-gold) !important;
+  box-shadow: 0 0 0 3px var(--fx-lux-gold-soft) !important;
+}
+html[data-fx-theme="light"] .fx-crm :is(.crm-kpi, .fx-dash-kpi, .fx-dash-link, .fx-dash-chart, .rounded-xl, .rounded-2xl) {
+  background: var(--fx-lux-paper) !important;
+  border-color: var(--fx-lux-line) !important;
+  box-shadow: var(--fx-lux-inset), var(--fx-lux-shadow);
+}
+html[data-fx-theme="light"] .fx-crm table {
+  background: transparent;
+}
+html[data-fx-theme="light"] .fx-crm :is(th, .crm-dense-table th, .fx-crm-table th) {
+  color: var(--fx-lux-muted) !important;
+  background: transparent !important;
+  letter-spacing: 0.06em;
+  border-bottom-color: var(--fx-lux-line) !important;
+}
+html[data-fx-theme="light"] .fx-crm tbody tr:hover {
+  background: var(--fx-lux-gold-soft);
+}
+html[data-fx-theme="light"] .fx-crm main :is(button, a.rounded, a.rounded-lg, a.rounded-full) {
+  border-radius: var(--fx-btn-radius);
+}
+html[data-fx-theme="light"] .fx-crm :is(button.bg-black, a.bg-black) {
+  background: #1a1714 !important;
+  color: #f6f1e8 !important;
+  box-shadow: inset 0 0 0 1px rgba(198, 165, 106, 0.4);
+}
+html[data-fx-theme="light"] .fx-crm .fx-crm-tabbar {
+  background: color-mix(in srgb, var(--fx-lux-paper) 94%, transparent);
+  border-top: 1px solid var(--fx-lux-line);
+  backdrop-filter: blur(16px);
+}
+html[data-fx-theme="light"] .fx-crm .fx-crm-tabbar a.is-active,
+html[data-fx-theme="light"] .fx-crm .fx-crm-tabbar button.is-active {
+  color: var(--fx-lux-ink);
+  box-shadow: inset 0 -2px 0 var(--fx-lux-gold-2);
+}
+html[data-fx-theme="light"] .fx-crm .fx-crm-sheet > [role="dialog"] {
+  background: var(--fx-lux-paper);
+  border-color: var(--fx-lux-line);
+  border-radius: 18px 18px 0 0;
+}
+html[data-fx-theme="light"] .fx-crm ::-webkit-scrollbar-thumb {
+  background: #c8bba6;
+}
+
+/* ——— CRM night: graphite, same controls ——— */
+html[data-fx-theme="dark"] .fx-crm.fx-crm-root {
+  --bg: var(--fx-lux-bg);
+  --bg-panel: var(--fx-lux-paper);
+  --bg-elevated: var(--fx-lux-elev);
+  --text: var(--fx-lux-ink);
+  background:
+    radial-gradient(800px 220px at 100% -10%, rgba(198, 165, 106, 0.1), transparent 50%),
+    var(--fx-lux-bg) !important;
+  color: var(--fx-lux-ink) !important;
+}
+html[data-fx-theme="dark"] .fx-crm :is(aside, header.fx-crm-topbar) {
+  background: rgba(20, 18, 16, 0.92) !important;
+  border-color: var(--fx-lux-line) !important;
+}
+html[data-fx-theme="dark"] .fx-crm .fx-btn--primary {
+  color: var(--fx-lux-gold-ink);
+}
+
+/* ——— CRM v2 shell on this branch.
+   No !important: PR #112's crmv2.css loads beside this file and keeps
+   [data-crmv2-root]. Its vivid fills win when that sheet is present.
+   .cv-btn / .cv-field only pick up the shared height, radius, and focus. ——— */
+[data-crmv2-root] {
+  background:
+    radial-gradient(900px 280px at 100% -10%, rgba(198, 165, 106, 0.12), transparent 55%),
+    var(--fx-lux-bg);
+  color: var(--fx-lux-ink);
+}
+[data-crmv2-root] aside {
+  background: var(--fx-lux-paper);
+  border-color: var(--fx-lux-line);
+}
+[data-crmv2-root] header {
+  background: color-mix(in srgb, var(--fx-lux-paper) 88%, transparent);
+  border-color: var(--fx-lux-line);
+  backdrop-filter: blur(16px);
+}
+[data-crmv2-root] :is(input, select, textarea) {
+  border-radius: var(--fx-btn-radius);
+  border-color: var(--fx-lux-line-strong);
+  background: var(--fx-lux-elev);
+  color: var(--fx-lux-ink);
+}
+[data-crmv2-root] :is(input, select, textarea):focus {
+  border-color: var(--fx-lux-gold);
+  box-shadow: 0 0 0 3px var(--fx-lux-gold-soft);
+  outline: none;
+}
+[data-crmv2-root] button,
+[data-crmv2-root] header a,
+[data-crmv2-root] > nav a,
+[data-crmv2-root] > nav button {
+  border-radius: var(--fx-btn-radius);
+}
+[data-crmv2-root] a.bg-white\/10,
+[data-crmv2-root] a[class*="bg-white/10"] {
+  box-shadow: inset 2px 0 0 var(--fx-lux-gold-2);
+}
+[data-crmv2-root] :is(.rounded-2xl, .rounded-xl) {
+  background: var(--fx-lux-paper);
+  border-color: var(--fx-lux-line);
+  box-shadow: var(--fx-lux-inset);
+}
+[data-crmv2-root] > nav {
+  background: var(--fx-lux-paper);
+  border-color: var(--fx-lux-line);
+}
+[data-crmv2-root] :is(.cv-btn, .cv-chip) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--fx-btn-h-sm);
+  border-radius: var(--fx-btn-radius);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+[data-crmv2-root] :is(.cv-field, .cv-select) {
+  min-height: var(--fx-btn-h);
+  border-radius: var(--fx-btn-radius);
+}
+[data-crmv2-root] :is(.cv-btn, .cv-field, .cv-select, .fx-btn):focus-visible {
+  outline: 2px solid var(--fx-lux-gold);
+  outline-offset: 2px;
+}
+
+/* ——— auth ——— */
+.fx-auth-page {
+  background:
+    radial-gradient(700px 320px at 80% -10%, rgba(198, 165, 106, 0.16), transparent 60%),
+    var(--fx-lux-bg) !important;
+  color: var(--fx-lux-ink) !important;
+}
+html:has(.fx-auth-page),
+body:has(.fx-auth-page) {
+  background: var(--fx-lux-bg) !important;
+  color: var(--fx-lux-ink) !important;
+}
+.fx-auth-page button[type="submit"],
+.fx-auth-page .bg-\[\#111111\] {
+  background: linear-gradient(180deg, #ead9b4 0%, #c6a56a 100%) !important;
+  color: #1a140c !important;
+  border: 1px solid rgba(255, 236, 204, 0.35) !important;
+  border-radius: 999px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 10px 24px rgba(198, 165, 106, 0.22);
+}
+.fx-auth-page .fx-auth-panel input,
+.fx-auth-page .fx-auth-input,
+.fx-auth-page select {
+  border-color: var(--fx-lux-line-strong) !important;
+  background: #100e0c !important;
+  border-radius: 12px;
+}
+html[data-fx-theme="light"] .fx-auth-page .fx-auth-panel input,
+html[data-fx-theme="light"] .fx-auth-page .fx-auth-input,
+html[data-fx-theme="light"] .fx-auth-page select {
+  background: #fffcf7 !important;
+  color: #1a1714 !important;
+  border-color: rgba(26, 23, 20, 0.16) !important;
+}
+html[data-fx-theme="light"] .fx-auth-page input::placeholder {
+  color: #6d6458 !important;
+}
+.fx-auth-page .fx-auth-accent-text {
+  background: linear-gradient(120deg, #f6f1e8, #c6a56a);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* ——— trade desk night surfaces (day theme still wins via mobile-luxe) ——— */
+.fx-desk {
+  background: var(--fx-lux-bg);
+  color: var(--fx-lux-ink);
+}
+.fx-desk-glass {
+  background: linear-gradient(180deg, rgba(20, 18, 16, 0.94), rgba(12, 11, 10, 0.9));
+  border-bottom-color: var(--fx-lux-line);
+}
+html[data-fx-theme="dark"] .fx-desk .fx-deposit-btn {
+  background: linear-gradient(180deg, #ead9b4, #c6a56a) !important;
+  color: #1a140c !important;
+  border-radius: 10px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 6px 16px rgba(198, 165, 106, 0.25);
+}
+html[data-fx-theme="dark"] .fx-desk .fx-deposit-btn * {
+  color: #1a140c !important;
+}
+.fx-desk-seg {
+  border-color: var(--fx-lux-line);
+  background: linear-gradient(180deg, #141210, #0c0b0a);
+}
+.fx-desk-seg__btn--active {
+  background: linear-gradient(180deg, #2a241c, #1c1916);
+  box-shadow: inset 0 0 0 1px rgba(198, 165, 106, 0.35);
+}
+
+/* ——— public documents ——— */
+.fx-doc {
+  background: var(--fx-lux-bg);
+  color: var(--fx-lux-ink);
+}
+.fx-doc > header {
+  background: color-mix(in srgb, var(--fx-lux-paper) 90%, transparent);
+  border-bottom: 1px solid var(--fx-lux-line);
+  backdrop-filter: blur(14px);
+}
+.fx-ios .fx-btn-primary {
+  background: linear-gradient(180deg, #ead9b4, #c6a56a);
+  color: #1a140c;
+}
+.fx-ios .fx-btn-secondary {
+  border-color: var(--fx-lux-line-strong);
+  color: var(--fx-lux-ink);
+}
+
+/* ——— chart terminal ——— */
+.tw {
+  --tw-bg: var(--fx-lux-bg);
+  --tw-panel: var(--fx-lux-paper);
+  --tw-line: #3a332b;
+  --tw-text: var(--fx-lux-ink);
+  --tw-muted: var(--fx-lux-muted);
+  background: var(--fx-lux-bg);
+  color: var(--fx-lux-ink);
+}
+.tw-toolbar {
+  background: var(--fx-lux-paper);
+  border-bottom-color: var(--fx-lux-line);
+}
+.tw-chip,
+.tw-seg,
+.tw-iconbtn,
+.tw-tool {
+  border: 1px solid transparent;
+  border-radius: 10px;
+}
+.tw-chip,
+.tw-seg {
+  background: var(--fx-lux-elev);
+  border-color: var(--fx-lux-line);
+}
+.tw-iconbtn:hover,
+.tw-tool:hover,
+.tw-seg button:hover {
+  color: var(--fx-lux-ink);
+  background: var(--fx-lux-gold-soft);
+}
+.tw-iconbtn[aria-pressed="true"],
+.tw-seg button[aria-pressed="true"] {
+  color: var(--fx-lux-gold-ink);
+  background: linear-gradient(180deg, #ead9b4, #c6a56a);
+  border-color: rgba(255, 236, 204, 0.35);
+}

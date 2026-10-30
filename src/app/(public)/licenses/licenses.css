@@ -11,6 +11,7 @@
   --lic-paper-muted: #6a6256;
   --lic-paper-line: rgba(28, 26, 23, 0.16);
   --lic-stamp: #7d3030;
+  --lic-gold: #8d6840;
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
@@ -36,6 +37,7 @@ html[data-fx-theme="dark"] .fx-licenses {
   --lic-paper-muted: #c4b8a6;
   --lic-paper-line: rgba(246, 241, 232, 0.16);
   --lic-stamp: #e0b4b4;
+  --lic-gold: #c6a56a;
 }
 
 html:has(.fx-licenses) {
@@ -173,8 +175,8 @@ html[data-fx-theme="dark"] .fx-lic-mark {
 }
 
 .fx-lic-textlink[aria-current="page"] {
-  text-decoration: underline;
-  text-underline-offset: 4px;
+  text-decoration: none;
+  box-shadow: inset 0 -1px 0 var(--lic-gold);
 }
 
 .fx-lic-main {
@@ -209,6 +211,17 @@ html[data-fx-theme="dark"] .fx-lic-mark {
   font-weight: 500;
   text-decoration: none;
   cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease, transform 120ms ease;
+}
+.fx-lic-print {
+  background: linear-gradient(180deg, #ead9b4, #c6a56a);
+  color: #1a140c;
+  border-color: rgba(255, 236, 204, 0.4);
+}
+.fx-lic-print:hover,
+.fx-lic-back:hover,
+.fx-lic-open:hover {
+  border-color: var(--lic-gold);
 }
 
 .fx-lic-open {
