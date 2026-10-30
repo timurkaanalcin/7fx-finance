@@ -20,9 +20,9 @@ export default async function LicensesPage() {
   return (
     <LicensesChrome nav={bundle.nav} copy={bundle.licenses} signedIn={signedIn} mode="list">
       {rows.length === 0 ? (
-        <LicenseSheet copy={bundle.licenses} mode="list" />
+        <LicenseSheet copy={bundle.licenses} mode="list" locale={locale} />
       ) : (
-        rows.map((row) => <LicenseSheet key={row.id} copy={bundle.licenses} row={row} mode="list" />)
+        rows.map((row) => <LicenseSheet key={row.id} copy={bundle.licenses} row={row} mode="list" locale={locale} />)
       )}
     </LicensesChrome>
   );

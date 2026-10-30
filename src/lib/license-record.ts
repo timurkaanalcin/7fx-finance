@@ -1,73 +1,102 @@
-/** Public license shape. Mirrors the stored License columns. No other facts are invented. */
+/**
+ * Public license shape. Values come only from stored columns.
+ * A blank optional column stays an em dash on the page.
+ */
 export type PublicLicense = {
   id: string;
   regulator: string;
   number: string;
   entity: string;
   registerUrl: string;
-  logo: string | null;
+  licenseType: string | null;
+  jurisdiction: string | null;
+  status: string | null;
+  issuedOn: Date | null;
+  expiresOn: Date | null;
+  scope: string | null;
+  address: string | null;
 };
 
 export const LICENSE_MISSING = "—";
 
-export type LicenseFieldKey =
-  | "authority"
-  | "number"
-  | "type"
+export type LicenseFieldId =
   | "entity"
+  | "number"
+  | "status"
+  | "licenseType"
   | "jurisdiction"
-  | "issued"
-  | "valid"
-  | "scope";
+  | "issuedOn"
+  | "expiresOn"
+  | "scope"
+  | "address";
 
-export type LicenseField = {
-  key: LicenseFieldKey;
+export type LicenseFieldLabels = Record<LicenseFieldId, string>;
+
+export type LicenseEntry = {
+  key: LicenseFieldId;
   value: string;
   missing: boolean;
   wide: boolean;
 };
 
-/** Stored columns that can fill a document row. */
-const STORED: Partial<Record<LicenseFieldKey, keyof PublicLicense>> = {
-  authority: "regulator",
-  number: "number",
-  entity: "entity",
+/** Reading order of a public-register entry: name, reference, status, then the rest. */
+export const REGISTER_FIELD_ORDER: readonly LicenseFieldId[] = [
+  "entity",
+  "number",
+  "status",
+  "licenseType",
+  "jurisdiction",
+  "issuedOn",
+  "expiresOn",
+  "scope",
+  "address",
+];
+
+const WIDE = new Set<LicenseFieldId>(["scope", "address"]);
+
+export const EMPTY_LICENSE: PublicLicense = {
+  id: "",
+  regulator: "",
+  number: "",
+  entity: "",
+  registerUrl: "",
+  licenseType: null,
+  jurisdiction: null,
+  status: null,
+  issuedOn: null,
+  expiresOn: null,
+  scope: null,
+  address: null,
 };
 
-/**
- * Fields the document shows that the License model does not store.
- * The page renders these as an em dash until a real value exists.
- */
-export const UNSTORED_LICENSE_FIELDS: readonly LicenseFieldKey[] = [
-  "type",
-  "jurisdiction",
-  "issued",
-  "valid",
-  "scope",
-];
+function text(value: string | null | undefined): string {
+  return String(value ?? "").trim();
+}
 
-const ORDER: readonly LicenseFieldKey[] = [
-  "authority",
-  "number",
-  "type",
-  "entity",
-  "jurisdiction",
-  "issued",
-  "valid",
-  "scope",
-];
+/** Calendar day stored on the column, in the page language. UTC so the day does not shift. */
+export function formatLicenseDate(value: Date | null | undefined, locale: string): string {
+  if (!value || Number.isNaN(value.getTime())) return "";
+  const day = value.getUTCFullYear() + "-" + String(value.getUTCMonth() + 1).padStart(2, "0") + "-" + String(value.getUTCDate()).padStart(2, "0");
+  const [year, month, date] = day.split("-").map(Number);
+  const utc = new Date(Date.UTC(year, month - 1, date));
+  return new Intl.DateTimeFormat(locale, {
+    timeZone: "UTC",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(utc);
+}
 
-export function licenseFields(row: PublicLicense): LicenseField[] {
-  return ORDER.map((key) => {
-    const source = STORED[key];
-    const raw = source ? String(row[source] ?? "").trim() : "";
-    const missing = raw.length === 0;
-    return {
-      key,
-      value: missing ? LICENSE_MISSING : raw,
-      missing,
-      wide: key === "scope" || key === "jurisdiction",
-    };
+function rawValue(row: PublicLicense, key: LicenseFieldId, locale: string): string {
+  if (key === "issuedOn" || key === "expiresOn") return formatLicenseDate(row[key], locale);
+  return text(row[key]);
+}
+
+export function licenseEntries(row: PublicLicense, locale: string): LicenseEntry[] {
+  return REGISTER_FIELD_ORDER.map((key) => {
+    const value = rawValue(row, key, locale);
+    const missing = value.length === 0;
+    return { key, value: missing ? LICENSE_MISSING : value, missing, wide: WIDE.has(key) };
   });
 }
 

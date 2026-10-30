@@ -23,20 +23,24 @@ export type PublicNavCopy = {
   language: string;
 };
 
+export type LicenseFieldLabels = {
+  entity: string;
+  number: string;
+  status: string;
+  licenseType: string;
+  jurisdiction: string;
+  issuedOn: string;
+  expiresOn: string;
+  scope: string;
+  address: string;
+};
+
 export type LicensePageCopy = {
   title: string;
   lede: string;
   emptyTitle: string;
   emptyBody: string;
   kicker: string;
-  authority: string;
-  number: string;
-  type: string;
-  entity: string;
-  jurisdiction: string;
-  issued: string;
-  valid: string;
-  scope: string;
   verify: string;
   viewFull: string;
   back: string;
@@ -44,6 +48,10 @@ export type LicensePageCopy = {
   seal: string;
   stamp: string;
   footnote: string;
+  /** Labels for a register we do not have a specific field list for. */
+  generic: LicenseFieldLabels;
+  /** Financial Services Register field names (FCA Register Extract handbook). */
+  fca: LicenseFieldLabels;
 };
 
 export type AssetCopy = {
@@ -224,18 +232,10 @@ const EN: PublicBundle = {
   },
   licenses: {
     title: "Licenses",
-    lede: "Each active record is laid out as its own document. Only fields stored in 7FX are filled in. A — means that field is not on file.",
+    lede: "Each record uses the field names of the public register it links to. Only values stored in 7FX are filled in. A — means that field is not on file.",
     emptyTitle: "No license records are published",
     emptyBody: "When a license is added and marked active, it appears here as a document. The fields below are the ones this page can show.",
     kicker: "License record",
-    authority: "Issuing authority",
-    number: "License or registration number",
-    type: "License type",
-    entity: "Entity name",
-    jurisdiction: "Jurisdiction",
-    issued: "Issue date",
-    valid: "Validity",
-    scope: "Scope of permitted activities",
     verify: "Verify on the official register",
     viewFull: "View full page",
     back: "All licenses",
@@ -243,6 +243,28 @@ const EN: PublicBundle = {
     seal: "Record seal",
     stamp: "RECORD",
     footnote: "A — means that field is not on file.",
+    generic: {
+      entity: "Entity name",
+      number: "License or registration number",
+      status: "Status",
+      licenseType: "License type",
+      jurisdiction: "Jurisdiction",
+      issuedOn: "Issue date",
+      expiresOn: "Expiry date",
+      scope: "Scope of permitted activities",
+      address: "Address",
+    },
+    fca: {
+      entity: "Registered firm name",
+      number: "Firm reference number",
+      status: "Current authorisation status",
+      licenseType: "Firm type",
+      jurisdiction: "Jurisdiction",
+      issuedOn: "Date first authorised by regulator",
+      expiresOn: "Expiry date",
+      scope: "Activities and permissions",
+      address: "Principal address",
+    },
   },
 };
 
@@ -565,18 +587,10 @@ const TR: PublicBundle = {
   },
   licenses: {
     title: "Lisanslar",
-    lede: "Her aktif kayıt kendi belgesi olarak düzenlenir. Yalnızca 7FX içinde saklanan alanlar doludur. — işareti, o alanın kayıtta olmadığını gösterir.",
+    lede: "Her kayıt, bağlandığı resmi kaydın alan adlarını kullanır. Yalnızca 7FX içinde saklanan değerler doludur. — işareti, o alanın kayıtta olmadığını gösterir.",
     emptyTitle: "Yayımlanmış lisans kaydı yok",
     emptyBody: "Bir lisans eklenip aktif işaretlendiğinde burada bir belge olarak görünür. Aşağıdaki alanlar bu sayfanın gösterebildikleridir.",
     kicker: "Lisans kaydı",
-    authority: "Düzenleyen kurum",
-    number: "Lisans veya kayıt numarası",
-    type: "Lisans türü",
-    entity: "Tüzel kişi adı",
-    jurisdiction: "Yetki bölgesi",
-    issued: "Düzenlenme tarihi",
-    valid: "Geçerlilik",
-    scope: "İzin verilen faaliyetlerin kapsamı",
     verify: "Resmi kayıtta doğrula",
     viewFull: "Tam sayfa görüntüle",
     back: "Tüm lisanslar",
@@ -584,6 +598,28 @@ const TR: PublicBundle = {
     seal: "Kayıt mührü",
     stamp: "KAYIT",
     footnote: "— işareti, o alanın kayıtta olmadığını gösterir.",
+    generic: {
+      entity: "Tüzel kişi adı",
+      number: "Lisans veya kayıt numarası",
+      status: "Durum",
+      licenseType: "Lisans türü",
+      jurisdiction: "Yetki bölgesi",
+      issuedOn: "Düzenlenme tarihi",
+      expiresOn: "Bitiş tarihi",
+      scope: "İzin verilen faaliyetlerin kapsamı",
+      address: "Adres",
+    },
+    fca: {
+      entity: "Kayıtlı firma adı",
+      number: "Firma referans numarası",
+      status: "Güncel yetkilendirme durumu",
+      licenseType: "Firma türü",
+      jurisdiction: "Yetki bölgesi",
+      issuedOn: "Düzenleyicinin ilk yetkilendirme tarihi",
+      expiresOn: "Bitiş tarihi",
+      scope: "Faaliyetler ve izinler",
+      address: "Esas adres",
+    },
   },
 };
 
@@ -726,18 +762,10 @@ const DE: PublicBundle = {
   },
   licenses: {
     title: "Lizenzen",
-    lede: "Jeder aktive Nachweis ist als eigenes Dokument gesetzt. Ausgefüllt sind nur Felder, die in 7FX gespeichert sind. Ein — bedeutet, dass das Feld nicht vorliegt.",
+    lede: "Jeder Nachweis nutzt die Feldnamen des öffentlichen Registers, auf das er verweist. Ausgefüllt sind nur Werte, die in 7FX gespeichert sind. Ein — bedeutet, dass das Feld nicht vorliegt.",
     emptyTitle: "Keine Lizenznachweise veröffentlicht",
     emptyBody: "Eine Lizenz erscheint hier als Dokument, sobald sie hinzugefügt und aktiv ist. Die Felder unten sind die, die diese Seite zeigen kann.",
     kicker: "Lizenznachweis",
-    authority: "Ausstellende Stelle",
-    number: "Lizenz- oder Registrierungsnummer",
-    type: "Lizenzart",
-    entity: "Name des Rechtsträgers",
-    jurisdiction: "Zuständigkeit",
-    issued: "Ausstellungsdatum",
-    valid: "Gültigkeit",
-    scope: "Umfang der erlaubten Tätigkeiten",
     verify: "Im amtlichen Register prüfen",
     viewFull: "Ganzseitig ansehen",
     back: "Alle Lizenzen",
@@ -745,6 +773,28 @@ const DE: PublicBundle = {
     seal: "Nachweissiegel",
     stamp: "AKTE",
     footnote: "Ein — bedeutet, dass das Feld nicht vorliegt.",
+    generic: {
+      entity: "Name des Rechtsträgers",
+      number: "Lizenz- oder Registrierungsnummer",
+      status: "Status",
+      licenseType: "Lizenzart",
+      jurisdiction: "Zuständigkeit",
+      issuedOn: "Ausstellungsdatum",
+      expiresOn: "Ablaufdatum",
+      scope: "Umfang der erlaubten Tätigkeiten",
+      address: "Adresse",
+    },
+    fca: {
+      entity: "Eingetragener Firmenname",
+      number: "Firmenreferenznummer",
+      status: "Aktueller Zulassungsstatus",
+      licenseType: "Firmentyp",
+      jurisdiction: "Zuständigkeit",
+      issuedOn: "Datum der ersten Zulassung durch die Aufsicht",
+      expiresOn: "Ablaufdatum",
+      scope: "Tätigkeiten und Erlaubnisse",
+      address: "Hauptadresse",
+    },
   },
 };
 
@@ -887,18 +937,10 @@ const RU: PublicBundle = {
   },
   licenses: {
     title: "Лицензии",
-    lede: "Каждая активная запись оформлена как отдельный документ. Заполнены только поля, которые хранит 7FX. Знак — значит, что поля в деле нет.",
+    lede: "Каждая запись использует названия полей того публичного реестра, на который она ссылается. Заполнены только значения, которые хранит 7FX. Знак — значит, что поля в деле нет.",
     emptyTitle: "Опубликованных записей о лицензиях нет",
     emptyBody: "Когда лицензию добавляют и отмечают активной, она появляется здесь документом. Ниже поля, которые эта страница может показать.",
     kicker: "Запись о лицензии",
-    authority: "Выдавший орган",
-    number: "Номер лицензии или регистрации",
-    type: "Вид лицензии",
-    entity: "Наименование лица",
-    jurisdiction: "Юрисдикция",
-    issued: "Дата выдачи",
-    valid: "Срок действия",
-    scope: "Объём разрешённой деятельности",
     verify: "Проверить в официальном реестре",
     viewFull: "Открыть на всю страницу",
     back: "Все лицензии",
@@ -906,6 +948,28 @@ const RU: PublicBundle = {
     seal: "Печать записи",
     stamp: "ДЕЛО",
     footnote: "Знак — значит, что поля в деле нет.",
+    generic: {
+      entity: "Наименование лица",
+      number: "Номер лицензии или регистрации",
+      status: "Статус",
+      licenseType: "Вид лицензии",
+      jurisdiction: "Юрисдикция",
+      issuedOn: "Дата выдачи",
+      expiresOn: "Дата окончания",
+      scope: "Объём разрешённой деятельности",
+      address: "Адрес",
+    },
+    fca: {
+      entity: "Зарегистрированное название фирмы",
+      number: "Референс-номер фирмы",
+      status: "Текущий статус авторизации",
+      licenseType: "Тип фирмы",
+      jurisdiction: "Юрисдикция",
+      issuedOn: "Дата первой авторизации регулятором",
+      expiresOn: "Дата окончания",
+      scope: "Виды деятельности и разрешения",
+      address: "Основной адрес",
+    },
   },
 };
 
@@ -1048,18 +1112,10 @@ const AR: PublicBundle = {
   },
   licenses: {
     title: "التراخيص",
-    lede: "كل سجل نشط منسق كوثيقة مستقلة. تُملأ فقط الحقول المخزّنة في 7FX. العلامة — تعني أن الحقل غير موجود في الملف.",
+    lede: "يستخدم كل سجل أسماء حقول السجل العام الذي يشير إليه. تُملأ فقط القيم المخزّنة في 7FX. العلامة — تعني أن الحقل غير موجود في الملف.",
     emptyTitle: "لا توجد سجلات تراخيص منشورة",
     emptyBody: "عندما يُضاف ترخيص ويُعلَّم نشطًا يظهر هنا كوثيقة. الحقول أدناه هي ما تستطيع هذه الصفحة عرضه.",
     kicker: "سجل ترخيص",
-    authority: "الجهة المُصدِرة",
-    number: "رقم الترخيص أو التسجيل",
-    type: "نوع الترخيص",
-    entity: "اسم الكيان",
-    jurisdiction: "الاختصاص",
-    issued: "تاريخ الإصدار",
-    valid: "الصلاحية",
-    scope: "نطاق الأنشطة المسموح بها",
     verify: "تحقق في السجل الرسمي",
     viewFull: "عرض الصفحة كاملة",
     back: "كل التراخيص",
@@ -1067,6 +1123,28 @@ const AR: PublicBundle = {
     seal: "ختم السجل",
     stamp: "سجل",
     footnote: "العلامة — تعني أن الحقل غير موجود في الملف.",
+    generic: {
+      entity: "اسم الكيان",
+      number: "رقم الترخيص أو التسجيل",
+      status: "الحالة",
+      licenseType: "نوع الترخيص",
+      jurisdiction: "الاختصاص",
+      issuedOn: "تاريخ الإصدار",
+      expiresOn: "تاريخ الانتهاء",
+      scope: "نطاق الأنشطة المسموح بها",
+      address: "العنوان",
+    },
+    fca: {
+      entity: "اسم الشركة المسجّل",
+      number: "الرقم المرجعي للشركة",
+      status: "حالة الترخيص الحالية",
+      licenseType: "نوع الشركة",
+      jurisdiction: "الاختصاص",
+      issuedOn: "تاريخ أول ترخيص من الجهة الرقابية",
+      expiresOn: "تاريخ الانتهاء",
+      scope: "الأنشطة والتصاريح",
+      address: "العنوان الرئيسي",
+    },
   },
 };
 

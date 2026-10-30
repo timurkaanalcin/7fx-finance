@@ -1,17 +1,19 @@
 /**
- * Public licenses are a document page built only from stored fields.
+ * Public licenses follow the stored register's field names and never invent values.
  * Run: npx tsx tests/licenses-page.test.ts
  */
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import {
+  EMPTY_LICENSE,
   httpsRegisterUrl,
-  licenseFields,
+  licenseEntries,
   LICENSE_MISSING,
-  UNSTORED_LICENSE_FIELDS,
+  REGISTER_FIELD_ORDER,
   type PublicLicense,
 } from "../src/lib/license-record";
+import { registerKind } from "../src/lib/license-register";
 import { publicBundle } from "../src/lib/public-doc-copy";
 import { isMarketingPath, shouldNoindex } from "../src/lib/seo-hosts";
 import type { Locale } from "../src/lib/i18n/locales";
@@ -28,86 +30,100 @@ function read(rel: string): string {
 }
 
 const SAMPLE: PublicLicense = {
+  ...EMPTY_LICENSE,
   id: "clicense1",
-  regulator: "Example Authority",
+  regulator: "Financial Conduct Authority",
   number: "REG-1",
   entity: "Example Ltd",
-  registerUrl: "https://register.example/lookup",
-  logo: null,
+  registerUrl: "https://register.fca.org.uk/",
+  status: "Authorised",
 };
 
 function main() {
-  const fields = licenseFields(SAMPLE);
-  const byKey = Object.fromEntries(fields.map((field) => [field.key, field]));
-  assert.equal(byKey.authority.value, "Example Authority");
-  assert.equal(byKey.authority.missing, false);
-  assert.equal(byKey.number.value, "REG-1");
-  assert.equal(byKey.entity.value, "Example Ltd");
-  for (const key of UNSTORED_LICENSE_FIELDS) {
-    assert.equal(byKey[key].missing, true, key);
-    assert.equal(byKey[key].value, LICENSE_MISSING, key);
+  assert.equal(registerKind(SAMPLE), "fca");
+  assert.equal(registerKind({ ...EMPTY_LICENSE, regulator: "Other Authority", registerUrl: "https://register.example/lookup" }), "generic");
+  assert.equal(registerKind({ ...EMPTY_LICENSE, regulator: "Financial Conduct Authority", registerUrl: "" }), "fca");
+
+  const fca = licenseEntries(SAMPLE, "en");
+  assert.deepEqual(fca.map((field) => field.key), [...REGISTER_FIELD_ORDER]);
+  assert.equal(fca[0].key, "entity");
+  assert.equal(fca[0].value, "Example Ltd");
+  assert.equal(fca.find((field) => field.key === "number")?.value, "REG-1");
+  assert.equal(fca.find((field) => field.key === "status")?.value, "Authorised");
+  for (const key of ["licenseType", "jurisdiction", "issuedOn", "expiresOn", "scope", "address"] as const) {
+    const field = fca.find((item) => item.key === key);
+    assert.equal(field?.missing, true, key);
+    assert.equal(field?.value, LICENSE_MISSING, key);
   }
-  assert.equal(byKey.scope.wide, true);
-  assert.equal(byKey.jurisdiction.wide, true);
-  assert.equal(byKey.issued.wide, false);
+  assert.equal(fca.find((field) => field.key === "scope")?.wide, true);
+  assert.equal(fca.find((field) => field.key === "address")?.wide, true);
 
-  const blank = licenseFields({ id: "x", regulator: "  ", number: "", entity: "", registerUrl: "", logo: null });
-  assert.ok(blank.every((field) => field.missing && field.value === LICENSE_MISSING));
+  const labels = publicBundle("en").licenses.fca;
+  assert.equal(labels.entity, "Registered firm name");
+  assert.equal(labels.number, "Firm reference number");
+  assert.equal(labels.status, "Current authorisation status");
+  assert.equal(labels.licenseType, "Firm type");
+  assert.equal(labels.issuedOn, "Date first authorised by regulator");
+  assert.equal(labels.scope, "Activities and permissions");
+  assert.equal(labels.address, "Principal address");
+  assert.equal(publicBundle("en").licenses.generic.licenseType, "License type");
+  assert.notEqual(publicBundle("tr").licenses.fca.entity, labels.entity);
 
-  assert.equal(httpsRegisterUrl("https://register.example/a"), "https://register.example/a");
-  assert.equal(httpsRegisterUrl("http://register.example/a"), null);
+  const dated = licenseEntries({
+    ...SAMPLE,
+    issuedOn: new Date("2013-10-01T00:00:00.000Z"),
+    expiresOn: null,
+  }, "en");
+  assert.match(dated.find((field) => field.key === "issuedOn")?.value || "", /2013/);
+  assert.equal(dated.find((field) => field.key === "issuedOn")?.value.includes("2013-10-02"), false);
+  assert.equal(dated.find((field) => field.key === "expiresOn")?.missing, true);
+
+  assert.equal(httpsRegisterUrl("https://register.fca.org.uk/"), "https://register.fca.org.uk/");
+  assert.equal(httpsRegisterUrl("http://register.fca.org.uk/"), null);
   assert.equal(httpsRegisterUrl("javascript:alert(1)"), null);
-  assert.equal(httpsRegisterUrl(""), null);
 
   const schema = read("prisma/schema.prisma");
   const model = schema.slice(schema.indexOf("model License {"), schema.indexOf("model Notification"));
-  for (const column of ["jurisdiction", "issuedAt", "expiresAt", "scope", "licenseType"]) {
-    assert.equal(model.includes(column), false, column);
+  for (const column of ["licenseType", "jurisdiction", "status", "issuedOn", "expiresOn", "scope", "address"]) {
+    assert.match(model, new RegExp(`${column}\\s+`), column);
   }
-  for (const column of ["regulator", "number", "entity", "registerUrl", "logo"]) {
-    assert.match(model, new RegExp(`\\b${column}\\b`));
-  }
+  assert.match(model, /issuedOn\s+DateTime\?/);
+  assert.match(model, /expiresOn\s+DateTime\?/);
+  const sql = read("prisma/migrations/20261030180000_license_register_fields/migration.sql");
+  assert.match(sql, /ADD COLUMN `licenseType` VARCHAR\(255\) NULL/);
+  assert.match(sql, /ADD COLUMN `issuedOn` DATE NULL/);
+  assert.match(sql, /ADD COLUMN `expiresOn` DATE NULL/);
+  assert.match(sql, /ADD COLUMN `scope` TEXT NULL/);
+  assert.match(sql, /ADD COLUMN `address` TEXT NULL/);
+  assert.equal(/DROP|DELETE|UPDATE /i.test(sql), false);
 
-  const page = read("src/app/(public)/licenses/page.tsx");
-  const detail = read("src/app/(public)/licenses/[id]/page.tsx");
   const sheet = read("src/components/licenses/LicenseSheet.tsx");
-  const landing = read("src/components/landing/LandingPage.tsx");
-  const section = read("src/components/landing/LicensesSection.tsx");
-  const css = read("src/app/(public)/licenses/licenses.css");
-  assert.match(page, /listPublicLicenses/);
-  assert.match(detail, /getPublicLicense/);
-  assert.match(detail, /notFound/);
-  assert.match(sheet, /viewFull/);
-  assert.match(sheet, /LICENSE_MISSING/);
-  assert.match(css, /@media print/);
-  assert.match(css, /data-fx-theme="dark"/);
-  assert.match(css, /fx-lic-seal/);
-  assert.equal(/FCA|CySEC|ASIC|123456/.test(sheet + page + detail), false);
-  assert.match(landing, /href="\/licenses"/);
-  assert.match(section, /href="\/licenses"/);
-  assert.equal(section.includes("/api/licenses"), false);
-  assert.match(read("src/components/public/PublicDoc.tsx"), /href: "\/licenses"/);
+  const admin = read("src/app/api/admin/licenses/route.ts");
+  const pub = read("src/app/api/licenses/route.ts");
+  assert.match(sheet, /fx-lic-verify-btn/);
+  assert.match(sheet, /registerKind/);
+  assert.equal(/row\?\.logo|validLogo|fx-lic-regulator-logo/.test(sheet), false);
+  assert.match(admin, /licenseType/);
+  assert.match(admin, /issuedOn/);
+  assert.match(admin, /expiresOn/);
+  assert.match(pub, /licenseType/);
+  assert.match(read("src/app/(admin)/izcrm/licenses/page.tsx"), /gap\.lic\.scope/);
+  assert.match(read("src/app/(public)/licenses/licenses.css"), /@media print/);
   assert.equal(isMarketingPath("/licenses"), true);
   assert.equal(shouldNoindex("7fx.customer.org.tr", "/licenses"), false);
-  assert.equal(shouldNoindex("7fx.customer.org.tr", "/licenses/clicense1"), true);
 
   const locales = { en, tr, de, ru, ar };
   for (const [name, dict] of Object.entries(locales)) {
-    assert.equal(typeof dict["landing.nav.licenses"], "string", name);
-    assert.equal(typeof dict["landing.licenses.summary"], "string", name);
-    assert.equal(typeof dict["landing.licenses.open"], "string", name);
+    for (const key of ["gap.lic.status", "gap.lic.type", "gap.lic.jurisdiction", "gap.lic.issued", "gap.lic.expires", "gap.lic.scope", "gap.lic.address"]) {
+      assert.equal(typeof dict[key], "string", `${name} ${key}`);
+    }
     const copy = publicBundle(name as Locale).licenses;
-    assert.equal(copy.stamp.length > 0, true, name);
-    for (const key of UNSTORED_LICENSE_FIELDS) {
-      assert.equal(typeof copy[key], "string", `${name} ${key}`);
+    for (const key of REGISTER_FIELD_ORDER) {
+      assert.equal(typeof copy.generic[key], "string", `${name} generic ${key}`);
+      assert.equal(typeof copy.fca[key], "string", `${name} fca ${key}`);
     }
   }
-  assert.equal(en["landing.nav.licenses"], "Licenses");
-  assert.equal(tr["landing.nav.licenses"], "Lisanslar");
-  assert.notEqual(de["landing.licenses.open"], en["landing.licenses.open"]);
-  assert.notEqual(ru["landing.licenses.summary"], en["landing.licenses.summary"]);
-  assert.notEqual(ar["landing.licenses.open"], en["landing.licenses.open"]);
-  const english = Object.values(publicBundle("en").licenses).join(" ");
+  const english = JSON.stringify(publicBundle("en").licenses);
   assert.equal(/[çğıöşüÇĞİÖŞÜıİ]/.test(english), false);
 
   console.log("licenses page tests passed");

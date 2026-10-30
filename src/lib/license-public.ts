@@ -7,7 +7,13 @@ const select = {
   number: true,
   entity: true,
   registerUrl: true,
-  logo: true,
+  licenseType: true,
+  jurisdiction: true,
+  status: true,
+  issuedOn: true,
+  expiresOn: true,
+  scope: true,
+  address: true,
 } as const;
 
 export async function listPublicLicenses(): Promise<PublicLicense[]> {

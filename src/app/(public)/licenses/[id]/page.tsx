@@ -32,7 +32,7 @@ export default async function LicenseDocumentPage({ params }: Params) {
   const signedIn = Boolean(cookies().get("7fx_session")?.value || cookies().get("deskflow_session")?.value);
   return (
     <LicensesChrome nav={bundle.nav} copy={bundle.licenses} signedIn={signedIn} mode="full">
-      <LicenseSheet copy={bundle.licenses} row={row} mode="full" />
+      <LicenseSheet copy={bundle.licenses} row={row} mode="full" locale={locale} />
     </LicensesChrome>
   );
 }
