@@ -22,7 +22,7 @@ function ask(path: string, cookie?: string, host = "7fx.customer.org.tr") {
 
 function main() {
   const privateHeader = "private, no-store";
-  for (const path of ["/", "/markets", "/faq", "/platform", "/ios", "/markets/forex"]) {
+  for (const path of ["/", "/markets", "/faq", "/platform", "/ios", "/licenses", "/markets/forex"]) {
     const res = ask(path);
     assert.equal(res.headers.get("cache-control"), privateHeader, path);
     assert.equal(String(res.headers.get("cache-control")).includes("s-maxage"), false, path);

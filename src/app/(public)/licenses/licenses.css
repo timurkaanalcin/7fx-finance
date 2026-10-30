@@ -1,0 +1,600 @@
+/* License documents. Tokens follow html[data-fx-theme]. Print forces paper. */
+
+.fx-licenses {
+  --lic-bg: #f3f0e8;
+  --lic-ink: #1c1a17;
+  --lic-muted: #5e584e;
+  --lic-line: rgba(28, 26, 23, 0.16);
+  --lic-chrome: rgba(243, 240, 232, 0.92);
+  --lic-paper: #fbf8f2;
+  --lic-paper-ink: #1c1a17;
+  --lic-paper-muted: #6a6256;
+  --lic-paper-line: rgba(28, 26, 23, 0.16);
+  --lic-stamp: #7d3030;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--lic-bg);
+  color: var(--lic-ink);
+  font-family: var(--font-inter), var(--font-inter-ext), ui-sans-serif, system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.6;
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+html[data-fx-theme="dark"] .fx-licenses {
+  --lic-bg: #0e0f12;
+  --lic-ink: #f4f0e8;
+  --lic-muted: #b1a89c;
+  --lic-line: rgba(244, 240, 232, 0.16);
+  --lic-chrome: rgba(14, 15, 18, 0.92);
+  --lic-paper: #17140f;
+  --lic-paper-ink: #f6f1e8;
+  --lic-paper-muted: #c4b8a6;
+  --lic-paper-line: rgba(246, 241, 232, 0.16);
+  --lic-stamp: #e0b4b4;
+}
+
+html:has(.fx-licenses) {
+  background: #f3f0e8;
+  color-scheme: light;
+}
+html[data-fx-theme="dark"]:has(.fx-licenses) {
+  background: #0e0f12;
+  color-scheme: dark;
+}
+
+.fx-licenses :is(h1, h2, h3) {
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.fx-lic-sr,
+.fx-licenses .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.fx-lic-skip {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  z-index: 40;
+  transform: translateY(-140%);
+  background: var(--lic-paper);
+  color: var(--lic-paper-ink);
+  padding: 8px 12px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.fx-lic-skip:focus {
+  transform: none;
+}
+
+.fx-lic-chrome {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--lic-chrome);
+  border-bottom: 1px solid var(--lic-line);
+  backdrop-filter: blur(16px);
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.fx-lic-bar,
+.fx-lic-foot-inner {
+  width: min(1120px, calc(100% - 32px));
+  margin-inline: auto;
+}
+
+.fx-lic-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  min-height: 56px;
+  padding-block: 8px;
+}
+
+.fx-lic-brand-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  min-width: 44px;
+  text-decoration: none;
+}
+
+.fx-lic-brand,
+.fx-lic-mark {
+  filter: brightness(0);
+}
+
+html[data-fx-theme="dark"] .fx-lic-brand,
+html[data-fx-theme="dark"] .fx-lic-mark {
+  filter: brightness(0) invert(1);
+}
+
+.fx-lic-nav {
+  display: flex;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 4px;
+}
+
+.fx-lic-textlink,
+.fx-licenses .fx-theme-toggle,
+.fx-licenses select {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 0;
+  background: transparent;
+  color: var(--lic-ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.fx-licenses select {
+  border: 1px solid var(--lic-line) !important;
+  background: transparent !important;
+  color: var(--lic-ink) !important;
+  padding-inline: 12px;
+}
+
+.fx-licenses .fx-theme-toggle {
+  border: 1px solid var(--lic-line);
+  color: var(--lic-ink);
+}
+
+.fx-lic-textlink[aria-current="page"] {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.fx-lic-main {
+  flex: 1;
+  width: min(880px, calc(100% - 32px));
+  margin-inline: auto;
+  padding-top: 28px;
+  padding-bottom: 40px;
+}
+
+.fx-lic-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.fx-lic-print,
+.fx-lic-back,
+.fx-lic-open {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--lic-line);
+  background: transparent;
+  color: var(--lic-ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.fx-lic-open {
+  border-color: var(--lic-paper-line);
+  color: var(--lic-paper-ink);
+  margin-bottom: 12px;
+}
+
+.fx-lic-intro h1 {
+  margin: 0;
+  font-size: clamp(32px, 4vw, 44px);
+}
+
+.fx-lic-intro p {
+  margin: 12px 0 0;
+  max-width: 62ch;
+  color: var(--lic-muted);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.fx-lic-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.fx-lic-sheet {
+  position: relative;
+  background: var(--lic-paper);
+  color: var(--lic-paper-ink);
+  border: 1px solid var(--lic-paper-line);
+  border-radius: 2px;
+  padding: 28px 20px 22px;
+  box-shadow: 0 16px 40px rgba(20, 16, 10, 0.06);
+}
+
+.fx-lic-sheet::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid var(--lic-paper-line);
+  pointer-events: none;
+}
+
+.fx-lic-sheet-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--lic-paper-line);
+}
+
+.fx-lic-letterhead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.fx-lic-mark {
+  height: 28px;
+  width: auto;
+  flex: 0 0 auto;
+}
+
+.fx-lic-kicker {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lic-paper-muted);
+}
+
+.fx-lic-docno {
+  margin: 0;
+  text-align: end;
+  min-width: 0;
+}
+
+.fx-lic-docno-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lic-paper-muted);
+}
+
+.fx-lic-docno-value {
+  display: block;
+  margin-top: 4px;
+  font-size: 16px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.fx-lic-doc-title {
+  margin: 18px 0 0;
+  font-size: clamp(24px, 3vw, 32px);
+  overflow-wrap: anywhere;
+}
+
+.fx-lic-empty {
+  margin: 8px 0 0;
+  max-width: 62ch;
+  color: var(--lic-paper-muted);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.fx-lic-regulator-logo {
+  display: block;
+  height: 36px;
+  width: auto;
+  max-width: min(160px, 100%);
+  object-fit: contain;
+  margin-top: 14px;
+}
+
+.fx-lic-fields {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px 28px;
+  margin: 22px 0 0;
+}
+
+.fx-lic-fields dt {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lic-paper-muted);
+}
+
+.fx-lic-fields dd {
+  margin: 4px 0 0;
+  font-size: 16px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.fx-lic-missing {
+  color: var(--lic-paper-muted);
+}
+
+.fx-lic-verify {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 44px;
+  max-width: 100%;
+  color: inherit;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.fx-lic-verify-label {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.fx-lic-host {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--lic-paper-muted);
+  overflow-wrap: anywhere;
+}
+
+.fx-lic-sheet-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 28px;
+  padding-top: 8px;
+}
+
+.fx-lic-footnote {
+  margin: 0;
+  max-width: 46ch;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--lic-paper-muted);
+}
+
+.fx-lic-seal {
+  width: 96px;
+  height: 96px;
+  margin: 0;
+  margin-inline-start: auto;
+  color: var(--lic-stamp);
+  transform: rotate(-6deg);
+  flex: 0 0 auto;
+}
+
+.fx-lic-seal svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.fx-lic-seal-mark,
+.fx-lic-seal-word {
+  fill: currentColor;
+  font-family: var(--font-inter), var(--font-inter-ext), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 500;
+}
+
+.fx-lic-seal-mark {
+  font-size: 16px;
+  letter-spacing: 0.14em;
+}
+
+.fx-lic-seal-word {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+
+.fx-lic-foot {
+  border-top: 1px solid var(--lic-line);
+  padding-top: 12px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+}
+
+.fx-lic-foot-inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+
+.fx-lic-foot a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: 4px;
+  color: var(--lic-muted);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.fx-lic-foot a[aria-current="page"],
+.fx-lic-foot a:hover {
+  color: var(--lic-ink);
+}
+
+.fx-licenses :is(a, button, select):focus-visible {
+  outline: 2px solid var(--lic-ink);
+  outline-offset: 2px;
+}
+
+@media (max-width: 520px) {
+  .fx-lic-sheet-top {
+    flex-direction: column;
+  }
+  .fx-lic-docno {
+    text-align: start;
+  }
+  .fx-lic-seal {
+    width: 88px;
+    height: 88px;
+  }
+}
+
+@media (min-width: 640px) {
+  .fx-lic-fields {
+    grid-template-columns: 1fr 1fr;
+  }
+  .fx-lic-fields .is-wide {
+    grid-column: 1 / -1;
+  }
+  .fx-lic-sheet {
+    padding: 40px 44px 32px;
+  }
+  .fx-lic-sheet::before {
+    inset: 12px;
+  }
+}
+
+@media (min-width: 768px) {
+  .fx-lic-bar,
+  .fx-lic-foot-inner {
+    width: min(1120px, calc(100% - 48px));
+  }
+  .fx-lic-main {
+    width: min(880px, calc(100% - 64px));
+    padding-top: 40px;
+    padding-bottom: 64px;
+  }
+}
+
+@media (min-width: 1080px) {
+  .fx-lic-nav {
+    flex: 0 1 auto;
+    justify-content: flex-end;
+  }
+}
+
+@media (min-width: 900px) {
+  .fx-lic-sheet {
+    min-height: 720px;
+    display: flex;
+    flex-direction: column;
+  }
+  .fx-lic-sheet-foot {
+    margin-top: auto;
+    padding-top: 28px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .fx-lic-sheet--full {
+    min-height: 960px;
+  }
+}
+
+@media print {
+  @page {
+    margin: 14mm;
+  }
+  html:has(.fx-licenses),
+  html[data-fx-theme="dark"]:has(.fx-licenses) {
+    background: #fff !important;
+    color-scheme: light;
+  }
+  .fx-licenses {
+    --lic-bg: #fff;
+    --lic-ink: #1c1a17;
+    --lic-muted: #3f3a34;
+    --lic-line: rgba(28, 26, 23, 0.2);
+    --lic-paper: #fff;
+    --lic-paper-ink: #1c1a17;
+    --lic-paper-muted: #3f3a34;
+    --lic-paper-line: rgba(28, 26, 23, 0.28);
+    --lic-stamp: #7d3030;
+    display: block;
+    min-height: 0;
+    background: #fff !important;
+    color: #1c1a17 !important;
+  }
+  .fx-lic-chrome,
+  .fx-lic-toolbar,
+  .fx-lic-intro,
+  .fx-lic-foot,
+  .fx-lic-open,
+  .fx-lic-skip,
+  .fx-install-in {
+    display: none !important;
+  }
+  .fx-lic-main {
+    width: auto;
+    margin: 0;
+    padding: 0;
+  }
+  .fx-lic-brand,
+  .fx-lic-mark {
+    filter: brightness(0) !important;
+  }
+  .fx-lic-sheet {
+    box-shadow: none;
+    min-height: 0 !important;
+    display: block !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    background: #fff !important;
+    color: #1c1a17 !important;
+  }
+  .fx-lic-sheet + .fx-lic-sheet {
+    break-before: page;
+    page-break-before: always;
+  }
+  .fx-lic-host {
+    display: none;
+  }
+  .fx-lic-verify[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 12px;
+    font-weight: 400;
+  }
+  .fx-lic-sheet,
+  .fx-lic-sheet * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

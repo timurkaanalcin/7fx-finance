@@ -145,6 +145,8 @@ html:has(.fx-landing) {
 .fx-landing .fx-nav-link,
 .fx-landing .fx-mobile-menu button,
 .fx-landing .fx-mobile-menu a {
+  display: inline-flex;
+  align-items: center;
   border: 0;
   background: transparent;
   color: #c5cedd;
@@ -153,7 +155,12 @@ html:has(.fx-landing) {
   min-height: 44px;
   font-size: 13px;
   font-weight: 500;
-  text-align: left;
+  text-align: start;
+  text-decoration: none;
+  white-space: nowrap;
+}
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .fx-landing .fx-nav-link { padding-inline: 8px; }
 }
 .fx-landing .fx-nav-link:hover,
 .fx-landing .fx-mobile-menu button:hover,
@@ -179,6 +186,9 @@ html:has(.fx-landing) {
   border: 1px solid var(--fx-line);
   background: rgba(255, 255, 255, 0.03);
   color: #f4f7fb;
+}
+@media (min-width: 1024px) {
+  .fx-landing .fx-icon-btn { display: none; }
 }
 
 .fx-landing .fx-btn-primary {
