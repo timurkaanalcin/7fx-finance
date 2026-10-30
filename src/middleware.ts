@@ -219,6 +219,8 @@ export function middleware(req: NextRequest) {
 
   if (
     (pathname.startsWith("/trade") ||
+      pathname === "/tw" ||
+      pathname.startsWith("/tw/") ||
       pathname === "/izcrm" ||
       pathname.startsWith("/izcrm/") ||
       isCrmV2Path(pathname) ||

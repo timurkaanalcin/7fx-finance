@@ -33,7 +33,7 @@ export default function AuthShell({ mode, children }: AuthShellProps) {
           }`}
         >
           <Link href="/" className="inline-flex items-center no-underline" aria-label={t("landing.homeAria")}>
-            <BrandLogo priority className="fx-nav-logo h-10 w-auto sm:h-11" height={44} />
+            <BrandLogo priority tone="paper" className="fx-nav-logo h-10 w-auto sm:h-11" height={44} />
           </Link>
           <Link
             href="/"

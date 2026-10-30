@@ -22,7 +22,7 @@ function main() {
   assert.equal(isChunkLoadError(null), false);
 
   const sw = read("public/sw.js");
-  assert.match(sw, /const VERSION = "2026-10-25-v5-network"/);
+  assert.match(sw, /const VERSION = "2026-10-30-v6-mono"/);
   assert.equal(sw.includes("2026-10-24-v4-offline"), false);
   assert.equal(sw.includes("caches.put"), false);
   assert.match(sw, /keys\.filter\(\(k\) => k !== CACHE\)/);

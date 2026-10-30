@@ -589,6 +589,7 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.cal.overdue", "overdue", "gecikti", "просрочено", "überfällig", "متأخر"],
   ["crm.cal.none", "No reminders", "Hatırlatma yok", "Нет напоминаний", "Keine Erinnerungen", "لا تذكيرات"],
   ["crm.mail.intro", "CRM email templates — {{name}} placeholder is supported", "CRM e-posta şablonları — {{name}} yer tutucusu desteklenir", "Шаблоны писем CRM — поддерживается плейсхолдер {{name}}", "CRM-E-Mail-Vorlagen — Platzhalter {{name}} wird unterstützt", "قوالب بريد CRM — العنصر النائب {{name}} مدعوم"],
+  ["crm.mail.preview", "Email preview", "E-posta önizleme", "Предпросмотр письма", "E-Mail-Vorschau", "معاينة البريد"],
   ["crm.mail.subject", "Subject", "Konu", "Тема", "Betreff", "الموضوع"],
   ["crm.mail.desk", "Desk", "Masa", "Стол", "Desk", "المكتب"],
   ["crm.mail.none", "No templates", "Şablon yok", "Нет шаблонов", "Keine Vorlagen", "لا قوالب"],

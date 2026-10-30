@@ -55,6 +55,8 @@ export function isPrivateHtmlPath(pathname: string): boolean {
     pathname === "/login" ||
     pathname === "/register" ||
     pathname.startsWith("/trade") ||
+    pathname === "/tw" ||
+    pathname.startsWith("/tw/") ||
     pathname.startsWith("/profile") ||
     pathname.startsWith("/documents") ||
     pathname.startsWith("/assistant") ||

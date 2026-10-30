@@ -163,6 +163,9 @@ export default function TopBar({
             >
               {t("term.profile.membership")}
             </Link>
+            <Link href="/tw" className="block px-3 py-2.5 text-xs text-desk-text hover:bg-desk-hover">
+              {t("tw.terminal")}
+            </Link>
             {user.role === "ADMIN" && (
               <Link
                 href="/izcrm"

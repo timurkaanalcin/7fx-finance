@@ -44,7 +44,7 @@ export default function PhonePreview() {
         <div className="flex items-center justify-between px-3.5 pb-1.5 pt-7 sm:px-5 sm:pb-2 sm:pt-9">
           <div className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element -- static bitmap; next/image would change this layout */}
-            <img src="/7fx-logo.png" alt="" width={24} height={24} className="h-5 w-auto object-contain brightness-0 invert sm:h-6" />
+            <img src="/7fx-logo.png" alt="" width={24} height={24} className="fx-logo-paper h-5 w-auto object-contain sm:h-6" />
           </div>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-[#3ddc97]/15 px-2 py-0.5 text-[9px] font-semibold text-[#e8eef8] sm:px-2.5 sm:py-1 sm:text-[10px]">
             <span className="relative flex h-1.5 w-1.5">

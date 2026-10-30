@@ -24,6 +24,7 @@ export type Candle = {
   high: number;
   low: number;
   close: number;
+  volume?: number;
 };
 
 async function tickFromQuote(
@@ -150,6 +151,7 @@ export async function getCandles(symbol: string, timeframe: string): Promise<{
       high: c.high,
       low: c.low,
       close: c.close,
+      ...(c.volume != null && Number.isFinite(c.volume) ? { volume: c.volume } : {}),
     })),
     error: result.error ? publicErrorText(result.error, "Quote unavailable") : undefined,
     stale: result.stale,

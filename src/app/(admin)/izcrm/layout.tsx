@@ -17,6 +17,7 @@ import { CrmShellSkeleton } from "@/components/crm/CrmStates";
 import CrmCommandPalette from "@/components/crm/CrmCommandPalette";
 import CrmMobileChrome from "@/components/crm/CrmMobileChrome";
 import CrmShortcuts from "@/components/crm/CrmShortcuts";
+import BrandLogo from "@/components/landing/BrandLogo";
 
 function AdminChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -98,7 +99,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
     <div className="fx-crm fx-crm-root flex min-h-screen bg-white text-black" dir={dir}>
       <aside className="fx-crm-side hidden w-[200px] shrink-0 flex-col border-r border-black/10 bg-white text-black lg:flex">
         <div className="fx-crm-brand flex h-11 items-center gap-2 border-b border-black/10 px-3">
-          <span className="fx-crm-mark" aria-hidden="true">7FX</span>
+          <BrandLogo tone="theme" height={28} className="fx-crm-mark h-7 w-7 object-contain" />
           <div className="min-w-0">
             <div className="truncate text-[12px] font-normal leading-tight text-black">{t("crm.desk")}</div>
             <div className="text-[12px] font-normal uppercase tracking-wider text-neutral-500">{t("crm.brokerCrm")}</div>
@@ -173,7 +174,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
 
       <div className="flex min-w-0 flex-1 flex-col bg-white">
         <header className="fx-crm-topbar flex h-11 items-center gap-2 border-b border-black/10 bg-white px-3">
-          <span className="fx-crm-mark lg:hidden" aria-hidden="true">7FX</span>
+          <BrandLogo tone="theme" height={28} className="fx-crm-mark h-7 w-7 shrink-0 object-contain lg:hidden" />
           <div className="fx-crm-mobile-nav flex max-w-[50%] gap-1 overflow-x-auto md:hidden">
             {[...flatMobile.filter((n) => !n.document).slice(0, 8), ...flatMobile.filter((n) => n.document)].map((n) => {
               const className = `whitespace-nowrap rounded px-2 py-1 text-[10px] ${
