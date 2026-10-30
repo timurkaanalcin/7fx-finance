@@ -231,11 +231,21 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
   );
 }
 
+function AdminLayoutBody({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  if (pathname === "/izcrm/crmv2" || pathname?.startsWith("/izcrm/crmv2/")) return <>{children}</>;
+  return (
+    <>
+      <SymbolCatalogSync />
+      <AdminChrome>{children}</AdminChrome>
+    </>
+  );
+}
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <CrmI18n>
-      <SymbolCatalogSync />
-      <AdminChrome>{children}</AdminChrome>
+      <AdminLayoutBody>{children}</AdminLayoutBody>
     </CrmI18n>
   );
 }
