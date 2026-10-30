@@ -44,6 +44,11 @@ export const MARKETING_COPY: Record<string, PublicPageCopy> = {
     description:
       "Answers about 7FX markets, languages, stock sessions, and what this website does and does not claim.",
   },
+  "/licenses": {
+    title: "Licenses on 7FX",
+    description:
+      "License records published on 7FX. Fields that are not on file are shown as a dash.",
+  },
 };
 
 export type AssetPage = {

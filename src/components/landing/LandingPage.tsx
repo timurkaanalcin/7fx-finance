@@ -105,6 +105,9 @@ export default function LandingPage() {
                 {item.label}
               </button>
             ))}
+            <Link href="/licenses" className="fx-nav-link">
+              {t("landing.nav.licenses")}
+            </Link>
           </nav>
 
           <div className="flex items-center gap-2">
@@ -148,6 +151,9 @@ export default function LandingPage() {
                 {item.label}
               </button>
             ))}
+            <Link href="/licenses" onClick={() => setMenuOpen(false)}>
+              {t("landing.nav.licenses")}
+            </Link>
             <Link href="/login" data-fx-cta="sign-in" onClick={() => setMenuOpen(false)}>
               {t("landing.signIn")}
             </Link>
@@ -387,6 +393,7 @@ export default function LandingPage() {
               <Link href="/markets">{t("landing.nav.markets")}</Link>
               <Link href="/platform">{t("landing.nav.platform")}</Link>
               <Link href="/faq">{t("landing.nav.faq")}</Link>
+              <Link href="/licenses">{t("landing.nav.licenses")}</Link>
               <Link href="/ios">{t("landing.ios.pageTitle")}</Link>
               {siteHost ? <span className="fx-host">{siteHost}</span> : null}
             </div>

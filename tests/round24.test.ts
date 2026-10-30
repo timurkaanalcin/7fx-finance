@@ -53,7 +53,7 @@ function main() {
   assert.equal(presence.includes("take: 50"), false);
   assert.match(read("src/components/crm/Presence.tsx"), /presence\?skip=/);
 
-  for (const pathName of ["/markets", "/markets/crypto", "/markets/forex", "/markets/commodities", "/markets/indices", "/markets/stocks", "/platform", "/faq"]) {
+  for (const pathName of ["/markets", "/markets/crypto", "/markets/forex", "/markets/commodities", "/markets/indices", "/markets/stocks", "/platform", "/faq", "/licenses"]) {
     assert.ok(isMarketingPath(pathName), pathName);
     assert.ok((MARKETING_PATHS as readonly string[]).includes(pathName), pathName);
     assert.equal(shouldNoindex("7fx.customer.org.tr", pathName), false, pathName);

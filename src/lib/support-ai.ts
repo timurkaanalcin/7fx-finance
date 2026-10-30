@@ -29,7 +29,7 @@ const FAQ: Faq[] = [
   { keys: ["sifre", "giris yap", "login", "giremiyorum"], answer: "Giriş sorunlarında e-posta ve şifrenizi kontrol edin. Şifrenizi Profil bölümünden değiştirebilirsiniz; hesabınıza erişemiyorsanız 'temsilci' yazarak canlı temsilciye bağlanabilirsiniz." },
   { keys: ["piyasa", "enstruman", "sembol", "forex", "hisse", "kripto", "altin", "emtia"], answer: "7FX üzerinden forex pariteleri, hisse ve endeksler, kripto varlıklar ve altın/petrol gibi emtialar tek hesap altında web terminalinden izlenip işlem yapılabilir." },
   { keys: ["guven", "ssl", "guvenlik", "kyc", "aml"], answer: "Bağlantılar SSL/TLS ile şifrelenir; oturum çerezli kimlik doğrulama ve korumalı yönetim alanları kullanılır. Gerekli durumlarda kimlik/uyum (KYC/AML) kontrolleri istenebilir." },
-  { keys: ["lisans", "regulasyon", "duzenleyici"], answer: "Lisans bilgileri yalnızca ana sayfadaki Lisanslar bölümünde, resmi kayıt bağlantısıyla birlikte yayımlanır. Orada yer almayan bir lisans bilgisini teyit edemem." },
+  { keys: ["lisans", "regulasyon", "duzenleyici"], answer: "Lisans bilgileri yalnızca /licenses sayfasında, resmi kayıt bağlantısıyla birlikte yayımlanır. Orada yer almayan bir lisans bilgisini teyit edemem." },
   { keys: ["mobil", "uygulama", "telefon", "pwa", "indir"], answer: "Platform masaüstü ve mobil tarayıcılarda çalışır; tarayıcı menüsünden Ana ekrana ekle diyerek uygulama gibi kullanabilirsiniz." },
   { keys: ["bakiye", "pozisyon", "emir", "kar", "zarar", "hesabim"], answer: "Hesabınıza özel bakiye, pozisyon ve işlem bilgilerini terminal ve Profil sayfasında görebilirsiniz. Hesabınıza özel bir konuyu incelemek için 'temsilci' yazarak canlı temsilciye bağlanın." },
 ];

@@ -22,6 +22,7 @@ export const MARKETING_PATHS = [
   "/markets/stocks",
   "/platform",
   "/faq",
+  "/licenses",
   "/ios",
 ] as const;
 

@@ -10,6 +10,7 @@ const NAV_HREFS = [
   { href: "/markets", key: "markets" },
   { href: "/platform", key: "platform" },
   { href: "/faq", key: "faq" },
+  { href: "/licenses", key: "licenses" },
 ] as const;
 
 /** Light public document. Server-rendered. Copy follows fx_lang; missing cookie stays English. */

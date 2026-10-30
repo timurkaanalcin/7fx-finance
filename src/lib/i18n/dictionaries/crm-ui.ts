@@ -1047,7 +1047,7 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.traders.sortLogin", "Last login", "Son giriş", "Последний вход", "Letzte Anmeldung", "آخر دخول"],
   ["crm.traders.sortSale", "Sale status", "Satış durumu", "Статус продажи", "Verkaufsstatus", "حالة البيع"],
   ["crm.queue.csv", "Download this filter as CSV", "Bu filtreyi CSV indir", "Скачать этот фильтр как CSV", "Diesen Filter als CSV herunterladen", "تنزيل هذا المرشح كملف CSV"],
-  ["crm.lic.empty", "No licenses yet. The landing section stays hidden.", "Henüz lisans yok. Ana sayfa bölümü gizli kalır.", "Лицензий пока нет. Блок на главной скрыт.", "Noch keine Lizenzen. Der Bereich auf der Startseite bleibt verborgen.", "لا توجد تراخيص بعد. يبقى قسم الصفحة الرئيسية مخفيًا."],
+  ["crm.lic.empty", "No licenses yet. The public licenses page stays empty.", "Henüz lisans yok. Herkese açık lisanslar sayfası boş kalır.", "Лицензий пока нет. Публичная страница лицензий пуста.", "Noch keine Lizenzen. Die öffentliche Lizenzseite bleibt leer.", "لا توجد تراخيص بعد. تبقى صفحة التراخيص العامة فارغة."],
   ["crm.spon.empty", "No sponsors yet. The landing section stays hidden.", "Henüz sponsor yok. Ana sayfa bölümü gizli kalır.", "Спонсоров пока нет. Блок на главной скрыт.", "Noch keine Sponsoren. Der Bereich auf der Startseite bleibt verborgen.", "لا يوجد رعاة بعد. يبقى قسم الصفحة الرئيسية مخفيًا."],
   ["crm.list.clear", "Clear filters", "Filtreleri temizle", "Сбросить фильтры", "Filter löschen", "مسح التصفية"],
   ["crm.list.showing", "Showing {from}–{to} of {total}", "Gösterilen {from}–{to} / {total}", "Показано {from}–{to} из {total}", "Anzeige {from}–{to} von {total}", "عرض {from}–{to} من {total}"],
