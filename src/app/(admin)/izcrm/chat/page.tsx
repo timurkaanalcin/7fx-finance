@@ -607,7 +607,11 @@ export default function ChatPage() {
   }
 
   function onFormat(action: FormatAction) {
-    applyFormatAction(messageRef.current, message, setMessage, action);
+    applyFormatAction(messageRef.current, message, setMessage, action, {
+      bold: i18n("crm.chat.fmtBold"),
+      italic: i18n("crm.chat.fmtItalic"),
+      underline: i18n("crm.chat.fmtUnderline"),
+    });
   }
 
   const pingPresence = useCallback(

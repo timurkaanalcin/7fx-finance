@@ -2,13 +2,14 @@ import { NextResponse } from "next/server";
 import { requireAdminWrite, writeAudit } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { isScopedStaff } from "@/lib/crm-scope";
+import { crmApiText } from "@/lib/i18n/request-text";
 
 export const dynamic = "force-dynamic";
 
 /** Bulk mark leads invalid/valid by pasted list of emails / phones / ids. */
 export async function POST(req: Request) {
   const admin = await requireAdminWrite("canManageUsers");
-  if (!admin || isScopedStaff(admin)) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  if (!admin || isScopedStaff(admin)) return NextResponse.json({ error: crmApiText(req, "crm.api.unauthorized") }, { status: 403 });
   const body = await req.json().catch(() => ({}));
   const invalid = body.invalid !== false;
   const tokens = Array.from(
@@ -19,7 +20,7 @@ export async function POST(req: Request) {
         .filter(Boolean)
     )
   ).slice(0, 20000) as string[];
-  if (!tokens.length) return NextResponse.json({ error: "Liste boş" }, { status: 400 });
+  if (!tokens.length) return NextResponse.json({ error: crmApiText(req, "crm.api.emptyList") }, { status: 400 });
   const emails = tokens.filter((t) => t.includes("@")).map((t) => t.toLowerCase());
   const others = tokens.filter((t) => !t.includes("@"));
   const phones = others.map((t) => t.replace(/[^\d+]/g, "")).filter((t) => t.replace(/\D/g, "").length >= 6);

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdminPerm } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { crmApiText } from "@/lib/i18n/request-text";
 import { composeTicketScenario, type TicketKind } from "@/lib/ticket-scenario";
 
 export const dynamic = "force-dynamic";
@@ -9,7 +10,7 @@ const KINDS = new Set(["DEPOSIT", "WITHDRAW", "MARGIN"]);
 
 export async function POST(req: Request) {
   const admin = await requireAdminPerm("canApproveDeposits");
-  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: crmApiText(req, "crm.api.unauthorized") }, { status: 403 });
 
   const body = await req.json().catch(() => ({}));
   const id = String(body.id || "").trim();
@@ -17,11 +18,11 @@ export async function POST(req: Request) {
   const reason = body.reason != null ? String(body.reason).slice(0, 4000) : "";
 
   if (!id || !KINDS.has(kind)) {
-    return NextResponse.json({ error: "id ve kind (DEPOSIT|WITHDRAW|MARGIN) gerekli" }, { status: 400 });
+    return NextResponse.json({ error: crmApiText(req, "crm.api.idKindRequired") }, { status: 400 });
   }
 
   const facts = await loadFacts(kind as TicketKind, id, reason);
-  if (!facts) return NextResponse.json({ error: "Kayıt bulunamadı" }, { status: 404 });
+  if (!facts) return NextResponse.json({ error: crmApiText(req, "crm.api.notFound") }, { status: 404 });
 
   return NextResponse.json({
     scenario: composeTicketScenario(facts),

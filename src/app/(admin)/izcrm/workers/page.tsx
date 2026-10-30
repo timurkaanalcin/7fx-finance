@@ -439,7 +439,7 @@ export default function WorkersPage() {
                 onKeyDown={(e) => {
                   if (e.key === "Escape") setQuery("");
                 }}
-                placeholder="Ad, e-posta, masa, rol…"
+                placeholder={i18n("crm.workers.searchPh")}
                 aria-label={i18n("crm.ui.search")}
                 className="w-48 rounded border border-neutral-300 bg-white py-1 pl-2 pr-6 text-xs"
               />

@@ -235,7 +235,7 @@ export default function AdminSummaryPage() {
                 onKeyDown={(e) => {
                   if (e.key === "Escape") setQuery("");
                 }}
-                placeholder="Ad, e-posta, ID…"
+                placeholder={i18n("crm.sum.searchPh")}
                 aria-label={i18n("crm.ui.search")}
                 className="w-48 rounded border border-neutral-300 bg-white py-1 pl-2 pr-6 text-xs"
               />

@@ -5,10 +5,14 @@
  */
 import assert from "node:assert/strict";
 import {
+  AUTO_REPLY_AR,
+  AUTO_REPLY_DE,
   AUTO_REPLY_EN,
   AUTO_REPLY_IDLE_MS,
+  AUTO_REPLY_RU,
   AUTO_REPLY_TR,
   LIVE_SUPPORT_NOTIFY_TITLE,
+  supportReplyTitle,
   SYSTEM_WORKER_ID,
   SYSTEM_WORKER_NAME,
   autoReplyText,
@@ -35,8 +39,15 @@ function main() {
   assert.equal(autoReplyText("TR"), AUTO_REPLY_TR);
   assert.equal(autoReplyText("en"), AUTO_REPLY_EN);
   assert.equal(autoReplyText(null), AUTO_REPLY_EN);
-  assert.equal(autoReplyText("ru"), AUTO_REPLY_EN);
+  assert.equal(autoReplyText("ru"), AUTO_REPLY_RU);
+  assert.equal(autoReplyText("ru-RU"), AUTO_REPLY_RU);
+  assert.equal(autoReplyText("de"), AUTO_REPLY_DE);
+  assert.equal(autoReplyText("ar"), AUTO_REPLY_AR);
   assert.equal(autoReplyText(""), AUTO_REPLY_EN);
+  assert.equal(autoReplyText("fr"), AUTO_REPLY_EN);
+  assert.equal(supportReplyTitle("tr"), "Destek ekibinden yeni mesaj");
+  assert.equal(supportReplyTitle(null), "New message from support");
+  assert.equal(supportReplyTitle("de"), "Neue Nachricht vom Support");
 
   assert.equal(LIVE_SUPPORT_NOTIFY_TITLE, "Live support: new message");
   assert.equal(SYSTEM_WORKER_NAME, "7FX");
