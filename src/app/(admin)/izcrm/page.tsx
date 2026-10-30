@@ -166,7 +166,7 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-2">
+      <div className="fx-dash-split">
         <section className="fx-dash-panel overflow-hidden">
           <div className="flex items-center justify-between border-b border-neutral-200 px-3 py-2">
             <h2 className="text-xs font-normal uppercase tracking-wider text-neutral-500">
@@ -273,7 +273,7 @@ export default function AdminDashboard() {
         </section>
       </div>
 
-      <div className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="fx-dash-links">
         {[
           { href: "/izcrm/traders", title: i18n("crm.nav.traders"), desc: i18n("crm.dash.cardTraders") },
           { href: "/izcrm/tickets", title: i18n("crm.nav.tickets"), desc: i18n("crm.dash.cardTickets") },

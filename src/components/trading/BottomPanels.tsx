@@ -2414,7 +2414,7 @@ export default function BottomPanels({
       )}
 
       {/* Mobile card list — elite dense cards */}
-      <div className={`flex-1 space-y-2 overflow-auto p-2.5 md:hidden ${tab === "open" ? "" : "hidden"}`}>
+      <div className="fx-trade-cards flex min-h-0 flex-1 flex-col gap-3 overflow-auto p-3 md:hidden">
         {tab === "open" && (
           <>
             {openPositions.length === 0 && (
@@ -2489,7 +2489,7 @@ export default function BottomPanels({
       </div>
 
       {/* Desktop tables — unchanged structure */}
-      <div className={`fx-blotter min-h-0 flex-1 overflow-auto ${tab === "open" ? "hidden md:block" : ""}`}>
+      <div className={`fx-blotter min-h-0 flex-1 overflow-auto ${tab === "open" ? "hidden md:block" : "hidden md:block"}`}>
         {tab === "open" && (
           <table className="fx-blotter-open min-w-full text-left text-[11px]">
             <thead className="sticky top-0 z-[1] bg-desk-bg/95 text-[9px] font-normal uppercase tracking-wider text-desk-muted backdrop-blur-sm">

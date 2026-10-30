@@ -88,7 +88,7 @@ export default function TopBar({
   const shortId = `#${user.id.slice(-10)}`;
 
   const avatar = (
-    <div className="flex h-7 w-7 items-center justify-center fx-avatar rounded-full bg-gradient-to-br from-desk-elev to-desk-hover text-[11px] font-bold text-desk-text ring-1 ring-desk-border/80 md:text-xs">
+    <div className="fx-avatar flex h-7 w-7 items-center justify-center rounded-full border border-white/20 bg-transparent text-[12px] font-normal text-desk-text">
       {user.name.slice(0, 1).toUpperCase()}
     </div>
   );
@@ -106,7 +106,7 @@ export default function TopBar({
           className="h-6 w-6 rounded-[8px] object-cover ring-1 ring-desk-border/80 md:h-7 md:w-7"
         />
         <div className="hidden leading-none sm:block">
-          <span className="text-sm font-semibold tracking-tight text-desk-text">7FX</span>
+          <span className="text-sm font-normal tracking-tight text-desk-text">7FX</span>
           <span className="mt-0.5 block text-[9px] font-medium uppercase tracking-[0.12em] text-desk-muted">
             {t("common.terminal")}
           </span>

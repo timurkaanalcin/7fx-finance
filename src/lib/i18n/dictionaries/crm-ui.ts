@@ -1066,6 +1066,8 @@ const SPEC: readonly (readonly [string, string, string, string, string, string])
   ["crm.kb.help", "Show this help", "Bu yardımı göster", "Показать эту справку", "Diese Hilfe zeigen", "إظهار هذه المساعدة"],
   ["crm.kb.jump", "Quick jump", "Hızlı geçiş", "Быстрый переход", "Schnellsprung", "انتقال سريع"],
   ["crm.kb.safe", "Shortcuts pause while you type. They never approve, reject, or move money.", "Yazarken kısayollar durur. Onay, red veya para hareketi tetiklemezler.", "Пока вы печатаете, сочетания молчат. Они не подтверждают, не отклоняют и не двигают деньги.", "Kürzel pausieren beim Tippen. Sie genehmigen, lehnen ab oder bewegen kein Geld.", "تتوقف الاختصارات أثناء الكتابة. لا توافق ولا ترفض ولا تحرّك المال."],
+  ["crm.nav.more", "More", "Diğer", "Ещё", "Mehr", "المزيد"],
+  ["crm.sheet.close", "Close", "Kapat", "Закрыть", "Schließen", "إغلاق"],
 ];
 
 function pack(index: 1|2|3|4|5): Dict {

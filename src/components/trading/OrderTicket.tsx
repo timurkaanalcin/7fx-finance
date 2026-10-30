@@ -1118,7 +1118,7 @@ export default function OrderTicket({
   if (modal) {
     return (
       <div
-        className="fx-lx-overlay fixed inset-0 z-[80] flex items-end justify-center bg-black/55 p-0 backdrop-blur-[2px] sm:items-center sm:p-4"
+        className="fx-lx-overlay fixed inset-0 z-[80] flex items-end justify-center bg-black/55 p-0 backdrop-blur-[2px] lg:items-center lg:p-4"
         role="dialog"
         aria-modal="true"
         aria-label={t("term.ot.aria")}
@@ -1128,7 +1128,7 @@ export default function OrderTicket({
       >
         <div
           ref={rootRef}
-          className={`fx-order-sheet flex max-h-[92vh] w-full max-w-[420px] flex-col overflow-hidden rounded-t-[20px] border border-desk-border bg-desk-panel shadow-2xl sm:rounded-[16px] ${className}`}
+          className={`fx-order-sheet flex max-h-[92vh] w-full max-w-[420px] flex-col overflow-hidden rounded-t-[16px] border border-desk-border bg-desk-panel shadow-2xl lg:rounded-[16px] ${className}`}
         >
           {body}
         </div>
