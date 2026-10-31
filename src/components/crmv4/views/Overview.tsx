@@ -18,6 +18,7 @@ import { DeskTools, TaskDesk } from "../round14";
 import { readJson } from "@/lib/crmv4/local";
 import { crmv4Href } from "@/lib/crmv4/sections";
 import { EntryQuality, emailOk } from "../round17";
+import { PerfBoard } from "../round18";
 import { Bars, Card, Chip, Field, Kpi, Lab, Msg, Sheet, State, auditExport, downloadCsv, fmtNum, localeTag, money, sendJson, useJson, when, type Tx, type UserRow } from "../kit";
 
 type Props = { base: string; tx: Tx; locale: string; name?: string };
@@ -73,6 +74,7 @@ export default function Overview({ base, tx, locale, name }: Props) {
         <DeskBoard locale={locale} v4={(key) => crmv4Text(locale, key)} tx={tx} />
       ) : (
         <div className="c4-stack">
+        <PerfBoard v4={(key) => crmv4Text(locale, key)} />
         <PinnedHome base={base} v4={(key) => crmv4Text(locale, key)} />
         <ChurnBoard base={base} v4={(key) => crmv4Text(locale, key)} />
         <CityMap v4={(key) => crmv4Text(locale, key)} />

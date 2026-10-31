@@ -11,7 +11,8 @@ import { crmv2Text, type CrmV2CopyKey } from "@/lib/crmv2/copy";
 import { crmv4Text, type CrmV4CopyKey } from "@/lib/crmv4/copy";
 import { readJson, writeJson } from "@/lib/crmv4/local";
 import { CRM_V4_MORE, CRM_V4_NAV, CRM_V4_SECTIONS, CRM_V4_TABS, crmv4Href, type CrmV4SectionId } from "@/lib/crmv4/sections";
-import { CommandPalette, ShortcutHelp, ShortcutHost } from "./round1";
+import { CommandPalette, ShortcutHost } from "./round1";
+import { DeskFoot, HelpSheet } from "./round18";
 import { HelpCenter, OfflineBanner, Tour, UndoHost, densityMode, storeDensity } from "./round2";
 import { rememberToast, toastHistory } from "./round3";
 import { AnnounceBar, DeskBoundary, FreshnessBar, LuxeSkeleton, PullSurface, storedAccent, useInboxCursor } from "./round4";
@@ -394,7 +395,7 @@ function Shell({ base, section, name }: Props) {
             )}
             </DeskBoundary>
           </main>
-          <footer className="c4-foot">{v4("footer")}</footer>
+          <DeskFoot section={heading} name={name} v4={v4} onHelp={() => setHelpOpen(true)} />
         </div>
       </div>
 
@@ -541,7 +542,7 @@ function Shell({ base, section, name }: Props) {
       )}
       <Fab base={base} v4={v4} onSearch={() => setPaletteOpen(true)} />
       <CommandPalette base={base} open={paletteOpen} onClose={() => setPaletteOpen(false)} v4={v4} />
-      <ShortcutHelp open={helpOpen} onClose={() => setHelpOpen(false)} v4={v4} />
+      <HelpSheet open={helpOpen} onClose={() => setHelpOpen(false)} v4={v4} closeLabel={tx("close")} />
       <HelpCenter open={guideOpen} onClose={() => setGuideOpen(false)} v4={v4} />
       <UndoHost v4={v4} />
       {logOpen && (
