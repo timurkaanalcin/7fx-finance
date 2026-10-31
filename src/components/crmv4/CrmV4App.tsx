@@ -15,6 +15,7 @@ import { CommandPalette, ShortcutHelp, ShortcutHost } from "./round1";
 import { HelpCenter, OfflineBanner, Tour, UndoHost, densityMode, storeDensity } from "./round2";
 import { rememberToast, toastHistory } from "./round3";
 import { AnnounceBar, DeskBoundary, FreshnessBar, LuxeSkeleton, PullSurface, storedAccent, useInboxCursor } from "./round4";
+import { IdleWarning, storedRole, storedZebra } from "./round5";
 import type { Accent } from "@/lib/crmv4/round4";
 import { Sheet, sendJson, useJson, when } from "./kit";
 import Overview from "./views/Overview";
@@ -73,6 +74,8 @@ function Shell({ base, section, name }: Props) {
   const [gearOpen, setGearOpen] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("light");
   const [accent, setAccent] = useState<Accent>("champagne");
+  const [role, setRole] = useState<"desk" | "viewer">("desk");
+  const [zebra, setZebra] = useState(false);
   const [pull, setPull] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -93,9 +96,19 @@ function Shell({ base, section, name }: Props) {
     setToastsLog(toastHistory());
     setScratch(readJson<Scratch[]>(NOTES_KEY, []));
     setAccent(storedAccent());
+    setRole(storedRole());
+    setZebra(storedZebra());
+    const onRole = (event: Event) => setRole((event as CustomEvent<string>).detail === "viewer" ? "viewer" : "desk");
+    const onZebra = (event: Event) => setZebra(Boolean((event as CustomEvent<boolean>).detail));
+    window.addEventListener("crmv4:role", onRole);
+    window.addEventListener("crmv4:zebra", onZebra);
     const onAccent = (event: Event) => setAccent((event as CustomEvent<Accent>).detail || "champagne");
     window.addEventListener("crmv4:accent", onAccent);
-    return () => window.removeEventListener("crmv4:accent", onAccent);
+    return () => {
+      window.removeEventListener("crmv4:accent", onAccent);
+      window.removeEventListener("crmv4:role", onRole);
+      window.removeEventListener("crmv4:zebra", onZebra);
+    };
   }, []);
 
   useEffect(() => {
@@ -170,9 +183,10 @@ function Shell({ base, section, name }: Props) {
   });
 
   return (
-    <div data-crmv4-root="" data-theme={theme} data-accent={accent} data-density={density} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
+    <div data-crmv4-root="" data-theme={theme} data-accent={accent} data-role={role} data-zebra={zebra ? "1" : "0"} data-density={density} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
       <a className="c4-skip" href="#c4-main">{v4("skipContent")}</a>
       <OfflineBanner v4={v4} />
+      <IdleWarning v4={v4} />
       <ShortcutHost base={base} v4={v4} onPalette={() => setPaletteOpen(true)} onHelp={setHelpOpen} />
       <Tour v4={v4} />
       <header className="c4-top">

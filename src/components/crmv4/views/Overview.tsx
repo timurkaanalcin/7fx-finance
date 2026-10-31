@@ -8,6 +8,7 @@ import { DeskBoard, TasksBoard } from "../round1";
 import { InsightWidgets } from "../round2";
 import { AgentKpis, CampaignMix, ReminderAlerts } from "../round3";
 import { CountryHeat, DeskLanding, HourHeat, MergeList, NextQueue, SmartLists, StaffList, WorkloadBoard } from "../round4";
+import { DailySheet, DeskGoals, ForecastLine, MiniChart } from "../round5";
 import { crmv4Href } from "@/lib/crmv4/sections";
 import { Bars, Card, Chip, Field, Kpi, Lab, Msg, Sheet, State, auditExport, downloadCsv, fmtNum, localeTag, money, sendJson, useJson, when, type Tx, type UserRow } from "../kit";
 
@@ -117,14 +118,19 @@ function Insights({ tx, locale, finance, report }: { tx: Tx; locale: string; fin
   const board = useJson<{ rows?: { object?: string; traders?: number; ftdCount?: number; depositAmount?: number; withdrawalAmount?: number; netDeposit?: number }[] }>("/api/admin/analytics/scoreboard");
   const summary = useJson<{ headline?: { balance?: number; equity?: number; margin?: number }; accounts?: { name?: string; email?: string; balance?: number; equity?: number; margin?: number; openPositions?: number }[] }>("/api/admin/summary");
   const k = finance?.kpis || {};
+  const trend = [Number(k.income) || 0, Number(k.net) || 0, Number(k.outcome) || 0, Number(k.floatingPnL) || 0];
   return (
-    <div className="c4-stack">
+    <div className="c4-stack c4-report-luxe">
+      <MiniChart points={trend} label={tx("net")} />
       <div className="c4-kpis">
         <Kpi tone="violet" label={tx("income")} value={money(k.income, "USD", locale)} href="#" />
         <Kpi tone="cyan" label={tx("outcome")} value={money(k.outcome, "USD", locale)} href="#" />
         <Kpi tone="amber" label={tx("net")} value={money(k.net, "USD", locale)} href="#" />
         <Kpi tone="emerald" label={tx("floating")} value={money(k.floatingPnL, "USD", locale)} href="#" />
       </div>
+      <ForecastLine v4={(key) => crmv4Text(locale, key)} locale={locale} />
+      <DeskGoals v4={(key) => crmv4Text(locale, key)} />
+      <DailySheet v4={(key) => crmv4Text(locale, key)} tx={tx} locale={locale} />
       <Card title={tx("report")}>
         <div className="c4-form c4-form-2" style={{ padding: 16 }}>
           <Field label={tx("depositsAmount")} value={money(report.depositsAmount, "USD", locale)} />

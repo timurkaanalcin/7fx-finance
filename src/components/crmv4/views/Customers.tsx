@@ -12,6 +12,7 @@ import { ActivityTimeline, BulkBar, CustomerDeskTable, FilterBuilder, ReviewDial
 import { Customer360, DuplicateScreen, RetentionForm, RoundRobinPreview, StatementView, pushUndo } from "../round2";
 import { ContactLine, DocumentsCenter, LocalTime, NoteTemplates, Pipeline, PresenceBadge, TradingOverview, columnPreset, parseOperators } from "../round3";
 import { CompareBoard, QuickChips, ValueSpark, WorkspaceTabs, pushWorkspace } from "../round4";
+import { BirthdayList, BulkNote, CallbackButton, DeskSwitch, JourneyMap, NoteBody, SearchHistory, WinLossCard, customerSegment, notePinned, rememberSearch, toggleNotePin } from "../round5";
 import { Card, Chip, Field, Lab, Msg, Pager, State, Status, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, statusTone, useJson, when, type Tx, type UserRow } from "../kit";
 
 const COLUMNS = ["customer", "country", "desk", "sale", "retention", "balance", "status"] as const;
@@ -67,6 +68,8 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
   const [inspectId, setInspectId] = useState("");
   const [pipelineOn, setPipelineOn] = useState(false);
   const [ops, setOps] = useState("");
+  const [deskPick, setDeskPick] = useState("");
+  const [vipOnly, setVipOnly] = useState(false);
   const memory = useDeskMemory();
   const v4 = (key: CrmV4CopyKey) => crmv4Text(locale, key);
   const parsed = parseOperators(ops);
@@ -78,7 +81,13 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
     if (!parsed.text) return true;
     return `${row.name || ""} ${row.email || ""}`.toLowerCase().includes(parsed.text.toLowerCase());
   });
-  const shown = visibleCustomers(operated, rules, memory.tags, memory.pins, pinnedOnly);
+  const listed = visibleCustomers(operated, rules, memory.tags, memory.pins, pinnedOnly);
+  const shown = listed.filter((row) => (deskPick ? (row.desk || "—") === deskPick : true) && (!vipOnly || customerSegment(row) === "vip"));
+  const deskNames: string[] = [];
+  for (const row of listed) {
+    const name = row.desk || "";
+    if (name && !deskNames.includes(name)) deskNames.push(name);
+  }
   const duplicates = duplicateEmails(shown);
 
   useEffect(() => {
@@ -87,6 +96,8 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
     setDense(window.localStorage.getItem(DENSE_KEY) === "1");
     setPresets(readJson<Preset[]>(PRESET_KEY, []));
   }, []);
+
+  useEffect(() => { if (q) rememberSearch(q); }, [q]);
 
   const idKey = shown.map((row) => row.id).join(",");
   useEffect(() => {
@@ -152,11 +163,14 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
           <p className="c4-muted c4-meta">{v4("localOnly")}</p>
         </div>
         <div className="c4-tools">
-          <button type="button" className="c4-btn" onClick={() => setFiltersOpen((open) => !open)}>{filtersOpen ? v4("hideFilters") : v4("showFilters")}</button>
+          <button type="button" className="c4-btn c4-sheet-toggle" onClick={() => setFiltersOpen((open) => !open)}>{filtersOpen ? v4("hideFilters") : v4("filterSheet")}</button>
+          <button type="button" className="c4-chip" data-on={vipOnly ? "1" : "0"} onClick={() => setVipOnly((on) => !on)}>{v4("vipOnly")}</button>
           <button type="button" className="c4-btn" onClick={() => setBuilderOpen((open) => !open)}>{builderOpen ? v4("hideBuilder") : v4("builder")}</button>
           <button type="button" className="c4-chip" data-on={pipelineOn ? "1" : "0"} onClick={() => setPipelineOn((on) => !on)}>{v4("pipeline")}</button>
           <input className="c4-field" style={{ maxWidth: 220 }} value={ops} aria-label={v4("operatorSearch")} placeholder="email:ada country:TR" onChange={(event) => setOps(event.target.value)} />
           <QuickChips saleStatus={saleStatus} v4={v4} onPick={(status) => setQuery({ saleStatus: status })} />
+          <DeskSwitch desks={deskNames} current={deskPick} v4={v4} onPick={setDeskPick} />
+          <SearchHistory v4={v4} onPick={(query) => setQuery({ q: query })} />
           <button type="button" className="c4-chip" data-on={followUp === "overdue" ? "1" : "0"} onClick={() => setQuery({ followUp: followUp === "overdue" ? "" : "overdue" })}>{v4("followUpDue")}</button>
           <button type="button" className="c4-chip" data-on={pinnedOnly ? "1" : "0"} onClick={() => setPinnedOnly((on) => !on)}>{v4("pinnedOnly")}</button>
           <button type="button" className="c4-btn" onClick={() => setQuery({ status: "", saleStatus: "", retentionStatus: "", country: "", presence: "", ftd: "", sort: "", followUp: "" })}>{v4("clearFilters")}</button>
@@ -235,9 +249,11 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
           </div>
         )}
         <BulkBar ids={selected} v4={v4} tx={tx} onDone={() => { setSelected([]); data.reload(); memory.setTags(readTags()); }} />
+        <BulkNote ids={selected} v4={v4} tx={tx} onDone={() => { setSelected([]); data.reload(); }} />
+        <BirthdayList rows={shown} v4={v4} />
         <form
           key={`${saleStatus}|${retentionStatus}|${country}|${presence}|${ftd}`}
-          className="c4-filters"
+          className="c4-filters c4-filter-sheet"
           data-open={filtersOpen ? "1" : "0"}
           onSubmit={(event) => {
             event.preventDefault();
@@ -407,7 +423,7 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           <Field label={tx("ftd")} value={u.ftd ? tx("yes") : tx("no")} />
         </div>
       )}
-      {u && <div className="c4-detail-tools"><ValueSpark id={id} tx={tx} v4={v4} locale={locale} /><RetentionForm id={id} tx={tx} v4={v4} onDone={user.reload} /><StatementView id={id} tx={tx} v4={v4} locale={locale} /><NoteTemplates v4={v4} onUse={async (body) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { addNote: body }); user.reload(); }} /><DocumentsCenter id={id} email={u.email || ""} tx={tx} v4={v4} locale={locale} /><TradingOverview id={id} tx={tx} v4={v4} locale={locale} /></div>}
+      {u && <div className="c4-detail-tools"><JourneyMap id={id} v4={v4} /><WinLossCard id={id} v4={v4} /><CallbackButton id={id} name={u.name || u.email || ""} v4={v4} tx={tx} /><ValueSpark id={id} tx={tx} v4={v4} locale={locale} /><RetentionForm id={id} tx={tx} v4={v4} onDone={user.reload} /><StatementView id={id} tx={tx} v4={v4} locale={locale} /><NoteTemplates v4={v4} onUse={async (body) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { addNote: body }); user.reload(); }} /><DocumentsCenter id={id} email={u.email || ""} tx={tx} v4={v4} locale={locale} /><TradingOverview id={id} tx={tx} v4={v4} locale={locale} /></div>}
       <div className="c4-with-side">
         <nav className="c4-side" aria-label={tx("customers")}>
           {PARTS.map((item) => (
@@ -657,13 +673,20 @@ function NoteForm({ tx, team, teams, onSubmit }: { tx: Tx; team?: string; teams?
 }
 
 function NoteList({ rows, tx, locale }: { rows: NoteRow[]; tx: Tx; locale: string }) {
+  const [pinTick, setPinTick] = useState(0);
   if (!rows.length) return <p className="c4-muted" style={{ padding: 16 }}>{tx("emptyNotes")}</p>;
+  const pins = rows.filter((row) => notePinned(row.id)).map((row) => row.id);
+  const ordered = [...rows].sort((a, b) => Number(pins.includes(b.id)) - Number(pins.includes(a.id)));
+  const v4 = (key: CrmV4CopyKey) => crmv4Text(locale, key);
   return (
-    <ul>
-      {rows.map((row) => (
-        <li key={row.id} style={{ padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
-          <div>{row.body}</div>
-          <div className="c4-muted">{row.authorName || "—"} · {row.team || tx("generalNote")} · {when(row.createdAt, locale)}</div>
+    <ul data-pins={pinTick}>
+      {ordered.map((row) => (
+        <li key={row.id} style={{ padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }} data-pinned={pins.includes(row.id) ? "1" : "0"}>
+          <NoteBody body={row.body || ""} />
+          <div className="c4-row">
+            <span className="c4-muted">{row.authorName || "—"} · {row.team || tx("generalNote")} · {when(row.createdAt, locale)}</span>
+            <button type="button" className="c4-btn" onClick={() => { toggleNotePin(row.id); setPinTick((n) => n + 1); }}>{pins.includes(row.id) ? v4("unpinNote") : v4("pinNote")}</button>
+          </div>
         </li>
       ))}
     </ul>

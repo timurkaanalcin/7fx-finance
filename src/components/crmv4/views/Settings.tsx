@@ -8,6 +8,7 @@ import { useI18n } from "@/lib/i18n/context";
 import { densityMode, storeDensity } from "../round2";
 import { toastHistory } from "../round3";
 import { AccentPicker, AnnounceEditor } from "../round4";
+import { FocusButton, FormatRules, RolePreview, ZebraToggle } from "../round5";
 import { Card, Lab, Msg, State, sendJson, useJson, type Tx } from "../kit";
 import Ops from "./Ops";
 
@@ -59,6 +60,10 @@ function LocalPrefs() {
         <button type="button" className="c4-btn" onClick={() => window.print()}>{v4("printDesk")}</button>
         <AccentPicker v4={v4} />
         <AnnounceEditor v4={v4} />
+        <RolePreview v4={v4} />
+        <ZebraToggle v4={v4} />
+        <FormatRules v4={v4} />
+        <FocusButton v4={v4} />
         <h3 className="c4-title">{v4("toastHistory")}</h3>
         <ul>{history.map((row) => <li key={row.id}>{row.text}</li>)}</ul>
         {!history.length && <p className="c4-muted">{v4("toastHistory")}</p>}

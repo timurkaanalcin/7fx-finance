@@ -17,6 +17,7 @@ import {
   type FilterRule,
   type Health,
 } from "@/lib/crmv4/round1";
+import { balanceTone, copyRowText, customerSegment, rememberExport, segmentLabel } from "./round5";
 import { Card, Status, SwipeRow, auditExport, downloadCsv, money, sendJson, useJson, when, type Tx, type UserRow } from "./kit";
 
 export type V4 = (key: CrmV4CopyKey) => string;
@@ -276,6 +277,8 @@ export function CustomerDeskTable({
                           <div className="c4-muted">{row.email}</div>
                           <div className="c4-row">
                             <Status tone={health === "healthy" ? "ok" : health === "risk" ? "bad" : health === "review" ? "info" : "warn"}>{healthLabel(health, v4)}</Status>
+                            <span className="c4-status" data-tone={customerSegment(row) === "vip" ? "ok" : "muted"}>{segmentLabel(customerSegment(row), v4)}</span>
+                            <button type="button" className="c4-btn" onClick={() => void copyRowText([row.name, row.email, row.country, row.balance])}>{v4("copyRow")}</button>
                             {duplicates.has(email) && <span className="c4-status" data-tone="warn">{v4("duplicate")}</span>}
                             {(tags[row.id] || []).map((tag) => <span key={tag} className="c4-tag">{tag}</span>)}
                             <button type="button" className="c4-btn" aria-pressed={pins.includes(row.id)} onClick={() => onPin(row.id)}>{pins.includes(row.id) ? v4("unpin") : v4("pin")}</button>
@@ -292,7 +295,7 @@ export function CustomerDeskTable({
                         </select>
                       )}
                       {col === "retention" && (row.retentionStatus ? <Status tone="info">{row.retentionStatus}</Status> : "—")}
-                      {col === "balance" && money(row.balance ?? row.account?.balance, row.currency || row.account?.currency, locale)}
+                      {col === "balance" && <span data-money={balanceTone(Number(row.balance ?? row.account?.balance) || 0)}>{money(row.balance ?? row.account?.balance, row.currency || row.account?.currency, locale)}</span>}
                       {col === "status" && (
                         <div className="c4-stack">
                           <Status tone={row.active === false ? "bad" : "ok"}>{row.active === false ? tx("chipFrozen") : tx("chipActive")}</Status>
@@ -596,4 +599,5 @@ export async function exportCurrent(kind: string, filename: string, header: stri
   const ok = await auditExport(kind, lines.length, "/crmv4");
   if (!ok) return;
   downloadCsv(filename, header, lines);
+  rememberExport(filename);
 }
