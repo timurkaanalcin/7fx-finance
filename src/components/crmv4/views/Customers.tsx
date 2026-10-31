@@ -10,6 +10,7 @@ import { moveItem, type FilterRule } from "@/lib/crmv4/round1";
 import { crmv4Href } from "@/lib/crmv4/sections";
 import { ActivityTimeline, BulkBar, CustomerDeskTable, FilterBuilder, ReviewDialog, duplicateEmails, readTags, rememberCustomer, useDeskMemory, visibleCustomers, type Col as DeskCol } from "../round1";
 import { Customer360, DuplicateScreen, RetentionForm, RoundRobinPreview, StatementView, pushUndo } from "../round2";
+import { ContactLine, DocumentsCenter, LocalTime, NoteTemplates, Pipeline, PresenceBadge, TradingOverview, columnPreset, parseOperators } from "../round3";
 import { Card, Chip, Field, Lab, Msg, Pager, State, Status, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, statusTone, useJson, when, type Tx, type UserRow } from "../kit";
 
 const COLUMNS = ["customer", "country", "desk", "sale", "retention", "balance", "status"] as const;
@@ -63,9 +64,20 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
   const [relative, setRelative] = useState(false);
   const [viewName, setViewName] = useState("");
   const [inspectId, setInspectId] = useState("");
+  const [pipelineOn, setPipelineOn] = useState(false);
+  const [ops, setOps] = useState("");
   const memory = useDeskMemory();
   const v4 = (key: CrmV4CopyKey) => crmv4Text(locale, key);
-  const shown = visibleCustomers(sorted, rules, memory.tags, memory.pins, pinnedOnly);
+  const parsed = parseOperators(ops);
+  const operated = sorted.filter((row) => {
+    const bag = row as unknown as Record<string, unknown>;
+    const aliases: Record<string, string> = { sale: "saleStatus", retention: "retentionStatus" };
+    const opsOk = Object.entries(parsed.ops).every(([key, value]) => String(bag[aliases[key] || key] ?? "").toLowerCase().includes(value.toLowerCase()));
+    if (!opsOk) return false;
+    if (!parsed.text) return true;
+    return `${row.name || ""} ${row.email || ""}`.toLowerCase().includes(parsed.text.toLowerCase());
+  });
+  const shown = visibleCustomers(operated, rules, memory.tags, memory.pins, pinnedOnly);
   const duplicates = duplicateEmails(shown);
 
   useEffect(() => {
@@ -141,6 +153,8 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
         <div className="c4-tools">
           <button type="button" className="c4-btn" onClick={() => setFiltersOpen((open) => !open)}>{filtersOpen ? v4("hideFilters") : v4("showFilters")}</button>
           <button type="button" className="c4-btn" onClick={() => setBuilderOpen((open) => !open)}>{builderOpen ? v4("hideBuilder") : v4("builder")}</button>
+          <button type="button" className="c4-chip" data-on={pipelineOn ? "1" : "0"} onClick={() => setPipelineOn((on) => !on)}>{v4("pipeline")}</button>
+          <input className="c4-field" style={{ maxWidth: 220 }} value={ops} aria-label={v4("operatorSearch")} placeholder="email:ada country:TR" onChange={(event) => setOps(event.target.value)} />
           <button type="button" className="c4-chip" data-on={followUp === "overdue" ? "1" : "0"} onClick={() => setQuery({ followUp: followUp === "overdue" ? "" : "overdue" })}>{v4("followUpDue")}</button>
           <button type="button" className="c4-chip" data-on={pinnedOnly ? "1" : "0"} onClick={() => setPinnedOnly((on) => !on)}>{v4("pinnedOnly")}</button>
           <button type="button" className="c4-btn" onClick={() => setQuery({ status: "", saleStatus: "", retentionStatus: "", country: "", presence: "", ftd: "", sort: "", followUp: "" })}>{v4("clearFilters")}</button>
@@ -185,6 +199,8 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
               />
               {v4("denseRows")}
             </label>
+            <button type="button" className="c4-btn" onClick={() => { const next = columnPreset("sales") as Col[]; setColumns(next); writeJson(COLUMN_KEY, next); }}>{v4("presetSales")}</button>
+            <button type="button" className="c4-btn" onClick={() => { const next = columnPreset("retention") as Col[]; setColumns(next); writeJson(COLUMN_KEY, next); }}>{v4("presetRetention")}</button>
             <label className="c4-chip" data-on={relative ? "1" : "0"}>
               <input type="checkbox" checked={relative} onChange={(event) => setRelative(event.target.checked)} />
               {v4("relativeTime")}
@@ -283,6 +299,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
           onSale={async (id, sale) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { saleStatus: sale }); data.reload(); }}
           onInspect={setInspectId}
         />
+        {pipelineOn && <Pipeline rows={shown} v4={v4} onMove={async (id, status) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { saleStatus: status }); data.reload(); }} />}
         <RoundRobinPreview ids={selected} v4={v4} tx={tx} onApplied={() => { setSelected([]); data.reload(); }} />
         <DuplicateScreen v4={v4} tx={tx} />
         {inspectId && <Customer360 base={base} id={inspectId} tx={tx} v4={v4} locale={locale} onClose={() => setInspectId("")} />}
@@ -355,7 +372,10 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           <button type="button" className="c4-btn" aria-label={v4("nextCustomer")} disabled={!neighbors.next} onClick={() => neighbors.next && router.push(crmv4Href(base, `customers/${neighbors.next}`))}>›</button>
           <div>
             <h2>{u.name || "—"}</h2>
-            <p className="c4-muted c4-meta">{u.email} · {v4("customerId")} {u.id}</p>
+            <p className="c4-muted c4-meta">{v4("customerId")} {u.id}</p>
+            <ContactLine email={u.email} phone={u.phone} v4={v4} />
+            <PresenceBadge lastSeen={(u as UserRow & { lastSeenAt?: string | null }).lastSeenAt} lastLogin={(u as UserRow & { lastLoginAt?: string | null }).lastLoginAt} v4={v4} locale={locale} />
+            <LocalTime country={u.country} v4={v4} />
           </div>
           <Field label={tx("registered")} value={when(u.createdAt, locale)} />
           <Status tone={u.active === false ? "bad" : "ok"}>{u.active === false ? tx("chipFrozen") : tx("chipActive")}</Status>
@@ -380,7 +400,7 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           <Field label={tx("ftd")} value={u.ftd ? tx("yes") : tx("no")} />
         </div>
       )}
-      {u && <div className="c4-detail-tools"><RetentionForm id={id} tx={tx} v4={v4} onDone={user.reload} /><StatementView id={id} tx={tx} v4={v4} locale={locale} /></div>}
+      {u && <div className="c4-detail-tools"><RetentionForm id={id} tx={tx} v4={v4} onDone={user.reload} /><StatementView id={id} tx={tx} v4={v4} locale={locale} /><NoteTemplates v4={v4} onUse={async (body) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { addNote: body }); user.reload(); }} /><DocumentsCenter id={id} email={u.email || ""} tx={tx} v4={v4} locale={locale} /><TradingOverview id={id} tx={tx} v4={v4} locale={locale} /></div>}
       <div className="c4-with-side">
         <nav className="c4-side" aria-label={tx("customers")}>
           {PARTS.map((item) => (

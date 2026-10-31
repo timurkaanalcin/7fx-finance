@@ -13,6 +13,7 @@ import { readJson, writeJson } from "@/lib/crmv4/local";
 import { CRM_V4_MORE, CRM_V4_NAV, CRM_V4_SECTIONS, CRM_V4_TABS, crmv4Href, type CrmV4SectionId } from "@/lib/crmv4/sections";
 import { CommandPalette, ShortcutHelp, ShortcutHost } from "./round1";
 import { HelpCenter, OfflineBanner, Tour, UndoHost, densityMode, storeDensity } from "./round2";
+import { rememberToast, toastHistory } from "./round3";
 import { Sheet, sendJson, useJson, when } from "./kit";
 import Overview from "./views/Overview";
 import { CustomerDetail, Customers } from "./views/Customers";
@@ -61,6 +62,9 @@ function Shell({ base, section, name }: Props) {
   const [helpOpen, setHelpOpen] = useState(false);
   const [guideOpen, setGuideOpen] = useState(false);
   const [density, setDensity] = useState<"comfortable" | "compact">("comfortable");
+  const [trail, setTrail] = useState<string[]>([]);
+  const [toastsLog, setToastsLog] = useState<{ id: number; text: string; ok: boolean }[]>([]);
+  const [logOpen, setLogOpen] = useState(false);
   const [noteQuery, setNoteQuery] = useState("");
   const [unreadOnly, setUnreadOnly] = useState(false);
   const [financeOpen, setFinanceOpen] = useState(false);
@@ -82,14 +86,25 @@ function Shell({ base, section, name }: Props) {
     const saved = window.localStorage.getItem("crmv4-theme");
     if (saved === "light" || saved === "dark") setTheme(saved);
     setDensity(densityMode());
+    setTrail(readTrail());
+    setToastsLog(toastHistory());
     setScratch(readJson<Scratch[]>(NOTES_KEY, []));
   }, []);
+
+  useEffect(() => {
+    const path = window.location.pathname + window.location.search;
+    const next = [...readTrail().filter((item) => item !== path), path].slice(-8);
+    window.sessionStorage.setItem("crmv4-trail", JSON.stringify(next));
+    setTrail(next);
+  }, [view, id]);
 
   useEffect(() => {
     const onToast = (event: Event) => {
       const detail = (event as CustomEvent<{ ok: boolean; error: string }>).detail;
       if (!detail) return;
       const item = { id: Date.now(), ok: detail.ok, text: detail.ok ? tx("saved") : detail.error || tx("failed") };
+      rememberToast(item.text, item.ok);
+      setToastsLog(toastHistory());
       setToasts((list) => [...list.slice(-2), item]);
       window.setTimeout(() => setToasts((list) => list.filter((row) => row.id !== item.id)), 2400);
     };
@@ -219,6 +234,14 @@ function Shell({ base, section, name }: Props) {
           {!id && (
             <div className="c4-pagehead">
               <div>
+                <nav className="c4-crumbs" aria-label={v4("crumbs")}>
+                  <button type="button" className="c4-btn" onClick={() => {
+                    const prev = trail[trail.length - 2];
+                    if (prev) window.location.assign(prev);
+                  }}>{v4("backStack")}</button>
+                  <span>{v4("v4mark")}</span>
+                  <span> / {heading}</span>
+                </nav>
                 <h1 className="c4-page-title">{heading}</h1>
                 <p className="c4-page-sub">{known ? subtitle(view) : tx("comingSoonBody")}</p>
               </div>
@@ -298,6 +321,9 @@ function Shell({ base, section, name }: Props) {
           storeDensity(next);
         }}>
           <span>{density === "compact" ? v4("compact") : v4("comfortable")}</span>
+        </button>
+        <button type="button" className="c4-rail-btn" aria-label={v4("toastHistory")} onClick={() => setLogOpen(true)}>
+          <span>{v4("toastHistory")}</span>
         </button>
         <button type="button" className="c4-rail-btn" aria-label={v4("helpCenter")} onClick={() => setGuideOpen(true)}>
           <span>{v4("helpCenter")}</span>
@@ -408,6 +434,12 @@ function Shell({ base, section, name }: Props) {
       <ShortcutHelp open={helpOpen} onClose={() => setHelpOpen(false)} v4={v4} />
       <HelpCenter open={guideOpen} onClose={() => setGuideOpen(false)} v4={v4} />
       <UndoHost v4={v4} />
+      {logOpen && (
+        <Drawer title={v4("toastHistory")} onClose={() => setLogOpen(false)} closeLabel={tx("close")}>
+          <ul>{toastsLog.map((row) => <li key={row.id} className="c4-pad">{row.text}</li>)}</ul>
+          {!toastsLog.length && <p className="c4-muted">{v4("toastHistory")}</p>}
+        </Drawer>
+      )}
       {langOpen && (
         <Sheet title={v4("language")} onClose={() => setLangOpen(false)} closeLabel={tx("close")}>
           <LanguageSwitcher tone={theme === "dark" ? "dark" : "crm"} />
@@ -415,6 +447,15 @@ function Shell({ base, section, name }: Props) {
       )}
     </div>
   );
+}
+
+function readTrail(): string[] {
+  try {
+    const parsed = JSON.parse(window.sessionStorage.getItem("crmv4-trail") || "[]") as string[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
 }
 
 function initials(name: string) {

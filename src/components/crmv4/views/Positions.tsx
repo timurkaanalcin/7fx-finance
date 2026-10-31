@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { crmv4Text } from "@/lib/crmv4/copy";
 import { exportCurrent } from "../round1";
+import { MarginWatch, RiskBoard, exportXlsx } from "../round3";
 import { PositionRows } from "./Customers";
 import { Card, Chip, Msg, Pager, State, TAKE, sendJson, useJson, type Tx } from "../kit";
 
@@ -38,10 +39,15 @@ export default function Positions({ tx, locale, q }: { tx: Tx; locale: string; q
       </div>
       <div className="c4-tools">
         <button type="button" className="c4-btn" onClick={() => void exportCurrent("positions-page", "positions.csv", ["trader", "symbol", "side", "volume", "profit", "status"], rows.map((row) => [String(row.traderName || row.user?.name || ""), String(row.symbol || ""), String(row.side || ""), String(row.volume ?? ""), String(row.profit ?? ""), String(row.status || "")]))}>{crmv4Text(locale, "exportCsv")}</button>
+        <button type="button" className="c4-btn" onClick={() => void exportXlsx("positions-xlsx", "positions.xlsx", ["trader", "symbol", "side", "volume", "profit", "status"], rows.map((row) => [String(row.traderName || row.user?.name || ""), String(row.symbol || ""), String(row.side || ""), String(row.volume ?? ""), String(row.profit ?? ""), String(row.status || "")]))}>{crmv4Text(locale, "exportXlsx")}</button>
+      </div>
+      <div className="c4-book-grid">
+        <RiskBoard rows={rows} tx={tx} v4={(key) => crmv4Text(locale, key)} locale={locale} />
+        <MarginWatch v4={(key) => crmv4Text(locale, key)} />
       </div>
       <State loading={data.loading} error={data.error} empty={!data.loading && rows.length === 0} tx={tx} onRetry={data.reload} />
-      <div className="c4-desk c4-table-wrap">
-        <table className="c4-table">
+      <div className="c4-desk c4-table-scroll c4-book">
+        <table className="c4-table c4-table-luxe">
           <thead>
             <tr>
               <th>{tx("customer")}</th>
@@ -56,10 +62,10 @@ export default function Positions({ tx, locale, q }: { tx: Tx; locale: string; q
             {rows.map((row) => (
               <tr key={row.id}>
                 <td>{row.traderName || row.user?.name || "—"}</td>
-                <td>{row.symbol}</td>
-                <td>{row.side}</td>
+                <td className="c4-symbol">{row.symbol}</td>
+                <td data-side={String(row.side || "").toUpperCase()}>{row.side}</td>
                 <td>{row.volume}</td>
-                <td>{row.profit}</td>
+                <td className={Number(row.profit) >= 0 ? "c4-pl-pos" : "c4-pl-neg"}>{row.profit}</td>
                 <td>
                   {row.status}
                   {row.status === "OPEN" && (
