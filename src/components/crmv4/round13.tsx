@@ -25,7 +25,7 @@ import { downloadCsv, money, useJson, type UserRow } from "./kit";
 export type V4 = (key: CrmV4CopyKey) => string;
 const SPEND_KEY = "crmv4-campaign-spend";
 const BUDGET_KEY = "crmv4-campaign-budget";
-const SEG_KEY = "crmv4-segments";
+const SEG_KEY = "crmv4-segment-rules";
 const NOTE_KEY = "crmv4-mkt-notes";
 const WIN_KEY = "crmv4-winback";
 const TAG_KEY = "crmv4-campaign-tags";
@@ -254,7 +254,15 @@ export function SegmentBuilder({ rows, v4 }: { rows: LeadRow[]; v4: V4 }) {
   const [name, setName] = useState("");
   const [field, setField] = useState<SegmentRule["field"]>("campaign");
   const [value, setValue] = useState("");
-  useEffect(() => { setRules(readJson(SEG_KEY, [])); }, []);
+  useEffect(() => {
+    const saved = readJson<unknown>(SEG_KEY, null);
+    if (Array.isArray(saved)) { setRules(saved as SegmentRule[]); return; }
+    const legacy = readJson<unknown>("crmv4-segments", null);
+    if (Array.isArray(legacy)) {
+      setRules(legacy as SegmentRule[]);
+      writeJson(SEG_KEY, legacy);
+    }
+  }, []);
   const draft = { name: name || "draft", field, value };
   const size = value.trim() ? rows.filter((row) => segmentHit(row, draft)).length : 0;
   const saved = rules[0];

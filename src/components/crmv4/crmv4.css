@@ -16,7 +16,7 @@
   --c4-card: #fffdf8;
   --c4-table: #f3ece2;
   --c4-ink: #2a2622;
-  --c4-muted: #7d7368;
+  --c4-muted: #5f564e;
   --c4-line: #e6dccf;
   --c4-line-strong: #d4c6b2;
   --c4-accent: #a6854e;
@@ -2946,6 +2946,28 @@
 @media (min-width: 1024px) {
   [data-crmv4-root] .c4-watch-cards { display: none; }
 }
+
+[data-crmv4-root] .c4-more-luxe,
+[data-crmv4-root] .c4-local-luxe,
+[data-crmv4-root] .c4-empty-luxe,
+[data-crmv4-root] .c4-state-error {
+  border: 1px solid rgba(166, 133, 78, 0.45);
+  border-radius: 16px;
+  background:
+    linear-gradient(165deg, rgba(166, 133, 78, 0.12), transparent 50%),
+    #fffdf8;
+}
+
+[data-crmv4-root] .c4-more-luxe { display: grid; gap: 10px; }
+[data-crmv4-root] .c4-more-luxe section { display: grid; gap: 6px; }
+[data-crmv4-root] .c4-local-luxe { margin: 8px 0; padding: 14px; }
+[data-crmv4-root] .c4-state-error { border-color: #de260b; }
+[data-crmv4-root] .c4-skel-luxe .c4-skel { background: linear-gradient(90deg, #f3ece2, rgba(166, 133, 78, 0.35), #f3ece2); background-size: 200% 100%; }
+
+[data-crmv4-root][data-theme="dark"] .c4-more-luxe,
+[data-crmv4-root][data-theme="dark"] .c4-local-luxe,
+[data-crmv4-root][data-theme="dark"] .c4-empty-luxe,
+[data-crmv4-root][data-theme="dark"] .c4-state-error { background: #221f1b; color: #f6f1e8; }
 @media (max-width: 1023px) {
   [data-crmv4-root] .c4-watch-phone { display: block; }
 }

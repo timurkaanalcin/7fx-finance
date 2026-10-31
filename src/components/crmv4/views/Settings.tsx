@@ -13,6 +13,7 @@ import { CallTarget, CategoryRules, DecimalPref, MotionPref } from "../round6";
 import { SoundToggle, TicketAlertToggle } from "../round7";
 import { DeskPrefs } from "../round8";
 import { BrandField, HolidayEditor, KpiPicker, ScoreEditor, ThemePresets } from "../round10";
+import { LocalData } from "../round20";
 import { Card, Lab, Msg, State, sendJson, useJson, type Tx } from "../kit";
 import Ops from "./Ops";
 
@@ -77,6 +78,7 @@ function LocalPrefs() {
         <DeskPrefs v4={v4} />
         <ScoreEditor v4={v4} />
         <BrandField v4={v4} />
+        <LocalData v4={v4} />
         <ThemePresets v4={v4} />
         <KpiPicker v4={v4} />
         <HolidayEditor v4={v4} />

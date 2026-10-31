@@ -17,7 +17,8 @@ import { HelpCenter, OfflineBanner, Tour, UndoHost, densityMode, storeDensity } 
 import { rememberToast, toastHistory } from "./round3";
 import { AnnounceBar, DeskBoundary, FreshnessBar, LuxeSkeleton, PullSurface, storedAccent, useInboxCursor } from "./round4";
 import { IdleWarning, storedRole, storedZebra } from "./round5";
-import { CallTarget, Fab, storedMotion } from "./round6";
+import { CallTarget, Fab, MotionPref, storedMotion } from "./round6";
+import { groupedNav } from "@/lib/crmv4/round20";
 import { lastView, playPing, rememberView, soundEnabled, ticketAlertsOn } from "./round7";
 import { resolvedTheme, storedContrast, storedFont, storedFreeze, themeMode } from "./round8";
 import { readBrand } from "./round10";
@@ -450,11 +451,11 @@ function Shell({ base, section, name }: Props) {
 
       <nav className="c4-tabs c4-tabs-luxe" aria-label={tx("panel")}>
         {CRM_V4_TABS.map((tab) => (
-          <Link key={tab} href={crmv4Href(base, tab === "overview" ? "" : tab)} data-on={view === tab ? "1" : "0"} className="c4-tab">
+          <Link key={tab} href={crmv4Href(base, tab === "overview" ? "" : tab)} data-on={view === tab ? "1" : "0"} className="c4-tab" aria-current={view === tab ? "page" : undefined}>
             {label(tab)}
           </Link>
         ))}
-        <button type="button" className="c4-tab" data-on={more ? "1" : "0"} onClick={() => setMore(true)}>
+        <button type="button" className="c4-tab" data-on={more ? "1" : "0"} aria-expanded={more} aria-haspopup="dialog" onClick={() => setMore(true)}>
           {tx("more")}
         </button>
       </nav>
@@ -467,20 +468,30 @@ function Shell({ base, section, name }: Props) {
 
       {more && (
         <Sheet title={tx("more")} onClose={() => setMore(false)} closeLabel={tx("close")}>
-          <div className="c4-stack">
-            {CRM_V4_MORE.map((tab) => (
-              <Link key={tab} href={crmv4Href(base, tab)} onClick={() => setMore(false)} className="c4-btn">{label(tab)}</Link>
+          <div className="c4-more-luxe">
+            {(["work", "records", "desk"] as const).map((group) => (
+              <section key={group} aria-label={v4(group === "work" ? "moreWork" : group === "records" ? "moreRecords" : "moreDesk")}>
+                <h3 className="c4-title">{v4(group === "work" ? "moreWork" : group === "records" ? "moreRecords" : "moreDesk")}</h3>
+                {groupedNav(CRM_V4_MORE)[group].map((tab) => (
+                  <Link key={tab} href={crmv4Href(base, tab)} aria-current={view === tab ? "page" : undefined} onClick={() => setMore(false)} className="c4-btn">{label(tab)}</Link>
+                ))}
+              </section>
             ))}
-            <button type="button" className="c4-btn" onClick={() => { setMore(false); setNotesOpen(true); }}>{tx("notifications")}</button>
-            <button type="button" className="c4-btn" onClick={() => { setMore(false); setRemindersOpen(true); }}>{v4("reminders")}</button>
-            <button type="button" className="c4-btn" onClick={() => { setMore(false); setPadOpen(true); }}>{v4("notes")}</button>
-            <LanguageSwitcher compact tone={theme === "dark" ? "dark" : "crm"} />
-            <button type="button" className="c4-btn" onClick={toggleTheme}>{theme === "dark" ? tx("themeLight") : tx("themeDark")}</button>
-            <p className="c4-muted c4-meta">{tx("signedInAs")} {name}</p>
-            <form method="post" action="/api/auth/logout">
-              <input type="hidden" name="nav" value="1" />
-              <button type="submit" className="c4-btn">{tx("signOut")}</button>
-            </form>
+            <section aria-label={v4("moreSession")}>
+              <h3 className="c4-title">{v4("moreSession")}</h3>
+              <button type="button" className="c4-btn" onClick={() => { setMore(false); setNotesOpen(true); }}>{tx("notifications")}</button>
+              <button type="button" className="c4-btn" onClick={() => { setMore(false); setRemindersOpen(true); }}>{v4("reminders")}</button>
+              <button type="button" className="c4-btn" onClick={() => { setMore(false); setPadOpen(true); }}>{v4("notes")}</button>
+              <button type="button" className="c4-btn" onClick={() => { setMore(false); setHelpOpen(true); }}>{v4("openHelp")}</button>
+              <MotionPref v4={v4} />
+              <LanguageSwitcher compact tone={theme === "dark" ? "dark" : "crm"} />
+              <button type="button" className="c4-btn" onClick={toggleTheme}>{theme === "dark" ? tx("themeLight") : tx("themeDark")}</button>
+              <p className="c4-muted c4-meta">{tx("signedInAs")} {name}</p>
+              <form method="post" action="/api/auth/logout">
+                <input type="hidden" name="nav" value="1" />
+                <button type="submit" className="c4-btn">{tx("signOut")}</button>
+              </form>
+            </section>
           </div>
         </Sheet>
       )}
