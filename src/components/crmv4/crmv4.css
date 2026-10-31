@@ -3170,7 +3170,8 @@
 [data-crmv4-root] .c4-panel[data-view="me"] .c4-pagehead,
 [data-crmv4-root] .c4-panel[data-view="goals"] .c4-pagehead,
 [data-crmv4-root] .c4-panel[data-view="kyc"] .c4-pagehead,
-[data-crmv4-root] .c4-panel[data-view="reports"] .c4-pagehead {
+[data-crmv4-root] .c4-panel[data-view="reports"] .c4-pagehead,
+[data-crmv4-root] .c4-panel[data-view="withdraw"] .c4-pagehead {
   flex-shrink: 0;
   height: auto;
   align-items: flex-start;
@@ -3358,4 +3359,39 @@
   [data-crmv4-root][data-print="report"] .c4-pagehead,
   [data-crmv4-root][data-print="report"] .c4-trail-luxe { display: none !important; }
   [data-crmv4-root][data-print="report"] .c4-report-center { background: #fff; color: #111; }
+}
+
+[data-crmv4-root] .c4-wd-luxe,
+[data-crmv4-root] .c4-find-luxe,
+[data-crmv4-root] .c4-wd-list li,
+[data-crmv4-root] .c4-find-list li[data-on="1"] {
+  border: 1px solid rgba(166, 133, 78, 0.45);
+  border-radius: 16px;
+  background:
+    linear-gradient(165deg, rgba(166, 133, 78, 0.12), transparent 48%),
+    #fffdf8;
+}
+
+[data-crmv4-root] .c4-wd-luxe { display: grid; gap: 12px; padding: 14px; }
+[data-crmv4-root] .c4-wd-luxe .c4-title,
+[data-crmv4-root] .c4-find-luxe .c4-title { margin: 0; font-weight: 500; }
+[data-crmv4-root] .c4-wd-list,
+[data-crmv4-root] .c4-find-list { display: grid; gap: 6px; margin: 0 0 8px; padding: 0; list-style: none; }
+[data-crmv4-root] .c4-find-luxe {
+  width: min(640px, calc(100% - 20px));
+  max-height: min(78dvh, 720px);
+  margin: 8dvh auto;
+  padding: 14px;
+  overflow: auto;
+}
+[data-crmv4-root] .c4-find-list li[data-on="1"] { box-shadow: inset 3px 0 0 #a6854e; }
+[data-crmv4-root] .c4-find-list .c4-btn { width: 100%; text-align: start; }
+
+[data-crmv4-root][data-theme="dark"] .c4-wd-luxe,
+[data-crmv4-root][data-theme="dark"] .c4-find-luxe,
+[data-crmv4-root][data-theme="dark"] .c4-wd-list li,
+[data-crmv4-root][data-theme="dark"] .c4-find-list li[data-on="1"] { background: #221f1b; color: #f6f1e8; }
+
+@media (max-width: 767px) {
+  [data-crmv4-root] .c4-find-luxe { width: calc(100% - 16px); margin-top: 12px; }
 }
