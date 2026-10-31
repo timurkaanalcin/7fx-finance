@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { ledgerBody } from "@/lib/crmv2/payload";
 import { crmv4Text } from "@/lib/crmv4/copy";
 import { DeskBoard, TasksBoard } from "../round1";
@@ -22,6 +22,8 @@ import { PerfBoard } from "../round18";
 import { Watchlist } from "../round19";
 import { FxDesk } from "../round22";
 import { AlertCenter } from "../round23";
+import { DeskArrange, loadLayout, orderedCards, storeLayout } from "../round26";
+import { defaultLayout, type OverviewLayout } from "@/lib/crmv4/round26";
 import { Bars, Card, Chip, Field, Kpi, Lab, Msg, Sheet, State, auditExport, downloadCsv, fmtNum, localeTag, money, sendJson, useJson, when, type Tx, type UserRow } from "../kit";
 
 type Props = { base: string; tx: Tx; locale: string; name?: string };
@@ -34,6 +36,10 @@ export default function Overview({ base, tx, locale, name }: Props) {
   const [sheet, setSheet] = useState<null | "add" | "transfer">(null);
   const [tab, setTab] = useState<"home" | "insights" | "desks">("home");
   const [kpiOn, setKpiOn] = useState<string[]>(["customers", "aum", "volume", "pending"]);
+  const [layout, setLayout] = useState<OverviewLayout>(defaultLayout());
+  useEffect(() => {
+    setLayout(loadLayout());
+  }, []);
   useEffect(() => {
     setKpiOn(readKpis());
     const onKpi = () => setKpiOn(readKpis());
@@ -47,6 +53,50 @@ export default function Overview({ base, tx, locale, name }: Props) {
 
   const mix = (finance.data?.byType || []).slice(0, 6).map((row) => ({ label: row.type, value: row.amount }));
   const banner = finance.data?.kpis?.income ?? aum;
+  const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale, key);
+  function commit(next: OverviewLayout) {
+    setLayout(next);
+    storeLayout(next);
+  }
+  const cards: Record<string, ReactNode> = {
+    alerts: <AlertCenter base={base} v4={v4} />,
+    fx: <FxDesk v4={v4} locale={locale} />,
+    watch: <Watchlist base={base} v4={v4} />,
+    team: <PerfBoard v4={v4} />,
+    pins: <PinnedHome base={base} v4={v4} />,
+    churn: <ChurnBoard base={base} v4={v4} />,
+    cities: <CityMap v4={v4} />,
+    book: <div className="c4-book-grid"><ShiftBoard v4={v4} /><AnnounceFeed v4={v4} /><GreetingPreview v4={v4} /></div>,
+    quality: <QualityReport v4={v4} />,
+    close: <DailyClose locale={locale} v4={v4} />,
+    backlog: <BacklogTrend v4={v4} />,
+    approvals: <ApprovalTimes v4={v4} />,
+    glossary: <Glossary v4={v4} />,
+    news: <WhatsNew v4={v4} />,
+    mix: <div className="c4-dash"><Card title={v4("mix")}><Donut rows={mix} /><State loading={finance.loading} error={finance.error} empty={!finance.loading && mix.length === 0} tx={tx} onRetry={finance.reload} /></Card><Card title={tx("chart")}><Bars rows={mix} /></Card></div>,
+    tasks: <div className="c4-tasks-luxe c4-task-desk-wrap"><TaskDesk locale={locale} v4={v4} tx={tx} /><DeskTools v4={v4} locale={locale} /><MonthBoard locale={locale} /><WeekBoard v4={v4} locale={locale} /><ReminderAlerts v4={v4} /><HolidayEditor v4={v4} /><ReminderTools v4={v4} tx={tx} /><TasksBoard locale={locale} v4={v4} tx={tx} /></div>,
+    stream: <ActivityStream v4={v4} />,
+    ib: <IbTree rows={users.data?.users || []} v4={v4} />,
+    roi: <RoiTable rows={users.data?.users || []} v4={v4} />,
+    campaigns: <CampaignMix v4={v4} />,
+    agents: <AgentKpis v4={v4} tx={tx} />,
+    heat: <div className="c4-book-grid"><CountryHeat v4={v4} /><HourHeat v4={v4} /></div>,
+    workload: <WorkloadBoard v4={v4} />,
+    lists: <SmartLists base={base} v4={v4} />,
+    queue: <NextQueue base={base} v4={v4} />,
+    merge: <MergeList v4={v4} />,
+    staff: <StaffList v4={v4} />,
+    insights: <InsightWidgets rows={(users.data?.users || []).map((row) => ({ id: row.id, name: row.name, email: row.email, createdAt: row.createdAt, ftd: row.ftd, balance: row.balance ?? row.account?.balance, active: row.active, assigneeName: row.assigneeName, desk: row.desk }))} v4={v4} tx={tx} />,
+    create: <QuickCreate v4={v4} tx={tx} />,
+    charts: <div className="c4-book-grid"><CohortTable rows={users.data?.users || []} v4={v4} locale={locale} /><AgentChart rows={users.data?.users || []} v4={v4} /><DeskChart rows={users.data?.users || []} v4={v4} /><WatchAlerts rows={users.data?.users || []} v4={v4} /></div>,
+    boards: <BoardSaver v4={v4} />,
+    symbols: <SymbolDrill v4={v4} />,
+    age: <PositionAge v4={v4} />,
+    movers: <PnlMovers v4={v4} />,
+    exposure: <ExposureAlert v4={v4} />,
+    recent: <div className="c4-split"><Card title={tx("recentCustomers")} extra={<Link href={crmv4Href(base, "customers")}>{tx("seeAll")}</Link>}><State loading={users.loading} error={users.error} empty={!users.loading && !(users.data?.users || []).length} tx={tx} onRetry={users.reload} /><UserList base={base} rows={users.data?.users || []} tx={tx} locale={locale} /></Card><div className="c4-stack"><Card title={tx("quick")}><div className="c4-row" style={{ padding: 16 }}><button type="button" className="c4-btn-hot c4-btn" onClick={() => setSheet("add")}>{tx("addCustomer")}</button><button type="button" className="c4-btn" onClick={() => void exportPage(tx, users.data?.users || [])}>{tx("quickExport")}</button><button type="button" className="c4-btn" onClick={() => setSheet("transfer")}>{tx("transfer")}</button><Link href={crmv4Href(base, "marketing")} className="c4-btn">{tx("mailShortcut")}</Link></div></Card><Card title={tx("alerts")}><div style={{ padding: 16 }}>{stats.loading && <p className="c4-muted">{tx("loading")}</p>}{!stats.loading && pending === 0 && <p className="c4-muted">{tx("noAlerts")}</p>}{pending > 0 && <Link href={crmv4Href(base, "finance", { status: "PENDING" })} className="c4-status" data-tone="warn">{tx("alertPending")}: {pending}</Link>}</div></Card></div></div>,
+  };
+  const shown = orderedCards(layout);
   return (
     <div className="c4-stack c4-exec">
       <ExecHero name={name || ""} customers={kpis?.users} aum={typeof aum === "number" ? aum : undefined} volume={kpis?.totalVolume} pending={pending} locale={locale} labels={{ customers: tx("kpiCustomers"), aum: tx("kpiAum"), volume: tx("kpiVolume"), pending: tx("kpiPending") }} v4={(key) => crmv4Text(locale, key)} />
@@ -77,97 +127,9 @@ export default function Overview({ base, tx, locale, name }: Props) {
         <DeskBoard locale={locale} v4={(key) => crmv4Text(locale, key)} tx={tx} />
       ) : (
         <div className="c4-stack">
-        <AlertCenter base={base} v4={(key) => crmv4Text(locale, key)} />
-        <FxDesk v4={(key) => crmv4Text(locale, key)} locale={locale} />
-        <Watchlist base={base} v4={(key) => crmv4Text(locale, key)} />
-        <PerfBoard v4={(key) => crmv4Text(locale, key)} />
-        <PinnedHome base={base} v4={(key) => crmv4Text(locale, key)} />
-        <ChurnBoard base={base} v4={(key) => crmv4Text(locale, key)} />
-        <CityMap v4={(key) => crmv4Text(locale, key)} />
-        <div className="c4-book-grid">
-          <ShiftBoard v4={(key) => crmv4Text(locale, key)} />
-          <AnnounceFeed v4={(key) => crmv4Text(locale, key)} />
-          <GreetingPreview v4={(key) => crmv4Text(locale, key)} />
-        </div>
-        <QualityReport v4={(key) => crmv4Text(locale, key)} />
-        <DailyClose locale={locale} v4={(key) => crmv4Text(locale, key)} />
-        <BacklogTrend v4={(key) => crmv4Text(locale, key)} />
-        <ApprovalTimes v4={(key) => crmv4Text(locale, key)} />
-        <Glossary v4={(key) => crmv4Text(locale, key)} />
-        <WhatsNew v4={(key) => crmv4Text(locale, key)} />
-        <div className="c4-dash">
-          <Card title={crmv4Text(locale, "mix")}>
-            <Donut rows={mix} />
-            <State loading={finance.loading} error={finance.error} empty={!finance.loading && mix.length === 0} tx={tx} onRetry={finance.reload} />
-          </Card>
-          <Card title={tx("chart")}>
-            <Bars rows={mix} />
-          </Card>
-        </div>
-        <div className="c4-tasks-luxe c4-task-desk-wrap">
-          <TaskDesk locale={locale} v4={(key) => crmv4Text(locale, key)} tx={tx} />
-          <DeskTools v4={(key) => crmv4Text(locale, key)} locale={locale} />
-          <MonthBoard locale={locale} />
-          <WeekBoard v4={(key) => crmv4Text(locale, key)} locale={locale} />
-          <ReminderAlerts v4={(key) => crmv4Text(locale, key)} />
-          <HolidayEditor v4={(key) => crmv4Text(locale, key)} />
-          <ReminderTools v4={(key) => crmv4Text(locale, key)} tx={tx} />
-          <TasksBoard locale={locale} v4={(key) => crmv4Text(locale, key)} tx={tx} />
-        </div>
-        <ActivityStream v4={(key) => crmv4Text(locale, key)} />
-        <IbTree rows={users.data?.users || []} v4={(key) => crmv4Text(locale, key)} />
-        <RoiTable rows={users.data?.users || []} v4={(key) => crmv4Text(locale, key)} />
-        <CampaignMix v4={(key) => crmv4Text(locale, key)} />
-        <AgentKpis v4={(key) => crmv4Text(locale, key)} tx={tx} />
-        <div className="c4-book-grid">
-          <CountryHeat v4={(key) => crmv4Text(locale, key)} />
-          <HourHeat v4={(key) => crmv4Text(locale, key)} />
-        </div>
-        <WorkloadBoard v4={(key) => crmv4Text(locale, key)} />
-        <SmartLists base={base} v4={(key) => crmv4Text(locale, key)} />
-        <NextQueue base={base} v4={(key) => crmv4Text(locale, key)} />
-        <MergeList v4={(key) => crmv4Text(locale, key)} />
-        <StaffList v4={(key) => crmv4Text(locale, key)} />
-        <InsightWidgets rows={(users.data?.users || []).map((row) => ({ id: row.id, name: row.name, email: row.email, createdAt: row.createdAt, ftd: row.ftd, balance: row.balance ?? row.account?.balance, active: row.active, assigneeName: row.assigneeName, desk: row.desk }))} v4={(key) => crmv4Text(locale, key)} tx={tx} />
-        <QuickCreate v4={(key) => crmv4Text(locale, key)} tx={tx} />
-        <div className="c4-book-grid">
-          <CohortTable rows={users.data?.users || []} v4={(key) => crmv4Text(locale, key)} locale={locale} />
-          <AgentChart rows={users.data?.users || []} v4={(key) => crmv4Text(locale, key)} />
-          <DeskChart rows={users.data?.users || []} v4={(key) => crmv4Text(locale, key)} />
-          <WatchAlerts rows={users.data?.users || []} v4={(key) => crmv4Text(locale, key)} />
-        </div>
-        <BoardSaver v4={(key) => crmv4Text(locale, key)} />
-        <SymbolDrill v4={(key) => crmv4Text(locale, key)} />
-        <PositionAge v4={(key) => crmv4Text(locale, key)} />
-        <PnlMovers v4={(key) => crmv4Text(locale, key)} />
-        <ExposureAlert v4={(key) => crmv4Text(locale, key)} />
-        <div className="c4-split">
-          <Card title={tx("recentCustomers")} extra={<Link href={crmv4Href(base, "customers")}>{tx("seeAll")}</Link>}>
-            <State loading={users.loading} error={users.error} empty={!users.loading && !(users.data?.users || []).length} tx={tx} onRetry={users.reload} />
-            <UserList base={base} rows={users.data?.users || []} tx={tx} locale={locale} />
-          </Card>
-          <div className="c4-stack">
-            <Card title={tx("quick")}>
-              <div className="c4-row" style={{ padding: 16 }}>
-                <button type="button" className="c4-btn-hot c4-btn" onClick={() => setSheet("add")}>{tx("addCustomer")}</button>
-                <button type="button" className="c4-btn" onClick={() => void exportPage(tx, users.data?.users || [])}>{tx("quickExport")}</button>
-                <button type="button" className="c4-btn" onClick={() => setSheet("transfer")}>{tx("transfer")}</button>
-                <Link href={crmv4Href(base, "marketing")} className="c4-btn">{tx("mailShortcut")}</Link>
-              </div>
-            </Card>
-            <Card title={tx("alerts")}>
-              <div style={{ padding: 16 }}>
-                {stats.loading && <p className="c4-muted">{tx("loading")}</p>}
-                {!stats.loading && pending === 0 && <p className="c4-muted">{tx("noAlerts")}</p>}
-                {pending > 0 && (
-                  <Link href={crmv4Href(base, "finance", { status: "PENDING" })} className="c4-status" data-tone="warn">
-                    {tx("alertPending")}: {pending}
-                  </Link>
-                )}
-              </div>
-            </Card>
-          </div>
-        </div>
+          <DeskArrange layout={layout} v4={v4} onChange={commit} />
+          {shown.map((id) => <div key={id} data-card={id}>{cards[id]}</div>)}
+          {!shown.length && <p className="c4-empty-gold">{v4("arrangeEmpty")}</p>}
         </div>
       )}
       {sheet === "add" && <AddCustomer tx={tx} locale={locale} onClose={() => setSheet(null)} onDone={users.reload} />}

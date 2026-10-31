@@ -3264,3 +3264,40 @@
     scroll-snap-align: start;
   }
 }
+
+[data-crmv4-root] .c4-line-luxe,
+[data-crmv4-root] .c4-arrange-luxe,
+[data-crmv4-root] .c4-line-day,
+[data-crmv4-root] .c4-arrange-list li {
+  border: 1px solid rgba(166, 133, 78, 0.45);
+  border-radius: 16px;
+  background:
+    linear-gradient(165deg, rgba(166, 133, 78, 0.12), transparent 48%),
+    #fffdf8;
+}
+
+[data-crmv4-root] .c4-line-luxe,
+[data-crmv4-root] .c4-arrange-luxe { display: grid; gap: 10px; padding: 14px; }
+[data-crmv4-root] .c4-line-luxe .c4-title,
+[data-crmv4-root] .c4-arrange-luxe .c4-title { margin: 0; }
+[data-crmv4-root] .c4-line-filters { display: flex; flex-wrap: wrap; gap: 8px; }
+[data-crmv4-root] .c4-line-day { display: grid; gap: 8px; padding: 12px; }
+[data-crmv4-root] .c4-line-day h4 { margin: 0; font-weight: 500; letter-spacing: 0.04em; }
+[data-crmv4-root] .c4-line-day ol { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+[data-crmv4-root] .c4-line-day li { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: baseline; }
+[data-crmv4-root] .c4-line-day li[data-kind="deposit"],
+[data-crmv4-root] .c4-line-day li[data-kind="call"] { box-shadow: inset 3px 0 0 #a6854e; }
+[data-crmv4-root] .c4-line-sums { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+[data-crmv4-root] .c4-arrange-list { display: grid; gap: 8px; max-height: 240px; margin: 0; padding: 0; overflow: auto; list-style: none; }
+[data-crmv4-root] .c4-arrange-list li { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; padding: 8px 10px; }
+[data-crmv4-root] .c4-arrange-list li[data-on="0"] { opacity: 0.55; }
+
+[data-crmv4-root][data-theme="dark"] .c4-line-luxe,
+[data-crmv4-root][data-theme="dark"] .c4-arrange-luxe,
+[data-crmv4-root][data-theme="dark"] .c4-line-day,
+[data-crmv4-root][data-theme="dark"] .c4-arrange-list li { background: #221f1b; color: #f6f1e8; }
+
+@media (max-width: 767px) {
+  [data-crmv4-root] .c4-line-day li { align-items: flex-start; }
+  [data-crmv4-root] .c4-arrange-list li .c4-btn { min-height: 44px; }
+}
