@@ -66,6 +66,9 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-staff-load": ["Staff filter", "Personel süzgeci", "Personalfilter", "Фильтр сотрудников", "مرشّح الموظفين"],
   "crmv3-kyc-check": ["Reviewer checklist", "İnceleme listesi", "Prüfliste", "Список проверки", "قائمة المراجعة"],
   "crmv3-notif-read": ["Notice read", "Bildirim okundu", "Hinweis gelesen", "Уведомление прочитано", "تنبيه مقروء"],
+  "crmv3-board-density": ["Card density", "Kart yoğunluğu", "Kartendichte", "Плотность карточек", "كثافة البطاقات"],
+  "crmv3-board-stages": ["Board stages", "Tahta aşamaları", "Tafelphasen", "Этапы доски", "مراحل اللوحة"],
+  "crmv3-board-tips": ["Dismissed tips", "Kapatılan ipuçları", "Verworfene Hinweise", "Закрытые подсказки", "تلميحات مغلقة"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;

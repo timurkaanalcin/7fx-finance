@@ -5,10 +5,13 @@ import { useI18n } from "@/lib/i18n/context";
 import { crmv2Text, type CrmV2CopyKey } from "@/lib/crmv2/copy";
 import { crmv3Href } from "@/lib/crmv3/sections";
 import { readJson, trapFocus, writeJson } from "@/lib/crmv3/bridge";
+import { questionOpensSheet } from "@/lib/crmv3/board";
+import { useEscape } from "@/lib/crmv3/focus";
 import { groupHits, moveIndex, pageHits, pushRecent, type SearchGroup, type SearchHit } from "@/lib/crmv3/withdraw";
 import type { CrmV3CopyKey } from "@/lib/crmv3/copy";
 import { money, useJson } from "../kit";
 import { shortcutRows } from "./later";
+import { TipList } from "./board";
 import { useV3 } from "./store";
 
 const RECENT_KEY = "crmv3-palette-recent";
@@ -43,8 +46,11 @@ export function ShortcutHost({ base, onPalette, onHelp }: { base: string; onPale
         onPalette();
         return;
       }
+      if (questionOpensSheet(event.key, typing)) {
+        onHelp(true);
+        return;
+      }
       if (typing) return;
-      if (event.key === "?") onHelp(true);
       if (event.key === "Escape") onHelp(false);
       if (event.key === "g") {
         armed.current = true;
@@ -175,20 +181,37 @@ export function CommandPalette({ base, open, onClose }: { base: string; open: bo
   );
 }
 
-export function ShortcutHelp({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function ShortcutHelp({ open, onClose, onGuide }: { open: boolean; onClose: () => void; onGuide?: () => void }) {
   const v3 = useV3();
+  const panel = useRef<HTMLDivElement>(null);
+  useEscape(open, onClose);
+  useEffect(() => {
+    if (!open) return;
+    const node = panel.current;
+    if (!node) return;
+    const onTab = trapFocus(node);
+    node.addEventListener("keydown", onTab);
+    const focusable = node.querySelector("button");
+    if (focusable instanceof HTMLElement) focusable.focus();
+    return () => node.removeEventListener("keydown", onTab);
+  }, [open]);
   if (!open) return null;
   return (
     <div className="c3-sheet-back" role="presentation" onClick={onClose}>
-      <div role="dialog" aria-modal="true" aria-label={v3("cheat")} className="c3-sheet" onClick={(event) => event.stopPropagation()}>
-        <h2 className="c3-title">{v3("cheat")}</h2>
-        <p className="c3-muted">{v3("helpKeys")}</p>
-        <ul>
+      <div ref={panel} role="dialog" aria-modal="true" aria-label={v3("ksTitle")} className="c3-sheet" data-shortcuts="" onClick={(event) => event.stopPropagation()}>
+        <h2 className="c3-title">{v3("ksTitle")}</h2>
+        <p className="c3-muted">{v3("ksHint")}</p>
+        <TipList />
+        <ul className="c3-shortcut-list">
           {shortcutRows(v3).map(([key, text]) => (
-            <li key={key} className="c3-row c3-between"><kbd>{key}</kbd><span>{text}</span></li>
+            <li key={key}><kbd>{key}</kbd><span>{text}</span></li>
           ))}
+          <li><kbd>Escape</kbd><span>{v3("ksEscape")}</span></li>
         </ul>
-        <button type="button" className="c3-btn" onClick={onClose}>{v3("closeForm")}</button>
+        <div className="c3-row">
+          {onGuide && <button type="button" className="c3-btn" onClick={onGuide}>{v3("hdTitle")}</button>}
+          <button type="button" className="c3-btn" onClick={onClose}>{v3("closeForm")}</button>
+        </div>
       </div>
     </div>
   );
