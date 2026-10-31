@@ -8,6 +8,7 @@ import { AffiliateDetail } from "../round3";
 import { readJson, writeJson } from "@/lib/crmv4/local";
 import { useI18n } from "@/lib/i18n/context";
 import { PayoutCard } from "../round10";
+import { AffiliateBoard, AnniversaryList, CampaignBoard, LeadFormPreview, MailGallery, MarketHero, MarketingNotes, ReferralList, RetentionHeat, SegmentBuilder, SmsPreview, TrendAndLanding, WeeklyDigest, WinbackBoard, useLeads } from "../round13";
 import { Card, Lab, Msg, State, sendJson, useJson, type Tx } from "../kit";
 
 type Template = { id: string; name?: string; subject?: string; body?: string; active?: boolean };
@@ -24,9 +25,29 @@ export default function Marketing({ tx }: { tx: Tx }) {
   const [audience, setAudience] = useState("");
   const [msg, setMsg] = useState("");
   const current = templates.find((row) => row.id === picked) || null;
+  const leads = useLeads();
+  const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale, key);
   return (
-    <div className="c4-stack">
+    <div className="c4-stack c4-mkt">
       <p className="c4-muted">{tx("marketingLead")}</p>
+      <MarketHero rows={leads.rows} v4={v4} locale={locale} />
+      <CampaignBoard rows={leads.rows} v4={v4} locale={locale} />
+      <TrendAndLanding rows={leads.rows} v4={v4} />
+      <div className="c4-mkt-grid">
+        <LeadFormPreview v4={v4} />
+        <SmsPreview v4={v4} />
+        <SegmentBuilder rows={leads.rows} v4={v4} />
+      </div>
+      <MailGallery templates={templates} v4={v4} />
+      <div className="c4-mkt-grid">
+        <RetentionHeat rows={leads.rows} v4={v4} />
+        <AnniversaryList rows={leads.rows} v4={v4} />
+        <ReferralList rows={leads.rows} v4={v4} />
+      </div>
+      <WinbackBoard v4={v4} />
+      <MarketingNotes v4={v4} />
+      <WeeklyDigest rows={leads.rows} v4={v4} />
+      <AffiliateBoard rows={rows} v4={v4} />
       <div className="c4-aff-luxe">
       <Card title={tx("affiliates")}>
         <State loading={aff.loading} error={aff.error} empty={!aff.loading && rows.length === 0} tx={tx} onRetry={aff.reload} />
