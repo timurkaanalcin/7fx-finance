@@ -6,6 +6,7 @@ import { approvalBody, approvalEndpoint } from "@/lib/crmv2/payload";
 import { Card, Chip, Lab, Pager, Sheet, State, Status, SwipeRow, TAKE, money, sendJson, statusTone, useJson, when, type Tx } from "../kit";
 import { FinanceChrome, ReviewChecks, methodName, queueMarks, readLastReason, rememberReason, rowAge, rowFlags, shapeQueue, useSecondLook, type FinanceRow } from "../desk/finance";
 import { ListBar } from "../desk/later";
+import { PayMethods } from "../desk/statement";
 import { useV3 } from "../desk/store";
 
 type MoneyRow = FinanceRow & { method?: unknown; user?: { name?: string; email?: string; createdAt?: string | null } | null };
@@ -75,6 +76,7 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
         />
       )}
       {tab !== "ledger" && <p className="c3-muted c3-pad">{v3("rowsShowing")} {moneyRows.length}</p>}
+      {tab !== "ledger" && <PayMethods rows={moneyRows} />}
       {tab !== "ledger" && (
         <div className="c3-tools">
           <button type="button" className="c3-btn" disabled={!bulk.length} onClick={() => void runBulk(bulk, tab, "approve", data.reload, setBulk)}>{v3("bulkApprove")}</button>

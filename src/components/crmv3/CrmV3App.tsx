@@ -13,6 +13,7 @@ import BrandLogo from "@/components/landing/BrandLogo";
 import { Sheet, sendJson, useJson, when } from "./kit";
 import { CommandPalette, ShortcutHelp, ShortcutHost } from "./desk/command";
 import { DeskFooter } from "./desk/later";
+import { QuickSheet } from "./desk/statement";
 import { groupedNav } from "@/lib/crmv3/local-pack";
 import { useLocal } from "./desk/store";
 import Overview from "./views/Overview";
@@ -51,6 +52,7 @@ function Shell({ base, section, name }: Props) {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [palette, setPalette] = useState(false);
   const [help, setHelp] = useState(false);
+  const [quick, setQuick] = useState(false);
   const [noteQuery, setNoteQuery] = useState("");
   const [unreadOnly, setUnreadOnly] = useState(false);
   const [banner] = useLocal<string>("crmv3-banner", "");
@@ -136,6 +138,7 @@ function Shell({ base, section, name }: Props) {
         </nav>
         <div className="c3-rail-foot">
           <p className="c3-muted c3-meta">{tx("signedInAs")}<span className="c3-value">{name}</span></p>
+          <button type="button" className="c3-btn" onClick={() => setQuick(true)} aria-label={v3("quickPlus")}>+</button>
           <form method="post" action="/api/auth/logout">
             <input type="hidden" name="nav" value="1" />
             <button type="submit" className="c3-btn">{tx("signOut")}</button>
@@ -160,6 +163,7 @@ function Shell({ base, section, name }: Props) {
               <button type="button" className="c3-btn" onClick={() => setSearchOpen(false)}>{tx("close")}</button>
             </form>
           )}
+          <button type="button" className="c3-icon-btn c3-plus-phone" onClick={() => setQuick(true)} aria-label={v3("quickPlus")}>+</button>
           <button type="button" className="c3-icon-btn" onClick={toggleTheme} aria-label={theme === "dark" ? tx("themeLight") : tx("themeDark")}>
             {theme === "dark" ? "Lt" : "Dk"}
           </button>
@@ -239,6 +243,7 @@ function Shell({ base, section, name }: Props) {
           <MoreGroups base={base} view={view} label={label} tx={tx} v3={v3} theme={theme} name={name} onClose={() => setMore(false)} onTheme={toggleTheme} onHelp={() => { setMore(false); setHelp(true); }} />
         </Sheet>
       )}
+      <QuickSheet open={quick} onClose={() => setQuick(false)} onSearch={() => setSearchOpen(true)} tx={tx} />
       <CommandPalette base={base} open={palette} onClose={() => setPalette(false)} />
       <ShortcutHelp open={help} onClose={() => setHelp(false)} />
       {notesOpen && (

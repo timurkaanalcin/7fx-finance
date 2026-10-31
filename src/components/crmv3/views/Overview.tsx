@@ -7,6 +7,7 @@ import { crmv3Href } from "@/lib/crmv3/sections";
 import { Bars, Card, Chip, Field, Kpi, Lab, Msg, Sheet, State, auditExport, downloadCsv, fmtNum, money, sendJson, useJson, when, type Tx, type UserRow } from "../kit";
 import { HomeDesk } from "../desk/panels";
 import { RiskWatch, TeamBoard } from "../desk/later";
+import { FxDesk } from "../desk/statement";
 import { EntryQuality, emailOk } from "../desk/feed";
 import { useV3 } from "../desk/store";
 
@@ -72,6 +73,7 @@ export default function Overview({ base, tx, locale }: Props) {
           </div>
         </div>
       )}
+      <FxDesk locale={locale} />
       <HomeDesk base={base} locale={locale} />
       <RiskWatch base={base} />
       <TeamBoard base={base} />
