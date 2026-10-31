@@ -2,6 +2,8 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { crmv4Text } from "@/lib/crmv4/copy";
+import { exportCurrent } from "../round1";
 import { PositionRows } from "./Customers";
 import { Card, Chip, Msg, Pager, State, TAKE, sendJson, useJson, type Tx } from "../kit";
 
@@ -33,6 +35,9 @@ export default function Positions({ tx, locale, q }: { tx: Tx; locale: string; q
             {tx(item === "OPEN" ? "open" : item === "CLOSED" ? "closed" : "all")}
           </Chip>
         ))}
+      </div>
+      <div className="c4-tools">
+        <button type="button" className="c4-btn" onClick={() => void exportCurrent("positions-page", "positions.csv", ["trader", "symbol", "side", "volume", "profit", "status"], rows.map((row) => [String(row.traderName || row.user?.name || ""), String(row.symbol || ""), String(row.side || ""), String(row.volume ?? ""), String(row.profit ?? ""), String(row.status || "")]))}>{crmv4Text(locale, "exportCsv")}</button>
       </div>
       <State loading={data.loading} error={data.error} empty={!data.loading && rows.length === 0} tx={tx} onRetry={data.reload} />
       <div className="c4-desk c4-table-wrap">

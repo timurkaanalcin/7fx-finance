@@ -121,19 +121,20 @@ const html = `<!DOCTYPE html>
               <input class="c4-field" aria-label="Country" placeholder="Country"/>
               <button class="c4-btn c4-btn-hot" type="button">Apply</button>
             </form>
-            <div class="c4-desk c4-table-wrap">
-              <table class="c4-table">
-                <thead><tr><th>Customer</th><th>Country</th><th>Desk</th><th>Sale</th><th>Balance</th><th>Status</th></tr></thead>
+            <div class="c4-bulk"><strong>2 selected</strong><button class="c4-btn" type="button">Freeze</button><button class="c4-btn" type="button">Activate</button><button class="c4-btn c4-btn-hot" type="button">Assign desk</button></div>
+            <div class="c4-desk c4-table-scroll">
+              <table class="c4-table c4-table-luxe">
+                <thead><tr><th></th><th>Customer</th><th>Country</th><th>Desk</th><th>Sale</th><th>Balance</th><th>Status</th></tr></thead>
                 <tbody>
-                  <tr><td>Ada Demir<div class="c4-muted">ada@desk.example</div></td><td>TR</td><td>Desk 1</td><td><span class="c4-status" data-tone="info">New</span></td><td>$4,280</td><td><span class="c4-status" data-tone="ok">Active</span></td></tr>
-                  <tr><td>Leo Hart<div class="c4-muted">leo@desk.example</div></td><td>GB</td><td>Desk 2</td><td><span class="c4-status" data-tone="warn">High potential</span></td><td>$910</td><td><span class="c4-status" data-tone="bad">Frozen</span></td></tr>
-                  <tr><td>Mina Sol<div class="c4-muted">mina@desk.example</div></td><td>AE</td><td>Desk 1</td><td><span class="c4-status" data-tone="ok">Depositor</span></td><td>$12,040</td><td><span class="c4-status" data-tone="ok">Active</span></td></tr>
+                  <tr data-on="1"><td></td><td>Ada Demir<div class="c4-muted">ada@desk.example</div><div class="c4-row"><span class="c4-status" data-tone="ok">Healthy</span><span class="c4-tag">vip</span></div></td><td>TR</td><td>Desk 1</td><td><span class="c4-status" data-tone="info">New</span></td><td>$4,280</td><td><span class="c4-status" data-tone="ok">Active</span></td></tr>
+                  <tr data-dup="1"><td></td><td>Leo Hart<div class="c4-muted">leo@desk.example</div><div class="c4-row"><span class="c4-status" data-tone="bad">Risk</span></div></td><td>GB</td><td>Desk 2</td><td><span class="c4-status" data-tone="warn">Watch</span></td><td>$910</td><td><span class="c4-status" data-tone="bad">Frozen</span></td></tr>
+                  <tr><td></td><td>Mina Sol<div class="c4-muted">mina@desk.example</div><div class="c4-row"><span class="c4-status" data-tone="ok">Healthy</span></div></td><td>AE</td><td>Desk 1</td><td><span class="c4-status" data-tone="ok">Depositor</span></td><td>$12,040</td><td><span class="c4-status" data-tone="ok">Active</span></td></tr>
                 </tbody>
               </table>
             </div>
             <ul class="c4-mob-list">
-              <li><div class="c4-swipe-link"><div class="c4-row c4-between"><span>Ada Demir</span><span class="c4-status" data-tone="ok">Active</span></div><div class="c4-muted">ada@desk.example</div><div>$4,280 · New</div></div></li>
-              <li><div class="c4-swipe-link"><div class="c4-row c4-between"><span>Leo Hart</span><span class="c4-status" data-tone="bad">Frozen</span></div><div class="c4-muted">leo@desk.example</div><div>$910 · Callback</div></div></li>
+              <li class="c4-person"><div class="c4-row c4-between"><span>Ada Demir</span><span class="c4-status" data-tone="ok">Healthy</span></div><div class="c4-muted">ada@desk.example</div><div>$4,280 · New</div></li>
+              <li class="c4-person"><div class="c4-row c4-between"><span>Leo Hart</span><span class="c4-status" data-tone="bad">Risk</span></div><div class="c4-muted">leo@desk.example</div><div>$910 · Frozen</div></li>
             </ul>
           </section>
         </div>
@@ -177,10 +178,11 @@ const html = `<!DOCTYPE html>
 
 const widths = [320, 360, 375, 390, 414, 430, 768, 820, 1024, 1280, 1440];
 const shots = [
-  { name: "crmv4-desktop-light", width: 1440, height: 900, theme: "light", screen: "overview" },
-  { name: "crmv4-desktop-dark", width: 1440, height: 900, theme: "dark", screen: "overview" },
-  { name: "crmv4-tablet", width: 768, height: 1024, theme: "light", screen: "customers" },
-  { name: "crmv4-phone-375", width: 375, height: 812, theme: "light", screen: "customers" },
+  { name: "crmv4-after-desktop-light", width: 1440, height: 900, theme: "light", screen: "overview" },
+  { name: "crmv4-after-desktop-dark", width: 1440, height: 900, theme: "dark", screen: "overview" },
+  { name: "crmv4-after-customers", width: 1440, height: 900, theme: "light", screen: "customers" },
+  { name: "crmv4-after-tablet", width: 768, height: 1024, theme: "light", screen: "customers" },
+  { name: "crmv4-after-phone", width: 375, height: 812, theme: "light", screen: "customers" },
 ];
 
 const browser = await chromium.launch({ headless: true });

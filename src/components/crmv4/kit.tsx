@@ -206,7 +206,7 @@ export function Skeleton() {
   );
 }
 
-export function State({ loading, error, empty, tx, onRetry }: { loading: boolean; error: string; empty: boolean; tx: Tx; onRetry: () => void }) {
+export function State({ loading, error, empty, tx, onRetry, hint }: { loading: boolean; error: string; empty: boolean; tx: Tx; onRetry: () => void; hint?: string }) {
   if (loading) return <Skeleton />;
   if (error) {
     return (
@@ -218,9 +218,10 @@ export function State({ loading, error, empty, tx, onRetry }: { loading: boolean
   }
   if (empty) {
     return (
-      <div className="c4-empty">
+      <div className="c4-empty c4-empty-luxe">
         <span className="c4-empty-mark" aria-hidden />
         <p>{tx("emptyState")}</p>
+        {hint ? <p className="c4-muted c4-meta">{hint}</p> : null}
       </div>
     );
   }

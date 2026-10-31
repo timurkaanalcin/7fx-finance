@@ -1,5 +1,7 @@
 /** CRM v4 chrome. Screen copy stays in the CRM v2 tables. Locales cannot drift. */
-const en = {
+import { ROUND1_COPY } from "@/lib/crmv4/copy-round1";
+
+const enBase = {
   v4mark: "CRM v4",
   financeNav: "Finance",
   subOverview: "Desk",
@@ -53,7 +55,7 @@ const en = {
   refreshing: "Refreshing",
 };
 
-const tr: typeof en = {
+const trBase: typeof enBase = {
   v4mark: "CRM v4",
   financeNav: "Finans",
   subOverview: "Masa",
@@ -107,7 +109,7 @@ const tr: typeof en = {
   refreshing: "Yenileniyor",
 };
 
-const de: typeof en = {
+const deBase: typeof enBase = {
   v4mark: "CRM v4",
   financeNav: "Finanzen",
   subOverview: "Pult",
@@ -161,7 +163,7 @@ const de: typeof en = {
   refreshing: "Aktualisierung",
 };
 
-const ru: typeof en = {
+const ruBase: typeof enBase = {
   v4mark: "CRM v4",
   financeNav: "Финансы",
   subOverview: "Стол",
@@ -215,7 +217,7 @@ const ru: typeof en = {
   refreshing: "Обновление",
 };
 
-const ar: typeof en = {
+const arBase: typeof enBase = {
   v4mark: "CRM v4",
   financeNav: "المالية",
   subOverview: "المكتب",
@@ -268,6 +270,12 @@ const ar: typeof en = {
   pullHint: "اسحب للتحديث",
   refreshing: "جارٍ التحديث",
 };
+
+const en = { ...enBase, ...ROUND1_COPY.en };
+const tr: typeof en = { ...trBase, ...ROUND1_COPY.tr };
+const de: typeof en = { ...deBase, ...ROUND1_COPY.de };
+const ru: typeof en = { ...ruBase, ...ROUND1_COPY.ru };
+const ar: typeof en = { ...arBase, ...ROUND1_COPY.ar };
 
 export const CRM_V4_COPY = { en, tr, de, ru, ar };
 
