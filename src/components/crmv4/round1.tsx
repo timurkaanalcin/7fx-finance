@@ -111,7 +111,7 @@ export function BulkBar({ ids, v4, tx, onDone }: { ids: string[]; v4: V4; tx: Tx
   }
 
   return (
-    <div className="c4-bulk" role="region" aria-label={v4("selected")}>
+    <div className="c4-bulk c4-bulk-luxe" role="region" aria-label={v4("selected")}>
       <strong>{ids.length} {v4("selected")}</strong>
       <button type="button" className="c4-btn" onClick={() => void bulk("freeze")}>{v4("bulkFreeze")}</button>
       <button type="button" className="c4-btn" onClick={() => void bulk("activate")}>{v4("bulkActivate")}</button>
