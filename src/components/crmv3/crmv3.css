@@ -1501,6 +1501,76 @@
   [data-crmv3-root] .c3-agenda-grid[data-mode="week"] { grid-template-columns: repeat(7, minmax(0, 1fr)); }
 }
 
+[data-crmv3-root] .c3-lux,
+[data-crmv3-root] .c3-note-studio {
+  display: grid;
+  gap: var(--c3-2);
+  min-width: 0;
+  padding: var(--c3-3);
+  border: 1px solid var(--c3-line);
+  border-radius: var(--c3-radius);
+  background: var(--c3-card);
+}
+
+[data-crmv3-root] .c3-lux h2,
+[data-crmv3-root] .c3-note-studio h2,
+[data-crmv3-root] .c3-note-studio h3 { margin: 0; }
+
+[data-crmv3-root] .c3-lux-desk { display: none; max-width: 100%; overflow-x: clip; }
+
+[data-crmv3-root] .c3-lux-desk thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--c3-card);
+}
+
+[data-crmv3-root] .c3-lux[data-dense="1"] .c3-table th,
+[data-crmv3-root] .c3-lux[data-dense="1"] .c3-table td { padding: var(--c3-1); }
+
+[data-crmv3-root] .c3-lux-cards,
+[data-crmv3-root] .c3-note-rows,
+[data-crmv3-root] .c3-task-rows {
+  display: grid;
+  gap: var(--c3-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv3-root] .c3-lux-cards li,
+[data-crmv3-root] .c3-note-rows li,
+[data-crmv3-root] .c3-task-rows li {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: var(--c3-2);
+  align-items: center;
+  padding: var(--c3-2);
+  border: 1px solid var(--c3-line);
+  border-radius: 8px;
+  background: var(--c3-elev);
+}
+
+[data-crmv3-root] .c3-lux-cards p,
+[data-crmv3-root] .c3-note-rows p { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+
+[data-crmv3-root] .c3-note-rows li[data-pinned="1"] { border-color: var(--c3-gold); }
+
+[data-crmv3-root] .c3-note-studio mark {
+  background: var(--c3-gold-soft);
+  color: var(--c3-ink);
+}
+
+[data-crmv3-root] .c3-task-rows li[data-done="1"] span { text-decoration: line-through; }
+
+[data-crmv3-root] .c3-lux .c3-chip input { margin-inline-end: var(--c3-1); }
+
+@media (min-width: 1024px) {
+  [data-crmv3-root] .c3-lux-desk { display: block; }
+  [data-crmv3-root] .c3-lux-cards { display: none; }
+}
+
 @media print {
   [data-crmv3-root][data-print="statement"] .c3-rail,
   [data-crmv3-root][data-print="statement"] .c3-header,

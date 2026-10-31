@@ -60,6 +60,9 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-fin-look": ["Finance look", "Para görünümü", "Geldansicht", "Вид денег", "عرض المال"],
   "crmv3-fin-checks": ["Finance checks", "Para kontrolleri", "Geldprüfungen", "Проверки денег", "فحوص المال"],
   "crmv3-fin-reason": ["Finance reason", "Para gerekçesi", "Geldgrund", "Причина денег", "سبب المال"],
+  "crmv3-columns": ["Columns", "Sütunlar", "Spalten", "Колонки", "أعمدة"],
+  "crmv3-tasks": ["Tasks", "Görevler", "Aufgaben", "Задачи", "مهام"],
+  "crmv3-note-pins": ["Pinned notes", "Sabit notlar", "Angeheftete Notizen", "Закреплённые заметки", "ملاحظات مثبتة"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;

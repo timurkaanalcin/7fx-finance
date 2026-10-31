@@ -17,6 +17,7 @@ import { ContactFeed, EntryQuality, applySplit, emailOk } from "../desk/feed";
 import { useLocal, useV3 } from "../desk/store";
 import { ListDesk, RecordHead, useLists } from "../desk/record";
 import { TradeBook } from "../desk/book";
+import { DenseList, NoteStudio } from "../desk/table";
 import { applyList } from "@/lib/crmv3/lists";
 
 export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; locale: string; q: string }) {
@@ -108,6 +109,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
         }} />
       )}
       <ListDesk base={base} v3={v3} activeId={listId} />
+      <DenseList base={base} rows={shown} tx={tx} locale={locale} />
       <p className="c3-muted">{v3("rowsShowing")} {shown.length}</p>
       {(selected.length === 1 || selected.length > 3) && <p className="c3-muted">{v3("compareNeed")}</p>}
       {selected.length >= 2 && <CompareDesk rows={shown.filter((row) => selected.includes(row.id))} base={base} locale={locale} />}
@@ -362,6 +364,7 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
         ))}
       </div>
       {u && part === "profile" && <ProfileShell id={id} user={u} tx={tx} onDone={user.reload} />}
+      {part === "notes" && <NoteStudio id={id} notes={user.data?.notes || []} tx={tx} locale={locale} onSaved={user.reload} />}
       {part === "notes" && <Notes id={id} notes={user.data?.notes || []} tx={tx} locale={locale} onDone={user.reload} />}
       {part === "money" && <Money id={id} tx={tx} locale={locale} />}
       {part === "trades" && <Trades id={id} tx={tx} locale={locale} />}
