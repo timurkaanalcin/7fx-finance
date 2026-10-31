@@ -32,6 +32,7 @@ import { StaffPage } from "./round24";
 import { GoalsPage, TopTrail } from "./round25";
 import { KycDesk } from "./round27";
 import { DayDesk, ReportDesk } from "./round43";
+import { RiskDesk } from "./round44";
 import { lastView, playPing, rememberView, soundEnabled, ticketAlertsOn } from "./round7";
 import { resolvedTheme, storedContrast, storedFont, storedFreeze, themeMode } from "./round8";
 import { readBrand } from "./round10";
@@ -268,6 +269,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "me") return v4("staffProfile");
     if (tab === "goals") return v4("goalsTitle");
     if (tab === "kyc") return v4("kycDesk");
+    if (tab === "risk") return v4("rkTitle");
     if (tab === "reports") return v4("reportsTitle");
     if (tab === "withdraw") return v4("wdDesk");
     if (tab === "deposit") return v4("depDesk");
@@ -295,6 +297,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "me") return v4("staffSub");
     if (tab === "goals") return v4("goalsSub");
     if (tab === "kyc") return v4("kycSub");
+    if (tab === "risk") return v4("rkSub");
     if (tab === "reports") return v4("reportsSub");
     if (tab === "withdraw") return v4("wdSub");
     if (tab === "deposit") return v4("depSub");
@@ -451,6 +454,7 @@ function Shell({ base, section, name }: Props) {
             {view === "day" && <DayDesk base={base} name={name} v4={v4} locale={locale} />}
             {view === "goals" && <GoalsPage v4={v4} locale={locale} />}
             {view === "kyc" && <KycDesk v4={v4} tx={tx} locale={locale} />}
+            {view === "risk" && <RiskDesk base={base} v4={v4} tx={tx} locale={locale} />}
             {view === "reports" && <ReportDesk v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
