@@ -22,6 +22,7 @@ import { CountryFlag, DeepLinkList, PhoneText, QuickMenu, RiskBadge } from "./ro
 import { emptySuggestions } from "./round8";
 import { trapFocus } from "@/lib/crmv4/round8";
 import { columnTotal } from "@/lib/crmv4/round6";
+import { tagTone } from "./round12";
 import { Card, Status, SwipeRow, auditExport, downloadCsv, money, sendJson, useJson, when, type Tx, type UserRow } from "./kit";
 
 export type V4 = (key: CrmV4CopyKey) => string;
@@ -185,7 +186,7 @@ export function FilterBuilder({ rules, onChange, v4 }: { rules: FilterRule[]; on
 
 export function CustomerDeskTable({
   base, rows, tx, locale, v4, columns, dense, widths, onResize, selected, onToggle, onToggleAll,
-  tags, pins, onPin, relative, duplicates, onSale, onInspect, scoreLabel, scoreFor,
+  tags, pins, onPin, relative, duplicates, onSale, onInspect, scoreLabel, scoreFor, headerFilters, onHeaderFilter,
 }: {
   base: string;
   rows: UserRow[];
@@ -208,6 +209,8 @@ export function CustomerDeskTable({
   onInspect?: (id: string) => void;
   scoreLabel?: string;
   scoreFor?: (row: UserRow) => number;
+  headerFilters?: Record<string, string>;
+  onHeaderFilter?: (col: string, value: string) => void;
 }) {
   const [cursor, setCursor] = useState(0);
   const [noteFor, setNoteFor] = useState("");
@@ -245,6 +248,9 @@ export function CustomerDeskTable({
               {columns.map((col) => (
                 <th key={col} style={widths[col] ? { width: widths[col] } : undefined}>
                   <span>{columnLabel(col, tx)}</span>
+                  {onHeaderFilter && (
+                    <input className="c4-field c4-head-filter" aria-label={`${v4("headerFilter")} ${col}`} value={headerFilters?.[col] || ""} onChange={(event) => onHeaderFilter(col, event.target.value)} />
+                  )}
                   <span
                     className="c4-resize"
                     role="separator"
@@ -287,7 +293,7 @@ export function CustomerDeskTable({
                             <span className="c4-status" data-tone={customerSegment(row) === "vip" ? "ok" : "muted"}>{segmentLabel(customerSegment(row), v4)}</span>
                             <button type="button" className="c4-btn" onClick={() => void copyRowText([row.name, row.email, row.country, row.balance])}>{v4("copyRow")}</button>
                             {duplicates.has(email) && <span className="c4-status" data-tone="warn">{v4("duplicate")}</span>}
-                            {(tags[row.id] || []).map((tag) => <span key={tag} className="c4-tag">{tag}</span>)}
+                            {(tags[row.id] || []).map((tag) => <span key={tag} className="c4-tag" data-tone={tagTone(tag)}>{tag}</span>)}
                             <button type="button" className="c4-btn" aria-pressed={pins.includes(row.id)} onClick={() => onPin(row.id)}>{pins.includes(row.id) ? v4("unpin") : v4("pin")}</button>
                             {onInspect && <button type="button" className="c4-btn" onClick={() => onInspect(row.id)}>{v4("open360")}</button>}
                           </div>
