@@ -71,6 +71,9 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-board-tips": ["Dismissed tips", "Kapatılan ipuçları", "Verworfene Hinweise", "Закрытые подсказки", "تلميحات مغلقة"],
   "crmv3-list-picks": ["Local picks", "Yerel seçim", "Lokale Auswahl", "Локальный выбор", "تحديد محلي"],
   "crmv3-list-pins": ["Pinned lists", "Sabitlenen listeler", "Angeheftete Listen", "Закреплённые списки", "قوائم مثبتة"],
+  "crmv3-risk-thresholds": ["Risk thresholds", "Risk eşikleri", "Risikogrenzen", "Пороги риска", "حدود المخاطر"],
+  "crmv3-risk-count": ["Withdrawal count", "Çekim sayısı", "Auszahlungszahl", "Число выводов", "عدد السحوبات"],
+  "crmv3-risk-notes": ["Risk notes", "Risk notları", "Risikonotizen", "Заметки риска", "ملاحظات المخاطر"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;

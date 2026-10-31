@@ -25,6 +25,7 @@ import { DeskStaff } from "./desk/today";
 import { NoticeDesk, useNotices } from "./desk/notices";
 import { HelpDrawer } from "./desk/board";
 import { DayDesk } from "./desk/period";
+import { RiskDesk } from "./desk/risk";
 import { readJson } from "@/lib/crmv3/bridge";
 import { RAIL_KEY, readFold } from "@/lib/crmv3/nav";
 import { MoreNav, RailNav } from "./desk/nav";
@@ -162,6 +163,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "me") return v3("staffProfile");
     if (tab === "goals") return v3("goalsTitle");
     if (tab === "kyc") return v3("kycDesk");
+    if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
     if (tab === "deposit") return v3("depDesk");
     if (tab === "inbox") return v3("inboxTitle");
@@ -285,6 +287,7 @@ function Shell({ base, section, name }: Props) {
             {view === "me" && <StaffPage signInName={name} base={base} locale={locale} />}
             {view === "goals" && <GoalsPage locale={locale} />}
             {view === "kyc" && <KycDesk tx={tx} locale={locale} />}
+            {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
             {view === "deposit" && <DepositDesk base={base} tx={tx} locale={locale} />}
             {view === "inbox" && <InboxDesk tx={tx} locale={locale} />}
