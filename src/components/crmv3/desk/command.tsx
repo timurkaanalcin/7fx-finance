@@ -1,12 +1,23 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useI18n } from "@/lib/i18n/context";
+import { crmv2Text, type CrmV2CopyKey } from "@/lib/crmv2/copy";
 import { crmv3Href } from "@/lib/crmv3/sections";
-import { trapFocus } from "@/lib/crmv3/bridge";
-import { useJson } from "../kit";
+import { readJson, trapFocus, writeJson } from "@/lib/crmv3/bridge";
+import { groupHits, moveIndex, pageHits, pushRecent, type SearchGroup, type SearchHit } from "@/lib/crmv3/withdraw";
+import type { CrmV3CopyKey } from "@/lib/crmv3/copy";
+import { money, useJson } from "../kit";
 import { shortcutRows } from "./later";
 import { useV3 } from "./store";
+
+const RECENT_KEY = "crmv3-palette-recent";
+const GROUP_LABEL: Record<SearchGroup, CrmV3CopyKey> = {
+  customer: "findCustomers",
+  ticket: "findTickets",
+  finance: "findFinance",
+  page: "findPages",
+};
 
 const GO: Record<string, string> = {
   o: "",
@@ -53,50 +64,104 @@ export function ShortcutHost({ base, onPalette, onHelp }: { base: string; onPale
 
 export function CommandPalette({ base, open, onClose }: { base: string; open: boolean; onClose: () => void }) {
   const v3 = useV3();
+  const { locale } = useI18n();
   const [q, setQ] = useState("");
+  const [recent, setRecent] = useState<string[]>([]);
+  const [index, setIndex] = useState(0);
   const input = useRef<HTMLInputElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const query = q.trim();
   const users = useJson<{ users?: { id: string; name?: string | null; email?: string | null }[] }>(open && query.length >= 2 ? `/api/admin/users?view=table&take=6&meta=0&role=TRADER&q=${encodeURIComponent(query)}` : null);
-  const tickets = useJson<{ tickets?: { id: string; customer?: string; kind?: string }[] }>(open && query.length >= 2 ? `/api/admin/tickets?status=&q=${encodeURIComponent(query)}` : null);
-  const deposits = useJson<{ requests?: { id: string; amount?: number; currency?: string; user?: { name?: string } }[] }>(open && query.length >= 2 ? `/api/admin/deposits?take=6&q=${encodeURIComponent(query)}` : null);
+  const tickets = useJson<{ tickets?: { id: string; customer?: string | null; kind?: string | null; currency?: string | null }[] }>(open && query.length >= 2 ? `/api/admin/tickets?q=${encodeURIComponent(query)}&take=6` : null);
+  const deposits = useJson<{ requests?: { id: string; amount?: number | null; currency?: string | null; user?: { name?: string | null } | null }[] }>(open && query.length >= 2 ? `/api/admin/deposits?take=6&q=${encodeURIComponent(query)}` : null);
+  const withdrawals = useJson<{ requests?: { id: string; amount?: number | null; currency?: string | null; user?: { name?: string | null } | null }[] }>(open && query.length >= 2 ? `/api/admin/withdrawals?take=6&q=${encodeURIComponent(query)}` : null);
   useEffect(() => {
     if (!open) return;
+    setRecent(readJson<string[]>(RECENT_KEY, []));
     const node = panel.current;
     if (!node) return;
     const onTab = trapFocus(node);
     node.addEventListener("keydown", onTab);
+    input.current?.focus();
     return () => node.removeEventListener("keydown", onTab);
   }, [open]);
+  const pages = useMemo(() => {
+    const label = (key: CrmV2CopyKey) => crmv2Text(locale, key);
+    return [
+      { id: "overview", label: label("overview"), href: crmv3Href(base, "") },
+      { id: "customers", label: label("customers"), href: crmv3Href(base, "customers") },
+      { id: "finance", label: v3("money"), href: crmv3Href(base, "finance") },
+      { id: "withdraw", label: v3("wdDesk"), href: crmv3Href(base, "withdraw") },
+      { id: "kyc", label: v3("kycDesk"), href: crmv3Href(base, "kyc") },
+      { id: "reports", label: v3("reportsTitle"), href: crmv3Href(base, "reports") },
+      { id: "goals", label: v3("goalsTitle"), href: crmv3Href(base, "goals") },
+      { id: "support", label: label("support"), href: crmv3Href(base, "support") },
+    ];
+  }, [base, locale, v3]);
   const hits = useMemo(() => {
-    const people = (users.data?.users || []).map((row) => ({ href: crmv3Href(base, `customers/${row.id}`), label: row.name || row.email || row.id, kind: v3("goCustomers") }));
-    const moneyHits = (deposits.data?.requests || []).map((row) => ({ href: crmv3Href(base, "finance"), label: `${row.user?.name || "—"} · ${row.amount ?? ""} ${row.currency || ""}`, kind: v3("goFinance") }));
-    const ticketHits = (tickets.data?.tickets || []).slice(0, 6).map((row) => ({ href: crmv3Href(base, "support"), label: `${row.customer || "—"} · ${row.kind || ""}`, kind: v3("goTickets") }));
-    return [...people, ...moneyHits, ...ticketHits];
-  }, [base, deposits.data, tickets.data, users.data, v3]);
+    const people: SearchHit[] = (users.data?.users || []).map((row) => ({ group: "customer", id: row.id, label: row.name || row.email || row.id, detail: row.email || "", href: crmv3Href(base, `customers/${row.id}`) }));
+    const ticketHits: SearchHit[] = (tickets.data?.tickets || []).slice(0, 6).map((row) => ({ group: "ticket", id: row.id, label: row.customer || row.id, detail: `${row.kind || ""}${row.currency ? ` ${row.currency}` : ""}`, href: crmv3Href(base, "support", { open: row.id }) }));
+    const moneyHits: SearchHit[] = [
+      ...(deposits.data?.requests || []).map((row) => ({ group: "finance" as const, id: `d-${row.id}`, label: row.user?.name || row.id, detail: money(row.amount, row.currency, locale), href: crmv3Href(base, "finance", { open: row.id }) })),
+      ...(withdrawals.data?.requests || []).map((row) => ({ group: "finance" as const, id: `w-${row.id}`, label: row.user?.name || row.id, detail: money(row.amount, row.currency, locale), href: crmv3Href(base, "finance", { tab: "withdrawals", open: row.id }) })),
+    ];
+    return [...people, ...ticketHits, ...moneyHits, ...pageHits(query, pages)];
+  }, [users.data, tickets.data, deposits.data, withdrawals.data, base, pages, query, locale]);
+  const groups = groupHits(query.length >= 2 ? hits : pageHits("", pages));
+  const flat = groups.flatMap((group) => group.items);
+  const active = flat[Math.min(index, Math.max(0, flat.length - 1))];
+  function remember(text: string) {
+    const next = pushRecent(readJson<string[]>(RECENT_KEY, []), text);
+    writeJson(RECENT_KEY, next);
+    setRecent(next);
+  }
+  function choose(hit: SearchHit) {
+    if (query.length >= 2) remember(query);
+    onClose();
+    window.location.assign(hit.href);
+  }
   if (!open) return null;
-  const sections = [
-    { href: crmv3Href(base, "customers"), label: v3("goCustomers") },
-    { href: crmv3Href(base, "finance"), label: v3("goFinance") },
-    { href: crmv3Href(base, "positions"), label: v3("goPositions") },
-    { href: crmv3Href(base, "support"), label: v3("goTickets") },
-    { href: crmv3Href(base, "settings", { area: "calendar" }), label: v3("goTasks") },
-  ];
   return (
     <div className="c3-sheet-back" role="presentation" onClick={onClose}>
-      <div ref={panel} role="dialog" aria-modal="true" aria-label={v3("palette")} className="c3-sheet" onClick={(event) => event.stopPropagation()}>
-        <input ref={input} className="c3-field" value={q} placeholder={v3("paletteHint")} aria-label={v3("palette")} onChange={(event) => setQ(event.target.value)} onKeyDown={(event) => { if (event.key === "Escape") onClose(); }} />
-        <ul>
-          {hits.map((hit) => (
-            <li key={`${hit.kind}-${hit.href}-${hit.label}`}>
-              <Link href={hit.href} onClick={onClose}>{hit.kind} · {hit.label}</Link>
-            </li>
-          ))}
-        </ul>
-        {!hits.length && <p className="c3-muted">{query.length >= 2 ? v3("paletteEmpty") : v3("commandEmpty")}</p>}
-        <div className="c3-stack">
-          {sections.map((item) => <Link key={item.href} href={item.href} onClick={onClose}>{item.label}</Link>)}
-        </div>
+      <div ref={panel} role="dialog" aria-modal="true" aria-label={v3("findTitle")} className="c3-sheet" onClick={(event) => event.stopPropagation()}>
+        <input
+          ref={input}
+          className="c3-field"
+          value={q}
+          placeholder={v3("findHint")}
+          aria-label={v3("findTitle")}
+          aria-activedescendant={active ? `find-${active.id}` : undefined}
+          onChange={(event) => { setQ(event.target.value); setIndex(0); }}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") onClose();
+            if (event.key === "ArrowDown") { event.preventDefault(); setIndex((current) => moveIndex(current, 1, flat.length)); }
+            if (event.key === "ArrowUp") { event.preventDefault(); setIndex((current) => moveIndex(current, -1, flat.length)); }
+            if (event.key === "Enter" && active) { event.preventDefault(); choose(active); }
+          }}
+        />
+        {query.length < 2 && (
+          <div>
+            <p className="c3-muted">{v3("findRecent")}</p>
+            {!recent.length && <p className="c3-muted">{v3("findRecentEmpty")}</p>}
+            <div className="c3-tools">
+              {recent.map((item) => <button key={item} type="button" className="c3-chip" onClick={() => { setQ(item); setIndex(0); }}>{item}</button>)}
+              {recent.length > 0 && <button type="button" className="c3-btn" onClick={() => { writeJson(RECENT_KEY, []); setRecent([]); }}>{v3("findClear")}</button>}
+            </div>
+          </div>
+        )}
+        {!flat.length && <p className="c3-muted">{v3("findEmpty")}</p>}
+        {groups.map((group) => (
+          <section key={group.group} aria-label={v3(GROUP_LABEL[group.group])}>
+            <h3 className="c3-title">{v3(GROUP_LABEL[group.group])}</h3>
+            <ul className="c3-arrange-list" role="listbox">
+              {group.items.map((hit) => (
+                <li key={`${hit.group}-${hit.id}`} id={`find-${hit.id}`} role="option" aria-selected={active?.id === hit.id}>
+                  <button type="button" className="c3-btn" data-on={active?.id === hit.id ? "1" : "0"} onClick={() => choose(hit)}>{hit.label}{hit.detail ? ` · ${hit.detail}` : ""}</button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
       </div>
     </div>
   );
