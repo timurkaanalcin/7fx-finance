@@ -3811,3 +3811,50 @@
   [data-crmv4-root] .c4-ledger-filters .c4-field,
   [data-crmv4-root] .c4-ledger-filters .c4-select { width: 100%; }
 }
+
+[data-crmv4-root] .c4-kyc-gallery,
+[data-crmv4-root] .c4-kyc-grid li,
+[data-crmv4-root] .c4-kyc-check,
+[data-crmv4-root] .c4-audit-time,
+[data-crmv4-root] .c4-audit-time li {
+  border: 1px solid rgba(166, 133, 78, 0.45);
+  border-radius: 16px;
+  background:
+    linear-gradient(165deg, rgba(166, 133, 78, 0.12), transparent 48%),
+    #fffdf8;
+  min-width: 0;
+}
+
+[data-crmv4-root] .c4-kyc-gallery,
+[data-crmv4-root] .c4-audit-time { display: grid; gap: 10px; padding: 14px; }
+[data-crmv4-root] .c4-kyc-gallery .c4-title,
+[data-crmv4-root] .c4-audit-time .c4-title { margin: 0; font-weight: 500; }
+[data-crmv4-root] .c4-kyc-gallery .c4-lab span,
+[data-crmv4-root] .c4-audit-time .c4-lab span { color: var(--c4-accent-ink); font-size: 12px; font-weight: 500; }
+[data-crmv4-root] .c4-kyc-grid,
+[data-crmv4-root] .c4-audit-time ul { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+[data-crmv4-root] .c4-kyc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+[data-crmv4-root] .c4-kyc-grid li,
+[data-crmv4-root] .c4-audit-time li { display: grid; gap: 6px; padding: 12px; }
+[data-crmv4-root] .c4-kyc-time { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+[data-crmv4-root] .c4-kyc-time li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 6px;
+  border-inline-start: 2px solid #a6854e;
+  padding-inline-start: 8px;
+}
+[data-crmv4-root] .c4-kyc-check { display: grid; gap: 6px; margin: 0; padding: 12px; }
+[data-crmv4-root] .c4-kyc-check legend { color: var(--c4-accent-ink); font-size: 12px; font-weight: 500; }
+[data-crmv4-root] .c4-kyc-check label { display: flex; gap: 8px; align-items: center; min-width: 0; }
+
+[data-crmv4-root][data-theme="dark"] .c4-kyc-gallery,
+[data-crmv4-root][data-theme="dark"] .c4-kyc-grid li,
+[data-crmv4-root][data-theme="dark"] .c4-kyc-check,
+[data-crmv4-root][data-theme="dark"] .c4-audit-time,
+[data-crmv4-root][data-theme="dark"] .c4-audit-time li { background: #221f1b; color: #f6f1e8; }
+
+@media (max-width: 767px) {
+  [data-crmv4-root] .c4-kyc-grid { grid-template-columns: minmax(0, 1fr); }
+}

@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { crmv4Text } from "@/lib/crmv4/copy";
 import { exportCurrent } from "../round1";
+import { AuditTimeline } from "../round37";
 import { RecentExports } from "../round5";
 import { Card, Chip, Lab, Msg, Pager, State, TAKE, sendJson, useJson, when, type Tx } from "../kit";
 
@@ -30,6 +31,7 @@ export default function Logs({ tx, locale, q }: { tx: Tx; locale: string; q: str
   }
   return (
     <div className="c4-logs-luxe">
+    <AuditTimeline v4={(key) => crmv4Text(locale, key)} locale={locale} tx={tx} />
     <Card title={tx("logs")}>
       <p className="c4-muted" style={{ padding: "8px 16px 0" }}>{tx("logsLead")}</p>
       <div className="c4-tools">

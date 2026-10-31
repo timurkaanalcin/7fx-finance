@@ -18,7 +18,7 @@ import { AgingBoard, ConversionStat, DepositorBoard, DocGallery, DomainBoard, Eq
 import { CompletenessMeter, ImportPreview, InlineProfile, LangBadge, SourceBoard, StaleList, StatusWatch, TagCloud } from "../round7";
 import { fuzzyHit } from "@/lib/crmv4/round8";
 import { RatioCard, toggleWatch, watchIds } from "../round8";
-import { DocStage, FREEZE_PRESETS, KYC_PRESETS, KycChecklist, OnboardTrack, ReasonChips, RichNote, WelcomeList } from "../round9";
+import { DocStage, FREEZE_PRESETS, OnboardTrack, RichNote, WelcomeList } from "../round9";
 import { CallWindow, CustomerQr, ExportColumns, PresenceFacts, nextCallId, scoreOf } from "../round10";
 import { BulkRemind, EditLog, EmailHintLine, HandoffNote, NoteCloud, SimilarList } from "../round11";
 import { BulkUntag, ContactSummary, DncFlag, DocAsk, Fold, KeyFacts, LiveBook, MarginGauge, MiniNav, MonthStatement, PreferTime, ProfileList, QuickSwitch, ShareViewButton, TagManager, TxMini, isDnc } from "../round12";
@@ -31,11 +31,12 @@ import { ListDesk, RecordHead, applyList, useLists } from "../round31";
 import { TradeBook } from "../round33";
 import { LuxList, NoteStudio } from "../round34";
 import { FinanceBook } from "../round36";
+import { KycStudio } from "../round37";
 import { rememberView } from "../round25";
 import { LifeLine } from "../round26";
 import { sameEntry } from "@/lib/crmv4/round17";
 import { countActive, decodeView, headerHit, inDateRange, inNumberRange, multiSort } from "@/lib/crmv4/round12";
-import { Card, Chip, Field, Lab, Msg, Pager, State, Status, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, statusTone, useJson, when, type Tx, type UserRow } from "../kit";
+import { Card, Chip, Field, Lab, Msg, Pager, State, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, useJson, when, type Tx, type UserRow } from "../kit";
 
 const COLUMNS = ["customer", "country", "desk", "sale", "retention", "balance", "status"] as const;
 type Col = DeskCol;
@@ -515,6 +516,7 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
         />
       )}
       {part === "money" && <FinanceBook id={id} v4={v4} locale={locale} tx={tx} />}
+      {part === "files" && <Files id={id} email={u?.email || ""} tx={tx} locale={locale} />}
       {u && <TradeBook id={id} v4={v4} locale={locale} />}
       {u && (
         <div className="c4-record-tools">
@@ -605,7 +607,6 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           {u && part === "profile" && <ProfileForm id={id} user={u} tx={tx} locale={locale} onDone={user.reload} />}
           {part === "notes" && <Notes id={id} notes={user.data?.notes || []} tx={tx} locale={locale} onDone={user.reload} />}
           {part === "trades" && <Trades id={id} tx={tx} locale={locale} />}
-          {part === "files" && <Files id={id} email={u?.email || ""} tx={tx} locale={locale} />}
           {u && part === "access" && <Access id={id} user={u} tx={tx} onDone={user.reload} />}
           {part === "activity" && <ContactFeed id={id} notes={user.data?.notes || []} events={user.data?.activityEvents || []} v4={v4} locale={locale} />}
         </div>
@@ -977,13 +978,13 @@ function Files({ id, email, tx, locale }: { id: string; email: string; tx: Tx; l
   const docs = useJson<{ documents?: DocRow[] }>(email ? `/api/admin/documents?q=${encodeURIComponent(email)}&take=40` : null);
   const files = useJson<{ documents?: FileRow[] }>(`/api/admin/customer-documents?userId=${encodeURIComponent(id)}&take=40`);
   const [msg, setMsg] = useState("");
-  const [zoom, setZoom] = useState<null | { title: string; src?: string; id?: string; pdf?: boolean }>(null);
+  const [zoom, setZoom] = useState<null | { title: string; src?: string; pdf?: boolean }>(null);
   const [compare, setCompare] = useState<string[]>([]);
-  const [kycReason, setKycReason] = useState("");
   const v4 = (key: CrmV4CopyKey) => crmv4Text(locale, key);
   const mine = (docs.data?.documents || []).filter((row) => row.traderId === id);
   return (
     <div className="c4-stack c4-doc-luxe">
+      <KycStudio id={id} rows={mine} loading={docs.loading} error={docs.error} onRetry={docs.reload} uploads={files.data?.documents || []} filesLoading={files.loading} tx={tx} locale={locale} v4={v4} />
       <DocDesk rows={mine} v4={v4} />
       <Card title={tx("kyc")}>
         <form
@@ -1010,42 +1011,6 @@ function Files({ id, email, tx, locale }: { id: string; email: string; tx: Tx; l
           <button type="submit" className="c4-btn c4-btn-hot">{tx("createDoc")}</button>
         </form>
         <Msg text={msg} />
-        <ul>
-          {mine.map((row) => (
-            <li key={row.id} className="c4-row" style={{ justifyContent: "space-between", padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
-              <div>
-                <div>{row.name} · {row.docType}</div>
-                <div className="c4-muted">{when(row.createdAt, locale)}</div>
-              </div>
-              <div className="c4-row">
-                <Status tone={statusTone(row.status)}>{row.status}</Status>
-                <button type="button" className="c4-btn" onClick={() => setZoom({ title: `${row.name || ""} · ${row.docType || ""}`, id: row.id })}>{v4("zoom")}</button>
-                {row.status === "PENDING" && (
-                  <>
-                    <button type="button" className="c4-btn" onClick={() => void review(row.id, "APPROVED", docs.reload, setMsg, tx)}>{tx("approve")}</button>
-                    <button type="button" className="c4-btn" onClick={() => void review(row.id, "REJECTED", docs.reload, setMsg, tx)}>{tx("reject")}</button>
-                  </>
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
-        {!docs.loading && mine.length === 0 && <p className="c4-empty-luxe">{tx("noneYet")}</p>}
-        <KycChecklist id={id} v4={v4} />
-        <ReasonChips presets={KYC_PRESETS} v4={v4} onPick={setKycReason} />
-        {kycReason && <p className="c4-muted c4-pad">{kycReason}</p>}
-        {zoom && (
-          <ReviewDialog
-            title={zoom.title}
-            src={zoom.src}
-            pdf={zoom.pdf}
-            v4={v4}
-            tx={tx}
-            onClose={() => setZoom(null)}
-            onApprove={zoom.id ? () => { void review(zoom.id || "", "APPROVED", docs.reload, setMsg, tx); setZoom(null); } : undefined}
-            onReject={zoom.id ? () => { void review(zoom.id || "", "REJECTED", docs.reload, setMsg, tx, kycReason); setZoom(null); } : undefined}
-          />
-        )}
       </Card>
       <Card title={tx("evrak")}>
         <form
@@ -1069,7 +1034,7 @@ function Files({ id, email, tx, locale }: { id: string; email: string; tx: Tx; l
           {(files.data?.documents || []).map((row) => (
             <li key={row.id} className="c4-row" style={{ justifyContent: "space-between", padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
               <span>{row.title || row.fileName}</span>
-              <button type="button" className="c4-btn" onClick={() => setZoom({ title: row.title || row.fileName || "", src: `/api/admin/customer-documents/${row.id}`, pdf: String(row.mime || row.fileName || "").includes("pdf") })}>{v4("zoom")}</button>
+              <button type="button" className="c4-btn" onClick={() => setZoom({ title: row.title || row.fileName || "", src: `/api/admin/customer-documents/${row.id}`, pdf: String(row.mime || row.fileName || "").toLowerCase().includes("pdf") })}>{v4("zoom")}</button>
               <button type="button" className="c4-btn" onClick={() => setCompare((list) => list.includes(row.id) ? list.filter((item) => item !== row.id) : [...list, row.id].slice(-2))}>{v4("compareDocs")}</button>
               <a href={`/api/admin/customer-documents/${row.id}`}>{tx("download")}</a>
             </li>
@@ -1080,6 +1045,9 @@ function Files({ id, email, tx, locale }: { id: string; email: string; tx: Tx; l
             {compare.map((fileId) => <DocStage key={fileId} src={`/api/admin/customer-documents/${fileId}`} pdf={String((files.data?.documents || []).find((row) => row.id === fileId)?.fileName || "").includes("pdf")} v4={v4} />)}
           </div>
         )}
+        {zoom && (
+          <ReviewDialog title={zoom.title} src={zoom.src} pdf={zoom.pdf} v4={v4} tx={tx} onClose={() => setZoom(null)} />
+        )}
       </Card>
     </div>
   );
@@ -1087,12 +1055,6 @@ function Files({ id, email, tx, locale }: { id: string; email: string; tx: Tx; l
 
 type DocRow = { id: string; name?: string; docType?: string; status?: string; traderId?: string; createdAt?: string };
 type FileRow = { id: string; title?: string; fileName?: string; mime?: string };
-
-async function review(id: string, status: string, reload: () => void, setMsg: (v: string) => void, tx: Tx, note?: string) {
-  const res = await sendJson("/api/admin/documents", "POST", { action: "review", id, status, ...(note ? { note } : {}) });
-  setMsg(res.ok ? tx("docReviewed") : res.error || tx("failed"));
-  if (res.ok) reload();
-}
 
 function Access({ id, user, tx, onDone }: { id: string; user: UserRow; tx: Tx; onDone: () => void }) {
   const perms = useJson<{ permissions?: { tradingEnabled?: boolean; withdrawalsEnabled?: boolean; loginEnabled?: boolean; loginBlockedMessage?: string | null } }>(`/api/admin/users/${encodeURIComponent(id)}/permissions`);
