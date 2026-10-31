@@ -5,6 +5,7 @@ import { useState } from "react";
 import { approvalBody, approvalEndpoint } from "@/lib/crmv2/payload";
 import { exportCurrent } from "../round1";
 import { MoneyTools } from "../round2";
+import { MethodChart, WithdrawFlags } from "../round4";
 import { Card, Chip, Lab, Pager, Sheet, State, Status, SwipeRow, TAKE, money, sendJson, statusTone, useJson, when, type Tx } from "../kit";
 import { crmv4Text } from "@/lib/crmv4/copy";
 
@@ -60,6 +61,10 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
       {tab !== "ledger" && (
         <MoneyTools rows={rows as MoneyRow[]} kind={tab === "withdrawals" ? "WITHDRAW" : tab === "balance" ? "MARGIN" : "DEPOSIT"} tx={tx} v4={(key) => crmv4Text(locale, key)} locale={locale} onDone={data.reload} />
       )}
+      {(tab === "deposits" || !params.get("tab")) && tab !== "withdrawals" && tab !== "balance" && tab !== "ledger" && (
+        <MethodChart rows={rows as MoneyRow[]} v4={(key) => crmv4Text(locale, key)} locale={locale} />
+      )}
+      {tab === "withdrawals" && <WithdrawFlags v4={(key) => crmv4Text(locale, key)} />}
       <State loading={data.loading} error={data.error} empty={!data.loading && rows.length === 0} tx={tx} onRetry={data.reload} />
       {tab === "ledger" ? <Ledger rows={rows as LedgerRow[]} tx={tx} locale={locale} /> : (
         <>

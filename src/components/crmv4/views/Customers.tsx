@@ -11,6 +11,7 @@ import { crmv4Href } from "@/lib/crmv4/sections";
 import { ActivityTimeline, BulkBar, CustomerDeskTable, FilterBuilder, ReviewDialog, duplicateEmails, readTags, rememberCustomer, useDeskMemory, visibleCustomers, type Col as DeskCol } from "../round1";
 import { Customer360, DuplicateScreen, RetentionForm, RoundRobinPreview, StatementView, pushUndo } from "../round2";
 import { ContactLine, DocumentsCenter, LocalTime, NoteTemplates, Pipeline, PresenceBadge, TradingOverview, columnPreset, parseOperators } from "../round3";
+import { CompareBoard, QuickChips, ValueSpark, WorkspaceTabs, pushWorkspace } from "../round4";
 import { Card, Chip, Field, Lab, Msg, Pager, State, Status, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, statusTone, useJson, when, type Tx, type UserRow } from "../kit";
 
 const COLUMNS = ["customer", "country", "desk", "sale", "retention", "balance", "status"] as const;
@@ -155,6 +156,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
           <button type="button" className="c4-btn" onClick={() => setBuilderOpen((open) => !open)}>{builderOpen ? v4("hideBuilder") : v4("builder")}</button>
           <button type="button" className="c4-chip" data-on={pipelineOn ? "1" : "0"} onClick={() => setPipelineOn((on) => !on)}>{v4("pipeline")}</button>
           <input className="c4-field" style={{ maxWidth: 220 }} value={ops} aria-label={v4("operatorSearch")} placeholder="email:ada country:TR" onChange={(event) => setOps(event.target.value)} />
+          <QuickChips saleStatus={saleStatus} v4={v4} onPick={(status) => setQuery({ saleStatus: status })} />
           <button type="button" className="c4-chip" data-on={followUp === "overdue" ? "1" : "0"} onClick={() => setQuery({ followUp: followUp === "overdue" ? "" : "overdue" })}>{v4("followUpDue")}</button>
           <button type="button" className="c4-chip" data-on={pinnedOnly ? "1" : "0"} onClick={() => setPinnedOnly((on) => !on)}>{v4("pinnedOnly")}</button>
           <button type="button" className="c4-btn" onClick={() => setQuery({ status: "", saleStatus: "", retentionStatus: "", country: "", presence: "", ftd: "", sort: "", followUp: "" })}>{v4("clearFilters")}</button>
@@ -299,6 +301,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
           onSale={async (id, sale) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { saleStatus: sale }); data.reload(); }}
           onInspect={setInspectId}
         />
+        {selected.length >= 2 && <CompareBoard rows={shown.filter((row) => selected.includes(row.id))} tx={tx} v4={v4} locale={locale} />}
         {pipelineOn && <Pipeline rows={shown} v4={v4} onMove={async (id, status) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { saleStatus: status }); data.reload(); }} />}
         <RoundRobinPreview ids={selected} v4={v4} tx={tx} onApplied={() => { setSelected([]); data.reload(); }} />
         <DuplicateScreen v4={v4} tx={tx} />
@@ -353,7 +356,10 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
     setNeighbors(readNeighborIds(id));
   }, [id]);
   useEffect(() => {
-    if (u) rememberCustomer(u);
+    if (u) {
+      rememberCustomer(u);
+      pushWorkspace({ id: u.id, name: u.name || u.email || u.id });
+    }
   }, [u]);
   function setPart(next: string) {
     const p = new URLSearchParams(params.toString());
@@ -364,6 +370,7 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
   const v4 = (key: CrmV4CopyKey) => crmv4Text(locale, key);
   return (
     <div className="c4-stack">
+      <WorkspaceTabs base={base} current={id} v4={v4} />
       <State loading={user.loading} error={user.error} empty={!user.loading && !u} tx={tx} onRetry={user.reload} />
       {u && (
         <header className="c4-strip c4-strip-luxe">
@@ -400,7 +407,7 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           <Field label={tx("ftd")} value={u.ftd ? tx("yes") : tx("no")} />
         </div>
       )}
-      {u && <div className="c4-detail-tools"><RetentionForm id={id} tx={tx} v4={v4} onDone={user.reload} /><StatementView id={id} tx={tx} v4={v4} locale={locale} /><NoteTemplates v4={v4} onUse={async (body) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { addNote: body }); user.reload(); }} /><DocumentsCenter id={id} email={u.email || ""} tx={tx} v4={v4} locale={locale} /><TradingOverview id={id} tx={tx} v4={v4} locale={locale} /></div>}
+      {u && <div className="c4-detail-tools"><ValueSpark id={id} tx={tx} v4={v4} locale={locale} /><RetentionForm id={id} tx={tx} v4={v4} onDone={user.reload} /><StatementView id={id} tx={tx} v4={v4} locale={locale} /><NoteTemplates v4={v4} onUse={async (body) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { addNote: body }); user.reload(); }} /><DocumentsCenter id={id} email={u.email || ""} tx={tx} v4={v4} locale={locale} /><TradingOverview id={id} tx={tx} v4={v4} locale={locale} /></div>}
       <div className="c4-with-side">
         <nav className="c4-side" aria-label={tx("customers")}>
           {PARTS.map((item) => (

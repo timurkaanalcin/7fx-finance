@@ -6,6 +6,7 @@ import { JOB_TITLE_KEYS, jobTitleLabel } from "@/lib/job-titles";
 import { API_KEY_MIGRATION_SQL } from "@/lib/crmv2/control";
 import { crmv4Text } from "@/lib/crmv4/copy";
 import { AuditDiff, SessionList } from "../round2";
+import { AuditExport } from "../round4";
 import { Card, Chip, Field, Lab, Msg, Pager, State, Status, TAKE, sendJson, statusTone, useJson, when, type Tx } from "../kit";
 
 const TABS = ["status", "services", "logs", "backups", "keys", "admins"] as const;
@@ -175,6 +176,7 @@ function LogPanel({ tx, locale }: { tx: Tx; locale: string }) {
         <input name="from" type="date" defaultValue={from} className="c4-field" aria-label={tx("from")} />
         <input name="to" type="date" defaultValue={to} className="c4-field" aria-label={tx("to")} />
         <button type="submit" className="c4-btn c4-btn-hot">{tx("applyWord")}</button>
+        {source === "audit" && <AuditExport rows={data.data?.rows || []} v4={(key) => crmv4Text(locale, key)} />}
       </form>
       <State loading={data.loading} error={data.error} empty={!data.loading && !(data.data?.rows || []).length} tx={tx} onRetry={data.reload} />
       <ul>

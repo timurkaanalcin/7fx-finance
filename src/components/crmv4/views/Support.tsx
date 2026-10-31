@@ -7,6 +7,7 @@ import { crmv4Text } from "@/lib/crmv4/copy";
 import { ReviewDialog, TicketMeta, exportCurrent } from "../round1";
 import { MacroBar } from "../round2";
 import { groupBy, setTicketAssignee, ticketAssignee } from "../round3";
+import { CsatPicker } from "../round4";
 import { Card, Chip, Lab, Msg, Sheet, State, Status, SwipeRow, money, sendJson, statusTone, useJson, when, type Tx } from "../kit";
 
 type Ticket = { id: string; kind: string; amount?: number; currency?: string; status?: string; customer?: string; openedAt?: string };
@@ -75,6 +76,7 @@ function Tickets({ tx, locale, q, status, setQuery }: { tx: Tx; locale: string; 
             </div>
             <p className="c4-muted c4-meta">{row.kind}</p>
             <TicketMeta id={`${row.kind}-${row.id}`} openedAt={row.openedAt} v4={v4} />
+            <CsatPicker id={`${row.kind}-${row.id}`} v4={v4} />
             <label className="c4-lab"><span>{v4("ticketAssign")}</span>
               <input className="c4-field" defaultValue={assignees[row.id] || ticketAssignee(row.id)} aria-label={v4("ticketAssign")} onBlur={(event) => { setTicketAssignee(row.id, event.target.value); setAssignees((map) => ({ ...map, [row.id]: event.target.value })); }} />
             </label>

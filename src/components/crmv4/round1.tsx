@@ -17,7 +17,7 @@ import {
   type FilterRule,
   type Health,
 } from "@/lib/crmv4/round1";
-import { Card, Status, auditExport, downloadCsv, money, sendJson, useJson, when, type Tx, type UserRow } from "./kit";
+import { Card, Status, SwipeRow, auditExport, downloadCsv, money, sendJson, useJson, when, type Tx, type UserRow } from "./kit";
 
 export type V4 = (key: CrmV4CopyKey) => string;
 export type Col = "customer" | "country" | "desk" | "sale" | "retention" | "balance" | "status";
@@ -325,13 +325,15 @@ export function CustomerDeskTable({
           const health = healthOf(row);
           return (
             <li key={row.id} className="c4-person">
-              <label className="c4-row">
-                <input type="checkbox" checked={selected.includes(row.id)} aria-label={row.name || row.id} onChange={() => onToggle(row.id)} />
-                <Link href={crmv4Href(base, `customers/${row.id}`)}>{row.name || "—"}</Link>
-                <Status tone={health === "healthy" ? "ok" : health === "risk" ? "bad" : "warn"}>{healthLabel(health, v4)}</Status>
-              </label>
-              <div className="c4-muted">{row.email}</div>
-              <div>{money(row.balance ?? row.account?.balance, row.currency || row.account?.currency, locale)}</div>
+              <SwipeRow actions={[{ key: "open", label: v4("swipeOpen"), tone: "gold", onClick: () => { window.location.href = crmv4Href(base, `customers/${row.id}`); } }]}>
+                <label className="c4-row">
+                  <input type="checkbox" checked={selected.includes(row.id)} aria-label={row.name || row.id} onChange={() => onToggle(row.id)} />
+                  <Link href={crmv4Href(base, `customers/${row.id}`)}>{row.name || "—"}</Link>
+                  <Status tone={health === "healthy" ? "ok" : health === "risk" ? "bad" : "warn"}>{healthLabel(health, v4)}</Status>
+                </label>
+                <div className="c4-muted">{row.email}</div>
+                <div>{money(row.balance ?? row.account?.balance, row.currency || row.account?.currency, locale)}</div>
+              </SwipeRow>
             </li>
           );
         })}

@@ -7,12 +7,13 @@ import { crmv4Text } from "@/lib/crmv4/copy";
 import { DeskBoard, TasksBoard } from "../round1";
 import { InsightWidgets } from "../round2";
 import { AgentKpis, CampaignMix, ReminderAlerts } from "../round3";
+import { CountryHeat, DeskLanding, HourHeat, MergeList, NextQueue, SmartLists, StaffList, WorkloadBoard } from "../round4";
 import { crmv4Href } from "@/lib/crmv4/sections";
 import { Bars, Card, Chip, Field, Kpi, Lab, Msg, Sheet, State, auditExport, downloadCsv, fmtNum, localeTag, money, sendJson, useJson, when, type Tx, type UserRow } from "../kit";
 
-type Props = { base: string; tx: Tx; locale: string };
+type Props = { base: string; tx: Tx; locale: string; name?: string };
 
-export default function Overview({ base, tx, locale }: Props) {
+export default function Overview({ base, tx, locale, name }: Props) {
   const stats = useJson<{ kpis?: { users?: number; totalVolume?: number; pendingDeposits?: number; pendingBalanceRequests?: number; openPositions?: number } }>("/api/admin/stats");
   const finance = useJson<{ kpis?: { totalEquity?: number; totalBalance?: number; income?: number; outcome?: number; net?: number; floatingPnL?: number }; byType?: { type: string; amount: number; count: number }[] }>("/api/admin/analytics/finance");
   const report = useJson<{ report?: Record<string, number | string> }>("/api/admin/analytics/report");
@@ -28,6 +29,7 @@ export default function Overview({ base, tx, locale }: Props) {
   const banner = finance.data?.kpis?.income ?? aum;
   return (
     <div className="c4-stack">
+      <DeskLanding name={name || ""} v4={(key) => crmv4Text(locale, key)} />
       <section className="c4-banner">
         <div className="c4-banner-value">{money(banner, "USD", locale)}</div>
         <div className="c4-banner-label">{tx("income")}</div>
@@ -66,6 +68,15 @@ export default function Overview({ base, tx, locale }: Props) {
         </div>
         <CampaignMix v4={(key) => crmv4Text(locale, key)} />
         <AgentKpis v4={(key) => crmv4Text(locale, key)} tx={tx} />
+        <div className="c4-book-grid">
+          <CountryHeat v4={(key) => crmv4Text(locale, key)} />
+          <HourHeat v4={(key) => crmv4Text(locale, key)} />
+        </div>
+        <WorkloadBoard v4={(key) => crmv4Text(locale, key)} />
+        <SmartLists base={base} v4={(key) => crmv4Text(locale, key)} />
+        <NextQueue base={base} v4={(key) => crmv4Text(locale, key)} />
+        <MergeList v4={(key) => crmv4Text(locale, key)} />
+        <StaffList v4={(key) => crmv4Text(locale, key)} />
         <InsightWidgets rows={(users.data?.users || []).map((row) => ({ id: row.id, name: row.name, email: row.email, createdAt: row.createdAt, ftd: row.ftd, balance: row.balance ?? row.account?.balance, active: row.active, assigneeName: row.assigneeName, desk: row.desk }))} v4={(key) => crmv4Text(locale, key)} tx={tx} />
         <div className="c4-split">
           <Card title={tx("recentCustomers")} extra={<Link href={crmv4Href(base, "customers")}>{tx("seeAll")}</Link>}>
