@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { questionOpensSheet } from "@/lib/crmv4/round41";
 import { useEscape } from "./round40";
 import { SALE_STATUSES } from "@/lib/membership";
 import type { CrmV4CopyKey } from "@/lib/crmv4/copy";
@@ -442,20 +443,21 @@ export function CommandPalette({ base, open, onClose, v4 }: { base: string; open
   );
 }
 
-export function ShortcutHost({ base, v4, onPalette, onHelp }: { base: string; v4: V4; onPalette: () => void; onHelp: (open: boolean) => void }) {
+export function ShortcutHost({ base, v4, onPalette, onHelp, onSheet }: { base: string; v4: V4; onPalette: () => void; onHelp: (open: boolean) => void; onSheet?: () => void }) {
   const armed = useRef(false);
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
-      const typing = target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT" || target.isContentEditable);
+      const typing = Boolean(target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT" || target.isContentEditable));
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
         onPalette();
         return;
       }
       if (typing) return;
-      if (event.key === "?") {
-        onHelp(true);
+      if (questionOpensSheet(event.key, typing)) {
+        if (onSheet) onSheet();
+        else onHelp(true);
         return;
       }
       if (event.key === "Escape") onHelp(false);
@@ -472,7 +474,7 @@ export function ShortcutHost({ base, v4, onPalette, onHelp }: { base: string; v4
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [base, onPalette, onHelp]);
+  }, [base, onPalette, onHelp, onSheet]);
   return <span className="c4-sr" aria-hidden>{v4("shortcuts")}</span>;
 }
 

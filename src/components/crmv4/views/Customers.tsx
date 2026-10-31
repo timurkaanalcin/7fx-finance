@@ -10,7 +10,8 @@ import { moveItem, type FilterRule } from "@/lib/crmv4/round1";
 import { crmv4Href } from "@/lib/crmv4/sections";
 import { BulkBar, FilterBuilder, ReviewDialog, readTags, rememberCustomer, useDeskMemory, visibleCustomers, type Col as DeskCol } from "../round1";
 import { Customer360, DuplicateScreen, RetentionForm, RoundRobinPreview, StatementView } from "../round2";
-import { ContactLine, DocumentsCenter, LocalTime, NoteTemplates, Pipeline, PresenceBadge, TradingOverview, columnPreset, parseOperators } from "../round3";
+import { ContactLine, DocumentsCenter, LocalTime, NoteTemplates, PresenceBadge, TradingOverview, columnPreset, parseOperators } from "../round3";
+import { PipelineDesk } from "../round41";
 import { QuickChips, ValueSpark, WorkspaceTabs, pushWorkspace } from "../round4";
 import { CompareDesk } from "../round23";
 import { BirthdayList, BulkNote, CallbackButton, DeskSwitch, JourneyMap, SearchHistory, WinLossCard, customerSegment, notePinned, rememberSearch, toggleNotePin } from "../round5";
@@ -416,7 +417,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
         <LuxList base={base} rows={tableRows} tx={tx} locale={locale} v4={v4} />
         {tagManagerOn && <TagManager tags={memory.tags} onChange={memory.setTags} v4={v4} />}
         {selected.length >= 2 && <CompareDesk rows={shown.filter((row) => selected.includes(row.id))} base={base} v4={v4} locale={locale} />}
-        {pipelineOn && <Pipeline rows={shown} v4={v4} onMove={async (id, status) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { saleStatus: status }); data.reload(); }} />}
+        {pipelineOn && <PipelineDesk rows={shown} v4={v4} onMove={async (id, status) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { saleStatus: status }); data.reload(); }} />}
         <RoundRobinPreview ids={selected} v4={v4} tx={tx} onApplied={() => { setSelected([]); data.reload(); }} />
         <DuplicateScreen v4={v4} tx={tx} />
         {inspectId && <Customer360 base={base} id={inspectId} tx={tx} v4={v4} locale={locale} onClose={() => setInspectId("")} />}

@@ -19,8 +19,9 @@ import { AgendaPage } from "./round33";
 import { DeskStaff } from "./round35";
 import { DeskBar, NoticeDesk, useNotices } from "./round38";
 import { GroupedMenu, PageRail } from "./round30";
-import { DeskFoot, HelpSheet } from "./round18";
-import { HelpCenter, OfflineBanner, Tour, UndoHost, densityMode, storeDensity } from "./round2";
+import { DeskFoot } from "./round18";
+import { HelpDrawer, ShortcutsSheet } from "./round41";
+import { OfflineBanner, Tour, UndoHost, densityMode, storeDensity } from "./round2";
 import { rememberToast, toastHistory } from "./round3";
 import { AnnounceBar, DeskBoundary, FreshnessBar, storedAccent } from "./round4";
 import { IdleWarning, storedRole, storedZebra } from "./round5";
@@ -80,8 +81,8 @@ function Shell({ base, section, name }: Props) {
   const [langOpen, setLangOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const [quickOpen, setQuickOpen] = useState(false);
-  const [guideOpen, setGuideOpen] = useState(false);
   const [density, setDensity] = useState<"comfortable" | "compact">("comfortable");
   const [shownName, setShownName] = useState("");
   const [trail, setTrail] = useState<string[]>([]);
@@ -316,7 +317,7 @@ function Shell({ base, section, name }: Props) {
       <a className="c4-skip" href="#c4-main">{v4("skipContent")}</a>
       <OfflineBanner v4={v4} />
       <IdleWarning v4={v4} />
-      <ShortcutHost base={base} v4={v4} onPalette={() => setPaletteOpen(true)} onHelp={setHelpOpen} />
+      <ShortcutHost base={base} v4={v4} onPalette={() => setPaletteOpen(true)} onHelp={setHelpOpen} onSheet={() => setSheetOpen(true)} />
       <Tour v4={v4} />
       <header className="c4-top">
         <Link href={crmv4Href(base, "")} className="c4-brand" aria-label={v4("v4mark")}>
@@ -464,7 +465,7 @@ function Shell({ base, section, name }: Props) {
             )}
             </DeskBoundary>
           </main>
-          <DeskFoot section={heading} name={name} v4={v4} onHelp={() => setHelpOpen(true)} />
+          <DeskFoot section={heading} name={name} v4={v4} onHelp={() => setSheetOpen(true)} />
         </div>
       </div>
 
@@ -502,7 +503,7 @@ function Shell({ base, section, name }: Props) {
         <button type="button" className="c4-rail-btn" aria-label={v4("toastHistory")} onClick={() => setLogOpen(true)}>
           <span>{v4("toastHistory")}</span>
         </button>
-        <button type="button" className="c4-rail-btn" aria-label={v4("helpCenter")} onClick={() => setGuideOpen(true)}>
+        <button type="button" className="c4-rail-btn" aria-label={v4("helpCenter")} onClick={() => setHelpOpen(true)}>
           <span>{v4("helpCenter")}</span>
         </button>
         <button type="button" className="c4-rail-btn" aria-label={theme === "dark" ? tx("themeLight") : tx("themeDark")} onClick={toggleTheme}>
@@ -545,7 +546,7 @@ function Shell({ base, section, name }: Props) {
               <button type="button" className="c4-btn" onClick={() => { setMore(false); setNotesOpen(true); }}>{tx("notifications")}</button>
               <button type="button" className="c4-btn" onClick={() => { setMore(false); setRemindersOpen(true); }}>{v4("reminders")}</button>
               <button type="button" className="c4-btn" onClick={() => { setMore(false); setPadOpen(true); }}>{v4("notes")}</button>
-              <button type="button" className="c4-btn" onClick={() => { setMore(false); setHelpOpen(true); }}>{v4("openHelp")}</button>
+              <button type="button" className="c4-btn" onClick={() => { setMore(false); setSheetOpen(true); }}>{v4("openHelp")}</button>
               <MotionPref v4={v4} />
               <LanguageSwitcher compact tone={theme === "dark" ? "dark" : "crm"} />
               <button type="button" className="c4-btn" onClick={toggleTheme}>{theme === "dark" ? tx("themeLight") : tx("themeDark")}</button>
@@ -589,8 +590,8 @@ function Shell({ base, section, name }: Props) {
       <Fab v4={v4} onCreate={() => setQuickOpen(true)} />
       <QuickSheet open={quickOpen} onClose={() => setQuickOpen(false)} onSearch={() => setPaletteOpen(true)} v4={v4} tx={tx} closeLabel={tx("close")} />
       <DeskSearch base={base} open={paletteOpen} onClose={() => setPaletteOpen(false)} v4={v4} locale={locale} />
-      <HelpSheet open={helpOpen} onClose={() => setHelpOpen(false)} v4={v4} closeLabel={tx("close")} />
-      <HelpCenter open={guideOpen} onClose={() => setGuideOpen(false)} v4={v4} />
+      <HelpDrawer open={helpOpen} onClose={() => setHelpOpen(false)} onShortcuts={() => { setHelpOpen(false); setSheetOpen(true); }} v4={v4} closeLabel={tx("close")} />
+      <ShortcutsSheet open={sheetOpen} onClose={() => setSheetOpen(false)} onHelp={() => { setSheetOpen(false); setHelpOpen(true); }} v4={v4} closeLabel={tx("close")} />
       <UndoHost v4={v4} />
       {logOpen && (
         <Drawer title={v4("toastHistory")} onClose={() => setLogOpen(false)} closeLabel={tx("close")}>
