@@ -420,6 +420,51 @@
 [data-crmv4-root] .c4-list-rows { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
 [data-crmv4-root] .c4-list-rows li { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 8px; }
 [data-crmv4-root] .c4-list-rows li[data-on="1"] { box-shadow: inset 3px 0 0 #a6854e; }
+
+[data-crmv4-root] .c4-insight-luxe,
+[data-crmv4-root] .c4-pref-luxe {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(166, 133, 78, 0.45);
+  border-radius: 16px;
+  background:
+    linear-gradient(165deg, rgba(166, 133, 78, 0.12), transparent 46%),
+    #fffdf8;
+}
+[data-crmv4-root] .c4-insight-luxe .c4-title,
+[data-crmv4-root] .c4-pref-luxe .c4-title { margin: 0; font-weight: 500; }
+[data-crmv4-root] .c4-bars { display: grid; gap: 6px; }
+[data-crmv4-root] .c4-bar-row { display: grid; grid-template-columns: minmax(0, 140px) minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+[data-crmv4-root] .c4-bar-track { height: 8px; border-radius: 8px; background: rgba(166, 133, 78, 0.2); }
+[data-crmv4-root] .c4-bar-fill { display: block; height: 8px; border-radius: 8px; background: #7a5e30; }
+[data-crmv4-root] .c4-insight-luxe table,
+[data-crmv4-root] .c4-pref-view { width: 100%; }
+[data-crmv4-root] .c4-pref-rows { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+[data-crmv4-root] .c4-pref-rows li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid rgba(166, 133, 78, 0.35);
+  border-radius: 12px;
+}
+[data-crmv4-root] .c4-pref-view {
+  margin: 0;
+  max-height: 160px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
+[data-crmv4-root][data-theme="dark"] .c4-insight-luxe,
+[data-crmv4-root][data-theme="dark"] .c4-pref-luxe,
+[data-crmv4-root][data-theme="dark"] .c4-pref-rows li { background: #221f1b; color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-bar-fill { background: #d4bc86; }
+@media (max-width: 767px) {
+  [data-crmv4-root] .c4-bar-row { grid-template-columns: minmax(0, 1fr); }
+}
 [data-crmv4-root][data-theme="dark"] .c4-record-head,
 [data-crmv4-root][data-theme="dark"] .c4-list-desk,
 [data-crmv4-root][data-theme="dark"] .c4-list-rows li { background: #221f1b; color: #f6f1e8; }
@@ -3336,6 +3381,8 @@
 [data-crmv4-root] .c4-panel[data-view="goals"] .c4-pagehead,
 [data-crmv4-root] .c4-panel[data-view="kyc"] .c4-pagehead,
 [data-crmv4-root] .c4-panel[data-view="reports"] .c4-pagehead,
+[data-crmv4-root] .c4-panel[data-view="insights"] .c4-pagehead,
+[data-crmv4-root] .c4-panel[data-view="prefs"] .c4-pagehead,
 [data-crmv4-root] .c4-panel[data-view="withdraw"] .c4-pagehead,
 [data-crmv4-root] .c4-panel[data-view="deposit"] .c4-pagehead,
 [data-crmv4-root] .c4-panel[data-view="inbox"] .c4-pagehead {
