@@ -19,6 +19,7 @@ import { ROUND17_COPY } from "@/lib/crmv4/copy-round17";
 import { ROUND18_COPY } from "@/lib/crmv4/copy-round18";
 import { ROUND19_COPY } from "@/lib/crmv4/copy-round19";
 import { ROUND20_COPY } from "@/lib/crmv4/copy-round20";
+import { ROUND21_COPY } from "@/lib/crmv4/copy-round21";
 
 const enBase = {
   v4mark: "CRM v4",
@@ -290,11 +291,11 @@ const arBase: typeof enBase = {
   refreshing: "جارٍ التحديث",
 };
 
-const en = { ...enBase, ...ROUND1_COPY.en, ...ROUND2_COPY.en, ...ROUND3_COPY.en, ...ROUND4_COPY.en, ...ROUND5_COPY.en, ...ROUND6_COPY.en, ...ROUND7_COPY.en, ...ROUND8_COPY.en, ...ROUND9_COPY.en, ...ROUND10_COPY.en, ...ROUND11_COPY.en, ...ROUND12_COPY.en, ...ROUND13_COPY.en, ...ROUND14_COPY.en, ...ROUND15_COPY.en, ...ROUND16_COPY.en, ...ROUND17_COPY.en, ...ROUND18_COPY.en, ...ROUND19_COPY.en, ...ROUND20_COPY.en };
-const tr: typeof en = { ...trBase, ...ROUND1_COPY.tr, ...ROUND2_COPY.tr, ...ROUND3_COPY.tr, ...ROUND4_COPY.tr, ...ROUND5_COPY.tr, ...ROUND6_COPY.tr, ...ROUND7_COPY.tr, ...ROUND8_COPY.tr, ...ROUND9_COPY.tr, ...ROUND10_COPY.tr, ...ROUND11_COPY.tr, ...ROUND12_COPY.tr, ...ROUND13_COPY.tr, ...ROUND14_COPY.tr, ...ROUND15_COPY.tr, ...ROUND16_COPY.tr, ...ROUND17_COPY.tr, ...ROUND18_COPY.tr, ...ROUND19_COPY.tr, ...ROUND20_COPY.tr };
-const de: typeof en = { ...deBase, ...ROUND1_COPY.de, ...ROUND2_COPY.de, ...ROUND3_COPY.de, ...ROUND4_COPY.de, ...ROUND5_COPY.de, ...ROUND6_COPY.de, ...ROUND7_COPY.de, ...ROUND8_COPY.de, ...ROUND9_COPY.de, ...ROUND10_COPY.de, ...ROUND11_COPY.de, ...ROUND12_COPY.de, ...ROUND13_COPY.de, ...ROUND14_COPY.de, ...ROUND15_COPY.de, ...ROUND16_COPY.de, ...ROUND17_COPY.de, ...ROUND18_COPY.de, ...ROUND19_COPY.de, ...ROUND20_COPY.de };
-const ru: typeof en = { ...ruBase, ...ROUND1_COPY.ru, ...ROUND2_COPY.ru, ...ROUND3_COPY.ru, ...ROUND4_COPY.ru, ...ROUND5_COPY.ru, ...ROUND6_COPY.ru, ...ROUND7_COPY.ru, ...ROUND8_COPY.ru, ...ROUND9_COPY.ru, ...ROUND10_COPY.ru, ...ROUND11_COPY.ru, ...ROUND12_COPY.ru, ...ROUND13_COPY.ru, ...ROUND14_COPY.ru, ...ROUND15_COPY.ru, ...ROUND16_COPY.ru, ...ROUND17_COPY.ru, ...ROUND18_COPY.ru, ...ROUND19_COPY.ru, ...ROUND20_COPY.ru };
-const ar: typeof en = { ...arBase, ...ROUND1_COPY.ar, ...ROUND2_COPY.ar, ...ROUND3_COPY.ar, ...ROUND4_COPY.ar, ...ROUND5_COPY.ar, ...ROUND6_COPY.ar, ...ROUND7_COPY.ar, ...ROUND8_COPY.ar, ...ROUND9_COPY.ar, ...ROUND10_COPY.ar, ...ROUND11_COPY.ar, ...ROUND12_COPY.ar, ...ROUND13_COPY.ar, ...ROUND14_COPY.ar, ...ROUND15_COPY.ar, ...ROUND16_COPY.ar, ...ROUND17_COPY.ar, ...ROUND18_COPY.ar, ...ROUND19_COPY.ar, ...ROUND20_COPY.ar };
+const en = { ...enBase, ...ROUND1_COPY.en, ...ROUND2_COPY.en, ...ROUND3_COPY.en, ...ROUND4_COPY.en, ...ROUND5_COPY.en, ...ROUND6_COPY.en, ...ROUND7_COPY.en, ...ROUND8_COPY.en, ...ROUND9_COPY.en, ...ROUND10_COPY.en, ...ROUND11_COPY.en, ...ROUND12_COPY.en, ...ROUND13_COPY.en, ...ROUND14_COPY.en, ...ROUND15_COPY.en, ...ROUND16_COPY.en, ...ROUND17_COPY.en, ...ROUND18_COPY.en, ...ROUND19_COPY.en, ...ROUND20_COPY.en, ...ROUND21_COPY.en };
+const tr: typeof en = { ...trBase, ...ROUND1_COPY.tr, ...ROUND2_COPY.tr, ...ROUND3_COPY.tr, ...ROUND4_COPY.tr, ...ROUND5_COPY.tr, ...ROUND6_COPY.tr, ...ROUND7_COPY.tr, ...ROUND8_COPY.tr, ...ROUND9_COPY.tr, ...ROUND10_COPY.tr, ...ROUND11_COPY.tr, ...ROUND12_COPY.tr, ...ROUND13_COPY.tr, ...ROUND14_COPY.tr, ...ROUND15_COPY.tr, ...ROUND16_COPY.tr, ...ROUND17_COPY.tr, ...ROUND18_COPY.tr, ...ROUND19_COPY.tr, ...ROUND20_COPY.tr, ...ROUND21_COPY.tr };
+const de: typeof en = { ...deBase, ...ROUND1_COPY.de, ...ROUND2_COPY.de, ...ROUND3_COPY.de, ...ROUND4_COPY.de, ...ROUND5_COPY.de, ...ROUND6_COPY.de, ...ROUND7_COPY.de, ...ROUND8_COPY.de, ...ROUND9_COPY.de, ...ROUND10_COPY.de, ...ROUND11_COPY.de, ...ROUND12_COPY.de, ...ROUND13_COPY.de, ...ROUND14_COPY.de, ...ROUND15_COPY.de, ...ROUND16_COPY.de, ...ROUND17_COPY.de, ...ROUND18_COPY.de, ...ROUND19_COPY.de, ...ROUND20_COPY.de, ...ROUND21_COPY.de };
+const ru: typeof en = { ...ruBase, ...ROUND1_COPY.ru, ...ROUND2_COPY.ru, ...ROUND3_COPY.ru, ...ROUND4_COPY.ru, ...ROUND5_COPY.ru, ...ROUND6_COPY.ru, ...ROUND7_COPY.ru, ...ROUND8_COPY.ru, ...ROUND9_COPY.ru, ...ROUND10_COPY.ru, ...ROUND11_COPY.ru, ...ROUND12_COPY.ru, ...ROUND13_COPY.ru, ...ROUND14_COPY.ru, ...ROUND15_COPY.ru, ...ROUND16_COPY.ru, ...ROUND17_COPY.ru, ...ROUND18_COPY.ru, ...ROUND19_COPY.ru, ...ROUND20_COPY.ru, ...ROUND21_COPY.ru };
+const ar: typeof en = { ...arBase, ...ROUND1_COPY.ar, ...ROUND2_COPY.ar, ...ROUND3_COPY.ar, ...ROUND4_COPY.ar, ...ROUND5_COPY.ar, ...ROUND6_COPY.ar, ...ROUND7_COPY.ar, ...ROUND8_COPY.ar, ...ROUND9_COPY.ar, ...ROUND10_COPY.ar, ...ROUND11_COPY.ar, ...ROUND12_COPY.ar, ...ROUND13_COPY.ar, ...ROUND14_COPY.ar, ...ROUND15_COPY.ar, ...ROUND16_COPY.ar, ...ROUND17_COPY.ar, ...ROUND18_COPY.ar, ...ROUND19_COPY.ar, ...ROUND20_COPY.ar, ...ROUND21_COPY.ar };
 
 export const CRM_V4_COPY = { en, tr, de, ru, ar };
 

@@ -2968,6 +2968,51 @@
 [data-crmv4-root][data-theme="dark"] .c4-local-luxe,
 [data-crmv4-root][data-theme="dark"] .c4-empty-luxe,
 [data-crmv4-root][data-theme="dark"] .c4-state-error { background: #221f1b; color: #f6f1e8; }
+
+[data-crmv4-root] .c4-statement-sheet,
+[data-crmv4-root] .c4-pay-luxe,
+[data-crmv4-root] .c4-pay-card {
+  border: 1px solid rgba(166, 133, 78, 0.45);
+  border-radius: 18px;
+  background:
+    linear-gradient(165deg, rgba(166, 133, 78, 0.12), transparent 48%),
+    #fffdf8;
+}
+
+[data-crmv4-root] .c4-statement-body,
+[data-crmv4-root] .c4-pay-list { margin: 0; padding: 0 14px 14px; }
+[data-crmv4-root] .c4-pay-list { display: grid; gap: 8px; list-style: none; }
+[data-crmv4-root] .c4-pay-card { display: grid; gap: 4px; padding: 12px; }
+[data-crmv4-root] .c4-pay-card[data-top="1"] { box-shadow: inset 3px 0 0 #a6854e; }
+[data-crmv4-root] .c4-statement-body ul { margin: 0 0 10px; padding-inline-start: 18px; }
+
+[data-crmv4-root][data-theme="dark"] .c4-statement-sheet,
+[data-crmv4-root][data-theme="dark"] .c4-pay-luxe,
+[data-crmv4-root][data-theme="dark"] .c4-pay-card { background: #221f1b; color: #f6f1e8; }
+
+@media (max-width: 767px) {
+  [data-crmv4-root] .c4-statement-sheet,
+  [data-crmv4-root] .c4-pay-luxe { margin-inline: 0; }
+  [data-crmv4-root] .c4-fin-hero { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media print {
+  [data-crmv4-root][data-print="statement"] .c4-foot,
+  [data-crmv4-root][data-print="statement"] .c4-pagehead,
+  [data-crmv4-root][data-print="statement"] .c4-statement-tools { display: none !important; }
+  [data-crmv4-root][data-print="statement"] { height: auto; max-height: none; overflow: visible; background: #fff; color: #111; }
+  [data-crmv4-root][data-print="statement"] .c4-stage { visibility: hidden; }
+  [data-crmv4-root][data-print="statement"] .c4-statement-sheet,
+  [data-crmv4-root][data-print="statement"] .c4-statement-sheet * { visibility: visible; }
+  [data-crmv4-root][data-print="statement"] .c4-statement-sheet {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: #fff;
+    color: #111;
+  }
+}
 @media (max-width: 1023px) {
   [data-crmv4-root] .c4-watch-phone { display: block; }
 }

@@ -24,6 +24,7 @@ import { BulkUntag, ContactSummary, DncFlag, DocAsk, Fold, KeyFacts, LiveBook, M
 import { DocDesk, NoteDesk } from "../round15";
 import { LeadDesk } from "../round16";
 import { ContactFeed, EntryQuality, applySplit, emailOk } from "../round17";
+import { StatementSheet } from "../round21";
 import { sameEntry } from "@/lib/crmv4/round17";
 import { countActive, decodeView, headerHit, inDateRange, inNumberRange, multiSort } from "@/lib/crmv4/round12";
 import { Card, Chip, Field, Lab, Msg, Pager, State, Status, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, statusTone, useJson, when, type Tx, type UserRow } from "../kit";
@@ -547,6 +548,21 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           </div>
           <Msg text={quickMsg} />
         </header>
+      )}
+      {u && (
+        <StatementSheet
+          id={id}
+          name={u.name || ""}
+          email={u.email || ""}
+          country={u.country || "—"}
+          desk={u.desk || "—"}
+          balance={money(u.balance ?? u.account?.balance, u.currency || u.account?.currency, locale)}
+          equity={money(u.equity ?? u.account?.equity, u.currency || u.account?.currency, locale)}
+          sale={u.saleStatus || "—"}
+          notes={user.data?.notes || []}
+          v4={v4}
+          locale={locale}
+        />
       )}
       {u && (
         <Fold section="facts" title={v4("keyFacts")}>
