@@ -1128,6 +1128,9 @@
   border: 0;
 }
 
+[data-crmv3-root] [data-mark="waiting"] { border-color: var(--c3-gold); }
+[data-crmv3-root] [data-mark="unread"] { border-color: var(--c3-neg); }
+
 [data-crmv3-root] .c3-btn[data-on="1"] {
   border-color: var(--c3-gold);
   background: var(--c3-gold-soft);
