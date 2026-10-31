@@ -82,7 +82,7 @@ export function useJson<T>(url: string | null) {
     fetch(url, { cache: "no-store" })
       .then(async (res) => {
         if (res.status === 401 || res.status === 403) {
-          window.location.href = "/login";
+          window.location.href = "/login?desk=crmv4";
           return null;
         }
         if (!res.ok) throw new Error(String(res.status));
@@ -114,7 +114,7 @@ export async function sendJson(url: string, method: string, body?: unknown): Pro
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   const data = (await res.json().catch(() => ({}))) as Record<string, unknown>;
-  if (res.status === 401) window.location.href = "/login";
+  if (res.status === 401) window.location.href = "/login?desk=crmv4";
   const result = { ok: res.ok, error: String(data.error || ""), data };
   window.dispatchEvent(new CustomEvent("crmv4:toast", { detail: result }));
   return result;
@@ -199,7 +199,12 @@ export function Card({ title, extra, children }: { title?: string; extra?: React
 
 export function Skeleton() {
   return (
-    <div className="c4-skel-wrap c4-skel-luxe" aria-busy="true">
+    <div className="c4-skel-wrap c4-skel-luxe c4-skel-card" aria-busy="true" data-skel="1">
+      <div className="c4-skel c4-skel-title" />
+      <div className="c4-skel-row">
+        <div className="c4-skel c4-skel-chip" />
+        <div className="c4-skel c4-skel-chip" />
+      </div>
       <div className="c4-skel" />
       <div className="c4-skel" />
       <div className="c4-skel c4-skel-short" />
@@ -211,18 +216,18 @@ export function State({ loading, error, empty, tx, onRetry, hint }: { loading: b
   if (loading) return <Skeleton />;
   if (error) {
     return (
-      <div className="c4-empty c4-state-error" role="alert">
+      <div className="c4-empty c4-state-error c4-error-card" role="alert" data-error="1">
         <span className="c4-empty-mark" aria-hidden />
-        <p>{tx("errorData")}</p>
-        <button type="button" className="c4-btn" onClick={onRetry}>{tx("retryLoad")}</button>
+        <p className="c4-title">{tx("errorData")}</p>
+        <button type="button" className="c4-btn c4-btn-hot" onClick={onRetry}>{tx("retryLoad")}</button>
       </div>
     );
   }
   if (empty) {
     return (
-      <div className="c4-empty c4-empty-luxe" role="status">
+      <div className="c4-empty c4-empty-luxe c4-empty-card" role="status" data-empty="1">
         <span className="c4-empty-mark" aria-hidden />
-        <p>{tx("emptyState")}</p>
+        <p className="c4-title">{tx("emptyState")}</p>
         {hint ? <p className="c4-muted c4-meta">{hint}</p> : null}
       </div>
     );

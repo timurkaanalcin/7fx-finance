@@ -106,7 +106,8 @@ function main() {
   assert.equal(gate.includes('new URL("/login", req.url)'), false);
   assert.equal(gate.includes('new URL("/trade", req.url)'), false);
   assert.equal(gate.includes('new URL("/izcrm", req.url)'), false);
-  assert.match(gate, /locationForRequest\(req, "\/login"\)/);
+  assert.match(gate, /locationForRequest\(req, unsignedCrmTarget\(pathname\)\)/);
+  assert.match(gate, /isCrmV4Path\(pathname\) \? "\/login\?desk=crmv4" : "\/login"/);
   assert.match(read("src/app/(auth)/login/page.tsx"), /locationForRequest\(/);
 
   for (const host of DOMAINS) {

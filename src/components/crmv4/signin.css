@@ -1,0 +1,167 @@
+/* CRM v4 desk sign-in. Only .c4-signin. The public login is unchanged. */
+
+.c4-signin {
+  --c4-page: #f4f0e8;
+  --c4-card: #fffdf8;
+  --c4-ink: #2a2622;
+  --c4-muted: #5f564e;
+  --c4-line: #e6dccf;
+  --c4-accent: #a6854e;
+  --c4-accent-ink: #7a5e30;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  max-width: 100%;
+  overflow-x: clip;
+  background:
+    linear-gradient(180deg, rgba(166, 133, 78, 0.16), transparent 28%),
+    var(--c4-page);
+  color: var(--c4-ink);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+.c4-signin[data-theme="dark"] {
+  --c4-page: #12110f;
+  --c4-card: #221f1b;
+  --c4-ink: #f6f1e8;
+  --c4-muted: #b7aa9b;
+  --c4-line: #3c342c;
+  --c4-accent: #d4bc86;
+  --c4-accent-ink: #d4bc86;
+}
+
+.c4-signin-bar,
+.c4-signin-main {
+  box-sizing: border-box;
+  width: min(440px, calc(100% - 32px));
+  margin-inline: auto;
+}
+
+.c4-signin-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  width: min(720px, calc(100% - 32px));
+  padding: 16px 0;
+}
+
+.c4-signin-theme,
+.c4-signin-home {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--c4-line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--c4-accent-ink);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+}
+
+.c4-signin-home { margin-inline-start: auto; }
+
+.c4-signin-main {
+  display: grid;
+  gap: 10px;
+  padding-bottom: 32px;
+}
+
+.c4-signin-kicker,
+.c4-signin-note {
+  margin: 0;
+  color: var(--c4-accent-ink);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.c4-signin-note {
+  letter-spacing: 0.02em;
+  text-transform: none;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+.c4-signin h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.c4-signin-lead {
+  margin: 0;
+  color: var(--c4-muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.c4-signin-card {
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 18px 16px 8px;
+  border: 1px solid rgba(166, 133, 78, 0.45);
+  border-radius: 18px;
+  background:
+    linear-gradient(165deg, rgba(166, 133, 78, 0.14), transparent 46%),
+    var(--c4-card);
+}
+
+.c4-signin-card h2 {
+  color: var(--c4-ink);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.c4-signin-card p,
+.c4-signin-card a {
+  color: var(--c4-muted);
+}
+
+.c4-signin-card label {
+  color: var(--c4-accent-ink);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.c4-signin input.fx-auth-input {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  border-color: var(--c4-line);
+  background: #fffdf8;
+  color: #2a2622;
+  border-radius: 12px;
+}
+
+.c4-signin[data-theme="dark"] input.fx-auth-input {
+  background: #1a1815;
+  color: #f6f1e8;
+  border-color: #3c342c;
+}
+
+.c4-signin button[type="submit"] {
+  background: #2a2622;
+  color: #f6f1e8;
+  border-radius: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  box-shadow: none;
+}
+
+.c4-signin[data-theme="dark"] button[type="submit"] {
+  background: #d4bc86 !important;
+  color: #1a1815 !important;
+}
+
+.c4-signin[data-theme="dark"] .c4-signin-card {
+  background: #221f1b;
+}

@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export default async function IzcrmV3Page({ params }: { params: { section?: string[] } }) {
   const admin = await requireAdmin();
-  if (!admin || admin.role !== "ADMIN") redirect("/login");
+  if (!admin || admin.role !== "ADMIN") redirect("/login?desk=crmv4");
   return (
     <Suspense fallback={null}>
       <CrmV4App base="/izcrm/crmv4" section={params.section ?? []} name={admin.name || "Admin"} />

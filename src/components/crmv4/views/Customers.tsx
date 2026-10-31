@@ -30,6 +30,7 @@ import { CohortBoard, OnboardCard } from "../round24";
 import { ListDesk, RecordHead, applyList, useLists } from "../round31";
 import { TradeBook } from "../round33";
 import { LuxList, NoteStudio } from "../round34";
+import { FinanceBook } from "../round36";
 import { rememberView } from "../round25";
 import { LifeLine } from "../round26";
 import { sameEntry } from "@/lib/crmv4/round17";
@@ -513,6 +514,7 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           }}
         />
       )}
+      {part === "money" && <FinanceBook id={id} v4={v4} locale={locale} tx={tx} />}
       {u && <TradeBook id={id} v4={v4} locale={locale} />}
       {u && (
         <div className="c4-record-tools">
@@ -602,7 +604,6 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
         <div className="c4-stack">
           {u && part === "profile" && <ProfileForm id={id} user={u} tx={tx} locale={locale} onDone={user.reload} />}
           {part === "notes" && <Notes id={id} notes={user.data?.notes || []} tx={tx} locale={locale} onDone={user.reload} />}
-          {part === "money" && <Money id={id} tx={tx} locale={locale} />}
           {part === "trades" && <Trades id={id} tx={tx} locale={locale} />}
           {part === "files" && <Files id={id} email={u?.email || ""} tx={tx} locale={locale} />}
           {u && part === "access" && <Access id={id} user={u} tx={tx} onDone={user.reload} />}
@@ -905,26 +906,6 @@ function NoteList({ rows, tx, locale }: { rows: NoteRow[]; tx: Tx; locale: strin
   );
 }
 
-function Money({ id, tx, locale }: { id: string; tx: Tx; locale: string }) {
-  const ledger = useJson<{ transactions?: { id: string; amount?: number; type?: string; currency?: string; createdAt?: string; comment?: string; balanceBefore?: number; balanceAfter?: number }[] }>(`/api/admin/transactions?userId=${encodeURIComponent(id)}&limit=30`);
-  const rows = ledger.data?.transactions || [];
-  return (
-    <Card title={tx("ledger")}>
-      <State loading={ledger.loading} error={ledger.error} empty={!ledger.loading && rows.length === 0} tx={tx} onRetry={ledger.reload} />
-      <ul>
-        {rows.map((row) => (
-          <li key={row.id} className="c4-row" style={{ justifyContent: "space-between", padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
-            <div>
-              <div>{row.type}</div>
-              <div className="c4-muted">{when(row.createdAt, locale)} · {row.comment || ""}</div>
-            </div>
-            <span className={plClass(row.amount)}>{money(row.amount, row.currency, locale)}</span>
-          </li>
-        ))}
-      </ul>
-    </Card>
-  );
-}
 
 function Trades({ id, tx, locale }: { id: string; tx: Tx; locale: string }) {
   const data = useJson<{ positions?: Position[]; orders?: OrderRow[] }>(`/api/admin/users/${encodeURIComponent(id)}?view=positions&take=30`);

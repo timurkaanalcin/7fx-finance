@@ -53,13 +53,14 @@ function main() {
   const signedOut = ask("/crmv4");
   const izcrm = ask("/izcrm");
   assert.equal(signedOut.status, 307);
-  assert.equal(signedOut.headers.get("location"), izcrm.headers.get("location"));
+  assert.equal(izcrm.headers.get("location"), "https://7fx.customer.org.tr/login");
+  assert.equal(signedOut.headers.get("location"), "https://7fx.customer.org.tr/login?desk=crmv4");
   assert.equal(ask("/crmv4/").status, 307);
-  assert.equal(ask("/crmv4/").headers.get("location"), "https://7fx.customer.org.tr/login");
+  assert.equal(ask("/crmv4/").headers.get("location"), "https://7fx.customer.org.tr/login?desk=crmv4");
   assert.equal(ask("/izcrm/crmv4").status, 307);
   assert.equal(ask("/izcrm/crmv4/").status, 307);
-  assert.equal(ask("/izcrm/crmv4/", { host: "crm7fx.customer.org.tr" }).headers.get("location"), "https://crm7fx.customer.org.tr/login");
-  assert.equal(ask("/crmv4", { host: "7fx.financeunit.co" }).headers.get("location"), "https://7fx.financeunit.co/login");
+  assert.equal(ask("/izcrm/crmv4/", { host: "crm7fx.customer.org.tr" }).headers.get("location"), "https://crm7fx.customer.org.tr/login?desk=crmv4");
+  assert.equal(ask("/crmv4", { host: "7fx.financeunit.co" }).headers.get("location"), "https://7fx.financeunit.co/login?desk=crmv4");
 
   assert.equal(ask("/crmv4/", { cookie: "7fx_session=admin" }).headers.get("x-middleware-rewrite"), "https://7fx.customer.org.tr/crmv4");
   assert.equal(ask("/izcrm/crmv4/", { cookie: "7fx_session=admin" }).headers.get("x-middleware-rewrite"), "https://7fx.customer.org.tr/izcrm/crmv4");
@@ -80,7 +81,7 @@ function main() {
   for (const file of ["src/app/crmv4/[[...section]]/page.tsx", "src/app/(admin)/izcrm/crmv4/[[...section]]/page.tsx"]) {
     const src = read(file);
     assert.match(src, /requireAdmin/);
-    assert.match(src, /redirect\("\/login"\)/);
+    assert.match(src, /redirect\("\/login\?desk=crmv4"\)/);
     assert.match(src, /CrmV4App/);
   }
 

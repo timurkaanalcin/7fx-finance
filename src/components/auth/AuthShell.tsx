@@ -4,20 +4,60 @@ import Link from "next/link";
 import { ReactNode, useEffect, useState } from "react";
 import BrandLogo from "@/components/landing/BrandLogo";
 import TerminalWindow from "@/components/public/TerminalWindow";
+import { crmv4Text, type CrmV4CopyKey } from "@/lib/crmv4/copy";
 import { useI18n } from "@/lib/i18n/context";
 
 type AuthShellProps = {
   mode: "login" | "register";
   children: ReactNode;
+  desk?: boolean;
 };
 
-export default function AuthShell({ mode, children }: AuthShellProps) {
-  const { t } = useI18n();
+export default function AuthShell({ mode, children, desk = false }: AuthShellProps) {
+  const { t, locale } = useI18n();
   const isLogin = mode === "login";
   const [host, setHost] = useState("");
+  const [theme, setTheme] = useState("light");
   useEffect(() => {
     setHost(window.location.host);
-  }, []);
+    if (!desk) return;
+    const stored = window.localStorage.getItem("crmv4-theme-mode");
+    if (stored === "dark" || stored === "light") setTheme(stored);
+  }, [desk]);
+  const v4 = (key: CrmV4CopyKey) => crmv4Text(locale, key);
+  if (desk && isLogin) {
+    return (
+      <div className="c4-signin" data-crmv4-root="" data-theme={theme} data-desk="crmv4" data-signin="1">
+        <header className="c4-signin-bar">
+          <Link href="/" className="inline-flex items-center no-underline" aria-label={t("landing.homeAria")}>
+            <BrandLogo priority tone={theme === "dark" ? "paper" : "ink"} className="h-9 w-auto" height={36} />
+          </Link>
+          <button
+            type="button"
+            className="c4-signin-theme"
+            onClick={() => {
+              const next = theme === "dark" ? "light" : "dark";
+              setTheme(next);
+              window.localStorage.setItem("crmv4-theme-mode", next);
+            }}
+          >
+            {v4("signTheme")}
+          </button>
+          <Link href="/" className="c4-signin-home">
+            {t("common.home")}
+          </Link>
+        </header>
+        <main className="c4-signin-main">
+          <p className="c4-signin-kicker">{v4("signKicker")}</p>
+          <h1>{v4("signTitle")}</h1>
+          <p className="c4-signin-lead">{v4("signBody")}</p>
+          <div className="c4-signin-card">{children}</div>
+          <p className="c4-signin-note">{v4("signNote")}</p>
+          <p className="c4-signin-note">© {new Date().getFullYear()} 7FX{host ? ` · ${host}` : ""}</p>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="fx-auth-page min-h-screen" data-fx-ui="auth-dark">
