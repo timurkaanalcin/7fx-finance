@@ -21,6 +21,7 @@ import { WithdrawDesk } from "./desk/withdraw";
 import { DepositDesk, InboxDesk } from "./desk/deposit";
 import { InsightsHome, PrefsHub } from "./desk/insights";
 import { AgendaPage } from "./desk/book";
+import { DeskStaff } from "./desk/today";
 import { readJson } from "@/lib/crmv3/bridge";
 import { RAIL_KEY, readFold } from "@/lib/crmv3/nav";
 import { MoreNav, RailNav } from "./desk/nav";
@@ -165,6 +166,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "reports") return v3("reportsTitle");
     if (tab === "insights") return v3("insTitle");
     if (tab === "agenda") return v3("agTitle");
+    if (tab === "roster") return v3("staffTitle");
     if (tab === "prefs") return v3("prefTitle");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -267,7 +269,7 @@ function Shell({ base, section, name }: Props) {
           {offline && <p className="c3-banner">{v3("offlineWord")}</p>}
           {!offline && idle && <p className="c3-banner">{v3("idleWord")} {v3("idleStay")}</p>}
           <div className="c3-stage">
-            {view === "overview" && <Overview base={base} tx={tx} locale={locale} />}
+            {view === "overview" && <Overview base={base} tx={tx} locale={locale} name={shownName || name} />}
             {view === "customers" && !id && <Customers base={base} tx={tx} locale={locale} q={q} />}
             {view === "customers" && id && <CustomerDetail base={base} id={id} tx={tx} locale={locale} />}
             {view === "finance" && <Finance base={base} tx={tx} locale={locale} q={q} />}
@@ -284,6 +286,7 @@ function Shell({ base, section, name }: Props) {
             {view === "reports" && <ReportsPage locale={locale} />}
             {view === "insights" && <InsightsHome locale={locale} />}
             {view === "agenda" && <AgendaPage base={base} locale={locale} />}
+            {view === "roster" && <DeskStaff />}
             {view === "prefs" && <PrefsHub locale={locale} />}
             {view === "logs" && <Logs tx={tx} locale={locale} q={q} />}
             {view === "control" && <Control tx={tx} locale={locale} />}

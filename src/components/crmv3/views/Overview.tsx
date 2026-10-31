@@ -13,10 +13,11 @@ import { DeskArrange, loadLayout, orderedCards, storeLayout } from "../desk/line
 import { defaultLayout, type OverviewCard } from "@/lib/crmv3/line";
 import { EntryQuality, emailOk } from "../desk/feed";
 import { useV3 } from "../desk/store";
+import { TodayHero } from "../desk/today";
 
-type Props = { base: string; tx: Tx; locale: string };
+type Props = { base: string; tx: Tx; locale: string; name?: string };
 
-export default function Overview({ base, tx, locale }: Props) {
+export default function Overview({ base, tx, locale, name }: Props) {
   const v3 = useV3();
   const stats = useJson<{ kpis?: { users?: number; totalVolume?: number; pendingDeposits?: number; pendingBalanceRequests?: number; openPositions?: number } }>("/api/admin/stats");
   const finance = useJson<{ kpis?: { totalEquity?: number; totalBalance?: number; income?: number; outcome?: number; net?: number; floatingPnL?: number }; byType?: { type: string; amount: number; count: number }[] }>("/api/admin/analytics/finance");
@@ -46,6 +47,7 @@ export default function Overview({ base, tx, locale }: Props) {
 
   return (
     <div className="c3-stack">
+      <TodayHero base={base} name={name || ""} locale={locale} />
       <div className="c3-row">
         <Chip on={tab === "home"} onClick={() => setTab("home")}>{tx("overview")}</Chip>
         <Chip on={tab === "insights"} onClick={() => setTab("insights")}>{tx("insights")}</Chip>

@@ -16,6 +16,7 @@ export const CRM_V3_SECTIONS = [
   { id: "settings", path: "settings" },
   { id: "me", path: "me" },
   { id: "prefs", path: "prefs" },
+  { id: "roster", path: "roster" },
   { id: "logs", path: "logs" },
   { id: "control", path: "control" },
 ] as const;
@@ -28,7 +29,7 @@ export const CRM_V3_COMING_SOON = ["campaignSend"] as const;
 /** Bottom bar on phones and tablets. Finance is labeled Money in the chrome. */
 export const CRM_V3_TABS = ["overview", "customers", "finance", "support"] as const;
 
-export const CRM_V3_MORE = ["positions", "marketing", "goals", "kyc", "withdraw", "deposit", "inbox", "agenda", "reports", "insights", "settings", "me", "prefs", "logs", "control"] as const;
+export const CRM_V3_MORE = ["positions", "marketing", "goals", "kyc", "withdraw", "deposit", "inbox", "agenda", "reports", "insights", "settings", "me", "prefs", "roster", "logs", "control"] as const;
 
 export function crmv3Href(base: string, path: string, query?: Record<string, string>): string {
   const root = base.replace(/\/+$/, "") || "/crmv3";
