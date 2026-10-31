@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Card, Lab, Msg, State, sendJson, useJson, type Tx } from "../kit";
+import { MarketDesk } from "../desk/panels";
 
 type Template = { id: string; name?: string; subject?: string; body?: string; active?: boolean };
 
@@ -17,6 +18,7 @@ export default function Marketing({ tx }: { tx: Tx }) {
   return (
     <div className="c3-stack">
       <p className="c3-muted">{tx("marketingLead")}</p>
+      <MarketDesk />
       <Card title={tx("affiliates")}>
         <State loading={aff.loading} error={aff.error} empty={!aff.loading && rows.length === 0} tx={tx} onRetry={aff.reload} />
         <ul>

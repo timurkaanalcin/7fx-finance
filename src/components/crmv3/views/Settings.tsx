@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { POTENTIAL_STATUSES, SALE_STATUSES } from "@/lib/membership";
 import { Card, Chip, Lab, Msg, State, sendJson, useJson, type Tx } from "../kit";
 import Ops from "./Ops";
+import { useLocal, useV3 } from "../desk/store";
 
 const AREAS = ["general", "leads", "desks", "groups", "methods", "assets", "rates", "sponsors", "licenses", "calendar", "import"] as const;
 
@@ -47,6 +48,34 @@ function areaLabel(area: (typeof AREAS)[number]) {
   return "importLeads" as const;
 }
 
+function DeskPrefs() {
+  const v3 = useV3();
+  const [banner, setBanner] = useLocal<string>("crmv3-banner", "");
+  const [decimals, setDecimals] = useLocal<string>("crmv3-decimals", "2");
+  const [motion, setMotion] = useLocal<string>("crmv3-motion", "");
+  return (
+    <Card title={v3("announce")}>
+      <div className="c3-form" style={{ padding: 16 }}>
+        <p className="c3-muted">{v3("bannerHint")}</p>
+        <Lab label={v3("announce")}><input className="c3-field" aria-label={v3("announce")} value={banner} onChange={(event) => setBanner(event.target.value)} /></Lab>
+        <Lab label={v3("decimals")}>
+          <select className="c3-select" aria-label={v3("decimals")} value={decimals} onChange={(event) => setDecimals(event.target.value)}>
+            <option value="0">0</option>
+            <option value="2">2</option>
+          </select>
+        </Lab>
+        <p className="c3-muted">{v3("decimalHint")}</p>
+        <button type="button" className="c3-chip" data-on={motion === "reduce" ? "1" : "0"} onClick={() => {
+          const next = motion === "reduce" ? "" : "reduce";
+          setMotion(next);
+          document.querySelector("[data-crmv3-root]")?.setAttribute("data-motion", next);
+        }}>{v3("motionLess")}</button>
+        <p className="c3-muted">{v3("motionHint")}</p>
+      </div>
+    </Card>
+  );
+}
+
 function General({ tx }: { tx: Tx }) {
   const data = useJson<{ referralCode?: string; referralRequired?: boolean; terminalImpersonationEnabled?: boolean }>("/api/admin/settings");
   const [code, setCode] = useState("");
@@ -78,6 +107,7 @@ function General({ tx }: { tx: Tx }) {
         <button type="submit" className="c3-btn c3-btn-hot">{tx("save")}</button>
         <Msg text={msg} />
       </form>
+      <DeskPrefs />
     </Card>
   );
 }

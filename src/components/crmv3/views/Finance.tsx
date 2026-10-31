@@ -1,11 +1,13 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { approvalBody, approvalEndpoint } from "@/lib/crmv2/payload";
 import { Card, Chip, Lab, Pager, Sheet, State, Status, SwipeRow, TAKE, money, sendJson, statusTone, useJson, when, type Tx } from "../kit";
+import { FinanceChrome, ReviewChecks, methodName, queueMarks, readLastReason, rememberReason, rowAge, rowFlags, shapeQueue, useSecondLook, type FinanceRow } from "../desk/finance";
+import { useV3 } from "../desk/store";
 
-type MoneyRow = { id: string; amount?: number; currency?: string; status?: string; createdAt?: string; method?: string; user?: { name?: string; email?: string } };
+type MoneyRow = FinanceRow & { method?: unknown; user?: { name?: string; email?: string; createdAt?: string | null } | null };
 type LedgerRow = { id: string; amount?: number; type?: string; currency?: string; trader?: string; createdAt?: string; comment?: string };
 
 export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: string }) {
@@ -14,8 +16,14 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
   const tab = params.get("tab") || "deposits";
   const status = params.get("status") || "";
   const skip = Number(params.get("skip") || 0) || 0;
+  const v3 = useV3();
   const [busy, setBusy] = useState<string | null>(null);
   const [sheet, setSheet] = useState<null | { id: string; kind: string; action: "approve" | "reject" }>(null);
+  const [oldest, setOldest] = useState(false);
+  const [band, setBand] = useState<"" | "small" | "large">("");
+  const [picked, setPicked] = useState<string | null>(null);
+  const [bulk, setBulk] = useState<string[]>([]);
+  const look = useSecondLook();
   const endpoint = tab === "withdrawals" ? "/api/admin/withdrawals" : tab === "balance" ? "/api/admin/balance-requests" : tab === "ledger" ? "/api/admin/transactions" : "/api/admin/deposits";
   const url = tab === "ledger"
     ? `/api/admin/transactions?limit=${TAKE}&skip=${skip}&q=${encodeURIComponent(q)}`
@@ -32,9 +40,12 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
     router.replace(`?${p.toString()}`);
   }
 
-  const rows = tab === "ledger"
+  const raw = tab === "ledger"
     ? ((data.data?.transactions as LedgerRow[]) || [])
     : ((data.data?.requests as MoneyRow[]) || []);
+  const rows = raw;
+  const moneyRows = tab === "ledger" ? [] : shapeQueue(rows as MoneyRow[], oldest, band);
+  const marks = queueMarks(moneyRows);
 
   return (
     <Card title={tx("finance")}>
@@ -51,13 +62,25 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
           </Chip>
         ))}
       </div>
-      <State loading={data.loading} error={data.error} empty={!data.loading && rows.length === 0} tx={tx} onRetry={data.reload} />
+      {tab !== "ledger" && <FinanceChrome rows={rows as MoneyRow[]} band={band} oldest={oldest} onBand={setBand} onOldest={() => setOldest((on) => !on)} />}
+      {tab !== "ledger" && (
+        <div className="c3-tools">
+          <button type="button" className="c3-btn" disabled={!bulk.length} onClick={() => void runBulk(bulk, tab, "approve", data.reload, setBulk)}>{v3("bulkApprove")}</button>
+          <button type="button" className="c3-btn" disabled={!bulk.length} onClick={() => void runBulk(bulk, tab, "reject", data.reload, setBulk)}>{v3("bulkReject")}</button>
+          <p className="c3-muted">{v3("reasonOptional")}</p>
+        </div>
+      )}
+      <State loading={data.loading} error={data.error} empty={!data.loading && (tab === "ledger" ? rows.length === 0 : moneyRows.length === 0)} tx={tx} onRetry={data.reload} />
+      {tab !== "ledger" && !data.loading && moneyRows.length === 0 && <p className="c3-muted c3-pad">{v3("financeEmpty")}</p>}
       {tab === "ledger" ? <Ledger rows={rows as LedgerRow[]} locale={locale} /> : (
         <ul>
-          {(rows as MoneyRow[]).map((row) => {
+          {moneyRows.map((row) => {
             const kind = tab === "withdrawals" ? "WITHDRAW" : tab === "balance" ? "MARGIN" : "DEPOSIT";
+            const who = String(row.user?.email || row.user?.name || "");
+            const age = rowAge(row);
+            const flags = rowFlags(row);
             return (
-              <li key={row.id}>
+              <li key={row.id} data-large={marks.largest === row.id ? "1" : "0"}>
                 <SwipeRow
                   actions={row.status === "PENDING" ? [
                     { key: "ok", label: tx("approve"), tone: "ok", onClick: () => setSheet({ id: row.id, kind, action: "approve" }) },
@@ -66,10 +89,29 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
                 >
                   <div className="c3-swipe-link">
                     <div className="c3-row c3-between">
-                      <span>{row.user?.name || "—"}</span>
+                      <label className="c3-row">
+                        <input type="checkbox" checked={bulk.includes(row.id)} onChange={() => setBulk(bulk.includes(row.id) ? bulk.filter((id) => id !== row.id) : [...bulk, row.id])} aria-label={row.user?.name || row.id} />
+                        <span>{row.user?.name || "—"}</span>
+                      </label>
                       <Status tone={statusTone(row.status)}>{row.status}</Status>
                     </div>
-                    <div className="c3-muted">{money(row.amount, row.currency, locale)} · {when(row.createdAt, locale)} · {row.method || ""}</div>
+                    <div className="c3-muted">{money(row.amount, row.currency, locale)} · {when(row.createdAt, locale)} · {methodName(row.method)}</div>
+                    <div className="c3-row">
+                      {marks.dupes.has(who) && <span className="c3-status" data-tone="warn">{v3("samePerson")}</span>}
+                      {marks.largest === row.id && String(row.status || "").toUpperCase() === "PENDING" && <span className="c3-status" data-tone="info">{v3("largestPending")}</span>}
+                      {age != null && age >= 24 && <span className="c3-status" data-tone="bad">{v3("lateMark")}</span>}
+                      <span className="c3-muted">{v3("queueAge")} {age ?? "—"}</span>
+                      {flags.includes("new") && <span className="c3-muted">{v3("flagNew")}</span>}
+                      {flags.includes("kyc") && <span className="c3-muted">{v3("flagKyc")}</span>}
+                      <button type="button" className="c3-btn" onClick={() => { void navigator.clipboard.writeText(String(row.amount ?? "")); }}>{v3("copyAmount")}</button>
+                      <button type="button" className="c3-btn" onClick={() => { look.toggle(row.id); setPicked(row.id); }}>{v3("secondLook")}</button>
+                    </div>
+                    {picked === row.id && (
+                      <div>
+                        <ReviewChecks id={row.id} />
+                        <p className="c3-muted">{v3("checkLocal")} · {look.ids.includes(row.id) ? v3("secondLook") : ""}</p>
+                      </div>
+                    )}
                   </div>
                 </SwipeRow>
               </li>
@@ -99,14 +141,29 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
   );
 }
 
+async function runBulk(ids: string[], tab: string, action: "approve" | "reject", reload: () => void, clear: (ids: string[]) => void) {
+  const kind = tab === "withdrawals" ? "WITHDRAW" : tab === "balance" ? "MARGIN" : "DEPOSIT";
+  const reason = readLastReason();
+  for (const id of ids) {
+    const res = await sendJson(approvalEndpoint(kind), "POST", approvalBody(id, action, reason));
+    if (!res.ok) return;
+  }
+  clear([]);
+  reload();
+}
+
 function ApproveForm({ tx, busy, onSubmit }: { tx: Tx; busy: boolean; onSubmit: (reason: string) => void }) {
+  const v3 = useV3();
   const [reason, setReason] = useState("");
+  useEffect(() => { setReason(readLastReason()); }, []);
   return (
-    <form className="c3-form" onSubmit={(event) => { event.preventDefault(); onSubmit(reason); }}>
+    <form className="c3-form" onSubmit={(event) => { event.preventDefault(); rememberReason(reason); onSubmit(reason); }}>
       <Lab label={`${tx("reason")} (${tx("optional")})`}>
         <textarea value={reason} onChange={(event) => setReason(event.target.value)} aria-required={false} rows={3} className="c3-field" />
       </Lab>
       <p className="c3-muted">{tx("optionalReason")}</p>
+      <p className="c3-muted">{v3("reasonLocal")}</p>
+      <button type="button" className="c3-btn" onClick={() => { setReason(""); rememberReason(""); }}>{v3("clearReason")}</button>
       <button type="submit" disabled={busy} className="c3-btn c3-btn-hot">{busy ? tx("loading") : tx("save")}</button>
     </form>
   );

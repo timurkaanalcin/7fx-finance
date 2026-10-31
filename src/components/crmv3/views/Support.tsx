@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { approvalBody, approvalEndpoint } from "@/lib/crmv2/payload";
 import { Card, Chip, Lab, Msg, Sheet, State, Status, SwipeRow, money, sendJson, statusTone, useJson, when, type Tx } from "../kit";
+import { TicketExtras } from "../desk/panels";
 
 type Ticket = { id: string; kind: string; amount?: number; currency?: string; status?: string; customer?: string; openedAt?: string };
 type Thread = { traderId?: string; trader?: string; messages?: { body?: string }[] };
@@ -53,6 +54,7 @@ function Tickets({ tx, locale, q, status, setQuery }: { tx: Tx; locale: string; 
         ))}
       </div>
       <State loading={data.loading} error={data.error} empty={!data.loading && !(data.data?.tickets || []).length} tx={tx} onRetry={data.reload} />
+      <TicketExtras rows={data.data?.tickets || []} />
       <ul>
         {(data.data?.tickets || []).map((row) => (
           <li key={`${row.kind}-${row.id}`}>

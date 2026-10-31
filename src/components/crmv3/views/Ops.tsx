@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useI18n } from "@/lib/i18n/context";
 import { Card, Lab, Msg, State, sendJson, useJson, when, type Tx } from "../kit";
+import { TaskDesk } from "../desk/panels";
 
 export default function Ops({ tx, area }: { tx: Tx; area: string }) {
   return (
@@ -275,9 +277,12 @@ function Licenses({ tx }: { tx: Tx }) {
 }
 
 function Calendar({ tx }: { tx: Tx }) {
+  const { locale } = useI18n();
   const data = useJson<{ reminders?: { id: string; body?: string; remindAt?: string; trader?: string | null }[] }>("/api/admin/calendar?take=40");
   const [msg, setMsg] = useState("");
   return (
+    <div className="c3-stack">
+    <TaskDesk locale={locale} tx={tx} />
     <Card title={tx("calendar")}>
       <State loading={data.loading} error={data.error} empty={!data.loading && !(data.data?.reminders || []).length} tx={tx} onRetry={data.reload} />
       <ul>
@@ -306,6 +311,7 @@ function Calendar({ tx }: { tx: Tx }) {
         <Msg text={msg} />
       </form>
     </Card>
+    </div>
   );
 }
 

@@ -1,5 +1,7 @@
 /** CRM v3 chrome strings. Shared screen copy stays in CRM v2 tables. Locales cannot drift. */
-const en = {
+import { DESK_AR, DESK_DE, DESK_EN, DESK_RU, DESK_TR } from "@/lib/crmv3/copy-desk";
+
+const enBase = {
   money: "Money",
   v3mark: "CRM v3",
   searchFab: "Search",
@@ -8,7 +10,9 @@ const en = {
   openRow: "Open",
 };
 
-const tr: typeof en = {
+const en = { ...enBase, ...DESK_EN };
+
+const trBase: typeof enBase = {
   money: "Para",
   v3mark: "CRM v3",
   searchFab: "Ara",
@@ -17,7 +21,9 @@ const tr: typeof en = {
   openRow: "Aç",
 };
 
-const de: typeof en = {
+const tr = { ...trBase, ...DESK_TR };
+
+const deBase: typeof enBase = {
   money: "Geld",
   v3mark: "CRM v3",
   searchFab: "Suchen",
@@ -26,7 +32,9 @@ const de: typeof en = {
   openRow: "Öffnen",
 };
 
-const ru: typeof en = {
+const de = { ...deBase, ...DESK_DE };
+
+const ruBase: typeof enBase = {
   money: "Деньги",
   v3mark: "CRM v3",
   searchFab: "Поиск",
@@ -35,7 +43,9 @@ const ru: typeof en = {
   openRow: "Открыть",
 };
 
-const ar: typeof en = {
+const ru = { ...ruBase, ...DESK_RU };
+
+const arBase: typeof enBase = {
   money: "المال",
   v3mark: "CRM v3",
   searchFab: "بحث",
@@ -43,6 +53,8 @@ const ar: typeof en = {
   refreshing: "جارٍ التحديث",
   openRow: "فتح",
 };
+
+const ar = { ...arBase, ...DESK_AR };
 
 export const CRM_V3_COPY = { en, tr, de, ru, ar };
 

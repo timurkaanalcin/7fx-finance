@@ -1,0 +1,23 @@
+/** Re-exports of CRM v4 helpers for the v3 desk. v4 modules stay unchanged. */
+export { duplicateEmails, healthOf, relativeFrom } from "@/lib/crmv4/round1";
+export { detailPairs, funnelOf, presetRange, sumAmounts } from "@/lib/crmv4/round2";
+export { bookTotals, exposureBySymbol, marginWatch, parseOperators } from "@/lib/crmv4/round3";
+export { countryHeat, hourHeat, nextAction, smartSplit, withdrawalFlags, workloadOf } from "@/lib/crmv4/round4";
+export { journeyOf, symbolPopularity, winLoss } from "@/lib/crmv4/round5";
+export { categorize, riskScore } from "@/lib/crmv4/round6";
+export { completeness } from "@/lib/crmv4/round7";
+export { ageBuckets, pnlMovers, trapFocus } from "@/lib/crmv4/round8";
+export { anomalyRows, toIcs } from "@/lib/crmv4/round10";
+export { isChurn, qualityRows } from "@/lib/crmv4/round11";
+export { marginLevel } from "@/lib/crmv4/round12";
+export { campaignStats, cpl, cpa, funnelOf as campaignFunnel, rankAffiliates, segmentHit, smsParts, sourceTrend } from "@/lib/crmv4/round13";
+export type { LeadRow, SegmentRule } from "@/lib/crmv4/round13";
+export { ageHours, changedKeys, deskRanks, dueToday, slaLeft, snoozeUntil } from "@/lib/crmv4/round14";
+export type { AssignRule } from "@/lib/crmv4/round14";
+export { currencyMix, docCounts, groupByAuthor, inBand, largestPendingId, methodName, noteDuplicate, orderNotes, pendingCount, queueAgeHours, sameCustomer, byAge } from "@/lib/crmv4/round15";
+export type { MoneyLite } from "@/lib/crmv4/round15";
+export { LEAD_STAGES, boardQuery, countryMix, daysInStage, followCounts, followTone, idsInStage, inStage, invertIds, stageCounts, stageFor, stuckIds, valueByCurrency, winShare } from "@/lib/crmv4/round16";
+export type { LeadCard, LeadStage } from "@/lib/crmv4/round16";
+export { callCount, dayBucket, emailOk, filterFeed, formScore, lastContact, mergeFeed, missingFields, passwordHint, phoneShort, pinFirst, sameEntry, splitName } from "@/lib/crmv4/round17";
+export type { CallLog, FeedKind } from "@/lib/crmv4/round17";
+export { readJson, writeJson } from "@/lib/crmv4/local";
