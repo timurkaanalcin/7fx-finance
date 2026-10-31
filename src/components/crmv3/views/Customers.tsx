@@ -18,6 +18,7 @@ import { useLocal, useV3 } from "../desk/store";
 import { ListDesk, RecordHead, useLists } from "../desk/record";
 import { TradeBook } from "../desk/book";
 import { DenseList, NoteStudio } from "../desk/table";
+import { FinanceBook } from "../desk/ledger";
 import { applyList } from "@/lib/crmv3/lists";
 
 export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; locale: string; q: string }) {
@@ -665,6 +666,8 @@ function Money({ id, tx, locale }: { id: string; tx: Tx; locale: string }) {
   const ledger = useJson<{ transactions?: { id: string; amount?: number; type?: string; currency?: string; createdAt?: string; comment?: string; balanceBefore?: number; balanceAfter?: number }[] }>(`/api/admin/transactions?userId=${encodeURIComponent(id)}&limit=30`);
   const rows = ledger.data?.transactions || [];
   return (
+    <div className="c3-stack">
+    <FinanceBook id={id} locale={locale} tx={tx} />
     <Card title={tx("ledger")}>
       <State loading={ledger.loading} error={ledger.error} empty={!ledger.loading && rows.length === 0} tx={tx} onRetry={ledger.reload} />
       <ul>
@@ -679,6 +682,7 @@ function Money({ id, tx, locale }: { id: string; tx: Tx; locale: string }) {
         ))}
       </ul>
     </Card>
+    </div>
   );
 }
 

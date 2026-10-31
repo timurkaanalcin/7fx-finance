@@ -33,20 +33,43 @@ export function unreadThreads(rows: { messages?: { workerId?: string | null; aut
 
 export type StaffCard = { id: string; name: string; desk: string; assigned: number };
 
-export function staffCards(
-  workers: { id: string; name?: string | null; desk?: string | null }[],
-  customers: { assigneeName?: string | null }[],
-): StaffCard[] {
+export type MatchCustomer = { assigneeName?: string | null; assigneeId?: string | null };
+export type MatchWorker = { id?: string | null; name?: string | null; desk?: string | null };
+
+/** Trim, collapse inner spaces, and ignore case. */
+export function normAssignee(value: unknown): string {
+  return String(value || "").trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+/** Prefer a loaded assignee id. Otherwise match the trimmed name. */
+export function matchedWorkerId(customer: MatchCustomer, workers: MatchWorker[]): string {
+  const id = String(customer.assigneeId || "").trim();
+  if (id) {
+    const hit = workers.find((worker) => String(worker.id || "").trim() === id);
+    if (hit) return String(hit.id || "");
+  }
+  const name = normAssignee(customer.assigneeName);
+  if (!name) return "";
+  const byName = workers.find((worker) => normAssignee(worker.name) === name);
+  if (!byName) return "";
+  return String(byName.id || byName.name || "");
+}
+
+export function staffCards(workers: MatchWorker[], customers: MatchCustomer[]): StaffCard[] {
   return workers.map((worker) => {
     const name = String(worker.name || "").trim();
-    const assigned = customers.filter((row) => name && String(row.assigneeName || "").trim().toLowerCase() === name.toLowerCase()).length;
-    return { id: worker.id, name: name || worker.id, desk: String(worker.desk || "").trim(), assigned };
+    const key = String(worker.id || "");
+    const assigned = customers.filter((row) => {
+      const match = matchedWorkerId(row, workers);
+      if (!match) return false;
+      return match === key || (!key && match === name);
+    }).length;
+    return { id: key || name, name: name || key, desk: String(worker.desk || "").trim(), assigned };
   });
 }
 
-export function unassignedCount(customers: { assigneeName?: string | null }[], workers: { name?: string | null }[]): number {
-  const names = new Set(workers.map((row) => String(row.name || "").trim().toLowerCase()).filter(Boolean));
-  return customers.filter((row) => !names.has(String(row.assigneeName || "").trim().toLowerCase())).length;
+export function unassignedCount(customers: MatchCustomer[], workers: MatchWorker[]): number {
+  return customers.filter((row) => matchedWorkerId(row, workers) === "").length;
 }
 
 export function filterLoad(cards: StaffCard[], mode: WorkFilter): StaffCard[] {
