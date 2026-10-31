@@ -14,6 +14,7 @@ import { DailyClose } from "../round11";
 import { byAge, inBand, methodName } from "@/lib/crmv4/round15";
 import { FinanceChrome, ReviewChecks, queueAgeHours, queueMarks, readLastReason, rememberReason, useSecondLook } from "../round15";
 import { useListBar } from "../round19";
+import { PayMethods } from "../round21";
 
 const FINANCE_COLS = ["amount", "method", "date", "status"];
 type MoneyRow = { id: string; amount?: number; currency?: string; status?: string; createdAt?: string; method?: string; user?: { name?: string; email?: string } };
@@ -72,6 +73,7 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
       {tab !== "ledger" && (
         <FinanceChrome rows={visible} v4={v4} band={band} oldest={oldest} onBand={setBand} onOldest={() => setOldest((on) => !on)} />
       )}
+      {tab !== "ledger" && <PayMethods rows={visible} v4={v4} />}
       <p className="c4-muted c4-pad">{crmv4Text(locale, "queueKeys")} j / k / a / r</p>
       <p className="c4-muted" style={{ padding: "8px 16px 0" }}>{tx("financeLead")}</p>
       <div className="c4-tools">
