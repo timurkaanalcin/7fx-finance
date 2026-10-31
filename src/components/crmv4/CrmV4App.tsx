@@ -15,6 +15,7 @@ import { ShortcutHost } from "./round1";
 import { DeskSearch, WithdrawDesk } from "./round28";
 import { DepositDesk, InboxDesk } from "./round29";
 import { InsightsHome, PrefsHub } from "./round32";
+import { AgendaPage } from "./round33";
 import { GroupedMenu, PageRail } from "./round30";
 import { DeskFoot, HelpSheet } from "./round18";
 import { HelpCenter, OfflineBanner, Tour, UndoHost, densityMode, storeDensity } from "./round2";
@@ -270,6 +271,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "inbox") return v4("inboxTitle");
     if (tab === "insights") return v4("insTitle");
     if (tab === "prefs") return v4("prefTitle");
+    if (tab === "agenda") return v4("agTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -294,6 +296,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "inbox") return v4("inboxSub");
     if (tab === "insights") return v4("insSub");
     if (tab === "prefs") return v4("prefSub");
+    if (tab === "agenda") return v4("agSub");
     return "";
   }
 
@@ -452,6 +455,7 @@ function Shell({ base, section, name }: Props) {
             {view === "reports" && <ReportsPage v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
+            {view === "agenda" && <AgendaPage base={base} v4={v4} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} v4={v4} tx={tx} locale={locale} />}
             {view === "deposit" && <DepositDesk base={base} v4={v4} tx={tx} locale={locale} />}
             {view === "inbox" && <InboxDesk v4={v4} tx={tx} locale={locale} />}

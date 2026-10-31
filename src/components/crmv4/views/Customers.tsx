@@ -28,6 +28,7 @@ import { ContactFeed, EntryQuality, applySplit, emailOk } from "../round17";
 import { StatementSheet } from "../round21";
 import { CohortBoard, OnboardCard } from "../round24";
 import { ListDesk, RecordHead, applyList, useLists } from "../round31";
+import { TradeBook } from "../round33";
 import { rememberView } from "../round25";
 import { LifeLine } from "../round26";
 import { sameEntry } from "@/lib/crmv4/round17";
@@ -541,6 +542,7 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           }}
         />
       )}
+      {u && <TradeBook id={id} v4={v4} locale={locale} />}
       {u && (
         <div className="c4-record-tools">
           <Link href={crmv4Href(base, "customers")} className="c4-btn c4-pill">{tx("back")}</Link>

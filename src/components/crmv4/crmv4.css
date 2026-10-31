@@ -462,6 +462,41 @@
 [data-crmv4-root][data-theme="dark"] .c4-pref-luxe,
 [data-crmv4-root][data-theme="dark"] .c4-pref-rows li { background: #221f1b; color: #f6f1e8; }
 [data-crmv4-root][data-theme="dark"] .c4-bar-fill { background: #d4bc86; }
+
+[data-crmv4-root] .c4-book-luxe,
+[data-crmv4-root] .c4-agenda-luxe {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(166, 133, 78, 0.45);
+  border-radius: 16px;
+  background:
+    linear-gradient(165deg, rgba(166, 133, 78, 0.12), transparent 46%),
+    #fffdf8;
+}
+[data-crmv4-root] .c4-book-luxe .c4-title,
+[data-crmv4-root] .c4-agenda-luxe .c4-title { margin: 0; font-weight: 500; }
+[data-crmv4-root] .c4-book-rows,
+[data-crmv4-root] .c4-book-sum,
+[data-crmv4-root] .c4-agenda-lane,
+[data-crmv4-root] .c4-agenda-grid ul { margin: 0; padding: 0; list-style: none; }
+[data-crmv4-root] .c4-book-rows li,
+[data-crmv4-root] .c4-agenda-lane li,
+[data-crmv4-root] .c4-agenda-grid li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 0;
+  border-top: 1px solid var(--c4-line);
+}
+[data-crmv4-root] .c4-agenda-grid { display: grid; gap: 10px; }
+[data-crmv4-root] .c4-agenda-grid section[data-today="1"] { box-shadow: inset 3px 0 0 #7a5e30; }
+[data-crmv4-root][data-theme="dark"] .c4-book-luxe,
+[data-crmv4-root][data-theme="dark"] .c4-agenda-luxe { background: #221f1b; color: #f6f1e8; }
+@media (min-width: 1024px) {
+  [data-crmv4-root] .c4-agenda-grid[data-mode="week"] { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+}
 @media (max-width: 767px) {
   [data-crmv4-root] .c4-bar-row { grid-template-columns: minmax(0, 1fr); }
 }
@@ -3383,6 +3418,7 @@
 [data-crmv4-root] .c4-panel[data-view="reports"] .c4-pagehead,
 [data-crmv4-root] .c4-panel[data-view="insights"] .c4-pagehead,
 [data-crmv4-root] .c4-panel[data-view="prefs"] .c4-pagehead,
+[data-crmv4-root] .c4-panel[data-view="agenda"] .c4-pagehead,
 [data-crmv4-root] .c4-panel[data-view="withdraw"] .c4-pagehead,
 [data-crmv4-root] .c4-panel[data-view="deposit"] .c4-pagehead,
 [data-crmv4-root] .c4-panel[data-view="inbox"] .c4-pagehead {
