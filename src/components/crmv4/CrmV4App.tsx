@@ -22,6 +22,7 @@ import { groupedNav } from "@/lib/crmv4/round20";
 import { QuickSheet } from "./round22";
 import { StaffPage } from "./round24";
 import { GoalsPage, TopTrail } from "./round25";
+import { KycDesk, ReportsPage } from "./round27";
 import { lastView, playPing, rememberView, soundEnabled, ticketAlertsOn } from "./round7";
 import { resolvedTheme, storedContrast, storedFont, storedFreeze, themeMode } from "./round8";
 import { readBrand } from "./round10";
@@ -239,6 +240,8 @@ function Shell({ base, section, name }: Props) {
   function label(tab: string) {
     if (tab === "me") return v4("staffProfile");
     if (tab === "goals") return v4("goalsTitle");
+    if (tab === "kyc") return v4("kycDesk");
+    if (tab === "reports") return v4("reportsTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -256,6 +259,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "control") return v4("subControl");
     if (tab === "me") return v4("staffSub");
     if (tab === "goals") return v4("goalsSub");
+    if (tab === "kyc") return v4("kycSub");
+    if (tab === "reports") return v4("reportsSub");
     return "";
   }
 
@@ -329,6 +334,8 @@ function Shell({ base, section, name }: Props) {
             </button>
             <div className="c4-drop-menu" role="menu">
               <Link href={crmv4Href(base, "goals")} data-on={view === "goals" ? "1" : "0"} onClick={() => setGearOpen(false)}>{v4("goalsTitle")}</Link>
+              <Link href={crmv4Href(base, "kyc")} data-on={view === "kyc" ? "1" : "0"} onClick={() => setGearOpen(false)}>{v4("kycDesk")}</Link>
+              <Link href={crmv4Href(base, "reports")} data-on={view === "reports" ? "1" : "0"} onClick={() => setGearOpen(false)}>{v4("reportsTitle")}</Link>
               <Link href={crmv4Href(base, "settings")} data-on={view === "settings" ? "1" : "0"} onClick={() => setGearOpen(false)}>{tx("settings")}</Link>
               <Link href={crmv4Href(base, "control")} data-on={view === "control" ? "1" : "0"} onClick={() => setGearOpen(false)}>{tx("control")}</Link>
             </div>
@@ -406,6 +413,8 @@ function Shell({ base, section, name }: Props) {
             {view === "settings" && <Settings tx={tx} />}
             {view === "me" && <StaffPage signInName={name} base={base} v4={v4} locale={locale} />}
             {view === "goals" && <GoalsPage v4={v4} locale={locale} />}
+            {view === "kyc" && <KycDesk v4={v4} tx={tx} locale={locale} />}
+            {view === "reports" && <ReportsPage v4={v4} locale={locale} />}
             {view === "logs" && <Logs tx={tx} locale={locale} q={q} />}
             {view === "control" && <Control tx={tx} locale={locale} />}
             {!known && (
