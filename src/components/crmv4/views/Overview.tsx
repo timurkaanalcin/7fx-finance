@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { ledgerBody } from "@/lib/crmv2/payload";
 import { crmv4Text } from "@/lib/crmv4/copy";
+import { DeskBoard, TasksBoard } from "../round1";
 import { crmv4Href } from "@/lib/crmv4/sections";
 import { Bars, Card, Chip, Field, Kpi, Lab, Msg, Sheet, State, auditExport, downloadCsv, fmtNum, localeTag, money, sendJson, useJson, when, type Tx, type UserRow } from "../kit";
 
@@ -15,7 +16,7 @@ export default function Overview({ base, tx, locale }: Props) {
   const report = useJson<{ report?: Record<string, number | string> }>("/api/admin/analytics/report");
   const users = useJson<{ users?: UserRow[] }>("/api/admin/users?view=table&take=8&meta=0&role=TRADER");
   const [sheet, setSheet] = useState<null | "add" | "transfer">(null);
-  const [tab, setTab] = useState<"home" | "insights">("home");
+  const [tab, setTab] = useState<"home" | "insights" | "desks">("home");
   const kpis = stats.data?.kpis;
   const pending = (kpis?.pendingDeposits || 0) + (kpis?.pendingBalanceRequests || 0);
   const aum = finance.data?.kpis?.totalEquity ?? finance.data?.kpis?.totalBalance;
@@ -32,6 +33,7 @@ export default function Overview({ base, tx, locale }: Props) {
       <div className="c4-row">
         <Chip on={tab === "home"} onClick={() => setTab("home")}>{tx("overview")}</Chip>
         <Chip on={tab === "insights"} onClick={() => setTab("insights")}>{tx("insights")}</Chip>
+        <Chip on={tab === "desks"} onClick={() => setTab("desks")}>{crmv4Text(locale, "deskBoard")}</Chip>
       </div>
       <p className="c4-muted">{tx("overviewLead")}</p>
       <div className="c4-kpis">
@@ -42,6 +44,8 @@ export default function Overview({ base, tx, locale }: Props) {
       </div>
       {tab === "insights" ? (
         <Insights tx={tx} locale={locale} finance={finance.data} report={r} />
+      ) : tab === "desks" ? (
+        <DeskBoard locale={locale} v4={(key) => crmv4Text(locale, key)} tx={tx} />
       ) : (
         <div className="c4-stack">
         <div className="c4-dash">
@@ -54,6 +58,7 @@ export default function Overview({ base, tx, locale }: Props) {
           </Card>
         </div>
         <MonthBoard locale={locale} />
+        <TasksBoard locale={locale} v4={(key) => crmv4Text(locale, key)} tx={tx} />
         <div className="c4-split">
           <Card title={tx("recentCustomers")} extra={<Link href={crmv4Href(base, "customers")}>{tx("seeAll")}</Link>}>
             <State loading={users.loading} error={users.error} empty={!users.loading && !(users.data?.users || []).length} tx={tx} onRetry={users.reload} />

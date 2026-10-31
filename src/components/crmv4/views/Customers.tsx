@@ -6,11 +6,13 @@ import { useEffect, useState } from "react";
 import { ACCOUNT_TYPES, POTENTIAL_STATUSES, RETENTION_STATUSES, SALE_STATUSES, VALIDATION_STATUSES } from "@/lib/membership";
 import { crmv4Text, type CrmV4CopyKey } from "@/lib/crmv4/copy";
 import { readJson, writeJson } from "@/lib/crmv4/local";
+import { moveItem, type FilterRule } from "@/lib/crmv4/round1";
 import { crmv4Href } from "@/lib/crmv4/sections";
+import { ActivityTimeline, BulkBar, CustomerDeskTable, FilterBuilder, ReviewDialog, duplicateEmails, readTags, rememberCustomer, useDeskMemory, visibleCustomers, type Col as DeskCol } from "../round1";
 import { Card, Chip, Field, Lab, Msg, Pager, State, Status, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, statusTone, useJson, when, type Tx, type UserRow } from "../kit";
 
 const COLUMNS = ["customer", "country", "desk", "sale", "retention", "balance", "status"] as const;
-type Col = (typeof COLUMNS)[number];
+type Col = DeskCol;
 type Preset = { id: string; name: string; values: Record<string, string> };
 const PRESET_KEY = "crmv4-customer-presets";
 const COLUMN_KEY = "crmv4-customer-columns";
@@ -26,6 +28,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
   const country = params.get("country") || "";
   const presence = params.get("presence") || "";
   const ftd = params.get("ftd") || "";
+  const followUp = params.get("followUp") || "";
   const skip = Number(params.get("skip") || 0) || 0;
   const sort = params.get("sort") || "";
   const takeRaw = Number(params.get("take") || TAKE);
@@ -37,6 +40,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
   if (country) query.set("country", country);
   if (presence) query.set("presence", presence);
   if (ftd) query.set("ftd", ftd);
+  if (followUp) query.set("followUp", followUp);
   const data = useJson<{ users?: UserRow[]; hasMore?: boolean; total?: number }>(`/api/admin/users?${query.toString()}`);
   const rows = data.data?.users || [];
   const sorted = [...rows].sort((a, b) => {
@@ -51,7 +55,16 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
   const [presets, setPresets] = useState<Preset[]>([]);
   const [presetName, setPresetName] = useState("");
   const [renameId, setRenameId] = useState("");
+  const [selected, setSelected] = useState<string[]>([]);
+  const [rules, setRules] = useState<FilterRule[]>([]);
+  const [builderOpen, setBuilderOpen] = useState(false);
+  const [pinnedOnly, setPinnedOnly] = useState(false);
+  const [relative, setRelative] = useState(false);
+  const [viewName, setViewName] = useState("");
+  const memory = useDeskMemory();
   const v4 = (key: CrmV4CopyKey) => crmv4Text(locale, key);
+  const shown = visibleCustomers(sorted, rules, memory.tags, memory.pins, pinnedOnly);
+  const duplicates = duplicateEmails(shown);
 
   useEffect(() => {
     const stored = readJson<Col[]>(COLUMN_KEY, [...COLUMNS]).filter((item) => (COLUMNS as readonly string[]).includes(item));
@@ -60,7 +73,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
     setPresets(readJson<Preset[]>(PRESET_KEY, []));
   }, []);
 
-  const idKey = sorted.map((row) => row.id).join(",");
+  const idKey = shown.map((row) => row.id).join(",");
   useEffect(() => {
     window.sessionStorage.setItem(IDS_KEY, JSON.stringify(idKey ? idKey.split(",") : []));
   }, [idKey]);
@@ -125,7 +138,10 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
         </div>
         <div className="c4-tools">
           <button type="button" className="c4-btn" onClick={() => setFiltersOpen((open) => !open)}>{filtersOpen ? v4("hideFilters") : v4("showFilters")}</button>
-          <button type="button" className="c4-btn" onClick={() => setQuery({ status: "", saleStatus: "", retentionStatus: "", country: "", presence: "", ftd: "", sort: "" })}>{v4("clearFilters")}</button>
+          <button type="button" className="c4-btn" onClick={() => setBuilderOpen((open) => !open)}>{builderOpen ? v4("hideBuilder") : v4("builder")}</button>
+          <button type="button" className="c4-chip" data-on={followUp === "overdue" ? "1" : "0"} onClick={() => setQuery({ followUp: followUp === "overdue" ? "" : "overdue" })}>{v4("followUpDue")}</button>
+          <button type="button" className="c4-chip" data-on={pinnedOnly ? "1" : "0"} onClick={() => setPinnedOnly((on) => !on)}>{v4("pinnedOnly")}</button>
+          <button type="button" className="c4-btn" onClick={() => setQuery({ status: "", saleStatus: "", retentionStatus: "", country: "", presence: "", ftd: "", sort: "", followUp: "" })}>{v4("clearFilters")}</button>
           <button type="button" className="c4-btn" aria-expanded={settingsOpen} onClick={() => setSettingsOpen((open) => !open)}>{v4("tableSettings")}</button>
           <button type="button" className="c4-btn" onClick={() => setQuery({ sort: sort === "name" ? "" : "name" })}>{v4("sortName")}</button>
           <button type="button" className="c4-btn" onClick={() => setQuery({ sort: sort === "balance" ? "" : "balance" })}>{v4("sortBalance")}</button>
@@ -135,7 +151,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
               {[20, 40, 80].map((item) => <option key={item} value={item}>{item}</option>)}
             </select>
           </label>
-          <button type="button" className="c4-btn" onClick={() => void exportRows(sorted)}>{tx("quickExport")}</button>
+          <button type="button" className="c4-btn" onClick={() => void exportRows(selected.length ? shown.filter((row) => selected.includes(row.id)) : shown)}>{selected.length ? v4("bulkExport") : tx("quickExport")}</button>
           <button type="button" className="c4-btn" onClick={() => void exportLeads()}>{tx("exportLeads")}</button>
         </div>
         {settingsOpen && (
@@ -167,8 +183,38 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
               />
               {v4("denseRows")}
             </label>
+            <label className="c4-chip" data-on={relative ? "1" : "0"}>
+              <input type="checkbox" checked={relative} onChange={(event) => setRelative(event.target.checked)} />
+              {v4("relativeTime")}
+            </label>
+            {COLUMNS.map((col) => (
+              <span key={`move-${col}`} className="c4-row">
+                <button type="button" className="c4-btn" aria-label={v4("moveLeft")} onClick={() => { const next = moveItem(columns, col, -1); setColumns(next); writeJson(COLUMN_KEY, next); }}>{v4("moveLeft")}</button>
+                <button type="button" className="c4-btn" aria-label={v4("moveRight")} onClick={() => { const next = moveItem(columns, col, 1); setColumns(next); writeJson(COLUMN_KEY, next); }}>{v4("moveRight")}</button>
+              </span>
+            ))}
           </div>
         )}
+        {builderOpen && <FilterBuilder rules={rules} onChange={setRules} v4={v4} />}
+        <div className="c4-tools">
+          <input className="c4-field" style={{ maxWidth: 180 }} value={viewName} aria-label={v4("savedView")} placeholder={v4("savedView")} onChange={(event) => setViewName(event.target.value)} />
+          <button type="button" className="c4-btn" onClick={() => {
+            const name = viewName.trim();
+            if (!name) return;
+            memory.setViews([...memory.views, { id: String(Date.now()), name, rules, sort, columns }]);
+            setViewName("");
+          }}>{v4("saveView")}</button>
+          {memory.views.map((view) => (
+            <button key={view.id} type="button" className="c4-chip" onClick={() => { setRules(view.rules); setColumns(view.columns); setQuery({ sort: view.sort }); }}>{view.name}</button>
+          ))}
+        </div>
+        {memory.recent.length > 0 && (
+          <div className="c4-presets">
+            <span className="c4-muted">{v4("recent")}</span>
+            {memory.recent.map((row) => <Link key={row.id} className="c4-tag" href={crmv4Href(base, `customers/${row.id}`)}>{row.name || row.email}</Link>)}
+          </div>
+        )}
+        <BulkBar ids={selected} v4={v4} tx={tx} onDone={() => { setSelected([]); data.reload(); memory.setTags(readTags()); }} />
         <form
           key={`${saleStatus}|${retentionStatus}|${country}|${presence}|${ftd}`}
           className="c4-filters"
@@ -208,8 +254,27 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
           <label className="c4-row"><input type="checkbox" name="ftd" defaultChecked={ftd === "1"} /> {tx("ftdOnly")}</label>
           <button type="submit" className="c4-btn c4-btn-hot">{tx("applyWord")}</button>
         </form>
-        <State loading={data.loading} error={data.error} empty={!data.loading && rows.length === 0} tx={tx} onRetry={data.reload} />
-        <CustomerTable base={base} rows={sorted} tx={tx} locale={locale} columns={columns} dense={dense} />
+        <State loading={data.loading} error={data.error} empty={!data.loading && shown.length === 0} tx={tx} onRetry={data.reload} hint={rows.length ? v4("emptyHint") : undefined} />
+        <CustomerDeskTable
+          base={base}
+          rows={shown}
+          tx={tx}
+          locale={locale}
+          v4={v4}
+          columns={columns}
+          dense={dense}
+          widths={memory.widths}
+          onResize={(col, width) => memory.setWidths({ ...memory.widths, [col]: width })}
+          selected={selected}
+          onToggle={(id) => setSelected((list) => list.includes(id) ? list.filter((item) => item !== id) : [...list, id])}
+          onToggleAll={() => setSelected(selected.length === shown.length ? [] : shown.map((row) => row.id))}
+          tags={memory.tags}
+          pins={memory.pins}
+          onPin={(id) => memory.setPins(memory.pins.includes(id) ? memory.pins.filter((item) => item !== id) : [...memory.pins, id])}
+          relative={relative}
+          duplicates={duplicates}
+          onSale={async (id, sale) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { saleStatus: sale }); data.reload(); }}
+        />
         <Pager skip={skip} take={take} hasMore={Boolean(data.data?.hasMore)} total={data.data?.total} tx={tx} onPage={(next) => setQuery({ skip: next ? String(next) : "" })} />
       </Card>
     </div>
@@ -246,64 +311,6 @@ async function exportLeads() {
   URL.revokeObjectURL(url);
 }
 
-function CustomerTable({ base, rows, tx, locale, columns, dense }: { base: string; rows: UserRow[]; tx: Tx; locale: string; columns: Col[]; dense: boolean }) {
-  if (!rows.length) return null;
-  const show = (col: Col) => columns.includes(col);
-  return (
-    <>
-      <div className="c4-desk c4-table-wrap" data-dense={dense ? "1" : "0"}>
-        <table className="c4-table">
-          <thead>
-            <tr>
-              {show("customer") && <th>{tx("customer")}</th>}
-              {show("country") && <th>{tx("country")}</th>}
-              {show("desk") && <th>{tx("desk")}</th>}
-              {show("sale") && <th>{tx("saleWord")}</th>}
-              {show("retention") && <th>{tx("retentionWord")}</th>}
-              {show("balance") && <th>{tx("balance")}</th>}
-              {show("status") && <th>{tx("status")}</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr key={row.id}>
-                {show("customer") && (
-                  <td>
-                    <Link href={crmv4Href(base, `customers/${row.id}`)}>{row.name || "—"}</Link>
-                    <div className="c4-muted">{row.email}</div>
-                  </td>
-                )}
-                {show("country") && <td>{row.country || "—"}</td>}
-                {show("desk") && <td>{row.desk || "—"}</td>}
-                {show("sale") && <td>{row.saleStatus ? <Status tone={statusTone(row.saleStatus)}>{row.saleStatus}</Status> : "—"}</td>}
-                {show("retention") && <td>{row.retentionStatus ? <Status tone="info">{row.retentionStatus}</Status> : "—"}</td>}
-                {show("balance") && <td>{money(row.balance ?? row.account?.balance, row.currency || row.account?.currency, locale)}</td>}
-                {show("status") && <td><Status tone={row.active === false ? "bad" : "ok"}>{row.active === false ? tx("chipFrozen") : tx("chipActive")}</Status></td>}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <ul className="c4-mob-list">
-        {rows.map((row) => (
-          <li key={row.id}>
-            <SwipeRow actions={[{ key: "open", label: tx("open"), tone: "gold", onClick: () => { window.location.href = crmv4Href(base, `customers/${row.id}`); } }]}>
-              <Link href={crmv4Href(base, `customers/${row.id}`)} className="c4-swipe-link">
-                <div className="c4-row c4-between">
-                  <span>{row.name || "—"}</span>
-                  <Status tone={row.active === false ? "bad" : "ok"}>{row.active === false ? tx("chipFrozen") : tx("chipActive")}</Status>
-                </div>
-                <div className="c4-muted">{row.email}</div>
-                <div>{money(row.balance ?? row.account?.balance, row.currency || row.account?.currency, locale)} · {row.saleStatus || tx("unmapped")}</div>
-              </Link>
-            </SwipeRow>
-          </li>
-        ))}
-      </ul>
-    </>
-  );
-}
-
 const PARTS = ["profile", "notes", "money", "trades", "files", "access", "activity"] as const;
 
 export function CustomerDetail({ base, id, tx, locale }: { base: string; id: string; tx: Tx; locale: string }) {
@@ -317,6 +324,9 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
   useEffect(() => {
     setNeighbors(readNeighborIds(id));
   }, [id]);
+  useEffect(() => {
+    if (u) rememberCustomer(u);
+  }, [u]);
   function setPart(next: string) {
     const p = new URLSearchParams(params.toString());
     if (next && next !== "profile") p.set("part", next);
@@ -341,6 +351,9 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           <div className="c4-row" style={{ marginInlineStart: "auto" }}>
             <button type="button" className="c4-btn c4-btn-hot" onClick={() => void openTerminal(id, tx, setQuickMsg)}>{tx("viewAs")}</button>
             <button type="button" className="c4-btn" onClick={() => void makeLink(id, tx, setQuickMsg)}>{tx("loginLink")}</button>
+            <button type="button" className="c4-btn" onClick={async () => {
+              try { await navigator.clipboard.writeText(u.id); setQuickMsg(v4("copied")); } catch { setQuickMsg(u.id); }
+            }}>{v4("copyId")}</button>
           </div>
           <Msg text={quickMsg} />
         </header>
@@ -709,6 +722,8 @@ function Files({ id, email, tx, locale }: { id: string; email: string; tx: Tx; l
   const docs = useJson<{ documents?: DocRow[] }>(email ? `/api/admin/documents?q=${encodeURIComponent(email)}&take=40` : null);
   const files = useJson<{ documents?: FileRow[] }>(`/api/admin/customer-documents?userId=${encodeURIComponent(id)}&take=40`);
   const [msg, setMsg] = useState("");
+  const [zoom, setZoom] = useState<null | { title: string; src?: string; id?: string }>(null);
+  const v4 = (key: CrmV4CopyKey) => crmv4Text(locale, key);
   const mine = (docs.data?.documents || []).filter((row) => row.traderId === id);
   return (
     <div className="c4-stack">
@@ -746,6 +761,7 @@ function Files({ id, email, tx, locale }: { id: string; email: string; tx: Tx; l
               </div>
               <div className="c4-row">
                 <Status tone={statusTone(row.status)}>{row.status}</Status>
+                <button type="button" className="c4-btn" onClick={() => setZoom({ title: `${row.name || ""} · ${row.docType || ""}`, id: row.id })}>{v4("zoom")}</button>
                 {row.status === "PENDING" && (
                   <>
                     <button type="button" className="c4-btn" onClick={() => void review(row.id, "APPROVED", docs.reload, setMsg, tx)}>{tx("approve")}</button>
@@ -756,7 +772,18 @@ function Files({ id, email, tx, locale }: { id: string; email: string; tx: Tx; l
             </li>
           ))}
         </ul>
-        {!docs.loading && mine.length === 0 && <p className="c4-muted" style={{ padding: 16 }}>{tx("noneYet")}</p>}
+        {!docs.loading && mine.length === 0 && <p className="c4-empty-luxe">{tx("noneYet")}</p>}
+        {zoom && (
+          <ReviewDialog
+            title={zoom.title}
+            src={zoom.src}
+            v4={v4}
+            tx={tx}
+            onClose={() => setZoom(null)}
+            onApprove={zoom.id ? () => { void review(zoom.id || "", "APPROVED", docs.reload, setMsg, tx); setZoom(null); } : undefined}
+            onReject={zoom.id ? () => { void review(zoom.id || "", "REJECTED", docs.reload, setMsg, tx); setZoom(null); } : undefined}
+          />
+        )}
       </Card>
       <Card title={tx("evrak")}>
         <form
@@ -780,6 +807,7 @@ function Files({ id, email, tx, locale }: { id: string; email: string; tx: Tx; l
           {(files.data?.documents || []).map((row) => (
             <li key={row.id} className="c4-row" style={{ justifyContent: "space-between", padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
               <span>{row.title || row.fileName}</span>
+              <button type="button" className="c4-btn" onClick={() => setZoom({ title: row.title || row.fileName || "", src: `/api/admin/customer-documents/${row.id}` })}>{v4("zoom")}</button>
               <a href={`/api/admin/customer-documents/${row.id}`}>{tx("download")}</a>
             </li>
           ))}
@@ -856,16 +884,7 @@ type ActivityRow = { id: string; kind?: string; path?: string | null; createdAt?
 function Activity({ rows, tx, locale }: { rows: ActivityRow[]; tx: Tx; locale: string }) {
   return (
     <Card title={tx("activityTab")}>
-      {rows.length === 0 ? <p className="c4-muted" style={{ padding: 16 }}>{tx("noActivity")}</p> : (
-        <ul>
-          {rows.map((row) => (
-            <li key={row.id} style={{ padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
-              <div>{row.kind}</div>
-              <div className="c4-muted">{row.path || ""} · {when(row.createdAt, locale)}</div>
-            </li>
-          ))}
-        </ul>
-      )}
+      <ActivityTimeline rows={rows} locale={locale} tx={tx} />
     </Card>
   );
 }

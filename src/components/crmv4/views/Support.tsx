@@ -3,6 +3,8 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { approvalBody, approvalEndpoint } from "@/lib/crmv2/payload";
+import { crmv4Text } from "@/lib/crmv4/copy";
+import { ReviewDialog, TicketMeta, exportCurrent } from "../round1";
 import { Card, Chip, Lab, Msg, Sheet, State, Status, SwipeRow, money, sendJson, statusTone, useJson, when, type Tx } from "../kit";
 
 type Ticket = { id: string; kind: string; amount?: number; currency?: string; status?: string; customer?: string; openedAt?: string };
@@ -42,7 +44,10 @@ export default function Support({ tx, locale, q }: { tx: Tx; locale: string; q: 
 function Tickets({ tx, locale, q, status, setQuery }: { tx: Tx; locale: string; q: string; status: string; setQuery: (next: Record<string, string>) => void }) {
   const data = useJson<{ tickets?: Ticket[] }>(`/api/admin/tickets?status=${encodeURIComponent(status)}&q=${encodeURIComponent(q)}`);
   const [sheet, setSheet] = useState<null | { id: string; kind: string; action: "approve" | "reject" }>(null);
+  const [zoom, setZoom] = useState<Ticket | null>(null);
   const [busy, setBusy] = useState(false);
+  const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale, key);
+  const list = data.data?.tickets || [];
   return (
     <Card title={tx("tickets")}>
       <div className="c4-tools">
@@ -52,15 +57,20 @@ function Tickets({ tx, locale, q, status, setQuery }: { tx: Tx; locale: string; 
           </Chip>
         ))}
       </div>
-      <State loading={data.loading} error={data.error} empty={!data.loading && !(data.data?.tickets || []).length} tx={tx} onRetry={data.reload} />
+      <div className="c4-tools">
+        <button type="button" className="c4-btn" onClick={() => void exportCurrent("tickets-page", "tickets.csv", ["customer", "kind", "amount", "status"], list.map((row) => [String(row.customer || ""), String(row.kind || ""), String(row.amount ?? ""), String(row.status || "")]))}>{v4("exportCsv")}</button>
+      </div>
+      <State loading={data.loading} error={data.error} empty={!data.loading && !list.length} tx={tx} onRetry={data.reload} />
       <div className="c4-stack">
-        {(data.data?.tickets || []).map((row) => (
+        {list.map((row) => (
           <article key={`${row.kind}-${row.id}`} className="c4-ticket">
             <div className="c4-row c4-between">
               <strong>{row.customer || "—"}</strong>
               <Status tone={statusTone(row.status)}>{row.status}</Status>
             </div>
             <p className="c4-muted c4-meta">{row.kind}</p>
+            <TicketMeta id={`${row.kind}-${row.id}`} openedAt={row.openedAt} v4={v4} />
+            <button type="button" className="c4-btn" onClick={() => setZoom(row)}>{v4("zoom")}</button>
             <hr className="c4-dashed" />
             <SwipeRow
               actions={row.status === "PENDING" ? [
@@ -76,6 +86,16 @@ function Tickets({ tx, locale, q, status, setQuery }: { tx: Tx; locale: string; 
           </article>
         ))}
       </div>
+      {zoom && (
+        <ReviewDialog
+          title={`${zoom.customer || ""} · ${zoom.kind || ""}`}
+          v4={v4}
+          tx={tx}
+          onClose={() => setZoom(null)}
+          onApprove={() => { setSheet({ id: zoom.id, kind: zoom.kind, action: "approve" }); setZoom(null); }}
+          onReject={() => { setSheet({ id: zoom.id, kind: zoom.kind, action: "reject" }); setZoom(null); }}
+        />
+      )}
       {sheet && (
         <Sheet title={sheet.action === "approve" ? tx("approve") : tx("reject")} onClose={() => setSheet(null)} closeLabel={tx("close")}>
           <form

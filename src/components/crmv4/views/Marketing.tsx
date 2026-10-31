@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { crmv4Text } from "@/lib/crmv4/copy";
+import { exportCurrent } from "../round1";
 import { readJson, writeJson } from "@/lib/crmv4/local";
 import { useI18n } from "@/lib/i18n/context";
 import { Card, Lab, Msg, State, sendJson, useJson, type Tx } from "../kit";
@@ -9,11 +10,13 @@ import { Card, Lab, Msg, State, sendJson, useJson, type Tx } from "../kit";
 type Template = { id: string; name?: string; subject?: string; body?: string; active?: boolean };
 
 export default function Marketing({ tx }: { tx: Tx }) {
+  const { locale } = useI18n();
   const aff = useJson<{ rows?: { name?: string; leads?: number; valid?: number; invalid?: number; deposits?: number }[] }>("/api/admin/analytics/affiliates?period=month");
   const mail = useJson<{ templates?: Template[] }>("/api/admin/mail");
   const rows = aff.data?.rows || [];
   const templates = mail.data?.templates || [];
   const [picked, setPicked] = useState("");
+  const [openName, setOpenName] = useState("");
   const [audience, setAudience] = useState("");
   const [msg, setMsg] = useState("");
   const current = templates.find((row) => row.id === picked) || null;
@@ -22,13 +25,29 @@ export default function Marketing({ tx }: { tx: Tx }) {
       <p className="c4-muted">{tx("marketingLead")}</p>
       <Card title={tx("affiliates")}>
         <State loading={aff.loading} error={aff.error} empty={!aff.loading && rows.length === 0} tx={tx} onRetry={aff.reload} />
+        <div className="c4-tools">
+          <button type="button" className="c4-btn" onClick={() => void exportCurrent("affiliates-page", "affiliates.csv", ["name", "leads", "valid", "invalid", "deposits"], rows.map((row) => [String(row.name || ""), String(row.leads ?? 0), String(row.valid ?? 0), String(row.invalid ?? 0), String(row.deposits ?? 0)]))}>{crmv4Text(locale, "exportCsv")}</button>
+        </div>
         <ul>
-          {rows.map((row) => (
-            <li key={row.name} className="c4-row" style={{ justifyContent: "space-between", padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
-              <span>{row.name || "—"}</span>
-              <span className="c4-muted">{tx("leads")} {row.leads ?? 0} · {tx("valid")} {row.valid ?? 0} · {tx("invalid")} {row.invalid ?? 0} · {tx("deposits")} {row.deposits ?? 0}</span>
-            </li>
-          ))}
+          {rows.map((row) => {
+            const total = Math.max(1, (row.leads ?? 0));
+            const open = openName === row.name;
+            return (
+              <li key={row.name} style={{ padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
+                <button type="button" className="c4-row c4-between" onClick={() => setOpenName(open ? "" : String(row.name || ""))}>
+                  <span>{row.name || "—"}</span>
+                  <span className="c4-muted">{tx("leads")} {row.leads ?? 0} · {crmv4Text(locale, "drill")}</span>
+                </button>
+                {open && (
+                  <div className="c4-bars">
+                    <div><div className="c4-row c4-between"><span>{tx("valid")}</span><span>{row.valid ?? 0}</span></div><div className="c4-bar" style={{ width: `${Math.max(8, ((row.valid ?? 0) / total) * 100)}%` }} /></div>
+                    <div><div className="c4-row c4-between"><span>{tx("invalid")}</span><span>{row.invalid ?? 0}</span></div><div className="c4-bar" style={{ width: `${Math.max(8, ((row.invalid ?? 0) / total) * 100)}%` }} /></div>
+                    <div className="c4-muted">{tx("deposits")} {row.deposits ?? 0}</div>
+                  </div>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </Card>
       <Card title={tx("templates")}>

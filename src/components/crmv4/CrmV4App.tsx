@@ -11,6 +11,7 @@ import { crmv2Text, type CrmV2CopyKey } from "@/lib/crmv2/copy";
 import { crmv4Text, type CrmV4CopyKey } from "@/lib/crmv4/copy";
 import { readJson, writeJson } from "@/lib/crmv4/local";
 import { CRM_V4_MORE, CRM_V4_NAV, CRM_V4_SECTIONS, CRM_V4_TABS, crmv4Href, type CrmV4SectionId } from "@/lib/crmv4/sections";
+import { CommandPalette, ShortcutHelp, ShortcutHost } from "./round1";
 import { Sheet, sendJson, useJson, when } from "./kit";
 import Overview from "./views/Overview";
 import { CustomerDetail, Customers } from "./views/Customers";
@@ -55,6 +56,10 @@ function Shell({ base, section, name }: Props) {
   const [padOpen, setPadOpen] = useState(false);
   const [remindersOpen, setRemindersOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [noteQuery, setNoteQuery] = useState("");
+  const [unreadOnly, setUnreadOnly] = useState(false);
   const [financeOpen, setFinanceOpen] = useState(false);
   const [gearOpen, setGearOpen] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("light");
@@ -127,8 +132,16 @@ function Shell({ base, section, name }: Props) {
   const heading = known ? label(view) : tx("comingSoon");
   const tone = theme === "light" ? "ink" : "paper";
 
+  const noteItems = (notes.data?.items || []).filter((item) => {
+    if (unreadOnly && item.readAt) return false;
+    const blob = `${item.title || ""} ${item.body || ""}`.toLowerCase();
+    return !noteQuery.trim() || blob.includes(noteQuery.trim().toLowerCase());
+  });
+
   return (
     <div data-crmv4-root="" data-theme={theme} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
+      <a className="c4-skip" href="#c4-main">{v4("skipContent")}</a>
+      <ShortcutHost base={base} v4={v4} onPalette={() => setPaletteOpen(true)} onHelp={setHelpOpen} />
       <header className="c4-top">
         <Link href={crmv4Href(base, "")} className="c4-brand" aria-label={v4("v4mark")}>
           <BrandLogo tone={tone} height={26} className="c4-logo" />
@@ -182,6 +195,9 @@ function Shell({ base, section, name }: Props) {
           </div>
         </nav>
         <div className="c4-top-tools">
+          <button type="button" className="c4-rail-btn" aria-label={v4("palette")} onClick={() => setPaletteOpen(true)}>
+            <span>⌘K</span>
+          </button>
           <button type="button" className="c4-rail-btn" aria-label={tx("notifications")} onClick={() => setNotesOpen(true)}>
             <BellIcon />
             {unread > 0 && <span className="c4-rail-badge">{unread}</span>}
@@ -206,7 +222,8 @@ function Shell({ base, section, name }: Props) {
             </div>
           )}
           <main
-            className="c4-stage"
+          id="c4-main"
+          className="c4-stage"
             onTouchStart={(event) => {
               if (event.currentTarget.scrollTop > 0) return;
               event.currentTarget.dataset.y = String(event.touches[0].clientY);
@@ -322,6 +339,8 @@ function Shell({ base, section, name }: Props) {
       {notesOpen && (
         <Drawer title={tx("notifications")} onClose={() => setNotesOpen(false)} closeLabel={tx("close")}>
           <div className="c4-stack">
+            <input className="c4-field" value={noteQuery} aria-label={v4("searchInbox")} placeholder={v4("searchInbox")} onChange={(event) => setNoteQuery(event.target.value)} />
+            <label className="c4-row"><input type="checkbox" checked={unreadOnly} onChange={(event) => setUnreadOnly(event.target.checked)} /> {v4("unreadOnly")}</label>
             <button
               type="button"
               className="c4-btn c4-btn-hot"
@@ -332,14 +351,19 @@ function Shell({ base, section, name }: Props) {
             >
               {tx("markRead")}{typeof notes.data?.unread === "number" ? ` · ${notes.data.unread}` : ""}
             </button>
-            {(notes.data?.items || []).map((item) => (
+            {noteItems.map((item) => (
               <div key={item.id} className="c4-note">
-                <div>{item.title || tx("notifications")}</div>
+                <div className="c4-row c4-between">
+                  <span>{item.title || tx("notifications")}</span>
+                  {!item.readAt && (
+                    <button type="button" className="c4-btn" onClick={async () => { await sendJson("/api/notifications", "PATCH", { id: item.id }); notes.reload(); }}>{v4("markOne")}</button>
+                  )}
+                </div>
                 <div className="c4-muted">{item.body}</div>
                 <div className="c4-muted c4-meta">{when(item.createdAt, locale)}{item.readAt ? "" : ` · ${tx("unread")}`}</div>
               </div>
             ))}
-            {!notes.loading && !(notes.data?.items || []).length && <p className="c4-muted">{tx("noneYet")}</p>}
+            {!notes.loading && !noteItems.length && <p className="c4-empty-luxe">{tx("noneYet")}</p>}
           </div>
         </Drawer>
       )}
@@ -364,6 +388,8 @@ function Shell({ base, section, name }: Props) {
           <ScratchNotes tx={tx} v4={v4} notes={scratch} setNotes={setScratch} />
         </Drawer>
       )}
+      <CommandPalette base={base} open={paletteOpen} onClose={() => setPaletteOpen(false)} v4={v4} />
+      <ShortcutHelp open={helpOpen} onClose={() => setHelpOpen(false)} v4={v4} />
       {langOpen && (
         <Sheet title={v4("language")} onClose={() => setLangOpen(false)} closeLabel={tx("close")}>
           <LanguageSwitcher tone={theme === "dark" ? "dark" : "crm"} />

@@ -2,6 +2,8 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { crmv4Text } from "@/lib/crmv4/copy";
+import { exportCurrent } from "../round1";
 import { Card, Chip, Lab, Msg, Pager, State, TAKE, sendJson, useJson, when, type Tx } from "../kit";
 
 type Row = { id: string; type?: string; title?: string | null; description?: string; createdAt?: string; workerName?: string | null; trader?: string; traderEmail?: string };
@@ -58,6 +60,9 @@ export default function Logs({ tx, locale, q }: { tx: Tx; locale: string; q: str
         <button type="submit" className="c4-btn c4-btn-hot">{tx("addCommunication")}</button>
         <Msg text={msg} />
       </form>
+      <div className="c4-tools">
+        <button type="button" className="c4-btn" onClick={() => void exportCurrent("logs-page", "logs.csv", ["type", "trader", "description", "worker"], rows.map((row) => [String(row.type || ""), String(row.trader || ""), String(row.description || row.title || ""), String(row.workerName || "")]))}>{crmv4Text(locale, "exportCsv")}</button>
+      </div>
       <State loading={data.loading} error={data.error} empty={!data.loading && rows.length === 0} tx={tx} onRetry={data.reload} />
       <ul>
         {rows.map((row) => (
