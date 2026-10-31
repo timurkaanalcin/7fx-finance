@@ -7,12 +7,13 @@ export const CRM_V2_SECTIONS = [
   { id: "marketing", path: "marketing" },
   { id: "settings", path: "settings" },
   { id: "logs", path: "logs" },
+  { id: "control", path: "control" },
 ] as const;
 
 export type CrmV2SectionId = (typeof CRM_V2_SECTIONS)[number]["id"];
 
-/** Surfaces with no backend. The UI says so instead of inventing rows. */
-export const CRM_V2_COMING_SOON = ["campaignSend", "leadMapping"] as const;
+/** Campaign send has no outbound mail transport. Lead mapping uses the settings API. */
+export const CRM_V2_COMING_SOON = ["campaignSend"] as const;
 
 export function crmv2Href(base: string, path: string, query?: Record<string, string>): string {
   const root = base.replace(/\/+$/, "") || "/crmv2";

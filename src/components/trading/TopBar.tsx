@@ -3,7 +3,7 @@
 import SignOutForm from "@/components/auth/SignOutForm";
 import ThemeToggle from "@/components/theme/ThemeToggle";
 import Link from "next/link";
-import { fmtMoney, fmtPct } from "@/lib/format";
+import { fmtMoney, fmtNum, fmtPct } from "@/lib/format";
 import type { AccountMetrics, UserInfo } from "./types";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 import NotificationBell from "@/components/notifications/NotificationBell";
@@ -45,7 +45,11 @@ export default function TopBar({
   const pnlPctRaw = eq > 0 ? (pnl / eq) * 100 : NaN;
   const pnlPct =
     a && Number.isFinite(pnlPctRaw)
-      ? `(${pnlPctRaw > 0 ? "+" : ""}${pnlPctRaw.toFixed(Math.abs(pnlPctRaw) < 10 ? 2 : 1)}%)`
+      ? pnlPctRaw > 0
+        ? `+${pnlPctRaw.toFixed(2)}%`
+        : pnlPctRaw < 0
+          ? `${pnlPctRaw.toFixed(2)}%`
+          : "0.00%"
       : undefined;
   const margin = a?.margin ?? 0;
   const denom = eq > 0 ? eq : margin + free;
@@ -62,8 +66,9 @@ export default function TopBar({
     {
       key: "level",
       label: t("term.margin.level"),
-      value: a ? fmtPct(ml) : "—",
-      tone: ml > 0 && ml < 100 ? "danger" : "default",
+      value: a ? `${fmtNum(ml, 2)}%` : "—",
+      tone: !a || ml <= 0 ? "default" : ml < 100 ? "danger" : ml < 200 ? "caution" : "positive",
+      meter: a ? Math.max(0, Math.min(100, ml)) : undefined,
     },
     {
       key: "used",
