@@ -7,6 +7,7 @@ import { ACCOUNT_TYPES, POTENTIAL_STATUSES, RETENTION_STATUSES, SALE_STATUSES, V
 import { crmv3Href } from "@/lib/crmv3/sections";
 import { Card, Chip, Field, Lab, Msg, Pager, Sheet, State, Status, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, statusTone, useJson, when, type Tx, type UserRow } from "../kit";
 import { LeadDesk } from "../desk/lead";
+import { ListBar } from "../desk/later";
 import { AssignPreview, DocTools, NoteTools, ProfileBits, QualityList, customerTools, duplicateSet, noteBlocked, rowAgeLabel, rowHealth, rowRisk } from "../desk/panels";
 import { ContactFeed, EntryQuality, applySplit, emailOk } from "../desk/feed";
 import { useLocal, useV3 } from "../desk/store";
@@ -40,6 +41,9 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
   const [tags, setTags] = useLocal<Record<string, string[]>>("crmv3-tags", {});
   const shown = customerTools(rows, ops, smart);
   const dupes = duplicateSet(shown);
+  const cols = ["customer", "country", "desk", "sale", "retention", "balance", "status"];
+  const [columns, setColumns] = useState(cols);
+  const [dense, setDense] = useState(false);
 
   function setQuery(next: Record<string, string>) {
     const p = new URLSearchParams(params.toString());
@@ -83,6 +87,18 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
           <p className="c3-muted">{v3("tagHint")} · {v3("exportHint")} · {v3("freezeHint")}</p>
         </div>
       )}
+      {mode === "list" && (
+        <ListBar id="customers" defaults={cols} onChange={(next, packed) => { setColumns(next); setDense(packed); }} labels={{
+          customer: tx("customer"),
+          country: tx("country"),
+          desk: tx("desk"),
+          sale: tx("saleWord"),
+          retention: tx("retentionWord"),
+          balance: tx("balance"),
+          status: tx("status"),
+        }} />
+      )}
+      <p className="c3-muted">{v3("rowsShowing")} {shown.length}</p>
       {mode === "board" && <LeadDesk base={base} rows={shown} selected={selected} onSelect={setSelected} />}
       <Card title={tx("customers")} extra={<span className="c3-muted">{typeof data.data?.total === "number" ? `${tx("totalRows")} ${data.data.total}` : ""}</span>}>
         <form
@@ -135,6 +151,8 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
             tags={tags}
             onSelect={setSelected}
             onPin={(id) => setPins(pins.includes(id) ? pins.filter((item) => item !== id) : [...pins, id])}
+            columns={columns}
+            dense={dense}
           />
         )}
         <Pager skip={skip} take={TAKE} hasMore={Boolean(data.data?.hasMore)} total={data.data?.total} tx={tx} onPage={(next) => setQuery({ skip: next ? String(next) : "" })} />
@@ -174,7 +192,7 @@ async function exportLeads() {
   URL.revokeObjectURL(url);
 }
 
-function CustomerTable({ base, rows, tx, locale, selected, dupes, pins, tags, onSelect, onPin }: {
+function CustomerTable({ base, rows, tx, locale, selected, dupes, pins, tags, onSelect, onPin, columns, dense }: {
   base: string;
   rows: UserRow[];
   tx: Tx;
@@ -185,6 +203,8 @@ function CustomerTable({ base, rows, tx, locale, selected, dupes, pins, tags, on
   tags: Record<string, string[]>;
   onSelect: (ids: string[]) => void;
   onPin: (id: string) => void;
+  columns: string[];
+  dense: boolean;
 }) {
   const v3 = useV3();
   if (!rows.length) return null;
@@ -194,22 +214,22 @@ function CustomerTable({ base, rows, tx, locale, selected, dupes, pins, tags, on
   return (
     <>
       <div className="c3-desk c3-table-wrap">
-        <table className="c3-table">
+        <table className="c3-table c3-sticky" data-dense={dense ? "1" : "0"}>
           <thead>
             <tr>
-              <th>{tx("customer")}</th>
-              <th>{tx("country")}</th>
-              <th>{tx("desk")}</th>
-              <th>{tx("saleWord")}</th>
-              <th>{tx("retentionWord")}</th>
-              <th>{tx("balance")}</th>
-              <th>{tx("status")}</th>
+              {columns.includes("customer") && <th>{tx("customer")}</th>}
+              {columns.includes("country") && <th>{tx("country")}</th>}
+              {columns.includes("desk") && <th>{tx("desk")}</th>}
+              {columns.includes("sale") && <th>{tx("saleWord")}</th>}
+              {columns.includes("retention") && <th>{tx("retentionWord")}</th>}
+              {columns.includes("balance") && <th>{tx("balance")}</th>}
+              {columns.includes("status") && <th>{tx("status")}</th>}
             </tr>
           </thead>
           <tbody>
             {rows.map((row) => (
               <tr key={row.id}>
-                <td>
+                {columns.includes("customer") && <td>
                   <label className="c3-row">
                     <input type="checkbox" checked={selected.includes(row.id)} onChange={() => toggle(row.id)} aria-label={row.name || row.email || row.id} />
                     <Link href={crmv3Href(base, `customers/${row.id}`)}>{row.name || "—"}</Link>
@@ -221,13 +241,13 @@ function CustomerTable({ base, rows, tx, locale, selected, dupes, pins, tags, on
                     <button type="button" className="c3-btn" onClick={() => void navigator.clipboard.writeText(row.id)}>{v3("copyId")}</button>
                     {(tags[row.id] || []).map((item) => <span key={item} className="c3-chip">{item}</span>)}
                   </div>
-                </td>
-                <td>{row.country || "—"}</td>
-                <td>{row.desk || "—"}</td>
-                <td>{row.saleStatus ? <Status tone={statusTone(row.saleStatus)}>{row.saleStatus}</Status> : "—"}</td>
-                <td>{row.retentionStatus ? <Status tone="info">{row.retentionStatus}</Status> : "—"}</td>
-                <td>{money(row.balance ?? row.account?.balance, row.currency || row.account?.currency, locale)}</td>
-                <td><Status tone={row.active === false ? "bad" : "ok"}>{row.active === false ? tx("chipFrozen") : tx("chipActive")}</Status></td>
+                </td>}
+                {columns.includes("country") && <td>{row.country || "—"}</td>}
+                {columns.includes("desk") && <td>{row.desk || "—"}</td>}
+                {columns.includes("sale") && <td>{row.saleStatus ? <Status tone={statusTone(row.saleStatus)}>{row.saleStatus}</Status> : "—"}</td>}
+                {columns.includes("retention") && <td>{row.retentionStatus ? <Status tone="info">{row.retentionStatus}</Status> : "—"}</td>}
+                {columns.includes("balance") && <td>{money(row.balance ?? row.account?.balance, row.currency || row.account?.currency, locale)}</td>}
+                {columns.includes("status") && <td><Status tone={row.active === false ? "bad" : "ok"}>{row.active === false ? tx("chipFrozen") : tx("chipActive")}</Status></td>}
               </tr>
             ))}
           </tbody>

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { approvalBody, approvalEndpoint } from "@/lib/crmv2/payload";
 import { Card, Chip, Lab, Pager, Sheet, State, Status, SwipeRow, TAKE, money, sendJson, statusTone, useJson, when, type Tx } from "../kit";
 import { FinanceChrome, ReviewChecks, methodName, queueMarks, readLastReason, rememberReason, rowAge, rowFlags, shapeQueue, useSecondLook, type FinanceRow } from "../desk/finance";
+import { ListBar } from "../desk/later";
 import { useV3 } from "../desk/store";
 
 type MoneyRow = FinanceRow & { method?: unknown; user?: { name?: string; email?: string; createdAt?: string | null } | null };
@@ -24,6 +25,8 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
   const [picked, setPicked] = useState<string | null>(null);
   const [bulk, setBulk] = useState<string[]>([]);
   const look = useSecondLook();
+  const finCols = ["name", "amount", "age", "status"];
+  const [finShow, setFinShow] = useState(finCols);
   const endpoint = tab === "withdrawals" ? "/api/admin/withdrawals" : tab === "balance" ? "/api/admin/balance-requests" : tab === "ledger" ? "/api/admin/transactions" : "/api/admin/deposits";
   const url = tab === "ledger"
     ? `/api/admin/transactions?limit=${TAKE}&skip=${skip}&q=${encodeURIComponent(q)}`
@@ -64,6 +67,15 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
       </div>
       {tab !== "ledger" && <FinanceChrome rows={rows as MoneyRow[]} band={band} oldest={oldest} onBand={setBand} onOldest={() => setOldest((on) => !on)} />}
       {tab !== "ledger" && (
+        <ListBar
+          id="finance"
+          defaults={finCols}
+          onChange={(next) => setFinShow(next)}
+          labels={{ name: tx("customer"), amount: tx("amount"), age: v3("queueAge"), status: tx("status") }}
+        />
+      )}
+      {tab !== "ledger" && <p className="c3-muted c3-pad">{v3("rowsShowing")} {moneyRows.length}</p>}
+      {tab !== "ledger" && (
         <div className="c3-tools">
           <button type="button" className="c3-btn" disabled={!bulk.length} onClick={() => void runBulk(bulk, tab, "approve", data.reload, setBulk)}>{v3("bulkApprove")}</button>
           <button type="button" className="c3-btn" disabled={!bulk.length} onClick={() => void runBulk(bulk, tab, "reject", data.reload, setBulk)}>{v3("bulkReject")}</button>
@@ -91,16 +103,16 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
                     <div className="c3-row c3-between">
                       <label className="c3-row">
                         <input type="checkbox" checked={bulk.includes(row.id)} onChange={() => setBulk(bulk.includes(row.id) ? bulk.filter((id) => id !== row.id) : [...bulk, row.id])} aria-label={row.user?.name || row.id} />
-                        <span>{row.user?.name || "—"}</span>
+                        {finShow.includes("name") && <span>{row.user?.name || "—"}</span>}
                       </label>
-                      <Status tone={statusTone(row.status)}>{row.status}</Status>
+                      {finShow.includes("status") && <Status tone={statusTone(row.status)}>{row.status}</Status>}
                     </div>
-                    <div className="c3-muted">{money(row.amount, row.currency, locale)} · {when(row.createdAt, locale)} · {methodName(row.method)}</div>
+                    <div className="c3-muted">{finShow.includes("amount") ? money(row.amount, row.currency, locale) : ""} · {when(row.createdAt, locale)} · {methodName(row.method)}</div>
                     <div className="c3-row">
                       {marks.dupes.has(who) && <span className="c3-status" data-tone="warn">{v3("samePerson")}</span>}
                       {marks.largest === row.id && String(row.status || "").toUpperCase() === "PENDING" && <span className="c3-status" data-tone="info">{v3("largestPending")}</span>}
                       {age != null && age >= 24 && <span className="c3-status" data-tone="bad">{v3("lateMark")}</span>}
-                      <span className="c3-muted">{v3("queueAge")} {age ?? "—"}</span>
+                      {finShow.includes("age") && <span className="c3-muted">{v3("queueAge")} {age ?? "—"}</span>}
                       {flags.includes("new") && <span className="c3-muted">{v3("flagNew")}</span>}
                       {flags.includes("kyc") && <span className="c3-muted">{v3("flagKyc")}</span>}
                       <button type="button" className="c3-btn" onClick={() => { void navigator.clipboard.writeText(String(row.amount ?? "")); }}>{v3("copyAmount")}</button>

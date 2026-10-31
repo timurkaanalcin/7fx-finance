@@ -6,6 +6,7 @@ import { ledgerBody } from "@/lib/crmv2/payload";
 import { crmv3Href } from "@/lib/crmv3/sections";
 import { Bars, Card, Chip, Field, Kpi, Lab, Msg, Sheet, State, auditExport, downloadCsv, fmtNum, money, sendJson, useJson, when, type Tx, type UserRow } from "../kit";
 import { HomeDesk } from "../desk/panels";
+import { RiskWatch, TeamBoard } from "../desk/later";
 import { EntryQuality, emailOk } from "../desk/feed";
 import { useV3 } from "../desk/store";
 
@@ -72,6 +73,8 @@ export default function Overview({ base, tx, locale }: Props) {
         </div>
       )}
       <HomeDesk base={base} locale={locale} />
+      <RiskWatch base={base} />
+      <TeamBoard base={base} />
       {sheet === "add" && <AddCustomer tx={tx} onClose={() => setSheet(null)} onDone={users.reload} />}
       {sheet === "transfer" && <TransferSheet tx={tx} onClose={() => setSheet(null)} />}
     </div>

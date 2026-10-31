@@ -12,6 +12,8 @@ import { CRM_V3_MORE, CRM_V3_SECTIONS, CRM_V3_TABS, crmv3Href, type CrmV3Section
 import BrandLogo from "@/components/landing/BrandLogo";
 import { Sheet, sendJson, useJson, when } from "./kit";
 import { CommandPalette, ShortcutHelp, ShortcutHost } from "./desk/command";
+import { DeskFooter } from "./desk/later";
+import { groupedNav } from "@/lib/crmv3/local-pack";
 import { useLocal } from "./desk/store";
 import Overview from "./views/Overview";
 import { CustomerDetail, Customers } from "./views/Customers";
@@ -127,7 +129,7 @@ function Shell({ base, section, name }: Props) {
         </div>
         <nav className="c3-stack" aria-label={tx("panel")}>
           {CRM_V3_SECTIONS.map((item) => (
-            <Link key={item.id} href={crmv3Href(base, item.path)} data-nav={item.id} data-on={view === item.id ? "1" : "0"} className="c3-nav">
+            <Link key={item.id} href={crmv3Href(base, item.path)} data-nav={item.id} data-on={view === item.id ? "1" : "0"} className="c3-nav" aria-current={view === item.id ? "page" : undefined}>
               {label(item.id)}
             </Link>
           ))}
@@ -212,15 +214,16 @@ function Shell({ base, section, name }: Props) {
             )}
           </div>
         </main>
+        <DeskFooter section={heading} name={name} onHelp={() => setHelp(true)} />
       </div>
 
       <nav className="c3-tabs" aria-label={tx("panel")}>
         {CRM_V3_TABS.map((tab) => (
-          <Link key={tab} href={crmv3Href(base, tab === "overview" ? "" : tab)} data-on={view === tab ? "1" : "0"} className="c3-tab">
+          <Link key={tab} href={crmv3Href(base, tab === "overview" ? "" : tab)} data-on={view === tab ? "1" : "0"} className="c3-tab" aria-current={view === tab ? "page" : undefined}>
             {label(tab)}
           </Link>
         ))}
-        <button type="button" className="c3-tab" data-on={more ? "1" : "0"} onClick={() => setMore(true)}>
+        <button type="button" className="c3-tab" data-on={more ? "1" : "0"} aria-expanded={more} onClick={() => setMore(true)}>
           {tx("more")}
         </button>
       </nav>
@@ -233,20 +236,7 @@ function Shell({ base, section, name }: Props) {
 
       {more && (
         <Sheet title={tx("more")} onClose={() => setMore(false)} closeLabel={tx("close")}>
-          <div className="c3-stack">
-            {CRM_V3_MORE.map((tab) => (
-              <Link key={tab} href={crmv3Href(base, tab)} onClick={() => setMore(false)} className="c3-btn">
-                {label(tab)}
-              </Link>
-            ))}
-            <LanguageSwitcher compact tone={theme === "dark" ? "dark" : "crm"} />
-            <button type="button" className="c3-btn" onClick={toggleTheme}>{theme === "dark" ? tx("themeLight") : tx("themeDark")}</button>
-            <p className="c3-muted c3-meta">{tx("signedInAs")} {name}</p>
-            <form method="post" action="/api/auth/logout">
-              <input type="hidden" name="nav" value="1" />
-              <button type="submit" className="c3-btn">{tx("signOut")}</button>
-            </form>
-          </div>
+          <MoreGroups base={base} view={view} label={label} tx={tx} v3={v3} theme={theme} name={name} onClose={() => setMore(false)} onTheme={toggleTheme} onHelp={() => { setMore(false); setHelp(true); }} />
         </Sheet>
       )}
       <CommandPalette base={base} open={palette} onClose={() => setPalette(false)} />
@@ -285,6 +275,57 @@ function Shell({ base, section, name }: Props) {
           </div>
         </Sheet>
       )}
+    </div>
+  );
+}
+
+function MoreGroups({ base, view, label, tx, v3, theme, name, onClose, onTheme, onHelp }: {
+  base: string;
+  view: string;
+  label: (tab: string) => string;
+  tx: (key: "more" | "themeLight" | "themeDark" | "signedInAs" | "signOut" | "close") => string;
+  v3: (key: "moreWork" | "moreRecords" | "moreDesk" | "moreSession" | "footShortcuts" | "motionLess") => string;
+  theme: "dark" | "light";
+  name: string;
+  onClose: () => void;
+  onTheme: () => void;
+  onHelp: () => void;
+}) {
+  const groups = groupedNav(CRM_V3_MORE);
+  const blocks = [
+    ["moreWork", groups.work],
+    ["moreRecords", groups.records],
+    ["moreDesk", groups.desk],
+  ] as const;
+  return (
+    <div className="c3-stack">
+      {blocks.map(([title, ids]) => (
+        <section key={title} className="c3-stack">
+          <h3 className="c3-title">{v3(title)}</h3>
+          {ids.map((tab) => (
+            <Link key={tab} href={crmv3Href(base, tab)} onClick={onClose} className="c3-btn" aria-current={view === tab ? "page" : undefined}>
+              {label(tab)}
+            </Link>
+          ))}
+        </section>
+      ))}
+      <section className="c3-stack">
+        <h3 className="c3-title">{v3("moreSession")}</h3>
+        <button type="button" className="c3-btn" onClick={onHelp}>{v3("footShortcuts")}</button>
+        <button type="button" className="c3-btn" onClick={() => {
+          const root = document.querySelector("[data-crmv3-root]");
+          const next = root?.getAttribute("data-motion") === "reduce" ? "" : "reduce";
+          window.localStorage.setItem("crmv3-motion", next);
+          root?.setAttribute("data-motion", next);
+        }}>{v3("motionLess")}</button>
+        <LanguageSwitcher compact tone={theme === "dark" ? "dark" : "crm"} />
+        <button type="button" className="c3-btn" onClick={onTheme}>{theme === "dark" ? tx("themeLight") : tx("themeDark")}</button>
+        <p className="c3-muted c3-meta">{tx("signedInAs")} {name}</p>
+        <form method="post" action="/api/auth/logout">
+          <input type="hidden" name="nav" value="1" />
+          <button type="submit" className="c3-btn">{tx("signOut")}</button>
+        </form>
+      </section>
     </div>
   );
 }
