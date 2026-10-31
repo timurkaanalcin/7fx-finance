@@ -30,7 +30,8 @@ import { RAIL_KEY, readFold } from "@/lib/crmv4/round30";
 import { QuickSheet } from "./round22";
 import { StaffPage } from "./round24";
 import { GoalsPage, TopTrail } from "./round25";
-import { KycDesk, ReportsPage } from "./round27";
+import { KycDesk } from "./round27";
+import { DayDesk, ReportDesk } from "./round43";
 import { lastView, playPing, rememberView, soundEnabled, ticketAlertsOn } from "./round7";
 import { resolvedTheme, storedContrast, storedFont, storedFreeze, themeMode } from "./round8";
 import { readBrand } from "./round10";
@@ -275,6 +276,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "prefs") return v4("prefTitle");
     if (tab === "agenda") return v4("agTitle");
     if (tab === "roster") return v4("staffTitle");
+    if (tab === "day") return v4("dayTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -301,6 +303,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "prefs") return v4("prefSub");
     if (tab === "agenda") return v4("agSub");
     if (tab === "roster") return v4("staffSub");
+    if (tab === "day") return v4("daySub");
     return "";
   }
 
@@ -445,9 +448,10 @@ function Shell({ base, section, name }: Props) {
             {view === "marketing" && <Marketing tx={tx} />}
             {view === "settings" && <Settings tx={tx} />}
             {view === "me" && <StaffPage signInName={name} base={base} v4={v4} locale={locale} />}
+            {view === "day" && <DayDesk base={base} name={name} v4={v4} locale={locale} />}
             {view === "goals" && <GoalsPage v4={v4} locale={locale} />}
             {view === "kyc" && <KycDesk v4={v4} tx={tx} locale={locale} />}
-            {view === "reports" && <ReportsPage v4={v4} locale={locale} />}
+            {view === "reports" && <ReportDesk v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
             {view === "agenda" && <AgendaPage base={base} v4={v4} locale={locale} />}

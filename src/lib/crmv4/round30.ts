@@ -7,7 +7,7 @@ export const NAV_SECTIONS = [
   { id: "money", ids: ["finance", "deposit", "withdraw", "goals"] },
   { id: "compliance", ids: ["kyc", "logs"] },
   { id: "insights", ids: ["insights", "reports"] },
-  { id: "desk", ids: ["settings", "me", "control", "prefs", "roster"] },
+  { id: "desk", ids: ["settings", "me", "day", "control", "prefs", "roster"] },
 ] as const;
 
 export type NavSectionId = (typeof NAV_SECTIONS)[number]["id"];
