@@ -15,6 +15,7 @@ import { CommandPalette, ShortcutHelp, ShortcutHost } from "./desk/command";
 import { DeskFooter } from "./desk/later";
 import { QuickSheet } from "./desk/statement";
 import { StaffPage } from "./desk/people";
+import { GoalsPage, TopTrail } from "./desk/goals";
 import { readJson } from "@/lib/crmv3/bridge";
 import { groupedNav } from "@/lib/crmv3/local-pack";
 import { useLocal } from "./desk/store";
@@ -60,6 +61,7 @@ function Shell({ base, section, name }: Props) {
   const [banner] = useLocal<string>("crmv3-banner", "");
   const [idle, setIdle] = useState(false);
   const [offline, setOffline] = useState(false);
+  const [trail, setTrail] = useState<string[]>([]);
   const params = useSearchParams();
   const q = params.get("q") || "";
   const notes = useJson<{ items?: { id: string; title?: string; body?: string; readAt?: string | null; createdAt?: string }[]; unread?: number }>(notesOpen ? "/api/notifications?take=20" : null);
@@ -128,12 +130,28 @@ function Shell({ base, section, name }: Props) {
   function label(tab: string) {
     if (tab === "finance") return v3("money");
     if (tab === "me") return v3("staffProfile");
+    if (tab === "goals") return v3("goalsTitle");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
   }
 
   const known = CRM_V3_SECTIONS.some((item) => item.id === view);
   const heading = known ? label(view) : tx("comingSoon");
+
+  useEffect(() => {
+    const path = window.location.pathname + window.location.search;
+    let prev: string[] = [];
+    try {
+      const raw = window.sessionStorage.getItem("crmv3-trail");
+      prev = raw ? JSON.parse(raw) as string[] : [];
+      if (!Array.isArray(prev)) prev = [];
+    } catch {
+      prev = [];
+    }
+    const next = [...prev.filter((item) => item !== path), path].slice(-8);
+    window.sessionStorage.setItem("crmv3-trail", JSON.stringify(next));
+    setTrail(next);
+  }, [view, id]);
 
   return (
     <div data-crmv3-root="" data-theme={theme} data-crmv3-view={id ? `${view}/${id}` : view} className="c3-app font-normal">
@@ -188,6 +206,7 @@ function Shell({ base, section, name }: Props) {
           <div className="c3-lang-slot">
             <LanguageSwitcher compact tone={theme === "dark" ? "dark" : "crm"} />
           </div>
+          <TopTrail base={base} view={view} id={id} heading={heading} openId={params.get("open") || ""} trail={trail} />
         </header>
         <main
           id="c3-main"
@@ -218,12 +237,13 @@ function Shell({ base, section, name }: Props) {
             {view === "overview" && <Overview base={base} tx={tx} locale={locale} />}
             {view === "customers" && !id && <Customers base={base} tx={tx} locale={locale} q={q} />}
             {view === "customers" && id && <CustomerDetail base={base} id={id} tx={tx} locale={locale} />}
-            {view === "finance" && <Finance tx={tx} locale={locale} q={q} />}
+            {view === "finance" && <Finance base={base} tx={tx} locale={locale} q={q} />}
             {view === "positions" && <Positions tx={tx} locale={locale} q={q} />}
-            {view === "support" && <Support tx={tx} locale={locale} q={q} />}
+            {view === "support" && <Support base={base} tx={tx} locale={locale} q={q} />}
             {view === "marketing" && <Marketing tx={tx} />}
             {view === "settings" && <Settings tx={tx} />}
             {view === "me" && <StaffPage signInName={name} base={base} locale={locale} />}
+            {view === "goals" && <GoalsPage locale={locale} />}
             {view === "logs" && <Logs tx={tx} locale={locale} q={q} />}
             {view === "control" && <Control tx={tx} locale={locale} />}
             {!known && (

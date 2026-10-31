@@ -1,18 +1,20 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { approvalBody, approvalEndpoint } from "@/lib/crmv2/payload";
 import { Card, Chip, Lab, Pager, Sheet, State, Status, SwipeRow, TAKE, money, sendJson, statusTone, useJson, when, type Tx } from "../kit";
 import { FinanceChrome, ReviewChecks, methodName, queueMarks, readLastReason, rememberReason, rowAge, rowFlags, shapeQueue, useSecondLook, type FinanceRow } from "../desk/finance";
 import { ListBar } from "../desk/later";
 import { PayMethods } from "../desk/statement";
+import { rememberView } from "../desk/goals";
+import { crmv3Href } from "@/lib/crmv3/sections";
 import { useV3 } from "../desk/store";
 
 type MoneyRow = FinanceRow & { method?: unknown; user?: { name?: string; email?: string; createdAt?: string | null } | null };
 type LedgerRow = { id: string; amount?: number; type?: string; currency?: string; trader?: string; createdAt?: string; comment?: string };
 
-export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: string }) {
+export default function Finance({ base, tx, locale, q }: { base: string; tx: Tx; locale: string; q: string }) {
   const params = useSearchParams();
   const router = useRouter();
   const tab = params.get("tab") || "deposits";
@@ -26,6 +28,8 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
   const [picked, setPicked] = useState<string | null>(null);
   const [bulk, setBulk] = useState<string[]>([]);
   const look = useSecondLook();
+  const openId = params.get("open") || "";
+  const opened = useRef("");
   const finCols = ["name", "amount", "age", "status"];
   const [finShow, setFinShow] = useState(finCols);
   const endpoint = tab === "withdrawals" ? "/api/admin/withdrawals" : tab === "balance" ? "/api/admin/balance-requests" : tab === "ledger" ? "/api/admin/transactions" : "/api/admin/deposits";
@@ -33,6 +37,23 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
     ? `/api/admin/transactions?limit=${TAKE}&skip=${skip}&q=${encodeURIComponent(q)}`
     : `${endpoint}?take=${TAKE}&skip=${skip}&q=${encodeURIComponent(q)}${status ? `&status=${encodeURIComponent(status)}` : ""}`;
   const data = useJson<Record<string, unknown>>(url);
+  const openMoney = useCallback((row: FinanceRow) => {
+    setPicked(row.id);
+    const financeTab = tab === "withdrawals" ? "withdrawals" : tab === "balance" ? "balance" : "deposits";
+    rememberView({
+      kind: "finance",
+      id: row.id,
+      title: `${row.user?.name || row.id}${row.currency ? ` ${row.currency}` : ""}`,
+      href: crmv3Href(base, "finance", { tab: financeTab === "deposits" ? "" : financeTab, open: row.id }),
+    });
+  }, [base, tab]);
+  useEffect(() => {
+    if (!openId || opened.current === openId || tab === "ledger") return;
+    const row = ((data.data?.requests as MoneyRow[]) || []).find((item) => item.id === openId);
+    if (!row) return;
+    opened.current = openId;
+    openMoney(row);
+  }, [openId, tab, data.data, openMoney]);
 
   function setQuery(next: Record<string, string>) {
     const p = new URLSearchParams(params.toString());
@@ -118,6 +139,7 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
                       {flags.includes("new") && <span className="c3-muted">{v3("flagNew")}</span>}
                       {flags.includes("kyc") && <span className="c3-muted">{v3("flagKyc")}</span>}
                       <button type="button" className="c3-btn" onClick={() => { void navigator.clipboard.writeText(String(row.amount ?? "")); }}>{v3("copyAmount")}</button>
+                      <button type="button" className="c3-btn" onClick={() => { openMoney(row); setQuery({ open: row.id }); }}>{tx("open")}</button>
                       <button type="button" className="c3-btn" onClick={() => { look.toggle(row.id); setPicked(row.id); }}>{v3("secondLook")}</button>
                     </div>
                     {picked === row.id && (
