@@ -16,6 +16,7 @@ import {
   type KycChecks,
 } from "@/lib/crmv4/round37";
 import { ReviewDialog } from "./round1";
+import { PhoneSheet } from "./round39";
 import { downloadCsv, sendJson, State, Status, statusTone, useJson, when, type Tx } from "./kit";
 
 export type V4 = (key: CrmV4CopyKey) => string;
@@ -187,12 +188,14 @@ export function AuditTimeline({ v4, locale, tx }: { v4: V4; locale: string; tx: 
       <State loading={data.loading} error={data.error} empty={!data.loading && !data.error && loaded.length === 0} tx={tx} onRetry={data.reload} hint={v4("auditEmpty")} />
       {!data.loading && !data.error && loaded.length > 0 && (
         <>
+          <PhoneSheet title={v4("sheetFilters")} v4={v4}>
           <div className="c4-ledger-filters">
             <label className="c4-lab"><span>{v4("auditActor")}</span><input className="c4-field" aria-label={v4("auditActor")} value={actor} onChange={(event) => setActor(event.target.value)} /></label>
             <label className="c4-lab"><span>{v4("auditAction")}</span><input className="c4-field" aria-label={v4("auditAction")} value={action} onChange={(event) => setAction(event.target.value)} /></label>
             <label className="c4-lab"><span>{v4("auditEntity")}</span><input className="c4-field" aria-label={v4("auditEntity")} value={entity} onChange={(event) => setEntity(event.target.value)} /></label>
             <button type="button" className="c4-btn" onClick={() => downloadCsv("audit-loaded.csv", [v4("auditActor"), v4("auditAction"), v4("auditEntity"), "level", "at"], auditLines(rows))}>{v4("auditExport")}</button>
           </div>
+          </PhoneSheet>
           <p className="c4-muted">{v4("auditCount")} · {rows.length}</p>
           {!rows.length && <p className="c4-empty c4-empty-card">{v4("auditEmpty")}</p>}
           {days.map((group) => (

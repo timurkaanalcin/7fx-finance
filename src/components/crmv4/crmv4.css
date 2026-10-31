@@ -3918,3 +3918,71 @@
   [data-crmv4-root] .c4-desk-bar { flex: 1 1 100%; }
   [data-crmv4-root] .c4-seg-counts { grid-template-columns: minmax(0, 1fr); }
 }
+
+[data-crmv4-root] .c4-sys-desk,
+[data-crmv4-root] .c4-sys-list li,
+[data-crmv4-root] .c4-record-foot {
+  border: 1px solid rgba(166, 133, 78, 0.45);
+  border-radius: 16px;
+  background:
+    linear-gradient(165deg, rgba(166, 133, 78, 0.12), transparent 48%),
+    #fffdf8;
+  min-width: 0;
+}
+
+[data-crmv4-root] .c4-sys-desk { display: grid; gap: 10px; padding: 14px; }
+[data-crmv4-root] .c4-sys-desk .c4-title { margin: 0; font-weight: 500; }
+[data-crmv4-root] .c4-sys-desk .c4-lab span { color: var(--c4-accent-ink); font-size: 12px; font-weight: 500; }
+[data-crmv4-root] .c4-sys-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+[data-crmv4-root] .c4-sys-list li { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; padding: 12px; }
+[data-crmv4-root] .c4-record-foot { display: none; }
+
+[data-crmv4-root][data-theme="dark"] .c4-sys-desk,
+[data-crmv4-root][data-theme="dark"] .c4-sys-list li,
+[data-crmv4-root][data-theme="dark"] .c4-record-foot { background: #221f1b; color: #f6f1e8; }
+
+@media (min-width: 768px) {
+  [data-crmv4-root] .c4-phone-sheet,
+  [data-crmv4-root] .c4-phone-sheet-body { display: contents; }
+  [data-crmv4-root] .c4-phone-sheet > .c4-sheet-toggle { display: none; }
+}
+
+@media (max-width: 767px) {
+  [data-crmv4-root] .c4-tabs-luxe .c4-tab {
+    min-height: 44px;
+    font-weight: 500;
+    color: var(--c4-accent-ink);
+  }
+  [data-crmv4-root] .c4-phone-sheet > .c4-sheet-toggle { min-height: 44px; }
+  [data-crmv4-root] .c4-phone-sheet[data-open="0"] .c4-phone-sheet-body { display: none; }
+  [data-crmv4-root] .c4-phone-sheet[data-open="1"] .c4-phone-sheet-body {
+    position: fixed;
+    z-index: 46;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    max-height: 70dvh;
+    overflow: auto;
+    padding: 12px 12px calc(16px + env(safe-area-inset-bottom, 0px));
+    border-radius: 16px 16px 0 0;
+    background: #fffdf8;
+    box-shadow: 0 -16px 40px rgba(42, 38, 34, 0.16);
+  }
+  [data-crmv4-root][data-theme="dark"] .c4-phone-sheet[data-open="1"] .c4-phone-sheet-body { background: #221f1b; color: #f6f1e8; }
+  [data-crmv4-root] .c4-record-foot {
+    display: flex;
+    position: sticky;
+    bottom: 0;
+    z-index: 6;
+    gap: 6px;
+    margin: 8px;
+    padding: 8px;
+  }
+  [data-crmv4-root] .c4-record-foot .c4-btn {
+    min-height: 44px;
+    flex: 1 1 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

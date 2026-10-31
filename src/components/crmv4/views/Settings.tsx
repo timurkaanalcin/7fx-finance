@@ -14,6 +14,8 @@ import { SoundToggle, TicketAlertToggle } from "../round7";
 import { DeskPrefs } from "../round8";
 import { BrandField, HolidayEditor, KpiPicker, ScoreEditor, ThemePresets } from "../round10";
 import { LocalData } from "../round20";
+import { sysSection } from "@/lib/crmv4/round39";
+import { PhoneSheet, SystemDesk } from "../round39";
 import { Card, Lab, Msg, State, sendJson, useJson, type Tx } from "../kit";
 import Ops from "./Ops";
 
@@ -22,7 +24,10 @@ const AREAS = ["general", "leads", "desks", "groups", "methods", "assets", "rate
 export default function Settings({ tx }: { tx: Tx }) {
   const params = useSearchParams();
   const router = useRouter();
+  const { locale } = useI18n();
+  const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale, key);
   const area = params.get("area") || "general";
+  const system = area === "methods" || area === "desks" || area === "currencies" ? sysSection(area) : null;
   function setArea(next: string) {
     const p = new URLSearchParams(params.toString());
     if (next === "general") p.delete("area");
@@ -33,15 +38,19 @@ export default function Settings({ tx }: { tx: Tx }) {
     <div className="c4-stack c4-settings-luxe">
       <p className="c4-muted">{tx("settingsLead")}</p>
       <div className="c4-with-side">
+        <PhoneSheet title={v4("sysTitle")} v4={v4}>
         <nav className="c4-side" aria-label={tx("settings")}>
           {AREAS.map((item) => (
             <button key={item} type="button" data-on={area === item ? "1" : "0"} onClick={() => setArea(item)}>{tx(areaLabel(item))}</button>
           ))}
+          <button type="button" data-on={area === "currencies" ? "1" : "0"} onClick={() => setArea("currencies")}>{v4("sysCurrencies")}</button>
         </nav>
+        </PhoneSheet>
         <div className="c4-stack">
           {area === "general" && <><General tx={tx} /><LocalPrefs /></>}
           {area === "leads" && <LeadMap tx={tx} />}
-          {area !== "general" && area !== "leads" && <Ops tx={tx} area={area} />}
+          {system && <SystemDesk area={system} tx={tx} v4={v4} />}
+          {area !== "general" && area !== "leads" && !system && <Ops tx={tx} area={area} />}
         </div>
       </div>
     </div>
