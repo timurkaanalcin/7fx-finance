@@ -24,6 +24,7 @@ import { AgendaPage } from "./desk/book";
 import { DeskStaff } from "./desk/today";
 import { NoticeDesk, useNotices } from "./desk/notices";
 import { HelpDrawer } from "./desk/board";
+import { DayDesk } from "./desk/period";
 import { readJson } from "@/lib/crmv3/bridge";
 import { RAIL_KEY, readFold } from "@/lib/crmv3/nav";
 import { MoreNav, RailNav } from "./desk/nav";
@@ -167,6 +168,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "reports") return v3("reportsTitle");
     if (tab === "insights") return v3("insTitle");
     if (tab === "agenda") return v3("agTitle");
+    if (tab === "day") return v3("dayTitle");
     if (tab === "roster") return v3("staffTitle");
     if (tab === "prefs") return v3("prefTitle");
     if (tab === "more") return tx("more");
@@ -289,6 +291,7 @@ function Shell({ base, section, name }: Props) {
             {view === "reports" && <ReportsPage locale={locale} />}
             {view === "insights" && <InsightsHome locale={locale} />}
             {view === "agenda" && <AgendaPage base={base} locale={locale} />}
+            {view === "day" && <DayDesk base={base} name={name} locale={locale} />}
             {view === "roster" && <DeskStaff />}
             {view === "prefs" && <PrefsHub locale={locale} />}
             {view === "logs" && <Logs tx={tx} locale={locale} q={q} />}

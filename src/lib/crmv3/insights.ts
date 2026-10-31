@@ -70,6 +70,7 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-board-stages": ["Board stages", "Tahta aşamaları", "Tafelphasen", "Этапы доски", "مراحل اللوحة"],
   "crmv3-board-tips": ["Dismissed tips", "Kapatılan ipuçları", "Verworfene Hinweise", "Закрытые подсказки", "تلميحات مغلقة"],
   "crmv3-list-picks": ["Local picks", "Yerel seçim", "Lokale Auswahl", "Локальный выбор", "تحديد محلي"],
+  "crmv3-list-pins": ["Pinned lists", "Sabitlenen listeler", "Angeheftete Listen", "Закреплённые списки", "قوائم مثبتة"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
