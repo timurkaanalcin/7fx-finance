@@ -16,6 +16,8 @@ import { BirthdayList, BulkNote, CallbackButton, DeskSwitch, JourneyMap, NoteBod
 import { AgingBoard, ConversionStat, DepositorBoard, DocGallery, DomainBoard, EquityCurve, ExpiryNote, RiskBadge, StreakBoard, TeamThread, WeeklyDigest, copyFilterLink } from "../round6";
 import { CompletenessMeter, ImportPreview, InlineProfile, LangBadge, SourceBoard, StaleList, StatusWatch, TagCloud, exportTimeline } from "../round7";
 import { filterActivity } from "@/lib/crmv4/round7";
+import { fuzzyHit } from "@/lib/crmv4/round8";
+import { RatioCard, toggleWatch, watchIds } from "../round8";
 import { Card, Chip, Field, Lab, Msg, Pager, State, Status, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, statusTone, useJson, when, type Tx, type UserRow } from "../kit";
 
 const COLUMNS = ["customer", "country", "desk", "sale", "retention", "balance", "status"] as const;
@@ -74,6 +76,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
   const [deskPick, setDeskPick] = useState("");
   const [vipOnly, setVipOnly] = useState(false);
   const [tagPick, setTagPick] = useState("");
+  const [fuzzy, setFuzzy] = useState("");
   const memory = useDeskMemory();
   const v4 = (key: CrmV4CopyKey) => crmv4Text(locale, key);
   const parsed = parseOperators(ops);
@@ -90,6 +93,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
     if (deskPick && (row.desk || "—") !== deskPick) return false;
     if (vipOnly && customerSegment(row) !== "vip") return false;
     if (tagPick && !(memory.tags[row.id] || []).includes(tagPick)) return false;
+    if (fuzzy && !fuzzyHit(fuzzy, `${row.name || ""} ${row.email || ""}`)) return false;
     return true;
   });
   const deskNames: string[] = [];
@@ -180,6 +184,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
           <QuickChips saleStatus={saleStatus} v4={v4} onPick={(status) => setQuery({ saleStatus: status })} />
           <DeskSwitch desks={deskNames} current={deskPick} v4={v4} onPick={setDeskPick} />
           <SearchHistory v4={v4} onPick={(query) => setQuery({ q: query })} />
+          <input className="c4-field" style={{ maxWidth: 180 }} value={fuzzy} aria-label={v4("fuzzy")} placeholder={v4("fuzzy")} onChange={(event) => setFuzzy(event.target.value)} />
           <button type="button" className="c4-chip" data-on={followUp === "overdue" ? "1" : "0"} onClick={() => setQuery({ followUp: followUp === "overdue" ? "" : "overdue" })}>{v4("followUpDue")}</button>
           <button type="button" className="c4-chip" data-on={pinnedOnly ? "1" : "0"} onClick={() => setPinnedOnly((on) => !on)}>{v4("pinnedOnly")}</button>
           <button type="button" className="c4-btn" onClick={() => setQuery({ status: "", saleStatus: "", retentionStatus: "", country: "", presence: "", ftd: "", sort: "", followUp: "" })}>{v4("clearFilters")}</button>
@@ -390,9 +395,11 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
   const user = useJson<{ user?: UserRow; notes?: NoteRow[]; activityEvents?: ActivityRow[] }>(`/api/admin/users/${encodeURIComponent(id)}?view=profile`);
   const u = user.data?.user;
   const [quickMsg, setQuickMsg] = useState("");
+  const [watching, setWatching] = useState(false);
   const [neighbors, setNeighbors] = useState({ prev: "", next: "" });
   useEffect(() => {
     setNeighbors(readNeighborIds(id));
+    setWatching(watchIds().includes(id));
   }, [id]);
   useEffect(() => {
     if (u) {
@@ -422,6 +429,8 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
             <ContactLine email={u.email} phone={u.phone} v4={v4} />
             <RiskBadge row={u} v4={v4} />
             <LangBadge language={u.language} v4={v4} />
+            <button type="button" className="c4-btn" onClick={() => { toggleWatch(id); setWatching(watchIds().includes(id)); }}>{watching ? v4("watchlist") : v4("watchAdd")}</button>
+            <RatioCard id={id} v4={v4} />
             <ExpiryNote expiresAt={(u as UserRow & { expiresAt?: string | null }).expiresAt} v4={v4} />
             <PresenceBadge lastSeen={(u as UserRow & { lastSeenAt?: string | null }).lastSeenAt} lastLogin={(u as UserRow & { lastLoginAt?: string | null }).lastLoginAt} v4={v4} locale={locale} />
             <LocalTime country={u.country} v4={v4} />

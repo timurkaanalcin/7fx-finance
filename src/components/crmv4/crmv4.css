@@ -1882,6 +1882,52 @@
   [data-crmv4-root] .c4-money-drawer { width: 100%; border-radius: 16px 16px 0 0; }
 }
 
+[data-crmv4-root] .c4-kpis-luxe .c4-kpi,
+[data-crmv4-root] .c4-kpi {
+  border: 1px solid rgba(166, 133, 78, 0.35);
+  background:
+    linear-gradient(180deg, rgba(166, 133, 78, 0.12), transparent 55%),
+    var(--c4-card);
+}
+
+[data-crmv4-root] .c4-chart,
+[data-crmv4-root] .c4-bars {
+  background-image: linear-gradient(rgba(166, 133, 78, 0.18) 1px, transparent 1px);
+  background-size: 100% 18px;
+}
+
+[data-crmv4-root] .c4-chart-row { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 8px; align-items: center; padding: 6px 15px; }
+[data-crmv4-root] .c4-chart-row i { display: block; height: 4px; border-radius: 99px; background: #a6854e; }
+[data-crmv4-root] .c4-tip:hover { outline: 1px solid #a6854e; }
+
+[data-crmv4-root] .c4-dialog-luxe,
+[data-crmv4-root] .c4-sheet.c4-dialog-luxe,
+[data-crmv4-root] .c4-palette.c4-dialog-luxe {
+  border: 1px solid rgba(166, 133, 78, 0.45);
+  box-shadow: 0 24px 60px rgba(42, 38, 34, 0.18);
+}
+
+[data-crmv4-root] .c4-toast {
+  border-radius: 12px;
+  background: #2a2622;
+  color: #f6f1e8;
+  box-shadow: inset 3px 0 0 #a6854e;
+}
+
+[data-crmv4-root][data-font="sm"] { font-size: 13px; }
+[data-crmv4-root][data-font="lg"] { font-size: 17px; }
+[data-crmv4-root][data-contrast="1"] { --c4-ink: #111; --c4-line: #2a2622; --c4-muted: #3c342c; }
+[data-crmv4-root][data-contrast="1"][data-theme="dark"] { --c4-ink: #fff; --c4-line: #f6f1e8; --c4-muted: #f3ece2; }
+[data-crmv4-root][data-freeze="1"] .c4-table th:first-child,
+[data-crmv4-root][data-freeze="1"] .c4-table td:first-child { position: sticky; inset-inline-start: 0; z-index: 1; background: var(--c4-card); }
+[data-crmv4-root] .c4-table-scroll { box-shadow: inset 12px 0 12px -12px rgba(42, 38, 34, 0.28), inset -12px 0 12px -12px rgba(42, 38, 34, 0.28); }
+
+@media (orientation: landscape) and (max-height: 500px) {
+  [data-crmv4-root] .c4-kpi-value { font-size: 16px; }
+  [data-crmv4-root] .c4-fab { bottom: calc(8px + env(safe-area-inset-bottom, 0px)); }
+  [data-crmv4-root] .c4-tabs-luxe { padding-top: 4px; }
+}
+
 @keyframes c4-shimmer {
   from { background-position: 100% 0; }
   to { background-position: -100% 0; }

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FormEvent, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CrmV2CopyKey } from "@/lib/crmv2/copy";
+import { trapFocus } from "@/lib/crmv4/round8";
 
 export type Tx = (key: CrmV2CopyKey) => string;
 
@@ -229,21 +230,26 @@ export function State({ loading, error, empty, tx, onRetry, hint }: { loading: b
 }
 
 export function Sheet({ title, onClose, closeLabel, children }: { title: string; onClose: () => void; closeLabel: string; children: ReactNode }) {
+  const panel = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
     };
     window.addEventListener("keydown", onKey);
+    const node = panel.current;
+    const onTab = node ? trapFocus(node) : null;
+    if (node && onTab) node.addEventListener("keydown", onTab);
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       window.removeEventListener("keydown", onKey);
+      if (node && onTab) node.removeEventListener("keydown", onTab);
       document.body.style.overflow = prev;
     };
   }, [onClose]);
   return (
     <div className="c4-sheet-back" role="presentation" onClick={onClose}>
-      <div role="dialog" aria-modal="true" aria-label={title} className="c4-sheet" onClick={(e) => e.stopPropagation()}>
+      <div ref={panel} role="dialog" aria-modal="true" aria-label={title} className="c4-sheet c4-dialog-luxe" onClick={(e) => e.stopPropagation()}>
         <div className="c4-grab" aria-hidden />
         <div className="c4-row c4-between">
           <h2 className="c4-title">{title}</h2>
@@ -325,7 +331,7 @@ export function Bars({ rows }: { rows: { label: string; value: number }[] }) {
             <span>{row.label}</span>
             <span className={plClass(row.value)}>{row.value}</span>
           </div>
-          <div className="c4-bar" style={{ width: `${Math.max(8, (Math.abs(row.value) / max) * 100)}%` }} />
+          <div className="c4-bar" title={row.label} style={{ width: `${Math.max(8, (Math.abs(row.value) / max) * 100)}%` }} />
         </div>
       ))}
     </div>

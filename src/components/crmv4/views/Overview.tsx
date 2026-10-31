@@ -10,6 +10,7 @@ import { AgentKpis, CampaignMix, ReminderAlerts } from "../round3";
 import { CountryHeat, DeskLanding, HourHeat, MergeList, NextQueue, SmartLists, StaffList, WorkloadBoard } from "../round4";
 import { DailySheet, DeskGoals, ForecastLine, MiniChart } from "../round5";
 import { WeekBoard } from "../round7";
+import { AgentChart, BoardSaver, CohortTable, DeskChart, ExposureAlert, PnlMovers, PositionAge, QuickCreate, SymbolDrill, WatchAlerts } from "../round8";
 import { crmv4Href } from "@/lib/crmv4/sections";
 import { Bars, Card, Chip, Field, Kpi, Lab, Msg, Sheet, State, auditExport, downloadCsv, fmtNum, localeTag, money, sendJson, useJson, when, type Tx, type UserRow } from "../kit";
 
@@ -81,6 +82,18 @@ export default function Overview({ base, tx, locale, name }: Props) {
         <MergeList v4={(key) => crmv4Text(locale, key)} />
         <StaffList v4={(key) => crmv4Text(locale, key)} />
         <InsightWidgets rows={(users.data?.users || []).map((row) => ({ id: row.id, name: row.name, email: row.email, createdAt: row.createdAt, ftd: row.ftd, balance: row.balance ?? row.account?.balance, active: row.active, assigneeName: row.assigneeName, desk: row.desk }))} v4={(key) => crmv4Text(locale, key)} tx={tx} />
+        <QuickCreate v4={(key) => crmv4Text(locale, key)} tx={tx} />
+        <div className="c4-book-grid">
+          <CohortTable rows={users.data?.users || []} v4={(key) => crmv4Text(locale, key)} locale={locale} />
+          <AgentChart rows={users.data?.users || []} v4={(key) => crmv4Text(locale, key)} />
+          <DeskChart rows={users.data?.users || []} v4={(key) => crmv4Text(locale, key)} />
+          <WatchAlerts rows={users.data?.users || []} v4={(key) => crmv4Text(locale, key)} />
+        </div>
+        <BoardSaver v4={(key) => crmv4Text(locale, key)} />
+        <SymbolDrill v4={(key) => crmv4Text(locale, key)} />
+        <PositionAge v4={(key) => crmv4Text(locale, key)} />
+        <PnlMovers v4={(key) => crmv4Text(locale, key)} />
+        <ExposureAlert v4={(key) => crmv4Text(locale, key)} />
         <div className="c4-split">
           <Card title={tx("recentCustomers")} extra={<Link href={crmv4Href(base, "customers")}>{tx("seeAll")}</Link>}>
             <State loading={users.loading} error={users.error} empty={!users.loading && !(users.data?.users || []).length} tx={tx} onRetry={users.reload} />

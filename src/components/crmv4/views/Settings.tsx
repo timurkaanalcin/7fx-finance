@@ -11,6 +11,7 @@ import { AccentPicker, AnnounceEditor } from "../round4";
 import { FocusButton, FormatRules, RolePreview, ZebraToggle } from "../round5";
 import { CallTarget, CategoryRules, DecimalPref, MotionPref } from "../round6";
 import { SoundToggle, TicketAlertToggle } from "../round7";
+import { DeskPrefs } from "../round8";
 import { Card, Lab, Msg, State, sendJson, useJson, type Tx } from "../kit";
 import Ops from "./Ops";
 
@@ -72,6 +73,7 @@ function LocalPrefs() {
         <CategoryRules v4={v4} />
         <SoundToggle v4={v4} />
         <TicketAlertToggle v4={v4} />
+        <DeskPrefs v4={v4} />
         <h3 className="c4-title">{v4("toastHistory")}</h3>
         <ul>{history.map((row) => <li key={row.id}>{row.text}</li>)}</ul>
         {!history.length && <p className="c4-muted">{v4("toastHistory")}</p>}
