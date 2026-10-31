@@ -16,6 +16,7 @@ import { DeskFooter } from "./desk/later";
 import { QuickSheet } from "./desk/statement";
 import { StaffPage } from "./desk/people";
 import { GoalsPage, TopTrail } from "./desk/goals";
+import { KycDesk, ReportsPage } from "./desk/review";
 import { readJson } from "@/lib/crmv3/bridge";
 import { groupedNav } from "@/lib/crmv3/local-pack";
 import { useLocal } from "./desk/store";
@@ -131,6 +132,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "finance") return v3("money");
     if (tab === "me") return v3("staffProfile");
     if (tab === "goals") return v3("goalsTitle");
+    if (tab === "kyc") return v3("kycDesk");
+    if (tab === "reports") return v3("reportsTitle");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
   }
@@ -244,6 +247,8 @@ function Shell({ base, section, name }: Props) {
             {view === "settings" && <Settings tx={tx} />}
             {view === "me" && <StaffPage signInName={name} base={base} locale={locale} />}
             {view === "goals" && <GoalsPage locale={locale} />}
+            {view === "kyc" && <KycDesk tx={tx} locale={locale} />}
+            {view === "reports" && <ReportsPage locale={locale} />}
             {view === "logs" && <Logs tx={tx} locale={locale} q={q} />}
             {view === "control" && <Control tx={tx} locale={locale} />}
             {!known && (
