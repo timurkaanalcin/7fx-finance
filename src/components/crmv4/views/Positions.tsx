@@ -5,6 +5,7 @@ import { useState } from "react";
 import { crmv4Text } from "@/lib/crmv4/copy";
 import { exportCurrent } from "../round1";
 import { MarginWatch, RiskBoard, exportXlsx } from "../round3";
+import { SymbolPop } from "../round5";
 import { PositionRows } from "./Customers";
 import { Card, Chip, Msg, Pager, State, TAKE, sendJson, useJson, type Tx } from "../kit";
 
@@ -41,6 +42,7 @@ export default function Positions({ tx, locale, q }: { tx: Tx; locale: string; q
         <button type="button" className="c4-btn" onClick={() => void exportCurrent("positions-page", "positions.csv", ["trader", "symbol", "side", "volume", "profit", "status"], rows.map((row) => [String(row.traderName || row.user?.name || ""), String(row.symbol || ""), String(row.side || ""), String(row.volume ?? ""), String(row.profit ?? ""), String(row.status || "")]))}>{crmv4Text(locale, "exportCsv")}</button>
         <button type="button" className="c4-btn" onClick={() => void exportXlsx("positions-xlsx", "positions.xlsx", ["trader", "symbol", "side", "volume", "profit", "status"], rows.map((row) => [String(row.traderName || row.user?.name || ""), String(row.symbol || ""), String(row.side || ""), String(row.volume ?? ""), String(row.profit ?? ""), String(row.status || "")]))}>{crmv4Text(locale, "exportXlsx")}</button>
       </div>
+      <SymbolPop v4={(key) => crmv4Text(locale, key)} />
       <div className="c4-book-grid">
         <RiskBoard rows={rows} tx={tx} v4={(key) => crmv4Text(locale, key)} locale={locale} />
         <MarginWatch v4={(key) => crmv4Text(locale, key)} />
@@ -69,7 +71,7 @@ export default function Positions({ tx, locale, q }: { tx: Tx; locale: string; q
                 <td>
                   {row.status}
                   {row.status === "OPEN" && (
-                    <button type="button" className="c4-btn" style={{ marginInlineStart: 8 }} onClick={async () => {
+                    <button type="button" className="c4-btn" data-write="1" style={{ marginInlineStart: 8 }} onClick={async () => {
                       if (!window.confirm(tx("confirmClose"))) return;
                       const res = await sendJson("/api/admin/positions", "PATCH", { id: row.id, status: "CLOSED", applyToBalance: false });
                       setMsg(res.ok ? tx("positionClosed") : res.error || tx("failed"));

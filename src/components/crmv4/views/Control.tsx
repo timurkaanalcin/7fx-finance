@@ -154,6 +154,7 @@ function LogPanel({ tx, locale }: { tx: Tx; locale: string }) {
     router.replace(`?${p.toString()}`);
   }
   return (
+    <div className="c4-logs-luxe">
     <Card title={tx("logs")}>
       <p className="c4-muted" style={{ padding: "8px 16px 0" }}>{tx("logsHint")}</p>
       <form className="c4-tools" onSubmit={(event) => {
@@ -194,6 +195,7 @@ function LogPanel({ tx, locale }: { tx: Tx; locale: string }) {
       {source === "login" && <SessionList v4={(key) => crmv4Text(locale, key)} locale={locale} />}
       <Pager skip={skip} take={TAKE} hasMore={Boolean(data.data?.hasMore)} tx={tx} onPage={(next) => setQuery({ skip: next ? String(next) : "" })} />
     </Card>
+    </div>
   );
 }
 

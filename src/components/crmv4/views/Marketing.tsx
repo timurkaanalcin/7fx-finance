@@ -26,6 +26,7 @@ export default function Marketing({ tx }: { tx: Tx }) {
   return (
     <div className="c4-stack">
       <p className="c4-muted">{tx("marketingLead")}</p>
+      <div className="c4-aff-luxe">
       <Card title={tx("affiliates")}>
         <State loading={aff.loading} error={aff.error} empty={!aff.loading && rows.length === 0} tx={tx} onRetry={aff.reload} />
         <div className="c4-tools">
@@ -54,6 +55,7 @@ export default function Marketing({ tx }: { tx: Tx }) {
         </ul>
         {detail && <AffiliateDetail name={detail} v4={(key) => crmv4Text(locale, key)} tx={tx} onClose={() => setDetail("")} />}
       </Card>
+      </div>
       <Card title={tx("templates")}>
         <State loading={mail.loading} error={mail.error} empty={!mail.loading && templates.length === 0} tx={tx} onRetry={mail.reload} />
         <ul>
@@ -63,6 +65,7 @@ export default function Marketing({ tx }: { tx: Tx }) {
               <button
                 type="button"
                 className="c4-btn"
+                data-write="1"
                 onClick={async () => {
                   const res = await sendJson("/api/admin/mail", "POST", { action: "delete", id: row.id });
                   setMsg(res.ok ? tx("templateDeleted") : tx("failed"));

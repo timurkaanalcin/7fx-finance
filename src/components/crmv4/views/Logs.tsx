@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { crmv4Text } from "@/lib/crmv4/copy";
 import { exportCurrent } from "../round1";
+import { RecentExports } from "../round5";
 import { Card, Chip, Lab, Msg, Pager, State, TAKE, sendJson, useJson, when, type Tx } from "../kit";
 
 type Row = { id: string; type?: string; title?: string | null; description?: string; createdAt?: string; workerName?: string | null; trader?: string; traderEmail?: string };
@@ -28,6 +29,7 @@ export default function Logs({ tx, locale, q }: { tx: Tx; locale: string; q: str
     router.replace(`?${p.toString()}`);
   }
   return (
+    <div className="c4-logs-luxe">
     <Card title={tx("logs")}>
       <p className="c4-muted" style={{ padding: "8px 16px 0" }}>{tx("logsLead")}</p>
       <div className="c4-tools">
@@ -81,5 +83,7 @@ export default function Logs({ tx, locale, q }: { tx: Tx; locale: string; q: str
       </ul>
       <Pager skip={skip} take={TAKE} hasMore={Boolean(data.data?.hasMore)} tx={tx} onPage={(next) => setQuery({ skip: next ? String(next) : "" })} />
     </Card>
+    <RecentExports v4={(key) => crmv4Text(locale, key)} />
+    </div>
   );
 }
