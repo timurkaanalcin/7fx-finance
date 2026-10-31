@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ACCOUNT_TYPES, POTENTIAL_STATUSES, RETENTION_STATUSES, SALE_STATUSES, VALIDATION_STATUSES } from "@/lib/membership";
 import { crmv4Text, type CrmV4CopyKey } from "@/lib/crmv4/copy";
 import { readJson, writeJson } from "@/lib/crmv4/local";
@@ -21,6 +21,8 @@ import { RatioCard, toggleWatch, watchIds } from "../round8";
 import { DocStage, FREEZE_PRESETS, KYC_PRESETS, KycChecklist, OnboardTrack, ReasonChips, RichNote, WelcomeList } from "../round9";
 import { CallWindow, CustomerQr, ExportColumns, PresenceFacts, nextCallId, scoreOf } from "../round10";
 import { BulkRemind, EditLog, EmailHintLine, HandoffNote, NoteCloud, SimilarList } from "../round11";
+import { BulkUntag, ContactSummary, DncFlag, DocAsk, Fold, KeyFacts, LiveBook, MarginGauge, MiniNav, MonthStatement, PreferTime, ProfileList, QuickSwitch, ShareViewButton, TagManager, TxMini, isDnc } from "../round12";
+import { countActive, decodeView, headerHit, inDateRange, inNumberRange, multiSort } from "@/lib/crmv4/round12";
 import { Card, Chip, Field, Lab, Msg, Pager, State, Status, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, statusTone, useJson, when, type Tx, type UserRow } from "../kit";
 
 const COLUMNS = ["customer", "country", "desk", "sale", "retention", "balance", "status"] as const;
@@ -43,6 +45,13 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
   const followUp = params.get("followUp") || "";
   const skip = Number(params.get("skip") || 0) || 0;
   const sort = params.get("sort") || "";
+  const sort2 = params.get("sort2") || "";
+  const minBal = params.get("minBal") || "";
+  const maxBal = params.get("maxBal") || "";
+  const minEq = params.get("minEq") || "";
+  const maxEq = params.get("maxEq") || "";
+  const fromReg = params.get("fromReg") || "";
+  const toReg = params.get("toReg") || "";
   const takeRaw = Number(params.get("take") || TAKE);
   const take = takeRaw === 20 || takeRaw === 80 ? takeRaw : TAKE;
   const query = new URLSearchParams({ view: "table", take: String(take), skip: String(skip), meta: "0", role: "TRADER", q });
@@ -55,11 +64,13 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
   if (followUp) query.set("followUp", followUp);
   const data = useJson<{ users?: UserRow[]; hasMore?: boolean; total?: number }>(`/api/admin/users?${query.toString()}`);
   const rows = data.data?.users || [];
-  const sorted = [...rows].sort((a, b) => {
-    if (sort === "name") return String(a.name || "").localeCompare(String(b.name || ""));
-    if (sort === "balance") return Number(b.balance ?? b.account?.balance ?? 0) - Number(a.balance ?? a.account?.balance ?? 0);
-    if (sort === "score") return scoreOf(b) - scoreOf(a);
-    return 0;
+  const sorted = multiSort(rows, [sort, sort2], (row, key) => {
+    if (key === "name") return String(row.name || "");
+    if (key === "balance") return Number(row.balance ?? row.account?.balance ?? 0);
+    if (key === "equity") return Number((row as UserRow & { equity?: number }).equity ?? row.account?.equity ?? 0);
+    if (key === "score") return scoreOf(row);
+    if (key === "created") return String(row.createdAt || "");
+    return "";
   });
   const [filtersOpen, setFiltersOpen] = useState(true);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -81,6 +92,9 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
   const [vipOnly, setVipOnly] = useState(false);
   const [tagPick, setTagPick] = useState("");
   const [fuzzy, setFuzzy] = useState("");
+  const [headers, setHeaders] = useState<Record<string, string>>({});
+  const [tagManagerOn, setTagManagerOn] = useState(false);
+  const shared = useRef(false);
   const memory = useDeskMemory();
   const v4 = (key: CrmV4CopyKey) => crmv4Text(locale, key);
   const parsed = parseOperators(ops);
@@ -98,6 +112,12 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
     if (vipOnly && customerSegment(row) !== "vip") return false;
     if (tagPick && !(memory.tags[row.id] || []).includes(tagPick)) return false;
     if (fuzzy && !fuzzyHit(fuzzy, `${row.name || ""} ${row.email || ""}`)) return false;
+    if (!headerHit(row, headers)) return false;
+    const balance = Number(row.balance ?? row.account?.balance ?? 0);
+    const equity = Number((row as UserRow & { equity?: number }).equity ?? row.account?.equity ?? balance);
+    if (!inNumberRange(balance, minBal, maxBal)) return false;
+    if (!inNumberRange(equity, minEq, maxEq)) return false;
+    if (!inDateRange(row.createdAt, fromReg, toReg)) return false;
     return true;
   });
   const deskNames: string[] = [];
@@ -120,6 +140,23 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
   useEffect(() => {
     window.sessionStorage.setItem(IDS_KEY, JSON.stringify(idKey ? idKey.split(",") : []));
   }, [idKey]);
+
+  useEffect(() => {
+    if (shared.current) return;
+    const raw = params.get("sv");
+    if (!raw) return;
+    shared.current = true;
+    const decoded = decodeView(raw);
+    if (!decoded) return;
+    const next = new URLSearchParams(params.toString());
+    for (const [key, value] of Object.entries(decoded)) {
+      if (value) next.set(key, value);
+      else next.delete(key);
+    }
+    next.delete("sv");
+    next.delete("skip");
+    router.replace(`?${next.toString()}`);
+  }, [params, router]);
 
   function setQuery(next: Record<string, string>) {
     const p = new URLSearchParams(params.toString());
@@ -191,12 +228,27 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
           <input className="c4-field" style={{ maxWidth: 180 }} value={fuzzy} aria-label={v4("fuzzy")} placeholder={v4("fuzzy")} onChange={(event) => setFuzzy(event.target.value)} />
           <button type="button" className="c4-chip" data-on={followUp === "overdue" ? "1" : "0"} onClick={() => setQuery({ followUp: followUp === "overdue" ? "" : "overdue" })}>{v4("followUpDue")}</button>
           <button type="button" className="c4-chip" data-on={pinnedOnly ? "1" : "0"} onClick={() => setPinnedOnly((on) => !on)}>{v4("pinnedOnly")}</button>
-          <button type="button" className="c4-btn" onClick={() => setQuery({ status: "", saleStatus: "", retentionStatus: "", country: "", presence: "", ftd: "", sort: "", followUp: "" })}>{v4("clearFilters")}</button>
+          <button type="button" className="c4-btn" onClick={() => setQuery({ status: "", saleStatus: "", retentionStatus: "", country: "", presence: "", ftd: "", sort: "", sort2: "", followUp: "", minBal: "", maxBal: "", minEq: "", maxEq: "", fromReg: "", toReg: "" })}>{v4("clearFilters")}</button>
+          {countActive({ status, saleStatus, retentionStatus, country, presence, ftd, followUp, sort, sort2, minBal, maxBal, minEq, maxEq, fromReg, toReg, ...headers }) > 0 && (
+            <button type="button" className="c4-chip" onClick={() => { setHeaders({}); setQuery({ status: "", saleStatus: "", retentionStatus: "", country: "", presence: "", ftd: "", sort: "", sort2: "", followUp: "", minBal: "", maxBal: "", minEq: "", maxEq: "", fromReg: "", toReg: "" }); }}>
+              {v4("clearAll")} <span className="c4-count">{countActive({ status, saleStatus, retentionStatus, country, presence, ftd, followUp, sort, sort2, minBal, maxBal, minEq, maxEq, fromReg, toReg, ...headers })}</span>
+            </button>
+          )}
           <button type="button" className="c4-btn" onClick={() => void copyFilterLink({ status, saleStatus, retentionStatus, country, presence, ftd, sort, q })}>{v4("shareFilters")}</button>
           <button type="button" className="c4-btn" aria-expanded={settingsOpen} onClick={() => setSettingsOpen((open) => !open)}>{v4("tableSettings")}</button>
           <button type="button" className="c4-btn" onClick={() => setQuery({ sort: sort === "name" ? "" : "name" })}>{v4("sortName")}</button>
           <button type="button" className="c4-btn" onClick={() => setQuery({ sort: sort === "balance" ? "" : "balance" })}>{v4("sortBalance")}</button>
           <button type="button" className="c4-btn" onClick={() => setQuery({ sort: sort === "score" ? "" : "score" })}>{v4("sortScore")}</button>
+          <button type="button" className="c4-btn" onClick={() => setQuery({ sort2: sort2 === "name" ? "created" : sort2 === "created" ? "" : "name" })}>{v4("sortThen")} {sort2 || "—"}</button>
+          <label className="c4-lab"><span>{v4("balanceRange")}</span><input className="c4-field" aria-label={v4("balanceRange")} defaultValue={minBal} onBlur={(event) => setQuery({ minBal: event.target.value })} /></label>
+          <input className="c4-field" aria-label={v4("balanceRange")} defaultValue={maxBal} onBlur={(event) => setQuery({ maxBal: event.target.value })} />
+          <label className="c4-lab"><span>{v4("equityRange")}</span><input className="c4-field" aria-label={v4("equityRange")} defaultValue={minEq} onBlur={(event) => setQuery({ minEq: event.target.value })} /></label>
+          <input className="c4-field" aria-label={v4("equityRange")} defaultValue={maxEq} onBlur={(event) => setQuery({ maxEq: event.target.value })} />
+          <label className="c4-lab"><span>{v4("registeredRange")}</span><input className="c4-field" type="date" aria-label={v4("registeredRange")} defaultValue={fromReg} onBlur={(event) => setQuery({ fromReg: event.target.value })} /></label>
+          <input className="c4-field" type="date" aria-label={v4("registeredRange")} defaultValue={toReg} onBlur={(event) => setQuery({ toReg: event.target.value })} />
+          <ShareViewButton v4={v4} payload={{ status, saleStatus, retentionStatus, country, presence, ftd, sort, sort2, followUp, minBal, maxBal, minEq, maxEq, fromReg, toReg }} />
+          <BulkUntag ids={selected} tags={memory.tags} onChange={memory.setTags} v4={v4} />
+          <button type="button" className="c4-btn" onClick={() => setTagManagerOn((on) => !on)}>{v4("tagManager")}</button>
           {nextCallId(shown) && <Link className="c4-btn" href={crmv4Href(base, `customers/${nextCallId(shown)}`)}>{v4("nextCall")}</Link>}
           <label className="c4-lab">
             <span>{v4("perPage")}</span>
@@ -365,7 +417,10 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
           onInspect={setInspectId}
           scoreLabel={v4("scoreCol")}
           scoreFor={scoreOf}
+          headerFilters={headers}
+          onHeaderFilter={(col, value) => setHeaders((current) => ({ ...current, [col]: value }))}
         />
+        {tagManagerOn && <TagManager tags={memory.tags} onChange={memory.setTags} v4={v4} />}
         {selected.length >= 2 && <CompareBoard rows={shown.filter((row) => selected.includes(row.id))} tx={tx} v4={v4} locale={locale} />}
         {pipelineOn && <Pipeline rows={shown} v4={v4} onMove={async (id, status) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { saleStatus: status }); data.reload(); }} />}
         <RoundRobinPreview ids={selected} v4={v4} tx={tx} onApplied={() => { setSelected([]); data.reload(); }} />
@@ -446,9 +501,14 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
     router.replace(`?${p.toString()}`);
   }
   const v4 = (key: CrmV4CopyKey) => crmv4Text(locale, key);
+  const margin = (u as (UserRow & { margin?: number }) | undefined)?.margin;
   return (
-    <div className="c4-stack">
+    <div className="c4-profile-split">
+      <ProfileList base={base} current={id} v4={v4} />
+      <div className="c4-stack c4-profile-main">
+      <QuickSwitch base={base} id={id} />
       <WorkspaceTabs base={base} current={id} v4={v4} />
+      <MiniNav v4={v4} />
       <State loading={user.loading} error={user.error} empty={!user.loading && !u} tx={tx} onRetry={user.reload} />
       {u && (
         <header className="c4-strip c4-strip-luxe">
@@ -457,25 +517,15 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           <button type="button" className="c4-btn" aria-label={v4("nextCustomer")} disabled={!neighbors.next} onClick={() => neighbors.next && router.push(crmv4Href(base, `customers/${neighbors.next}`))}>›</button>
           <div>
             <h2>{u.name || "—"}</h2>
+            {isDnc(id) && <span className="c4-status" data-tone="bad">{v4("doNotCall")}</span>}
             <p className="c4-muted c4-meta">{v4("customerId")} {u.id}</p>
             <ContactLine email={u.email} phone={u.phone} v4={v4} />
             <EmailHintLine email={u.email} v4={v4} />
             <RiskBadge row={u} v4={v4} />
             <LangBadge language={u.language} v4={v4} />
             <button type="button" className="c4-btn" onClick={() => { toggleWatch(id); setWatching(watchIds().includes(id)); }}>{watching ? v4("watchlist") : v4("watchAdd")}</button>
-            <RatioCard id={id} v4={v4} />
-            <OnboardTrack row={u} v4={v4} />
-            <WelcomeList id={id} v4={v4} />
-            <ExpiryNote expiresAt={(u as UserRow & { expiresAt?: string | null }).expiresAt} v4={v4} />
             <PresenceBadge lastSeen={(u as UserRow & { lastSeenAt?: string | null }).lastSeenAt} lastLogin={(u as UserRow & { lastLoginAt?: string | null }).lastLoginAt} v4={v4} locale={locale} />
             <LocalTime country={u.country} v4={v4} />
-            <SimilarList row={u} v4={v4} />
-            <HandoffNote id={id} v4={v4} tx={tx} />
-            <NoteCloud notes={user.data?.notes || []} v4={v4} />
-            <EditLog id={id} v4={v4} />
-            <PresenceFacts row={u} v4={v4} />
-            <CallWindow country={u.country} v4={v4} />
-            <CustomerQr url={shareUrl} v4={v4} />
           </div>
           <Field label={tx("registered")} value={when(u.createdAt, locale)} />
           <Status tone={u.active === false ? "bad" : "ok"}>{u.active === false ? tx("chipFrozen") : tx("chipActive")}</Status>
@@ -495,6 +545,9 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
         </header>
       )}
       {u && (
+        <Fold section="facts" title={v4("keyFacts")}>
+          <KeyFacts row={u} locale={locale} v4={v4} balance={money(u.balance ?? u.account?.balance, u.currency || u.account?.currency, locale)} equity={money(u.equity ?? u.account?.equity, u.currency || u.account?.currency, locale)} country={u.country || "—"} desk={u.desk || "—"} sale={u.saleStatus || "—"} />
+          <MarginGauge equity={u.equity ?? u.account?.equity} margin={margin} v4={v4} />
         <div className="c4-form c4-form-2">
           <Field label={tx("balance")} value={money(u.balance ?? u.account?.balance, u.currency || u.account?.currency, locale)} />
           <Field label={tx("equity")} value={money(u.equity ?? u.account?.equity, u.currency || u.account?.currency, locale)} />
@@ -504,8 +557,24 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           <Field label={tx("assignee")} value={u.assigneeName || tx("unassigned")} />
           <Field label={tx("ftd")} value={u.ftd ? tx("yes") : tx("no")} />
         </div>
+        </Fold>
       )}
-      {u && <div className="c4-detail-tools"><CompletenessMeter row={u} v4={v4} /><InlineProfile id={id} user={u} tx={tx} v4={v4} onDone={user.reload} /><JourneyMap id={id} v4={v4} /><WinLossCard id={id} v4={v4} /><EquityCurve id={id} v4={v4} /><DocGallery id={id} v4={v4} /><TeamThread id={id} name="" v4={v4} tx={tx} /><CallbackButton id={id} name={u.name || u.email || ""} v4={v4} tx={tx} /><ValueSpark id={id} tx={tx} v4={v4} locale={locale} /><RetentionForm id={id} tx={tx} v4={v4} onDone={user.reload} /><StatementView id={id} tx={tx} v4={v4} locale={locale} /><NoteTemplates v4={v4} onUse={async (body) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { addNote: body }); user.reload(); }} /><DocumentsCenter id={id} email={u.email || ""} tx={tx} v4={v4} locale={locale} /><TradingOverview id={id} tx={tx} v4={v4} locale={locale} /></div>}
+      <Fold section="money" title={v4("recentTx")}>
+        <TxMini id={id} locale={locale} v4={v4} />
+        <MonthStatement id={id} locale={locale} v4={v4} />
+      </Fold>
+      <Fold section="book" title={v4("liveBook")}>
+        <LiveBook id={id} locale={locale} v4={v4} />
+      </Fold>
+      <Fold section="docs" title={v4("docAsk")} openByDefault={false}>
+        <DocAsk v4={v4} />
+      </Fold>
+      <Fold section="contact" title={v4("contactCounts")}>
+        <ContactSummary email={u?.email} id={id} v4={v4} />
+        <DncFlag id={id} v4={v4} />
+        <PreferTime id={id} v4={v4} />
+      </Fold>
+      {u && <Fold section="tools" title={v4("fold")} openByDefault={false}><div className="c4-detail-tools"><SimilarList row={u} v4={v4} /><HandoffNote id={id} v4={v4} tx={tx} /><NoteCloud notes={user.data?.notes || []} v4={v4} /><EditLog id={id} v4={v4} /><PresenceFacts row={u} v4={v4} /><CallWindow country={u.country} v4={v4} /><CustomerQr url={shareUrl} v4={v4} /><RatioCard id={id} v4={v4} /><OnboardTrack row={u} v4={v4} /><WelcomeList id={id} v4={v4} /><ExpiryNote expiresAt={(u as UserRow & { expiresAt?: string | null }).expiresAt} v4={v4} /><CompletenessMeter row={u} v4={v4} /><InlineProfile id={id} user={u} tx={tx} v4={v4} onDone={user.reload} /><JourneyMap id={id} v4={v4} /><WinLossCard id={id} v4={v4} /><EquityCurve id={id} v4={v4} /><DocGallery id={id} v4={v4} /><TeamThread id={id} name="" v4={v4} tx={tx} /><CallbackButton id={id} name={u.name || u.email || ""} v4={v4} tx={tx} /><ValueSpark id={id} tx={tx} v4={v4} locale={locale} /><RetentionForm id={id} tx={tx} v4={v4} onDone={user.reload} /><StatementView id={id} tx={tx} v4={v4} locale={locale} /><NoteTemplates v4={v4} onUse={async (body) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { addNote: body }); user.reload(); }} /><DocumentsCenter id={id} email={u.email || ""} tx={tx} v4={v4} locale={locale} /><TradingOverview id={id} tx={tx} v4={v4} locale={locale} /></div></Fold>}
       <div className="c4-with-side c4-detail-luxe">
         <nav className="c4-side" aria-label={tx("customers")}>
           {PARTS.map((item) => (
@@ -521,6 +590,7 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           {u && part === "access" && <Access id={id} user={u} tx={tx} onDone={user.reload} />}
           {part === "activity" && <Activity rows={user.data?.activityEvents || []} tx={tx} locale={locale} />}
         </div>
+      </div>
       </div>
     </div>
   );
@@ -705,9 +775,17 @@ type NoteRow = { id: string; body?: string; authorName?: string | null; createdA
 function Notes({ id, notes, tx, locale, onDone }: { id: string; notes: NoteRow[]; tx: Tx; locale: string; onDone: () => void }) {
   const teams = useJson<{ notes?: NoteRow[]; writableTeams?: string[] }>(`/api/admin/users/${encodeURIComponent(id)}/team-notes?take=50`);
   const [msg, setMsg] = useState("");
+  const [showTeam, setShowTeam] = useState(true);
   const teamNotes = teams.data?.notes || [];
+  const v4 = (key: CrmV4CopyKey) => crmv4Text(locale, key);
+  useEffect(() => { setShowTeam(readJson<boolean>("crmv4-show-agent-notes", true) !== false); }, []);
   return (
     <div className="c4-split-even c4-split">
+      <button type="button" className="c4-chip" data-on={showTeam ? "1" : "0"} onClick={() => {
+        const next = !showTeam;
+        setShowTeam(next);
+        writeJson("crmv4-show-agent-notes", next);
+      }}>{v4("agentNotes")}</button>
       <Card title={tx("generalNote")}>
         <NoteForm tx={tx} onSubmit={async (body) => {
           const res = await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { addNote: body });
@@ -717,14 +795,14 @@ function Notes({ id, notes, tx, locale, onDone }: { id: string; notes: NoteRow[]
         <Msg text={msg} />
         <NoteList rows={notes} tx={tx} locale={locale} />
       </Card>
-      <Card title={tx("team")}>
+      {showTeam && <Card title={tx("team")}>
         <NoteForm tx={tx} team={(teams.data?.writableTeams || ["SALE"])[0] || "SALE"} teams={teams.data?.writableTeams || []} onSubmit={async (body, team) => {
           const res = await sendJson(`/api/admin/users/${encodeURIComponent(id)}/team-notes`, "POST", { team, body });
           setMsg(res.ok ? tx("noteSaved") : res.error || tx("failed"));
           if (res.ok) teams.reload();
         }} />
         <NoteList rows={teamNotes} tx={tx} locale={locale} />
-      </Card>
+      </Card>}
     </div>
   );
 }
