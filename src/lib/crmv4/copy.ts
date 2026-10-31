@@ -5,6 +5,7 @@ import { ROUND3_COPY } from "@/lib/crmv4/copy-round3";
 import { ROUND4_COPY } from "@/lib/crmv4/copy-round4";
 import { ROUND5_COPY } from "@/lib/crmv4/copy-round5";
 import { ROUND6_COPY } from "@/lib/crmv4/copy-round6";
+import { ROUND7_COPY } from "@/lib/crmv4/copy-round7";
 
 const enBase = {
   v4mark: "CRM v4",
@@ -276,11 +277,11 @@ const arBase: typeof enBase = {
   refreshing: "جارٍ التحديث",
 };
 
-const en = { ...enBase, ...ROUND1_COPY.en, ...ROUND2_COPY.en, ...ROUND3_COPY.en, ...ROUND4_COPY.en, ...ROUND5_COPY.en, ...ROUND6_COPY.en };
-const tr: typeof en = { ...trBase, ...ROUND1_COPY.tr, ...ROUND2_COPY.tr, ...ROUND3_COPY.tr, ...ROUND4_COPY.tr, ...ROUND5_COPY.tr, ...ROUND6_COPY.tr };
-const de: typeof en = { ...deBase, ...ROUND1_COPY.de, ...ROUND2_COPY.de, ...ROUND3_COPY.de, ...ROUND4_COPY.de, ...ROUND5_COPY.de, ...ROUND6_COPY.de };
-const ru: typeof en = { ...ruBase, ...ROUND1_COPY.ru, ...ROUND2_COPY.ru, ...ROUND3_COPY.ru, ...ROUND4_COPY.ru, ...ROUND5_COPY.ru, ...ROUND6_COPY.ru };
-const ar: typeof en = { ...arBase, ...ROUND1_COPY.ar, ...ROUND2_COPY.ar, ...ROUND3_COPY.ar, ...ROUND4_COPY.ar, ...ROUND5_COPY.ar, ...ROUND6_COPY.ar };
+const en = { ...enBase, ...ROUND1_COPY.en, ...ROUND2_COPY.en, ...ROUND3_COPY.en, ...ROUND4_COPY.en, ...ROUND5_COPY.en, ...ROUND6_COPY.en, ...ROUND7_COPY.en };
+const tr: typeof en = { ...trBase, ...ROUND1_COPY.tr, ...ROUND2_COPY.tr, ...ROUND3_COPY.tr, ...ROUND4_COPY.tr, ...ROUND5_COPY.tr, ...ROUND6_COPY.tr, ...ROUND7_COPY.tr };
+const de: typeof en = { ...deBase, ...ROUND1_COPY.de, ...ROUND2_COPY.de, ...ROUND3_COPY.de, ...ROUND4_COPY.de, ...ROUND5_COPY.de, ...ROUND6_COPY.de, ...ROUND7_COPY.de };
+const ru: typeof en = { ...ruBase, ...ROUND1_COPY.ru, ...ROUND2_COPY.ru, ...ROUND3_COPY.ru, ...ROUND4_COPY.ru, ...ROUND5_COPY.ru, ...ROUND6_COPY.ru, ...ROUND7_COPY.ru };
+const ar: typeof en = { ...arBase, ...ROUND1_COPY.ar, ...ROUND2_COPY.ar, ...ROUND3_COPY.ar, ...ROUND4_COPY.ar, ...ROUND5_COPY.ar, ...ROUND6_COPY.ar, ...ROUND7_COPY.ar };
 
 export const CRM_V4_COPY = { en, tr, de, ru, ar };
 

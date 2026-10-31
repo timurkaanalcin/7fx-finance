@@ -7,6 +7,7 @@ import { exportCurrent } from "../round1";
 import { MoneyTools } from "../round2";
 import { MethodChart, WithdrawFlags } from "../round4";
 import { BonusHistory } from "../round5";
+import { CommissionCard, MoneyHistory, useQueueCursor } from "../round7";
 import { Card, Chip, Lab, Pager, Sheet, State, Status, SwipeRow, TAKE, money, sendJson, statusTone, useJson, when, type Tx } from "../kit";
 import { crmv4Text } from "@/lib/crmv4/copy";
 
@@ -21,6 +22,7 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
   const skip = Number(params.get("skip") || 0) || 0;
   const [busy, setBusy] = useState<string | null>(null);
   const [sheet, setSheet] = useState<null | { id: string; kind: string; action: "approve" | "reject" }>(null);
+  const [history, setHistory] = useState<MoneyRow | null>(null);
   const endpoint = tab === "withdrawals" ? "/api/admin/withdrawals" : tab === "balance" ? "/api/admin/balance-requests" : tab === "ledger" ? "/api/admin/transactions" : "/api/admin/deposits";
   const url = tab === "ledger"
     ? `/api/admin/transactions?limit=${TAKE}&skip=${skip}&q=${encodeURIComponent(q)}`
@@ -37,12 +39,22 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
     router.replace(`?${p.toString()}`);
   }
 
+  const queue = useQueueCursor((tab === "ledger" ? [] : ((data.data?.requests as MoneyRow[]) || [])).filter((row) => row.status === "PENDING").length, (index) => {
+    const pending = ((data.data?.requests as MoneyRow[]) || []).filter((row) => row.status === "PENDING");
+    const row = pending[index];
+    if (row) setSheet({ id: row.id, kind: tab === "withdrawals" ? "WITHDRAW" : tab === "balance" ? "MARGIN" : "DEPOSIT", action: "approve" });
+  }, (index) => {
+    const pending = ((data.data?.requests as MoneyRow[]) || []).filter((row) => row.status === "PENDING");
+    const row = pending[index];
+    if (row) setSheet({ id: row.id, kind: tab === "withdrawals" ? "WITHDRAW" : tab === "balance" ? "MARGIN" : "DEPOSIT", action: "reject" });
+  });
   const rows = tab === "ledger"
     ? ((data.data?.transactions as LedgerRow[]) || [])
     : ((data.data?.requests as MoneyRow[]) || []);
 
   return (
     <Card title={tx("finance")}>
+      <p className="c4-muted c4-pad">{crmv4Text(locale, "queueKeys")} j / k / a / r</p>
       <p className="c4-muted" style={{ padding: "8px 16px 0" }}>{tx("financeLead")}</p>
       <div className="c4-tools">
         {(["deposits", "withdrawals", "balance", "ledger"] as const).map((item) => (
@@ -67,10 +79,11 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
       )}
       {tab === "withdrawals" && <WithdrawFlags v4={(key) => crmv4Text(locale, key)} />}
       {tab === "ledger" && <BonusHistory v4={(key) => crmv4Text(locale, key)} locale={locale} />}
+      {tab !== "ledger" && <CommissionCard amount={(rows as MoneyRow[]).reduce((sum, row) => sum + Math.abs(Number(row.amount) || 0), 0)} v4={(key) => crmv4Text(locale, key)} locale={locale} />}
       <State loading={data.loading} error={data.error} empty={!data.loading && rows.length === 0} tx={tx} onRetry={data.reload} />
       {tab === "ledger" ? <Ledger rows={rows as LedgerRow[]} tx={tx} locale={locale} /> : (
         <>
-          <div className="c4-desk c4-table-wrap">
+          <div className="c4-desk c4-table-wrap" tabIndex={0} onKeyDown={queue.onKeyDown}>
             <table className="c4-table">
               <thead>
                 <tr>
@@ -87,7 +100,7 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
                   const kind = tab === "withdrawals" ? "WITHDRAW" : tab === "balance" ? "MARGIN" : "DEPOSIT";
                   return (
                     <tr key={row.id}>
-                      <td>{row.user?.name || "—"}</td>
+                      <td><button type="button" className="c4-btn" onClick={() => setHistory(row)}>{row.user?.name || "—"}</button></td>
                       <td>{money(row.amount, row.currency, locale)}</td>
                       <td>{row.method || "—"}</td>
                       <td>{when(row.createdAt, locale)}</td>
@@ -132,6 +145,7 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
         </>
       )}
       <Pager skip={skip} take={TAKE} hasMore={Boolean(data.data?.hasMore)} tx={tx} onPage={(next) => setQuery({ skip: next ? String(next) : "" })} />
+      {history && <MoneyHistory row={history} tx={tx} v4={(key) => crmv4Text(locale, key)} locale={locale} onClose={() => setHistory(null)} />}
       {sheet && (
         <Sheet title={sheet.action === "approve" ? tx("approve") : tx("reject")} onClose={() => setSheet(null)} closeLabel={tx("close")}>
           <ApproveForm

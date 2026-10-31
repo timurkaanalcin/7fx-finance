@@ -14,6 +14,8 @@ import { ContactLine, DocumentsCenter, LocalTime, NoteTemplates, Pipeline, Prese
 import { CompareBoard, QuickChips, ValueSpark, WorkspaceTabs, pushWorkspace } from "../round4";
 import { BirthdayList, BulkNote, CallbackButton, DeskSwitch, JourneyMap, NoteBody, SearchHistory, WinLossCard, customerSegment, notePinned, rememberSearch, toggleNotePin } from "../round5";
 import { AgingBoard, ConversionStat, DepositorBoard, DocGallery, DomainBoard, EquityCurve, ExpiryNote, RiskBadge, StreakBoard, TeamThread, WeeklyDigest, copyFilterLink } from "../round6";
+import { CompletenessMeter, ImportPreview, InlineProfile, LangBadge, SourceBoard, StaleList, StatusWatch, TagCloud, exportTimeline } from "../round7";
+import { filterActivity } from "@/lib/crmv4/round7";
 import { Card, Chip, Field, Lab, Msg, Pager, State, Status, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, statusTone, useJson, when, type Tx, type UserRow } from "../kit";
 
 const COLUMNS = ["customer", "country", "desk", "sale", "retention", "balance", "status"] as const;
@@ -71,6 +73,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
   const [ops, setOps] = useState("");
   const [deskPick, setDeskPick] = useState("");
   const [vipOnly, setVipOnly] = useState(false);
+  const [tagPick, setTagPick] = useState("");
   const memory = useDeskMemory();
   const v4 = (key: CrmV4CopyKey) => crmv4Text(locale, key);
   const parsed = parseOperators(ops);
@@ -83,7 +86,12 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
     return `${row.name || ""} ${row.email || ""}`.toLowerCase().includes(parsed.text.toLowerCase());
   });
   const listed = visibleCustomers(operated, rules, memory.tags, memory.pins, pinnedOnly);
-  const shown = listed.filter((row) => (deskPick ? (row.desk || "—") === deskPick : true) && (!vipOnly || customerSegment(row) === "vip"));
+  const shown = listed.filter((row) => {
+    if (deskPick && (row.desk || "—") !== deskPick) return false;
+    if (vipOnly && customerSegment(row) !== "vip") return false;
+    if (tagPick && !(memory.tags[row.id] || []).includes(tagPick)) return false;
+    return true;
+  });
   const deskNames: string[] = [];
   for (const row of listed) {
     const name = row.desk || "";
@@ -261,6 +269,11 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
           <WeeklyDigest rows={shown} v4={v4} tx={tx} />
         </div>
         <StreakBoard v4={v4} />
+        <TagCloud v4={v4} onPick={setTagPick} />
+        <StatusWatch rows={shown} v4={v4} />
+        <StaleList rows={shown} v4={v4} />
+        <SourceBoard rows={shown} v4={v4} />
+        <ImportPreview known={shown.map((row) => row.email || "")} v4={v4} />
         <form
           key={`${saleStatus}|${retentionStatus}|${country}|${presence}|${ftd}`}
           className="c4-filters c4-filter-sheet"
@@ -408,6 +421,7 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
             <p className="c4-muted c4-meta">{v4("customerId")} {u.id}</p>
             <ContactLine email={u.email} phone={u.phone} v4={v4} />
             <RiskBadge row={u} v4={v4} />
+            <LangBadge language={u.language} v4={v4} />
             <ExpiryNote expiresAt={(u as UserRow & { expiresAt?: string | null }).expiresAt} v4={v4} />
             <PresenceBadge lastSeen={(u as UserRow & { lastSeenAt?: string | null }).lastSeenAt} lastLogin={(u as UserRow & { lastLoginAt?: string | null }).lastLoginAt} v4={v4} locale={locale} />
             <LocalTime country={u.country} v4={v4} />
@@ -435,8 +449,8 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           <Field label={tx("ftd")} value={u.ftd ? tx("yes") : tx("no")} />
         </div>
       )}
-      {u && <div className="c4-detail-tools"><JourneyMap id={id} v4={v4} /><WinLossCard id={id} v4={v4} /><EquityCurve id={id} v4={v4} /><DocGallery id={id} v4={v4} /><TeamThread id={id} name="" v4={v4} tx={tx} /><CallbackButton id={id} name={u.name || u.email || ""} v4={v4} tx={tx} /><ValueSpark id={id} tx={tx} v4={v4} locale={locale} /><RetentionForm id={id} tx={tx} v4={v4} onDone={user.reload} /><StatementView id={id} tx={tx} v4={v4} locale={locale} /><NoteTemplates v4={v4} onUse={async (body) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { addNote: body }); user.reload(); }} /><DocumentsCenter id={id} email={u.email || ""} tx={tx} v4={v4} locale={locale} /><TradingOverview id={id} tx={tx} v4={v4} locale={locale} /></div>}
-      <div className="c4-with-side">
+      {u && <div className="c4-detail-tools"><CompletenessMeter row={u} v4={v4} /><InlineProfile id={id} user={u} tx={tx} v4={v4} onDone={user.reload} /><JourneyMap id={id} v4={v4} /><WinLossCard id={id} v4={v4} /><EquityCurve id={id} v4={v4} /><DocGallery id={id} v4={v4} /><TeamThread id={id} name="" v4={v4} tx={tx} /><CallbackButton id={id} name={u.name || u.email || ""} v4={v4} tx={tx} /><ValueSpark id={id} tx={tx} v4={v4} locale={locale} /><RetentionForm id={id} tx={tx} v4={v4} onDone={user.reload} /><StatementView id={id} tx={tx} v4={v4} locale={locale} /><NoteTemplates v4={v4} onUse={async (body) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { addNote: body }); user.reload(); }} /><DocumentsCenter id={id} email={u.email || ""} tx={tx} v4={v4} locale={locale} /><TradingOverview id={id} tx={tx} v4={v4} locale={locale} /></div>}
+      <div className="c4-with-side c4-detail-luxe">
         <nav className="c4-side" aria-label={tx("customers")}>
           {PARTS.map((item) => (
             <button key={item} type="button" data-on={part === item ? "1" : "0"} onClick={() => setPart(item)}>{tx(partKey(item))}</button>
@@ -956,9 +970,18 @@ function Access({ id, user, tx, onDone }: { id: string; user: UserRow; tx: Tx; o
 type ActivityRow = { id: string; kind?: string; path?: string | null; createdAt?: string };
 
 function Activity({ rows, tx, locale }: { rows: ActivityRow[]; tx: Tx; locale: string }) {
+  const [kind, setKind] = useState("");
+  const v4 = (key: CrmV4CopyKey) => crmv4Text(locale, key);
+  const shown = filterActivity(rows, kind);
+  const kinds = Array.from(new Set(rows.map((row) => String(row.kind || "")).filter(Boolean)));
   return (
     <Card title={tx("activityTab")}>
-      <ActivityTimeline rows={rows} locale={locale} tx={tx} />
+      <div className="c4-tools" aria-label={v4("activityFilter")}>
+        <button type="button" className="c4-chip" data-on={kind ? "0" : "1"} onClick={() => setKind("")}>{tx("all")}</button>
+        {kinds.map((item) => <button key={item} type="button" className="c4-chip" data-on={kind === item ? "1" : "0"} onClick={() => setKind(item)}>{item}</button>)}
+        <button type="button" className="c4-btn" onClick={() => void exportTimeline(shown)}>{v4("exportTimeline")}</button>
+      </div>
+      <ActivityTimeline rows={shown} locale={locale} tx={tx} />
     </Card>
   );
 }
