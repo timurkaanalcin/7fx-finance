@@ -10,6 +10,7 @@ import { LeadDesk } from "../desk/lead";
 import { StatementSheet } from "../desk/statement";
 import { CohortBoard, CompareDesk, OnboardCard } from "../desk/people";
 import { rememberView } from "../desk/goals";
+import { LifeLine } from "../desk/line";
 import { ListBar } from "../desk/later";
 import { AssignPreview, DocTools, NoteTools, ProfileBits, QualityList, customerTools, duplicateSet, noteBlocked, rowAgeLabel, rowHealth, rowRisk } from "../desk/panels";
 import { ContactFeed, EntryQuality, applySplit, emailOk } from "../desk/feed";
@@ -360,6 +361,7 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           locale={locale}
         />
       )}
+      {u && <LifeLine id={id} email={u.email || ""} notes={user.data?.notes || []} locale={locale} />}
       <div className="c3-row">
         {PARTS.map((item) => (
           <Chip key={item} on={part === item} onClick={() => setPart(item)}>{tx(partKey(item))}</Chip>

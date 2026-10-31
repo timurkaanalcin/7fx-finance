@@ -270,6 +270,7 @@ export function QuickSheet({ open, onClose, onSearch, tx }: {
             const row = { id: String(Date.now()), at: new Date().toISOString(), outcome: "reached", minutes: 0, next: "", note: body.trim() };
             all[userId.trim()] = [row, ...(all[userId.trim()] || [])].slice(0, 40);
             writeJson("crmv3-call-log", all);
+            window.dispatchEvent(new Event("crmv3:call-log"));
             setMsg(v3("quickSaved"));
             setBody("");
             return;
