@@ -1979,6 +1979,125 @@
   [data-crmv4-root] .c4-pdf { height: 220px; }
 }
 
+[data-crmv4-root] .c4-page-search.c4-search-luxe {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+[data-crmv4-root] .c4-toast[data-ok="0"] {
+  background: var(--c4-danger);
+  color: #fff;
+  box-shadow: none;
+}
+
+[data-crmv4-root] .c4-page-title {
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  line-height: 22px;
+}
+
+[data-crmv4-root] .c4-page-sub,
+[data-crmv4-root] .c4-brand-line {
+  margin: 4px 0 0;
+  color: var(--c4-muted);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: 0;
+}
+
+[data-crmv4-root] .c4-brand-line {
+  color: #a6854e;
+  font-weight: 650;
+}
+
+[data-crmv4-root] .c4-pagehead {
+  align-items: center;
+  gap: 10px 16px;
+  min-height: 64px;
+  margin: 10px 10px 0;
+  padding: 10px 16px;
+  border-radius: 14px;
+  border-color: rgba(166, 133, 78, 0.28);
+}
+
+[data-crmv4-root] .c4-top {
+  background:
+    linear-gradient(180deg, rgba(166, 133, 78, 0.16), transparent 72%),
+    var(--c4-card);
+}
+
+[data-crmv4-root] .c4-nav-item {
+  padding: 8px 14px 10px;
+}
+
+[data-crmv4-root] .c4-nav-title {
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  line-height: 16px;
+}
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+  [data-crmv4-root] .c4-nav { flex-wrap: wrap; }
+  [data-crmv4-root] .c4-nav-sub { display: none; }
+}
+
+[data-crmv4-root] .c4-staff-luxe .c4-card,
+[data-crmv4-root] .c4-audit-luxe,
+[data-crmv4-root] .c4-audit-luxe .c4-card {
+  border: 1px solid rgba(166, 133, 78, 0.4);
+  border-radius: 18px;
+  background:
+    linear-gradient(165deg, rgba(166, 133, 78, 0.16), transparent 46%),
+    #fffdf8;
+}
+
+[data-crmv4-root] .c4-staff-luxe li,
+[data-crmv4-root] .c4-audit-luxe li {
+  margin: 8px 12px;
+  padding: 12px;
+  border: 1px solid #e6dccf;
+  border-radius: 14px;
+  background: #fffdf8;
+}
+
+[data-crmv4-root] .c4-cal-day[data-holiday="1"] {
+  box-shadow: inset 0 0 0 2px #a6854e;
+}
+
+[data-crmv4-root] .c4-qr svg { display: block; width: 96px; height: 96px; }
+[data-crmv4-root] .c4-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-staff-luxe .c4-card,
+[data-crmv4-root][data-theme="dark"] .c4-audit-luxe,
+[data-crmv4-root][data-theme="dark"] .c4-audit-luxe .c4-card,
+[data-crmv4-root][data-theme="dark"] .c4-staff-luxe li,
+[data-crmv4-root][data-theme="dark"] .c4-audit-luxe li {
+  background: #221f1b;
+  color: #f6f1e8;
+}
+
+@media (max-width: 767px) {
+  [data-crmv4-root] .c4-staff-luxe li,
+  [data-crmv4-root] .c4-audit-luxe li {
+    margin-inline: 8px;
+    flex-wrap: wrap;
+  }
+  [data-crmv4-root] .c4-pagehead { margin-inline: 8px; }
+}
+
 @keyframes c4-shimmer {
   from { background-position: 100% 0; }
   to { background-position: -100% 0; }

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ledgerBody } from "@/lib/crmv2/payload";
 import { crmv4Text } from "@/lib/crmv4/copy";
 import { DeskBoard, TasksBoard } from "../round1";
@@ -12,6 +12,8 @@ import { DailySheet, DeskGoals, ForecastLine, MiniChart } from "../round5";
 import { WeekBoard } from "../round7";
 import { AgentChart, BoardSaver, CohortTable, DeskChart, ExposureAlert, PnlMovers, PositionAge, QuickCreate, SymbolDrill, WatchAlerts } from "../round8";
 import { CallComposer, MyDay, NoteSearch } from "../round9";
+import { ActivityStream, HolidayEditor, IbTree, KpiPicker, ReminderTools, RoiTable, readKpis } from "../round10";
+import { readJson } from "@/lib/crmv4/local";
 import { crmv4Href } from "@/lib/crmv4/sections";
 import { Bars, Card, Chip, Field, Kpi, Lab, Msg, Sheet, State, auditExport, downloadCsv, fmtNum, localeTag, money, sendJson, useJson, when, type Tx, type UserRow } from "../kit";
 
@@ -24,6 +26,13 @@ export default function Overview({ base, tx, locale, name }: Props) {
   const users = useJson<{ users?: UserRow[] }>("/api/admin/users?view=table&take=8&meta=0&role=TRADER");
   const [sheet, setSheet] = useState<null | "add" | "transfer">(null);
   const [tab, setTab] = useState<"home" | "insights" | "desks">("home");
+  const [kpiOn, setKpiOn] = useState<string[]>(["customers", "aum", "volume", "pending"]);
+  useEffect(() => {
+    setKpiOn(readKpis());
+    const onKpi = () => setKpiOn(readKpis());
+    window.addEventListener("crmv4:kpis", onKpi);
+    return () => window.removeEventListener("crmv4:kpis", onKpi);
+  }, []);
   const kpis = stats.data?.kpis;
   const pending = (kpis?.pendingDeposits || 0) + (kpis?.pendingBalanceRequests || 0);
   const aum = finance.data?.kpis?.totalEquity ?? finance.data?.kpis?.totalBalance;
@@ -47,11 +56,12 @@ export default function Overview({ base, tx, locale, name }: Props) {
         <Chip on={tab === "desks"} onClick={() => setTab("desks")}>{crmv4Text(locale, "deskBoard")}</Chip>
       </div>
       <p className="c4-muted">{tx("overviewLead")}</p>
+      <KpiPicker v4={(key) => crmv4Text(locale, key)} />
       <div className="c4-kpis">
-        <Kpi tone="violet" label={tx("kpiCustomers")} value={fmtNum(kpis?.users, locale)} href={crmv4Href(base, "customers")} />
-        <Kpi tone="cyan" label={tx("kpiAum")} value={money(aum, "USD", locale)} href={crmv4Href(base, "finance", { tab: "ledger" })} />
-        <Kpi tone="amber" label={tx("kpiVolume")} value={fmtNum(kpis?.totalVolume, locale)} href={crmv4Href(base, "positions")} />
-        <Kpi tone="emerald" label={tx("kpiPending")} value={fmtNum(pending, locale)} href={crmv4Href(base, "finance", { status: "PENDING" })} />
+        {kpiOn.includes("customers") && <Kpi tone="violet" label={tx("kpiCustomers")} value={fmtNum(kpis?.users, locale)} href={crmv4Href(base, "customers")} />}
+        {kpiOn.includes("aum") && <Kpi tone="cyan" label={tx("kpiAum")} value={money(aum, "USD", locale)} href={crmv4Href(base, "finance", { tab: "ledger" })} />}
+        {kpiOn.includes("volume") && <Kpi tone="amber" label={tx("kpiVolume")} value={fmtNum(kpis?.totalVolume, locale)} href={crmv4Href(base, "positions")} />}
+        {kpiOn.includes("pending") && <Kpi tone="emerald" label={tx("kpiPending")} value={fmtNum(pending, locale)} href={crmv4Href(base, "finance", { status: "PENDING" })} />}
       </div>
       {tab === "insights" ? (
         <Insights tx={tx} locale={locale} finance={finance.data} report={r} />
@@ -72,8 +82,13 @@ export default function Overview({ base, tx, locale, name }: Props) {
           <MonthBoard locale={locale} />
           <WeekBoard v4={(key) => crmv4Text(locale, key)} locale={locale} />
           <ReminderAlerts v4={(key) => crmv4Text(locale, key)} />
+          <HolidayEditor v4={(key) => crmv4Text(locale, key)} />
+          <ReminderTools v4={(key) => crmv4Text(locale, key)} tx={tx} />
           <TasksBoard locale={locale} v4={(key) => crmv4Text(locale, key)} tx={tx} />
         </div>
+        <ActivityStream v4={(key) => crmv4Text(locale, key)} />
+        <IbTree rows={users.data?.users || []} v4={(key) => crmv4Text(locale, key)} />
+        <RoiTable rows={users.data?.users || []} v4={(key) => crmv4Text(locale, key)} />
         <CampaignMix v4={(key) => crmv4Text(locale, key)} />
         <AgentKpis v4={(key) => crmv4Text(locale, key)} tx={tx} />
         <div className="c4-book-grid">
@@ -364,6 +379,13 @@ function dayKey(value: string) {
 function MonthBoard({ locale }: { locale: string }) {
   const [cursor, setCursor] = useState(() => new Date());
   const [picked, setPicked] = useState("");
+  const [holidays, setHolidays] = useState<string[]>([]);
+  useEffect(() => {
+    const load = () => setHolidays(readJson<string[]>("crmv4-holidays", []));
+    load();
+    window.addEventListener("crmv4:holidays", load);
+    return () => window.removeEventListener("crmv4:holidays", load);
+  }, []);
   const data = useJson<{ reminders?: { id: string; body?: string; remindAt?: string }[] }>("/api/admin/calendar?take=200");
   const year = cursor.getFullYear();
   const month = cursor.getMonth();
@@ -392,7 +414,7 @@ function MonthBoard({ locale }: { locale: string }) {
           const key = iso(index + 1);
           const hits = items.filter((row) => dayKey(String(row.remindAt || "")) === key);
           return (
-            <button key={key} type="button" className="c4-cal-day" data-today={key === today ? "1" : "0"} data-on={picked === key ? "1" : "0"} data-has={hits.length ? "1" : "0"} onClick={() => setPicked(key)}>
+            <button key={key} type="button" className="c4-cal-day" data-today={key === today ? "1" : "0"} data-on={picked === key ? "1" : "0"} data-has={hits.length ? "1" : "0"} data-holiday={holidays.includes(key) ? "1" : "0"} onClick={() => setPicked(key)}>
               <span>{index + 1}</span>
               {hits[0]?.body && <em>{hits[0].body}</em>}
             </button>

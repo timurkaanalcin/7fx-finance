@@ -19,6 +19,7 @@ import { IdleWarning, storedRole, storedZebra } from "./round5";
 import { CallTarget, Fab, storedMotion } from "./round6";
 import { lastView, playPing, rememberView, soundEnabled, ticketAlertsOn } from "./round7";
 import { resolvedTheme, storedContrast, storedFont, storedFreeze, themeMode } from "./round8";
+import { readBrand } from "./round10";
 import type { Accent } from "@/lib/crmv4/round4";
 import { Sheet, sendJson, useJson, when } from "./kit";
 import Overview from "./views/Overview";
@@ -85,6 +86,8 @@ function Shell({ base, section, name }: Props) {
   const [font, setFont] = useState<"sm" | "md" | "lg">("md");
   const [contrast, setContrast] = useState(false);
   const [freeze, setFreeze] = useState(false);
+  const [focus, setFocus] = useState(false);
+  const [brand, setBrand] = useState("");
   const ticketSeen = useRef(0);
   const [pull, setPull] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
@@ -119,6 +122,11 @@ function Shell({ base, section, name }: Props) {
     setToastsLog(toastHistory());
     setScratch(readJson<Scratch[]>(NOTES_KEY, []));
     setAccent(storedAccent());
+    setBrand(readBrand());
+    const onFocus = (event: Event) => setFocus(Boolean((event as CustomEvent<boolean>).detail));
+    const onBrand = () => setBrand(readBrand());
+    window.addEventListener("crmv4:focus", onFocus);
+    window.addEventListener("crmv4:brand", onBrand);
     setRole(storedRole());
     setZebra(storedZebra());
     setMotion(storedMotion());
@@ -139,6 +147,8 @@ function Shell({ base, section, name }: Props) {
       window.removeEventListener("crmv4:contrast", onContrast);
       window.removeEventListener("crmv4:freeze", onFreeze);
       window.removeEventListener("crmv4:theme-mode", onMode);
+      window.removeEventListener("crmv4:focus", onFocus);
+      window.removeEventListener("crmv4:brand", onBrand);
       media.removeEventListener("change", onMode);
     };
   }, []);
@@ -240,7 +250,7 @@ function Shell({ base, section, name }: Props) {
   });
 
   return (
-    <div data-crmv4-root="" data-theme={theme} data-accent={accent} data-role={role} data-zebra={zebra ? "1" : "0"} data-motion={motion} data-compact={compact ? "1" : "0"} data-font={font} data-contrast={contrast ? "1" : "0"} data-freeze={freeze ? "1" : "0"} data-density={density} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
+    <div data-crmv4-root="" data-theme={theme} data-accent={accent} data-role={role} data-zebra={zebra ? "1" : "0"} data-motion={motion} data-compact={compact ? "1" : "0"} data-font={font} data-contrast={contrast ? "1" : "0"} data-freeze={freeze ? "1" : "0"} data-focus={focus ? "1" : "0"} data-density={density} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
       <a className="c4-skip" href="#c4-main">{v4("skipContent")}</a>
       <OfflineBanner v4={v4} />
       <IdleWarning v4={v4} />
@@ -326,6 +336,7 @@ function Shell({ base, section, name }: Props) {
                   <span> / {heading}</span>
                 </nav>
                 <h1 className="c4-page-title">{heading}</h1>
+                {brand ? <p className="c4-brand-line">{brand}</p> : null}
                 <p className="c4-page-sub">{known ? subtitle(view) : tx("comingSoonBody")}</p>
                 <FreshnessBar v4={v4} />
               </div>

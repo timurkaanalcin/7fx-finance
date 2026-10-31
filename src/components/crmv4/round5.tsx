@@ -422,7 +422,7 @@ export function FocusButton({ v4 }: { v4: V4 }) {
     <button type="button" className="c4-chip" data-on={on ? "1" : "0"} onClick={() => {
       const next = !on;
       setOn(next);
-      document.querySelector("[data-crmv4-root]")?.setAttribute("data-focus", next ? "1" : "0");
+      window.dispatchEvent(new CustomEvent("crmv4:focus", { detail: next }));
     }}>{v4("focusMode")}</button>
   );
 }

@@ -19,6 +19,7 @@ import { filterActivity } from "@/lib/crmv4/round7";
 import { fuzzyHit } from "@/lib/crmv4/round8";
 import { RatioCard, toggleWatch, watchIds } from "../round8";
 import { DocStage, FREEZE_PRESETS, KYC_PRESETS, KycChecklist, OnboardTrack, ReasonChips, RichNote, WelcomeList } from "../round9";
+import { CallWindow, CustomerQr, ExportColumns, PresenceFacts, nextCallId, scoreOf } from "../round10";
 import { Card, Chip, Field, Lab, Msg, Pager, State, Status, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, statusTone, useJson, when, type Tx, type UserRow } from "../kit";
 
 const COLUMNS = ["customer", "country", "desk", "sale", "retention", "balance", "status"] as const;
@@ -56,6 +57,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
   const sorted = [...rows].sort((a, b) => {
     if (sort === "name") return String(a.name || "").localeCompare(String(b.name || ""));
     if (sort === "balance") return Number(b.balance ?? b.account?.balance ?? 0) - Number(a.balance ?? a.account?.balance ?? 0);
+    if (sort === "score") return scoreOf(b) - scoreOf(a);
     return 0;
   });
   const [filtersOpen, setFiltersOpen] = useState(true);
@@ -193,6 +195,8 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
           <button type="button" className="c4-btn" aria-expanded={settingsOpen} onClick={() => setSettingsOpen((open) => !open)}>{v4("tableSettings")}</button>
           <button type="button" className="c4-btn" onClick={() => setQuery({ sort: sort === "name" ? "" : "name" })}>{v4("sortName")}</button>
           <button type="button" className="c4-btn" onClick={() => setQuery({ sort: sort === "balance" ? "" : "balance" })}>{v4("sortBalance")}</button>
+          <button type="button" className="c4-btn" onClick={() => setQuery({ sort: sort === "score" ? "" : "score" })}>{v4("sortScore")}</button>
+          {nextCallId(shown) && <Link className="c4-btn" href={crmv4Href(base, `customers/${nextCallId(shown)}`)}>{v4("nextCall")}</Link>}
           <label className="c4-lab">
             <span>{v4("perPage")}</span>
             <select aria-label={v4("perPage")} className="c4-select" value={String(take)} onChange={(event) => setQuery({ take: event.target.value === String(TAKE) ? "" : event.target.value })}>
@@ -200,6 +204,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
             </select>
           </label>
           <button type="button" className="c4-btn" onClick={() => void exportRows(selected.length ? shown.filter((row) => selected.includes(row.id)) : shown)}>{selected.length ? v4("bulkExport") : tx("quickExport")}</button>
+          <ExportColumns v4={v4} onExport={(cols) => void exportRows(selected.length ? shown.filter((row) => selected.includes(row.id)) : shown, cols)} />
           <button type="button" className="c4-btn" onClick={() => void exportLeads()}>{tx("exportLeads")}</button>
         </div>
         {settingsOpen && (
@@ -356,6 +361,8 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
           duplicates={duplicates}
           onSale={async (id, sale) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { saleStatus: sale }); data.reload(); }}
           onInspect={setInspectId}
+          scoreLabel={v4("scoreCol")}
+          scoreFor={scoreOf}
         />
         {selected.length >= 2 && <CompareBoard rows={shown.filter((row) => selected.includes(row.id))} tx={tx} v4={v4} locale={locale} />}
         {pipelineOn && <Pipeline rows={shown} v4={v4} onMove={async (id, status) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { saleStatus: status }); data.reload(); }} />}
@@ -378,12 +385,21 @@ function columnLabel(col: Col, tx: Tx) {
   return tx("status");
 }
 
-async function exportRows(rows: UserRow[]) {
+const EXPORT_FIELDS: Record<string, (row: UserRow) => string> = {
+  name: (row) => String(row.name || ""),
+  email: (row) => String(row.email || ""),
+  country: (row) => String(row.country || ""),
+  desk: (row) => String(row.desk || ""),
+  sale: (row) => String(row.saleStatus || ""),
+  balance: (row) => String(row.balance ?? row.account?.balance ?? ""),
+};
+
+async function exportRows(rows: UserRow[], cols = ["name", "email", "country", "desk", "sale", "balance"]) {
   const ok = await auditExport("customers-page", rows.length, "/crmv4/customers");
   if (!ok) return;
-  downloadCsv("customers.csv", ["name", "email", "country", "desk", "sale", "retention", "balance", "active"], rows.map((row) => [
-    String(row.name || ""), String(row.email || ""), String(row.country || ""), String(row.desk || ""), String(row.saleStatus || ""), String(row.retentionStatus || ""), String(row.balance ?? row.account?.balance ?? ""), row.active === false ? "frozen" : "active",
-  ]));
+  const fields = cols.filter((col) => EXPORT_FIELDS[col]);
+  const picked = fields.length ? fields : Object.keys(EXPORT_FIELDS);
+  downloadCsv("customers.csv", picked, rows.map((row) => picked.map((col) => EXPORT_FIELDS[col](row))));
 }
 
 async function exportLeads() {
@@ -409,9 +425,11 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
   const [quickMsg, setQuickMsg] = useState("");
   const [watching, setWatching] = useState(false);
   const [neighbors, setNeighbors] = useState({ prev: "", next: "" });
+  const [shareUrl, setShareUrl] = useState("");
   useEffect(() => {
     setNeighbors(readNeighborIds(id));
     setWatching(watchIds().includes(id));
+    setShareUrl(window.location.href);
   }, [id]);
   useEffect(() => {
     if (u) {
@@ -448,6 +466,9 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
             <ExpiryNote expiresAt={(u as UserRow & { expiresAt?: string | null }).expiresAt} v4={v4} />
             <PresenceBadge lastSeen={(u as UserRow & { lastSeenAt?: string | null }).lastSeenAt} lastLogin={(u as UserRow & { lastLoginAt?: string | null }).lastLoginAt} v4={v4} locale={locale} />
             <LocalTime country={u.country} v4={v4} />
+            <PresenceFacts row={u} v4={v4} />
+            <CallWindow country={u.country} v4={v4} />
+            <CustomerQr url={shareUrl} v4={v4} />
           </div>
           <Field label={tx("registered")} value={when(u.createdAt, locale)} />
           <Status tone={u.active === false ? "bad" : "ok"}>{u.active === false ? tx("chipFrozen") : tx("chipActive")}</Status>
@@ -457,6 +478,11 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
             <button type="button" className="c4-btn" onClick={async () => {
               try { await navigator.clipboard.writeText(u.id); setQuickMsg(v4("copied")); } catch { setQuickMsg(u.id); }
             }}>{v4("copyId")}</button>
+            <button type="button" className="c4-btn" onClick={async () => {
+              const link = window.location.href;
+              try { await navigator.clipboard.writeText(link); setQuickMsg(v4("shareLink")); } catch { setQuickMsg(link); }
+            }}>{v4("shareLink")}</button>
+            <button type="button" className="c4-btn" onClick={() => window.print()}>{v4("printProfile")}</button>
           </div>
           <Msg text={quickMsg} />
         </header>
