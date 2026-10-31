@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useEscape } from "./round40";
 import { SALE_STATUSES } from "@/lib/membership";
 import type { CrmV4CopyKey } from "@/lib/crmv4/copy";
 import { readJson, writeJson } from "@/lib/crmv4/local";
@@ -625,6 +626,9 @@ export function TicketMeta({ id, openedAt, v4 }: { id: string; openedAt?: string
 export function ReviewDialog({ title, src, pdf, onClose, onApprove, onReject, v4, tx }: { title: string; src?: string; pdf?: boolean; onClose: () => void; onApprove?: () => void; onReject?: () => void; v4: V4; tx: Tx }) {
   const [turn, setTurn] = useState(0);
   const [scale, setScale] = useState(1);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  useEscape(true, onClose);
+  useEffect(() => { closeRef.current?.focus(); }, []);
   return (
     <div className="c4-palette-back" role="presentation" onClick={onClose}>
       <div role="dialog" aria-modal="true" aria-label={v4("zoom")} className="c4-review c4-kyc-luxe" onClick={(event) => event.stopPropagation()}>
@@ -653,7 +657,7 @@ export function ReviewDialog({ title, src, pdf, onClose, onApprove, onReject, v4
         <div className="c4-row">
           {onApprove && <button type="button" className="c4-btn c4-btn-hot" onClick={onApprove}>{tx("approve")}</button>}
           {onReject && <button type="button" className="c4-btn c4-btn-coral" onClick={onReject}>{tx("reject")}</button>}
-          <button type="button" className="c4-btn" onClick={onClose}>{tx("close")}</button>
+          <button ref={closeRef} type="button" className="c4-btn" onClick={onClose}>{tx("close")}</button>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useEscape } from "./round40";
 import type { CrmV4CopyKey } from "@/lib/crmv4/copy";
 import { readJson, writeJson } from "@/lib/crmv4/local";
 import { convert, currencyMix, largestCurrency, withMids, type FxPair } from "@/lib/crmv4/round22";
@@ -102,6 +103,7 @@ export function QuickSheet({ open, onClose, onSearch, v4, tx, closeLabel }: {
   const [userId, setUserId] = useState("");
   const [body, setBody] = useState("");
   const [msg, setMsg] = useState("");
+  useEscape(open, onClose);
   if (!open) return null;
   const local = kind === "call";
   return (
