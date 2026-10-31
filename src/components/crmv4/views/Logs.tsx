@@ -16,6 +16,8 @@ export default function Logs({ tx, locale, q }: { tx: Tx; locale: string; q: str
   const data = useJson<{ communications?: Row[]; hasMore?: boolean }>(`/api/admin/communications?take=${TAKE}&skip=${skip}&q=${encodeURIComponent(q)}${type ? `&type=${encodeURIComponent(type)}` : ""}`);
   const rows = data.data?.communications || [];
   const [msg, setMsg] = useState("");
+  const [callsOnly, setCallsOnly] = useState(false);
+  const [worker, setWorker] = useState("");
   function setQuery(next: Record<string, string>) {
     const p = new URLSearchParams(params.toString());
     for (const [key, value] of Object.entries(next)) {
@@ -63,9 +65,13 @@ export default function Logs({ tx, locale, q }: { tx: Tx; locale: string; q: str
       <div className="c4-tools">
         <button type="button" className="c4-btn" onClick={() => void exportCurrent("logs-page", "logs.csv", ["type", "trader", "description", "worker"], rows.map((row) => [String(row.type || ""), String(row.trader || ""), String(row.description || row.title || ""), String(row.workerName || "")]))}>{crmv4Text(locale, "exportCsv")}</button>
       </div>
+      <div className="c4-tools">
+        <button type="button" className="c4-chip" data-on={callsOnly ? "1" : "0"} onClick={() => { setCallsOnly((on) => !on); setQuery({ type: callsOnly ? "" : "CALL" }); }}>{crmv4Text(locale, "callLog")}</button>
+        <input className="c4-field" value={worker} aria-label={crmv4Text(locale, "callFilter")} placeholder={crmv4Text(locale, "callFilter")} onChange={(event) => setWorker(event.target.value)} />
+      </div>
       <State loading={data.loading} error={data.error} empty={!data.loading && rows.length === 0} tx={tx} onRetry={data.reload} />
       <ul>
-        {rows.map((row) => (
+        {rows.filter((row) => !worker.trim() || String(row.workerName || "").toLowerCase().includes(worker.trim().toLowerCase())).map((row) => (
           <li key={row.id} style={{ padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
             <div>{row.type} · {row.trader || row.title || "—"}</div>
             <div className="c4-muted">{row.description || row.title}</div>

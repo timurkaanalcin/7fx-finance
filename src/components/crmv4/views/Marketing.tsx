@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { crmv4Text } from "@/lib/crmv4/copy";
 import { exportCurrent } from "../round1";
 import { TemplatePreview } from "../round2";
+import { AffiliateDetail } from "../round3";
 import { readJson, writeJson } from "@/lib/crmv4/local";
 import { useI18n } from "@/lib/i18n/context";
 import { Card, Lab, Msg, State, sendJson, useJson, type Tx } from "../kit";
@@ -18,6 +19,7 @@ export default function Marketing({ tx }: { tx: Tx }) {
   const templates = mail.data?.templates || [];
   const [picked, setPicked] = useState("");
   const [openName, setOpenName] = useState("");
+  const [detail, setDetail] = useState("");
   const [audience, setAudience] = useState("");
   const [msg, setMsg] = useState("");
   const current = templates.find((row) => row.id === picked) || null;
@@ -35,7 +37,7 @@ export default function Marketing({ tx }: { tx: Tx }) {
             const open = openName === row.name;
             return (
               <li key={row.name} style={{ padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
-                <button type="button" className="c4-row c4-between" onClick={() => setOpenName(open ? "" : String(row.name || ""))}>
+                <button type="button" className="c4-row c4-between" onClick={() => { setOpenName(open ? "" : String(row.name || "")); setDetail(String(row.name || "")); }}>
                   <span>{row.name || "—"}</span>
                   <span className="c4-muted">{tx("leads")} {row.leads ?? 0} · {crmv4Text(locale, "drill")}</span>
                 </button>
@@ -50,6 +52,7 @@ export default function Marketing({ tx }: { tx: Tx }) {
             );
           })}
         </ul>
+        {detail && <AffiliateDetail name={detail} v4={(key) => crmv4Text(locale, key)} tx={tx} onClose={() => setDetail("")} />}
       </Card>
       <Card title={tx("templates")}>
         <State loading={mail.loading} error={mail.error} empty={!mail.loading && templates.length === 0} tx={tx} onRetry={mail.reload} />

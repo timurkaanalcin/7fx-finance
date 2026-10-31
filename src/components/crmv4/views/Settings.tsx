@@ -3,6 +3,10 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { POTENTIAL_STATUSES, SALE_STATUSES } from "@/lib/membership";
+import { crmv4Text } from "@/lib/crmv4/copy";
+import { useI18n } from "@/lib/i18n/context";
+import { densityMode, storeDensity } from "../round2";
+import { toastHistory } from "../round3";
 import { Card, Lab, Msg, State, sendJson, useJson, type Tx } from "../kit";
 import Ops from "./Ops";
 
@@ -28,12 +32,35 @@ export default function Settings({ tx }: { tx: Tx }) {
           ))}
         </nav>
         <div className="c4-stack">
-          {area === "general" && <General tx={tx} />}
+          {area === "general" && <><General tx={tx} /><LocalPrefs /></>}
           {area === "leads" && <LeadMap tx={tx} />}
           {area !== "general" && area !== "leads" && <Ops tx={tx} area={area} />}
         </div>
       </div>
     </div>
+  );
+}
+
+function LocalPrefs() {
+  const { locale } = useI18n();
+  const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale, key);
+  const [mode, setMode] = useState<"comfortable" | "compact">("comfortable");
+  const [history, setHistory] = useState<{ id: number; text: string }[]>([]);
+  useEffect(() => {
+    setMode(densityMode());
+    setHistory(toastHistory());
+  }, []);
+  return (
+    <Card title={v4("localPrefs")}>
+      <div className="c4-form" style={{ padding: 16 }}>
+        <p>{v4("density")}: {mode === "compact" ? v4("compact") : v4("comfortable")}</p>
+        <button type="button" className="c4-btn" onClick={() => { const next = mode === "compact" ? "comfortable" : "compact"; setMode(next); storeDensity(next); }}>{v4("density")}</button>
+        <button type="button" className="c4-btn" onClick={() => window.print()}>{v4("printDesk")}</button>
+        <h3 className="c4-title">{v4("toastHistory")}</h3>
+        <ul>{history.map((row) => <li key={row.id}>{row.text}</li>)}</ul>
+        {!history.length && <p className="c4-muted">{v4("toastHistory")}</p>}
+      </div>
+    </Card>
   );
 }
 

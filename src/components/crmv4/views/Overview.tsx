@@ -6,6 +6,7 @@ import { ledgerBody } from "@/lib/crmv2/payload";
 import { crmv4Text } from "@/lib/crmv4/copy";
 import { DeskBoard, TasksBoard } from "../round1";
 import { InsightWidgets } from "../round2";
+import { AgentKpis, CampaignMix, ReminderAlerts } from "../round3";
 import { crmv4Href } from "@/lib/crmv4/sections";
 import { Bars, Card, Chip, Field, Kpi, Lab, Msg, Sheet, State, auditExport, downloadCsv, fmtNum, localeTag, money, sendJson, useJson, when, type Tx, type UserRow } from "../kit";
 
@@ -58,8 +59,13 @@ export default function Overview({ base, tx, locale }: Props) {
             <Bars rows={mix} />
           </Card>
         </div>
-        <MonthBoard locale={locale} />
-        <TasksBoard locale={locale} v4={(key) => crmv4Text(locale, key)} tx={tx} />
+        <div className="c4-tasks-luxe">
+          <MonthBoard locale={locale} />
+          <ReminderAlerts v4={(key) => crmv4Text(locale, key)} />
+          <TasksBoard locale={locale} v4={(key) => crmv4Text(locale, key)} tx={tx} />
+        </div>
+        <CampaignMix v4={(key) => crmv4Text(locale, key)} />
+        <AgentKpis v4={(key) => crmv4Text(locale, key)} tx={tx} />
         <InsightWidgets rows={(users.data?.users || []).map((row) => ({ id: row.id, name: row.name, email: row.email, createdAt: row.createdAt, ftd: row.ftd, balance: row.balance ?? row.account?.balance, active: row.active, assigneeName: row.assigneeName, desk: row.desk }))} v4={(key) => crmv4Text(locale, key)} tx={tx} />
         <div className="c4-split">
           <Card title={tx("recentCustomers")} extra={<Link href={crmv4Href(base, "customers")}>{tx("seeAll")}</Link>}>

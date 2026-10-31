@@ -6,6 +6,7 @@ import { approvalBody, approvalEndpoint } from "@/lib/crmv2/payload";
 import { crmv4Text } from "@/lib/crmv4/copy";
 import { ReviewDialog, TicketMeta, exportCurrent } from "../round1";
 import { MacroBar } from "../round2";
+import { groupBy, setTicketAssignee, ticketAssignee } from "../round3";
 import { Card, Chip, Lab, Msg, Sheet, State, Status, SwipeRow, money, sendJson, statusTone, useJson, when, type Tx } from "../kit";
 
 type Ticket = { id: string; kind: string; amount?: number; currency?: string; status?: string; customer?: string; openedAt?: string };
@@ -46,6 +47,8 @@ function Tickets({ tx, locale, q, status, setQuery }: { tx: Tx; locale: string; 
   const data = useJson<{ tickets?: Ticket[] }>(`/api/admin/tickets?status=${encodeURIComponent(status)}&q=${encodeURIComponent(q)}`);
   const [sheet, setSheet] = useState<null | { id: string; kind: string; action: "approve" | "reject" }>(null);
   const [zoom, setZoom] = useState<Ticket | null>(null);
+  const [merged, setMerged] = useState(false);
+  const [assignees, setAssignees] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale, key);
   const list = data.data?.tickets || [];
@@ -60,6 +63,7 @@ function Tickets({ tx, locale, q, status, setQuery }: { tx: Tx; locale: string; 
       </div>
       <div className="c4-tools">
         <button type="button" className="c4-btn" onClick={() => void exportCurrent("tickets-page", "tickets.csv", ["customer", "kind", "amount", "status"], list.map((row) => [String(row.customer || ""), String(row.kind || ""), String(row.amount ?? ""), String(row.status || "")]))}>{v4("exportCsv")}</button>
+        <button type="button" className="c4-chip" data-on={merged ? "1" : "0"} onClick={() => setMerged((on) => !on)}>{v4("mergeView")}</button>
       </div>
       <State loading={data.loading} error={data.error} empty={!data.loading && !list.length} tx={tx} onRetry={data.reload} />
       <div className="c4-stack">
@@ -71,6 +75,9 @@ function Tickets({ tx, locale, q, status, setQuery }: { tx: Tx; locale: string; 
             </div>
             <p className="c4-muted c4-meta">{row.kind}</p>
             <TicketMeta id={`${row.kind}-${row.id}`} openedAt={row.openedAt} v4={v4} />
+            <label className="c4-lab"><span>{v4("ticketAssign")}</span>
+              <input className="c4-field" defaultValue={assignees[row.id] || ticketAssignee(row.id)} aria-label={v4("ticketAssign")} onBlur={(event) => { setTicketAssignee(row.id, event.target.value); setAssignees((map) => ({ ...map, [row.id]: event.target.value })); }} />
+            </label>
             <button type="button" className="c4-btn" onClick={() => setZoom(row)}>{v4("zoom")}</button>
             <hr className="c4-dashed" />
             <SwipeRow
@@ -87,6 +94,13 @@ function Tickets({ tx, locale, q, status, setQuery }: { tx: Tx; locale: string; 
           </article>
         ))}
       </div>
+      {merged && (
+        <ul className="c4-queue">
+          {groupBy(list, (row) => row.customer || "—").map((group) => (
+            <li key={group.key} className="c4-queue-card"><strong>{group.key}</strong> · {group.rows.length}</li>
+          ))}
+        </ul>
+      )}
       {zoom && (
         <ReviewDialog
           title={`${zoom.customer || ""} · ${zoom.kind || ""}`}
