@@ -14,6 +14,8 @@ import { Sheet, sendJson, useJson, when } from "./kit";
 import { CommandPalette, ShortcutHelp, ShortcutHost } from "./desk/command";
 import { DeskFooter } from "./desk/later";
 import { QuickSheet } from "./desk/statement";
+import { StaffPage } from "./desk/people";
+import { readJson } from "@/lib/crmv3/bridge";
 import { groupedNav } from "@/lib/crmv3/local-pack";
 import { useLocal } from "./desk/store";
 import Overview from "./views/Overview";
@@ -62,9 +64,21 @@ function Shell({ base, section, name }: Props) {
   const q = params.get("q") || "";
   const notes = useJson<{ items?: { id: string; title?: string; body?: string; readAt?: string | null; createdAt?: string }[]; unread?: number }>(notesOpen ? "/api/notifications?take=20" : null);
 
+  const [shownName, setShownName] = useState("");
   useEffect(() => {
-    const saved = window.localStorage.getItem("crmv3-theme");
-    if (saved === "light" || saved === "dark") setTheme(saved);
+    const apply = () => {
+      const saved = window.localStorage.getItem("crmv3-theme");
+      if (saved === "light" || saved === "dark") setTheme(saved);
+    };
+    const readName = () => setShownName(String(readJson<{ displayName?: string }>("crmv3-staff-prefs", {}).displayName || ""));
+    apply();
+    readName();
+    window.addEventListener("crmv3:theme", apply);
+    window.addEventListener("crmv3:staff-prefs", readName);
+    return () => {
+      window.removeEventListener("crmv3:theme", apply);
+      window.removeEventListener("crmv3:staff-prefs", readName);
+    };
   }, []);
 
   useEffect(() => {
@@ -113,6 +127,7 @@ function Shell({ base, section, name }: Props) {
 
   function label(tab: string) {
     if (tab === "finance") return v3("money");
+    if (tab === "me") return v3("staffProfile");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
   }
@@ -137,7 +152,7 @@ function Shell({ base, section, name }: Props) {
           ))}
         </nav>
         <div className="c3-rail-foot">
-          <p className="c3-muted c3-meta">{tx("signedInAs")}<span className="c3-value">{name}</span></p>
+          <p className="c3-muted c3-meta">{tx("signedInAs")}<span className="c3-value">{shownName || name}</span></p>
           <button type="button" className="c3-btn" onClick={() => setQuick(true)} aria-label={v3("quickPlus")}>+</button>
           <form method="post" action="/api/auth/logout">
             <input type="hidden" name="nav" value="1" />
@@ -208,6 +223,7 @@ function Shell({ base, section, name }: Props) {
             {view === "support" && <Support tx={tx} locale={locale} q={q} />}
             {view === "marketing" && <Marketing tx={tx} />}
             {view === "settings" && <Settings tx={tx} />}
+            {view === "me" && <StaffPage signInName={name} base={base} locale={locale} />}
             {view === "logs" && <Logs tx={tx} locale={locale} q={q} />}
             {view === "control" && <Control tx={tx} locale={locale} />}
             {!known && (

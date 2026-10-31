@@ -8,6 +8,7 @@ import { crmv3Href } from "@/lib/crmv3/sections";
 import { Card, Chip, Field, Lab, Msg, Pager, Sheet, State, Status, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, statusTone, useJson, when, type Tx, type UserRow } from "../kit";
 import { LeadDesk } from "../desk/lead";
 import { StatementSheet } from "../desk/statement";
+import { CohortBoard, CompareDesk, OnboardCard } from "../desk/people";
 import { ListBar } from "../desk/later";
 import { AssignPreview, DocTools, NoteTools, ProfileBits, QualityList, customerTools, duplicateSet, noteBlocked, rowAgeLabel, rowHealth, rowRisk } from "../desk/panels";
 import { ContactFeed, EntryQuality, applySplit, emailOk } from "../desk/feed";
@@ -100,6 +101,9 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
         }} />
       )}
       <p className="c3-muted">{v3("rowsShowing")} {shown.length}</p>
+      {(selected.length === 1 || selected.length > 3) && <p className="c3-muted">{v3("compareNeed")}</p>}
+      {selected.length >= 2 && <CompareDesk rows={shown.filter((row) => selected.includes(row.id))} base={base} locale={locale} />}
+      <CohortBoard />
       {mode === "board" && <LeadDesk base={base} rows={shown} selected={selected} onSelect={setSelected} />}
       <Card title={tx("customers")} extra={<span className="c3-muted">{typeof data.data?.total === "number" ? `${tx("totalRows")} ${data.data.total}` : ""}</span>}>
         <form
@@ -342,6 +346,15 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           equity={money(u.equity ?? u.account?.equity, u.currency || u.account?.currency, locale)}
           sale={u.saleStatus || "—"}
           notes={user.data?.notes || []}
+          locale={locale}
+        />
+      )}
+      {u && (
+        <OnboardCard
+          id={id}
+          email={u.email || ""}
+          createdAt={u.createdAt}
+          documentsStatus={u.documentsStatus}
           locale={locale}
         />
       )}
