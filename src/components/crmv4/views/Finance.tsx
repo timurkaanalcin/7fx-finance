@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { approvalBody, approvalEndpoint } from "@/lib/crmv2/payload";
 import { exportCurrent } from "../round1";
+import { MoneyTools } from "../round2";
 import { Card, Chip, Lab, Pager, Sheet, State, Status, SwipeRow, TAKE, money, sendJson, statusTone, useJson, when, type Tx } from "../kit";
 import { crmv4Text } from "@/lib/crmv4/copy";
 
@@ -56,6 +57,9 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
       <div className="c4-tools">
         <button type="button" className="c4-btn" onClick={() => void exportCurrent("finance-page", "finance.csv", ["name", "amount", "status", "type"], (rows as MoneyRow[]).map((row) => [String(row.user?.name || (row as unknown as LedgerRow).trader || ""), String(row.amount ?? ""), String(row.status || (row as unknown as LedgerRow).type || ""), String((row as unknown as LedgerRow).type || "")]))}>{crmv4Text(locale, "exportCsv")}</button>
       </div>
+      {tab !== "ledger" && (
+        <MoneyTools rows={rows as MoneyRow[]} kind={tab === "withdrawals" ? "WITHDRAW" : tab === "balance" ? "MARGIN" : "DEPOSIT"} tx={tx} v4={(key) => crmv4Text(locale, key)} locale={locale} onDone={data.reload} />
+      )}
       <State loading={data.loading} error={data.error} empty={!data.loading && rows.length === 0} tx={tx} onRetry={data.reload} />
       {tab === "ledger" ? <Ledger rows={rows as LedgerRow[]} tx={tx} locale={locale} /> : (
         <>

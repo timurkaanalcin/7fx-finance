@@ -12,6 +12,7 @@ import { crmv4Text, type CrmV4CopyKey } from "@/lib/crmv4/copy";
 import { readJson, writeJson } from "@/lib/crmv4/local";
 import { CRM_V4_MORE, CRM_V4_NAV, CRM_V4_SECTIONS, CRM_V4_TABS, crmv4Href, type CrmV4SectionId } from "@/lib/crmv4/sections";
 import { CommandPalette, ShortcutHelp, ShortcutHost } from "./round1";
+import { HelpCenter, OfflineBanner, Tour, UndoHost, densityMode, storeDensity } from "./round2";
 import { Sheet, sendJson, useJson, when } from "./kit";
 import Overview from "./views/Overview";
 import { CustomerDetail, Customers } from "./views/Customers";
@@ -58,6 +59,8 @@ function Shell({ base, section, name }: Props) {
   const [langOpen, setLangOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [guideOpen, setGuideOpen] = useState(false);
+  const [density, setDensity] = useState<"comfortable" | "compact">("comfortable");
   const [noteQuery, setNoteQuery] = useState("");
   const [unreadOnly, setUnreadOnly] = useState(false);
   const [financeOpen, setFinanceOpen] = useState(false);
@@ -78,6 +81,7 @@ function Shell({ base, section, name }: Props) {
   useEffect(() => {
     const saved = window.localStorage.getItem("crmv4-theme");
     if (saved === "light" || saved === "dark") setTheme(saved);
+    setDensity(densityMode());
     setScratch(readJson<Scratch[]>(NOTES_KEY, []));
   }, []);
 
@@ -139,9 +143,11 @@ function Shell({ base, section, name }: Props) {
   });
 
   return (
-    <div data-crmv4-root="" data-theme={theme} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
+    <div data-crmv4-root="" data-theme={theme} data-density={density} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
       <a className="c4-skip" href="#c4-main">{v4("skipContent")}</a>
+      <OfflineBanner v4={v4} />
       <ShortcutHost base={base} v4={v4} onPalette={() => setPaletteOpen(true)} onHelp={setHelpOpen} />
+      <Tour v4={v4} />
       <header className="c4-top">
         <Link href={crmv4Href(base, "")} className="c4-brand" aria-label={v4("v4mark")}>
           <BrandLogo tone={tone} height={26} className="c4-logo" />
@@ -286,6 +292,16 @@ function Shell({ base, section, name }: Props) {
           <LangIcon />
           <span>{locale.toUpperCase()}</span>
         </button>
+        <button type="button" className="c4-rail-btn" aria-label={v4("density")} onClick={() => {
+          const next = density === "compact" ? "comfortable" : "compact";
+          setDensity(next);
+          storeDensity(next);
+        }}>
+          <span>{density === "compact" ? v4("compact") : v4("comfortable")}</span>
+        </button>
+        <button type="button" className="c4-rail-btn" aria-label={v4("helpCenter")} onClick={() => setGuideOpen(true)}>
+          <span>{v4("helpCenter")}</span>
+        </button>
         <button type="button" className="c4-rail-btn" aria-label={theme === "dark" ? tx("themeLight") : tx("themeDark")} onClick={toggleTheme}>
           <SunIcon />
           <span>{theme === "dark" ? tx("themeLight") : tx("themeDark")}</span>
@@ -390,6 +406,8 @@ function Shell({ base, section, name }: Props) {
       )}
       <CommandPalette base={base} open={paletteOpen} onClose={() => setPaletteOpen(false)} v4={v4} />
       <ShortcutHelp open={helpOpen} onClose={() => setHelpOpen(false)} v4={v4} />
+      <HelpCenter open={guideOpen} onClose={() => setGuideOpen(false)} v4={v4} />
+      <UndoHost v4={v4} />
       {langOpen && (
         <Sheet title={v4("language")} onClose={() => setLangOpen(false)} closeLabel={tx("close")}>
           <LanguageSwitcher tone={theme === "dark" ? "dark" : "crm"} />

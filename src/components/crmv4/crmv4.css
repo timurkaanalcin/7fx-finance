@@ -1261,6 +1261,103 @@
   [data-crmv4-root] .c4-desk-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
+[data-crmv4-root] .c4-strip-luxe {
+  background:
+    linear-gradient(180deg, rgba(166, 133, 78, 0.16), transparent 70%),
+    var(--c4-card);
+  border-color: #d9c7a4;
+}
+
+[data-crmv4-root] .c4-strip-luxe h2 {
+  font-size: 22px;
+  letter-spacing: 0.04em;
+}
+
+[data-crmv4-root] .c4-detail-tools,
+[data-crmv4-root] .c4-widget-grid {
+  display: grid;
+  gap: 15px;
+}
+
+[data-crmv4-root] .c4-360-name {
+  margin: 8px 0 0;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+[data-crmv4-root] .c4-money-tools,
+[data-crmv4-root] .c4-queue {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 8px 15px 0;
+  list-style: none;
+}
+
+[data-crmv4-root] .c4-queue-card {
+  padding: 12px 14px;
+  border: 1px solid var(--c4-line);
+  border-radius: 12px;
+  background: var(--c4-card);
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+
+[data-crmv4-root] .c4-queue-card:hover { transform: translateY(-1px); }
+[data-crmv4-root] .c4-queue-card[data-late="1"] { border-color: #c46a4a; box-shadow: inset 3px 0 0 #c46a4a; }
+
+[data-crmv4-root] .c4-compare {
+  margin: 0 15px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(166, 133, 78, 0.12);
+}
+
+[data-crmv4-root] .c4-ticket-luxe {
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(42, 38, 34, 0.04);
+}
+
+[data-crmv4-root] .c4-ticket-luxe:hover { transform: translateY(-1px); }
+
+[data-crmv4-root] .c4-funnel-row {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) 40px;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 15px;
+}
+
+[data-crmv4-root] .c4-statement { padding: 15px; }
+[data-crmv4-root] .c4-diff { margin: 6px 0 0; }
+[data-crmv4-root] .c4-diff div { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 8px; }
+[data-crmv4-root] .c4-diff dt { color: var(--c4-muted); }
+[data-crmv4-root] .c4-diff dd { margin: 0; }
+
+[data-crmv4-root] .c4-offline,
+[data-crmv4-root] .c4-tour,
+[data-crmv4-root] .c4-undo {
+  position: sticky;
+  z-index: 40;
+  margin: 8px 15px 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #2a2622;
+  color: #f6f1e8;
+}
+
+[data-crmv4-root] .c4-offline[data-on="1"] { background: #1b5e3b; }
+
+[data-crmv4-root][data-density="compact"] .c4-table td,
+[data-crmv4-root][data-density="compact"] .c4-queue-card,
+[data-crmv4-root][data-density="compact"] .c4-ticket { padding-top: 6px; padding-bottom: 6px; }
+
+@media (min-width: 1024px) {
+  [data-crmv4-root] .c4-detail-tools,
+  [data-crmv4-root] .c4-widget-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 @keyframes c4-shimmer {
   from { background-position: 100% 0; }
   to { background-position: -100% 0; }

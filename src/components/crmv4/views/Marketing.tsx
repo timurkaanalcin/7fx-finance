@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { crmv4Text } from "@/lib/crmv4/copy";
 import { exportCurrent } from "../round1";
+import { TemplatePreview } from "../round2";
 import { readJson, writeJson } from "@/lib/crmv4/local";
 import { useI18n } from "@/lib/i18n/context";
 import { Card, Lab, Msg, State, sendJson, useJson, type Tx } from "../kit";
@@ -109,6 +110,7 @@ export default function Marketing({ tx }: { tx: Tx }) {
           </Lab>
           {current && (
             <div className="c4-note">
+              <TemplatePreview subject={current.subject || ""} body={current.body || ""} v4={(key) => crmv4Text(locale, key)} />
               <div>{tx("campaignPreview")}: {current.subject}</div>
               <p>{current.body}</p>
               {audience && <p className="c4-muted">{tx("campaignAudience")}: {audience}</p>}
