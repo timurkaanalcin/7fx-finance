@@ -301,6 +301,7 @@ function CustomerTable({ base, rows, tx, locale, selected, dupes, pins, tags, on
 const PARTS = ["profile", "notes", "money", "trades", "files", "access", "activity"] as const;
 
 export function CustomerDetail({ base, id, tx, locale }: { base: string; id: string; tx: Tx; locale: string }) {
+  const v3 = useV3();
   const params = useSearchParams();
   const router = useRouter();
   const part = (params.get("part") || "profile") as (typeof PARTS)[number];
@@ -373,6 +374,13 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
       {part === "files" && <Files id={id} email={u?.email || ""} tx={tx} locale={locale} />}
       {u && part === "access" && <Access id={id} user={u} tx={tx} onDone={user.reload} />}
       {part === "activity" && <Activity id={id} notes={user.data?.notes || []} rows={user.data?.activityEvents || []} tx={tx} locale={locale} />}
+      <nav className="c3-record-foot" aria-label={v3("phoneFoot")}>
+        <button type="button" className="c3-btn" data-on={part === "notes" ? "1" : "0"} onClick={() => setPart("notes")}>{tx("notesTab")}</button>
+        <button type="button" className="c3-btn" data-on={part === "money" ? "1" : "0"} onClick={() => setPart("money")}>{tx("moneyTab")}</button>
+        <button type="button" className="c3-btn" data-on={part === "files" ? "1" : "0"} onClick={() => setPart("files")}>{tx("filesTab")}</button>
+        <Link className="c3-btn" href={crmv3Href(base, "customers")}>{tx("back")}</Link>
+        <p className="c3-muted c3-phone-note">{v3("tabNote")}</p>
+      </nav>
     </div>
   );
 }

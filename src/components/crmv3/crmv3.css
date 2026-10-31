@@ -1903,6 +1903,104 @@
   [data-crmv3-root] .c3-seg-people { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
+[data-crmv3-root] .c3-sys-desk {
+  display: grid;
+  gap: var(--c3-2);
+  min-width: 0;
+  padding: var(--c3-3);
+  border: 1px solid var(--c3-line);
+  border-radius: var(--c3-radius);
+  background: var(--c3-card);
+}
+
+[data-crmv3-root] .c3-sys-desk h2 { margin: 0; }
+
+[data-crmv3-root] .c3-sys-list {
+  display: grid;
+  gap: var(--c3-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv3-root] .c3-sys-list li {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: var(--c3-2);
+  align-items: center;
+  padding: var(--c3-2);
+  border: 1px solid var(--c3-line);
+  border-radius: 8px;
+  background: var(--c3-elev);
+  overflow-wrap: anywhere;
+}
+
+[data-crmv3-root] .c3-record-foot { display: none; }
+
+[data-crmv3-root] .c3-phone-note { display: none; margin: 0; }
+
+@media (min-width: 768px) {
+  [data-crmv3-root] .c3-phone-sheet,
+  [data-crmv3-root] .c3-phone-sheet-body { display: contents; }
+  [data-crmv3-root] .c3-phone-sheet > .c3-sheet-toggle { display: none; }
+}
+
+@media (max-width: 767px) {
+  [data-crmv3-root] .c3-tab,
+  [data-crmv3-root] .c3-phone-sheet > .c3-sheet-toggle,
+  [data-crmv3-root] .c3-record-foot .c3-btn,
+  [data-crmv3-root] .c3-phone-sheet .c3-chip,
+  [data-crmv3-root] .c3-phone-sheet .c3-btn {
+    min-height: 44px;
+  }
+  [data-crmv3-root] .c3-phone-sheet .c3-field,
+  [data-crmv3-root] .c3-phone-sheet .c3-select {
+    height: 44px;
+    min-height: 44px;
+  }
+  [data-crmv3-root] .c3-phone-sheet[data-open="0"] .c3-phone-sheet-body { display: none; }
+  [data-crmv3-root] .c3-phone-sheet[data-open="1"] .c3-phone-sheet-body {
+    position: fixed;
+    z-index: 46;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    max-height: 70dvh;
+    overflow-x: clip;
+    overflow-y: auto;
+    padding: var(--c3-3) var(--c3-3) calc(var(--c3-4) + env(safe-area-inset-bottom, 0px));
+    border-radius: 16px 16px 0 0;
+    background: var(--c3-card);
+    box-shadow: 0 -16px 40px rgba(42, 38, 34, 0.16);
+  }
+  [data-crmv3-root] .c3-record-foot {
+    display: flex;
+    position: sticky;
+    bottom: calc(var(--c3-touch) + (3 * var(--chrome-pad)) + env(safe-area-inset-bottom, 0px));
+    z-index: 6;
+    flex-wrap: wrap;
+    gap: var(--c3-2);
+    margin: var(--c3-2) 0 0;
+    padding: var(--c3-2);
+    border: 1px solid var(--c3-line);
+    border-radius: var(--c3-radius);
+    background: var(--c3-card);
+  }
+  [data-crmv3-root] .c3-record-foot .c3-btn {
+    flex: 1 1 72px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding-inline: var(--c3-2);
+    white-space: nowrap;
+  }
+  [data-crmv3-root] .c3-phone-note {
+    display: block;
+    flex: 1 1 100%;
+  }
+}
+
 @media print {
   [data-crmv3-root][data-print="statement"] .c3-rail,
   [data-crmv3-root][data-print="statement"] .c3-header,

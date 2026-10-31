@@ -21,6 +21,7 @@ import {
 } from "@/lib/crmv3/notices";
 import { crmv3Href } from "@/lib/crmv3/sections";
 import { downloadCsv, money, State, useJson, when, type Tx } from "../kit";
+import { PhoneSheet } from "./system";
 import { useV3 } from "./store";
 
 type Cash = { id: string; amount?: number | null; currency?: string | null; createdAt?: string | null; status?: string | null; user?: { name?: string | null } | null };
@@ -154,6 +155,7 @@ export function SegmentDesk({ tx }: { tx: Tx }) {
       {!people.loading && !people.error && loaded.length === 0 && <p className="c3-empty-card" role="status">{v3("segNone")}</p>}
       {!people.loading && !people.error && loaded.length > 0 && (
         <>
+          <PhoneSheet title={v3("sheetFilters")}>
           <div className="c3-ledger-filters">
             <Select label={v3("segCountry")} value={pick.country} any={v3("segAny")} options={uniqueValues(loaded, "country")} onChange={(value) => set("country", value)} />
             <Select label={v3("segStage")} value={pick.stage} any={v3("segAny")} options={uniqueValues(loaded, "saleStatus")} onChange={(value) => set("stage", value)} />
@@ -168,6 +170,7 @@ export function SegmentDesk({ tx }: { tx: Tx }) {
             </label>
             <Select label={v3("segCurrency")} value={pick.currency} any={v3("segAny")} options={uniqueValues(loaded, "currency")} onChange={(value) => set("currency", value)} />
           </div>
+          </PhoneSheet>
           <p>{v3("segCount")} · {rows.length}</p>
           <h3 className="c3-title">{v3("segByCurrency")}</h3>
           <ul className="c3-seg-counts">

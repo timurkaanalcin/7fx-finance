@@ -3,17 +3,21 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { POTENTIAL_STATUSES, SALE_STATUSES } from "@/lib/membership";
+import { sysSection } from "@/lib/crmv3/system";
 import { Card, Chip, Lab, Msg, State, sendJson, useJson, type Tx } from "../kit";
 import Ops from "./Ops";
 import { useLocal, useV3 } from "../desk/store";
 import { LocalData } from "../desk/later";
+import { PhoneSheet, SystemDesk } from "../desk/system";
 
 const AREAS = ["general", "leads", "desks", "groups", "methods", "assets", "rates", "sponsors", "licenses", "calendar", "import"] as const;
 
 export default function Settings({ tx }: { tx: Tx }) {
+  const v3 = useV3();
   const params = useSearchParams();
   const router = useRouter();
   const area = params.get("area") || "general";
+  const system = area === "methods" || area === "desks" || area === "currencies" ? sysSection(area) : null;
   function setArea(next: string) {
     const p = new URLSearchParams(params.toString());
     if (next === "general") p.delete("area");
@@ -23,14 +27,18 @@ export default function Settings({ tx }: { tx: Tx }) {
   return (
     <div className="c3-stack">
       <p className="c3-muted">{tx("settingsLead")}</p>
-      <div className="c3-row">
-        {AREAS.map((item) => (
-          <Chip key={item} on={area === item} onClick={() => setArea(item)}>{tx(areaLabel(item))}</Chip>
-        ))}
-      </div>
+      <PhoneSheet title={v3("sysTitle")}>
+        <div className="c3-row">
+          {AREAS.map((item) => (
+            <Chip key={item} on={area === item} onClick={() => setArea(item)}>{tx(areaLabel(item))}</Chip>
+          ))}
+          <Chip on={area === "currencies"} onClick={() => setArea("currencies")}>{v3("sysCurrencies")}</Chip>
+        </div>
+      </PhoneSheet>
       {area === "general" && <General tx={tx} />}
       {area === "leads" && <LeadMap tx={tx} />}
-      {area !== "general" && area !== "leads" && <Ops tx={tx} area={area} />}
+      {system && <SystemDesk area={system} tx={tx} />}
+      {area !== "general" && area !== "leads" && !system && <Ops tx={tx} area={area} />}
     </div>
   );
 }
