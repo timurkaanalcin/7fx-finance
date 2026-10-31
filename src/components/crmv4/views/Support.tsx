@@ -13,6 +13,7 @@ import { CsatTrend, FirstTimer, ReplyTemplates, ResponseStat, bulkTicketUpdate, 
 import { ApprovalTimes, BacklogTrend } from "../round11";
 import { SlaBadge, ViewerHint, ticketExport } from "../round14";
 import { Card, Chip, Lab, Msg, Sheet, State, Status, SwipeRow, money, sendJson, statusTone, useJson, when, type Tx } from "../kit";
+import { TicketInbox } from "../round45";
 import { rememberView } from "../round25";
 import { crmv4Href } from "@/lib/crmv4/sections";
 
@@ -44,6 +45,7 @@ export default function Support({ tx, locale, q }: { tx: Tx; locale: string; q: 
         <Chip on={tab === "kyc"} onClick={() => setQuery({ tab: "kyc" })}>{tx("kycQueue")}</Chip>
         <Chip on={tab === "files"} onClick={() => setQuery({ tab: "files" })}>{tx("evrak")}</Chip>
       </div>
+      {tab === "tickets" && <TicketInbox v4={(key) => crmv4Text(locale, key)} tx={tx} locale={locale} />}
       {tab === "tickets" && <Tickets tx={tx} locale={locale} q={q} status={params.get("status") || "PENDING"} openId={params.get("open") || ""} setQuery={setQuery} />}
       {tab === "chat" && <Chat tx={tx} locale={locale} q={q} userId={params.get("user") || ""} setQuery={setQuery} />}
       {tab === "kyc" && <Kyc tx={tx} locale={locale} q={q} />}
