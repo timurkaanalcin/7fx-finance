@@ -7,6 +7,7 @@ import { crmv4Text } from "@/lib/crmv4/copy";
 import { useI18n } from "@/lib/i18n/context";
 import { densityMode, storeDensity } from "../round2";
 import { toastHistory } from "../round3";
+import { AccentPicker, AnnounceEditor } from "../round4";
 import { Card, Lab, Msg, State, sendJson, useJson, type Tx } from "../kit";
 import Ops from "./Ops";
 
@@ -23,7 +24,7 @@ export default function Settings({ tx }: { tx: Tx }) {
     router.replace(`?${p.toString()}`);
   }
   return (
-    <div className="c4-stack">
+    <div className="c4-stack c4-settings-luxe">
       <p className="c4-muted">{tx("settingsLead")}</p>
       <div className="c4-with-side">
         <nav className="c4-side" aria-label={tx("settings")}>
@@ -56,6 +57,8 @@ function LocalPrefs() {
         <p>{v4("density")}: {mode === "compact" ? v4("compact") : v4("comfortable")}</p>
         <button type="button" className="c4-btn" onClick={() => { const next = mode === "compact" ? "comfortable" : "compact"; setMode(next); storeDensity(next); }}>{v4("density")}</button>
         <button type="button" className="c4-btn" onClick={() => window.print()}>{v4("printDesk")}</button>
+        <AccentPicker v4={v4} />
+        <AnnounceEditor v4={v4} />
         <h3 className="c4-title">{v4("toastHistory")}</h3>
         <ul>{history.map((row) => <li key={row.id}>{row.text}</li>)}</ul>
         {!history.length && <p className="c4-muted">{v4("toastHistory")}</p>}

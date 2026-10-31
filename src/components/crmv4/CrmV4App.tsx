@@ -14,6 +14,8 @@ import { CRM_V4_MORE, CRM_V4_NAV, CRM_V4_SECTIONS, CRM_V4_TABS, crmv4Href, type 
 import { CommandPalette, ShortcutHelp, ShortcutHost } from "./round1";
 import { HelpCenter, OfflineBanner, Tour, UndoHost, densityMode, storeDensity } from "./round2";
 import { rememberToast, toastHistory } from "./round3";
+import { AnnounceBar, DeskBoundary, FreshnessBar, LuxeSkeleton, PullSurface, storedAccent, useInboxCursor } from "./round4";
+import type { Accent } from "@/lib/crmv4/round4";
 import { Sheet, sendJson, useJson, when } from "./kit";
 import Overview from "./views/Overview";
 import { CustomerDetail, Customers } from "./views/Customers";
@@ -70,6 +72,7 @@ function Shell({ base, section, name }: Props) {
   const [financeOpen, setFinanceOpen] = useState(false);
   const [gearOpen, setGearOpen] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("light");
+  const [accent, setAccent] = useState<Accent>("champagne");
   const [pull, setPull] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -89,6 +92,10 @@ function Shell({ base, section, name }: Props) {
     setTrail(readTrail());
     setToastsLog(toastHistory());
     setScratch(readJson<Scratch[]>(NOTES_KEY, []));
+    setAccent(storedAccent());
+    const onAccent = (event: Event) => setAccent((event as CustomEvent<Accent>).detail || "champagne");
+    window.addEventListener("crmv4:accent", onAccent);
+    return () => window.removeEventListener("crmv4:accent", onAccent);
   }, []);
 
   useEffect(() => {
@@ -156,9 +163,14 @@ function Shell({ base, section, name }: Props) {
     const blob = `${item.title || ""} ${item.body || ""}`.toLowerCase();
     return !noteQuery.trim() || blob.includes(noteQuery.trim().toLowerCase());
   });
+  const inbox = useInboxCursor(noteItems.length, (index) => {
+    const item = noteItems[index];
+    if (!item || item.readAt) return;
+    void sendJson("/api/notifications", "PATCH", { id: item.id }).then(() => notes.reload());
+  });
 
   return (
-    <div data-crmv4-root="" data-theme={theme} data-density={density} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
+    <div data-crmv4-root="" data-theme={theme} data-accent={accent} data-density={density} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
       <a className="c4-skip" href="#c4-main">{v4("skipContent")}</a>
       <OfflineBanner v4={v4} />
       <ShortcutHost base={base} v4={v4} onPalette={() => setPaletteOpen(true)} onHelp={setHelpOpen} />
@@ -244,12 +256,14 @@ function Shell({ base, section, name }: Props) {
                 </nav>
                 <h1 className="c4-page-title">{heading}</h1>
                 <p className="c4-page-sub">{known ? subtitle(view) : tx("comingSoonBody")}</p>
+                <FreshnessBar v4={v4} />
               </div>
               <form action={crmv4Href(base, "customers")} className="c4-page-search" role="search">
                 <input name="q" defaultValue={q} placeholder={tx("search")} aria-label={tx("search")} className="c4-field" />
               </form>
             </div>
           )}
+          <AnnounceBar />
           <main
           id="c4-main"
           className="c4-stage"
@@ -272,7 +286,8 @@ function Shell({ base, section, name }: Props) {
             }}
           >
             <div className="c4-pull" data-on={pull > 8 || refreshing ? "1" : "0"}>{refreshing ? v4("refreshing") : v4("pullHint")}</div>
-            {view === "overview" && <Overview base={base} tx={tx} locale={locale} />}
+            <DeskBoundary v4={v4}>
+            {view === "overview" && <Overview base={base} tx={tx} locale={locale} name={name} />}
             {view === "customers" && !id && <Customers base={base} tx={tx} locale={locale} q={q} />}
             {view === "customers" && id && <CustomerDetail base={base} id={id} tx={tx} locale={locale} />}
             {view === "finance" && <Finance tx={tx} locale={locale} q={q} />}
@@ -288,6 +303,7 @@ function Shell({ base, section, name }: Props) {
                 <p className="c4-muted c4-pad">{tx("comingSoonBody")}</p>
               </section>
             )}
+            </DeskBoundary>
           </main>
           <footer className="c4-foot">{v4("footer")}</footer>
         </div>
@@ -379,8 +395,9 @@ function Shell({ base, section, name }: Props) {
       )}
 
       {notesOpen && (
-        <Drawer title={tx("notifications")} onClose={() => setNotesOpen(false)} closeLabel={tx("close")}>
-          <div className="c4-stack">
+        <Drawer title={tx("notifications")} className="c4-inbox" onClose={() => setNotesOpen(false)} closeLabel={tx("close")}>
+          <PullSurface hint={v4("pullHint")} onRefresh={notes.reload}>
+          <div className="c4-stack c4-inbox-list" tabIndex={0} onKeyDown={inbox.onKeyDown}>
             <input className="c4-field" value={noteQuery} aria-label={v4("searchInbox")} placeholder={v4("searchInbox")} onChange={(event) => setNoteQuery(event.target.value)} />
             <label className="c4-row"><input type="checkbox" checked={unreadOnly} onChange={(event) => setUnreadOnly(event.target.checked)} /> {v4("unreadOnly")}</label>
             <button
@@ -393,8 +410,9 @@ function Shell({ base, section, name }: Props) {
             >
               {tx("markRead")}{typeof notes.data?.unread === "number" ? ` · ${notes.data.unread}` : ""}
             </button>
-            {noteItems.map((item) => (
-              <div key={item.id} className="c4-note">
+            {notes.loading && <LuxeSkeleton />}
+            {noteItems.map((item, index) => (
+              <div key={item.id} className="c4-note" data-on={inbox.cursor === index ? "1" : "0"} data-unread={item.readAt ? "0" : "1"}>
                 <div className="c4-row c4-between">
                   <span>{item.title || tx("notifications")}</span>
                   {!item.readAt && (
@@ -407,6 +425,7 @@ function Shell({ base, section, name }: Props) {
             ))}
             {!notes.loading && !noteItems.length && <p className="c4-empty-luxe">{tx("noneYet")}</p>}
           </div>
+          </PullSurface>
         </Drawer>
       )}
 
@@ -464,7 +483,7 @@ function initials(name: string) {
   return mark || "A";
 }
 
-function Drawer({ title, onClose, closeLabel, children }: { title: string; onClose: () => void; closeLabel: string; children: ReactNode }) {
+function Drawer({ title, onClose, closeLabel, children, className }: { title: string; onClose: () => void; closeLabel: string; children: ReactNode; className?: string }) {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
@@ -479,7 +498,7 @@ function Drawer({ title, onClose, closeLabel, children }: { title: string; onClo
   }, [onClose]);
   return (
     <div className="c4-drawer-back" role="presentation" onClick={onClose}>
-      <div role="dialog" aria-modal="true" aria-label={title} className="c4-drawer" onClick={(event) => event.stopPropagation()}>
+      <div role="dialog" aria-modal="true" aria-label={title} className={className ? `c4-drawer ${className}` : "c4-drawer"} onClick={(event) => event.stopPropagation()}>
         <div className="c4-grab" aria-hidden />
         <div className="c4-row c4-between">
           <h2 className="c4-title">{title}</h2>
