@@ -606,15 +606,34 @@ export function TicketMeta({ id, openedAt, v4 }: { id: string; openedAt?: string
   );
 }
 
-export function ReviewDialog({ title, src, onClose, onApprove, onReject, v4, tx }: { title: string; src?: string; onClose: () => void; onApprove?: () => void; onReject?: () => void; v4: V4; tx: Tx }) {
+export function ReviewDialog({ title, src, pdf, onClose, onApprove, onReject, v4, tx }: { title: string; src?: string; pdf?: boolean; onClose: () => void; onApprove?: () => void; onReject?: () => void; v4: V4; tx: Tx }) {
+  const [turn, setTurn] = useState(0);
+  const [scale, setScale] = useState(1);
   return (
     <div className="c4-palette-back" role="presentation" onClick={onClose}>
-      <div role="dialog" aria-modal="true" aria-label={v4("zoom")} className="c4-review" onClick={(event) => event.stopPropagation()}>
+      <div role="dialog" aria-modal="true" aria-label={v4("zoom")} className="c4-review c4-kyc-luxe" onClick={(event) => event.stopPropagation()}>
         <h2 className="c4-title">{title}</h2>
-        {src ? (
-          // eslint-disable-next-line @next/next/no-img-element -- authenticated admin file, not a public image
-          <img src={src} alt="" className="c4-zoom" />
-        ) : <p className="c4-muted">{v4("noPreview")}</p>}
+        {src && pdf ? <iframe title={title} src={src} className="c4-pdf" /> : null}
+        {src && !pdf ? (
+          <div className="c4-viewer" onPointerDown={(event) => {
+            const startX = event.clientX;
+            const startY = event.clientY;
+            const node = event.currentTarget.querySelector("img");
+            if (!node) return;
+            const move = (ev: PointerEvent) => { node.style.translate = `${ev.clientX - startX}px ${ev.clientY - startY}px`; };
+            const up = () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); };
+            window.addEventListener("pointermove", move);
+            window.addEventListener("pointerup", up);
+          }}>
+            <div className="c4-row">
+              <button type="button" className="c4-btn" onClick={() => setTurn((value) => (value + 90) % 360)}>{v4("rotate")}</button>
+              <button type="button" className="c4-btn" onClick={() => setScale((value) => Math.min(3, value + 0.25))}>{v4("zoomIn")}</button>
+            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element -- authenticated admin file, not a public image */}
+            <img src={src} alt="" className="c4-zoom" style={{ transform: `rotate(${turn}deg) scale(${scale})` }} />
+          </div>
+        ) : null}
+        {!src && <p className="c4-muted">{v4("noPreview")}</p>}
         <div className="c4-row">
           {onApprove && <button type="button" className="c4-btn c4-btn-hot" onClick={onApprove}>{tx("approve")}</button>}
           {onReject && <button type="button" className="c4-btn c4-btn-coral" onClick={onReject}>{tx("reject")}</button>}

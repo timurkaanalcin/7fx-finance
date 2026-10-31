@@ -11,6 +11,7 @@ import { CountryHeat, DeskLanding, HourHeat, MergeList, NextQueue, SmartLists, S
 import { DailySheet, DeskGoals, ForecastLine, MiniChart } from "../round5";
 import { WeekBoard } from "../round7";
 import { AgentChart, BoardSaver, CohortTable, DeskChart, ExposureAlert, PnlMovers, PositionAge, QuickCreate, SymbolDrill, WatchAlerts } from "../round8";
+import { CallComposer, MyDay, NoteSearch } from "../round9";
 import { crmv4Href } from "@/lib/crmv4/sections";
 import { Bars, Card, Chip, Field, Kpi, Lab, Msg, Sheet, State, auditExport, downloadCsv, fmtNum, localeTag, money, sendJson, useJson, when, type Tx, type UserRow } from "../kit";
 
@@ -33,6 +34,9 @@ export default function Overview({ base, tx, locale, name }: Props) {
   return (
     <div className="c4-stack">
       <DeskLanding name={name || ""} v4={(key) => crmv4Text(locale, key)} />
+      <MyDay name={name || ""} v4={(key) => crmv4Text(locale, key)} tx={tx} />
+      <CallComposer v4={(key) => crmv4Text(locale, key)} tx={tx} />
+      <NoteSearch v4={(key) => crmv4Text(locale, key)} />
       <section className="c4-banner">
         <div className="c4-banner-value">{money(banner, "USD", locale)}</div>
         <div className="c4-banner-label">{tx("income")}</div>

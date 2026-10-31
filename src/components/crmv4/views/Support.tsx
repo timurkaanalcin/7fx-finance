@@ -9,6 +9,7 @@ import { MacroBar } from "../round2";
 import { groupBy, setTicketAssignee, ticketAssignee } from "../round3";
 import { CsatPicker } from "../round4";
 import { SlaHeat, ticketCategory } from "../round6";
+import { CsatTrend, FirstTimer, ReplyTemplates, ResponseStat, bulkTicketUpdate, escalated, exportChat, internalNote, saveInternalNote, toggleEscalated } from "../round9";
 import { Card, Chip, Lab, Msg, Sheet, State, Status, SwipeRow, money, sendJson, statusTone, useJson, when, type Tx } from "../kit";
 
 type Ticket = { id: string; kind: string; amount?: number; currency?: string; status?: string; customer?: string; openedAt?: string };
@@ -50,6 +51,9 @@ function Tickets({ tx, locale, q, status, setQuery }: { tx: Tx; locale: string; 
   const [sheet, setSheet] = useState<null | { id: string; kind: string; action: "approve" | "reject" }>(null);
   const [zoom, setZoom] = useState<Ticket | null>(null);
   const [merged, setMerged] = useState(false);
+  const [picked, setPicked] = useState<string[]>([]);
+  const [reason, setReason] = useState("");
+  const [flags, setFlags] = useState<Record<string, boolean>>({});
   const [assignees, setAssignees] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale, key);
@@ -66,8 +70,15 @@ function Tickets({ tx, locale, q, status, setQuery }: { tx: Tx; locale: string; 
       <div className="c4-tools">
         <button type="button" className="c4-btn" onClick={() => void exportCurrent("tickets-page", "tickets.csv", ["customer", "kind", "amount", "status"], list.map((row) => [String(row.customer || ""), String(row.kind || ""), String(row.amount ?? ""), String(row.status || "")]))}>{v4("exportCsv")}</button>
         <button type="button" className="c4-chip" data-on={merged ? "1" : "0"} onClick={() => setMerged((on) => !on)}>{v4("mergeView")}</button>
+        <input className="c4-field" aria-label={v4("reasonPreset")} value={reason} onChange={(event) => setReason(event.target.value)} />
+        <button type="button" className="c4-btn" onClick={async () => {
+          const rows = list.filter((row) => picked.includes(row.id));
+          const failed = await bulkTicketUpdate(rows, "approve", reason);
+          if (!failed) { setPicked([]); data.reload(); }
+        }}>{v4("bulkTickets")}</button>
       </div>
       <SlaHeat v4={v4} />
+      <CsatTrend ids={list.map((row) => `${row.kind}-${row.id}`)} v4={v4} />
       <State loading={data.loading} error={data.error} empty={!data.loading && !list.length} tx={tx} onRetry={data.reload} />
       <div className="c4-stack">
         {list.map((row) => (
@@ -77,6 +88,13 @@ function Tickets({ tx, locale, q, status, setQuery }: { tx: Tx; locale: string; 
               <Status tone={statusTone(row.status)}>{row.status}</Status>
             </div>
             <p className="c4-muted c4-meta">{row.kind}{ticketCategory(`${row.kind || ""} ${row.customer || ""}`) ? ` · ${ticketCategory(`${row.kind || ""} ${row.customer || ""}`)}` : ""}</p>
+            <label className="c4-row"><input type="checkbox" checked={picked.includes(row.id)} aria-label={row.customer || row.id} onChange={() => setPicked((list) => list.includes(row.id) ? list.filter((item) => item !== row.id) : [...list, row.id])} /></label>
+            <FirstTimer openedAt={row.openedAt} v4={v4} />
+            <button type="button" className="c4-chip" data-on={(flags[`${row.kind}-${row.id}`] ?? escalated(`${row.kind}-${row.id}`)) ? "1" : "0"} onClick={() => {
+              const key = `${row.kind}-${row.id}`;
+              const on = toggleEscalated(key);
+              setFlags((map) => ({ ...map, [key]: on }));
+            }}>{v4("escalate")}</button>
             <TicketMeta id={`${row.kind}-${row.id}`} openedAt={row.openedAt} v4={v4} />
             <CsatPicker id={`${row.kind}-${row.id}`} v4={v4} />
             <label className="c4-lab"><span>{v4("ticketAssign")}</span>
@@ -148,10 +166,13 @@ function Chat({ tx, locale, q, userId, setQuery }: { tx: Tx; locale: string; q: 
   const [msg, setMsg] = useState("");
   const presence = useJson<{ presence?: { customerTyping?: boolean; adminLastReadAt?: string | null } }>(userId ? `/api/admin/chat/presence?userId=${encodeURIComponent(userId)}` : null);
   const [draft, setDraft] = useState("");
+  const [chatQ, setChatQ] = useState("");
+  const [internal, setInternal] = useState("");
   const messages = thread.data?.threads?.[0]?.messages || [];
+  const visible = messages.filter((row) => !chatQ.trim() || String(row.body || "").toLowerCase().includes(chatQ.trim().toLowerCase()));
   const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale, key);
   return (
-    <div className="c4-split">
+    <div className="c4-split c4-chat-luxe">
       <Card title={tx("chat")}>
         <State loading={list.loading} error={list.error} empty={!list.loading && !(list.data?.threads || []).length} tx={tx} onRetry={list.reload} />
         <ul>
@@ -168,8 +189,13 @@ function Chat({ tx, locale, q, userId, setQuery }: { tx: Tx; locale: string; q: 
       <Card title={thread.data?.threads?.[0]?.trader || tx("noThread")}>
         {!userId && <p className="c4-muted" style={{ padding: 16 }}>{tx("noThread")}</p>}
         <State loading={thread.loading} error={thread.error} empty={Boolean(userId) && !thread.loading && messages.length === 0} tx={tx} onRetry={thread.reload} />
+        <div className="c4-row c4-pad">
+          <input className="c4-field" aria-label={v4("searchChat")} placeholder={v4("searchChat")} value={chatQ} onChange={(event) => setChatQ(event.target.value)} />
+          <button type="button" className="c4-btn" onClick={() => void exportChat(messages)}>{v4("exportChat")}</button>
+        </div>
+        <ResponseStat messages={messages} v4={v4} />
         <ul>
-          {messages.map((row) => (
+          {visible.map((row) => (
             <li key={row.id} style={{ padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
               <div>{row.body}</div>
               <div className="c4-muted">{row.workerName || tx("customerMsg")}{row.automatic ? ` · ${tx("automatic")}` : ""} · {when(row.createdAt, locale)}</div>
@@ -196,6 +222,11 @@ function Chat({ tx, locale, q, userId, setQuery }: { tx: Tx; locale: string; q: 
           >
             {presence.data?.presence?.customerTyping && <p className="c4-muted">{v4("typingNow")}</p>}
             <MacroBar v4={v4} onInsert={setDraft} />
+            <ReplyTemplates customer={thread.data?.threads?.[0]?.trader || ""} kind="chat" v4={v4} onInsert={setDraft} />
+            <label className="c4-lab"><span>{v4("internalNote")}</span>
+              <textarea className="c4-field" rows={2} value={internal || (userId ? internalNote(userId) : "")} aria-label={v4("internalNote")} onChange={(event) => setInternal(event.target.value)} onBlur={() => userId && saveInternalNote(userId, internal)} />
+            </label>
+            <p className="c4-muted">{v4("publicReply")}</p>
             <Lab label={tx("writeReply")}><textarea name="message" required rows={3} className="c4-field" value={draft} onChange={(event) => {
               setDraft(event.target.value);
               void fetch("/api/admin/chat/presence", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId, typing: true }) });
