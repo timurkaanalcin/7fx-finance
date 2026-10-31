@@ -223,7 +223,7 @@ export function CustomerDeskTable({
   return (
     <>
       <div
-        className="c4-desk c4-table-scroll"
+        className="c4-desk c4-table-scroll c4-list-sticky"
         data-dense={dense ? "1" : "0"}
         tabIndex={0}
         onKeyDown={(event) => {
