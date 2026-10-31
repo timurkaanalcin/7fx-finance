@@ -92,6 +92,8 @@ export function CommandPalette({ base, open, onClose }: { base: string; open: bo
       { id: "customers", label: label("customers"), href: crmv3Href(base, "customers") },
       { id: "finance", label: v3("money"), href: crmv3Href(base, "finance") },
       { id: "withdraw", label: v3("wdDesk"), href: crmv3Href(base, "withdraw") },
+      { id: "deposit", label: v3("depDesk"), href: crmv3Href(base, "deposit") },
+      { id: "inbox", label: v3("inboxTitle"), href: crmv3Href(base, "inbox") },
       { id: "kyc", label: v3("kycDesk"), href: crmv3Href(base, "kyc") },
       { id: "reports", label: v3("reportsTitle"), href: crmv3Href(base, "reports") },
       { id: "goals", label: v3("goalsTitle"), href: crmv3Href(base, "goals") },
