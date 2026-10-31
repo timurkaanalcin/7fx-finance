@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { AuditTimeline } from "../desk/gallery";
 import { Card, Chip, Lab, Msg, Pager, State, TAKE, sendJson, useJson, when, type Tx } from "../kit";
 
 type Row = { id: string; type?: string; title?: string | null; description?: string; createdAt?: string; workerName?: string | null; trader?: string; traderEmail?: string };
@@ -24,6 +25,8 @@ export default function Logs({ tx, locale, q }: { tx: Tx; locale: string; q: str
     router.replace(`?${p.toString()}`);
   }
   return (
+    <div className="c3-stack">
+    <AuditTimeline locale={locale} tx={tx} />
     <Card title={tx("logs")}>
       <p className="c3-muted" style={{ padding: "8px 16px 0" }}>{tx("logsLead")}</p>
       <div className="c3-tools">
@@ -70,5 +73,6 @@ export default function Logs({ tx, locale, q }: { tx: Tx; locale: string; q: str
       </ul>
       <Pager skip={skip} take={TAKE} hasMore={Boolean(data.data?.hasMore)} tx={tx} onPage={(next) => setQuery({ skip: next ? String(next) : "" })} />
     </Card>
+    </div>
   );
 }
