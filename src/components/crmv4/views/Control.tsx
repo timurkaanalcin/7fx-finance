@@ -8,6 +8,7 @@ import { crmv4Text } from "@/lib/crmv4/copy";
 import { AuditDiff, SessionList } from "../round2";
 import { AuditExport } from "../round4";
 import { ActivityStream, LoginAnomalies } from "../round10";
+import { AuditChanges } from "../round14";
 import { Card, Chip, Field, Lab, Msg, Pager, State, Status, TAKE, sendJson, statusTone, useJson, when, type Tx } from "../kit";
 
 const TABS = ["status", "services", "logs", "backups", "keys", "admins"] as const;
@@ -196,6 +197,7 @@ function LogPanel({ tx, locale }: { tx: Tx; locale: string }) {
             </div>
             <div className="c4-muted">{row.actor || "—"} · {row.target || "—"} · {when(row.at, locale)}</div>
             <AuditDiff detail={row.detail} v4={(key) => crmv4Text(locale, key)} />
+            <AuditChanges detail={row.detail} v4={(key) => crmv4Text(locale, key)} />
           </li>
         ))}
       </ul>
