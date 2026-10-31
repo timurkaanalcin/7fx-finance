@@ -21,6 +21,7 @@ import { DenseList, NoteStudio } from "../desk/table";
 import { FinanceBook } from "../desk/ledger";
 import { KycStudio } from "../desk/gallery";
 import { Dossier } from "../desk/dossier";
+import { SaleBoard } from "../desk/board";
 import { applyList } from "@/lib/crmv3/lists";
 
 export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; locale: string; q: string }) {
@@ -46,6 +47,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
   const v3 = useV3();
   const [lists] = useLists();
   const [mode, setMode] = useState<"list" | "board">("list");
+  const [saleOn, setSaleOn] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
   const [ops, setOps] = useState("");
   const [smart, setSmart] = useState<"" | "quiet" | "funded" | "kyc">("");
@@ -74,6 +76,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
       <div className="c3-row">
         <Chip on={mode === "list"} onClick={() => setMode("list")}>{v3("listView")}</Chip>
         <Chip on={mode === "board"} onClick={() => setMode("board")}>{v3("boardView")}</Chip>
+        <Chip on={saleOn} onClick={() => setSaleOn((on) => !on)}>{v3("bdTitle")}</Chip>
         <Chip on={smart === ""} onClick={() => setSmart("")}>{tx("all")}</Chip>
         <Chip on={smart === "quiet"} onClick={() => setSmart(smart === "quiet" ? "" : "quiet")}>{v3("smartQuiet")}</Chip>
         <Chip on={smart === "funded"} onClick={() => setSmart(smart === "funded" ? "" : "funded")}>{v3("smartFunded")}</Chip>
@@ -118,6 +121,16 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
       {selected.length >= 2 && <CompareDesk rows={shown.filter((row) => selected.includes(row.id))} base={base} locale={locale} />}
       <CohortBoard />
       {mode === "board" && <LeadDesk base={base} rows={shown} selected={selected} onSelect={setSelected} />}
+      {saleOn && (
+        <SaleBoard
+          rows={shown}
+          onMove={async (id, status) => {
+            const res = await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { saleStatus: status });
+            if (!res.ok) throw new Error(res.error || "failed");
+            data.reload();
+          }}
+        />
+      )}
       <Card title={tx("customers")} extra={<span className="c3-muted">{typeof data.data?.total === "number" ? `${tx("totalRows")} ${data.data.total}` : ""}</span>}>
         <form
           className="c3-tools"

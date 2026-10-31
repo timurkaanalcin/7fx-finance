@@ -23,6 +23,7 @@ import { InsightsHome, PrefsHub } from "./desk/insights";
 import { AgendaPage } from "./desk/book";
 import { DeskStaff } from "./desk/today";
 import { NoticeDesk, useNotices } from "./desk/notices";
+import { HelpDrawer } from "./desk/board";
 import { readJson } from "@/lib/crmv3/bridge";
 import { RAIL_KEY, readFold } from "@/lib/crmv3/nav";
 import { MoreNav, RailNav } from "./desk/nav";
@@ -63,6 +64,7 @@ function Shell({ base, section, name }: Props) {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [palette, setPalette] = useState(false);
   const [help, setHelp] = useState(false);
+  const [guide, setGuide] = useState(false);
   const [quick, setQuick] = useState(false);
   const [folded, setFolded] = useState(false);
   const [railQuery, setRailQuery] = useState("");
@@ -193,7 +195,7 @@ function Shell({ base, section, name }: Props) {
   return (
     <div data-crmv3-root="" data-theme={theme} data-fold={folded ? "1" : "0"} data-crmv3-view={id ? `${view}/${id}` : view} className="c3-app font-normal">
       <a className="c3-skip" href="#c3-main">{v3("skipMain")}</a>
-      <ShortcutHost base={base} onPalette={() => setPalette(true)} onHelp={setHelp} />
+      <ShortcutHost base={base} onPalette={() => setPalette(true)} onHelp={(open) => { setHelp(open); if (open) setGuide(false); }} />
       <aside className="c3-rail">
         <div className="c3-rail-brand">
           <BrandLogo tone={theme === "light" ? "ink" : "paper"} height={24} className="c3-logo" />
@@ -235,6 +237,7 @@ function Shell({ base, section, name }: Props) {
             {theme === "dark" ? "Lt" : "Dk"}
           </button>
           <Link href={crmv3Href(base, "me")} className="c3-desk-name">{shownName || name || v3("barProfile")}</Link>
+          <button type="button" className="c3-icon-btn c3-help-btn" onClick={() => setGuide(true)} aria-label={v3("hdTitle")}>?</button>
           <button type="button" className="c3-icon-btn" onClick={() => setNotesOpen(true)} aria-label={tx("notifications")}>
             {notices.unread > 0 ? notices.unread : "•"}
           </button>
@@ -320,12 +323,13 @@ function Shell({ base, section, name }: Props) {
 
       {more && (
         <Sheet title={tx("more")} onClose={() => setMore(false)} closeLabel={tx("close")}>
-          <MoreGroups base={base} view={view} label={label} tx={tx} v3={v3} theme={theme} name={name} onClose={() => setMore(false)} onTheme={toggleTheme} onHelp={() => { setMore(false); setHelp(true); }} />
+          <MoreGroups base={base} view={view} label={label} tx={tx} v3={v3} theme={theme} name={name} onClose={() => setMore(false)} onTheme={toggleTheme} onHelp={() => { setMore(false); setHelp(true); }} onGuide={() => { setMore(false); setGuide(true); }} />
         </Sheet>
       )}
       <QuickSheet open={quick} onClose={() => setQuick(false)} onSearch={() => setSearchOpen(true)} tx={tx} />
       <CommandPalette base={base} open={palette} onClose={() => setPalette(false)} />
-      <ShortcutHelp open={help} onClose={() => setHelp(false)} />
+      <HelpDrawer open={guide} onClose={() => setGuide(false)} onShortcuts={() => { setGuide(false); setHelp(true); }} closeLabel={tx("close")} />
+      <ShortcutHelp open={help} onClose={() => setHelp(false)} onGuide={() => { setHelp(false); setGuide(true); }} />
       {notesOpen && (
         <Sheet title={v3("noticeTitle")} onClose={() => setNotesOpen(false)} closeLabel={tx("close")}>
           <NoticeDesk base={base} locale={locale} tx={tx} notices={notices} />
@@ -335,7 +339,7 @@ function Shell({ base, section, name }: Props) {
   );
 }
 
-function MoreGroups({ base, view, label, tx, v3, theme, name, onClose, onTheme, onHelp }: {
+function MoreGroups({ base, view, label, tx, v3, theme, name, onClose, onTheme, onHelp, onGuide }: {
   base: string;
   view: string;
   label: (tab: string) => string;
@@ -346,6 +350,7 @@ function MoreGroups({ base, view, label, tx, v3, theme, name, onClose, onTheme, 
   onClose: () => void;
   onTheme: () => void;
   onHelp: () => void;
+  onGuide: () => void;
 }) {
   const names = Object.fromEntries(CRM_V3_SECTIONS.map((item) => [item.id, label(item.id)]));
   return (
@@ -354,6 +359,7 @@ function MoreGroups({ base, view, label, tx, v3, theme, name, onClose, onTheme, 
       <section className="c3-stack">
         <h3 className="c3-title">{v3("moreSession")}</h3>
         <button type="button" className="c3-btn" onClick={onHelp}>{v3("footShortcuts")}</button>
+        <button type="button" className="c3-btn" onClick={onGuide}>{v3("hdTitle")}</button>
         <button type="button" className="c3-btn" onClick={() => {
           const root = document.querySelector("[data-crmv3-root]");
           const next = root?.getAttribute("data-motion") === "reduce" ? "" : "reduce";

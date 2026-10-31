@@ -19,6 +19,7 @@ import { GALLERY_AR, GALLERY_DE, GALLERY_EN, GALLERY_RU, GALLERY_TR } from "@/li
 import { NOTICE_AR, NOTICE_DE, NOTICE_EN, NOTICE_RU, NOTICE_TR } from "@/lib/crmv3/copy-notices";
 import { SYSTEM_AR, SYSTEM_DE, SYSTEM_EN, SYSTEM_RU, SYSTEM_TR } from "@/lib/crmv3/copy-system";
 import { DOSSIER_AR, DOSSIER_DE, DOSSIER_EN, DOSSIER_RU, DOSSIER_TR } from "@/lib/crmv3/copy-dossier";
+import { BOARD_AR, BOARD_DE, BOARD_EN, BOARD_RU, BOARD_TR } from "@/lib/crmv3/copy-board";
 
 const enBase = {
   money: "Money",
@@ -29,7 +30,7 @@ const enBase = {
   openRow: "Open",
 };
 
-const en = { ...enBase, ...DESK_EN, ...LATER_EN, ...CASH_EN, ...PEOPLE_EN, ...GOALS_EN, ...LINE_EN, ...REVIEW_EN, ...WD_EN, ...DEP_EN, ...NAV_EN, ...LISTS_EN, ...INSIGHTS_EN, ...BOOK_EN, ...TABLE_EN, ...TODAY_EN, ...LEDGER_EN, ...GALLERY_EN, ...NOTICE_EN, ...SYSTEM_EN, ...DOSSIER_EN };
+const en = { ...enBase, ...DESK_EN, ...LATER_EN, ...CASH_EN, ...PEOPLE_EN, ...GOALS_EN, ...LINE_EN, ...REVIEW_EN, ...WD_EN, ...DEP_EN, ...NAV_EN, ...LISTS_EN, ...INSIGHTS_EN, ...BOOK_EN, ...TABLE_EN, ...TODAY_EN, ...LEDGER_EN, ...GALLERY_EN, ...NOTICE_EN, ...SYSTEM_EN, ...DOSSIER_EN, ...BOARD_EN };
 
 const trBase: typeof enBase = {
   money: "Para",
@@ -40,7 +41,7 @@ const trBase: typeof enBase = {
   openRow: "Aç",
 };
 
-const tr = { ...trBase, ...DESK_TR, ...LATER_TR, ...CASH_TR, ...PEOPLE_TR, ...GOALS_TR, ...LINE_TR, ...REVIEW_TR, ...WD_TR, ...DEP_TR, ...NAV_TR, ...LISTS_TR, ...INSIGHTS_TR, ...BOOK_TR, ...TABLE_TR, ...TODAY_TR, ...LEDGER_TR, ...GALLERY_TR, ...NOTICE_TR, ...SYSTEM_TR, ...DOSSIER_TR };
+const tr = { ...trBase, ...DESK_TR, ...LATER_TR, ...CASH_TR, ...PEOPLE_TR, ...GOALS_TR, ...LINE_TR, ...REVIEW_TR, ...WD_TR, ...DEP_TR, ...NAV_TR, ...LISTS_TR, ...INSIGHTS_TR, ...BOOK_TR, ...TABLE_TR, ...TODAY_TR, ...LEDGER_TR, ...GALLERY_TR, ...NOTICE_TR, ...SYSTEM_TR, ...DOSSIER_TR, ...BOARD_TR };
 
 const deBase: typeof enBase = {
   money: "Geld",
@@ -51,7 +52,7 @@ const deBase: typeof enBase = {
   openRow: "Öffnen",
 };
 
-const de = { ...deBase, ...DESK_DE, ...LATER_DE, ...CASH_DE, ...PEOPLE_DE, ...GOALS_DE, ...LINE_DE, ...REVIEW_DE, ...WD_DE, ...DEP_DE, ...NAV_DE, ...LISTS_DE, ...INSIGHTS_DE, ...BOOK_DE, ...TABLE_DE, ...TODAY_DE, ...LEDGER_DE, ...GALLERY_DE, ...NOTICE_DE, ...SYSTEM_DE, ...DOSSIER_DE };
+const de = { ...deBase, ...DESK_DE, ...LATER_DE, ...CASH_DE, ...PEOPLE_DE, ...GOALS_DE, ...LINE_DE, ...REVIEW_DE, ...WD_DE, ...DEP_DE, ...NAV_DE, ...LISTS_DE, ...INSIGHTS_DE, ...BOOK_DE, ...TABLE_DE, ...TODAY_DE, ...LEDGER_DE, ...GALLERY_DE, ...NOTICE_DE, ...SYSTEM_DE, ...DOSSIER_DE, ...BOARD_DE };
 
 const ruBase: typeof enBase = {
   money: "Деньги",
@@ -62,7 +63,7 @@ const ruBase: typeof enBase = {
   openRow: "Открыть",
 };
 
-const ru = { ...ruBase, ...DESK_RU, ...LATER_RU, ...CASH_RU, ...PEOPLE_RU, ...GOALS_RU, ...LINE_RU, ...REVIEW_RU, ...WD_RU, ...DEP_RU, ...NAV_RU, ...LISTS_RU, ...INSIGHTS_RU, ...BOOK_RU, ...TABLE_RU, ...TODAY_RU, ...LEDGER_RU, ...GALLERY_RU, ...NOTICE_RU, ...SYSTEM_RU, ...DOSSIER_RU };
+const ru = { ...ruBase, ...DESK_RU, ...LATER_RU, ...CASH_RU, ...PEOPLE_RU, ...GOALS_RU, ...LINE_RU, ...REVIEW_RU, ...WD_RU, ...DEP_RU, ...NAV_RU, ...LISTS_RU, ...INSIGHTS_RU, ...BOOK_RU, ...TABLE_RU, ...TODAY_RU, ...LEDGER_RU, ...GALLERY_RU, ...NOTICE_RU, ...SYSTEM_RU, ...DOSSIER_RU, ...BOARD_RU };
 
 const arBase: typeof enBase = {
   money: "المال",
@@ -73,7 +74,7 @@ const arBase: typeof enBase = {
   openRow: "فتح",
 };
 
-const ar = { ...arBase, ...DESK_AR, ...LATER_AR, ...CASH_AR, ...PEOPLE_AR, ...GOALS_AR, ...LINE_AR, ...REVIEW_AR, ...WD_AR, ...DEP_AR, ...NAV_AR, ...LISTS_AR, ...INSIGHTS_AR, ...BOOK_AR, ...TABLE_AR, ...TODAY_AR, ...LEDGER_AR, ...GALLERY_AR, ...NOTICE_AR, ...SYSTEM_AR, ...DOSSIER_AR };
+const ar = { ...arBase, ...DESK_AR, ...LATER_AR, ...CASH_AR, ...PEOPLE_AR, ...GOALS_AR, ...LINE_AR, ...REVIEW_AR, ...WD_AR, ...DEP_AR, ...NAV_AR, ...LISTS_AR, ...INSIGHTS_AR, ...BOOK_AR, ...TABLE_AR, ...TODAY_AR, ...LEDGER_AR, ...GALLERY_AR, ...NOTICE_AR, ...SYSTEM_AR, ...DOSSIER_AR, ...BOARD_AR };
 
 export const CRM_V3_COPY = { en, tr, de, ru, ar };
 
