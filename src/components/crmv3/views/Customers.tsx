@@ -9,6 +9,7 @@ import { Card, Chip, Field, Lab, Msg, Pager, Sheet, State, Status, SwipeRow, TAK
 import { LeadDesk } from "../desk/lead";
 import { StatementSheet } from "../desk/statement";
 import { CohortBoard, CompareDesk, OnboardCard } from "../desk/people";
+import { rememberView } from "../desk/goals";
 import { ListBar } from "../desk/later";
 import { AssignPreview, DocTools, NoteTools, ProfileBits, QualityList, customerTools, duplicateSet, noteBlocked, rowAgeLabel, rowHealth, rowRisk } from "../desk/panels";
 import { ContactFeed, EntryQuality, applySplit, emailOk } from "../desk/feed";
@@ -300,7 +301,8 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
     const prev = JSON.parse(window.localStorage.getItem(key) || "[]") as { id: string; name: string }[];
     const next = [{ id: u.id, name: u.name || u.email || u.id }, ...prev.filter((row) => row.id !== u.id)].slice(0, 8);
     window.localStorage.setItem(key, JSON.stringify(next));
-  }, [u]);
+    rememberView({ kind: "customer", id: u.id, title: u.name || u.email || u.id, href: crmv3Href(base, `customers/${u.id}`) });
+  }, [u, base]);
   function setPart(next: string) {
     const p = new URLSearchParams(params.toString());
     if (next && next !== "profile") p.set("part", next);

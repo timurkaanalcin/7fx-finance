@@ -1,17 +1,19 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { approvalBody, approvalEndpoint } from "@/lib/crmv2/payload";
 import { Card, Chip, Lab, Msg, Sheet, State, Status, SwipeRow, money, sendJson, statusTone, useJson, when, type Tx } from "../kit";
 import { TicketExtras } from "../desk/panels";
+import { rememberView } from "../desk/goals";
+import { crmv3Href } from "@/lib/crmv3/sections";
 
 type Ticket = { id: string; kind: string; amount?: number; currency?: string; status?: string; customer?: string; openedAt?: string };
 type Thread = { traderId?: string; trader?: string; messages?: { body?: string }[] };
 type ChatMessage = { id: string; body?: string; workerName?: string | null; workerId?: string | null; automatic?: boolean; createdAt?: string };
 type Doc = { id: string; name?: string; docType?: string; status?: string; trader?: string; traderId?: string; createdAt?: string };
 
-export default function Support({ tx, locale, q }: { tx: Tx; locale: string; q: string }) {
+export default function Support({ base, tx, locale, q }: { base: string; tx: Tx; locale: string; q: string }) {
   const params = useSearchParams();
   const router = useRouter();
   const tab = params.get("tab") || "tickets";
@@ -32,7 +34,7 @@ export default function Support({ tx, locale, q }: { tx: Tx; locale: string; q: 
         <Chip on={tab === "kyc"} onClick={() => setQuery({ tab: "kyc" })}>{tx("kycQueue")}</Chip>
         <Chip on={tab === "files"} onClick={() => setQuery({ tab: "files" })}>{tx("evrak")}</Chip>
       </div>
-      {tab === "tickets" && <Tickets tx={tx} locale={locale} q={q} status={params.get("status") || "PENDING"} setQuery={setQuery} />}
+      {tab === "tickets" && <Tickets base={base} tx={tx} locale={locale} q={q} status={params.get("status") || "PENDING"} openId={params.get("open") || ""} setQuery={setQuery} />}
       {tab === "chat" && <Chat tx={tx} locale={locale} q={q} userId={params.get("user") || ""} setQuery={setQuery} />}
       {tab === "kyc" && <Kyc tx={tx} locale={locale} q={q} />}
       {tab === "files" && <Files tx={tx} locale={locale} />}
@@ -40,10 +42,23 @@ export default function Support({ tx, locale, q }: { tx: Tx; locale: string; q: 
   );
 }
 
-function Tickets({ tx, locale, q, status, setQuery }: { tx: Tx; locale: string; q: string; status: string; setQuery: (next: Record<string, string>) => void }) {
+function Tickets({ base, tx, locale, q, status, openId, setQuery }: { base: string; tx: Tx; locale: string; q: string; status: string; openId: string; setQuery: (next: Record<string, string>) => void }) {
   const data = useJson<{ tickets?: Ticket[] }>(`/api/admin/tickets?status=${encodeURIComponent(status)}&q=${encodeURIComponent(q)}`);
   const [sheet, setSheet] = useState<null | { id: string; kind: string; action: "approve" | "reject" }>(null);
   const [busy, setBusy] = useState(false);
+  const opened = useRef("");
+  const openTicket = useCallback((row: Ticket) => {
+    setQuery({ open: row.id });
+    rememberView({ kind: "ticket", id: row.id, title: row.customer || row.id, href: crmv3Href(base, "support", { open: row.id }) });
+  }, [base, setQuery]);
+  useEffect(() => {
+    if (!openId || opened.current === openId) return;
+    const row = (data.data?.tickets || []).find((item) => item.id === openId);
+    if (!row) return;
+    opened.current = openId;
+    rememberView({ kind: "ticket", id: row.id, title: row.customer || row.id, href: crmv3Href(base, "support", { open: row.id }) });
+  }, [openId, data.data, base]);
+  const openRow = (data.data?.tickets || []).find((item) => item.id === openId);
   return (
     <Card title={tx("tickets")}>
       <div className="c3-tools">
@@ -54,6 +69,12 @@ function Tickets({ tx, locale, q, status, setQuery }: { tx: Tx; locale: string; 
         ))}
       </div>
       <State loading={data.loading} error={data.error} empty={!data.loading && !(data.data?.tickets || []).length} tx={tx} onRetry={data.reload} />
+      {openRow && (
+        <section className="c3-card" aria-label={openRow.customer || openRow.id}>
+          <p className="c3-pad">{openRow.customer || "—"} · {openRow.kind}</p>
+          <p className="c3-muted c3-pad">{money(openRow.amount, openRow.currency, locale)} · {when(openRow.openedAt, locale)} · {openRow.status || "—"}</p>
+        </section>
+      )}
       <TicketExtras rows={data.data?.tickets || []} />
       <ul>
         {(data.data?.tickets || []).map((row) => (
@@ -66,7 +87,7 @@ function Tickets({ tx, locale, q, status, setQuery }: { tx: Tx; locale: string; 
             >
               <div className="c3-swipe-link">
                 <div className="c3-row c3-between">
-                  <span>{row.customer || "—"} · {row.kind}</span>
+                  <button type="button" className="c3-btn" onClick={() => openTicket(row)}>{row.customer || "—"} · {row.kind}</button>
                   <Status tone={statusTone(row.status)}>{row.status}</Status>
                 </div>
                 <div className="c3-muted">{money(row.amount, row.currency, locale)} · {when(row.openedAt, locale)}</div>
