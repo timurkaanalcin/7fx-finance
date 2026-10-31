@@ -28,6 +28,7 @@ import { ContactFeed, EntryQuality, applySplit, emailOk } from "../round17";
 import { StatementSheet } from "../round21";
 import { CohortBoard, OnboardCard } from "../round24";
 import { rememberView } from "../round25";
+import { LifeLine } from "../round26";
 import { sameEntry } from "@/lib/crmv4/round17";
 import { countActive, decodeView, headerHit, inDateRange, inNumberRange, multiSort } from "@/lib/crmv4/round12";
 import { Card, Chip, Field, Lab, Msg, Pager, State, Status, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, statusTone, useJson, when, type Tx, type UserRow } from "../kit";
@@ -553,6 +554,9 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           </div>
           <Msg text={quickMsg} />
         </header>
+      )}
+      {u && (
+        <LifeLine id={id} email={u.email || ""} notes={user.data?.notes || []} v4={v4} locale={locale} />
       )}
       {u && (
         <OnboardCard

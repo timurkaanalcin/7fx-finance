@@ -132,6 +132,7 @@ export function QuickSheet({ open, onClose, onSearch, v4, tx, closeLabel }: {
             const row = { id: String(Date.now()), at: new Date().toISOString(), outcome: "reached", minutes: 0, next: "", note: body.trim() };
             all[userId.trim()] = [row, ...(all[userId.trim()] || [])].slice(0, 40);
             writeJson(CALL_KEY, all);
+            window.dispatchEvent(new Event("crmv4:call-log"));
             setMsg(v4("quickSaved"));
             setBody("");
             return;

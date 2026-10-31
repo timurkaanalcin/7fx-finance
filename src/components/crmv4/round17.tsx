@@ -77,6 +77,7 @@ export function ContactFeed({ id, notes, events, v4, locale }: {
     const nextRows = [row, ...(all[id] || [])].slice(0, 40);
     all[id] = nextRows;
     writeJson(CALL_KEY, all);
+    window.dispatchEvent(new Event("crmv4:call-log"));
     setCalls(nextRows);
     setMinutes("");
     setNext("");
