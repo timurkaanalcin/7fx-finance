@@ -5,6 +5,7 @@ import { useState } from "react";
 import type { CrmV3CopyKey } from "@/lib/crmv3/copy";
 import { NAV_SECTIONS, activeGroup, filterSection, listedIds, sectionPath, type NavSectionId } from "@/lib/crmv3/nav";
 import { crmv3Href } from "@/lib/crmv3/sections";
+import { SmartMenu } from "./record";
 
 export type V3 = (key: CrmV3CopyKey) => string;
 
@@ -67,6 +68,7 @@ export function GroupedLinks({
                 <span className="c3-rail-name">{names[id] || id}</span>
               </Link>
             ))}
+            {group.id === "work" && <SmartMenu base={base} v3={v3} onPick={onPick} linkClass={linkClass} />}
           </section>
         );
       })}
