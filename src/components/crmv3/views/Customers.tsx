@@ -24,6 +24,7 @@ import { Dossier } from "../desk/dossier";
 import { SaleBoard } from "../desk/board";
 import { BulkDock, RecordThread } from "../desk/picks";
 import { pageAllOn, toggleOne, togglePage } from "@/lib/crmv3/picks";
+import { DayTimeline } from "../desk/risk";
 import { applyList } from "@/lib/crmv3/lists";
 
 export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; locale: string; q: string }) {
@@ -403,6 +404,7 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
       {part === "files" && <Files id={id} email={u?.email || ""} tx={tx} locale={locale} />}
       {u && part === "access" && <Access id={id} user={u} tx={tx} onDone={user.reload} />}
       {part === "activity" && <Activity id={id} notes={user.data?.notes || []} rows={user.data?.activityEvents || []} tx={tx} locale={locale} />}
+      {part === "activity" && <DayTimeline id={id} notes={user.data?.notes || []} events={user.data?.activityEvents || []} locale={locale} />}
       <nav className="c3-record-foot" aria-label={v3("phoneFoot")}>
         <button type="button" className="c3-btn" data-on={part === "notes" ? "1" : "0"} onClick={() => setPart("notes")}>{tx("notesTab")}</button>
         <button type="button" className="c3-btn" data-on={part === "money" ? "1" : "0"} onClick={() => setPart("money")}>{tx("moneyTab")}</button>
