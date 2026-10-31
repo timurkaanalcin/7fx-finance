@@ -7,6 +7,7 @@ import { TemplatePreview } from "../round2";
 import { AffiliateDetail } from "../round3";
 import { readJson, writeJson } from "@/lib/crmv4/local";
 import { useI18n } from "@/lib/i18n/context";
+import { PayoutCard } from "../round10";
 import { Card, Lab, Msg, State, sendJson, useJson, type Tx } from "../kit";
 
 type Template = { id: string; name?: string; subject?: string; body?: string; active?: boolean };
@@ -53,6 +54,7 @@ export default function Marketing({ tx }: { tx: Tx }) {
             );
           })}
         </ul>
+        <PayoutCard amount={rows.reduce((sum, row) => sum + (Number(row.deposits) || 0), 0)} v4={(key) => crmv4Text(locale, key)} />
         {detail && <AffiliateDetail name={detail} v4={(key) => crmv4Text(locale, key)} tx={tx} onClose={() => setDetail("")} />}
       </Card>
       </div>

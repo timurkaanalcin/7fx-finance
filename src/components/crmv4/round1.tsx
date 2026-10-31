@@ -185,7 +185,7 @@ export function FilterBuilder({ rules, onChange, v4 }: { rules: FilterRule[]; on
 
 export function CustomerDeskTable({
   base, rows, tx, locale, v4, columns, dense, widths, onResize, selected, onToggle, onToggleAll,
-  tags, pins, onPin, relative, duplicates, onSale, onInspect,
+  tags, pins, onPin, relative, duplicates, onSale, onInspect, scoreLabel, scoreFor,
 }: {
   base: string;
   rows: UserRow[];
@@ -206,6 +206,8 @@ export function CustomerDeskTable({
   duplicates: Set<string>;
   onSale: (id: string, sale: string) => void;
   onInspect?: (id: string) => void;
+  scoreLabel?: string;
+  scoreFor?: (row: UserRow) => number;
 }) {
   const [cursor, setCursor] = useState(0);
   const [noteFor, setNoteFor] = useState("");
@@ -262,6 +264,7 @@ export function CustomerDeskTable({
                   />
                 </th>
               ))}
+              {scoreLabel && <th>{scoreLabel}</th>}
             </tr>
           </thead>
           <tbody>
@@ -321,6 +324,7 @@ export function CustomerDeskTable({
                       )}
                     </td>
                   ))}
+                  {scoreFor && <td>{scoreFor(row)}</td>}
                 </tr>
               );
             })}
@@ -448,7 +452,7 @@ export function ShortcutHost({ base, v4, onPalette, onHelp }: { base: string; v4
         return;
       }
       if (!armed.current) return;
-      const go: Record<string, string> = { o: "", c: "customers", f: "finance", p: "positions", s: "support", m: "marketing", l: "logs", e: "settings", k: "control" };
+      const go: Record<string, string> = { o: "", c: "customers", f: "finance", p: "positions", s: "support", m: "marketing", l: "logs", e: "settings", k: "control", x: "control" };
       const path = go[event.key.toLowerCase()];
       if (path !== undefined) window.location.assign(crmv4Href(base, path));
       armed.current = false;
@@ -461,7 +465,7 @@ export function ShortcutHost({ base, v4, onPalette, onHelp }: { base: string; v4
 
 export function ShortcutHelp({ open, onClose, v4 }: { open: boolean; onClose: () => void; v4: V4 }) {
   if (!open) return null;
-  const rows = ["Ctrl/Cmd K", "?", "g o", "g c", "g f", "g p", "g s", "g m", "g l", "g e", "g k", "j / k", "Enter", "x"];
+  const rows = ["Ctrl/Cmd K", "?", "g o", "g c", "g f", "g p", "g s", "g m", "g l", "g e", "g k", "g x", "j / k", "Enter", "x"];
   return (
     <div className="c4-palette-back" role="presentation" onClick={onClose}>
       <div role="dialog" aria-modal="true" aria-label={v4("helpShortcut")} className="c4-palette" onClick={(event) => event.stopPropagation()}>

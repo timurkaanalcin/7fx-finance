@@ -7,6 +7,7 @@ import { API_KEY_MIGRATION_SQL } from "@/lib/crmv2/control";
 import { crmv4Text } from "@/lib/crmv4/copy";
 import { AuditDiff, SessionList } from "../round2";
 import { AuditExport } from "../round4";
+import { ActivityStream, LoginAnomalies } from "../round10";
 import { Card, Chip, Field, Lab, Msg, Pager, State, Status, TAKE, sendJson, statusTone, useJson, when, type Tx } from "../kit";
 
 const TABS = ["status", "services", "logs", "backups", "keys", "admins"] as const;
@@ -32,7 +33,13 @@ export default function Control({ tx, locale }: { tx: Tx; locale: string }) {
         ))}
       </div>
       {(tab === "status" || tab === "services") && <StatusPanel tx={tx} locale={locale} />}
-      {tab === "logs" && <LogPanel tx={tx} locale={locale} />}
+      {tab === "logs" && (
+        <div className="c4-stack">
+          <LogPanel tx={tx} locale={locale} />
+          <ActivityStream v4={(key) => crmv4Text(locale, key)} />
+          <LoginAnomalies v4={(key) => crmv4Text(locale, key)} />
+        </div>
+      )}
       {tab === "backups" && <Backups tx={tx} />}
       {tab === "keys" && <Keys tx={tx} />}
       {tab === "admins" && <Admins tx={tx} locale={locale} />}
@@ -154,7 +161,7 @@ function LogPanel({ tx, locale }: { tx: Tx; locale: string }) {
     router.replace(`?${p.toString()}`);
   }
   return (
-    <div className="c4-logs-luxe">
+    <div className="c4-logs-luxe c4-audit-luxe">
     <Card title={tx("logs")}>
       <p className="c4-muted" style={{ padding: "8px 16px 0" }}>{tx("logsHint")}</p>
       <form className="c4-tools" onSubmit={(event) => {
@@ -264,6 +271,7 @@ function Admins({ tx, locale }: { tx: Tx; locale: string }) {
   const [msg, setMsg] = useState("");
   const [edit, setEdit] = useState<Worker | null>(null);
   return (
+    <div className="c4-staff-luxe">
     <Card title={tx("admins")}>
       <p className="c4-muted" style={{ padding: "8px 16px 0" }}>{tx("adminIntro")} {tx("readOnlyHint")}</p>
       <State loading={data.loading} error={data.error} empty={!data.loading && !(data.data?.workers || []).length} tx={tx} onRetry={data.reload} />
@@ -349,5 +357,6 @@ function Admins({ tx, locale }: { tx: Tx; locale: string }) {
         </form>
       )}
     </Card>
+    </div>
   );
 }
