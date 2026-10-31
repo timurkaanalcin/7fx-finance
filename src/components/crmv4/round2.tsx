@@ -408,6 +408,7 @@ export function densityMode(): "comfortable" | "compact" {
 
 export function storeDensity(mode: "comfortable" | "compact") {
   window.localStorage.setItem(DENSITY_KEY, mode);
+  window.dispatchEvent(new Event("crmv4:density"));
 }
 
 type UndoItem = { id: number; label: string; run: () => void };
