@@ -7,6 +7,7 @@ import { ACCOUNT_TYPES, POTENTIAL_STATUSES, RETENTION_STATUSES, SALE_STATUSES, V
 import { crmv3Href } from "@/lib/crmv3/sections";
 import { Card, Chip, Field, Lab, Msg, Pager, Sheet, State, Status, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, statusTone, useJson, when, type Tx, type UserRow } from "../kit";
 import { LeadDesk } from "../desk/lead";
+import { StatementSheet } from "../desk/statement";
 import { ListBar } from "../desk/later";
 import { AssignPreview, DocTools, NoteTools, ProfileBits, QualityList, customerTools, duplicateSet, noteBlocked, rowAgeLabel, rowHealth, rowRisk } from "../desk/panels";
 import { ContactFeed, EntryQuality, applySplit, emailOk } from "../desk/feed";
@@ -329,6 +330,20 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
             <ProfileBits user={u} />
           </div>
         </Card>
+      )}
+      {u && (
+        <StatementSheet
+          id={id}
+          name={u.name || ""}
+          email={u.email || ""}
+          country={u.country || "—"}
+          desk={u.desk || "—"}
+          balance={money(u.balance ?? u.account?.balance, u.currency || u.account?.currency, locale)}
+          equity={money(u.equity ?? u.account?.equity, u.currency || u.account?.currency, locale)}
+          sale={u.saleStatus || "—"}
+          notes={user.data?.notes || []}
+          locale={locale}
+        />
       )}
       <div className="c3-row">
         {PARTS.map((item) => (
