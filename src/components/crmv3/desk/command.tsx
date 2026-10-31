@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { crmv3Href } from "@/lib/crmv3/sections";
 import { trapFocus } from "@/lib/crmv3/bridge";
 import { useJson } from "../kit";
+import { shortcutRows } from "./later";
 import { useV3 } from "./store";
 
 const GO: Record<string, string> = {
@@ -109,6 +110,11 @@ export function ShortcutHelp({ open, onClose }: { open: boolean; onClose: () => 
       <div role="dialog" aria-modal="true" aria-label={v3("cheat")} className="c3-sheet" onClick={(event) => event.stopPropagation()}>
         <h2 className="c3-title">{v3("cheat")}</h2>
         <p className="c3-muted">{v3("helpKeys")}</p>
+        <ul>
+          {shortcutRows(v3).map(([key, text]) => (
+            <li key={key} className="c3-row c3-between"><kbd>{key}</kbd><span>{text}</span></li>
+          ))}
+        </ul>
         <button type="button" className="c3-btn" onClick={onClose}>{v3("closeForm")}</button>
       </div>
     </div>

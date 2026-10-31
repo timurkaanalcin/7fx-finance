@@ -874,3 +874,75 @@
 @media (min-width: 1280px) {
   [data-crmv3-root] .c3-lead { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 }
+
+[data-crmv3-root] .c3-foot {
+  position: fixed;
+  z-index: 35;
+  right: 0;
+  bottom: calc(var(--c3-touch) + (2 * var(--chrome-pad)) + env(safe-area-inset-bottom, 0px));
+  left: 0;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--c3-2);
+  align-items: center;
+  box-sizing: border-box;
+  min-width: 0;
+  padding: var(--chrome-pad);
+  border-top: 1px solid var(--c3-line);
+  background: var(--c3-card);
+  color: var(--c3-muted);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+[data-crmv3-root] .c3-foot span {
+  min-width: 0;
+  overflow: clip;
+}
+
+[data-crmv3-root] .c3-foot .c3-btn {
+  min-height: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  padding: 0 var(--c3-2);
+}
+
+@media (max-width: 1023px) {
+  [data-crmv3-root] .c3-main {
+    padding-bottom: calc(var(--c3-3) + var(--c3-touch) + (6 * var(--chrome-pad)) + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+[data-crmv3-root] .c3-listbar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--c3-card);
+}
+
+[data-crmv3-root] .c3-sticky th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--c3-card);
+}
+
+[data-crmv3-root] .c3-table[data-dense="1"] th,
+[data-crmv3-root] .c3-table[data-dense="1"] td {
+  padding: var(--c3-1);
+}
+
+[data-crmv3-root] .c3-table tr[data-first="1"] {
+  background: var(--c3-gold-soft);
+}
+
+[data-crmv3-root] .c3-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: clip;
+}
+
+@media (min-width: 1024px) {
+  [data-crmv3-root] .c3-foot { position: static; }
+}

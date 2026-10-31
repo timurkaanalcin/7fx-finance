@@ -6,6 +6,7 @@ import { POTENTIAL_STATUSES, SALE_STATUSES } from "@/lib/membership";
 import { Card, Chip, Lab, Msg, State, sendJson, useJson, type Tx } from "../kit";
 import Ops from "./Ops";
 import { useLocal, useV3 } from "../desk/store";
+import { LocalData } from "../desk/later";
 
 const AREAS = ["general", "leads", "desks", "groups", "methods", "assets", "rates", "sponsors", "licenses", "calendar", "import"] as const;
 
@@ -108,6 +109,7 @@ function General({ tx }: { tx: Tx }) {
         <Msg text={msg} />
       </form>
       <DeskPrefs />
+      <LocalData />
     </Card>
   );
 }
