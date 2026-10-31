@@ -8,8 +8,8 @@ import { crmv4Text, type CrmV4CopyKey } from "@/lib/crmv4/copy";
 import { readJson, writeJson } from "@/lib/crmv4/local";
 import { moveItem, type FilterRule } from "@/lib/crmv4/round1";
 import { crmv4Href } from "@/lib/crmv4/sections";
-import { BulkBar, CustomerDeskTable, FilterBuilder, ReviewDialog, duplicateEmails, readTags, rememberCustomer, useDeskMemory, visibleCustomers, type Col as DeskCol } from "../round1";
-import { Customer360, DuplicateScreen, RetentionForm, RoundRobinPreview, StatementView, pushUndo } from "../round2";
+import { BulkBar, FilterBuilder, ReviewDialog, readTags, rememberCustomer, useDeskMemory, visibleCustomers, type Col as DeskCol } from "../round1";
+import { Customer360, DuplicateScreen, RetentionForm, RoundRobinPreview, StatementView } from "../round2";
 import { ContactLine, DocumentsCenter, LocalTime, NoteTemplates, Pipeline, PresenceBadge, TradingOverview, columnPreset, parseOperators } from "../round3";
 import { QuickChips, ValueSpark, WorkspaceTabs, pushWorkspace } from "../round4";
 import { CompareDesk } from "../round23";
@@ -22,13 +22,14 @@ import { DocStage, FREEZE_PRESETS, KYC_PRESETS, KycChecklist, OnboardTrack, Reas
 import { CallWindow, CustomerQr, ExportColumns, PresenceFacts, nextCallId, scoreOf } from "../round10";
 import { BulkRemind, EditLog, EmailHintLine, HandoffNote, NoteCloud, SimilarList } from "../round11";
 import { BulkUntag, ContactSummary, DncFlag, DocAsk, Fold, KeyFacts, LiveBook, MarginGauge, MiniNav, MonthStatement, PreferTime, ProfileList, QuickSwitch, ShareViewButton, TagManager, TxMini, isDnc } from "../round12";
-import { DocDesk, NoteDesk } from "../round15";
+import { DocDesk } from "../round15";
 import { LeadDesk } from "../round16";
 import { ContactFeed, EntryQuality, applySplit, emailOk } from "../round17";
 import { StatementSheet } from "../round21";
 import { CohortBoard, OnboardCard } from "../round24";
 import { ListDesk, RecordHead, applyList, useLists } from "../round31";
 import { TradeBook } from "../round33";
+import { LuxList, NoteStudio } from "../round34";
 import { rememberView } from "../round25";
 import { LifeLine } from "../round26";
 import { sameEntry } from "@/lib/crmv4/round17";
@@ -138,7 +139,6 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
     const name = row.desk || "";
     if (name && !deskNames.includes(name)) deskNames.push(name);
   }
-  const duplicates = duplicateEmails(shown);
 
   useEffect(() => {
     const stored = readJson<Col[]>(COLUMN_KEY, [...COLUMNS]).filter((item) => (COLUMNS as readonly string[]).includes(item));
@@ -406,36 +406,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
           <button type="submit" className="c4-btn c4-btn-hot">{tx("applyWord")}</button>
         </form>
         <State loading={data.loading} error={data.error} empty={!data.loading && tableRows.length === 0} tx={tx} onRetry={data.reload} hint={rows.length ? v4("emptyHint") : undefined} />
-        <CustomerDeskTable
-          base={base}
-          rows={tableRows}
-          tx={tx}
-          locale={locale}
-          v4={v4}
-          columns={columns}
-          dense={dense}
-          widths={memory.widths}
-          onResize={(col, width) => memory.setWidths({ ...memory.widths, [col]: width })}
-          selected={selected}
-          onToggle={(id) => setSelected((list) => list.includes(id) ? list.filter((item) => item !== id) : [...list, id])}
-          onToggleAll={() => setSelected(selected.length === tableRows.length ? [] : tableRows.map((row) => row.id))}
-          tags={memory.tags}
-          pins={memory.pins}
-          onPin={(id) => {
-            const prev = memory.pins;
-            const next = prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id];
-            memory.setPins(next);
-            pushUndo(v4("pin"), () => memory.setPins(prev));
-          }}
-          relative={relative}
-          duplicates={duplicates}
-          onSale={async (id, sale) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { saleStatus: sale }); data.reload(); }}
-          onInspect={setInspectId}
-          scoreLabel={v4("scoreCol")}
-          scoreFor={scoreOf}
-          headerFilters={headers}
-          onHeaderFilter={(col, value) => setHeaders((current) => ({ ...current, [col]: value }))}
-        />
+        <LuxList base={base} rows={tableRows} tx={tx} locale={locale} v4={v4} />
         {tagManagerOn && <TagManager tags={memory.tags} onChange={memory.setTags} v4={v4} />}
         {selected.length >= 2 && <CompareDesk rows={shown.filter((row) => selected.includes(row.id))} base={base} v4={v4} locale={locale} />}
         {pipelineOn && <Pipeline rows={shown} v4={v4} onMove={async (id, status) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { saleStatus: status }); data.reload(); }} />}
@@ -872,12 +843,7 @@ function Notes({ id, notes, tx, locale, onDone }: { id: string; notes: NoteRow[]
       }}>{v4("agentNotes")}</button>
       <Card title={tx("generalNote")}>
         <div className="c4-note-luxe">
-          <NoteDesk notes={notes} v4={v4} tx={tx} locale={locale} save={tx("save")} onSubmit={async (body) => {
-            const res = await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { addNote: body });
-            setMsg(res.ok ? tx("noteSaved") : res.error || tx("failed"));
-            if (res.ok) onDone();
-            return res.ok;
-          }} />
+          <NoteStudio id={id} notes={notes} tx={tx} locale={locale} v4={v4} onSaved={onDone} />
           <Msg text={msg} />
         </div>
       </Card>

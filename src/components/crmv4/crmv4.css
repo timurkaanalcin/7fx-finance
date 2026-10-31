@@ -494,6 +494,52 @@
 [data-crmv4-root] .c4-agenda-grid section[data-today="1"] { box-shadow: inset 3px 0 0 #7a5e30; }
 [data-crmv4-root][data-theme="dark"] .c4-book-luxe,
 [data-crmv4-root][data-theme="dark"] .c4-agenda-luxe { background: #221f1b; color: #f6f1e8; }
+
+[data-crmv4-root] .c4-lux-list,
+[data-crmv4-root] .c4-note-studio,
+[data-crmv4-root] .c4-lux-cards li {
+  border: 1px solid rgba(166, 133, 78, 0.4);
+  border-radius: 16px;
+  background:
+    linear-gradient(165deg, rgba(166, 133, 78, 0.1), transparent 48%),
+    #fffdf8;
+}
+[data-crmv4-root] .c4-lux-list,
+[data-crmv4-root] .c4-note-studio { display: grid; gap: 10px; padding: 14px; }
+[data-crmv4-root] .c4-lux-list .c4-title,
+[data-crmv4-root] .c4-note-studio .c4-title { margin: 0; font-weight: 500; color: #7a5e30; }
+[data-crmv4-root] .c4-lux-desk { display: none; }
+[data-crmv4-root] .c4-lux-cards { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+[data-crmv4-root] .c4-lux-cards li { display: grid; gap: 4px; padding: 10px; }
+[data-crmv4-root] .c4-lux-cards p { margin: 0; }
+[data-crmv4-root] .c4-lux-desk thead th {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  background: #fffdf8;
+  color: #7a5e30;
+  font-weight: 500;
+  font-size: 11px;
+}
+[data-crmv4-root] .c4-lux-list[data-dense="1"] td { padding: 4px 8px; font-size: 12px; }
+[data-crmv4-root] .c4-note-rows,
+[data-crmv4-root] .c4-task-rows { margin: 0; padding: 0; list-style: none; }
+[data-crmv4-root] .c4-note-rows li,
+[data-crmv4-root] .c4-task-rows li { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 0; border-top: 1px solid var(--c4-line); }
+[data-crmv4-root] .c4-note-rows li[data-pinned="1"] { box-shadow: inset 3px 0 0 #7a5e30; }
+[data-crmv4-root] .c4-note-rows mark { background: transparent; color: #7a5e30; font-weight: 500; }
+[data-crmv4-root][data-theme="dark"] .c4-lux-list,
+[data-crmv4-root][data-theme="dark"] .c4-note-studio,
+[data-crmv4-root][data-theme="dark"] .c4-lux-cards li,
+[data-crmv4-root][data-theme="dark"] .c4-lux-desk thead th { background: #221f1b; color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-lux-list .c4-title,
+[data-crmv4-root][data-theme="dark"] .c4-note-studio .c4-title,
+[data-crmv4-root][data-theme="dark"] .c4-lux-desk thead th,
+[data-crmv4-root][data-theme="dark"] .c4-note-rows mark { color: #d4bc86; }
+@media (min-width: 768px) {
+  [data-crmv4-root] .c4-lux-desk { display: block; }
+  [data-crmv4-root] .c4-lux-cards { display: none; }
+}
 @media (min-width: 1024px) {
   [data-crmv4-root] .c4-agenda-grid[data-mode="week"] { grid-template-columns: repeat(7, minmax(0, 1fr)); }
 }
