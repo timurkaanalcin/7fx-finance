@@ -11,7 +11,8 @@ import { crmv2Text, type CrmV2CopyKey } from "@/lib/crmv2/copy";
 import { crmv4Text, type CrmV4CopyKey } from "@/lib/crmv4/copy";
 import { readJson, writeJson } from "@/lib/crmv4/local";
 import { CRM_V4_MORE, CRM_V4_NAV, CRM_V4_SECTIONS, CRM_V4_TABS, crmv4Href, type CrmV4SectionId } from "@/lib/crmv4/sections";
-import { CommandPalette, ShortcutHost } from "./round1";
+import { ShortcutHost } from "./round1";
+import { DeskSearch, WithdrawDesk } from "./round28";
 import { DeskFoot, HelpSheet } from "./round18";
 import { HelpCenter, OfflineBanner, Tour, UndoHost, densityMode, storeDensity } from "./round2";
 import { rememberToast, toastHistory } from "./round3";
@@ -242,6 +243,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "goals") return v4("goalsTitle");
     if (tab === "kyc") return v4("kycDesk");
     if (tab === "reports") return v4("reportsTitle");
+    if (tab === "withdraw") return v4("wdDesk");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -261,6 +263,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "goals") return v4("goalsSub");
     if (tab === "kyc") return v4("kycSub");
     if (tab === "reports") return v4("reportsSub");
+    if (tab === "withdraw") return v4("wdSub");
     return "";
   }
 
@@ -336,6 +339,7 @@ function Shell({ base, section, name }: Props) {
               <Link href={crmv4Href(base, "goals")} data-on={view === "goals" ? "1" : "0"} onClick={() => setGearOpen(false)}>{v4("goalsTitle")}</Link>
               <Link href={crmv4Href(base, "kyc")} data-on={view === "kyc" ? "1" : "0"} onClick={() => setGearOpen(false)}>{v4("kycDesk")}</Link>
               <Link href={crmv4Href(base, "reports")} data-on={view === "reports" ? "1" : "0"} onClick={() => setGearOpen(false)}>{v4("reportsTitle")}</Link>
+              <Link href={crmv4Href(base, "withdraw")} data-on={view === "withdraw" ? "1" : "0"} onClick={() => setGearOpen(false)}>{v4("wdDesk")}</Link>
               <Link href={crmv4Href(base, "settings")} data-on={view === "settings" ? "1" : "0"} onClick={() => setGearOpen(false)}>{tx("settings")}</Link>
               <Link href={crmv4Href(base, "control")} data-on={view === "control" ? "1" : "0"} onClick={() => setGearOpen(false)}>{tx("control")}</Link>
             </div>
@@ -415,6 +419,7 @@ function Shell({ base, section, name }: Props) {
             {view === "goals" && <GoalsPage v4={v4} locale={locale} />}
             {view === "kyc" && <KycDesk v4={v4} tx={tx} locale={locale} />}
             {view === "reports" && <ReportsPage v4={v4} locale={locale} />}
+            {view === "withdraw" && <WithdrawDesk base={base} v4={v4} tx={tx} locale={locale} />}
             {view === "logs" && <Logs tx={tx} locale={locale} q={q} />}
             {view === "control" && <Control tx={tx} locale={locale} />}
             {!known && (
@@ -583,7 +588,7 @@ function Shell({ base, section, name }: Props) {
       )}
       <Fab v4={v4} onCreate={() => setQuickOpen(true)} />
       <QuickSheet open={quickOpen} onClose={() => setQuickOpen(false)} onSearch={() => setPaletteOpen(true)} v4={v4} tx={tx} closeLabel={tx("close")} />
-      <CommandPalette base={base} open={paletteOpen} onClose={() => setPaletteOpen(false)} v4={v4} />
+      <DeskSearch base={base} open={paletteOpen} onClose={() => setPaletteOpen(false)} v4={v4} locale={locale} />
       <HelpSheet open={helpOpen} onClose={() => setHelpOpen(false)} v4={v4} closeLabel={tx("close")} />
       <HelpCenter open={guideOpen} onClose={() => setGuideOpen(false)} v4={v4} />
       <UndoHost v4={v4} />
