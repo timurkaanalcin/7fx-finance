@@ -26,6 +26,7 @@ import { DocDesk, NoteDesk } from "../round15";
 import { LeadDesk } from "../round16";
 import { ContactFeed, EntryQuality, applySplit, emailOk } from "../round17";
 import { StatementSheet } from "../round21";
+import { CohortBoard, OnboardCard } from "../round24";
 import { sameEntry } from "@/lib/crmv4/round17";
 import { countActive, decodeView, headerHit, inDateRange, inNumberRange, multiSort } from "@/lib/crmv4/round12";
 import { Card, Chip, Field, Lab, Msg, Pager, State, Status, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, statusTone, useJson, when, type Tx, type UserRow } from "../kit";
@@ -186,6 +187,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
     <div className="c4-stack">
       <p className="c4-muted">{tx("customersLead")}</p>
       <Card title={tx("customers")} extra={<span className="c4-muted">{typeof data.data?.total === "number" ? `${tx("totalRows")} ${data.data.total}` : ""}</span>}>
+        <CohortBoard v4={v4} />
         <LeadDesk rows={shown} v4={v4} base={base} selected={selected} onSelect={setSelected} />
         <div className="c4-presets" data-presets="">
           {presets.map((preset) => (
@@ -549,6 +551,16 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           </div>
           <Msg text={quickMsg} />
         </header>
+      )}
+      {u && (
+        <OnboardCard
+          id={id}
+          email={u.email || ""}
+          createdAt={u.createdAt}
+          documentsStatus={u.documentsStatus}
+          v4={v4}
+          locale={locale}
+        />
       )}
       {u && (
         <StatementSheet

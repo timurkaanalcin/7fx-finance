@@ -20,6 +20,7 @@ import { IdleWarning, storedRole, storedZebra } from "./round5";
 import { CallTarget, Fab, MotionPref, storedMotion } from "./round6";
 import { groupedNav } from "@/lib/crmv4/round20";
 import { QuickSheet } from "./round22";
+import { StaffPage } from "./round24";
 import { lastView, playPing, rememberView, soundEnabled, ticketAlertsOn } from "./round7";
 import { resolvedTheme, storedContrast, storedFont, storedFreeze, themeMode } from "./round8";
 import { readBrand } from "./round10";
@@ -73,6 +74,7 @@ function Shell({ base, section, name }: Props) {
   const [quickOpen, setQuickOpen] = useState(false);
   const [guideOpen, setGuideOpen] = useState(false);
   const [density, setDensity] = useState<"comfortable" | "compact">("comfortable");
+  const [shownName, setShownName] = useState("");
   const [trail, setTrail] = useState<string[]>([]);
   const [toastsLog, setToastsLog] = useState<{ id: number; text: string; ok: boolean }[]>([]);
   const [logOpen, setLogOpen] = useState(false);
@@ -122,6 +124,8 @@ function Shell({ base, section, name }: Props) {
     const media = window.matchMedia("(prefers-color-scheme: dark)");
     media.addEventListener("change", onMode);
     setDensity(densityMode());
+    const onDensity = () => setDensity(densityMode());
+    window.addEventListener("crmv4:density", onDensity);
     setTrail(readTrail());
     setToastsLog(toastHistory());
     setScratch(readJson<Scratch[]>(NOTES_KEY, []));
@@ -151,10 +155,21 @@ function Shell({ base, section, name }: Props) {
       window.removeEventListener("crmv4:contrast", onContrast);
       window.removeEventListener("crmv4:freeze", onFreeze);
       window.removeEventListener("crmv4:theme-mode", onMode);
+      window.removeEventListener("crmv4:density", onDensity);
       window.removeEventListener("crmv4:focus", onFocus);
       window.removeEventListener("crmv4:brand", onBrand);
       media.removeEventListener("change", onMode);
     };
+  }, []);
+
+  useEffect(() => {
+    const read = () => {
+      const prefs = readJson<{ displayName?: string }>("crmv4-staff-prefs", {});
+      setShownName(String(prefs.displayName || "").trim());
+    };
+    read();
+    window.addEventListener("crmv4:staff-prefs", read);
+    return () => window.removeEventListener("crmv4:staff-prefs", read);
   }, []);
 
   useEffect(() => {
@@ -217,9 +232,11 @@ function Shell({ base, section, name }: Props) {
     const next = theme === "dark" ? "light" : "dark";
     setTheme(next);
     window.localStorage.setItem("crmv4-theme-mode", next);
+    window.dispatchEvent(new Event("crmv4:theme-mode"));
   }
 
   function label(tab: string) {
+    if (tab === "me") return v4("staffProfile");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -235,6 +252,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "logs") return v4("subLogs");
     if (tab === "settings") return v4("subSettings");
     if (tab === "control") return v4("subControl");
+    if (tab === "me") return v4("staffSub");
     return "";
   }
 
@@ -328,7 +346,7 @@ function Shell({ base, section, name }: Props) {
       </header>
 
       <div className="c4-frame">
-        <div className="c4-panel" onScroll={(event) => setCompact(event.currentTarget.scrollTop > 24)}>
+        <div className="c4-panel" data-view={view} onScroll={(event) => setCompact(event.currentTarget.scrollTop > 24)}>
           {!id && (
             <div className="c4-pagehead">
               <div>
@@ -389,6 +407,7 @@ function Shell({ base, section, name }: Props) {
             {view === "support" && <Support tx={tx} locale={locale} q={q} />}
             {view === "marketing" && <Marketing tx={tx} />}
             {view === "settings" && <Settings tx={tx} />}
+            {view === "me" && <StaffPage signInName={name} base={base} v4={v4} locale={locale} />}
             {view === "logs" && <Logs tx={tx} locale={locale} q={q} />}
             {view === "control" && <Control tx={tx} locale={locale} />}
             {!known && (
@@ -406,9 +425,9 @@ function Shell({ base, section, name }: Props) {
       <aside className="c4-rail c4-rail-luxe" aria-label={v4("admin")}>
         <button type="button" className="c4-rail-btn c4-plus" aria-label={v4("quickPlus")} onClick={() => setQuickOpen(true)}>+</button>
         <CallTarget v4={v4} />
-        <button type="button" className="c4-rail-btn" aria-label={name}>
-          <span className="c4-avatar">{initials(name)}</span>
-          <span>{v4("admin")}</span>
+        <button type="button" className="c4-rail-btn" aria-label={`${shownName || name} ${v4("staffProfile")}`} onClick={() => window.location.assign(crmv4Href(base, "me"))}>
+          <span className="c4-avatar">{initials(shownName || name)}</span>
+          <span>{shownName || v4("admin")}</span>
         </button>
         <button type="button" className="c4-rail-btn" aria-label={tx("notifications")} onClick={() => setNotesOpen(true)}>
           <BellIcon />
