@@ -11,7 +11,8 @@ import { crmv4Href } from "@/lib/crmv4/sections";
 import { BulkBar, CustomerDeskTable, FilterBuilder, ReviewDialog, duplicateEmails, readTags, rememberCustomer, useDeskMemory, visibleCustomers, type Col as DeskCol } from "../round1";
 import { Customer360, DuplicateScreen, RetentionForm, RoundRobinPreview, StatementView, pushUndo } from "../round2";
 import { ContactLine, DocumentsCenter, LocalTime, NoteTemplates, Pipeline, PresenceBadge, TradingOverview, columnPreset, parseOperators } from "../round3";
-import { CompareBoard, QuickChips, ValueSpark, WorkspaceTabs, pushWorkspace } from "../round4";
+import { QuickChips, ValueSpark, WorkspaceTabs, pushWorkspace } from "../round4";
+import { CompareDesk } from "../round23";
 import { BirthdayList, BulkNote, CallbackButton, DeskSwitch, JourneyMap, SearchHistory, WinLossCard, customerSegment, notePinned, rememberSearch, toggleNotePin } from "../round5";
 import { AgingBoard, ConversionStat, DepositorBoard, DocGallery, DomainBoard, EquityCurve, ExpiryNote, RiskBadge, StreakBoard, TeamThread, WeeklyDigest, copyFilterLink } from "../round6";
 import { CompletenessMeter, ImportPreview, InlineProfile, LangBadge, SourceBoard, StaleList, StatusWatch, TagCloud } from "../round7";
@@ -426,7 +427,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
           onHeaderFilter={(col, value) => setHeaders((current) => ({ ...current, [col]: value }))}
         />
         {tagManagerOn && <TagManager tags={memory.tags} onChange={memory.setTags} v4={v4} />}
-        {selected.length >= 2 && <CompareBoard rows={shown.filter((row) => selected.includes(row.id))} tx={tx} v4={v4} locale={locale} />}
+        {selected.length >= 2 && <CompareDesk rows={shown.filter((row) => selected.includes(row.id))} base={base} v4={v4} locale={locale} />}
         {pipelineOn && <Pipeline rows={shown} v4={v4} onMove={async (id, status) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { saleStatus: status }); data.reload(); }} />}
         <RoundRobinPreview ids={selected} v4={v4} tx={tx} onApplied={() => { setSelected([]); data.reload(); }} />
         <DuplicateScreen v4={v4} tx={tx} />
