@@ -1,7 +1,9 @@
 "use client";
 
 import "../../globals.css";
+import "@/styles/luxury.css";
 import SignOutForm from "@/components/auth/SignOutForm";
+import FxButton from "@/components/ui/FxButton";
 import NotificationBell from "@/components/notifications/NotificationBell";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -93,6 +95,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
   }
 
   const flatMobile = CRM_NAV_GROUPS.flatMap((g) => g.items);
+  const initial = (name.trim().slice(0, 1) || "A").toUpperCase();
 
   return (
     <CrmSecurityShell adminName={name} adminEmail={email} adminId={adminId} readOnly={readOnly}>
@@ -194,33 +197,36 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
               );
             })}
           </div>
-          <div className="fx-crm-actions ml-auto flex items-center gap-2 text-[11px] text-neutral-500">
-            <button
-              type="button"
+          <div className="fx-crm-actions fx-toolbar ml-auto text-[12px]">
+            <FxButton
+              variant="secondary"
+              size="sm"
+              className="fx-btn--pill"
               onClick={() => window.dispatchEvent(new Event("fx-crm-palette"))}
-              className="flex items-center gap-1.5 rounded border border-black/10 px-2 py-1 text-neutral-500 hover:bg-neutral-100 hover:text-black"
               aria-label={t("crm.palette.title")}
               title={`${t("crm.palette.title")} (Ctrl/⌘ + K)`}
             >
               <span aria-hidden>⌕</span>
               <span className="hidden sm:inline">{t("crm.palette.search")}</span>
-              <kbd className="hidden rounded bg-neutral-100 px-1 text-[9px] text-neutral-500 lg:inline">⌘K</kbd>
-            </button>
+              <kbd className="fx-kbd hidden lg:inline">⌘K</kbd>
+            </FxButton>
             <NotificationBell enableButton liveAlerts pollMs={5000} />
+            <span className="fx-toolbar__sep" aria-hidden="true" />
             <LanguageSwitcher compact tone="crm" />
             <CrmShortcuts />
-            <span className="hidden sm:inline">{name}{readOnly ? (
-            <span className="ml-1 rounded bg-amber-50 px-1.5 py-0.5 text-[9px] font-semibold uppercase text-amber-700">{t("crm.ui.readOnly")}</span>
-          ) : null}</span>
-            <Link
-              href="/trade"
-              className="rounded bg-neutral-100 px-2 py-1 hover:bg-neutral-100 hover:text-black"
-            >
+            <span className="fx-userchip hidden sm:inline-flex" title={email || name}>
+              <span className="fx-userchip__mark" aria-hidden="true">{initial}</span>
+              <span className="fx-userchip__name">{name}</span>
+              {readOnly ? <span className="fx-chip">{t("crm.ui.readOnly")}</span> : null}
+            </span>
+            <span className="fx-toolbar__sep" aria-hidden="true" />
+            <Link href="/trade" className="fx-btn fx-btn--secondary fx-btn--sm">
               {t("crm.terminal")}
             </Link>
             <SignOutForm
               label={t("crm.signOut")}
-              buttonClassName="rounded px-2 py-1 hover:bg-neutral-100 hover:text-black"
+              className="fx-toolbar__slot"
+              buttonClassName="fx-btn fx-btn--ghost fx-btn--sm fx-btn--danger"
             />
           </div>
         </header>

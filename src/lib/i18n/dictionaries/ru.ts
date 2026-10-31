@@ -647,6 +647,8 @@ export const ru: Dict = {
   "term.top.equity": "Средства",
   "term.top.pl": "П/У",
   "term.top.credit": "Кредит",
+  "term.acct.show": "Показать цифры",
+  "term.acct.hide": "Скрыть цифры",
   "term.ticket.size": "Примерный размер сделки (лот × контракт × цена)",
   "term.ticket.slPnl": "Оценка П/У, если сработает стоп-лосс",
   "term.watch.spread": "Спред (аск − бид)",

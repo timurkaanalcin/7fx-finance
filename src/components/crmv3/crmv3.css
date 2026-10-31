@@ -753,3 +753,25 @@
   [data-crmv3-root] .c3-tab,
   [data-crmv3-root] .c3-swipe-face { transition: none; }
 }
+
+/* Shared luxury control scale. Fills stay on the v3 tones above. */
+[data-crmv3-root] .c3-btn,
+[data-crmv3-root] .c3-field,
+[data-crmv3-root] .c3-select {
+  border-radius: var(--fx-btn-radius, 10px);
+}
+[data-crmv3-root] .c3-btn {
+  min-height: var(--fx-btn-h, 40px);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+[data-crmv3-root] .c3-field,
+[data-crmv3-root] .c3-select {
+  min-height: var(--fx-btn-h, 40px);
+}
+[data-crmv3-root] .c3-btn:focus-visible,
+[data-crmv3-root] .c3-field:focus-visible,
+[data-crmv3-root] .c3-select:focus-visible {
+  outline: 2px solid var(--fx-lux-gold, #c6a56a);
+  outline-offset: 2px;
+}

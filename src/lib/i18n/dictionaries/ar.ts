@@ -647,6 +647,8 @@ export const ar: Dict = {
   "term.top.equity": "حقوق الملكية",
   "term.top.pl": "الربح/الخسارة",
   "term.top.credit": "الائتمان",
+  "term.acct.show": "إظهار الأرقام",
+  "term.acct.hide": "إخفاء الأرقام",
   "term.ticket.size": "حجم الصفقة التقريبي (لوت × العقد × السعر)",
   "term.ticket.slPnl": "الربح/الخسارة التقديرية إذا تم وقف الخسارة",
   "term.watch.spread": "السبريد (بيع − شراء)",

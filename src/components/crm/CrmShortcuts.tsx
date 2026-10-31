@@ -65,7 +65,7 @@ export default function CrmShortcuts() {
         aria-label={t("crm.kb.title")}
         title={t("crm.kb.title")}
         data-fx-shortcuts=""
-        className="flex h-7 w-7 items-center justify-center rounded border border-black/10 font-medium text-neutral-600 hover:bg-neutral-100 hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-black"
+        className="fx-btn fx-btn--icon fx-btn--secondary fx-btn--sm"
       >
         ?
       </button>

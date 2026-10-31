@@ -687,6 +687,8 @@ export const de: Dict = {
   "term.top.equity": "Eigenkapital",
   "term.top.pl": "G/V",
   "term.top.credit": "Kredit",
+  "term.acct.show": "Zahlen zeigen",
+  "term.acct.hide": "Zahlen ausblenden",
   "term.ticket.size": "Ungefähre Positionsgröße (Lot × Kontrakt × Preis)",
   "term.ticket.slPnl": "Geschätzter G/V, wenn der Stop-Loss erreicht wird",
   "term.watch.spread": "Spread (Ask − Bid)",

@@ -260,10 +260,10 @@ export default function NotificationBell({
             if (pushState === "granted" && vapid) return;
             void subscribe(true);
           }}
-          className={`whitespace-nowrap rounded border px-2 py-1 text-[10px] font-semibold ${
+          className={`fx-btn fx-btn--pill fx-btn--sm ${
             pushState === "granted" && vapid
-              ? "border-[#26a69a]/40 bg-[#26a69a]/10 text-[#0f766e]"
-              : "border-black/10 bg-white text-neutral-800 hover:bg-neutral-100"
+              ? "fx-pill--ok"
+              : "fx-btn--secondary"
           }`}
           aria-label={t("term.notify.enableBtn")}
         >
@@ -275,20 +275,20 @@ export default function NotificationBell({
           type="button"
           aria-label={`${t("term.notify.title")}${unread ? ` (${t("term.notify.unread").replace("{n}", String(unread))})` : ""}`}
           onClick={() => setOpen((o) => !o)}
-          className={`relative inline-flex h-8 w-8 items-center justify-center rounded-full border ${dark ? "border-[#2a2a2a] bg-[#0a0a0a] text-slate-200 hover:border-white/30" : "border-black/10 bg-white text-[#111111] hover:bg-neutral-50"}`}
+          className={`fx-btn fx-btn--icon fx-btn--secondary relative ${dark ? "border-[#3a332b] bg-[#141210] text-[#f6f1e8]" : ""}`}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
             <path d="M6 9a6 6 0 1112 0c0 5 2 6.5 2 6.5H4S6 14 6 9z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
             <path d="M10 19a2 2 0 004 0" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
           </svg>
           {unread > 0 && (
-            <span className="absolute -right-1 -top-1 min-w-[16px] rounded-full bg-[#e5484d] px-1 text-center text-[9px] font-bold leading-4 text-white">
+            <span className="fx-badge">
               {unread > 99 ? "99+" : unread}
             </span>
           )}
         </button>
         {open && (
-          <div className="absolute right-0 z-[70] mt-2 w-[min(340px,calc(100vw-24px))] overflow-hidden rounded-xl border border-black/10 bg-white text-[#111111] shadow-[0_16px_40px_rgba(0,0,0,0.18)]">
+          <div className="fx-note-panel absolute right-0 z-[70] mt-2 w-[min(340px,calc(100vw-24px))] overflow-hidden rounded-xl border border-black/10 bg-white text-[#111111] shadow-[0_16px_40px_rgba(0,0,0,0.18)]">
             <div className="flex items-center justify-between border-b border-black/5 px-3 py-2">
               <span className="text-[13px] font-semibold">{t("term.notify.title")}</span>
               {unread > 0 && <button type="button" onClick={markAll} className="text-[11px] text-neutral-500 hover:text-black">{t("term.notify.markAll")}</button>}

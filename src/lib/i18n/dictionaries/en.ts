@@ -816,6 +816,8 @@ export const en: Dict = {
   "term.top.equity": "Equity",
   "term.top.pl": "P/L",
   "term.top.credit": "Credit",
+  "term.acct.show": "Show figures",
+  "term.acct.hide": "Hide figures",
   "term.ticket.size": "Approx. trade size (lot × contract × price)",
   "term.ticket.slPnl": "Estimated P&L if Stop Loss is hit",
   "term.watch.spread": "Spread (ask − bid)",

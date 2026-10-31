@@ -1,4 +1,5 @@
 import "../base.css";
+import "@/styles/luxury.css";
 import "./auth-mobile.css";
 import DeferredSheets from "@/components/styles/DeferredSheets";
 

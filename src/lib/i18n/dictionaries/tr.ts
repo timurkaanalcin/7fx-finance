@@ -796,6 +796,8 @@ export const tr: Dict = {
   "term.top.equity": "Özkaynak",
   "term.top.pl": "K/Z",
   "term.top.credit": "Kredi",
+  "term.acct.show": "Rakamları göster",
+  "term.acct.hide": "Rakamları gizle",
   "term.ticket.size": "Yaklaşık işlem büyüklüğü (lot × sözleşme × fiyat)",
   "term.ticket.slPnl": "Zarar durdur seviyesine gelirse tahmini K/Z",
   "term.watch.spread": "Spread (satış − alış)",

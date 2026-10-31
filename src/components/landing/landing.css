@@ -1,14 +1,14 @@
-/* ——— 7FX Landing: dark premium terminal ——— */
+/* ——— 7FX Landing: graphite private desk, champagne chrome ——— */
 .fx-landing-marker { contain: none; }
 .fx-landing {
-  --fx-bg: #07090d;
-  --fx-bg-soft: #0c1017;
-  --fx-surface: #10151d;
-  --fx-ink: #f4f7fb;
-  --fx-muted: #9aa3b5;
-  --fx-line: rgba(255, 255, 255, 0.08);
-  --fx-buy: #3ddc97;
-  --fx-sell: #ff5d73;
+  --fx-bg: #0c0b0a;
+  --fx-bg-soft: #12100e;
+  --fx-surface: #171410;
+  --fx-ink: #f6f1e8;
+  --fx-muted: #b3a89a;
+  --fx-line: rgba(214, 186, 140, 0.16);
+  --fx-buy: #1fb58f;
+  --fx-sell: #ef5350;
   --fx-shell: min(1280px, calc(100% - 32px));
   --fx-section-pad: 72px;
   --fx-sticky-h: 64px;
@@ -32,8 +32,8 @@
 
 html:has(.fx-landing),
 body:has(.fx-landing) {
-  background: #07090d;
-  color: #f4f7fb;
+  background: #0c0b0a;
+  color: #f6f1e8;
   color-scheme: dark;
 }
 html:has(.fx-landing) {
@@ -45,7 +45,7 @@ html:has(.fx-landing) {
 .fx-landing h3 {
   font-family: var(--font-inter), var(--font-inter-ext), system-ui, sans-serif;
   font-weight: 400;
-  color: #f4f7fb;
+  color: #f6f1e8;
   letter-spacing: -0.02em;
 }
 .fx-landing [role="dialog"] h2,
@@ -66,8 +66,8 @@ html:has(.fx-landing) {
 }
 .fx-landing .fx-section--soft {
   background:
-    radial-gradient(900px 280px at 10% 0%, rgba(61, 220, 151, 0.05), transparent 60%),
-    #0c1017;
+    radial-gradient(900px 280px at 10% 0%, rgba(198, 165, 106, 0.08), transparent 60%),
+    #12100e;
 }
 
 .fx-landing .fx-h1 {
@@ -93,7 +93,7 @@ html:has(.fx-landing) {
 
 .fx-landing .fx-eyebrow {
   margin: 0;
-  color: #d7ffe9;
+  color: #ead9b4;
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.16em;
@@ -103,12 +103,12 @@ html:has(.fx-landing) {
   width: 7px;
   height: 7px;
   border-radius: 99px;
-  background: #3ddc97;
-  box-shadow: 0 0 0 4px rgba(61, 220, 151, 0.16);
+  background: #c6a56a;
+  box-shadow: 0 0 0 4px rgba(198, 165, 106, 0.18);
 }
 
 .fx-landing .fx-nav {
-  background: rgba(7, 9, 13, 0.82);
+  background: rgba(12, 11, 10, 0.82);
   border-bottom: 1px solid var(--fx-line);
   backdrop-filter: blur(16px);
   padding-top: calc(env(safe-area-inset-top, 0px) + var(--chrome-pad, 6px));
@@ -170,7 +170,7 @@ html:has(.fx-landing) {
   gap: 4px;
   padding: 8px 16px 16px;
   border-top: 1px solid var(--fx-line);
-  background: #0c1017;
+  background: #12100e;
 }
 .fx-landing .fx-icon-btn {
   display: inline-flex;
@@ -181,33 +181,34 @@ html:has(.fx-landing) {
   border-radius: 999px;
   border: 1px solid var(--fx-line);
   background: rgba(255, 255, 255, 0.03);
-  color: #f4f7fb;
+  color: #f6f1e8;
 }
 @media (min-width: 1024px) {
   .fx-landing .fx-icon-btn { display: none; }
 }
 
 .fx-landing .fx-btn-primary {
-  background: #f4f7fb;
-  color: #0b0e13;
+  background: linear-gradient(180deg, #ead9b4 0%, #c6a56a 100%);
+  color: #1a140c;
   font-weight: 500;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 236, 204, 0.35);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 10px 28px rgba(198, 165, 106, 0.22);
 }
 .fx-landing .fx-btn-primary:hover {
-  background: #ffffff;
+  background: linear-gradient(180deg, #f3e6c8 0%, #d4b57a 100%);
 }
 .fx-landing .fx-btn-secondary {
-  background: transparent;
-  color: #f4f7fb;
+  background: rgba(255, 255, 255, 0.03);
+  color: #f6f1e8;
   font-weight: 400;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(214, 186, 140, 0.35);
 }
 .fx-landing .fx-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(198, 165, 106, 0.1);
 }
 .fx-landing a[href="/apk"] {
-  background: #f4f7fb !important;
-  color: #0b0e13 !important;
+  background: linear-gradient(180deg, #ead9b4 0%, #c6a56a 100%) !important;
+  color: #1a140c !important;
   border-color: transparent !important;
 }
 
@@ -226,8 +227,8 @@ html:has(.fx-landing) {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  background: #f4f7fb;
-  color: #0b0e13;
+  background: #ead9b4;
+  color: #1a140c;
   border-radius: 8px;
   padding: 8px 12px;
   font-size: 13px;
@@ -258,8 +259,8 @@ html:has(.fx-landing) {
   inset: -10% -10% auto;
   height: 520px;
   background:
-    radial-gradient(520px 280px at 78% 30%, rgba(61, 220, 151, 0.16), transparent 70%),
-    radial-gradient(420px 240px at 12% 0%, rgba(120, 162, 255, 0.12), transparent 70%);
+    radial-gradient(520px 280px at 78% 30%, rgba(198, 165, 106, 0.2), transparent 70%),
+    radial-gradient(420px 240px at 12% 0%, rgba(232, 213, 176, 0.08), transparent 70%);
 }
 .fx-landing .fx-hero-grid {
   position: relative;
@@ -313,10 +314,10 @@ html:has(.fx-landing) {
 .fx-landing .fx-chart-card {
   min-height: 440px;
   border-radius: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(214, 186, 140, 0.18);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)),
-    #0d121a;
+    #141210;
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
 }
 .fx-landing .fx-chart-card {
@@ -709,7 +710,7 @@ html:has(.fx-landing) {
 }
 .fx-landing .fx-laptop figcaption span,
 .fx-landing .fx-phone figcaption span {
-  color: #d7ffe9;
+  color: #ead9b4;
   font-weight: 500;
 }
 .fx-landing .fx-phone {
@@ -965,8 +966,8 @@ html:has(.fx-landing) {
 .fx-landing .fx-final {
   border-top: 1px solid var(--fx-line);
   background:
-    radial-gradient(600px 180px at 80% 50%, rgba(61, 220, 151, 0.12), transparent 70%),
-    #07090d;
+    radial-gradient(600px 180px at 80% 50%, rgba(198, 165, 106, 0.14), transparent 70%),
+    #0c0b0a;
 }
 .fx-landing .fx-final-inner {
   display: flex;
@@ -1085,7 +1086,7 @@ html:has(.fx-landing) {
 .fx-landing select:focus-visible,
 .fx-landing textarea:focus-visible,
 .fx-landing [role="tab"]:focus-visible {
-  outline: 2px solid #f4f7fb;
+  outline: 2px solid #c6a56a;
   outline-offset: 2px;
 }
 
@@ -1135,8 +1136,8 @@ html:has(.fx-landing) {
   height: 6px;
   margin-right: 8px;
   border-radius: 99px;
-  background: #3ddc97;
-  box-shadow: 0 0 0 3px rgba(61, 220, 151, 0.15);
+  background: #c6a56a;
+  box-shadow: 0 0 0 3px rgba(198, 165, 106, 0.18);
 }
 @media (min-width: 800px) {
   .fx-landing .fx-trust-band ul {
@@ -1164,7 +1165,7 @@ html:has(.fx-landing) {
 }
 .fx-landing .fx-mid-cta-title {
   margin: 0;
-  color: #f4f7fb;
+  color: #f6f1e8;
   font-family: var(--font-inter), var(--font-inter-ext), system-ui, sans-serif;
   font-size: var(--fx-fs-24);
   font-weight: 300;
