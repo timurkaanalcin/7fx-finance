@@ -1,16 +1,24 @@
 "use client";
 
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { useEscape } from "@/lib/crmv3/focus";
 import { accountCurrencies, activeMethods, methodOn, type SysSection } from "@/lib/crmv3/system";
 import { sendJson, State, Status, useJson, type Tx } from "../kit";
 import { useV3 } from "./store";
 
 export function PhoneSheet({ title, children }: { title: string; children: ReactNode }) {
   const v3 = useV3();
+  const toggleRef = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
+  const close = useCallback(() => {
+    setOpen(false);
+    toggleRef.current?.focus();
+  }, []);
+  useEscape(open, close);
+  useEffect(() => { if (open) toggleRef.current?.focus(); }, [open]);
   return (
     <div className="c3-phone-sheet" data-open={open ? "1" : "0"}>
-      <button type="button" className="c3-btn c3-sheet-toggle" onClick={() => setOpen((value) => !value)}>{open ? v3("sheetClose") : title}</button>
+      <button ref={toggleRef} type="button" className="c3-btn c3-sheet-toggle" onClick={() => setOpen((value) => !value)}>{open ? v3("sheetClose") : title}</button>
       <div className="c3-phone-sheet-body">{children}</div>
     </div>
   );

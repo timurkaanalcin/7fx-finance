@@ -20,6 +20,7 @@ import { TradeBook } from "../desk/book";
 import { DenseList, NoteStudio } from "../desk/table";
 import { FinanceBook } from "../desk/ledger";
 import { KycStudio } from "../desk/gallery";
+import { Dossier } from "../desk/dossier";
 import { applyList } from "@/lib/crmv3/lists";
 
 export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; locale: string; q: string }) {
@@ -366,6 +367,16 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           <Chip key={item} on={part === item} onClick={() => setPart(item)}>{tx(partKey(item))}</Chip>
         ))}
       </div>
+      {u && part === "profile" && (
+        <Dossier
+          base={base}
+          user={u}
+          notes={user.data?.notes || []}
+          events={user.data?.activityEvents || []}
+          tx={tx}
+          locale={locale}
+        />
+      )}
       {u && part === "profile" && <ProfileShell id={id} user={u} tx={tx} onDone={user.reload} />}
       {part === "notes" && <NoteStudio id={id} notes={user.data?.notes || []} tx={tx} locale={locale} onSaved={user.reload} />}
       {part === "notes" && <Notes id={id} notes={user.data?.notes || []} tx={tx} locale={locale} onDone={user.reload} />}
