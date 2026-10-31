@@ -15,6 +15,8 @@ import { ListBar } from "../desk/later";
 import { AssignPreview, DocTools, NoteTools, ProfileBits, QualityList, customerTools, duplicateSet, noteBlocked, rowAgeLabel, rowHealth, rowRisk } from "../desk/panels";
 import { ContactFeed, EntryQuality, applySplit, emailOk } from "../desk/feed";
 import { useLocal, useV3 } from "../desk/store";
+import { ListDesk, RecordHead, useLists } from "../desk/record";
+import { applyList } from "@/lib/crmv3/lists";
 
 export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; locale: string; q: string }) {
   const params = useSearchParams();
@@ -25,6 +27,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
   const country = params.get("country") || "";
   const presence = params.get("presence") || "";
   const ftd = params.get("ftd") || "";
+  const listId = params.get("list") || "";
   const skip = Number(params.get("skip") || 0) || 0;
   const query = new URLSearchParams({ view: "table", take: String(TAKE), skip: String(skip), meta: "0", role: "TRADER", q });
   if (status) query.set("status", status);
@@ -36,6 +39,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
   const data = useJson<{ users?: UserRow[]; hasMore?: boolean; total?: number }>(`/api/admin/users?${query.toString()}`);
   const rows = data.data?.users || [];
   const v3 = useV3();
+  const [lists] = useLists();
   const [mode, setMode] = useState<"list" | "board">("list");
   const [selected, setSelected] = useState<string[]>([]);
   const [ops, setOps] = useState("");
@@ -43,7 +47,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
   const [pins, setPins] = useLocal<string[]>("crmv3-pins", []);
   const [tag, setTag] = useState("");
   const [tags, setTags] = useLocal<Record<string, string[]>>("crmv3-tags", {});
-  const shown = customerTools(rows, ops, smart);
+  const shown = applyList(customerTools(rows, ops, smart), lists, listId);
   const dupes = duplicateSet(shown);
   const cols = ["customer", "country", "desk", "sale", "retention", "balance", "status"];
   const [columns, setColumns] = useState(cols);
@@ -102,6 +106,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
           status: tx("status"),
         }} />
       )}
+      <ListDesk base={base} v3={v3} activeId={listId} />
       <p className="c3-muted">{v3("rowsShowing")} {shown.length}</p>
       {(selected.length === 1 || selected.length > 3) && <p className="c3-muted">{v3("compareNeed")}</p>}
       {selected.length >= 2 && <CompareDesk rows={shown.filter((row) => selected.includes(row.id))} base={base} locale={locale} />}
@@ -314,27 +319,14 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
     <div className="c3-stack">
       <Link href={crmv3Href(base, "customers")}>{tx("back")}</Link>
       <State loading={user.loading} error={user.error} empty={!user.loading && !u} tx={tx} onRetry={user.reload} />
+      {u && <RecordHead base={base} user={u} locale={locale} tx={tx} />}
       {u && (
         <Card>
-          <div style={{ padding: 16 }} className="c3-stack">
-            <div className="c3-row" style={{ justifyContent: "space-between" }}>
-              <div>
-                <h2 className="c3-title c3-heading">{u.name || "—"}</h2>
-                <p className="c3-muted">{u.email}</p>
-              </div>
-              <Status tone={u.active === false ? "bad" : "ok"}>{u.active === false ? tx("chipFrozen") : tx("chipActive")}</Status>
-            </div>
-            <div className="c3-form c3-form-2">
-              <Field label={tx("balance")} value={money(u.balance ?? u.account?.balance, u.currency || u.account?.currency, locale)} />
-              <Field label={tx("equity")} value={money(u.equity ?? u.account?.equity, u.currency || u.account?.currency, locale)} />
-              <Field label={tx("country")} value={u.country || "—"} />
-              <Field label={tx("desk")} value={u.desk || "—"} />
-              <Field label={tx("sale")} value={u.saleStatus || "—"} />
-              <Field label={tx("assignee")} value={u.assigneeName || tx("unassigned")} />
-              <Field label={tx("registered")} value={when(u.createdAt, locale)} />
-              <Field label={tx("ftd")} value={u.ftd ? tx("yes") : tx("no")} />
-            </div>
-            <ProfileBits user={u} />
+          <div className="c3-pad c3-form c3-form-2">
+            <Field label={tx("assignee")} value={u.assigneeName || tx("unassigned")} />
+            <Field label={tx("registered")} value={when(u.createdAt, locale)} />
+            <Field label={tx("ftd")} value={u.ftd ? tx("yes") : tx("no")} />
+            <div className="c3-span"><ProfileBits user={u} /></div>
           </div>
         </Card>
       )}
