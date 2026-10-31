@@ -19,6 +19,7 @@ import { GoalsPage, TopTrail } from "./desk/goals";
 import { KycDesk, ReportsPage } from "./desk/review";
 import { WithdrawDesk } from "./desk/withdraw";
 import { DepositDesk, InboxDesk } from "./desk/deposit";
+import { InsightsHome, PrefsHub } from "./desk/insights";
 import { readJson } from "@/lib/crmv3/bridge";
 import { RAIL_KEY, readFold } from "@/lib/crmv3/nav";
 import { MoreNav, RailNav } from "./desk/nav";
@@ -161,6 +162,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "deposit") return v3("depDesk");
     if (tab === "inbox") return v3("inboxTitle");
     if (tab === "reports") return v3("reportsTitle");
+    if (tab === "insights") return v3("insTitle");
+    if (tab === "prefs") return v3("prefTitle");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
   }
@@ -277,6 +280,8 @@ function Shell({ base, section, name }: Props) {
             {view === "deposit" && <DepositDesk base={base} tx={tx} locale={locale} />}
             {view === "inbox" && <InboxDesk tx={tx} locale={locale} />}
             {view === "reports" && <ReportsPage locale={locale} />}
+            {view === "insights" && <InsightsHome locale={locale} />}
+            {view === "prefs" && <PrefsHub locale={locale} />}
             {view === "logs" && <Logs tx={tx} locale={locale} q={q} />}
             {view === "control" && <Control tx={tx} locale={locale} />}
             {!known && (
