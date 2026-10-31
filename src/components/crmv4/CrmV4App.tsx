@@ -21,6 +21,7 @@ import { CallTarget, Fab, MotionPref, storedMotion } from "./round6";
 import { groupedNav } from "@/lib/crmv4/round20";
 import { QuickSheet } from "./round22";
 import { StaffPage } from "./round24";
+import { GoalsPage, TopTrail } from "./round25";
 import { lastView, playPing, rememberView, soundEnabled, ticketAlertsOn } from "./round7";
 import { resolvedTheme, storedContrast, storedFont, storedFreeze, themeMode } from "./round8";
 import { readBrand } from "./round10";
@@ -237,6 +238,7 @@ function Shell({ base, section, name }: Props) {
 
   function label(tab: string) {
     if (tab === "me") return v4("staffProfile");
+    if (tab === "goals") return v4("goalsTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -253,6 +255,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "settings") return v4("subSettings");
     if (tab === "control") return v4("subControl");
     if (tab === "me") return v4("staffSub");
+    if (tab === "goals") return v4("goalsSub");
     return "";
   }
 
@@ -325,6 +328,7 @@ function Shell({ base, section, name }: Props) {
               <span className="c4-nav-sub">{v4("gear")}</span>
             </button>
             <div className="c4-drop-menu" role="menu">
+              <Link href={crmv4Href(base, "goals")} data-on={view === "goals" ? "1" : "0"} onClick={() => setGearOpen(false)}>{v4("goalsTitle")}</Link>
               <Link href={crmv4Href(base, "settings")} data-on={view === "settings" ? "1" : "0"} onClick={() => setGearOpen(false)}>{tx("settings")}</Link>
               <Link href={crmv4Href(base, "control")} data-on={view === "control" ? "1" : "0"} onClick={() => setGearOpen(false)}>{tx("control")}</Link>
             </div>
@@ -343,6 +347,7 @@ function Shell({ base, section, name }: Props) {
             <MenuIcon />
           </button>
         </div>
+        <TopTrail base={base} view={view} id={id} heading={heading} openId={params.get("open") || ""} trail={trail} v4={v4} />
       </header>
 
       <div className="c4-frame">
@@ -350,14 +355,6 @@ function Shell({ base, section, name }: Props) {
           {!id && (
             <div className="c4-pagehead">
               <div>
-                <nav className="c4-crumbs" aria-label={v4("crumbs")}>
-                  <button type="button" className="c4-btn" onClick={() => {
-                    const prev = trail[trail.length - 2];
-                    if (prev) window.location.assign(prev);
-                  }}>{v4("backStack")}</button>
-                  <span>{v4("v4mark")}</span>
-                  <span> / {heading}</span>
-                </nav>
                 <h1 className="c4-page-title">{heading}</h1>
                 {brand ? <p className="c4-brand-line">{brand}</p> : null}
                 <p className="c4-page-sub">{known ? subtitle(view) : tx("comingSoonBody")}</p>
@@ -408,6 +405,7 @@ function Shell({ base, section, name }: Props) {
             {view === "marketing" && <Marketing tx={tx} />}
             {view === "settings" && <Settings tx={tx} />}
             {view === "me" && <StaffPage signInName={name} base={base} v4={v4} locale={locale} />}
+            {view === "goals" && <GoalsPage v4={v4} locale={locale} />}
             {view === "logs" && <Logs tx={tx} locale={locale} q={q} />}
             {view === "control" && <Control tx={tx} locale={locale} />}
             {!known && (

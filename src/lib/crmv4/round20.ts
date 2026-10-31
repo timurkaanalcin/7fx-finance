@@ -28,7 +28,7 @@ export function keyCount(entries: string[]): number {
 }
 
 export function groupedNav(ids: readonly string[]): { work: string[]; records: string[]; desk: string[] } {
-  const work = ids.filter((id) => id === "positions" || id === "marketing");
+  const work = ids.filter((id) => id === "positions" || id === "marketing" || id === "goals");
   const records = ids.filter((id) => id === "logs" || id === "control");
   const desk = ids.filter((id) => id === "settings" || id === "me");
   return { work, records, desk };

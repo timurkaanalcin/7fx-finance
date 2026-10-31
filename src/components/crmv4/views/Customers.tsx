@@ -27,6 +27,7 @@ import { LeadDesk } from "../round16";
 import { ContactFeed, EntryQuality, applySplit, emailOk } from "../round17";
 import { StatementSheet } from "../round21";
 import { CohortBoard, OnboardCard } from "../round24";
+import { rememberView } from "../round25";
 import { sameEntry } from "@/lib/crmv4/round17";
 import { countActive, decodeView, headerHit, inDateRange, inNumberRange, multiSort } from "@/lib/crmv4/round12";
 import { Card, Chip, Field, Lab, Msg, Pager, State, Status, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, statusTone, useJson, when, type Tx, type UserRow } from "../kit";
@@ -500,8 +501,9 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
     if (u) {
       rememberCustomer(u);
       pushWorkspace({ id: u.id, name: u.name || u.email || u.id });
+      rememberView({ kind: "customer", id: u.id, title: u.name || u.email || u.id, href: crmv4Href(base, `customers/${u.id}`) });
     }
-  }, [u]);
+  }, [u, base]);
   function setPart(next: string) {
     const p = new URLSearchParams(params.toString());
     if (next && next !== "profile") p.set("part", next);

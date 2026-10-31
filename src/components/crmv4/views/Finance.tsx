@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { approvalBody, approvalEndpoint } from "@/lib/crmv2/payload";
 import { exportCurrent } from "../round1";
 import { MoneyTools } from "../round2";
@@ -15,6 +15,8 @@ import { byAge, inBand, methodName } from "@/lib/crmv4/round15";
 import { FinanceChrome, ReviewChecks, queueAgeHours, queueMarks, readLastReason, rememberReason, useSecondLook } from "../round15";
 import { useListBar } from "../round19";
 import { PayMethods } from "../round21";
+import { rememberView } from "../round25";
+import { crmv4Href } from "@/lib/crmv4/sections";
 
 const FINANCE_COLS = ["amount", "method", "date", "status"];
 type MoneyRow = { id: string; amount?: number; currency?: string; status?: string; createdAt?: string; method?: string; user?: { name?: string; email?: string } };
@@ -29,6 +31,7 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
   const [busy, setBusy] = useState<string | null>(null);
   const [sheet, setSheet] = useState<null | { id: string; kind: string; action: "approve" | "reject" }>(null);
   const [history, setHistory] = useState<MoneyRow | null>(null);
+  const opened = useRef("");
   const [band, setBand] = useState<"" | "small" | "large">("");
   const [oldest, setOldest] = useState(false);
   const look = useSecondLook();
@@ -59,6 +62,25 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
     const row = pending[index];
     if (row) setSheet({ id: row.id, kind: tab === "withdrawals" ? "WITHDRAW" : tab === "balance" ? "MARGIN" : "DEPOSIT", action: "reject" });
   });
+  const openId = params.get("open") || "";
+  const openMoney = useCallback((row: MoneyRow) => {
+    setHistory(row);
+    const financeTab = tab === "withdrawals" ? "withdrawals" : tab === "balance" ? "balance" : "deposits";
+    const root = window.location.pathname.includes("/izcrm/crmv4") ? "/izcrm/crmv4" : "/crmv4";
+    rememberView({
+      kind: "finance",
+      id: row.id,
+      title: `${row.user?.name || row.id}${row.currency ? ` ${row.currency}` : ""}`,
+      href: crmv4Href(root, "finance", { tab: financeTab, open: row.id }),
+    });
+  }, [tab]);
+  useEffect(() => {
+    if (!openId || opened.current === openId || tab === "ledger") return;
+    const row = ((data.data?.requests as MoneyRow[]) || []).find((item) => item.id === openId);
+    if (!row) return;
+    opened.current = openId;
+    openMoney(row);
+  }, [openId, tab, data.data, openMoney]);
   const rows = tab === "ledger"
     ? ((data.data?.transactions as LedgerRow[]) || [])
     : ((data.data?.requests as MoneyRow[]) || []);
@@ -125,7 +147,7 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
                   return (
                     <tr key={row.id} className="c4-fin-row" data-status={row.status || ""} data-top={marks.largest === row.id ? "1" : "0"} data-look={look.ids.includes(row.id) ? "1" : "0"}>
                       <td>
-                        <button type="button" className="c4-btn" onClick={() => setHistory(row)}>{row.user?.name || "—"}</button>
+                        <button type="button" className="c4-btn" onClick={() => openMoney(row)}>{row.user?.name || "—"}</button>
                         {marks.dupes.has(who) && <span className="c4-status" data-tone="warn">{v4("sameCustomer")}</span>}
                         {marks.largest === row.id && row.status === "PENDING" && <span className="c4-status" data-tone="ok">{v4("largest")}</span>}
                         {age != null && <span className="c4-muted"> {v4("queueAge")} {age}h</span>}
