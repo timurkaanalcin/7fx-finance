@@ -199,7 +199,7 @@ export function Card({ title, extra, children }: { title?: string; extra?: React
 
 export function Skeleton() {
   return (
-    <div className="c4-skel-wrap" aria-hidden>
+    <div className="c4-skel-wrap c4-skel-luxe" aria-busy="true">
       <div className="c4-skel" />
       <div className="c4-skel" />
       <div className="c4-skel c4-skel-short" />
@@ -211,7 +211,8 @@ export function State({ loading, error, empty, tx, onRetry, hint }: { loading: b
   if (loading) return <Skeleton />;
   if (error) {
     return (
-      <div className="c4-empty">
+      <div className="c4-empty c4-state-error" role="alert">
+        <span className="c4-empty-mark" aria-hidden />
         <p>{tx("errorData")}</p>
         <button type="button" className="c4-btn" onClick={onRetry}>{tx("retryLoad")}</button>
       </div>
@@ -219,7 +220,7 @@ export function State({ loading, error, empty, tx, onRetry, hint }: { loading: b
   }
   if (empty) {
     return (
-      <div className="c4-empty c4-empty-luxe">
+      <div className="c4-empty c4-empty-luxe" role="status">
         <span className="c4-empty-mark" aria-hidden />
         <p>{tx("emptyState")}</p>
         {hint ? <p className="c4-muted c4-meta">{hint}</p> : null}

@@ -39,7 +39,13 @@ const STEP_KEY: Record<string, CrmV4CopyKey> = {
 };
 
 export function readSegmentRules(): { vipBalance: number; dormantDays: number } {
-  return readJson(SEGMENT_KEY, { vipBalance: 10000, dormantDays: 30 });
+  const raw = readJson<unknown>(SEGMENT_KEY, null);
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return { vipBalance: 10000, dormantDays: 30 };
+  const row = raw as { vipBalance?: unknown; dormantDays?: unknown };
+  return {
+    vipBalance: typeof row.vipBalance === "number" ? row.vipBalance : 10000,
+    dormantDays: typeof row.dormantDays === "number" ? row.dormantDays : 30,
+  };
 }
 
 export function JourneyMap({ id, v4 }: { id: string; v4: V4 }) {
