@@ -2762,3 +2762,70 @@
   from { background-position: 100% 0; }
   to { background-position: -100% 0; }
 }
+
+[data-crmv4-root] .c4-feed-luxe,
+[data-crmv4-root] .c4-entry-luxe,
+[data-crmv4-root] .c4-quality {
+  border: 1px solid rgba(166, 133, 78, 0.4);
+  border-radius: 18px;
+  background:
+    linear-gradient(165deg, rgba(166, 133, 78, 0.12), transparent 46%),
+    #fffdf8;
+}
+
+[data-crmv4-root] .c4-feed {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0 12px 12px;
+  list-style: none;
+}
+
+[data-crmv4-root] .c4-feed-item {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid #e6dccf;
+  border-radius: 14px;
+  background: #fff;
+}
+
+[data-crmv4-root] .c4-feed-item[data-kind="call"] { box-shadow: inset 3px 0 0 #a6854e; }
+[data-crmv4-root] .c4-feed-item[data-kind="note"] { box-shadow: inset 3px 0 0 #8d8478; }
+[data-crmv4-root] .c4-feed-item[data-kind="money"] { box-shadow: inset 3px 0 0 #1f8a4c; }
+[data-crmv4-root] .c4-feed-item[data-kind="status"] { box-shadow: inset 3px 0 0 #2a2622; }
+[data-crmv4-root] .c4-feed-item[data-pin="1"] { outline: 1px solid #a6854e; }
+
+[data-crmv4-root] .c4-entry-form .c4-entry-block { display: contents; }
+[data-crmv4-root] .c4-entry-form .c4-entry-block > .c4-title,
+[data-crmv4-root] .c4-entry-span { grid-column: 1 / -1; }
+[data-crmv4-root] .c4-quality { margin: 8px 16px 0; padding: 12px; }
+
+[data-crmv4-root] .c4-sheet:has(.c4-entry-form) {
+  width: min(100%, 520px);
+  border: 1px solid rgba(166, 133, 78, 0.45);
+  background: #fffdf8;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-feed-luxe,
+[data-crmv4-root][data-theme="dark"] .c4-entry-luxe,
+[data-crmv4-root][data-theme="dark"] .c4-quality,
+[data-crmv4-root][data-theme="dark"] .c4-feed-item,
+[data-crmv4-root][data-theme="dark"] .c4-sheet:has(.c4-entry-form) {
+  background: #221f1b;
+  color: #f6f1e8;
+}
+
+@media (max-width: 767px) {
+  [data-crmv4-root] .c4-entry-luxe {
+    position: fixed;
+    z-index: 40;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    max-height: 78dvh;
+    overflow: auto;
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 -16px 40px rgba(42, 38, 34, 0.18);
+  }
+}

@@ -8,14 +8,13 @@ import { crmv4Text, type CrmV4CopyKey } from "@/lib/crmv4/copy";
 import { readJson, writeJson } from "@/lib/crmv4/local";
 import { moveItem, type FilterRule } from "@/lib/crmv4/round1";
 import { crmv4Href } from "@/lib/crmv4/sections";
-import { ActivityTimeline, BulkBar, CustomerDeskTable, FilterBuilder, ReviewDialog, duplicateEmails, readTags, rememberCustomer, useDeskMemory, visibleCustomers, type Col as DeskCol } from "../round1";
+import { BulkBar, CustomerDeskTable, FilterBuilder, ReviewDialog, duplicateEmails, readTags, rememberCustomer, useDeskMemory, visibleCustomers, type Col as DeskCol } from "../round1";
 import { Customer360, DuplicateScreen, RetentionForm, RoundRobinPreview, StatementView, pushUndo } from "../round2";
 import { ContactLine, DocumentsCenter, LocalTime, NoteTemplates, Pipeline, PresenceBadge, TradingOverview, columnPreset, parseOperators } from "../round3";
 import { CompareBoard, QuickChips, ValueSpark, WorkspaceTabs, pushWorkspace } from "../round4";
 import { BirthdayList, BulkNote, CallbackButton, DeskSwitch, JourneyMap, SearchHistory, WinLossCard, customerSegment, notePinned, rememberSearch, toggleNotePin } from "../round5";
 import { AgingBoard, ConversionStat, DepositorBoard, DocGallery, DomainBoard, EquityCurve, ExpiryNote, RiskBadge, StreakBoard, TeamThread, WeeklyDigest, copyFilterLink } from "../round6";
-import { CompletenessMeter, ImportPreview, InlineProfile, LangBadge, SourceBoard, StaleList, StatusWatch, TagCloud, exportTimeline } from "../round7";
-import { filterActivity } from "@/lib/crmv4/round7";
+import { CompletenessMeter, ImportPreview, InlineProfile, LangBadge, SourceBoard, StaleList, StatusWatch, TagCloud } from "../round7";
 import { fuzzyHit } from "@/lib/crmv4/round8";
 import { RatioCard, toggleWatch, watchIds } from "../round8";
 import { DocStage, FREEZE_PRESETS, KYC_PRESETS, KycChecklist, OnboardTrack, ReasonChips, RichNote, WelcomeList } from "../round9";
@@ -24,6 +23,8 @@ import { BulkRemind, EditLog, EmailHintLine, HandoffNote, NoteCloud, SimilarList
 import { BulkUntag, ContactSummary, DncFlag, DocAsk, Fold, KeyFacts, LiveBook, MarginGauge, MiniNav, MonthStatement, PreferTime, ProfileList, QuickSwitch, ShareViewButton, TagManager, TxMini, isDnc } from "../round12";
 import { DocDesk, NoteDesk } from "../round15";
 import { LeadDesk } from "../round16";
+import { ContactFeed, EntryQuality, applySplit, emailOk } from "../round17";
+import { sameEntry } from "@/lib/crmv4/round17";
 import { countActive, decodeView, headerHit, inDateRange, inNumberRange, multiSort } from "@/lib/crmv4/round12";
 import { Card, Chip, Field, Lab, Msg, Pager, State, Status, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, statusTone, useJson, when, type Tx, type UserRow } from "../kit";
 
@@ -585,13 +586,13 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           ))}
         </nav>
         <div className="c4-stack">
-          {u && part === "profile" && <ProfileForm id={id} user={u} tx={tx} onDone={user.reload} />}
+          {u && part === "profile" && <ProfileForm id={id} user={u} tx={tx} locale={locale} onDone={user.reload} />}
           {part === "notes" && <Notes id={id} notes={user.data?.notes || []} tx={tx} locale={locale} onDone={user.reload} />}
           {part === "money" && <Money id={id} tx={tx} locale={locale} />}
           {part === "trades" && <Trades id={id} tx={tx} locale={locale} />}
           {part === "files" && <Files id={id} email={u?.email || ""} tx={tx} locale={locale} />}
           {u && part === "access" && <Access id={id} user={u} tx={tx} onDone={user.reload} />}
-          {part === "activity" && <Activity rows={user.data?.activityEvents || []} tx={tx} locale={locale} />}
+          {part === "activity" && <ContactFeed id={id} notes={user.data?.notes || []} events={user.data?.activityEvents || []} v4={v4} locale={locale} />}
         </div>
       </div>
       </div>
@@ -621,14 +622,40 @@ function partKey(part: (typeof PARTS)[number]) {
   return "activityTab" as const;
 }
 
-function ProfileForm({ id, user, tx, onDone }: { id: string; user: UserRow; tx: Tx; onDone: () => void }) {
+function ProfileForm({ id, user, tx, locale, onDone }: { id: string; user: UserRow; tx: Tx; locale: string; onDone: () => void }) {
   const staff = useJson<{ workers?: { id: string; name?: string }[] }>("/api/admin/workers?take=100");
   const [msg, setMsg] = useState("");
+  const [open, setOpen] = useState(true);
+  const formRef = useRef<HTMLFormElement>(null);
+  const v4 = (key: CrmV4CopyKey) => crmv4Text(locale, key);
+  const initial = { name: user.name || "", email: user.email || "", phone: user.phone || "", country: user.country || "" };
+  const [live, setLive] = useState(initial);
+  function readLive() {
+    const node = formRef.current;
+    if (!node) return;
+    const fd = new FormData(node);
+    setLive({
+      name: String(fd.get("name") || ""),
+      email: String(fd.get("email") || ""),
+      phone: String(fd.get("phone") || ""),
+      country: String(fd.get("country") || ""),
+    });
+  }
+  function closeForm() {
+    if (!sameEntry(live, initial) && !window.confirm(v4("discardEdit"))) return;
+    setOpen(false);
+  }
+  if (!open) return <button type="button" className="c4-btn c4-btn-hot" onClick={() => setOpen(true)}>{v4("openForm")}</button>;
   return (
+    <div className="c4-entry-luxe">
+    <button type="button" className="c4-btn c4-phone-only" onClick={closeForm}>{v4("closeForm")}</button>
     <Card title={tx("profile")}>
+      <EntryQuality fields={live} initial={initial} v4={v4} />
       <form
-        className="c4-form c4-form-2"
+        ref={formRef}
+        className="c4-form c4-form-2 c4-entry-form"
         style={{ padding: 16 }}
+        onInput={readLive}
         onSubmit={async (event) => {
           event.preventDefault();
           const fd = new FormData(event.currentTarget);
@@ -665,6 +692,8 @@ function ProfileForm({ id, user, tx, onDone }: { id: string; user: UserRow; tx: 
           if (res.ok) onDone();
         }}
       >
+        <div className="c4-entry-block">
+        <h3 className="c4-title">{v4("identityBlock")}</h3>
         <Lab label={tx("name")}><input name="name" defaultValue={user.name || ""} className="c4-field" /></Lab>
         <Lab label={tx("email")}><input name="email" defaultValue={user.email || ""} className="c4-field" /></Lab>
         <Lab label={tx("firstName")}><input name="firstName" defaultValue={user.firstName || ""} className="c4-field" /></Lab>
@@ -672,12 +701,19 @@ function ProfileForm({ id, user, tx, onDone }: { id: string; user: UserRow; tx: 
         <Lab label={tx("phone")}><input name="phone" defaultValue={user.phone || ""} className="c4-field" /></Lab>
         <Lab label={tx("country")}><input name="country" defaultValue={user.country || ""} className="c4-field" /></Lab>
         <Lab label={tx("language")}><input name="language" defaultValue={user.language || ""} className="c4-field" /></Lab>
+        <button type="button" className="c4-btn" onClick={() => applySplit(live.name, formRef.current?.elements.namedItem("firstName") as HTMLInputElement | null, formRef.current?.elements.namedItem("lastName") as HTMLInputElement | null)}>{v4("splitName")}</button>
+        </div>
+        <div className="c4-entry-block">
+        <h3 className="c4-title">{v4("deskBlock")}</h3>
         <Lab label={tx("desk")}><input name="desk" defaultValue={user.desk || ""} className="c4-field" /></Lab>
         <Lab label={tx("accountType")}>
           <select name="accountType" defaultValue={user.accountType || "STANDARD"} className="c4-select">
             {ACCOUNT_TYPES.map((item) => <option key={item}>{item}</option>)}
           </select>
         </Lab>
+        </div>
+        <div className="c4-entry-block">
+        <h3 className="c4-title">{v4("statusBlock")}</h3>
         <Lab label={tx("sale")}>
           <select name="saleStatus" defaultValue={user.saleStatus || ""} className="c4-select">
             <option value="" />
@@ -729,14 +765,16 @@ function ProfileForm({ id, user, tx, onDone }: { id: string; user: UserRow; tx: 
         </Lab>
         <Lab label={tx("addressLine")}><input name="address" defaultValue={user.address || ""} className="c4-field" /></Lab>
         <Lab label={tx("retentionNote")}><textarea name="retentionNote" defaultValue={user.retentionNote || ""} className="c4-field" rows={3} /></Lab>
-        <div className="c4-row">
-          <button type="submit" className="c4-btn c4-btn-hot">{tx("saveProfile")}</button>
+        </div>
+        <div className="c4-row c4-entry-span">
+          <button type="submit" className="c4-btn c4-btn-hot" disabled={Boolean(live.email) && !emailOk(live.email)}>{tx("saveProfile")}</button>
           <button type="button" className="c4-btn" onClick={() => void openTerminal(id, tx, setMsg)}>{tx("viewAs")}</button>
           <button type="button" className="c4-btn" onClick={() => void makeLink(id, tx, setMsg)}>{tx("loginLink")}</button>
         </div>
         <Msg text={msg} />
       </form>
     </Card>
+    </div>
   );
 }
 
@@ -1120,20 +1158,3 @@ function Access({ id, user, tx, onDone }: { id: string; user: UserRow; tx: Tx; o
 }
 
 type ActivityRow = { id: string; kind?: string; path?: string | null; createdAt?: string };
-
-function Activity({ rows, tx, locale }: { rows: ActivityRow[]; tx: Tx; locale: string }) {
-  const [kind, setKind] = useState("");
-  const v4 = (key: CrmV4CopyKey) => crmv4Text(locale, key);
-  const shown = filterActivity(rows, kind);
-  const kinds = Array.from(new Set(rows.map((row) => String(row.kind || "")).filter(Boolean)));
-  return (
-    <Card title={tx("activityTab")}>
-      <div className="c4-tools" aria-label={v4("activityFilter")}>
-        <button type="button" className="c4-chip" data-on={kind ? "0" : "1"} onClick={() => setKind("")}>{tx("all")}</button>
-        {kinds.map((item) => <button key={item} type="button" className="c4-chip" data-on={kind === item ? "1" : "0"} onClick={() => setKind(item)}>{item}</button>)}
-        <button type="button" className="c4-btn" onClick={() => void exportTimeline(shown)}>{v4("exportTimeline")}</button>
-      </div>
-      <ActivityTimeline rows={shown} locale={locale} tx={tx} />
-    </Card>
-  );
-}
