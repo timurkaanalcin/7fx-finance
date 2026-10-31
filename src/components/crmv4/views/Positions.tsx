@@ -18,6 +18,8 @@ export default function Positions({ tx, locale, q }: { tx: Tx; locale: string; q
   const skip = Number(params.get("skip") || 0) || 0;
   const data = useJson<{ positions?: Row[]; hasMore?: boolean }>(`/api/admin/positions?status=${encodeURIComponent(status)}&take=${TAKE}&skip=${skip}&q=${encodeURIComponent(q)}`);
   const rows = data.data?.positions || [];
+  const [extra, setExtra] = useState<Row[]>([]);
+  const [moreBusy, setMoreBusy] = useState(false);
   const [msg, setMsg] = useState("");
   function setQuery(next: Record<string, string>) {
     const p = new URLSearchParams(params.toString());
@@ -61,7 +63,7 @@ export default function Positions({ tx, locale, q }: { tx: Tx; locale: string; q
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
+            {[...rows, ...extra].map((row) => (
               <tr key={row.id}>
                 <td>{row.traderName || row.user?.name || "—"}</td>
                 <td className="c4-symbol">{row.symbol}</td>
@@ -90,6 +92,16 @@ export default function Positions({ tx, locale, q }: { tx: Tx; locale: string; q
       <div style={{ padding: "0 16px 8px" }}><Msg text={msg} /></div>
       <p className="c4-muted" style={{ padding: "0 16px 8px" }}>{tx("closePositionHint")}</p>
       <Pager skip={skip} take={TAKE} hasMore={Boolean(data.data?.hasMore)} tx={tx} onPage={(next) => setQuery({ skip: next ? String(next) : "" })} />
+      {data.data?.hasMore && (
+        <button type="button" className="c4-btn" disabled={moreBusy} onClick={async () => {
+          setMoreBusy(true);
+          const nextSkip = skip + TAKE + extra.length;
+          const res = await fetch(`/api/admin/positions?status=${encodeURIComponent(status)}&take=${TAKE}&skip=${nextSkip}&q=${encodeURIComponent(q)}`, { cache: "no-store" });
+          const body = res.ok ? await res.json() as { positions?: Row[] } : { positions: [] };
+          setExtra((list) => [...list, ...(body.positions || [])]);
+          setMoreBusy(false);
+        }}>{crmv4Text(locale, "loadMore")}</button>
+      )}
     </Card>
   );
 }

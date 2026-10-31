@@ -18,6 +18,7 @@ import { AnnounceBar, DeskBoundary, FreshnessBar, LuxeSkeleton, PullSurface, sto
 import { IdleWarning, storedRole, storedZebra } from "./round5";
 import { CallTarget, Fab, storedMotion } from "./round6";
 import { lastView, playPing, rememberView, soundEnabled, ticketAlertsOn } from "./round7";
+import { resolvedTheme, storedContrast, storedFont, storedFreeze, themeMode } from "./round8";
 import type { Accent } from "@/lib/crmv4/round4";
 import { Sheet, sendJson, useJson, when } from "./kit";
 import Overview from "./views/Overview";
@@ -81,6 +82,9 @@ function Shell({ base, section, name }: Props) {
   const [motion, setMotion] = useState<"system" | "reduce">("system");
   const [resume, setResume] = useState("");
   const [compact, setCompact] = useState(false);
+  const [font, setFont] = useState<"sm" | "md" | "lg">("md");
+  const [contrast, setContrast] = useState(false);
+  const [freeze, setFreeze] = useState(false);
   const ticketSeen = useRef(0);
   const [pull, setPull] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
@@ -95,8 +99,21 @@ function Shell({ base, section, name }: Props) {
   const unread = notes.data?.unread || 0;
 
   useEffect(() => {
-    const saved = window.localStorage.getItem("crmv4-theme");
-    if (saved === "light" || saved === "dark") setTheme(saved);
+    const mode = themeMode();
+    setTheme(resolvedTheme(mode === "light" || mode === "dark" ? mode : "system"));
+    setFont(storedFont());
+    setContrast(storedContrast());
+    setFreeze(storedFreeze());
+    const onFont = (event: Event) => setFont((event as CustomEvent<"sm" | "md" | "lg">).detail || "md");
+    const onContrast = (event: Event) => setContrast(Boolean((event as CustomEvent<boolean>).detail));
+    const onFreeze = (event: Event) => setFreeze(Boolean((event as CustomEvent<boolean>).detail));
+    const onMode = () => setTheme(resolvedTheme(themeMode()));
+    window.addEventListener("crmv4:font", onFont);
+    window.addEventListener("crmv4:contrast", onContrast);
+    window.addEventListener("crmv4:freeze", onFreeze);
+    window.addEventListener("crmv4:theme-mode", onMode);
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    media.addEventListener("change", onMode);
     setDensity(densityMode());
     setTrail(readTrail());
     setToastsLog(toastHistory());
@@ -118,6 +135,11 @@ function Shell({ base, section, name }: Props) {
       window.removeEventListener("crmv4:role", onRole);
       window.removeEventListener("crmv4:zebra", onZebra);
       window.removeEventListener("crmv4:motion", onMotion);
+      window.removeEventListener("crmv4:font", onFont);
+      window.removeEventListener("crmv4:contrast", onContrast);
+      window.removeEventListener("crmv4:freeze", onFreeze);
+      window.removeEventListener("crmv4:theme-mode", onMode);
+      media.removeEventListener("change", onMode);
     };
   }, []);
 
@@ -180,7 +202,7 @@ function Shell({ base, section, name }: Props) {
   function toggleTheme() {
     const next = theme === "dark" ? "light" : "dark";
     setTheme(next);
-    window.localStorage.setItem("crmv4-theme", next);
+    window.localStorage.setItem("crmv4-theme-mode", next);
   }
 
   function label(tab: string) {
@@ -218,7 +240,7 @@ function Shell({ base, section, name }: Props) {
   });
 
   return (
-    <div data-crmv4-root="" data-theme={theme} data-accent={accent} data-role={role} data-zebra={zebra ? "1" : "0"} data-motion={motion} data-compact={compact ? "1" : "0"} data-density={density} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
+    <div data-crmv4-root="" data-theme={theme} data-accent={accent} data-role={role} data-zebra={zebra ? "1" : "0"} data-motion={motion} data-compact={compact ? "1" : "0"} data-font={font} data-contrast={contrast ? "1" : "0"} data-freeze={freeze ? "1" : "0"} data-density={density} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
       <a className="c4-skip" href="#c4-main">{v4("skipContent")}</a>
       <OfflineBanner v4={v4} />
       <IdleWarning v4={v4} />

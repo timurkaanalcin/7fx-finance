@@ -19,6 +19,8 @@ import {
 } from "@/lib/crmv4/round1";
 import { balanceTone, copyRowText, customerSegment, rememberExport, segmentLabel } from "./round5";
 import { CountryFlag, DeepLinkList, PhoneText, QuickMenu, RiskBadge } from "./round6";
+import { emptySuggestions } from "./round8";
+import { trapFocus } from "@/lib/crmv4/round8";
 import { columnTotal } from "@/lib/crmv4/round6";
 import { Card, Status, SwipeRow, auditExport, downloadCsv, money, sendJson, useJson, when, type Tx, type UserRow } from "./kit";
 
@@ -379,12 +381,19 @@ export { duplicateEmails };
 export function CommandPalette({ base, open, onClose, v4 }: { base: string; open: boolean; onClose: () => void; v4: V4 }) {
   const [q, setQ] = useState("");
   const input = useRef<HTMLInputElement>(null);
+  const panel = useRef<HTMLDivElement>(null);
   const query = q.trim();
   const users = useJson<{ users?: UserRow[] }>(open && query.length >= 2 ? `/api/admin/users?view=table&take=6&meta=0&role=TRADER&q=${encodeURIComponent(query)}` : null);
   const tickets = useJson<{ tickets?: { id: string; customer?: string; kind?: string }[] }>(open && query.length >= 2 ? `/api/admin/tickets?status=&q=${encodeURIComponent(query)}` : null);
   const deposits = useJson<{ requests?: { id: string; amount?: number; currency?: string; user?: { name?: string } }[] }>(open && query.length >= 2 ? `/api/admin/deposits?take=6&q=${encodeURIComponent(query)}` : null);
   useEffect(() => {
-    if (open) input.current?.focus();
+    if (!open) return;
+    input.current?.focus();
+    const node = panel.current;
+    if (!node) return;
+    const onTab = trapFocus(node);
+    node.addEventListener("keydown", onTab);
+    return () => node.removeEventListener("keydown", onTab);
   }, [open]);
   const hits = useMemo(() => {
     const people = (users.data?.users || []).map((row) => ({ href: crmv4Href(base, `customers/${row.id}`), label: row.name || row.email || row.id, kind: "customer" }));
@@ -395,7 +404,7 @@ export function CommandPalette({ base, open, onClose, v4 }: { base: string; open
   if (!open) return null;
   return (
     <div className="c4-palette-back" role="presentation" onClick={onClose}>
-      <div role="dialog" aria-modal="true" aria-label={v4("palette")} className="c4-palette c4-search-luxe" onClick={(event) => event.stopPropagation()}>
+      <div ref={panel} role="dialog" aria-modal="true" aria-label={v4("palette")} className="c4-palette c4-search-luxe c4-dialog-luxe" onClick={(event) => event.stopPropagation()}>
         <input ref={input} className="c4-field" value={q} placeholder={v4("paletteHint")} aria-label={v4("palette")} onChange={(event) => setQ(event.target.value)} onKeyDown={(event) => { if (event.key === "Escape") onClose(); }} />
         <ul>
           {hits.map((hit) => (
@@ -405,6 +414,11 @@ export function CommandPalette({ base, open, onClose, v4 }: { base: string; open
           ))}
         </ul>
         {!hits.length && <p className="c4-muted">{query.length >= 2 ? v4("paletteEmpty") : v4("paletteHint")}</p>}
+        {query.length >= 2 && !hits.length && (
+          <div className="c4-deep" aria-label={v4("searchSuggest")}>
+            {emptySuggestions(base).map((item) => <Link key={item.href} href={item.href} onClick={onClose}>{item.label}</Link>)}
+          </div>
+        )}
         {query.length < 2 && <DeepLinkList base={base} v4={v4} />}
       </div>
     </div>
