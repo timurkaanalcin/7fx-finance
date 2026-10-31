@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   approvalShare,
   byCurrency,
@@ -12,7 +12,7 @@ import {
 } from "@/lib/crmv3/statement";
 import { convert, currencyMix, largestCurrency, withMids, type FxPair } from "@/lib/crmv3/fx";
 import { methodName } from "@/lib/crmv3/bridge";
-import { readJson, writeJson } from "@/lib/crmv3/bridge";
+import { readJson, trapFocus, writeJson } from "@/lib/crmv3/bridge";
 import { money, sendJson, useJson, when, type Tx } from "../kit";
 import { useV3 } from "./store";
 
@@ -240,11 +240,28 @@ export function QuickSheet({ open, onClose, onSearch, tx }: {
   const [userId, setUserId] = useState("");
   const [body, setBody] = useState("");
   const [msg, setMsg] = useState("");
+  const panel = useRef<HTMLDivElement>(null);
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeRef.current();
+    };
+    window.addEventListener("keydown", onKey);
+    const node = panel.current;
+    const onTab = node ? trapFocus(node) : null;
+    if (node && onTab) node.addEventListener("keydown", onTab);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      if (node && onTab) node.removeEventListener("keydown", onTab);
+    };
+  }, [open]);
   if (!open) return null;
   const local = kind === "call";
   return (
     <div className="c3-sheet-back" role="presentation" onClick={onClose}>
-      <div role="dialog" aria-modal="true" aria-label={v3("quickPlus")} className="c3-sheet" onClick={(event) => event.stopPropagation()}>
+      <div ref={panel} role="dialog" aria-modal="true" aria-label={v3("quickPlus")} className="c3-sheet" onClick={(event) => event.stopPropagation()}>
         <h2 className="c3-title">{v3("quickPlus")}</h2>
         <p className="c3-muted">{v3("quickHint")}</p>
         <div className="c3-tools">

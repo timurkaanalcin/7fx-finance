@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FormEvent, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CrmV2CopyKey } from "@/lib/crmv2/copy";
+import { trapFocus } from "@/lib/crmv3/bridge";
 
 export type Tx = (key: CrmV2CopyKey) => string;
 
@@ -228,21 +229,28 @@ export function State({ loading, error, empty, tx, onRetry }: { loading: boolean
 }
 
 export function Sheet({ title, onClose, closeLabel, children }: { title: string; onClose: () => void; closeLabel: string; children: ReactNode }) {
+  const panel = useRef<HTMLDivElement>(null);
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
+      if (event.key === "Escape") closeRef.current();
     };
     window.addEventListener("keydown", onKey);
+    const node = panel.current;
+    const onTab = node ? trapFocus(node) : null;
+    if (node && onTab) node.addEventListener("keydown", onTab);
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       window.removeEventListener("keydown", onKey);
+      if (node && onTab) node.removeEventListener("keydown", onTab);
       document.body.style.overflow = prev;
     };
-  }, [onClose]);
+  }, []);
   return (
     <div className="c3-sheet-back" role="presentation" onClick={onClose}>
-      <div role="dialog" aria-modal="true" aria-label={title} className="c3-sheet" onClick={(e) => e.stopPropagation()}>
+      <div ref={panel} role="dialog" aria-modal="true" aria-label={title} className="c3-sheet" onClick={(e) => e.stopPropagation()}>
         <div className="c3-grab" aria-hidden />
         <div className="c3-row c3-between">
           <h2 className="c3-title">{title}</h2>

@@ -70,6 +70,8 @@ export function CommandPalette({ base, open, onClose }: { base: string; open: bo
   const [index, setIndex] = useState(0);
   const input = useRef<HTMLInputElement>(null);
   const panel = useRef<HTMLDivElement>(null);
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
   const query = q.trim();
   const users = useJson<{ users?: { id: string; name?: string | null; email?: string | null }[] }>(open && query.length >= 2 ? `/api/admin/users?view=table&take=6&meta=0&role=TRADER&q=${encodeURIComponent(query)}` : null);
   const tickets = useJson<{ tickets?: { id: string; customer?: string | null; kind?: string | null; currency?: string | null }[] }>(open && query.length >= 2 ? `/api/admin/tickets?q=${encodeURIComponent(query)}&take=6` : null);
@@ -81,9 +83,13 @@ export function CommandPalette({ base, open, onClose }: { base: string; open: bo
     const node = panel.current;
     if (!node) return;
     const onTab = trapFocus(node);
-    node.addEventListener("keydown", onTab);
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeRef.current();
+      onTab(event);
+    };
+    node.addEventListener("keydown", onKey);
     input.current?.focus();
-    return () => node.removeEventListener("keydown", onTab);
+    return () => node.removeEventListener("keydown", onKey);
   }, [open]);
   const pages = useMemo(() => {
     const label = (key: CrmV2CopyKey) => crmv2Text(locale, key);
