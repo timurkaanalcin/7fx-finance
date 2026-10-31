@@ -423,6 +423,12 @@ export function CommandPalette({ base, open, onClose, v4 }: { base: string; open
             </li>
           ))}
         </ul>
+        {query.length < 2 && (
+          <ul>
+            <li><Link href={crmv4Href(base, "support")} onClick={onClose}>{v4("goTickets")}</Link></li>
+            <li><Link href={`${crmv4Href(base, "")}#c4-tasks`} onClick={onClose}>{v4("goTasks")}</Link></li>
+          </ul>
+        )}
         {!hits.length && <p className="c4-muted">{query.length >= 2 ? v4("paletteEmpty") : v4("paletteHint")}</p>}
         {query.length >= 2 && !hits.length && (
           <div className="c4-deep" aria-label={v4("searchSuggest")}>

@@ -4,13 +4,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { approvalBody, approvalEndpoint } from "@/lib/crmv2/payload";
 import { crmv4Text } from "@/lib/crmv4/copy";
-import { ReviewDialog, TicketMeta, exportCurrent } from "../round1";
+import { ReviewDialog, TicketMeta } from "../round1";
 import { MacroBar } from "../round2";
 import { groupBy, setTicketAssignee, ticketAssignee } from "../round3";
 import { CsatPicker } from "../round4";
 import { SlaHeat, ticketCategory } from "../round6";
 import { CsatTrend, FirstTimer, ReplyTemplates, ResponseStat, bulkTicketUpdate, escalated, exportChat, internalNote, saveInternalNote, toggleEscalated } from "../round9";
 import { ApprovalTimes, BacklogTrend } from "../round11";
+import { SlaBadge, ViewerHint, ticketExport } from "../round14";
 import { Card, Chip, Lab, Msg, Sheet, State, Status, SwipeRow, money, sendJson, statusTone, useJson, when, type Tx } from "../kit";
 
 type Ticket = { id: string; kind: string; amount?: number; currency?: string; status?: string; customer?: string; openedAt?: string };
@@ -57,11 +58,15 @@ function Tickets({ tx, locale, q, status, setQuery }: { tx: Tx; locale: string; 
   const [picked, setPicked] = useState<string[]>([]);
   const [reason, setReason] = useState("");
   const [flags, setFlags] = useState<Record<string, boolean>>({});
+  const [unassigned, setUnassigned] = useState(false);
+  const [cols, setCols] = useState<string[]>(["customer", "kind", "amount", "status", "opened"]);
   const [assignees, setAssignees] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale, key);
-  const list = data.data?.tickets || [];
+  const list = (data.data?.tickets || []).filter((row) => !unassigned || !ticketAssignee(row.id));
   return (
+    <div className="c4-ticket-board">
+    <ViewerHint v4={v4} />
     <Card title={tx("tickets")}>
       <div className="c4-tools">
         {["PENDING", "APPROVED", "REJECTED", ""].map((item) => (
@@ -71,7 +76,14 @@ function Tickets({ tx, locale, q, status, setQuery }: { tx: Tx; locale: string; 
         ))}
       </div>
       <div className="c4-tools">
-        <button type="button" className="c4-btn" onClick={() => void exportCurrent("tickets-page", "tickets.csv", ["customer", "kind", "amount", "status"], list.map((row) => [String(row.customer || ""), String(row.kind || ""), String(row.amount ?? ""), String(row.status || "")]))}>{v4("exportCsv")}</button>
+        <button type="button" className="c4-chip" data-on={unassigned ? "1" : "0"} onClick={() => setUnassigned((on) => !on)}>{v4("unassigned")}</button>
+        {["customer", "kind", "amount", "status", "opened"].map((column) => (
+          <label key={column} className="c4-chip" data-on={cols.includes(column) ? "1" : "0"}>
+            <input type="checkbox" checked={cols.includes(column)} aria-label={v4("ticketCols")} onChange={() => setCols((current) => current.includes(column) ? current.filter((item) => item !== column) : [...current, column])} />
+            {column}
+          </label>
+        ))}
+        <button type="button" className="c4-btn" onClick={() => ticketExport(list, cols)}>{v4("ticketCols")}</button>
         <button type="button" className="c4-chip" data-on={merged ? "1" : "0"} onClick={() => setMerged((on) => !on)}>{v4("mergeView")}</button>
         <input className="c4-field" aria-label={v4("reasonPreset")} value={reason} onChange={(event) => setReason(event.target.value)} />
         <button type="button" className="c4-btn" onClick={async () => {
@@ -83,15 +95,17 @@ function Tickets({ tx, locale, q, status, setQuery }: { tx: Tx; locale: string; 
       <SlaHeat v4={v4} />
       <CsatTrend ids={list.map((row) => `${row.kind}-${row.id}`)} v4={v4} />
       <State loading={data.loading} error={data.error} empty={!data.loading && !list.length} tx={tx} onRetry={data.reload} />
+      {!data.loading && !list.length && <p className="c4-empty-gold">{v4("emptyTickets")}</p>}
       <div className="c4-stack">
         {list.map((row) => (
-          <article key={`${row.kind}-${row.id}`} className="c4-ticket c4-ticket-luxe">
+          <article key={`${row.kind}-${row.id}`} className="c4-ticket c4-ticket-luxe" data-status={row.status || ""} tabIndex={0}>
             <div className="c4-row c4-between">
               <strong>{row.customer || "—"}</strong>
               <Status tone={statusTone(row.status)}>{row.status}</Status>
             </div>
             <p className="c4-muted c4-meta">{row.kind}{ticketCategory(`${row.kind || ""} ${row.customer || ""}`) ? ` · ${ticketCategory(`${row.kind || ""} ${row.customer || ""}`)}` : ""}</p>
             <label className="c4-row"><input type="checkbox" checked={picked.includes(row.id)} aria-label={row.customer || row.id} onChange={() => setPicked((list) => list.includes(row.id) ? list.filter((item) => item !== row.id) : [...list, row.id])} /></label>
+            <SlaBadge openedAt={row.openedAt} v4={v4} />
             <FirstTimer openedAt={row.openedAt} v4={v4} />
             <button type="button" className="c4-chip" data-on={(flags[`${row.kind}-${row.id}`] ?? escalated(`${row.kind}-${row.id}`)) ? "1" : "0"} onClick={() => {
               const key = `${row.kind}-${row.id}`;
@@ -160,6 +174,7 @@ function Tickets({ tx, locale, q, status, setQuery }: { tx: Tx; locale: string; 
         </Sheet>
       )}
     </Card>
+    </div>
   );
 }
 

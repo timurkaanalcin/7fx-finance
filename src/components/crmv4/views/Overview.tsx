@@ -14,6 +14,7 @@ import { AgentChart, BoardSaver, CohortTable, DeskChart, ExposureAlert, PnlMover
 import { CallComposer, MyDay, NoteSearch } from "../round9";
 import { ActivityStream, HolidayEditor, IbTree, KpiPicker, ReminderTools, RoiTable, readKpis } from "../round10";
 import { AnnounceFeed, ApprovalTimes, BacklogTrend, ChurnBoard, CityMap, DailyClose, ExecHero, Glossary, GreetingPreview, PinnedHome, QualityReport, ShiftBoard, WhatsNew } from "../round11";
+import { DeskTools, TaskDesk } from "../round14";
 import { readJson } from "@/lib/crmv4/local";
 import { crmv4Href } from "@/lib/crmv4/sections";
 import { Bars, Card, Chip, Field, Kpi, Lab, Msg, Sheet, State, auditExport, downloadCsv, fmtNum, localeTag, money, sendJson, useJson, when, type Tx, type UserRow } from "../kit";
@@ -94,7 +95,9 @@ export default function Overview({ base, tx, locale, name }: Props) {
             <Bars rows={mix} />
           </Card>
         </div>
-        <div className="c4-tasks-luxe">
+        <div className="c4-tasks-luxe c4-task-desk-wrap">
+          <TaskDesk locale={locale} v4={(key) => crmv4Text(locale, key)} tx={tx} />
+          <DeskTools v4={(key) => crmv4Text(locale, key)} locale={locale} />
           <MonthBoard locale={locale} />
           <WeekBoard v4={(key) => crmv4Text(locale, key)} locale={locale} />
           <ReminderAlerts v4={(key) => crmv4Text(locale, key)} />
