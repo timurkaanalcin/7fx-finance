@@ -58,7 +58,7 @@ import { useLocal, useV3 } from "./store";
 
 type Person = UserRow & { lastLoginAt?: string | null; lastSeenAt?: string | null };
 
-export function HomeDesk({ base, locale }: { base: string; locale: string }) {
+export function useHomeCards({ base, locale }: { base: string; locale: string }) {
   const v3 = useV3();
   const users = useJson<{ users?: Person[] }>("/api/admin/users?view=table&take=40&meta=0&role=TRADER");
   const day = useJson<{ reminders?: { id: string; body?: string; remindAt?: string }[] }>("/api/admin/calendar?take=40");
@@ -84,8 +84,8 @@ export function HomeDesk({ base, locale }: { base: string; locale: string }) {
   const pinned = rows.filter((row) => pins.includes(row.id));
   const rate = Number(quote.data?.quotes?.[0]?.bid || quote.data?.quotes?.[0]?.price || 0);
   const hours = hourHeat(rows.map((row) => row.createdAt));
-  return (
-    <div className="c3-stack">
+  return {
+    goal: (
       <Card title={v3("deskGoal")}>
         <div className="c3-pad c3-stack">
           <p className="c3-muted">{v3("goalLocal")}</p>
@@ -99,6 +99,8 @@ export function HomeDesk({ base, locale }: { base: string; locale: string }) {
           {rate > 0 && <p className="c3-muted">{v3("quoteTry")} {rate} · {v3("tryHint")}</p>}
         </div>
       </Card>
+    ),
+    funnel: (
       <Card title={v3("funnelLeads")}>
         <div className="c3-kpis">
           <div className="c3-kpi"><p className="c3-kpi-label">{v3("funnelLeads")}</p><p className="c3-kpi-value">{funnel.leads}</p></div>
@@ -112,6 +114,8 @@ export function HomeDesk({ base, locale }: { base: string; locale: string }) {
           <span className="c3-chip" data-on="1">{v3("nextRetain")} {next.retain}</span>
         </div>
       </Card>
+    ),
+    tasks: (
       <Card title={v3("myDay")}>
         <p className="c3-muted c3-pad">{v3("dueAnnounce")} {dueToday(day.data?.reminders || [])}</p>
         {!mine.length && <p className="c3-muted c3-pad">{v3("myDayEmpty")}</p>}
@@ -122,6 +126,8 @@ export function HomeDesk({ base, locale }: { base: string; locale: string }) {
         </ul>
         <p className="c3-pad"><Link href={crmv3Href(base, "settings", { area: "calendar" })}>{v3("goTasks")}</Link></p>
       </Card>
+    ),
+    churn: (
       <Card title={v3("churnRisk")}>
         <p className="c3-muted c3-pad">{v3("churnHint")}</p>
         {!churn.length && <p className="c3-muted c3-pad">{v3("churnNone")}</p>}
@@ -131,6 +137,8 @@ export function HomeDesk({ base, locale }: { base: string; locale: string }) {
           ))}
         </ul>
       </Card>
+    ),
+    pins: (
       <Card title={v3("pinnedList")}>
         {!pinned.length && <p className="c3-muted c3-pad">{v3("pinNone")}</p>}
         <ul>
@@ -139,6 +147,8 @@ export function HomeDesk({ base, locale }: { base: string; locale: string }) {
           ))}
         </ul>
       </Card>
+    ),
+    cities: (
       <Card title={v3("countryHeat")}>
         <ul>
           {heat.map((row) => (
@@ -146,6 +156,8 @@ export function HomeDesk({ base, locale }: { base: string; locale: string }) {
           ))}
         </ul>
       </Card>
+    ),
+    book: (
       <Card title={v3("deskBoard")}>
         <ul>
           {ranks.map((row) => (
@@ -153,6 +165,8 @@ export function HomeDesk({ base, locale }: { base: string; locale: string }) {
           ))}
         </ul>
       </Card>
+    ),
+    workload: (
       <Card title={v3("workloadWord")}>
         <ul>
           {load.map((row) => (
@@ -160,13 +174,15 @@ export function HomeDesk({ base, locale }: { base: string; locale: string }) {
           ))}
         </ul>
       </Card>
+    ),
+    heat: (
       <Card title={v3("hourHeat")}>
         <div className="c3-hours" aria-label={v3("hourHeat")}>
           {hours.map((count, hour) => <span key={hour} title={`${hour}: ${count}`}>{count}</span>)}
         </div>
       </Card>
-    </div>
-  );
+    ),
+  };
 }
 
 export function customerTools(rows: UserRow[], ops: string, smart: "" | "quiet" | "funded" | "kyc"): UserRow[] {

@@ -4,6 +4,7 @@ import { LATER_AR, LATER_DE, LATER_EN, LATER_RU, LATER_TR } from "@/lib/crmv3/co
 import { CASH_AR, CASH_DE, CASH_EN, CASH_RU, CASH_TR } from "@/lib/crmv3/copy-cash";
 import { PEOPLE_AR, PEOPLE_DE, PEOPLE_EN, PEOPLE_RU, PEOPLE_TR } from "@/lib/crmv3/copy-people";
 import { GOALS_AR, GOALS_DE, GOALS_EN, GOALS_RU, GOALS_TR } from "@/lib/crmv3/copy-goals";
+import { LINE_AR, LINE_DE, LINE_EN, LINE_RU, LINE_TR } from "@/lib/crmv3/copy-line";
 
 const enBase = {
   money: "Money",
@@ -14,7 +15,7 @@ const enBase = {
   openRow: "Open",
 };
 
-const en = { ...enBase, ...DESK_EN, ...LATER_EN, ...CASH_EN, ...PEOPLE_EN, ...GOALS_EN };
+const en = { ...enBase, ...DESK_EN, ...LATER_EN, ...CASH_EN, ...PEOPLE_EN, ...GOALS_EN, ...LINE_EN };
 
 const trBase: typeof enBase = {
   money: "Para",
@@ -25,7 +26,7 @@ const trBase: typeof enBase = {
   openRow: "Aç",
 };
 
-const tr = { ...trBase, ...DESK_TR, ...LATER_TR, ...CASH_TR, ...PEOPLE_TR, ...GOALS_TR };
+const tr = { ...trBase, ...DESK_TR, ...LATER_TR, ...CASH_TR, ...PEOPLE_TR, ...GOALS_TR, ...LINE_TR };
 
 const deBase: typeof enBase = {
   money: "Geld",
@@ -36,7 +37,7 @@ const deBase: typeof enBase = {
   openRow: "Öffnen",
 };
 
-const de = { ...deBase, ...DESK_DE, ...LATER_DE, ...CASH_DE, ...PEOPLE_DE, ...GOALS_DE };
+const de = { ...deBase, ...DESK_DE, ...LATER_DE, ...CASH_DE, ...PEOPLE_DE, ...GOALS_DE, ...LINE_DE };
 
 const ruBase: typeof enBase = {
   money: "Деньги",
@@ -47,7 +48,7 @@ const ruBase: typeof enBase = {
   openRow: "Открыть",
 };
 
-const ru = { ...ruBase, ...DESK_RU, ...LATER_RU, ...CASH_RU, ...PEOPLE_RU, ...GOALS_RU };
+const ru = { ...ruBase, ...DESK_RU, ...LATER_RU, ...CASH_RU, ...PEOPLE_RU, ...GOALS_RU, ...LINE_RU };
 
 const arBase: typeof enBase = {
   money: "المال",
@@ -58,7 +59,7 @@ const arBase: typeof enBase = {
   openRow: "فتح",
 };
 
-const ar = { ...arBase, ...DESK_AR, ...LATER_AR, ...CASH_AR, ...PEOPLE_AR, ...GOALS_AR };
+const ar = { ...arBase, ...DESK_AR, ...LATER_AR, ...CASH_AR, ...PEOPLE_AR, ...GOALS_AR, ...LINE_AR };
 
 export const CRM_V3_COPY = { en, tr, de, ru, ar };
 

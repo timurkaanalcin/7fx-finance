@@ -1,26 +1,44 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ledgerBody } from "@/lib/crmv2/payload";
 import { crmv3Href } from "@/lib/crmv3/sections";
 import { Bars, Card, Chip, Field, Kpi, Lab, Msg, Sheet, State, auditExport, downloadCsv, fmtNum, money, sendJson, useJson, when, type Tx, type UserRow } from "../kit";
-import { HomeDesk } from "../desk/panels";
+import { useHomeCards } from "../desk/panels";
 import { RiskWatch, TeamBoard } from "../desk/later";
 import { FxDesk } from "../desk/statement";
 import { AlertCenter } from "../desk/people";
+import { DeskArrange, loadLayout, orderedCards, storeLayout } from "../desk/line";
+import { defaultLayout, type OverviewCard } from "@/lib/crmv3/line";
 import { EntryQuality, emailOk } from "../desk/feed";
 import { useV3 } from "../desk/store";
 
 type Props = { base: string; tx: Tx; locale: string };
 
 export default function Overview({ base, tx, locale }: Props) {
+  const v3 = useV3();
   const stats = useJson<{ kpis?: { users?: number; totalVolume?: number; pendingDeposits?: number; pendingBalanceRequests?: number; openPositions?: number } }>("/api/admin/stats");
   const finance = useJson<{ kpis?: { totalEquity?: number; totalBalance?: number; income?: number; outcome?: number; net?: number; floatingPnL?: number }; byType?: { type: string; amount: number; count: number }[] }>("/api/admin/analytics/finance");
   const report = useJson<{ report?: Record<string, number | string> }>("/api/admin/analytics/report");
   const users = useJson<{ users?: UserRow[] }>("/api/admin/users?view=table&take=8&meta=0&role=TRADER");
   const [sheet, setSheet] = useState<null | "add" | "transfer">(null);
   const [tab, setTab] = useState<"home" | "insights">("home");
+  const home = useHomeCards({ base, locale });
+  const [layout, setLayout] = useState(defaultLayout);
+  useEffect(() => { setLayout(loadLayout()); }, []);
+  function commit(next: ReturnType<typeof defaultLayout>) {
+    setLayout(next);
+    storeLayout(next);
+  }
+  const cards: Record<OverviewCard, JSX.Element> = {
+    rules: <AlertCenter base={base} />,
+    fx: <FxDesk locale={locale} />,
+    ...home,
+    watch: <RiskWatch base={base} />,
+    team: <TeamBoard base={base} />,
+  };
+  const shown = orderedCards(layout);
   const kpis = stats.data?.kpis;
   const pending = (kpis?.pendingDeposits || 0) + (kpis?.pendingBalanceRequests || 0);
   const aum = finance.data?.kpis?.totalEquity ?? finance.data?.kpis?.totalBalance;
@@ -74,11 +92,9 @@ export default function Overview({ base, tx, locale }: Props) {
           </div>
         </div>
       )}
-      <AlertCenter base={base} />
-      <FxDesk locale={locale} />
-      <HomeDesk base={base} locale={locale} />
-      <RiskWatch base={base} />
-      <TeamBoard base={base} />
+      <DeskArrange layout={layout} onChange={commit} />
+      {shown.map((id) => <div key={id} data-card={id}>{cards[id]}</div>)}
+      {!shown.length && <p className="c3-empty" role="status">{v3("arrangeEmpty")}</p>}
       {sheet === "add" && <AddCustomer tx={tx} onClose={() => setSheet(null)} onDone={users.reload} />}
       {sheet === "transfer" && <TransferSheet tx={tx} onClose={() => setSheet(null)} />}
     </div>

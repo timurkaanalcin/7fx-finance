@@ -1037,6 +1037,29 @@
   min-width: 0;
 }
 
+[data-crmv3-root] .c3-arrange-list,
+[data-crmv3-root] .c3-line-day ol {
+  display: grid;
+  gap: var(--c3-2);
+  margin: 0;
+  padding: 0 var(--c3-3) var(--c3-3);
+  list-style: none;
+}
+
+[data-crmv3-root] .c3-arrange-list > li,
+[data-crmv3-root] .c3-line-day li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--c3-2);
+  min-width: 0;
+}
+
+[data-crmv3-root] .c3-line-day h4 {
+  margin: 0;
+  padding: var(--c3-2) var(--c3-3) 0;
+}
+
 [data-crmv3-root] .c3-goal-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
