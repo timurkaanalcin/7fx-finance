@@ -16,6 +16,7 @@ import { AssignPreview, DocTools, NoteTools, ProfileBits, QualityList, customerT
 import { ContactFeed, EntryQuality, applySplit, emailOk } from "../desk/feed";
 import { useLocal, useV3 } from "../desk/store";
 import { ListDesk, RecordHead, useLists } from "../desk/record";
+import { TradeBook } from "../desk/book";
 import { applyList } from "@/lib/crmv3/lists";
 
 export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; locale: string; q: string }) {
@@ -319,6 +320,7 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
     <div className="c3-stack">
       <Link href={crmv3Href(base, "customers")}>{tx("back")}</Link>
       <State loading={user.loading} error={user.error} empty={!user.loading && !u} tx={tx} onRetry={user.reload} />
+      {u && <TradeBook id={id} locale={locale} />}
       {u && <RecordHead base={base} user={u} locale={locale} tx={tx} />}
       {u && (
         <Card>
