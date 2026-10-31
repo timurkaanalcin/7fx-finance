@@ -22,6 +22,7 @@ import { DocStage, FREEZE_PRESETS, KYC_PRESETS, KycChecklist, OnboardTrack, Reas
 import { CallWindow, CustomerQr, ExportColumns, PresenceFacts, nextCallId, scoreOf } from "../round10";
 import { BulkRemind, EditLog, EmailHintLine, HandoffNote, NoteCloud, SimilarList } from "../round11";
 import { BulkUntag, ContactSummary, DncFlag, DocAsk, Fold, KeyFacts, LiveBook, MarginGauge, MiniNav, MonthStatement, PreferTime, ProfileList, QuickSwitch, ShareViewButton, TagManager, TxMini, isDnc } from "../round12";
+import { DocDesk, NoteDesk } from "../round15";
 import { countActive, decodeView, headerHit, inDateRange, inNumberRange, multiSort } from "@/lib/crmv4/round12";
 import { Card, Chip, Field, Lab, Msg, Pager, State, Status, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, statusTone, useJson, when, type Tx, type UserRow } from "../kit";
 
@@ -787,13 +788,15 @@ function Notes({ id, notes, tx, locale, onDone }: { id: string; notes: NoteRow[]
         writeJson("crmv4-show-agent-notes", next);
       }}>{v4("agentNotes")}</button>
       <Card title={tx("generalNote")}>
-        <NoteForm tx={tx} onSubmit={async (body) => {
-          const res = await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { addNote: body });
-          setMsg(res.ok ? tx("noteSaved") : res.error || tx("failed"));
-          if (res.ok) onDone();
-        }} />
-        <Msg text={msg} />
-        <NoteList rows={notes} tx={tx} locale={locale} />
+        <div className="c4-note-luxe">
+          <NoteDesk notes={notes} v4={v4} tx={tx} locale={locale} save={tx("save")} onSubmit={async (body) => {
+            const res = await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { addNote: body });
+            setMsg(res.ok ? tx("noteSaved") : res.error || tx("failed"));
+            if (res.ok) onDone();
+            return res.ok;
+          }} />
+          <Msg text={msg} />
+        </div>
       </Card>
       {showTeam && <Card title={tx("team")}>
         <NoteForm tx={tx} team={(teams.data?.writableTeams || ["SALE"])[0] || "SALE"} teams={teams.data?.writableTeams || []} onSubmit={async (body, team) => {
@@ -950,7 +953,8 @@ function Files({ id, email, tx, locale }: { id: string; email: string; tx: Tx; l
   const v4 = (key: CrmV4CopyKey) => crmv4Text(locale, key);
   const mine = (docs.data?.documents || []).filter((row) => row.traderId === id);
   return (
-    <div className="c4-stack">
+    <div className="c4-stack c4-doc-luxe">
+      <DocDesk rows={mine} v4={v4} />
       <Card title={tx("kyc")}>
         <form
           className="c4-form c4-form-2"

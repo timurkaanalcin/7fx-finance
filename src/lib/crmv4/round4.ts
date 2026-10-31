@@ -130,7 +130,12 @@ export function mergeSuggestions(rows: Person[]): { key: string; ids: string[] }
 export function methodMix(rows: MoneyLine[]): { method: string; count: number; amount: number }[] {
   const map = new Map<string, { count: number; amount: number }>();
   for (const row of rows) {
-    const method = String(row.method || "—") || "—";
+    const raw = row.method as unknown;
+    const method = typeof raw === "string" && raw
+      ? raw
+      : raw && typeof raw === "object" && "label" in raw
+        ? String((raw as { label?: string }).label || "—")
+        : "—";
     const cell = map.get(method) || { count: 0, amount: 0 };
     cell.count += 1;
     cell.amount += Math.abs(Number(row.amount) || 0);
