@@ -17,6 +17,7 @@ import { AnnounceFeed, ApprovalTimes, BacklogTrend, ChurnBoard, CityMap, DailyCl
 import { DeskTools, TaskDesk } from "../round14";
 import { readJson } from "@/lib/crmv4/local";
 import { crmv4Href } from "@/lib/crmv4/sections";
+import { EntryQuality, emailOk } from "../round17";
 import { Bars, Card, Chip, Field, Kpi, Lab, Msg, Sheet, State, auditExport, downloadCsv, fmtNum, localeTag, money, sendJson, useJson, when, type Tx, type UserRow } from "../kit";
 
 type Props = { base: string; tx: Tx; locale: string; name?: string };
@@ -161,7 +162,7 @@ export default function Overview({ base, tx, locale, name }: Props) {
         </div>
         </div>
       )}
-      {sheet === "add" && <AddCustomer tx={tx} onClose={() => setSheet(null)} onDone={users.reload} />}
+      {sheet === "add" && <AddCustomer tx={tx} locale={locale} onClose={() => setSheet(null)} onDone={users.reload} />}
       {sheet === "transfer" && <TransferSheet tx={tx} onClose={() => setSheet(null)} />}
     </div>
   );
@@ -296,14 +297,18 @@ async function exportPage(tx: Tx, rows: UserRow[]) {
   void tx;
 }
 
-function AddCustomer({ tx, onClose, onDone }: { tx: Tx; onClose: () => void; onDone: () => void }) {
+function AddCustomer({ tx, locale, onClose, onDone }: { tx: Tx; locale: string; onClose: () => void; onDone: () => void }) {
   const [err, setErr] = useState("");
+  const [live, setLive] = useState({ name: "", email: "", phone: "", country: "" });
+  const [password, setPassword] = useState("");
+  const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale, key);
   return (
     <Sheet title={tx("addCustomerTitle")} onClose={onClose} closeLabel={tx("close")}>
       <form
-        className="c4-form"
+        className="c4-form c4-entry-form"
         onSubmit={async (event) => {
           event.preventDefault();
+          if (live.email && !emailOk(live.email)) return;
           const fd = new FormData(event.currentTarget);
           const res = await sendJson("/api/admin/users", "POST", { name: fd.get("name"), email: fd.get("email"), password: fd.get("password"), role: "TRADER" });
           if (!res.ok) {
@@ -314,11 +319,15 @@ function AddCustomer({ tx, onClose, onDone }: { tx: Tx; onClose: () => void; onD
           onClose();
         }}
       >
-        <Lab label={tx("name")}><input name="name" required className="c4-field" /></Lab>
-        <Lab label={tx("email")}><input name="email" type="email" required className="c4-field" /></Lab>
-        <Lab label={tx("password")}><input name="password" type="password" required minLength={6} className="c4-field" /></Lab>
+        <EntryQuality fields={live} password={password} v4={v4} />
+        <p className="c4-muted">{v4("identityBlock")}</p>
+        <Lab label={tx("name")}><input name="name" required className="c4-field" value={live.name} onChange={(event) => setLive({ ...live, name: event.target.value })} /></Lab>
+        <Lab label={tx("email")}><input name="email" type="email" required className="c4-field" value={live.email} onChange={(event) => setLive({ ...live, email: event.target.value })} /></Lab>
+        <Lab label={tx("phone")}><input name="phone" className="c4-field" value={live.phone} onChange={(event) => setLive({ ...live, phone: event.target.value })} aria-label={tx("phone")} /></Lab>
+        <Lab label={tx("country")}><input name="country" className="c4-field" value={live.country} onChange={(event) => setLive({ ...live, country: event.target.value })} /></Lab>
+        <Lab label={tx("password")}><input name="password" type="password" required minLength={6} className="c4-field" value={password} onChange={(event) => setPassword(event.target.value)} /></Lab>
         <Msg text={err} />
-        <button type="submit" className="c4-btn c4-btn-hot">{tx("save")}</button>
+        <button type="submit" className="c4-btn c4-btn-hot" disabled={Boolean(live.email) && !emailOk(live.email)}>{tx("save")}</button>
       </form>
     </Sheet>
   );
