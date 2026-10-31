@@ -20,7 +20,8 @@ import { KycDesk, ReportsPage } from "./desk/review";
 import { WithdrawDesk } from "./desk/withdraw";
 import { DepositDesk, InboxDesk } from "./desk/deposit";
 import { readJson } from "@/lib/crmv3/bridge";
-import { groupedNav } from "@/lib/crmv3/local-pack";
+import { RAIL_KEY, readFold } from "@/lib/crmv3/nav";
+import { MoreNav, RailNav } from "./desk/nav";
 import { useLocal } from "./desk/store";
 import Overview from "./views/Overview";
 import { CustomerDetail, Customers } from "./views/Customers";
@@ -59,6 +60,8 @@ function Shell({ base, section, name }: Props) {
   const [palette, setPalette] = useState(false);
   const [help, setHelp] = useState(false);
   const [quick, setQuick] = useState(false);
+  const [folded, setFolded] = useState(false);
+  const [railQuery, setRailQuery] = useState("");
   const [noteQuery, setNoteQuery] = useState("");
   const [unreadOnly, setUnreadOnly] = useState(false);
   const [banner] = useLocal<string>("crmv3-banner", "");
@@ -85,6 +88,25 @@ function Shell({ base, section, name }: Props) {
       window.removeEventListener("crmv3:staff-prefs", readName);
     };
   }, []);
+
+  useEffect(() => { setFolded(readFold(window.localStorage.getItem(RAIL_KEY))); }, []);
+
+  useEffect(() => {
+    if (!searchOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSearchOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [searchOpen]);
+
+  function toggleFold() {
+    setFolded((current) => {
+      const next = !current;
+      window.localStorage.setItem(RAIL_KEY, next ? "1" : "0");
+      return next;
+    });
+  }
 
   useEffect(() => {
     const onToast = (event: Event) => {
@@ -145,6 +167,7 @@ function Shell({ base, section, name }: Props) {
 
   const known = CRM_V3_SECTIONS.some((item) => item.id === view);
   const heading = known ? label(view) : tx("comingSoon");
+  const names = Object.fromEntries(CRM_V3_SECTIONS.map((item) => [item.id, label(item.id)]));
 
   useEffect(() => {
     const path = window.location.pathname + window.location.search;
@@ -162,7 +185,7 @@ function Shell({ base, section, name }: Props) {
   }, [view, id]);
 
   return (
-    <div data-crmv3-root="" data-theme={theme} data-crmv3-view={id ? `${view}/${id}` : view} className="c3-app font-normal">
+    <div data-crmv3-root="" data-theme={theme} data-fold={folded ? "1" : "0"} data-crmv3-view={id ? `${view}/${id}` : view} className="c3-app font-normal">
       <a className="c3-skip" href="#c3-main">{v3("skipMain")}</a>
       <ShortcutHost base={base} onPalette={() => setPalette(true)} onHelp={setHelp} />
       <aside className="c3-rail">
@@ -170,19 +193,16 @@ function Shell({ base, section, name }: Props) {
           <BrandLogo tone={theme === "light" ? "ink" : "paper"} height={24} className="c3-logo" />
           <span>{v3("v3mark")}</span>
         </div>
-        <nav className="c3-stack" aria-label={tx("panel")}>
-          {CRM_V3_SECTIONS.map((item) => (
-            <Link key={item.id} href={crmv3Href(base, item.path)} data-nav={item.id} data-on={view === item.id ? "1" : "0"} className="c3-nav" aria-current={view === item.id ? "page" : undefined}>
-              {label(item.id)}
-            </Link>
-          ))}
-        </nav>
+        <RailNav base={base} view={view} names={names} folded={folded} query={railQuery} v3={v3} onQuery={setRailQuery} onToggle={toggleFold} />
         <div className="c3-rail-foot">
           <p className="c3-muted c3-meta">{tx("signedInAs")}<span className="c3-value">{shownName || name}</span></p>
           <button type="button" className="c3-btn" onClick={() => setQuick(true)} aria-label={v3("quickPlus")}>+</button>
           <form method="post" action="/api/auth/logout">
             <input type="hidden" name="nav" value="1" />
-            <button type="submit" className="c3-btn">{tx("signOut")}</button>
+            <button type="submit" className="c3-btn" aria-label={tx("signOut")}>
+              <span className="c3-rail-mark" aria-hidden="true">{tx("signOut").slice(0, 1)}</span>
+              <span className="c3-rail-name">{tx("signOut")}</span>
+            </button>
           </form>
         </div>
       </aside>
@@ -338,31 +358,17 @@ function MoreGroups({ base, view, label, tx, v3, theme, name, onClose, onTheme, 
   view: string;
   label: (tab: string) => string;
   tx: (key: "more" | "themeLight" | "themeDark" | "signedInAs" | "signOut" | "close") => string;
-  v3: (key: "moreWork" | "moreRecords" | "moreDesk" | "moreSession" | "footShortcuts" | "motionLess") => string;
+  v3: (key: CrmV3CopyKey) => string;
   theme: "dark" | "light";
   name: string;
   onClose: () => void;
   onTheme: () => void;
   onHelp: () => void;
 }) {
-  const groups = groupedNav(CRM_V3_MORE);
-  const blocks = [
-    ["moreWork", groups.work],
-    ["moreRecords", groups.records],
-    ["moreDesk", groups.desk],
-  ] as const;
+  const names = Object.fromEntries(CRM_V3_SECTIONS.map((item) => [item.id, label(item.id)]));
   return (
     <div className="c3-stack">
-      {blocks.map(([title, ids]) => (
-        <section key={title} className="c3-stack">
-          <h3 className="c3-title">{v3(title)}</h3>
-          {ids.map((tab) => (
-            <Link key={tab} href={crmv3Href(base, tab)} onClick={onClose} className="c3-btn" aria-current={view === tab ? "page" : undefined}>
-              {label(tab)}
-            </Link>
-          ))}
-        </section>
-      ))}
+      <MoreNav base={base} view={view} names={names} allow={CRM_V3_MORE} v3={v3} onPick={onClose} />
       <section className="c3-stack">
         <h3 className="c3-title">{v3("moreSession")}</h3>
         <button type="button" className="c3-btn" onClick={onHelp}>{v3("footShortcuts")}</button>
