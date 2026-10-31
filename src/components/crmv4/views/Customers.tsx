@@ -23,6 +23,7 @@ import { CallWindow, CustomerQr, ExportColumns, PresenceFacts, nextCallId, score
 import { BulkRemind, EditLog, EmailHintLine, HandoffNote, NoteCloud, SimilarList } from "../round11";
 import { BulkUntag, ContactSummary, DncFlag, DocAsk, Fold, KeyFacts, LiveBook, MarginGauge, MiniNav, MonthStatement, PreferTime, ProfileList, QuickSwitch, ShareViewButton, TagManager, TxMini, isDnc } from "../round12";
 import { DocDesk, NoteDesk } from "../round15";
+import { LeadDesk } from "../round16";
 import { countActive, decodeView, headerHit, inDateRange, inNumberRange, multiSort } from "@/lib/crmv4/round12";
 import { Card, Chip, Field, Lab, Msg, Pager, State, Status, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, statusTone, useJson, when, type Tx, type UserRow } from "../kit";
 
@@ -182,6 +183,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
     <div className="c4-stack">
       <p className="c4-muted">{tx("customersLead")}</p>
       <Card title={tx("customers")} extra={<span className="c4-muted">{typeof data.data?.total === "number" ? `${tx("totalRows")} ${data.data.total}` : ""}</span>}>
+        <LeadDesk rows={shown} v4={v4} base={base} selected={selected} onSelect={setSelected} />
         <div className="c4-presets" data-presets="">
           {presets.map((preset) => (
             <span key={preset.id} className="c4-chip" data-on="0">
