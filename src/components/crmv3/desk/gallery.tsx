@@ -16,6 +16,7 @@ import {
   type KycChecks,
 } from "@/lib/crmv3/gallery";
 import { downloadCsv, sendJson, Sheet, State, Status, statusTone, useJson, when, type Tx } from "../kit";
+import { PhoneSheet } from "./system";
 import { useV3 } from "./store";
 
 type DocRow = {
@@ -199,12 +200,14 @@ export function AuditTimeline({ locale, tx }: { locale: string; tx: Tx }) {
       {!data.loading && !data.error && loaded.length === 0 && <p className="c3-empty-card" role="status">{v3("auditEmpty")}</p>}
       {!data.loading && !data.error && loaded.length > 0 && (
         <>
+          <PhoneSheet title={v3("sheetFilters")}>
           <div className="c3-ledger-filters">
             <label className="c3-lab"><span>{v3("auditActor")}</span><input className="c3-field" aria-label={v3("auditActor")} value={actor} onChange={(event) => setActor(event.target.value)} /></label>
             <label className="c3-lab"><span>{v3("auditAction")}</span><input className="c3-field" aria-label={v3("auditAction")} value={action} onChange={(event) => setAction(event.target.value)} /></label>
             <label className="c3-lab"><span>{v3("auditEntity")}</span><input className="c3-field" aria-label={v3("auditEntity")} value={entity} onChange={(event) => setEntity(event.target.value)} /></label>
             <button type="button" className="c3-btn" onClick={() => downloadCsv("audit-loaded.csv", [v3("auditActor"), v3("auditAction"), v3("auditEntity"), "level", "at"], auditLines(rows))}>{v3("auditExport")}</button>
           </div>
+          </PhoneSheet>
           <p className="c3-muted">{v3("auditCount")} · {rows.length}</p>
           {!rows.length && <p className="c3-empty-card" role="status">{v3("auditEmpty")}</p>}
           {days.map((group) => (
