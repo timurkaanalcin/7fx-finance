@@ -10,6 +10,7 @@ import { BonusHistory } from "../round5";
 import { CommissionCard, MoneyHistory, useQueueCursor } from "../round7";
 import { Card, Chip, Lab, Pager, Sheet, State, Status, SwipeRow, TAKE, money, sendJson, statusTone, useJson, when, type Tx } from "../kit";
 import { crmv4Text } from "@/lib/crmv4/copy";
+import { DailyClose } from "../round11";
 
 type MoneyRow = { id: string; amount?: number; currency?: string; status?: string; createdAt?: string; method?: string; user?: { name?: string; email?: string } };
 type LedgerRow = { id: string; amount?: number; type?: string; currency?: string; trader?: string; createdAt?: string; comment?: string };
@@ -53,6 +54,8 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
     : ((data.data?.requests as MoneyRow[]) || []);
 
   return (
+    <div className="c4-stack">
+    <DailyClose locale={locale} v4={(key) => crmv4Text(locale, key)} />
     <Card title={tx("finance")}>
       <p className="c4-muted c4-pad">{crmv4Text(locale, "queueKeys")} j / k / a / r</p>
       <p className="c4-muted" style={{ padding: "8px 16px 0" }}>{tx("financeLead")}</p>
@@ -164,6 +167,7 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
         </Sheet>
       )}
     </Card>
+    </div>
   );
 }
 

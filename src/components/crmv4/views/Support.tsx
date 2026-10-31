@@ -10,6 +10,7 @@ import { groupBy, setTicketAssignee, ticketAssignee } from "../round3";
 import { CsatPicker } from "../round4";
 import { SlaHeat, ticketCategory } from "../round6";
 import { CsatTrend, FirstTimer, ReplyTemplates, ResponseStat, bulkTicketUpdate, escalated, exportChat, internalNote, saveInternalNote, toggleEscalated } from "../round9";
+import { ApprovalTimes, BacklogTrend } from "../round11";
 import { Card, Chip, Lab, Msg, Sheet, State, Status, SwipeRow, money, sendJson, statusTone, useJson, when, type Tx } from "../kit";
 
 type Ticket = { id: string; kind: string; amount?: number; currency?: string; status?: string; customer?: string; openedAt?: string };
@@ -31,6 +32,8 @@ export default function Support({ tx, locale, q }: { tx: Tx; locale: string; q: 
   }
   return (
     <div className="c4-stack">
+      <BacklogTrend v4={(key) => crmv4Text(locale, key)} />
+      <ApprovalTimes v4={(key) => crmv4Text(locale, key)} />
       <p className="c4-muted">{tx("supportLead")}</p>
       <div className="c4-row">
         <Chip on={tab === "tickets"} onClick={() => setQuery({ tab: "" })}>{tx("tickets")}</Chip>

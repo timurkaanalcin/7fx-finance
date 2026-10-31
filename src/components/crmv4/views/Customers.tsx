@@ -20,6 +20,7 @@ import { fuzzyHit } from "@/lib/crmv4/round8";
 import { RatioCard, toggleWatch, watchIds } from "../round8";
 import { DocStage, FREEZE_PRESETS, KYC_PRESETS, KycChecklist, OnboardTrack, ReasonChips, RichNote, WelcomeList } from "../round9";
 import { CallWindow, CustomerQr, ExportColumns, PresenceFacts, nextCallId, scoreOf } from "../round10";
+import { BulkRemind, EditLog, EmailHintLine, HandoffNote, NoteCloud, SimilarList } from "../round11";
 import { Card, Chip, Field, Lab, Msg, Pager, State, Status, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, statusTone, useJson, when, type Tx, type UserRow } from "../kit";
 
 const COLUMNS = ["customer", "country", "desk", "sale", "retention", "balance", "status"] as const;
@@ -205,6 +206,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
           </label>
           <button type="button" className="c4-btn" onClick={() => void exportRows(selected.length ? shown.filter((row) => selected.includes(row.id)) : shown)}>{selected.length ? v4("bulkExport") : tx("quickExport")}</button>
           <ExportColumns v4={v4} onExport={(cols) => void exportRows(selected.length ? shown.filter((row) => selected.includes(row.id)) : shown, cols)} />
+          <BulkRemind rows={shown.filter((row) => selected.includes(row.id))} v4={v4} />
           <button type="button" className="c4-btn" onClick={() => void exportLeads()}>{tx("exportLeads")}</button>
         </div>
         {settingsOpen && (
@@ -457,6 +459,7 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
             <h2>{u.name || "—"}</h2>
             <p className="c4-muted c4-meta">{v4("customerId")} {u.id}</p>
             <ContactLine email={u.email} phone={u.phone} v4={v4} />
+            <EmailHintLine email={u.email} v4={v4} />
             <RiskBadge row={u} v4={v4} />
             <LangBadge language={u.language} v4={v4} />
             <button type="button" className="c4-btn" onClick={() => { toggleWatch(id); setWatching(watchIds().includes(id)); }}>{watching ? v4("watchlist") : v4("watchAdd")}</button>
@@ -466,6 +469,10 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
             <ExpiryNote expiresAt={(u as UserRow & { expiresAt?: string | null }).expiresAt} v4={v4} />
             <PresenceBadge lastSeen={(u as UserRow & { lastSeenAt?: string | null }).lastSeenAt} lastLogin={(u as UserRow & { lastLoginAt?: string | null }).lastLoginAt} v4={v4} locale={locale} />
             <LocalTime country={u.country} v4={v4} />
+            <SimilarList row={u} v4={v4} />
+            <HandoffNote id={id} v4={v4} tx={tx} />
+            <NoteCloud notes={user.data?.notes || []} v4={v4} />
+            <EditLog id={id} v4={v4} />
             <PresenceFacts row={u} v4={v4} />
             <CallWindow country={u.country} v4={v4} />
             <CustomerQr url={shareUrl} v4={v4} />

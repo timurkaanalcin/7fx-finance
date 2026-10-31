@@ -2098,6 +2098,134 @@
   [data-crmv4-root] .c4-pagehead { margin-inline: 8px; }
 }
 
+[data-crmv4-root] .c4-tour {
+  position: fixed;
+  z-index: 45;
+  inset-inline: 10px;
+  bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+  width: auto;
+  margin: 0;
+}
+
+[data-crmv4-root] .c4-resume {
+  margin: 0 0 4px;
+  border-radius: 12px;
+  gap: 10px;
+}
+
+[data-crmv4-root] .c4-resume-path {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+[data-crmv4-root] .c4-exec-hero {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.7fr) minmax(0, 1.3fr);
+  gap: 18px;
+  align-items: center;
+  padding: 22px;
+  border: 1px solid rgba(166, 133, 78, 0.45);
+  border-radius: 20px;
+  background:
+    linear-gradient(145deg, rgba(166, 133, 78, 0.24), transparent 48%),
+    #fffdf8;
+  box-shadow: 0 18px 40px rgba(42, 38, 34, 0.06);
+}
+
+[data-crmv4-root] .c4-exec-kicker {
+  margin: 0;
+  color: #a6854e;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.18em;
+}
+
+[data-crmv4-root] .c4-exec-title {
+  margin: 6px 0 12px;
+  font-size: 32px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+[data-crmv4-root] .c4-exec-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+[data-crmv4-root] .c4-exec-metric {
+  position: relative;
+  padding: 14px 16px 16px;
+  border: 1px solid #e6dccf;
+  border-radius: 14px;
+  background: #fffdf8;
+}
+
+[data-crmv4-root] .c4-exec-metric span {
+  color: #7d7368;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root] .c4-exec-metric strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 26px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+[data-crmv4-root] .c4-hover-tip {
+  display: none;
+  position: absolute;
+  z-index: 3;
+  inset-inline: 10px;
+  top: calc(100% - 6px);
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #2a2622;
+  color: #f6f1e8;
+  font-size: 12px;
+  font-style: normal;
+  line-height: 1.35;
+}
+
+[data-crmv4-root] .c4-exec-metric:hover .c4-hover-tip,
+[data-crmv4-root] .c4-exec-metric:focus .c4-hover-tip,
+[data-crmv4-root] .c4-exec-metric:focus-within .c4-hover-tip {
+  display: block;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-exec-hero,
+[data-crmv4-root][data-theme="dark"] .c4-exec-metric {
+  background: #221f1b;
+  color: #f6f1e8;
+}
+
+@media (min-width: 768px) {
+  [data-crmv4-root] .c4-tour {
+    inset-inline-start: auto;
+    inset-inline-end: 72px;
+    bottom: 16px;
+    width: min(420px, calc(100vw - 96px));
+  }
+}
+
+@media (max-width: 767px) {
+  [data-crmv4-root] .c4-exec-hero { grid-template-columns: minmax(0, 1fr); padding: 16px; }
+  [data-crmv4-root] .c4-exec-title { font-size: 26px; }
+  [data-crmv4-root] .c4-exec-metric strong { font-size: 22px; }
+  [data-crmv4-root] .c4-fab { bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+  [data-crmv4-root] .c4-tour { bottom: calc(168px + env(safe-area-inset-bottom, 0px)); }
+}
+
 @keyframes c4-shimmer {
   from { background-position: 100% 0; }
   to { background-position: -100% 0; }
