@@ -10,17 +10,18 @@ import { useI18n } from "@/lib/i18n/context";
 import { crmv2Text, type CrmV2CopyKey } from "@/lib/crmv2/copy";
 import { crmv4Text, type CrmV4CopyKey } from "@/lib/crmv4/copy";
 import { readJson, writeJson } from "@/lib/crmv4/local";
-import { CRM_V4_MORE, CRM_V4_NAV, CRM_V4_SECTIONS, CRM_V4_TABS, crmv4Href, type CrmV4SectionId } from "@/lib/crmv4/sections";
+import { CRM_V4_NAV, CRM_V4_SECTIONS, CRM_V4_TABS, crmv4Href, type CrmV4SectionId } from "@/lib/crmv4/sections";
 import { ShortcutHost } from "./round1";
 import { DeskSearch, WithdrawDesk } from "./round28";
 import { DepositDesk, InboxDesk } from "./round29";
+import { GroupedMenu, PageRail } from "./round30";
 import { DeskFoot, HelpSheet } from "./round18";
 import { HelpCenter, OfflineBanner, Tour, UndoHost, densityMode, storeDensity } from "./round2";
 import { rememberToast, toastHistory } from "./round3";
 import { AnnounceBar, DeskBoundary, FreshnessBar, LuxeSkeleton, PullSurface, storedAccent, useInboxCursor } from "./round4";
 import { IdleWarning, storedRole, storedZebra } from "./round5";
 import { CallTarget, Fab, MotionPref, storedMotion } from "./round6";
-import { groupedNav } from "@/lib/crmv4/round20";
+import { RAIL_KEY, readFold } from "@/lib/crmv4/round30";
 import { QuickSheet } from "./round22";
 import { StaffPage } from "./round24";
 import { GoalsPage, TopTrail } from "./round25";
@@ -86,6 +87,8 @@ function Shell({ base, section, name }: Props) {
   const [unreadOnly, setUnreadOnly] = useState(false);
   const [financeOpen, setFinanceOpen] = useState(false);
   const [gearOpen, setGearOpen] = useState(false);
+  const [folded, setFolded] = useState(false);
+  const [railQuery, setRailQuery] = useState("");
   const [theme, setTheme] = useState<"dark" | "light">("light");
   const [accent, setAccent] = useState<Accent>("champagne");
   const [role, setRole] = useState<"desk" | "viewer">("desk");
@@ -228,9 +231,26 @@ function Shell({ base, section, name }: Props) {
       setFinanceOpen(false);
       setGearOpen(false);
     };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") close();
+    };
     window.addEventListener("click", close);
-    return () => window.removeEventListener("click", close);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("click", close);
+      window.removeEventListener("keydown", onKey);
+    };
   }, [financeOpen, gearOpen]);
+
+  useEffect(() => { setFolded(readFold(window.localStorage.getItem(RAIL_KEY))); }, []);
+
+  function toggleFold() {
+    setFolded((current) => {
+      const next = !current;
+      window.localStorage.setItem(RAIL_KEY, next ? "1" : "0");
+      return next;
+    });
+  }
 
   function toggleTheme() {
     const next = theme === "dark" ? "light" : "dark";
@@ -287,8 +307,11 @@ function Shell({ base, section, name }: Props) {
     void sendJson("/api/notifications", "PATCH", { id: item.id }).then(() => notes.reload());
   });
 
+  const names: Record<string, string> = {};
+  for (const item of CRM_V4_SECTIONS) names[item.id] = label(item.id);
+
   return (
-    <div data-crmv4-root="" data-theme={theme} data-accent={accent} data-role={role} data-zebra={zebra ? "1" : "0"} data-motion={motion} data-compact={compact ? "1" : "0"} data-font={font} data-contrast={contrast ? "1" : "0"} data-freeze={freeze ? "1" : "0"} data-focus={focus ? "1" : "0"} data-density={density} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
+    <div data-crmv4-root="" data-theme={theme} data-accent={accent} data-role={role} data-zebra={zebra ? "1" : "0"} data-motion={motion} data-compact={compact ? "1" : "0"} data-font={font} data-contrast={contrast ? "1" : "0"} data-freeze={freeze ? "1" : "0"} data-focus={focus ? "1" : "0"} data-density={density} data-fold={folded ? "1" : "0"} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
       <a className="c4-skip" href="#c4-main">{v4("skipContent")}</a>
       <OfflineBanner v4={v4} />
       <IdleWarning v4={v4} />
@@ -335,20 +358,14 @@ function Shell({ base, section, name }: Props) {
               data-on={view === "settings" || view === "control" ? "1" : "0"}
               aria-label={tx("settings")}
               aria-expanded={gearOpen}
+              aria-controls="c4-gear-menu"
               onClick={() => { setGearOpen((open) => !open); setFinanceOpen(false); }}
             >
               <span className="c4-nav-title"><GearIcon /></span>
               <span className="c4-nav-sub">{v4("gear")}</span>
             </button>
-            <div className="c4-drop-menu" role="menu">
-              <Link href={crmv4Href(base, "goals")} data-on={view === "goals" ? "1" : "0"} onClick={() => setGearOpen(false)}>{v4("goalsTitle")}</Link>
-              <Link href={crmv4Href(base, "kyc")} data-on={view === "kyc" ? "1" : "0"} onClick={() => setGearOpen(false)}>{v4("kycDesk")}</Link>
-              <Link href={crmv4Href(base, "reports")} data-on={view === "reports" ? "1" : "0"} onClick={() => setGearOpen(false)}>{v4("reportsTitle")}</Link>
-              <Link href={crmv4Href(base, "withdraw")} data-on={view === "withdraw" ? "1" : "0"} onClick={() => setGearOpen(false)}>{v4("wdDesk")}</Link>
-              <Link href={crmv4Href(base, "deposit")} data-on={view === "deposit" ? "1" : "0"} onClick={() => setGearOpen(false)}>{v4("depDesk")}</Link>
-              <Link href={crmv4Href(base, "inbox")} data-on={view === "inbox" ? "1" : "0"} onClick={() => setGearOpen(false)}>{v4("inboxTitle")}</Link>
-              <Link href={crmv4Href(base, "settings")} data-on={view === "settings" ? "1" : "0"} onClick={() => setGearOpen(false)}>{tx("settings")}</Link>
-              <Link href={crmv4Href(base, "control")} data-on={view === "control" ? "1" : "0"} onClick={() => setGearOpen(false)}>{tx("control")}</Link>
+            <div className="c4-drop-menu c4-gear-menu" id="c4-gear-menu">
+              <GroupedMenu base={base} view={view} names={names} v4={v4} onPick={() => setGearOpen(false)} />
             </div>
           </div>
         </nav>
@@ -367,6 +384,8 @@ function Shell({ base, section, name }: Props) {
         </div>
         <TopTrail base={base} view={view} id={id} heading={heading} openId={params.get("open") || ""} trail={trail} v4={v4} />
       </header>
+
+      <PageRail base={base} view={view} names={names} folded={folded} query={railQuery} v4={v4} onQuery={setRailQuery} onToggle={toggleFold} />
 
       <div className="c4-frame">
         <div className="c4-panel" data-view={view} onScroll={(event) => setCompact(event.currentTarget.scrollTop > 24)}>
@@ -513,14 +532,7 @@ function Shell({ base, section, name }: Props) {
       {more && (
         <Sheet title={tx("more")} onClose={() => setMore(false)} closeLabel={tx("close")}>
           <div className="c4-more-luxe">
-            {(["work", "records", "desk"] as const).map((group) => (
-              <section key={group} aria-label={v4(group === "work" ? "moreWork" : group === "records" ? "moreRecords" : "moreDesk")}>
-                <h3 className="c4-title">{v4(group === "work" ? "moreWork" : group === "records" ? "moreRecords" : "moreDesk")}</h3>
-                {groupedNav(CRM_V4_MORE)[group].map((tab) => (
-                  <Link key={tab} href={crmv4Href(base, tab)} aria-current={view === tab ? "page" : undefined} onClick={() => setMore(false)} className="c4-btn">{label(tab)}</Link>
-                ))}
-              </section>
-            ))}
+            <GroupedMenu base={base} view={view} names={names} v4={v4} onPick={() => setMore(false)} />
             <section aria-label={v4("moreSession")}>
               <h3 className="c4-title">{v4("moreSession")}</h3>
               <button type="button" className="c4-btn" onClick={() => { setMore(false); setNotesOpen(true); }}>{tx("notifications")}</button>
