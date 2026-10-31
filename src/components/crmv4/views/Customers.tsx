@@ -86,6 +86,9 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
     return "";
   });
   const [filtersOpen, setFiltersOpen] = useState(true);
+  useEffect(() => {
+    if (window.matchMedia("(max-width: 767px)").matches) setFiltersOpen(false);
+  }, []);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [columns, setColumns] = useState<Col[]>([...COLUMNS]);
   const [dense, setDense] = useState(false);
@@ -611,6 +614,12 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           {part === "activity" && <ContactFeed id={id} notes={user.data?.notes || []} events={user.data?.activityEvents || []} v4={v4} locale={locale} />}
         </div>
       </div>
+      <nav className="c4-record-foot" aria-label={v4("phoneFoot")}>
+        <button type="button" className="c4-btn" data-on={part === "notes" ? "1" : "0"} onClick={() => setPart("notes")}>{tx("notesTab")}</button>
+        <button type="button" className="c4-btn" data-on={part === "money" ? "1" : "0"} onClick={() => setPart("money")}>{tx("moneyTab")}</button>
+        <button type="button" className="c4-btn" data-on={part === "files" ? "1" : "0"} onClick={() => setPart("files")}>{tx("filesTab")}</button>
+        <Link className="c4-btn" href={crmv4Href(base, "customers")}>{tx("back")}</Link>
+      </nav>
       </div>
     </div>
   );

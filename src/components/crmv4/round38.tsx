@@ -20,6 +20,7 @@ import {
   type SegPick,
 } from "@/lib/crmv4/round38";
 import { crmv4Href } from "@/lib/crmv4/sections";
+import { PhoneSheet } from "./round39";
 import { downloadCsv, money, State, useJson, when, type Tx } from "./kit";
 
 export type V4 = (key: CrmV4CopyKey) => string;
@@ -163,6 +164,7 @@ export function SegmentDesk({ v4, tx }: { v4: V4; tx: Tx }) {
       <State loading={people.loading} error={people.error} empty={!people.loading && !people.error && loaded.length === 0} tx={tx} onRetry={people.reload} hint={v4("segNone")} />
       {!people.loading && !people.error && loaded.length > 0 && (
         <>
+          <PhoneSheet title={v4("sheetFilters")} v4={v4}>
           <div className="c4-ledger-filters">
             <Select label={v4("segCountry")} value={pick.country} any={v4("segAny")} options={uniqueValues(loaded, "country")} onChange={(value) => set("country", value)} />
             <Select label={v4("segStage")} value={pick.stage} any={v4("segAny")} options={uniqueValues(loaded, "saleStatus")} onChange={(value) => set("stage", value)} />
@@ -177,6 +179,7 @@ export function SegmentDesk({ v4, tx }: { v4: V4; tx: Tx }) {
             </label>
             <Select label={v4("segCurrency")} value={pick.currency} any={v4("segAny")} options={uniqueValues(loaded, "currency")} onChange={(value) => set("currency", value)} />
           </div>
+          </PhoneSheet>
           <p>{v4("segCount")} · {rows.length}</p>
           <h3 className="c4-title">{v4("segByCurrency")}</h3>
           <ul className="c4-seg-counts">
