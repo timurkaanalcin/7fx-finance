@@ -6,6 +6,7 @@ import AuthShell from "@/components/auth/AuthShell";
 import LoginForm from "@/components/auth/LoginForm";
 import { publicAuthMetadata } from "@/lib/i18n/public-meta";
 import { locationForRequest } from "@/lib/request-origin";
+import "@/components/crmv4/signin.css";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +14,7 @@ export function generateMetadata() {
   return publicAuthMetadata("auth.meta.loginTitle", "auth.meta.loginDesc");
 }
 
-export default async function LoginPage() {
+export default async function LoginPage({ searchParams }: { searchParams?: { desk?: string | string[] } }) {
   const session = await getSession();
   if (session) {
     const user = await requireUser();
@@ -32,8 +33,9 @@ export default async function LoginPage() {
     await destroySession();
   }
 
+  const desk = searchParams?.desk === "crmv4";
   return (
-    <AuthShell mode="login">
+    <AuthShell mode="login" desk={desk}>
       <LoginForm />
     </AuthShell>
   );

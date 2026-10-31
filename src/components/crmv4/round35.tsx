@@ -74,7 +74,7 @@ export function TodayHero({ base, name, v4, locale }: { base: string; name: stri
 
 export function DeskStaff({ v4 }: { v4: V4 }) {
   const workers = useJson<{ workers?: { id: string; name?: string | null; desk?: string | null }[] }>("/api/admin/workers?take=40");
-  const people = useJson<{ users?: { assigneeName?: string | null }[] }>("/api/admin/users?take=80&meta=0&role=TRADER");
+  const people = useJson<{ users?: { assigneeName?: string | null; assigneeId?: string | null }[] }>("/api/admin/users?take=80&meta=0&role=TRADER");
   const [mode, setMode] = useState<WorkFilter>("all");
   const [query, setQuery] = useState("");
   useEffect(() => { setMode(readLoad(window.localStorage.getItem(LOAD_KEY))); }, []);

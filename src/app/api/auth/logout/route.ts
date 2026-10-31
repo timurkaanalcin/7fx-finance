@@ -10,7 +10,7 @@ export async function POST(req: Request) {
   const host = hostnameFromRequest({ headers: { get: (n: string) => req.headers.get(n) } });
   const body = await readAuthBody(req);
   const res = isDocumentNav(req, body)
-    ? navRedirect(req, "/login")
+    ? navRedirect(req, body.desk === "crmv4" ? "/login?desk=crmv4" : "/login")
     : NextResponse.json({ ok: true });
   clearSessionCookie(res, host);
   res.headers.set("Cache-Control", "private, no-store");

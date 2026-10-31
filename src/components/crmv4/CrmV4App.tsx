@@ -520,6 +520,7 @@ function Shell({ base, section, name }: Props) {
         </button>
         <form method="post" action="/api/auth/logout" style={{ marginTop: "auto", width: "100%" }}>
           <input type="hidden" name="nav" value="1" />
+          <input type="hidden" name="desk" value="crmv4" />
           <button type="submit" className="c4-rail-btn" aria-label={tx("signOut")}>
             <OutIcon />
             <span>{tx("signOut")}</span>
@@ -560,6 +561,7 @@ function Shell({ base, section, name }: Props) {
               <p className="c4-muted c4-meta">{tx("signedInAs")} {name}</p>
               <form method="post" action="/api/auth/logout">
                 <input type="hidden" name="nav" value="1" />
+                <input type="hidden" name="desk" value="crmv4" />
                 <button type="submit" className="c4-btn">{tx("signOut")}</button>
               </form>
             </section>

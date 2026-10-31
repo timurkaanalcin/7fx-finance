@@ -27,6 +27,10 @@ function isCrmV3Path(pathname: string): boolean {
   );
 }
 
+function unsignedCrmTarget(pathname: string): string {
+  return isCrmV4Path(pathname) ? "/login?desk=crmv4" : "/login";
+}
+
 function isCrmV4Path(pathname: string): boolean {
   return (
     pathname === "/crmv4" ||
@@ -209,7 +213,7 @@ export function middleware(req: NextRequest) {
 
     if (pathname === "/izcrm" || pathname.startsWith("/izcrm/") || isCrmAppPath(pathname)) {
       if (!token) {
-        return applyHeaders(NextResponse.redirect(locationForRequest(req, "/login")));
+        return applyHeaders(NextResponse.redirect(locationForRequest(req, unsignedCrmTarget(pathname))));
       }
       return applyHeaders(passCrmV2());
     }
@@ -268,7 +272,7 @@ export function middleware(req: NextRequest) {
       pathname.startsWith("/membership")) &&
     !token
   ) {
-    return applyHeaders(NextResponse.redirect(locationForRequest(req, "/login")));
+    return applyHeaders(NextResponse.redirect(locationForRequest(req, unsignedCrmTarget(pathname))));
   }
 
   return applyHeaders(passCrmV2());
