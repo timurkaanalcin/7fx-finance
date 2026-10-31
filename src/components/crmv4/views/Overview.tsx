@@ -9,6 +9,7 @@ import { InsightWidgets } from "../round2";
 import { AgentKpis, CampaignMix, ReminderAlerts } from "../round3";
 import { CountryHeat, DeskLanding, HourHeat, MergeList, NextQueue, SmartLists, StaffList, WorkloadBoard } from "../round4";
 import { DailySheet, DeskGoals, ForecastLine, MiniChart } from "../round5";
+import { WeekBoard } from "../round7";
 import { crmv4Href } from "@/lib/crmv4/sections";
 import { Bars, Card, Chip, Field, Kpi, Lab, Msg, Sheet, State, auditExport, downloadCsv, fmtNum, localeTag, money, sendJson, useJson, when, type Tx, type UserRow } from "../kit";
 
@@ -64,6 +65,7 @@ export default function Overview({ base, tx, locale, name }: Props) {
         </div>
         <div className="c4-tasks-luxe">
           <MonthBoard locale={locale} />
+          <WeekBoard v4={(key) => crmv4Text(locale, key)} locale={locale} />
           <ReminderAlerts v4={(key) => crmv4Text(locale, key)} />
           <TasksBoard locale={locale} v4={(key) => crmv4Text(locale, key)} tx={tx} />
         </div>

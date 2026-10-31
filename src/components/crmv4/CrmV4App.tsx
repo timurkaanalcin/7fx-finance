@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 import CrmI18n from "@/components/i18n/CrmI18n";
 import BrandLogo from "@/components/landing/BrandLogo";
@@ -17,6 +17,7 @@ import { rememberToast, toastHistory } from "./round3";
 import { AnnounceBar, DeskBoundary, FreshnessBar, LuxeSkeleton, PullSurface, storedAccent, useInboxCursor } from "./round4";
 import { IdleWarning, storedRole, storedZebra } from "./round5";
 import { CallTarget, Fab, storedMotion } from "./round6";
+import { lastView, playPing, rememberView, soundEnabled, ticketAlertsOn } from "./round7";
 import type { Accent } from "@/lib/crmv4/round4";
 import { Sheet, sendJson, useJson, when } from "./kit";
 import Overview from "./views/Overview";
@@ -78,6 +79,9 @@ function Shell({ base, section, name }: Props) {
   const [role, setRole] = useState<"desk" | "viewer">("desk");
   const [zebra, setZebra] = useState(false);
   const [motion, setMotion] = useState<"system" | "reduce">("system");
+  const [resume, setResume] = useState("");
+  const [compact, setCompact] = useState(false);
+  const ticketSeen = useRef(0);
   const [pull, setPull] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -118,7 +122,32 @@ function Shell({ base, section, name }: Props) {
   }, []);
 
   useEffect(() => {
+    const baseTitle = "CRM v4";
+    document.title = unread > 0 ? `(${unread}) ${baseTitle}` : baseTitle;
+    if (unread > ticketSeen.current && soundEnabled()) playPing();
+    ticketSeen.current = unread;
+  }, [unread]);
+
+  useEffect(() => {
+    if (!ticketAlertsOn()) return;
+    const id = window.setInterval(async () => {
+      if (!ticketAlertsOn() || typeof Notification === "undefined" || Notification.permission !== "granted") return;
+      const res = await fetch("/api/admin/tickets?status=PENDING", { cache: "no-store" });
+      if (!res.ok) return;
+      const body = await res.json() as { tickets?: unknown[] };
+      const count = (body.tickets || []).length;
+      const seen = Number(window.sessionStorage.getItem("crmv4-ticket-count") || "0");
+      if (count > seen) new Notification(v4("ticketNotify"));
+      window.sessionStorage.setItem("crmv4-ticket-count", String(count));
+    }, 60000);
+    return () => window.clearInterval(id);
+  }, [v4]);
+
+  useEffect(() => {
     const path = window.location.pathname + window.location.search;
+    const previous = lastView();
+    if (previous && previous !== path && view === "overview" && !id) setResume(previous);
+    rememberView(path);
     const next = [...readTrail().filter((item) => item !== path), path].slice(-8);
     window.sessionStorage.setItem("crmv4-trail", JSON.stringify(next));
     setTrail(next);
@@ -189,7 +218,7 @@ function Shell({ base, section, name }: Props) {
   });
 
   return (
-    <div data-crmv4-root="" data-theme={theme} data-accent={accent} data-role={role} data-zebra={zebra ? "1" : "0"} data-motion={motion} data-density={density} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
+    <div data-crmv4-root="" data-theme={theme} data-accent={accent} data-role={role} data-zebra={zebra ? "1" : "0"} data-motion={motion} data-compact={compact ? "1" : "0"} data-density={density} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
       <a className="c4-skip" href="#c4-main">{v4("skipContent")}</a>
       <OfflineBanner v4={v4} />
       <IdleWarning v4={v4} />
@@ -262,7 +291,7 @@ function Shell({ base, section, name }: Props) {
       </header>
 
       <div className="c4-frame">
-        <div className="c4-panel">
+        <div className="c4-panel" onScroll={(event) => setCompact(event.currentTarget.scrollTop > 24)}>
           {!id && (
             <div className="c4-pagehead">
               <div>
@@ -306,6 +335,12 @@ function Shell({ base, section, name }: Props) {
             }}
           >
             <div className="c4-pull" data-on={pull > 8 || refreshing ? "1" : "0"}>{refreshing ? v4("refreshing") : v4("pullHint")}</div>
+            {resume && (
+              <p className="c4-resume">
+                <button type="button" className="c4-btn" onClick={() => { window.location.assign(resume); }}>{v4("resumeView")}</button>
+                <button type="button" className="c4-btn" onClick={() => setResume("")}>{tx("close")}</button>
+              </p>
+            )}
             <DeskBoundary v4={v4}>
             {view === "overview" && <Overview base={base} tx={tx} locale={locale} name={name} />}
             {view === "customers" && !id && <Customers base={base} tx={tx} locale={locale} q={q} />}
@@ -378,7 +413,7 @@ function Shell({ base, section, name }: Props) {
         </form>
       </aside>
 
-      <nav className="c4-tabs" aria-label={tx("panel")}>
+      <nav className="c4-tabs c4-tabs-luxe" aria-label={tx("panel")}>
         {CRM_V4_TABS.map((tab) => (
           <Link key={tab} href={crmv4Href(base, tab === "overview" ? "" : tab)} data-on={view === tab ? "1" : "0"} className="c4-tab">
             {label(tab)}
