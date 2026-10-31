@@ -230,9 +230,11 @@ export function State({ loading, error, empty, tx, onRetry }: { loading: boolean
 
 export function Sheet({ title, onClose, closeLabel, children }: { title: string; onClose: () => void; closeLabel: string; children: ReactNode }) {
   const panel = useRef<HTMLDivElement>(null);
+  const closeBtn = useRef<HTMLButtonElement>(null);
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
   useEffect(() => {
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") closeRef.current();
     };
@@ -240,12 +242,14 @@ export function Sheet({ title, onClose, closeLabel, children }: { title: string;
     const node = panel.current;
     const onTab = node ? trapFocus(node) : null;
     if (node && onTab) node.addEventListener("keydown", onTab);
+    closeBtn.current?.focus();
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       window.removeEventListener("keydown", onKey);
       if (node && onTab) node.removeEventListener("keydown", onTab);
       document.body.style.overflow = prev;
+      opener?.focus();
     };
   }, []);
   return (
@@ -254,7 +258,7 @@ export function Sheet({ title, onClose, closeLabel, children }: { title: string;
         <div className="c3-grab" aria-hidden />
         <div className="c3-row c3-between">
           <h2 className="c3-title">{title}</h2>
-          <button type="button" className="c3-btn" onClick={onClose}>{closeLabel}</button>
+          <button ref={closeBtn} type="button" className="c3-btn" onClick={onClose}>{closeLabel}</button>
         </div>
         {children}
       </div>

@@ -2001,6 +2001,55 @@
   }
 }
 
+[data-crmv3-root] .c3-dossier,
+[data-crmv3-root] .c3-dos-grid article {
+  min-width: 0;
+  border: 1px solid var(--c3-line);
+  border-radius: var(--c3-radius);
+  background: var(--c3-card);
+}
+
+[data-crmv3-root] .c3-dossier {
+  display: grid;
+  gap: var(--c3-2);
+  padding: var(--c3-3);
+}
+
+[data-crmv3-root] .c3-dossier h2,
+[data-crmv3-root] .c3-dos-grid h3,
+[data-crmv3-root] .c3-dos-grid h4 { margin: 0; }
+
+[data-crmv3-root] .c3-dos-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--c3-2);
+}
+
+[data-crmv3-root] .c3-dos-grid article {
+  display: grid;
+  gap: var(--c3-1);
+  align-content: start;
+  padding: var(--c3-2);
+  background: var(--c3-elev);
+  overflow-wrap: anywhere;
+}
+
+[data-crmv3-root] .c3-dos-grid ul {
+  display: grid;
+  gap: var(--c3-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv3-root] .c3-dos-grid article[data-flag="overdue"] { border-color: var(--c3-gold); }
+
+[data-crmv3-root] .c3-dossier .c3-btn { min-height: 44px; }
+
+@media (min-width: 768px) {
+  [data-crmv3-root] .c3-dos-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 @media print {
   [data-crmv3-root][data-print="statement"] .c3-rail,
   [data-crmv3-root][data-print="statement"] .c3-header,
