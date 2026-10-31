@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { PositionRows } from "./Customers";
 import { Card, Chip, Msg, Pager, State, TAKE, sendJson, useJson, type Tx } from "../kit";
+import { BookDesk } from "../desk/panels";
 
 type Row = { id: string; symbol?: string; side?: string; volume?: number; profit?: number; status?: string; traderName?: string; user?: { name?: string }; openedAt?: string };
 
@@ -14,6 +15,10 @@ export default function Positions({ tx, locale, q }: { tx: Tx; locale: string; q
   const skip = Number(params.get("skip") || 0) || 0;
   const data = useJson<{ positions?: Row[]; hasMore?: boolean }>(`/api/admin/positions?status=${encodeURIComponent(status)}&take=${TAKE}&skip=${skip}&q=${encodeURIComponent(q)}`);
   const rows = data.data?.positions || [];
+  const [extra, setExtra] = useState<Row[]>([]);
+  const [moreSkip, setMoreSkip] = useState(skip + TAKE);
+  const [more, setMore] = useState(true);
+  const shown = rows.concat(extra);
   const [msg, setMsg] = useState("");
   function setQuery(next: Record<string, string>) {
     const p = new URLSearchParams(params.toString());
@@ -25,6 +30,16 @@ export default function Positions({ tx, locale, q }: { tx: Tx; locale: string; q
     router.replace(`?${p.toString()}`);
   }
   return (
+    <div className="c3-stack">
+    <BookDesk rows={shown} more={more} onMore={() => {
+      void fetch(`/api/admin/positions?status=${encodeURIComponent(status)}&take=${TAKE}&skip=${moreSkip}&q=${encodeURIComponent(q)}`, { cache: "no-store" })
+        .then((res) => res.json())
+        .then((body: { positions?: Row[]; hasMore?: boolean }) => {
+          setExtra((prev) => [...prev, ...(body.positions || [])]);
+          setMore(Boolean(body.hasMore));
+          setMoreSkip((value) => value + TAKE);
+        });
+    }} />
     <Card title={tx("positions")}>
       <p className="c3-muted" style={{ padding: "8px 16px 0" }}>{tx("positionsLead")}</p>
       <div className="c3-tools">
@@ -34,7 +49,7 @@ export default function Positions({ tx, locale, q }: { tx: Tx; locale: string; q
           </Chip>
         ))}
       </div>
-      <State loading={data.loading} error={data.error} empty={!data.loading && rows.length === 0} tx={tx} onRetry={data.reload} />
+      <State loading={data.loading} error={data.error} empty={!data.loading && shown.length === 0} tx={tx} onRetry={data.reload} />
       <div className="c3-desk c3-table-wrap">
         <table className="c3-table">
           <thead>
@@ -48,7 +63,7 @@ export default function Positions({ tx, locale, q }: { tx: Tx; locale: string; q
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
+            {shown.map((row) => (
               <tr key={row.id}>
                 <td>{row.traderName || row.user?.name || "—"}</td>
                 <td>{row.symbol}</td>
@@ -72,11 +87,12 @@ export default function Positions({ tx, locale, q }: { tx: Tx; locale: string; q
         </table>
       </div>
       <div className="c3-mob-list">
-        <PositionRows rows={rows} tx={tx} locale={locale} onDone={data.reload} />
+        <PositionRows rows={shown} tx={tx} locale={locale} onDone={data.reload} />
       </div>
       <div style={{ padding: "0 16px 8px" }}><Msg text={msg} /></div>
       <p className="c3-muted" style={{ padding: "0 16px 8px" }}>{tx("closePositionHint")}</p>
-      <Pager skip={skip} take={TAKE} hasMore={Boolean(data.data?.hasMore)} tx={tx} onPage={(next) => setQuery({ skip: next ? String(next) : "" })} />
+      <Pager skip={skip} take={TAKE} hasMore={Boolean(data.data?.hasMore)} tx={tx} onPage={(next) => { setExtra([]); setMoreSkip((next || 0) + TAKE); setQuery({ skip: next ? String(next) : "" }); }} />
     </Card>
+    </div>
   );
 }

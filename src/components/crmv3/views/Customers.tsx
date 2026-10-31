@@ -2,10 +2,14 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ACCOUNT_TYPES, POTENTIAL_STATUSES, RETENTION_STATUSES, SALE_STATUSES, VALIDATION_STATUSES } from "@/lib/membership";
 import { crmv3Href } from "@/lib/crmv3/sections";
-import { Card, Chip, Field, Lab, Msg, Pager, State, Status, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, statusTone, useJson, when, type Tx, type UserRow } from "../kit";
+import { Card, Chip, Field, Lab, Msg, Pager, Sheet, State, Status, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, statusTone, useJson, when, type Tx, type UserRow } from "../kit";
+import { LeadDesk } from "../desk/lead";
+import { AssignPreview, DocTools, NoteTools, ProfileBits, QualityList, customerTools, duplicateSet, noteBlocked, rowAgeLabel, rowHealth, rowRisk } from "../desk/panels";
+import { ContactFeed, EntryQuality, applySplit, emailOk } from "../desk/feed";
+import { useLocal, useV3 } from "../desk/store";
 
 export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; locale: string; q: string }) {
   const params = useSearchParams();
@@ -26,6 +30,16 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
   if (ftd) query.set("ftd", ftd);
   const data = useJson<{ users?: UserRow[]; hasMore?: boolean; total?: number }>(`/api/admin/users?${query.toString()}`);
   const rows = data.data?.users || [];
+  const v3 = useV3();
+  const [mode, setMode] = useState<"list" | "board">("list");
+  const [selected, setSelected] = useState<string[]>([]);
+  const [ops, setOps] = useState("");
+  const [smart, setSmart] = useState<"" | "quiet" | "funded" | "kyc">("");
+  const [pins, setPins] = useLocal<string[]>("crmv3-pins", []);
+  const [tag, setTag] = useState("");
+  const [tags, setTags] = useLocal<Record<string, string[]>>("crmv3-tags", {});
+  const shown = customerTools(rows, ops, smart);
+  const dupes = duplicateSet(shown);
 
   function setQuery(next: Record<string, string>) {
     const p = new URLSearchParams(params.toString());
@@ -40,6 +54,36 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
   return (
     <div className="c3-stack">
       <p className="c3-muted">{tx("customersLead")}</p>
+      <div className="c3-row">
+        <Chip on={mode === "list"} onClick={() => setMode("list")}>{v3("listView")}</Chip>
+        <Chip on={mode === "board"} onClick={() => setMode("board")}>{v3("boardView")}</Chip>
+        <Chip on={smart === ""} onClick={() => setSmart("")}>{tx("all")}</Chip>
+        <Chip on={smart === "quiet"} onClick={() => setSmart(smart === "quiet" ? "" : "quiet")}>{v3("smartQuiet")}</Chip>
+        <Chip on={smart === "funded"} onClick={() => setSmart(smart === "funded" ? "" : "funded")}>{v3("smartFunded")}</Chip>
+        <Chip on={smart === "kyc"} onClick={() => setSmart(smart === "kyc" ? "" : "kyc")}>{v3("smartKyc")}</Chip>
+      </div>
+      <p className="c3-muted">{v3("smartHint")}</p>
+      <label className="c3-lab">
+        <span>{v3("opSearch")}</span>
+        <input className="c3-field" aria-label={v3("opSearch")} value={ops} onChange={(event) => setOps(event.target.value)} placeholder="email:ada country:TR sale:NEW" />
+      </label>
+      <p className="c3-muted">{v3("operatorHint")}</p>
+      {mode === "list" && (
+        <div className="c3-tools">
+          <button type="button" className="c3-btn" disabled={!selected.length} onClick={() => void exportRows(shown.filter((row) => selected.includes(row.id)))}>{v3("exportPick")}</button>
+          <button type="button" className="c3-btn" disabled={!selected.length} onClick={() => void bulkUsers(selected, "freeze", v3("confirmBulk"), data.reload, () => setSelected([]))}>{v3("freezePick")}</button>
+          <button type="button" className="c3-btn" disabled={!selected.length} onClick={() => void bulkUsers(selected, "activate", v3("confirmBulk"), data.reload, () => setSelected([]))}>{v3("activatePick")}</button>
+          <input className="c3-field" aria-label={v3("addTag")} value={tag} onChange={(event) => setTag(event.target.value)} />
+          <button type="button" className="c3-btn" disabled={!selected.length || !tag.trim()} onClick={() => {
+            const next = { ...tags };
+            for (const id of selected) next[id] = Array.from(new Set([...(next[id] || []), tag.trim()]));
+            setTags(next);
+            setTag("");
+          }}>{v3("addTag")}</button>
+          <p className="c3-muted">{v3("tagHint")} · {v3("exportHint")} · {v3("freezeHint")}</p>
+        </div>
+      )}
+      {mode === "board" && <LeadDesk base={base} rows={shown} selected={selected} onSelect={setSelected} />}
       <Card title={tx("customers")} extra={<span className="c3-muted">{typeof data.data?.total === "number" ? `${tx("totalRows")} ${data.data.total}` : ""}</span>}>
         <form
           className="c3-tools"
@@ -78,10 +122,25 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
           <button type="button" className="c3-btn" onClick={() => void exportRows(rows)}>{tx("quickExport")}</button>
           <button type="button" className="c3-btn" onClick={() => void exportLeads()}>{tx("exportLeads")}</button>
         </form>
-        <State loading={data.loading} error={data.error} empty={!data.loading && rows.length === 0} tx={tx} onRetry={data.reload} />
-        <CustomerTable base={base} rows={rows} tx={tx} locale={locale} />
+        <State loading={data.loading} error={data.error} empty={!data.loading && shown.length === 0} tx={tx} onRetry={data.reload} />
+        {mode === "list" && (
+          <CustomerTable
+            base={base}
+            rows={shown}
+            tx={tx}
+            locale={locale}
+            selected={selected}
+            dupes={dupes}
+            pins={pins}
+            tags={tags}
+            onSelect={setSelected}
+            onPin={(id) => setPins(pins.includes(id) ? pins.filter((item) => item !== id) : [...pins, id])}
+          />
+        )}
         <Pager skip={skip} take={TAKE} hasMore={Boolean(data.data?.hasMore)} total={data.data?.total} tx={tx} onPage={(next) => setQuery({ skip: next ? String(next) : "" })} />
       </Card>
+      <QualityList rows={shown} />
+      <AssignPreview rows={shown} />
     </div>
   );
 }
@@ -92,6 +151,15 @@ async function exportRows(rows: UserRow[]) {
   downloadCsv("customers.csv", ["name", "email", "country", "desk", "sale", "retention", "balance", "active"], rows.map((row) => [
     String(row.name || ""), String(row.email || ""), String(row.country || ""), String(row.desk || ""), String(row.saleStatus || ""), String(row.retentionStatus || ""), String(row.balance ?? row.account?.balance ?? ""), row.active === false ? "frozen" : "active",
   ]));
+}
+
+async function bulkUsers(ids: string[], bulkAction: "freeze" | "activate", confirmText: string, reload: () => void, clear: () => void) {
+  if (!ids.length || !window.confirm(confirmText)) return;
+  const res = await sendJson("/api/admin/users", "POST", { action: "bulk", bulkAction, userIds: ids });
+  if (res.ok) {
+    clear();
+    reload();
+  }
 }
 
 async function exportLeads() {
@@ -106,8 +174,23 @@ async function exportLeads() {
   URL.revokeObjectURL(url);
 }
 
-function CustomerTable({ base, rows, tx, locale }: { base: string; rows: UserRow[]; tx: Tx; locale: string }) {
+function CustomerTable({ base, rows, tx, locale, selected, dupes, pins, tags, onSelect, onPin }: {
+  base: string;
+  rows: UserRow[];
+  tx: Tx;
+  locale: string;
+  selected: string[];
+  dupes: Set<string>;
+  pins: string[];
+  tags: Record<string, string[]>;
+  onSelect: (ids: string[]) => void;
+  onPin: (id: string) => void;
+}) {
+  const v3 = useV3();
   if (!rows.length) return null;
+  function toggle(id: string) {
+    onSelect(selected.includes(id) ? selected.filter((item) => item !== id) : [...selected, id]);
+  }
   return (
     <>
       <div className="c3-desk c3-table-wrap">
@@ -127,8 +210,17 @@ function CustomerTable({ base, rows, tx, locale }: { base: string; rows: UserRow
             {rows.map((row) => (
               <tr key={row.id}>
                 <td>
-                  <Link href={crmv3Href(base, `customers/${row.id}`)}>{row.name || "—"}</Link>
-                  <div className="c3-muted">{row.email}</div>
+                  <label className="c3-row">
+                    <input type="checkbox" checked={selected.includes(row.id)} onChange={() => toggle(row.id)} aria-label={row.name || row.email || row.id} />
+                    <Link href={crmv3Href(base, `customers/${row.id}`)}>{row.name || "—"}</Link>
+                  </label>
+                  <div className="c3-muted">{row.email}{dupes.has(String(row.email || "").trim().toLowerCase()) ? ` · ${v3("dupEmail")}` : ""}</div>
+                  <div className="c3-muted">{v3("healthWord")} {rowHealth(row)} · {v3("riskWord")} {rowRisk(row)} · {rowAgeLabel(row.createdAt)}</div>
+                  <div className="c3-row">
+                    <button type="button" className="c3-btn" onClick={() => onPin(row.id)}>{pins.includes(row.id) ? v3("pinOff") : v3("pinOn")}</button>
+                    <button type="button" className="c3-btn" onClick={() => void navigator.clipboard.writeText(row.id)}>{v3("copyId")}</button>
+                    {(tags[row.id] || []).map((item) => <span key={item} className="c3-chip">{item}</span>)}
+                  </div>
                 </td>
                 <td>{row.country || "—"}</td>
                 <td>{row.desk || "—"}</td>
@@ -144,15 +236,23 @@ function CustomerTable({ base, rows, tx, locale }: { base: string; rows: UserRow
       <ul className="c3-mob-list">
         {rows.map((row) => (
           <li key={row.id}>
-            <SwipeRow actions={[{ key: "open", label: tx("open"), tone: "gold", onClick: () => { window.location.href = crmv3Href(base, `customers/${row.id}`); } }]}>
-              <Link href={crmv3Href(base, `customers/${row.id}`)} className="c3-swipe-link">
+            <SwipeRow actions={[
+              { key: "open", label: tx("open"), tone: "gold", onClick: () => { window.location.href = crmv3Href(base, `customers/${row.id}`); } },
+              { key: "call", label: v3("callJump"), onClick: () => { if (row.phone) window.location.href = `tel:${row.phone}`; } },
+              { key: "notes", label: v3("notesJump"), onClick: () => { window.location.href = crmv3Href(base, `customers/${row.id}`, { part: "notes" }); } },
+            ]}>
+              <div className="c3-swipe-link">
+                <label className="c3-row">
+                  <input type="checkbox" checked={selected.includes(row.id)} onChange={() => toggle(row.id)} aria-label={row.name || row.email || row.id} />
+                  <Link href={crmv3Href(base, `customers/${row.id}`)}>{row.name || "—"}</Link>
+                </label>
                 <div className="c3-row c3-between">
-                  <span>{row.name || "—"}</span>
+                  <span className="c3-muted">{row.email}</span>
                   <Status tone={row.active === false ? "bad" : "ok"}>{row.active === false ? tx("chipFrozen") : tx("chipActive")}</Status>
                 </div>
-                <div className="c3-muted">{row.email}</div>
                 <div>{money(row.balance ?? row.account?.balance, row.currency || row.account?.currency, locale)} · {row.saleStatus || tx("unmapped")}</div>
-              </Link>
+                <div className="c3-muted">{v3("healthWord")} {rowHealth(row)} · {v3("riskWord")} {rowRisk(row)}{dupes.has(String(row.email || "").trim().toLowerCase()) ? ` · ${v3("dupEmail")}` : ""}</div>
+              </div>
             </SwipeRow>
           </li>
         ))}
@@ -169,6 +269,13 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
   const part = (params.get("part") || "profile") as (typeof PARTS)[number];
   const user = useJson<{ user?: UserRow; notes?: NoteRow[]; activityEvents?: ActivityRow[] }>(`/api/admin/users/${encodeURIComponent(id)}?view=profile`);
   const u = user.data?.user;
+  useEffect(() => {
+    if (!u) return;
+    const key = "crmv3-recent";
+    const prev = JSON.parse(window.localStorage.getItem(key) || "[]") as { id: string; name: string }[];
+    const next = [{ id: u.id, name: u.name || u.email || u.id }, ...prev.filter((row) => row.id !== u.id)].slice(0, 8);
+    window.localStorage.setItem(key, JSON.stringify(next));
+  }, [u]);
   function setPart(next: string) {
     const p = new URLSearchParams(params.toString());
     if (next && next !== "profile") p.set("part", next);
@@ -199,6 +306,7 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
               <Field label={tx("registered")} value={when(u.createdAt, locale)} />
               <Field label={tx("ftd")} value={u.ftd ? tx("yes") : tx("no")} />
             </div>
+            <ProfileBits user={u} />
           </div>
         </Card>
       )}
@@ -207,13 +315,13 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           <Chip key={item} on={part === item} onClick={() => setPart(item)}>{tx(partKey(item))}</Chip>
         ))}
       </div>
-      {u && part === "profile" && <ProfileForm id={id} user={u} tx={tx} onDone={user.reload} />}
+      {u && part === "profile" && <ProfileShell id={id} user={u} tx={tx} onDone={user.reload} />}
       {part === "notes" && <Notes id={id} notes={user.data?.notes || []} tx={tx} locale={locale} onDone={user.reload} />}
       {part === "money" && <Money id={id} tx={tx} locale={locale} />}
       {part === "trades" && <Trades id={id} tx={tx} locale={locale} />}
       {part === "files" && <Files id={id} email={u?.email || ""} tx={tx} locale={locale} />}
       {u && part === "access" && <Access id={id} user={u} tx={tx} onDone={user.reload} />}
-      {part === "activity" && <Activity rows={user.data?.activityEvents || []} tx={tx} locale={locale} />}
+      {part === "activity" && <Activity id={id} notes={user.data?.notes || []} rows={user.data?.activityEvents || []} tx={tx} locale={locale} />}
     </div>
   );
 }
@@ -228,11 +336,55 @@ function partKey(part: (typeof PARTS)[number]) {
   return "activityTab" as const;
 }
 
-function ProfileForm({ id, user, tx, onDone }: { id: string; user: UserRow; tx: Tx; onDone: () => void }) {
+function ProfileShell({ id, user, tx, onDone }: { id: string; user: UserRow; tx: Tx; onDone: () => void }) {
+  const v3 = useV3();
+  const [phone, setPhone] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [dirty, setDirty] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 767px)");
+    const apply = () => setPhone(media.matches);
+    apply();
+    media.addEventListener("change", apply);
+    return () => media.removeEventListener("change", apply);
+  }, []);
+  function close() {
+    if (dirty && !window.confirm(v3("discardEdit"))) return;
+    setOpen(false);
+  }
+  const form = <ProfileForm id={id} user={user} tx={tx} onDone={onDone} onDirty={setDirty} />;
+  if (!phone) return form;
+  return (
+    <>
+      <button type="button" className="c3-btn c3-btn-hot" onClick={() => setOpen(true)}>{v3("openForm")}</button>
+      {open && (
+        <Sheet title={v3("openForm")} onClose={close} closeLabel={v3("closeForm")}>
+          {form}
+        </Sheet>
+      )}
+    </>
+  );
+}
+
+function ProfileForm({ id, user, tx, onDone, onDirty }: { id: string; user: UserRow; tx: Tx; onDone: () => void; onDirty?: (dirty: boolean) => void }) {
+  const v3 = useV3();
   const staff = useJson<{ workers?: { id: string; name?: string }[] }>("/api/admin/workers?take=100");
   const [msg, setMsg] = useState("");
+  const [dnc, setDnc] = useLocal<string[]>("crmv3-dnc", []);
+  const [prefer, setPrefer] = useLocal<Record<string, string>>("crmv3-prefer-time", {});
+  const initial = { name: user.name || "", email: user.email || "", phone: user.phone || "", country: user.country || "" };
+  const [fields, setFields] = useState(initial);
+  const firstRef = useRef<HTMLInputElement>(null);
+  const lastRef = useRef<HTMLInputElement>(null);
+  useEffect(() => { onDirty?.(fields.name !== initial.name || fields.email !== initial.email || fields.phone !== initial.phone || fields.country !== initial.country); }, [fields, initial.name, initial.email, initial.phone, initial.country, onDirty]);
   return (
     <Card title={tx("profile")}>
+      <div className="c3-pad">
+        <EntryQuality fields={fields} initial={initial} />
+        <p className="c3-muted">{v3("dncHint")}</p>
+        <label className="c3-row"><input type="checkbox" checked={dnc.includes(id)} onChange={() => setDnc(dnc.includes(id) ? dnc.filter((item) => item !== id) : [...dnc, id])} /> {v3("dncWord")}</label>
+        <Lab label={v3("prefTime")}><input className="c3-field" aria-label={v3("prefTime")} value={prefer[id] || ""} onChange={(event) => setPrefer({ ...prefer, [id]: event.target.value })} /></Lab>
+      </div>
       <form
         className="c3-form c3-form-2"
         style={{ padding: 16 }}
@@ -240,6 +392,11 @@ function ProfileForm({ id, user, tx, onDone }: { id: string; user: UserRow; tx: 
           event.preventDefault();
           const fd = new FormData(event.currentTarget);
           const assigneeId = String(fd.get("assigneeId") || "");
+          const email = String(fd.get("email") || "");
+          if (email && !emailOk(email)) {
+            setMsg(v3("emailCheck"));
+            return;
+          }
           const res = await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", {
             name: fd.get("name"),
             email: fd.get("email"),
@@ -272,19 +429,23 @@ function ProfileForm({ id, user, tx, onDone }: { id: string; user: UserRow; tx: 
           if (res.ok) onDone();
         }}
       >
-        <Lab label={tx("name")}><input name="name" defaultValue={user.name || ""} className="c3-field" /></Lab>
-        <Lab label={tx("email")}><input name="email" defaultValue={user.email || ""} className="c3-field" /></Lab>
-        <Lab label={tx("firstName")}><input name="firstName" defaultValue={user.firstName || ""} className="c3-field" /></Lab>
-        <Lab label={tx("lastName")}><input name="lastName" defaultValue={user.lastName || ""} className="c3-field" /></Lab>
-        <Lab label={tx("phone")}><input name="phone" defaultValue={user.phone || ""} className="c3-field" /></Lab>
-        <Lab label={tx("country")}><input name="country" defaultValue={user.country || ""} className="c3-field" /></Lab>
+        <p className="c3-kicker c3-span">{v3("identityBlock")}</p>
+        <Lab label={tx("name")}><input name="name" value={fields.name} onChange={(event) => setFields({ ...fields, name: event.target.value })} className="c3-field" /></Lab>
+        <Lab label={tx("email")}><input name="email" value={fields.email} onChange={(event) => setFields({ ...fields, email: event.target.value })} className="c3-field" /></Lab>
+        <Lab label={tx("firstName")}><input name="firstName" ref={firstRef} defaultValue={user.firstName || ""} className="c3-field" /></Lab>
+        <Lab label={tx("lastName")}><input name="lastName" ref={lastRef} defaultValue={user.lastName || ""} className="c3-field" /></Lab>
+        <button type="button" className="c3-btn" onClick={() => applySplit(fields.name, firstRef.current, lastRef.current)}>{v3("splitName")}</button>
+        <Lab label={tx("phone")}><input name="phone" value={fields.phone} onChange={(event) => setFields({ ...fields, phone: event.target.value })} className="c3-field" /></Lab>
+        <Lab label={tx("country")}><input name="country" value={fields.country} onChange={(event) => setFields({ ...fields, country: event.target.value })} className="c3-field" /></Lab>
         <Lab label={tx("language")}><input name="language" defaultValue={user.language || ""} className="c3-field" /></Lab>
+        <p className="c3-kicker c3-span">{v3("deskBlock")}</p>
         <Lab label={tx("desk")}><input name="desk" defaultValue={user.desk || ""} className="c3-field" /></Lab>
         <Lab label={tx("accountType")}>
           <select name="accountType" defaultValue={user.accountType || "STANDARD"} className="c3-select">
             {ACCOUNT_TYPES.map((item) => <option key={item}>{item}</option>)}
           </select>
         </Lab>
+        <p className="c3-kicker c3-span">{v3("statusBlock")}</p>
         <Lab label={tx("sale")}>
           <select name="saleStatus" defaultValue={user.saleStatus || ""} className="c3-select">
             <option value="" />
@@ -383,6 +544,7 @@ async function makeLink(id: string, tx: Tx, setMsg: (v: string) => void) {
 type NoteRow = { id: string; body?: string; authorName?: string | null; createdAt?: string; team?: string | null };
 
 function Notes({ id, notes, tx, locale, onDone }: { id: string; notes: NoteRow[]; tx: Tx; locale: string; onDone: () => void }) {
+  const v3 = useV3();
   const teams = useJson<{ notes?: NoteRow[]; writableTeams?: string[] }>(`/api/admin/users/${encodeURIComponent(id)}/team-notes?take=50`);
   const [msg, setMsg] = useState("");
   const teamNotes = teams.data?.notes || [];
@@ -390,12 +552,14 @@ function Notes({ id, notes, tx, locale, onDone }: { id: string; notes: NoteRow[]
     <div className="c3-split-even c3-split">
       <Card title={tx("generalNote")}>
         <NoteForm tx={tx} onSubmit={async (body) => {
+          if (noteBlocked(body, notes)) { setMsg(v3("noteDup")); return; }
           const res = await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { addNote: body });
           setMsg(res.ok ? tx("noteSaved") : res.error || tx("failed"));
           if (res.ok) onDone();
         }} />
+        <p className="c3-muted" style={{ padding: "0 16px" }}>{v3("noteChars")}</p>
         <Msg text={msg} />
-        <NoteList rows={notes} tx={tx} locale={locale} />
+        <NoteTools notes={notes} locale={locale} />
       </Card>
       <Card title={tx("team")}>
         <NoteForm tx={tx} team={(teams.data?.writableTeams || ["SALE"])[0] || "SALE"} teams={teams.data?.writableTeams || []} onSubmit={async (body, team) => {
@@ -567,6 +731,7 @@ function Files({ id, email, tx, locale }: { id: string; email: string; tx: Tx; l
           <button type="submit" className="c3-btn c3-btn-hot">{tx("createDoc")}</button>
         </form>
         <Msg text={msg} />
+        <DocTools rows={mine} />
         <ul>
           {mine.map((row) => (
             <li key={row.id} className="c3-row" style={{ justifyContent: "space-between", padding: "8px 16px", borderTop: "1px solid var(--c3-line)" }}>
@@ -683,19 +848,13 @@ function Access({ id, user, tx, onDone }: { id: string; user: UserRow; tx: Tx; o
 
 type ActivityRow = { id: string; kind?: string; path?: string | null; createdAt?: string };
 
-function Activity({ rows, tx, locale }: { rows: ActivityRow[]; tx: Tx; locale: string }) {
+function Activity({ id, notes, rows, tx, locale }: { id: string; notes: NoteRow[]; rows: ActivityRow[]; tx: Tx; locale: string }) {
   return (
     <Card title={tx("activityTab")}>
-      {rows.length === 0 ? <p className="c3-muted" style={{ padding: 16 }}>{tx("noActivity")}</p> : (
-        <ul>
-          {rows.map((row) => (
-            <li key={row.id} style={{ padding: "8px 16px", borderTop: "1px solid var(--c3-line)" }}>
-              <div>{row.kind}</div>
-              <div className="c3-muted">{row.path || ""} · {when(row.createdAt, locale)}</div>
-            </li>
-          ))}
-        </ul>
-      )}
+      <div className="c3-pad">
+        <ContactFeed id={id} notes={notes} events={rows} locale={locale} />
+      </div>
+      {rows.length === 0 ? <p className="c3-muted" style={{ padding: 16 }}>{tx("noActivity")}</p> : null}
     </Card>
   );
 }

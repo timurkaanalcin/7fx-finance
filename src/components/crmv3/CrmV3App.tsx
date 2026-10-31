@@ -11,6 +11,8 @@ import { crmv3Text, type CrmV3CopyKey } from "@/lib/crmv3/copy";
 import { CRM_V3_MORE, CRM_V3_SECTIONS, CRM_V3_TABS, crmv3Href, type CrmV3SectionId } from "@/lib/crmv3/sections";
 import BrandLogo from "@/components/landing/BrandLogo";
 import { Sheet, sendJson, useJson, when } from "./kit";
+import { CommandPalette, ShortcutHelp, ShortcutHost } from "./desk/command";
+import { useLocal } from "./desk/store";
 import Overview from "./views/Overview";
 import { CustomerDetail, Customers } from "./views/Customers";
 import Finance from "./views/Finance";
@@ -45,6 +47,13 @@ function Shell({ base, section, name }: Props) {
   const [pull, setPull] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [palette, setPalette] = useState(false);
+  const [help, setHelp] = useState(false);
+  const [noteQuery, setNoteQuery] = useState("");
+  const [unreadOnly, setUnreadOnly] = useState(false);
+  const [banner] = useLocal<string>("crmv3-banner", "");
+  const [idle, setIdle] = useState(false);
+  const [offline, setOffline] = useState(false);
   const params = useSearchParams();
   const q = params.get("q") || "";
   const notes = useJson<{ items?: { id: string; title?: string; body?: string; readAt?: string | null; createdAt?: string }[]; unread?: number }>(notesOpen ? "/api/notifications?take=20" : null);
@@ -66,6 +75,32 @@ function Shell({ base, section, name }: Props) {
     return () => window.removeEventListener("crmv3:toast", onToast);
   }, [tx]);
 
+  useEffect(() => {
+    if (window.localStorage.getItem("crmv3-motion") === "reduce") {
+      document.querySelector("[data-crmv3-root]")?.setAttribute("data-motion", "reduce");
+    }
+    const onOff = () => setOffline(!navigator.onLine);
+    onOff();
+    window.addEventListener("online", onOff);
+    window.addEventListener("offline", onOff);
+    let timer = 0;
+    const arm = () => {
+      setIdle(false);
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => setIdle(true), 12 * 60 * 1000);
+    };
+    arm();
+    window.addEventListener("pointerdown", arm);
+    window.addEventListener("keydown", arm);
+    return () => {
+      window.removeEventListener("online", onOff);
+      window.removeEventListener("offline", onOff);
+      window.removeEventListener("pointerdown", arm);
+      window.removeEventListener("keydown", arm);
+      window.clearTimeout(timer);
+    };
+  }, []);
+
   function toggleTheme() {
     const next = theme === "dark" ? "light" : "dark";
     setTheme(next);
@@ -83,6 +118,8 @@ function Shell({ base, section, name }: Props) {
 
   return (
     <div data-crmv3-root="" data-theme={theme} data-crmv3-view={id ? `${view}/${id}` : view} className="c3-app font-normal">
+      <a className="c3-skip" href="#c3-main">{v3("skipMain")}</a>
+      <ShortcutHost base={base} onPalette={() => setPalette(true)} onHelp={setHelp} />
       <aside className="c3-rail">
         <div className="c3-rail-brand">
           <BrandLogo tone={theme === "light" ? "ink" : "paper"} height={24} className="c3-logo" />
@@ -132,6 +169,7 @@ function Shell({ base, section, name }: Props) {
           </div>
         </header>
         <main
+          id="c3-main"
           className="c3-main"
           onTouchStart={(event) => {
             if (event.currentTarget.scrollTop > 0) return;
@@ -152,6 +190,9 @@ function Shell({ base, section, name }: Props) {
           }}
         >
           <div className="c3-pull" data-on={pull > 8 || refreshing ? "1" : "0"}>{refreshing ? v3("refreshing") : v3("pullHint")}</div>
+          {banner && <p className="c3-banner">{banner}</p>}
+          {offline && <p className="c3-banner">{v3("offlineWord")}</p>}
+          {!offline && idle && <p className="c3-banner">{v3("idleWord")} {v3("idleStay")}</p>}
           <div className="c3-stage">
             {view === "overview" && <Overview base={base} tx={tx} locale={locale} />}
             {view === "customers" && !id && <Customers base={base} tx={tx} locale={locale} q={q} />}
@@ -208,9 +249,14 @@ function Shell({ base, section, name }: Props) {
           </div>
         </Sheet>
       )}
+      <CommandPalette base={base} open={palette} onClose={() => setPalette(false)} />
+      <ShortcutHelp open={help} onClose={() => setHelp(false)} />
       {notesOpen && (
         <Sheet title={tx("notifications")} onClose={() => setNotesOpen(false)} closeLabel={tx("close")}>
           <div className="c3-stack">
+            <input className="c3-field" aria-label={v3("noteSearch")} placeholder={v3("noteSearch")} value={noteQuery} onChange={(event) => setNoteQuery(event.target.value)} />
+            <button type="button" className="c3-chip" data-on={unreadOnly ? "1" : "0"} onClick={() => setUnreadOnly((on) => !on)}>{v3("unreadOnly")}</button>
+            <p className="c3-muted">{v3("unreadHint")}</p>
             <button
               type="button"
               className="c3-btn"
@@ -221,11 +267,18 @@ function Shell({ base, section, name }: Props) {
             >
               {tx("markRead")}{typeof notes.data?.unread === "number" ? ` · ${notes.data.unread}` : ""}
             </button>
-            {(notes.data?.items || []).map((item) => (
+            {(notes.data?.items || []).filter((item) => {
+              if (unreadOnly && item.readAt) return false;
+              const blob = `${item.title || ""} ${item.body || ""}`.toLowerCase();
+              return blob.includes(noteQuery.trim().toLowerCase());
+            }).map((item) => (
               <div key={item.id} className="c3-note">
                 <div>{item.title || tx("notifications")}</div>
                 <div className="c3-muted">{item.body}</div>
                 <div className="c3-muted c3-meta">{when(item.createdAt, locale)}{item.readAt ? "" : ` · ${tx("unread")}`}</div>
+                {!item.readAt && (
+                  <button type="button" className="c3-btn" onClick={async () => { await sendJson("/api/notifications", "PATCH", { id: item.id }); notes.reload(); }}>{v3("markOne")}</button>
+                )}
               </div>
             ))}
             {!notes.loading && !(notes.data?.items || []).length && <p className="c3-muted">{tx("noneYet")}</p>}

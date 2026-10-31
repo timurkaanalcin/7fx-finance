@@ -4,7 +4,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { JOB_TITLE_KEYS, jobTitleLabel } from "@/lib/job-titles";
 import { API_KEY_MIGRATION_SQL } from "@/lib/crmv2/control";
-import { Card, Chip, Field, Lab, Msg, Pager, State, Status, TAKE, sendJson, statusTone, useJson, when, type Tx } from "../kit";
+import { Card, Chip, Field, Lab, Msg, Pager, State, Status, TAKE, downloadCsv, sendJson, statusTone, useJson, when, type Tx } from "../kit";
+import { AnomalyList, AuditBits } from "../desk/panels";
 
 const TABS = ["status", "services", "logs", "backups", "keys", "admins"] as const;
 
@@ -184,9 +185,14 @@ function LogPanel({ tx, locale }: { tx: Tx; locale: string }) {
             </div>
             <div className="c3-muted">{row.actor || "—"} · {row.target || "—"} · {when(row.at, locale)}</div>
             <pre className="c3-note" style={{ whiteSpace: "pre-wrap", marginTop: 8 }}>{JSON.stringify(row.detail, null, 2)}</pre>
+            <AuditBits detail={row.detail} />
           </li>
         ))}
       </ul>
+      {source === "login" && <AnomalyList rows={data.data?.rows || []} />}
+      <div className="c3-pad">
+        <button type="button" className="c3-btn" onClick={() => downloadCsv("audit.csv", ["at", "action", "actor", "target"], (data.data?.rows || []).map((row) => [String(row.at || ""), String(row.action || ""), String(row.actor || ""), String(row.target || "")]))}>{tx("quickExport")}</button>
+      </div>
       <Pager skip={skip} take={TAKE} hasMore={Boolean(data.data?.hasMore)} tx={tx} onPage={(next) => setQuery({ skip: next ? String(next) : "" })} />
     </Card>
   );

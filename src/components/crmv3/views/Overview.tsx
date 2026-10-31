@@ -5,6 +5,9 @@ import { useState } from "react";
 import { ledgerBody } from "@/lib/crmv2/payload";
 import { crmv3Href } from "@/lib/crmv3/sections";
 import { Bars, Card, Chip, Field, Kpi, Lab, Msg, Sheet, State, auditExport, downloadCsv, fmtNum, money, sendJson, useJson, when, type Tx, type UserRow } from "../kit";
+import { HomeDesk } from "../desk/panels";
+import { EntryQuality, emailOk } from "../desk/feed";
+import { useV3 } from "../desk/store";
 
 type Props = { base: string; tx: Tx; locale: string };
 
@@ -68,6 +71,7 @@ export default function Overview({ base, tx, locale }: Props) {
           </div>
         </div>
       )}
+      <HomeDesk base={base} locale={locale} />
       {sheet === "add" && <AddCustomer tx={tx} onClose={() => setSheet(null)} onDone={users.reload} />}
       {sheet === "transfer" && <TransferSheet tx={tx} onClose={() => setSheet(null)} />}
     </div>
@@ -199,15 +203,26 @@ async function exportPage(tx: Tx, rows: UserRow[]) {
 }
 
 function AddCustomer({ tx, onClose, onDone }: { tx: Tx; onClose: () => void; onDone: () => void }) {
+  const v3 = useV3();
   const [err, setErr] = useState("");
+  const [fields, setFields] = useState({ name: "", email: "", phone: "", country: "" });
+  const [password, setPassword] = useState("");
+  const dirty = Boolean(fields.name || fields.email || fields.phone || fields.country || password);
+  function close() {
+    if (dirty && !window.confirm(v3("discardEdit"))) return;
+    onClose();
+  }
   return (
-    <Sheet title={tx("addCustomerTitle")} onClose={onClose} closeLabel={tx("close")}>
+    <Sheet title={tx("addCustomerTitle")} onClose={close} closeLabel={tx("close")}>
       <form
         className="c3-form"
         onSubmit={async (event) => {
           event.preventDefault();
-          const fd = new FormData(event.currentTarget);
-          const res = await sendJson("/api/admin/users", "POST", { name: fd.get("name"), email: fd.get("email"), password: fd.get("password"), role: "TRADER" });
+          if (fields.email && !emailOk(fields.email)) {
+            setErr(v3("emailCheck"));
+            return;
+          }
+          const res = await sendJson("/api/admin/users", "POST", { name: fields.name, email: fields.email, password, role: "TRADER" });
           if (!res.ok) {
             setErr(res.error || tx("failed"));
             return;
@@ -216,9 +231,14 @@ function AddCustomer({ tx, onClose, onDone }: { tx: Tx; onClose: () => void; onD
           onClose();
         }}
       >
-        <Lab label={tx("name")}><input name="name" required className="c3-field" /></Lab>
-        <Lab label={tx("email")}><input name="email" type="email" required className="c3-field" /></Lab>
-        <Lab label={tx("password")}><input name="password" type="password" required minLength={6} className="c3-field" /></Lab>
+        <EntryQuality fields={fields} password={password} />
+        <p className="c3-muted">{v3("phoneNotPosted")}</p>
+        <Lab label={tx("name")}><input name="name" required value={fields.name} onChange={(event) => setFields({ ...fields, name: event.target.value })} className="c3-field" /></Lab>
+        <Lab label={tx("email")}><input name="email" value={fields.email} onChange={(event) => setFields({ ...fields, email: event.target.value })} className="c3-field" /></Lab>
+        <Lab label={tx("phone")}><input value={fields.phone} onChange={(event) => setFields({ ...fields, phone: event.target.value })} className="c3-field" aria-label={tx("phone")} /></Lab>
+        <Lab label={tx("country")}><input value={fields.country} onChange={(event) => setFields({ ...fields, country: event.target.value })} className="c3-field" aria-label={tx("country")} /></Lab>
+        <Lab label={tx("password")}><input name="password" type="password" required minLength={6} value={password} onChange={(event) => setPassword(event.target.value)} className="c3-field" /></Lab>
+        <p className="c3-muted">{v3("passwordStay")}</p>
         <Msg text={err} />
         <button type="submit" className="c3-btn c3-btn-hot">{tx("save")}</button>
       </form>
