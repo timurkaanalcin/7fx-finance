@@ -19,6 +19,7 @@ import { ListDesk, RecordHead, useLists } from "../desk/record";
 import { TradeBook } from "../desk/book";
 import { DenseList, NoteStudio } from "../desk/table";
 import { FinanceBook } from "../desk/ledger";
+import { KycStudio } from "../desk/gallery";
 import { applyList } from "@/lib/crmv3/lists";
 
 export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; locale: string; q: string }) {
@@ -759,6 +760,7 @@ function Files({ id, email, tx, locale }: { id: string; email: string; tx: Tx; l
   const mine = (docs.data?.documents || []).filter((row) => row.traderId === id);
   return (
     <div className="c3-stack">
+      <KycStudio id={id} rows={mine} loading={docs.loading} error={docs.error} onRetry={docs.reload} uploads={files.data?.documents || []} filesLoading={files.loading} tx={tx} locale={locale} />
       <Card title={tx("kyc")}>
         <form
           className="c3-form c3-form-2"
@@ -837,8 +839,8 @@ function Files({ id, email, tx, locale }: { id: string; email: string; tx: Tx; l
   );
 }
 
-type DocRow = { id: string; name?: string; docType?: string; status?: string; traderId?: string; createdAt?: string };
-type FileRow = { id: string; title?: string; fileName?: string };
+type DocRow = { id: string; name?: string; docType?: string; status?: string; traderId?: string; createdAt?: string; reviewedAt?: string | null };
+type FileRow = { id: string; title?: string; fileName?: string; mime?: string; createdAt?: string };
 
 async function review(id: string, status: string, reload: () => void, setMsg: (v: string) => void, tx: Tx) {
   const res = await sendJson("/api/admin/documents", "POST", { action: "review", id, status });

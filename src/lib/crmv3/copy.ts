@@ -15,6 +15,7 @@ import { BOOK_AR, BOOK_DE, BOOK_EN, BOOK_RU, BOOK_TR } from "@/lib/crmv3/copy-bo
 import { TABLE_AR, TABLE_DE, TABLE_EN, TABLE_RU, TABLE_TR } from "@/lib/crmv3/copy-table";
 import { TODAY_AR, TODAY_DE, TODAY_EN, TODAY_RU, TODAY_TR } from "@/lib/crmv3/copy-today";
 import { LEDGER_AR, LEDGER_DE, LEDGER_EN, LEDGER_RU, LEDGER_TR } from "@/lib/crmv3/copy-ledger";
+import { GALLERY_AR, GALLERY_DE, GALLERY_EN, GALLERY_RU, GALLERY_TR } from "@/lib/crmv3/copy-gallery";
 
 const enBase = {
   money: "Money",
@@ -25,7 +26,7 @@ const enBase = {
   openRow: "Open",
 };
 
-const en = { ...enBase, ...DESK_EN, ...LATER_EN, ...CASH_EN, ...PEOPLE_EN, ...GOALS_EN, ...LINE_EN, ...REVIEW_EN, ...WD_EN, ...DEP_EN, ...NAV_EN, ...LISTS_EN, ...INSIGHTS_EN, ...BOOK_EN, ...TABLE_EN, ...TODAY_EN, ...LEDGER_EN };
+const en = { ...enBase, ...DESK_EN, ...LATER_EN, ...CASH_EN, ...PEOPLE_EN, ...GOALS_EN, ...LINE_EN, ...REVIEW_EN, ...WD_EN, ...DEP_EN, ...NAV_EN, ...LISTS_EN, ...INSIGHTS_EN, ...BOOK_EN, ...TABLE_EN, ...TODAY_EN, ...LEDGER_EN, ...GALLERY_EN };
 
 const trBase: typeof enBase = {
   money: "Para",
@@ -36,7 +37,7 @@ const trBase: typeof enBase = {
   openRow: "Aç",
 };
 
-const tr = { ...trBase, ...DESK_TR, ...LATER_TR, ...CASH_TR, ...PEOPLE_TR, ...GOALS_TR, ...LINE_TR, ...REVIEW_TR, ...WD_TR, ...DEP_TR, ...NAV_TR, ...LISTS_TR, ...INSIGHTS_TR, ...BOOK_TR, ...TABLE_TR, ...TODAY_TR, ...LEDGER_TR };
+const tr = { ...trBase, ...DESK_TR, ...LATER_TR, ...CASH_TR, ...PEOPLE_TR, ...GOALS_TR, ...LINE_TR, ...REVIEW_TR, ...WD_TR, ...DEP_TR, ...NAV_TR, ...LISTS_TR, ...INSIGHTS_TR, ...BOOK_TR, ...TABLE_TR, ...TODAY_TR, ...LEDGER_TR, ...GALLERY_TR };
 
 const deBase: typeof enBase = {
   money: "Geld",
@@ -47,7 +48,7 @@ const deBase: typeof enBase = {
   openRow: "Öffnen",
 };
 
-const de = { ...deBase, ...DESK_DE, ...LATER_DE, ...CASH_DE, ...PEOPLE_DE, ...GOALS_DE, ...LINE_DE, ...REVIEW_DE, ...WD_DE, ...DEP_DE, ...NAV_DE, ...LISTS_DE, ...INSIGHTS_DE, ...BOOK_DE, ...TABLE_DE, ...TODAY_DE, ...LEDGER_DE };
+const de = { ...deBase, ...DESK_DE, ...LATER_DE, ...CASH_DE, ...PEOPLE_DE, ...GOALS_DE, ...LINE_DE, ...REVIEW_DE, ...WD_DE, ...DEP_DE, ...NAV_DE, ...LISTS_DE, ...INSIGHTS_DE, ...BOOK_DE, ...TABLE_DE, ...TODAY_DE, ...LEDGER_DE, ...GALLERY_DE };
 
 const ruBase: typeof enBase = {
   money: "Деньги",
@@ -58,7 +59,7 @@ const ruBase: typeof enBase = {
   openRow: "Открыть",
 };
 
-const ru = { ...ruBase, ...DESK_RU, ...LATER_RU, ...CASH_RU, ...PEOPLE_RU, ...GOALS_RU, ...LINE_RU, ...REVIEW_RU, ...WD_RU, ...DEP_RU, ...NAV_RU, ...LISTS_RU, ...INSIGHTS_RU, ...BOOK_RU, ...TABLE_RU, ...TODAY_RU, ...LEDGER_RU };
+const ru = { ...ruBase, ...DESK_RU, ...LATER_RU, ...CASH_RU, ...PEOPLE_RU, ...GOALS_RU, ...LINE_RU, ...REVIEW_RU, ...WD_RU, ...DEP_RU, ...NAV_RU, ...LISTS_RU, ...INSIGHTS_RU, ...BOOK_RU, ...TABLE_RU, ...TODAY_RU, ...LEDGER_RU, ...GALLERY_RU };
 
 const arBase: typeof enBase = {
   money: "المال",
@@ -69,7 +70,7 @@ const arBase: typeof enBase = {
   openRow: "فتح",
 };
 
-const ar = { ...arBase, ...DESK_AR, ...LATER_AR, ...CASH_AR, ...PEOPLE_AR, ...GOALS_AR, ...LINE_AR, ...REVIEW_AR, ...WD_AR, ...DEP_AR, ...NAV_AR, ...LISTS_AR, ...INSIGHTS_AR, ...BOOK_AR, ...TABLE_AR, ...TODAY_AR, ...LEDGER_AR };
+const ar = { ...arBase, ...DESK_AR, ...LATER_AR, ...CASH_AR, ...PEOPLE_AR, ...GOALS_AR, ...LINE_AR, ...REVIEW_AR, ...WD_AR, ...DEP_AR, ...NAV_AR, ...LISTS_AR, ...INSIGHTS_AR, ...BOOK_AR, ...TABLE_AR, ...TODAY_AR, ...LEDGER_AR, ...GALLERY_AR };
 
 export const CRM_V3_COPY = { en, tr, de, ru, ar };
 
