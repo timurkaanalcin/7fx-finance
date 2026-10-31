@@ -16,6 +16,7 @@ import {
   type ProfileBits,
 } from "@/lib/crmv4/round7";
 import { capitalizeName, phoneIssue } from "@/lib/crmv4/round11";
+import { methodName } from "@/lib/crmv4/round15";
 import { exportCurrent, readTags } from "./round1";
 import { pushEdit } from "./round11";
 import { money, sendJson, useJson, when, type Tx, type UserRow } from "./kit";
@@ -94,7 +95,7 @@ export function LangBadge({ language, v4 }: { language?: string | null; v4: V4 }
   return <span className="c4-status" data-tone="info">{v4("langBadge")} {language}</span>;
 }
 
-export function MoneyHistory({ row, tx, v4, locale, onClose }: { row: { id: string; amount?: number; currency?: string; status?: string; method?: string; createdAt?: string; user?: { name?: string; email?: string } }; tx: Tx; v4: V4; locale: string; onClose: () => void }) {
+export function MoneyHistory({ row, tx, v4, locale, onClose }: { row: { id: string; amount?: number; currency?: string; status?: string; method?: unknown; createdAt?: string; user?: { name?: string; email?: string } }; tx: Tx; v4: V4; locale: string; onClose: () => void }) {
   const email = row.user?.email || "";
   const ledger = useJson<{ transactions?: { id: string; type?: string; amount?: number; createdAt?: string; comment?: string }[] }>(email ? `/api/admin/transactions?q=${encodeURIComponent(email)}&limit=12` : null);
   return (
@@ -102,7 +103,7 @@ export function MoneyHistory({ row, tx, v4, locale, onClose }: { row: { id: stri
       <aside className="c4-drawer c4-money-drawer" role="dialog" aria-modal="true" aria-label={v4("moneyHistory")} onClick={(event) => event.stopPropagation()}>
         <div className="c4-row c4-between"><h2 className="c4-title">{v4("moneyHistory")}</h2><button type="button" className="c4-btn" onClick={onClose}>{tx("close")}</button></div>
         <p>{row.user?.name || "—"} · {money(row.amount, row.currency, locale)}</p>
-        <p className="c4-muted">{row.status} · {row.method || "—"} · {when(row.createdAt, locale)}</p>
+        <p className="c4-muted">{row.status} · {methodName(row.method) || "—"} · {when(row.createdAt, locale)}</p>
         <ul>
           {(ledger.data?.transactions || []).map((item) => (
             <li key={item.id} className="c4-pad">{item.type} · {money(item.amount, row.currency, locale)} · {when(item.createdAt, locale)}</li>

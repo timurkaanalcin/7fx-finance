@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { approvalBody, approvalEndpoint } from "@/lib/crmv2/payload";
 import { crmv4Text } from "@/lib/crmv4/copy";
 import { ReviewDialog, TicketMeta } from "../round1";
@@ -13,6 +13,8 @@ import { CsatTrend, FirstTimer, ReplyTemplates, ResponseStat, bulkTicketUpdate, 
 import { ApprovalTimes, BacklogTrend } from "../round11";
 import { SlaBadge, ViewerHint, ticketExport } from "../round14";
 import { Card, Chip, Lab, Msg, Sheet, State, Status, SwipeRow, money, sendJson, statusTone, useJson, when, type Tx } from "../kit";
+import { rememberView } from "../round25";
+import { crmv4Href } from "@/lib/crmv4/sections";
 
 type Ticket = { id: string; kind: string; amount?: number; currency?: string; status?: string; customer?: string; openedAt?: string };
 type Thread = { traderId?: string; trader?: string; messages?: { body?: string; workerId?: string | null; createdAt?: string }[]; presence?: { customerTyping?: boolean; adminLastReadAt?: string | null } };
@@ -42,7 +44,7 @@ export default function Support({ tx, locale, q }: { tx: Tx; locale: string; q: 
         <Chip on={tab === "kyc"} onClick={() => setQuery({ tab: "kyc" })}>{tx("kycQueue")}</Chip>
         <Chip on={tab === "files"} onClick={() => setQuery({ tab: "files" })}>{tx("evrak")}</Chip>
       </div>
-      {tab === "tickets" && <Tickets tx={tx} locale={locale} q={q} status={params.get("status") || "PENDING"} setQuery={setQuery} />}
+      {tab === "tickets" && <Tickets tx={tx} locale={locale} q={q} status={params.get("status") || "PENDING"} openId={params.get("open") || ""} setQuery={setQuery} />}
       {tab === "chat" && <Chat tx={tx} locale={locale} q={q} userId={params.get("user") || ""} setQuery={setQuery} />}
       {tab === "kyc" && <Kyc tx={tx} locale={locale} q={q} />}
       {tab === "files" && <Files tx={tx} locale={locale} />}
@@ -50,10 +52,23 @@ export default function Support({ tx, locale, q }: { tx: Tx; locale: string; q: 
   );
 }
 
-function Tickets({ tx, locale, q, status, setQuery }: { tx: Tx; locale: string; q: string; status: string; setQuery: (next: Record<string, string>) => void }) {
+function Tickets({ tx, locale, q, status, openId, setQuery }: { tx: Tx; locale: string; q: string; status: string; openId: string; setQuery: (next: Record<string, string>) => void }) {
   const data = useJson<{ tickets?: Ticket[] }>(`/api/admin/tickets?status=${encodeURIComponent(status)}&q=${encodeURIComponent(q)}`);
   const [sheet, setSheet] = useState<null | { id: string; kind: string; action: "approve" | "reject" }>(null);
   const [zoom, setZoom] = useState<Ticket | null>(null);
+  const opened = useRef("");
+  const openTicket = useCallback((row: Ticket) => {
+    setZoom(row);
+    const root = window.location.pathname.includes("/izcrm/crmv4") ? "/izcrm/crmv4" : "/crmv4";
+    rememberView({ kind: "ticket", id: row.id, title: row.customer || row.id, href: crmv4Href(root, "support", { open: row.id }) });
+  }, []);
+  useEffect(() => {
+    if (!openId || opened.current === openId) return;
+    const row = (data.data?.tickets || []).find((item) => item.id === openId);
+    if (!row) return;
+    opened.current = openId;
+    openTicket(row);
+  }, [openId, data.data, openTicket]);
   const [merged, setMerged] = useState(false);
   const [picked, setPicked] = useState<string[]>([]);
   const [reason, setReason] = useState("");
@@ -117,7 +132,7 @@ function Tickets({ tx, locale, q, status, setQuery }: { tx: Tx; locale: string; 
             <label className="c4-lab"><span>{v4("ticketAssign")}</span>
               <input className="c4-field" defaultValue={assignees[row.id] || ticketAssignee(row.id)} aria-label={v4("ticketAssign")} onBlur={(event) => { setTicketAssignee(row.id, event.target.value); setAssignees((map) => ({ ...map, [row.id]: event.target.value })); }} />
             </label>
-            <button type="button" className="c4-btn" onClick={() => setZoom(row)}>{v4("zoom")}</button>
+            <button type="button" className="c4-btn" onClick={() => openTicket(row)}>{v4("zoom")}</button>
             <hr className="c4-dashed" />
             <SwipeRow
               actions={row.status === "PENDING" ? [
