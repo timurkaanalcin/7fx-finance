@@ -22,6 +22,7 @@ import {
   type ReviewDoc,
 } from "@/lib/crmv3/review";
 import { auditExport, downloadCsv, money, sendJson, useJson, when, type Tx } from "../kit";
+import { PeriodCards } from "./period";
 import { useV3 } from "./store";
 
 const CHECK_KEY = "crmv3-doc-review";
@@ -148,7 +149,7 @@ async function saveCsv(kind: string, filename: string, header: string[], lines: 
 
 export function ReportsPage({ locale }: { locale: string }) {
   const v3 = useV3();
-  const people = useJson<{ users?: { id: string; name?: string | null; email?: string | null; country?: string | null; desk?: string | null; documentsStatus?: string | null }[] }>("/api/admin/users?view=table&take=80&meta=0&role=TRADER");
+  const people = useJson<{ users?: { id: string; name?: string | null; email?: string | null; country?: string | null; desk?: string | null; documentsStatus?: string | null; createdAt?: string | null }[] }>("/api/admin/users?view=table&take=80&meta=0&role=TRADER");
   const deposits = useJson<{ requests?: { id: string; amount?: number | null; currency?: string | null; status?: string | null; createdAt?: string | null; user?: { name?: string | null } | null }[] }>("/api/admin/deposits?take=80");
   const withdrawals = useJson<{ requests?: { id: string; amount?: number | null; currency?: string | null; status?: string | null; createdAt?: string | null; user?: { name?: string | null } | null }[] }>("/api/admin/withdrawals?take=80");
   const tickets = useJson<{ tickets?: { id: string; kind?: string | null; amount?: number | null; currency?: string | null; status?: string | null; customer?: string | null; openedAt?: string | null }[] }>("/api/admin/tickets?take=40");
@@ -181,6 +182,13 @@ export function ReportsPage({ locale }: { locale: string }) {
           <button type="button" className="c3-btn" onClick={printReport}>{v3("reportsPrint")}</button>
         </div>
       </article>
+      <PeriodCards
+        locale={locale}
+        users={users}
+        deposits={depositRows.map((row) => ({ ...row, at: row.createdAt }))}
+        withdrawals={withdrawalRows.map((row) => ({ ...row, at: row.createdAt }))}
+        tickets={ticketRows.map((row) => ({ ...row, at: row.openedAt }))}
+      />
       <MoneyReport title={v3("reportsDeposits")} rows={shownDeposits} locale={locale} filename="deposits.csv" kind="deposits" />
       <MoneyReport title={v3("reportsWithdrawals")} rows={shownWithdrawals} locale={locale} filename="withdrawals.csv" kind="withdrawals" />
       <MoneyReport title={v3("reportsTickets")} rows={shownTickets} locale={locale} filename="tickets.csv" kind="tickets" />
