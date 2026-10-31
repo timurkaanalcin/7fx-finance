@@ -22,6 +22,8 @@ import { FinanceBook } from "../desk/ledger";
 import { KycStudio } from "../desk/gallery";
 import { Dossier } from "../desk/dossier";
 import { SaleBoard } from "../desk/board";
+import { BulkDock, RecordThread } from "../desk/picks";
+import { pageAllOn, toggleOne, togglePage } from "@/lib/crmv3/picks";
 import { applyList } from "@/lib/crmv3/lists";
 
 export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; locale: string; q: string }) {
@@ -116,6 +118,8 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
       )}
       <ListDesk base={base} v3={v3} activeId={listId} />
       <DenseList base={base} rows={shown} tx={tx} locale={locale} />
+      <button type="button" className="c3-btn" data-on={pageAllOn(shown.map((row) => row.id), selected) ? "1" : "0"} onClick={() => setSelected((current) => togglePage(shown.map((row) => row.id), current))}>{v3("bkPage")}</button>
+      <BulkDock rows={shown} selected={selected} lists={lists} tx={tx} onReload={data.reload} onClear={() => setSelected([])} />
       <p className="c3-muted">{v3("rowsShowing")} {shown.length}</p>
       {(selected.length === 1 || selected.length > 3) && <p className="c3-muted">{v3("compareNeed")}</p>}
       {selected.length >= 2 && <CompareDesk rows={shown.filter((row) => selected.includes(row.id))} base={base} locale={locale} />}
@@ -240,7 +244,7 @@ function CustomerTable({ base, rows, tx, locale, selected, dupes, pins, tags, on
   const v3 = useV3();
   if (!rows.length) return null;
   function toggle(id: string) {
-    onSelect(selected.includes(id) ? selected.filter((item) => item !== id) : [...selected, id]);
+    onSelect(toggleOne(selected, id));
   }
   return (
     <>
@@ -390,6 +394,7 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           locale={locale}
         />
       )}
+      {u && part === "profile" && <RecordThread userId={id} tx={tx} locale={locale} />}
       {u && part === "profile" && <ProfileShell id={id} user={u} tx={tx} onDone={user.reload} />}
       {part === "notes" && <NoteStudio id={id} notes={user.data?.notes || []} tx={tx} locale={locale} onSaved={user.reload} />}
       {part === "notes" && <Notes id={id} notes={user.data?.notes || []} tx={tx} locale={locale} onDone={user.reload} />}
