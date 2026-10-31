@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import type { CrmV4CopyKey } from "@/lib/crmv4/copy";
 import { NAV_SECTIONS, activeGroup, filterSection, matchedCount, sectionPath, type NavSectionId } from "@/lib/crmv4/round30";
+import { SmartRail } from "./round31";
 import { crmv4Href } from "@/lib/crmv4/sections";
 
 export type V4 = (key: CrmV4CopyKey) => string;
@@ -59,6 +60,7 @@ export function GroupedLinks({
                 <span className="c4-rail-name">{names[id] || id}</span>
               </Link>
             ))}
+            {group.id === "work" && <SmartRail base={base} v4={v4} onPick={onPick} />}
           </section>
         );
       })}
