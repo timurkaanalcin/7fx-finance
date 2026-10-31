@@ -32,6 +32,7 @@ import { StaffPage } from "./round24";
 import { GoalsPage, TopTrail } from "./round25";
 import { KycDesk } from "./round27";
 import { DayDesk, ReportDesk } from "./round43";
+import { AffiliateDesk } from "./round45";
 import { lastView, playPing, rememberView, soundEnabled, ticketAlertsOn } from "./round7";
 import { resolvedTheme, storedContrast, storedFont, storedFreeze, themeMode } from "./round8";
 import { readBrand } from "./round10";
@@ -277,6 +278,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "agenda") return v4("agTitle");
     if (tab === "roster") return v4("staffTitle");
     if (tab === "day") return v4("dayTitle");
+    if (tab === "affiliates") return v4("afTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -304,6 +306,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "agenda") return v4("agSub");
     if (tab === "roster") return v4("staffSub");
     if (tab === "day") return v4("daySub");
+    if (tab === "affiliates") return v4("afCustomers");
     return "";
   }
 
@@ -452,6 +455,7 @@ function Shell({ base, section, name }: Props) {
             {view === "goals" && <GoalsPage v4={v4} locale={locale} />}
             {view === "kyc" && <KycDesk v4={v4} tx={tx} locale={locale} />}
             {view === "reports" && <ReportDesk v4={v4} locale={locale} />}
+            {view === "affiliates" && <AffiliateDesk v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
             {view === "agenda" && <AgendaPage base={base} v4={v4} locale={locale} />}
