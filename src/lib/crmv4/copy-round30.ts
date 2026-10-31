@@ -1,0 +1,92 @@
+/** Round-30 chrome. Every locale carries the English keys. */
+const en = {
+  navWork: "Work",
+  navMoney: "Money",
+  navCompliance: "Compliance",
+  navInsights: "Insights",
+  navDesk: "Desk",
+  railNav: "Sections",
+  railFold: "Collapse the section rail",
+  railExpand: "Expand the section rail",
+  railFoldShort: "Collapse",
+  railExpandShort: "Expand",
+  railHere: "Open page",
+  railFind: "Find a loaded page",
+  railNone: "No loaded page matches.",
+  railStored: "The collapsed rail is stored in this browser.",
+  railCount: "pages",
+};
+
+const tr: typeof en = {
+  navWork: "İş",
+  navMoney: "Para",
+  navCompliance: "Uyum",
+  navInsights: "İçgörü",
+  navDesk: "Masa",
+  railNav: "Bölümler",
+  railFold: "Bölüm rayını daralt",
+  railExpand: "Bölüm rayını aç",
+  railFoldShort: "Daralt",
+  railExpandShort: "Aç",
+  railHere: "Açık sayfa",
+  railFind: "Yüklenen bir sayfa bul",
+  railNone: "Yüklenen sayfa eşleşmedi.",
+  railStored: "Daraltılmış ray bu tarayıcıda durur.",
+  railCount: "sayfa",
+};
+
+const de: typeof en = {
+  navWork: "Arbeit",
+  navMoney: "Geld",
+  navCompliance: "Prüfung",
+  navInsights: "Einblick",
+  navDesk: "Desk",
+  railNav: "Bereiche",
+  railFold: "Bereichsleiste einklappen",
+  railExpand: "Bereichsleiste ausklappen",
+  railFoldShort: "Einklappen",
+  railExpandShort: "Ausklappen",
+  railHere: "Offene Seite",
+  railFind: "Geladene Seite finden",
+  railNone: "Keine geladene Seite passt.",
+  railStored: "Die eingeklappte Leiste bleibt in diesem Browser.",
+  railCount: "Seiten",
+};
+
+const ru: typeof en = {
+  navWork: "Работа",
+  navMoney: "Деньги",
+  navCompliance: "Проверка",
+  navInsights: "Обзор",
+  navDesk: "Стол",
+  railNav: "Разделы",
+  railFold: "Свернуть полосу разделов",
+  railExpand: "Развернуть полосу разделов",
+  railFoldShort: "Свернуть",
+  railExpandShort: "Развернуть",
+  railHere: "Открытая страница",
+  railFind: "Найти загруженную страницу",
+  railNone: "Нет подходящей загруженной страницы.",
+  railStored: "Свёрнутая полоса хранится в этом браузере.",
+  railCount: "страниц",
+};
+
+const ar: typeof en = {
+  navWork: "العمل",
+  navMoney: "المال",
+  navCompliance: "الالتزام",
+  navInsights: "الرؤية",
+  navDesk: "المكتب",
+  railNav: "الأقسام",
+  railFold: "طي شريط الأقسام",
+  railExpand: "فتح شريط الأقسام",
+  railFoldShort: "طي",
+  railExpandShort: "فتح",
+  railHere: "الصفحة المفتوحة",
+  railFind: "ابحث عن صفحة محمّلة",
+  railNone: "لا صفحة محمّلة تطابق.",
+  railStored: "الشريط المطوي يبقى في هذا المتصفح.",
+  railCount: "صفحات",
+};
+
+export const ROUND30_COPY = { en, tr, de, ru, ar };
