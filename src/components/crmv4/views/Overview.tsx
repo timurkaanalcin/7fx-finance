@@ -13,6 +13,7 @@ import { WeekBoard } from "../round7";
 import { AgentChart, BoardSaver, CohortTable, DeskChart, ExposureAlert, PnlMovers, PositionAge, QuickCreate, SymbolDrill, WatchAlerts } from "../round8";
 import { CallComposer, MyDay, NoteSearch } from "../round9";
 import { ActivityStream, HolidayEditor, IbTree, KpiPicker, ReminderTools, RoiTable, readKpis } from "../round10";
+import { AnnounceFeed, ApprovalTimes, BacklogTrend, ChurnBoard, CityMap, DailyClose, ExecHero, Glossary, GreetingPreview, PinnedHome, QualityReport, ShiftBoard, WhatsNew } from "../round11";
 import { readJson } from "@/lib/crmv4/local";
 import { crmv4Href } from "@/lib/crmv4/sections";
 import { Bars, Card, Chip, Field, Kpi, Lab, Msg, Sheet, State, auditExport, downloadCsv, fmtNum, localeTag, money, sendJson, useJson, when, type Tx, type UserRow } from "../kit";
@@ -41,7 +42,8 @@ export default function Overview({ base, tx, locale, name }: Props) {
   const mix = (finance.data?.byType || []).slice(0, 6).map((row) => ({ label: row.type, value: row.amount }));
   const banner = finance.data?.kpis?.income ?? aum;
   return (
-    <div className="c4-stack">
+    <div className="c4-stack c4-exec">
+      <ExecHero name={name || ""} customers={kpis?.users} aum={typeof aum === "number" ? aum : undefined} volume={kpis?.totalVolume} pending={pending} locale={locale} labels={{ customers: tx("kpiCustomers"), aum: tx("kpiAum"), volume: tx("kpiVolume"), pending: tx("kpiPending") }} v4={(key) => crmv4Text(locale, key)} />
       <DeskLanding name={name || ""} v4={(key) => crmv4Text(locale, key)} />
       <MyDay name={name || ""} v4={(key) => crmv4Text(locale, key)} tx={tx} />
       <CallComposer v4={(key) => crmv4Text(locale, key)} tx={tx} />
@@ -69,6 +71,20 @@ export default function Overview({ base, tx, locale, name }: Props) {
         <DeskBoard locale={locale} v4={(key) => crmv4Text(locale, key)} tx={tx} />
       ) : (
         <div className="c4-stack">
+        <PinnedHome base={base} v4={(key) => crmv4Text(locale, key)} />
+        <ChurnBoard base={base} v4={(key) => crmv4Text(locale, key)} />
+        <CityMap v4={(key) => crmv4Text(locale, key)} />
+        <div className="c4-book-grid">
+          <ShiftBoard v4={(key) => crmv4Text(locale, key)} />
+          <AnnounceFeed v4={(key) => crmv4Text(locale, key)} />
+          <GreetingPreview v4={(key) => crmv4Text(locale, key)} />
+        </div>
+        <QualityReport v4={(key) => crmv4Text(locale, key)} />
+        <DailyClose locale={locale} v4={(key) => crmv4Text(locale, key)} />
+        <BacklogTrend v4={(key) => crmv4Text(locale, key)} />
+        <ApprovalTimes v4={(key) => crmv4Text(locale, key)} />
+        <Glossary v4={(key) => crmv4Text(locale, key)} />
+        <WhatsNew v4={(key) => crmv4Text(locale, key)} />
         <div className="c4-dash">
           <Card title={crmv4Text(locale, "mix")}>
             <Donut rows={mix} />

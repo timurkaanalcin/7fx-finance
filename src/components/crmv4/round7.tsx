@@ -15,7 +15,9 @@ import {
   weekKeys,
   type ProfileBits,
 } from "@/lib/crmv4/round7";
+import { capitalizeName, phoneIssue } from "@/lib/crmv4/round11";
 import { exportCurrent, readTags } from "./round1";
+import { pushEdit } from "./round11";
 import { money, sendJson, useJson, when, type Tx, type UserRow } from "./kit";
 
 export type V4 = (key: CrmV4CopyKey) => string;
@@ -44,17 +46,44 @@ export function InlineProfile({ id, user, tx, v4, onDone }: { id: string; user: 
   const [phone, setPhone] = useState(user.phone || "");
   const [country, setCountry] = useState(user.country || "");
   const [msg, setMsg] = useState("");
+  const [undo, setUndo] = useState<null | { name: string; phone: string; country: string }>(null);
+  useEffect(() => {
+    if (!undo) return;
+    const timer = window.setTimeout(() => setUndo(null), 10000);
+    return () => window.clearTimeout(timer);
+  }, [undo]);
+  async function save(next: { name: string; phone: string; country: string }, previous: { name: string; phone: string; country: string }) {
+    const res = await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { name: next.name, phone: next.phone, country: next.country });
+    setMsg(res.ok ? tx("saved") : res.error || tx("failed"));
+    if (!res.ok) return;
+    setUndo(previous);
+    const at = new Date().toISOString();
+    if (previous.name !== next.name) pushEdit({ at, id, field: "name", from: previous.name, to: next.name });
+    if (previous.phone !== next.phone) pushEdit({ at, id, field: "phone", from: previous.phone, to: next.phone });
+    if (previous.country !== next.country) pushEdit({ at, id, field: "country", from: previous.country, to: next.country });
+    onDone();
+  }
   return (
-    <form className="c4-row c4-pad" onSubmit={async (event) => {
+    <form className="c4-row c4-pad" onSubmit={(event) => {
       event.preventDefault();
-      const res = await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { name, phone, country });
-      setMsg(res.ok ? tx("saved") : res.error || tx("failed"));
-      if (res.ok) onDone();
+      void save({ name, phone, country }, { name: user.name || "", phone: user.phone || "", country: user.country || "" });
     }}>
       <input className="c4-field" aria-label={tx("name")} value={name} onChange={(event) => setName(event.target.value)} />
+      <button type="button" className="c4-btn" onClick={() => {
+        const next = capitalizeName(name);
+        setName(next);
+        void save({ name: next, phone, country }, { name, phone, country });
+      }}>{v4("nameCase")}</button>
       <input className="c4-field" aria-label={tx("phone")} value={phone} onChange={(event) => setPhone(event.target.value)} />
+      {phoneIssue(phone) && <span className="c4-muted">{v4("phoneHint")}</span>}
       <input className="c4-field" aria-label={tx("country")} value={country} onChange={(event) => setCountry(event.target.value)} />
       <button type="submit" className="c4-btn c4-btn-hot">{v4("inlineSave")}</button>
+      {undo && <button type="button" className="c4-btn" onClick={() => {
+        setName(undo.name);
+        setPhone(undo.phone);
+        setCountry(undo.country);
+        void save(undo, { name, phone, country });
+      }}>{v4("undoEdit")}</button>}
       {msg && <span className="c4-muted">{msg}</span>}
     </form>
   );

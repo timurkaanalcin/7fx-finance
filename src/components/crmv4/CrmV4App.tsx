@@ -370,6 +370,7 @@ function Shell({ base, section, name }: Props) {
             <div className="c4-pull" data-on={pull > 8 || refreshing ? "1" : "0"}>{refreshing ? v4("refreshing") : v4("pullHint")}</div>
             {resume && (
               <p className="c4-resume">
+                <span className="c4-resume-path">{resume}</span>
                 <button type="button" className="c4-btn" onClick={() => { window.location.assign(resume); }}>{v4("resumeView")}</button>
                 <button type="button" className="c4-btn" onClick={() => setResume("")}>{tx("close")}</button>
               </p>
