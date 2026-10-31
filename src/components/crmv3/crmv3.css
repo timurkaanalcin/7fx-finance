@@ -2188,3 +2188,87 @@
   [data-crmv3-root][data-print="report"] .c3-report-tools { display: none; }
   [data-crmv3-root][data-print="report"] { background: #fff; color: #111; }
 }
+
+[data-crmv3-root] .c3-pick-dock,
+[data-crmv3-root] .c3-thread,
+[data-crmv3-root] .c3-thread-line,
+[data-crmv3-root] .c3-pick-confirm {
+  min-width: 0;
+  max-width: 100%;
+}
+
+[data-crmv3-root] .c3-pick-dock,
+[data-crmv3-root] .c3-thread {
+  display: grid;
+  gap: var(--c3-2);
+  padding: var(--c3-3);
+  border: 1px solid var(--c3-line);
+  border-radius: var(--c3-radius);
+  background: var(--c3-card);
+  overflow-x: clip;
+}
+
+[data-crmv3-root] .c3-pick-dock {
+  position: sticky;
+  bottom: 8px;
+  z-index: 8;
+}
+
+[data-crmv3-root] .c3-pick-dock h3,
+[data-crmv3-root] .c3-thread h3,
+[data-crmv3-root] .c3-thread h4,
+[data-crmv3-root] .c3-thread-line p { margin: 0; }
+
+[data-crmv3-root] .c3-pick-dock .c3-select,
+[data-crmv3-root] .c3-pick-dock .c3-field,
+[data-crmv3-root] .c3-thread .c3-field { width: 100%; }
+
+[data-crmv3-root] .c3-pick-dock .c3-btn,
+[data-crmv3-root] .c3-pick-dock .c3-select,
+[data-crmv3-root] .c3-thread .c3-btn,
+[data-crmv3-root] .c3-thread .c3-chip { min-height: 44px; }
+
+[data-crmv3-root] .c3-pick-confirm {
+  display: grid;
+  gap: var(--c3-2);
+  padding: var(--c3-2);
+  border: 1px solid var(--c3-line);
+  border-radius: 12px;
+  background: var(--c3-elev);
+}
+
+[data-crmv3-root] .c3-pick-results,
+[data-crmv3-root] .c3-thread-list {
+  display: grid;
+  gap: var(--c3-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv3-root] .c3-pick-results li,
+[data-crmv3-root] .c3-thread-line {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: var(--c3-2);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--c3-2);
+  border: 1px solid var(--c3-line);
+  border-radius: 12px;
+  background: var(--c3-elev);
+  overflow-wrap: anywhere;
+}
+
+[data-crmv3-root] .c3-thread-line { display: grid; justify-content: stretch; }
+
+[data-crmv3-root] .c3-thread-line[data-who="staff"] { border-inline-start: 3px solid var(--c3-gold); }
+[data-crmv3-root] .c3-thread-line[data-who="customer"] { border-inline-start: 3px solid var(--c3-ink); }
+[data-crmv3-root] .c3-thread-line[data-who="auto"] { border-inline-start: 3px solid var(--c3-muted); }
+
+@media (max-width: 1023px) {
+  [data-crmv3-root] .c3-pick-dock {
+    bottom: calc(var(--c3-touch) + 72px + env(safe-area-inset-bottom, 0px));
+  }
+}
