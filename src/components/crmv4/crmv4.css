@@ -2498,7 +2498,7 @@
 }
 
 [data-crmv4-root] .c4-exec-metric span {
-  color: #7d7368;
+  color: var(--c4-accent-ink);
   font-size: 11px;
   font-weight: 650;
   letter-spacing: 0.08em;
@@ -2727,7 +2727,7 @@
 }
 
 [data-crmv4-root] .c4-mkt-metric span {
-  color: #7d7368;
+  color: var(--c4-accent-ink);
   font-size: 11px;
   font-weight: 650;
   letter-spacing: 0.08em;
@@ -2950,7 +2950,7 @@
 }
 
 [data-crmv4-root] .c4-fin-metric span {
-  color: #7d7368;
+  color: var(--c4-accent-ink);
   font-size: 11px;
   font-weight: 650;
   letter-spacing: 0.08em;
@@ -3550,6 +3550,9 @@
 
 [data-crmv4-root] .c4-top { flex-wrap: wrap; }
 
+[data-crmv4-root] .c4-crumbs a,
+[data-crmv4-root] .c4-crumbs span { overflow-wrap: normal; }
+
 [data-crmv4-root] .c4-trail-luxe {
   flex: 1 0 100%;
   display: grid;
@@ -3985,4 +3988,30 @@
     align-items: center;
     justify-content: center;
   }
+}
+
+[data-crmv4-root] .c4-dossier,
+[data-crmv4-root] .c4-dos-grid article {
+  border: 1px solid rgba(166, 133, 78, 0.45);
+  border-radius: 16px;
+  background:
+    linear-gradient(165deg, rgba(166, 133, 78, 0.12), transparent 48%),
+    #fffdf8;
+  min-width: 0;
+}
+
+[data-crmv4-root] .c4-dossier { display: grid; gap: 10px; padding: 14px; }
+[data-crmv4-root] .c4-dossier .c4-title,
+[data-crmv4-root] .c4-dos-grid h3,
+[data-crmv4-root] .c4-dos-grid h4 { margin: 0; font-weight: 500; }
+[data-crmv4-root] .c4-dos-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+[data-crmv4-root] .c4-dos-grid article { display: grid; gap: 6px; padding: 12px; align-content: start; }
+[data-crmv4-root] .c4-dos-grid ul { margin: 0; padding: 0; list-style: none; }
+[data-crmv4-root] .c4-dossier .c4-btn { min-height: 44px; }
+
+[data-crmv4-root][data-theme="dark"] .c4-dossier,
+[data-crmv4-root][data-theme="dark"] .c4-dos-grid article { background: #221f1b; color: #f6f1e8; }
+
+@media (max-width: 767px) {
+  [data-crmv4-root] .c4-dos-grid { grid-template-columns: minmax(0, 1fr); }
 }

@@ -32,6 +32,7 @@ import { TradeBook } from "../round33";
 import { LuxList, NoteStudio } from "../round34";
 import { FinanceBook } from "../round36";
 import { KycStudio } from "../round37";
+import { Dossier, useEscape } from "../round40";
 import { rememberView } from "../round25";
 import { LifeLine } from "../round26";
 import { sameEntry } from "@/lib/crmv4/round17";
@@ -89,6 +90,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
   useEffect(() => {
     if (window.matchMedia("(max-width: 767px)").matches) setFiltersOpen(false);
   }, []);
+  useEscape(filtersOpen, () => setFiltersOpen(false));
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [columns, setColumns] = useState<Col[]>([...COLUMNS]);
   const [dense, setDense] = useState(false);
@@ -503,6 +505,17 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
       <WorkspaceTabs base={base} current={id} v4={v4} />
       <MiniNav v4={v4} />
       <State loading={user.loading} error={user.error} empty={!user.loading && !u} tx={tx} onRetry={user.reload} />
+      {u && part === "profile" && (
+        <Dossier
+          base={base}
+          user={u}
+          notes={user.data?.notes || []}
+          events={user.data?.activityEvents || []}
+          v4={v4}
+          tx={tx}
+          locale={locale}
+        />
+      )}
       {u && (
         <RecordHead
           base={base}

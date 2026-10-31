@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
+import { useEscape } from "./round40";
 import { approvalBody, approvalEndpoint } from "@/lib/crmv2/payload";
 import { crmv4Href } from "@/lib/crmv4/sections";
 import { readJson, writeJson } from "@/lib/crmv4/local";
@@ -385,6 +386,7 @@ export function Tour({ v4 }: { v4: V4 }) {
 }
 
 export function HelpCenter({ open, onClose, v4 }: { open: boolean; onClose: () => void; v4: V4 }) {
+  useEscape(open, onClose);
   if (!open) return null;
   return (
     <div className="c4-palette-back" role="presentation" onClick={onClose}>

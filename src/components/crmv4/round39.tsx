@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode, useEffect, useState } from "react";
+import { useEscape } from "./round40";
 import type { CrmV4CopyKey } from "@/lib/crmv4/copy";
 import { accountCurrencies, activeMethods, methodOn, type SysSection } from "@/lib/crmv4/round39";
 import { sendJson, State, Status, useJson, type Tx } from "./kit";
@@ -9,6 +10,7 @@ export type V4 = (key: CrmV4CopyKey) => string;
 
 export function PhoneSheet({ title, v4, children }: { title: string; v4: V4; children: ReactNode }) {
   const [open, setOpen] = useState(false);
+  useEscape(open, () => setOpen(false));
   return (
     <div className="c4-phone-sheet" data-open={open ? "1" : "0"}>
       <button type="button" className="c4-btn c4-sheet-toggle" onClick={() => setOpen((value) => !value)}>{open ? v4("sheetClose") : title}</button>
