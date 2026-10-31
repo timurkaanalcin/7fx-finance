@@ -540,6 +540,47 @@
   [data-crmv4-root] .c4-lux-desk { display: block; }
   [data-crmv4-root] .c4-lux-cards { display: none; }
 }
+
+[data-crmv4-root] .c4-today-hero,
+[data-crmv4-root] .c4-staff-luxe,
+[data-crmv4-root] .c4-staff-cards li,
+[data-crmv4-root] .c4-today-counts a {
+  border: 1px solid rgba(166, 133, 78, 0.45);
+  border-radius: 16px;
+  background:
+    linear-gradient(165deg, rgba(166, 133, 78, 0.12), transparent 48%),
+    #fffdf8;
+}
+[data-crmv4-root] .c4-today-hero,
+[data-crmv4-root] .c4-staff-luxe { display: grid; gap: 10px; padding: 14px; }
+[data-crmv4-root] .c4-today-hero .c4-title,
+[data-crmv4-root] .c4-staff-luxe .c4-title { margin: 0; font-weight: 500; color: #7a5e30; }
+[data-crmv4-root] .c4-today-counts,
+[data-crmv4-root] .c4-today-money,
+[data-crmv4-root] .c4-staff-cards { display: grid; gap: 8px; }
+[data-crmv4-root] .c4-today-counts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+[data-crmv4-root] .c4-today-counts a {
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+  color: inherit;
+  text-decoration: none;
+}
+[data-crmv4-root] .c4-today-counts strong { font-weight: 500; font-size: 22px; }
+[data-crmv4-root] .c4-today-money ul,
+[data-crmv4-root] .c4-staff-cards { margin: 0; padding: 0; list-style: none; }
+[data-crmv4-root] .c4-staff-cards li { display: grid; gap: 4px; padding: 10px; }
+[data-crmv4-root][data-theme="dark"] .c4-today-hero,
+[data-crmv4-root][data-theme="dark"] .c4-staff-luxe,
+[data-crmv4-root][data-theme="dark"] .c4-staff-cards li,
+[data-crmv4-root][data-theme="dark"] .c4-today-counts a { background: #221f1b; color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-today-hero .c4-title,
+[data-crmv4-root][data-theme="dark"] .c4-staff-luxe .c4-title { color: #d4bc86; }
+@media (min-width: 1024px) {
+  [data-crmv4-root] .c4-today-counts { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  [data-crmv4-root] .c4-today-money { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  [data-crmv4-root] .c4-staff-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
 @media (min-width: 1024px) {
   [data-crmv4-root] .c4-agenda-grid[data-mode="week"] { grid-template-columns: repeat(7, minmax(0, 1fr)); }
 }
@@ -3465,6 +3506,7 @@
 [data-crmv4-root] .c4-panel[data-view="insights"] .c4-pagehead,
 [data-crmv4-root] .c4-panel[data-view="prefs"] .c4-pagehead,
 [data-crmv4-root] .c4-panel[data-view="agenda"] .c4-pagehead,
+[data-crmv4-root] .c4-panel[data-view="roster"] .c4-pagehead,
 [data-crmv4-root] .c4-panel[data-view="withdraw"] .c4-pagehead,
 [data-crmv4-root] .c4-panel[data-view="deposit"] .c4-pagehead,
 [data-crmv4-root] .c4-panel[data-view="inbox"] .c4-pagehead {

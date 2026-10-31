@@ -14,6 +14,7 @@ export const CRM_V4_SECTIONS = [
   { id: "reports", path: "reports" },
   { id: "insights", path: "insights" },
   { id: "prefs", path: "prefs" },
+  { id: "roster", path: "roster" },
   { id: "withdraw", path: "withdraw" },
   { id: "deposit", path: "deposit" },
   { id: "inbox", path: "inbox" },
@@ -38,7 +39,7 @@ export const CRM_V4_NAV = [
   { id: "logs", path: "logs", sub: "subLogs" },
 ] as const;
 
-export const CRM_V4_MORE = ["positions", "marketing", "goals", "kyc", "withdraw", "deposit", "inbox", "agenda", "reports", "insights", "settings", "me", "prefs", "logs", "control"] as const;
+export const CRM_V4_MORE = ["positions", "marketing", "goals", "kyc", "withdraw", "deposit", "inbox", "agenda", "reports", "insights", "settings", "me", "prefs", "roster", "logs", "control"] as const;
 
 export function crmv4Href(base: string, path: string, query?: Record<string, string>): string {
   const root = base.replace(/\/+$/, "") || "/crmv4";
