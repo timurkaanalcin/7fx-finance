@@ -14,7 +14,7 @@ import { ContactLine, DocumentsCenter, LocalTime, NoteTemplates, Pipeline, Prese
 import { QuickChips, ValueSpark, WorkspaceTabs, pushWorkspace } from "../round4";
 import { CompareDesk } from "../round23";
 import { BirthdayList, BulkNote, CallbackButton, DeskSwitch, JourneyMap, SearchHistory, WinLossCard, customerSegment, notePinned, rememberSearch, toggleNotePin } from "../round5";
-import { AgingBoard, ConversionStat, DepositorBoard, DocGallery, DomainBoard, EquityCurve, ExpiryNote, RiskBadge, StreakBoard, TeamThread, WeeklyDigest, copyFilterLink } from "../round6";
+import { AgingBoard, ConversionStat, DepositorBoard, DocGallery, DomainBoard, EquityCurve, ExpiryNote, StreakBoard, TeamThread, WeeklyDigest, copyFilterLink } from "../round6";
 import { CompletenessMeter, ImportPreview, InlineProfile, LangBadge, SourceBoard, StaleList, StatusWatch, TagCloud } from "../round7";
 import { fuzzyHit } from "@/lib/crmv4/round8";
 import { RatioCard, toggleWatch, watchIds } from "../round8";
@@ -27,6 +27,7 @@ import { LeadDesk } from "../round16";
 import { ContactFeed, EntryQuality, applySplit, emailOk } from "../round17";
 import { StatementSheet } from "../round21";
 import { CohortBoard, OnboardCard } from "../round24";
+import { ListDesk, RecordHead, applyList, useLists } from "../round31";
 import { rememberView } from "../round25";
 import { LifeLine } from "../round26";
 import { sameEntry } from "@/lib/crmv4/round17";
@@ -104,6 +105,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
   const [tagManagerOn, setTagManagerOn] = useState(false);
   const shared = useRef(false);
   const memory = useDeskMemory();
+  const [smartLists] = useLists();
   const v4 = (key: CrmV4CopyKey) => crmv4Text(locale, key);
   const parsed = parseOperators(ops);
   const operated = sorted.filter((row) => {
@@ -128,6 +130,8 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
     if (!inDateRange(row.createdAt, fromReg, toReg)) return false;
     return true;
   });
+  const listId = params.get("list") || "";
+  const tableRows = listId ? applyList(shown, smartLists, listId) : shown;
   const deskNames: string[] = [];
   for (const row of listed) {
     const name = row.desk || "";
@@ -190,7 +194,8 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
       <p className="c4-muted">{tx("customersLead")}</p>
       <Card title={tx("customers")} extra={<span className="c4-muted">{typeof data.data?.total === "number" ? `${tx("totalRows")} ${data.data.total}` : ""}</span>}>
         <CohortBoard v4={v4} />
-        <LeadDesk rows={shown} v4={v4} base={base} selected={selected} onSelect={setSelected} />
+        <ListDesk v4={v4} activeId={listId} />
+        <LeadDesk rows={tableRows} v4={v4} base={base} selected={selected} onSelect={setSelected} />
         <div className="c4-presets" data-presets="">
           {presets.map((preset) => (
             <span key={preset.id} className="c4-chip" data-on="0">
@@ -399,10 +404,10 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
           <label className="c4-row"><input type="checkbox" name="ftd" defaultChecked={ftd === "1"} /> {tx("ftdOnly")}</label>
           <button type="submit" className="c4-btn c4-btn-hot">{tx("applyWord")}</button>
         </form>
-        <State loading={data.loading} error={data.error} empty={!data.loading && shown.length === 0} tx={tx} onRetry={data.reload} hint={rows.length ? v4("emptyHint") : undefined} />
+        <State loading={data.loading} error={data.error} empty={!data.loading && tableRows.length === 0} tx={tx} onRetry={data.reload} hint={rows.length ? v4("emptyHint") : undefined} />
         <CustomerDeskTable
           base={base}
-          rows={shown}
+          rows={tableRows}
           tx={tx}
           locale={locale}
           v4={v4}
@@ -412,7 +417,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
           onResize={(col, width) => memory.setWidths({ ...memory.widths, [col]: width })}
           selected={selected}
           onToggle={(id) => setSelected((list) => list.includes(id) ? list.filter((item) => item !== id) : [...list, id])}
-          onToggleAll={() => setSelected(selected.length === shown.length ? [] : shown.map((row) => row.id))}
+          onToggleAll={() => setSelected(selected.length === tableRows.length ? [] : tableRows.map((row) => row.id))}
           tags={memory.tags}
           pins={memory.pins}
           onPin={(id) => {
@@ -522,38 +527,39 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
       <MiniNav v4={v4} />
       <State loading={user.loading} error={user.error} empty={!user.loading && !u} tx={tx} onRetry={user.reload} />
       {u && (
-        <header className="c4-strip c4-strip-luxe">
+        <RecordHead
+          base={base}
+          user={u}
+          locale={locale}
+          tx={tx}
+          v4={v4}
+          quickMsg={quickMsg}
+          onView={() => void openTerminal(id, tx, setQuickMsg)}
+          onLink={() => void makeLink(id, tx, setQuickMsg)}
+          onCopy={async () => {
+            try { await navigator.clipboard.writeText(u.id); setQuickMsg(v4("copied")); } catch { setQuickMsg(u.id); }
+          }}
+        />
+      )}
+      {u && (
+        <div className="c4-record-tools">
           <Link href={crmv4Href(base, "customers")} className="c4-btn c4-pill">{tx("back")}</Link>
           <button type="button" className="c4-btn" aria-label={v4("prevCustomer")} disabled={!neighbors.prev} onClick={() => neighbors.prev && router.push(crmv4Href(base, `customers/${neighbors.prev}`))}>‹</button>
           <button type="button" className="c4-btn" aria-label={v4("nextCustomer")} disabled={!neighbors.next} onClick={() => neighbors.next && router.push(crmv4Href(base, `customers/${neighbors.next}`))}>›</button>
-          <div>
-            <h2>{u.name || "—"}</h2>
-            {isDnc(id) && <span className="c4-status" data-tone="bad">{v4("doNotCall")}</span>}
-            <p className="c4-muted c4-meta">{v4("customerId")} {u.id}</p>
-            <ContactLine email={u.email} phone={u.phone} v4={v4} />
-            <EmailHintLine email={u.email} v4={v4} />
-            <RiskBadge row={u} v4={v4} />
-            <LangBadge language={u.language} v4={v4} />
-            <button type="button" className="c4-btn" onClick={() => { toggleWatch(id); setWatching(watchIds().includes(id)); }}>{watching ? v4("watchlist") : v4("watchAdd")}</button>
-            <PresenceBadge lastSeen={(u as UserRow & { lastSeenAt?: string | null }).lastSeenAt} lastLogin={(u as UserRow & { lastLoginAt?: string | null }).lastLoginAt} v4={v4} locale={locale} />
-            <LocalTime country={u.country} v4={v4} />
-          </div>
+          {isDnc(id) && <span className="c4-status" data-tone="bad">{v4("doNotCall")}</span>}
+          <ContactLine email={u.email} phone={u.phone} v4={v4} />
+          <EmailHintLine email={u.email} v4={v4} />
+          <LangBadge language={u.language} v4={v4} />
+          <button type="button" className="c4-btn" onClick={() => { toggleWatch(id); setWatching(watchIds().includes(id)); }}>{watching ? v4("watchlist") : v4("watchAdd")}</button>
+          <PresenceBadge lastSeen={(u as UserRow & { lastSeenAt?: string | null }).lastSeenAt} lastLogin={(u as UserRow & { lastLoginAt?: string | null }).lastLoginAt} v4={v4} locale={locale} />
+          <LocalTime country={u.country} v4={v4} />
           <Field label={tx("registered")} value={when(u.createdAt, locale)} />
-          <Status tone={u.active === false ? "bad" : "ok"}>{u.active === false ? tx("chipFrozen") : tx("chipActive")}</Status>
-          <div className="c4-row" style={{ marginInlineStart: "auto" }}>
-            <button type="button" className="c4-btn c4-btn-hot" onClick={() => void openTerminal(id, tx, setQuickMsg)}>{tx("viewAs")}</button>
-            <button type="button" className="c4-btn" onClick={() => void makeLink(id, tx, setQuickMsg)}>{tx("loginLink")}</button>
-            <button type="button" className="c4-btn" onClick={async () => {
-              try { await navigator.clipboard.writeText(u.id); setQuickMsg(v4("copied")); } catch { setQuickMsg(u.id); }
-            }}>{v4("copyId")}</button>
-            <button type="button" className="c4-btn" onClick={async () => {
-              const link = window.location.href;
-              try { await navigator.clipboard.writeText(link); setQuickMsg(v4("shareLink")); } catch { setQuickMsg(link); }
-            }}>{v4("shareLink")}</button>
-            <button type="button" className="c4-btn" onClick={() => window.print()}>{v4("printProfile")}</button>
-          </div>
-          <Msg text={quickMsg} />
-        </header>
+          <button type="button" className="c4-btn" onClick={async () => {
+            const link = window.location.href;
+            try { await navigator.clipboard.writeText(link); setQuickMsg(v4("shareLink")); } catch { setQuickMsg(link); }
+          }}>{v4("shareLink")}</button>
+          <button type="button" className="c4-btn" onClick={() => window.print()}>{v4("printProfile")}</button>
+        </div>
       )}
       {u && (
         <LifeLine id={id} email={u.email || ""} notes={user.data?.notes || []} v4={v4} locale={locale} />
