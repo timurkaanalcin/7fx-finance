@@ -331,17 +331,10 @@ export function MotionPref({ v4 }: { v4: V4 }) {
   );
 }
 
-export function Fab({ base, v4, onSearch }: { base: string; v4: V4; onSearch: () => void }) {
-  const [open, setOpen] = useState(false);
+export function Fab({ v4, onCreate }: { v4: V4; onCreate: () => void }) {
   return (
     <div className="c4-fab">
-      {open && (
-        <div className="c4-fab-menu">
-          <Link href={crmv4Href(base, "customers")}>{v4("deepLinks")}</Link>
-          <button type="button" className="c4-btn" onClick={onSearch}>{v4("fab")}</button>
-        </div>
-      )}
-      <button type="button" className="c4-fab-btn c4-press" aria-label={v4("fab")} onClick={() => setOpen((on) => !on)}>{v4("fab")}</button>
+      <button type="button" className="c4-fab-btn c4-press" aria-label={v4("quickPlus")} onClick={onCreate}>+</button>
     </div>
   );
 }

@@ -2990,6 +2990,33 @@
 [data-crmv4-root][data-theme="dark"] .c4-pay-luxe,
 [data-crmv4-root][data-theme="dark"] .c4-pay-card { background: #221f1b; color: #f6f1e8; }
 
+[data-crmv4-root] .c4-fx-desk,
+[data-crmv4-root] .c4-quick-luxe,
+[data-crmv4-root] .c4-fx-mix li {
+  border: 1px solid rgba(166, 133, 78, 0.45);
+  border-radius: 18px;
+  background:
+    linear-gradient(165deg, rgba(166, 133, 78, 0.12), transparent 48%),
+    #fffdf8;
+}
+
+[data-crmv4-root] .c4-fx-quotes,
+[data-crmv4-root] .c4-fx-mix { display: grid; gap: 8px; margin: 0; padding: 0 14px 14px; list-style: none; }
+[data-crmv4-root] .c4-fx-quotes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+[data-crmv4-root] .c4-fx-quotes li,
+[data-crmv4-root] .c4-fx-mix li { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px 12px; }
+[data-crmv4-root] .c4-fx-mix li[data-top="1"] { box-shadow: inset 3px 0 0 #a6854e; }
+[data-crmv4-root] .c4-plus { color: #a6854e; font-size: 22px; font-weight: 650; }
+
+[data-crmv4-root][data-theme="dark"] .c4-fx-desk,
+[data-crmv4-root][data-theme="dark"] .c4-quick-luxe,
+[data-crmv4-root][data-theme="dark"] .c4-fx-mix li { background: #221f1b; color: #f6f1e8; }
+
+@media (max-width: 767px) {
+  [data-crmv4-root] .c4-fx-quotes { grid-template-columns: minmax(0, 1fr); }
+  [data-crmv4-root] .c4-top-tools .c4-plus { display: none; }
+}
+
 @media (max-width: 767px) {
   [data-crmv4-root] .c4-statement-sheet,
   [data-crmv4-root] .c4-pay-luxe { margin-inline: 0; }

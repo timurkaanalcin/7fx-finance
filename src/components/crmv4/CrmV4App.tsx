@@ -19,6 +19,7 @@ import { AnnounceBar, DeskBoundary, FreshnessBar, LuxeSkeleton, PullSurface, sto
 import { IdleWarning, storedRole, storedZebra } from "./round5";
 import { CallTarget, Fab, MotionPref, storedMotion } from "./round6";
 import { groupedNav } from "@/lib/crmv4/round20";
+import { QuickSheet } from "./round22";
 import { lastView, playPing, rememberView, soundEnabled, ticketAlertsOn } from "./round7";
 import { resolvedTheme, storedContrast, storedFont, storedFreeze, themeMode } from "./round8";
 import { readBrand } from "./round10";
@@ -69,6 +70,7 @@ function Shell({ base, section, name }: Props) {
   const [langOpen, setLangOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [quickOpen, setQuickOpen] = useState(false);
   const [guideOpen, setGuideOpen] = useState(false);
   const [density, setDensity] = useState<"comfortable" | "compact">("comfortable");
   const [trail, setTrail] = useState<string[]>([]);
@@ -311,6 +313,7 @@ function Shell({ base, section, name }: Props) {
           </div>
         </nav>
         <div className="c4-top-tools">
+          <button type="button" className="c4-rail-btn c4-plus" aria-label={v4("quickPlus")} onClick={() => setQuickOpen(true)}>+</button>
           <button type="button" className="c4-rail-btn" aria-label={v4("palette")} onClick={() => setPaletteOpen(true)}>
             <span>⌘K</span>
           </button>
@@ -401,6 +404,7 @@ function Shell({ base, section, name }: Props) {
       </div>
 
       <aside className="c4-rail c4-rail-luxe" aria-label={v4("admin")}>
+        <button type="button" className="c4-rail-btn c4-plus" aria-label={v4("quickPlus")} onClick={() => setQuickOpen(true)}>+</button>
         <CallTarget v4={v4} />
         <button type="button" className="c4-rail-btn" aria-label={name}>
           <span className="c4-avatar">{initials(name)}</span>
@@ -551,7 +555,8 @@ function Shell({ base, section, name }: Props) {
           <ScratchNotes tx={tx} v4={v4} notes={scratch} setNotes={setScratch} />
         </Drawer>
       )}
-      <Fab base={base} v4={v4} onSearch={() => setPaletteOpen(true)} />
+      <Fab v4={v4} onCreate={() => setQuickOpen(true)} />
+      <QuickSheet open={quickOpen} onClose={() => setQuickOpen(false)} onSearch={() => setPaletteOpen(true)} v4={v4} tx={tx} closeLabel={tx("close")} />
       <CommandPalette base={base} open={paletteOpen} onClose={() => setPaletteOpen(false)} v4={v4} />
       <HelpSheet open={helpOpen} onClose={() => setHelpOpen(false)} v4={v4} closeLabel={tx("close")} />
       <HelpCenter open={guideOpen} onClose={() => setGuideOpen(false)} v4={v4} />
