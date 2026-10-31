@@ -63,6 +63,7 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-columns": ["Columns", "Sütunlar", "Spalten", "Колонки", "أعمدة"],
   "crmv3-tasks": ["Tasks", "Görevler", "Aufgaben", "Задачи", "مهام"],
   "crmv3-note-pins": ["Pinned notes", "Sabit notlar", "Angeheftete Notizen", "Закреплённые заметки", "ملاحظات مثبتة"],
+  "crmv3-staff-load": ["Staff filter", "Personel süzgeci", "Personalfilter", "Фильтр сотрудников", "مرشّح الموظفين"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
