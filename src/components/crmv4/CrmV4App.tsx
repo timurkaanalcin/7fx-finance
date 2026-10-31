@@ -17,11 +17,12 @@ import { DepositDesk, InboxDesk } from "./round29";
 import { InsightsHome, PrefsHub } from "./round32";
 import { AgendaPage } from "./round33";
 import { DeskStaff } from "./round35";
+import { DeskBar, NoticeDesk, useNotices } from "./round38";
 import { GroupedMenu, PageRail } from "./round30";
 import { DeskFoot, HelpSheet } from "./round18";
 import { HelpCenter, OfflineBanner, Tour, UndoHost, densityMode, storeDensity } from "./round2";
 import { rememberToast, toastHistory } from "./round3";
-import { AnnounceBar, DeskBoundary, FreshnessBar, LuxeSkeleton, PullSurface, storedAccent, useInboxCursor } from "./round4";
+import { AnnounceBar, DeskBoundary, FreshnessBar, storedAccent } from "./round4";
 import { IdleWarning, storedRole, storedZebra } from "./round5";
 import { CallTarget, Fab, MotionPref, storedMotion } from "./round6";
 import { RAIL_KEY, readFold } from "@/lib/crmv4/round30";
@@ -86,8 +87,6 @@ function Shell({ base, section, name }: Props) {
   const [trail, setTrail] = useState<string[]>([]);
   const [toastsLog, setToastsLog] = useState<{ id: number; text: string; ok: boolean }[]>([]);
   const [logOpen, setLogOpen] = useState(false);
-  const [noteQuery, setNoteQuery] = useState("");
-  const [unreadOnly, setUnreadOnly] = useState(false);
   const [financeOpen, setFinanceOpen] = useState(false);
   const [gearOpen, setGearOpen] = useState(false);
   const [folded, setFolded] = useState(false);
@@ -112,6 +111,7 @@ function Shell({ base, section, name }: Props) {
   const params = useSearchParams();
   const q = params.get("q") || "";
   const notes = useJson<{ items?: { id: string; title?: string; body?: string; readAt?: string | null; createdAt?: string }[]; unread?: number }>("/api/notifications?take=20");
+  const notices = useNotices();
   const stats = useJson<{ kpis?: { pendingDeposits?: number; pendingBalanceRequests?: number } }>("/api/admin/stats");
   const reminders = useJson<{ reminders?: Reminder[] }>(remindersOpen ? "/api/admin/calendar?take=80" : null);
   const pending = (stats.data?.kpis?.pendingDeposits || 0) + (stats.data?.kpis?.pendingBalanceRequests || 0);
@@ -307,16 +307,6 @@ function Shell({ base, section, name }: Props) {
   const heading = known ? label(view) : tx("comingSoon");
   const tone = theme === "light" ? "ink" : "paper";
 
-  const noteItems = (notes.data?.items || []).filter((item) => {
-    if (unreadOnly && item.readAt) return false;
-    const blob = `${item.title || ""} ${item.body || ""}`.toLowerCase();
-    return !noteQuery.trim() || blob.includes(noteQuery.trim().toLowerCase());
-  });
-  const inbox = useInboxCursor(noteItems.length, (index) => {
-    const item = noteItems[index];
-    if (!item || item.readAt) return;
-    void sendJson("/api/notifications", "PATCH", { id: item.id }).then(() => notes.reload());
-  });
 
   const names: Record<string, string> = {};
   for (const item of CRM_V4_SECTIONS) names[item.id] = label(item.id);
@@ -380,6 +370,7 @@ function Shell({ base, section, name }: Props) {
             </div>
           </div>
         </nav>
+        <DeskBar base={base} name={name} theme={theme} onTheme={toggleTheme} onNotes={() => setNotesOpen(true)} unread={notices.unread} v4={v4} tx={tx} />
         <div className="c4-top-tools">
           <button type="button" className="c4-rail-btn c4-plus" aria-label={v4("quickPlus")} onClick={() => setQuickOpen(true)}>+</button>
           <button type="button" className="c4-rail-btn" aria-label={v4("palette")} onClick={() => setPaletteOpen(true)}>
@@ -387,7 +378,7 @@ function Shell({ base, section, name }: Props) {
           </button>
           <button type="button" className="c4-rail-btn" aria-label={tx("notifications")} onClick={() => setNotesOpen(true)}>
             <BellIcon />
-            {unread > 0 && <span className="c4-rail-badge">{unread}</span>}
+            {notices.unread > 0 && <span className="c4-rail-badge">{notices.unread}</span>}
           </button>
           <button type="button" className="c4-rail-btn" aria-label={v4("openMenu")} onClick={() => setMore(true)}>
             <MenuIcon />
@@ -486,7 +477,7 @@ function Shell({ base, section, name }: Props) {
         </button>
         <button type="button" className="c4-rail-btn" aria-label={tx("notifications")} onClick={() => setNotesOpen(true)}>
           <BellIcon />
-          {unread > 0 && <span className="c4-rail-badge">{unread}</span>}
+          {notices.unread > 0 && <span className="c4-rail-badge">{notices.unread}</span>}
           <span>{tx("notifications")}</span>
         </button>
         <button type="button" className="c4-rail-btn" aria-label={v4("reminders")} onClick={() => setRemindersOpen(true)}>
@@ -570,37 +561,8 @@ function Shell({ base, section, name }: Props) {
       )}
 
       {notesOpen && (
-        <Drawer title={tx("notifications")} className="c4-inbox" onClose={() => setNotesOpen(false)} closeLabel={tx("close")}>
-          <PullSurface hint={v4("pullHint")} onRefresh={notes.reload}>
-          <div className="c4-stack c4-inbox-list" tabIndex={0} onKeyDown={inbox.onKeyDown}>
-            <input className="c4-field" value={noteQuery} aria-label={v4("searchInbox")} placeholder={v4("searchInbox")} onChange={(event) => setNoteQuery(event.target.value)} />
-            <label className="c4-row"><input type="checkbox" checked={unreadOnly} onChange={(event) => setUnreadOnly(event.target.checked)} /> {v4("unreadOnly")}</label>
-            <button
-              type="button"
-              className="c4-btn c4-btn-hot"
-              onClick={async () => {
-                await sendJson("/api/notifications", "PATCH", { all: true });
-                notes.reload();
-              }}
-            >
-              {tx("markRead")}{typeof notes.data?.unread === "number" ? ` · ${notes.data.unread}` : ""}
-            </button>
-            {notes.loading && <LuxeSkeleton />}
-            {noteItems.map((item, index) => (
-              <div key={item.id} className="c4-note" data-on={inbox.cursor === index ? "1" : "0"} data-unread={item.readAt ? "0" : "1"}>
-                <div className="c4-row c4-between">
-                  <span>{item.title || tx("notifications")}</span>
-                  {!item.readAt && (
-                    <button type="button" className="c4-btn" onClick={async () => { await sendJson("/api/notifications", "PATCH", { id: item.id }); notes.reload(); }}>{v4("markOne")}</button>
-                  )}
-                </div>
-                <div className="c4-muted">{item.body}</div>
-                <div className="c4-muted c4-meta">{when(item.createdAt, locale)}{item.readAt ? "" : ` · ${tx("unread")}`}</div>
-              </div>
-            ))}
-            {!notes.loading && !noteItems.length && <p className="c4-empty-luxe">{tx("noneYet")}</p>}
-          </div>
-          </PullSurface>
+        <Drawer title={v4("noteTitle")} className="c4-inbox" onClose={() => setNotesOpen(false)} closeLabel={tx("close")}>
+          <NoticeDesk base={base} v4={v4} locale={locale} tx={tx} notices={notices} />
         </Drawer>
       )}
 

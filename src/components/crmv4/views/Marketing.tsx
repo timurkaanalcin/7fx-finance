@@ -9,6 +9,7 @@ import { readJson, writeJson } from "@/lib/crmv4/local";
 import { useI18n } from "@/lib/i18n/context";
 import { PayoutCard } from "../round10";
 import { AffiliateBoard, AnniversaryList, CampaignBoard, LeadFormPreview, MailGallery, MarketHero, MarketingNotes, ReferralList, RetentionHeat, SegmentBuilder, SmsPreview, TrendAndLanding, WeeklyDigest, WinbackBoard, useLeads } from "../round13";
+import { SegmentDesk } from "../round38";
 import { Card, Lab, Msg, State, sendJson, useJson, type Tx } from "../kit";
 
 type Template = { id: string; name?: string; subject?: string; body?: string; active?: boolean };
@@ -29,6 +30,7 @@ export default function Marketing({ tx }: { tx: Tx }) {
   const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale, key);
   return (
     <div className="c4-stack c4-mkt">
+      <SegmentDesk v4={v4} tx={tx} />
       <p className="c4-muted">{tx("marketingLead")}</p>
       <MarketHero rows={leads.rows} v4={v4} locale={locale} />
       <CampaignBoard rows={leads.rows} v4={v4} locale={locale} />
