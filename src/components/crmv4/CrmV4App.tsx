@@ -13,6 +13,7 @@ import { readJson, writeJson } from "@/lib/crmv4/local";
 import { CRM_V4_MORE, CRM_V4_NAV, CRM_V4_SECTIONS, CRM_V4_TABS, crmv4Href, type CrmV4SectionId } from "@/lib/crmv4/sections";
 import { ShortcutHost } from "./round1";
 import { DeskSearch, WithdrawDesk } from "./round28";
+import { DepositDesk, InboxDesk } from "./round29";
 import { DeskFoot, HelpSheet } from "./round18";
 import { HelpCenter, OfflineBanner, Tour, UndoHost, densityMode, storeDensity } from "./round2";
 import { rememberToast, toastHistory } from "./round3";
@@ -244,6 +245,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "kyc") return v4("kycDesk");
     if (tab === "reports") return v4("reportsTitle");
     if (tab === "withdraw") return v4("wdDesk");
+    if (tab === "deposit") return v4("depDesk");
+    if (tab === "inbox") return v4("inboxTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -264,6 +267,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "kyc") return v4("kycSub");
     if (tab === "reports") return v4("reportsSub");
     if (tab === "withdraw") return v4("wdSub");
+    if (tab === "deposit") return v4("depSub");
+    if (tab === "inbox") return v4("inboxSub");
     return "";
   }
 
@@ -340,6 +345,8 @@ function Shell({ base, section, name }: Props) {
               <Link href={crmv4Href(base, "kyc")} data-on={view === "kyc" ? "1" : "0"} onClick={() => setGearOpen(false)}>{v4("kycDesk")}</Link>
               <Link href={crmv4Href(base, "reports")} data-on={view === "reports" ? "1" : "0"} onClick={() => setGearOpen(false)}>{v4("reportsTitle")}</Link>
               <Link href={crmv4Href(base, "withdraw")} data-on={view === "withdraw" ? "1" : "0"} onClick={() => setGearOpen(false)}>{v4("wdDesk")}</Link>
+              <Link href={crmv4Href(base, "deposit")} data-on={view === "deposit" ? "1" : "0"} onClick={() => setGearOpen(false)}>{v4("depDesk")}</Link>
+              <Link href={crmv4Href(base, "inbox")} data-on={view === "inbox" ? "1" : "0"} onClick={() => setGearOpen(false)}>{v4("inboxTitle")}</Link>
               <Link href={crmv4Href(base, "settings")} data-on={view === "settings" ? "1" : "0"} onClick={() => setGearOpen(false)}>{tx("settings")}</Link>
               <Link href={crmv4Href(base, "control")} data-on={view === "control" ? "1" : "0"} onClick={() => setGearOpen(false)}>{tx("control")}</Link>
             </div>
@@ -420,6 +427,8 @@ function Shell({ base, section, name }: Props) {
             {view === "kyc" && <KycDesk v4={v4} tx={tx} locale={locale} />}
             {view === "reports" && <ReportsPage v4={v4} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} v4={v4} tx={tx} locale={locale} />}
+            {view === "deposit" && <DepositDesk base={base} v4={v4} tx={tx} locale={locale} />}
+            {view === "inbox" && <InboxDesk v4={v4} tx={tx} locale={locale} />}
             {view === "logs" && <Logs tx={tx} locale={locale} q={q} />}
             {view === "control" && <Control tx={tx} locale={locale} />}
             {!known && (
