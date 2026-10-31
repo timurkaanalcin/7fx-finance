@@ -18,6 +18,8 @@ import {
   type Health,
 } from "@/lib/crmv4/round1";
 import { balanceTone, copyRowText, customerSegment, rememberExport, segmentLabel } from "./round5";
+import { CountryFlag, DeepLinkList, PhoneText, QuickMenu, RiskBadge } from "./round6";
+import { columnTotal } from "@/lib/crmv4/round6";
 import { Card, Status, SwipeRow, auditExport, downloadCsv, money, sendJson, useJson, when, type Tx, type UserRow } from "./kit";
 
 export type V4 = (key: CrmV4CopyKey) => string;
@@ -321,21 +323,33 @@ export function CustomerDeskTable({
               );
             })}
           </tbody>
+          <tfoot>
+            <tr>
+              <td />
+              {columns.map((col) => (
+                <td key={`total-${col}`}>{col === "balance" ? `${v4("columnTotal")} ${columnTotal(rows.map((row) => Number(row.balance ?? row.account?.balance) || 0)).toFixed(0)}` : ""}</td>
+              ))}
+            </tr>
+          </tfoot>
         </table>
       </div>
       <ul className="c4-mob-list">
         {rows.map((row) => {
           const health = healthOf(row);
           return (
-            <li key={row.id} className="c4-person">
+            <li key={row.id} className="c4-person c4-phone-card">
               <SwipeRow actions={[{ key: "open", label: v4("swipeOpen"), tone: "gold", onClick: () => { window.location.href = crmv4Href(base, `customers/${row.id}`); } }]}>
                 <label className="c4-row">
                   <input type="checkbox" checked={selected.includes(row.id)} aria-label={row.name || row.id} onChange={() => onToggle(row.id)} />
+                  <CountryFlag country={row.country} />
                   <Link href={crmv4Href(base, `customers/${row.id}`)}>{row.name || "—"}</Link>
                   <Status tone={health === "healthy" ? "ok" : health === "risk" ? "bad" : "warn"}>{healthLabel(health, v4)}</Status>
+                  <RiskBadge row={row} v4={v4} />
                 </label>
                 <div className="c4-muted">{row.email}</div>
+                <PhoneText phone={row.phone} country={row.country} />
                 <div>{money(row.balance ?? row.account?.balance, row.currency || row.account?.currency, locale)}</div>
+                <QuickMenu id={row.id} phone={row.phone} base={base} v4={v4} />
               </SwipeRow>
             </li>
           );
@@ -381,7 +395,7 @@ export function CommandPalette({ base, open, onClose, v4 }: { base: string; open
   if (!open) return null;
   return (
     <div className="c4-palette-back" role="presentation" onClick={onClose}>
-      <div role="dialog" aria-modal="true" aria-label={v4("palette")} className="c4-palette" onClick={(event) => event.stopPropagation()}>
+      <div role="dialog" aria-modal="true" aria-label={v4("palette")} className="c4-palette c4-search-luxe" onClick={(event) => event.stopPropagation()}>
         <input ref={input} className="c4-field" value={q} placeholder={v4("paletteHint")} aria-label={v4("palette")} onChange={(event) => setQ(event.target.value)} onKeyDown={(event) => { if (event.key === "Escape") onClose(); }} />
         <ul>
           {hits.map((hit) => (
@@ -391,6 +405,7 @@ export function CommandPalette({ base, open, onClose, v4 }: { base: string; open
           ))}
         </ul>
         {!hits.length && <p className="c4-muted">{query.length >= 2 ? v4("paletteEmpty") : v4("paletteHint")}</p>}
+        {query.length < 2 && <DeepLinkList base={base} v4={v4} />}
       </div>
     </div>
   );
@@ -436,7 +451,8 @@ export function ShortcutHelp({ open, onClose, v4 }: { open: boolean; onClose: ()
   return (
     <div className="c4-palette-back" role="presentation" onClick={onClose}>
       <div role="dialog" aria-modal="true" aria-label={v4("helpShortcut")} className="c4-palette" onClick={(event) => event.stopPropagation()}>
-        <h2 className="c4-title">{v4("shortcuts")}</h2>
+        <h2 className="c4-title">{v4("cheatSheet")}</h2>
+        <p className="c4-muted">{v4("shortcuts")}</p>
         <ul className="c4-shortcut-list">
           {rows.map((row) => <li key={row}><kbd>{row}</kbd></li>)}
         </ul>

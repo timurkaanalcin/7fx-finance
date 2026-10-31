@@ -9,6 +9,7 @@ import { densityMode, storeDensity } from "../round2";
 import { toastHistory } from "../round3";
 import { AccentPicker, AnnounceEditor } from "../round4";
 import { FocusButton, FormatRules, RolePreview, ZebraToggle } from "../round5";
+import { CallTarget, CategoryRules, DecimalPref, MotionPref } from "../round6";
 import { Card, Lab, Msg, State, sendJson, useJson, type Tx } from "../kit";
 import Ops from "./Ops";
 
@@ -64,6 +65,10 @@ function LocalPrefs() {
         <ZebraToggle v4={v4} />
         <FormatRules v4={v4} />
         <FocusButton v4={v4} />
+        <CallTarget v4={v4} />
+        <DecimalPref v4={v4} />
+        <MotionPref v4={v4} />
+        <CategoryRules v4={v4} />
         <h3 className="c4-title">{v4("toastHistory")}</h3>
         <ul>{history.map((row) => <li key={row.id}>{row.text}</li>)}</ul>
         {!history.length && <p className="c4-muted">{v4("toastHistory")}</p>}

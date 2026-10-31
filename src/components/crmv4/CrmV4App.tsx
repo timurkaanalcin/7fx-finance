@@ -16,6 +16,7 @@ import { HelpCenter, OfflineBanner, Tour, UndoHost, densityMode, storeDensity } 
 import { rememberToast, toastHistory } from "./round3";
 import { AnnounceBar, DeskBoundary, FreshnessBar, LuxeSkeleton, PullSurface, storedAccent, useInboxCursor } from "./round4";
 import { IdleWarning, storedRole, storedZebra } from "./round5";
+import { CallTarget, Fab, storedMotion } from "./round6";
 import type { Accent } from "@/lib/crmv4/round4";
 import { Sheet, sendJson, useJson, when } from "./kit";
 import Overview from "./views/Overview";
@@ -76,6 +77,7 @@ function Shell({ base, section, name }: Props) {
   const [accent, setAccent] = useState<Accent>("champagne");
   const [role, setRole] = useState<"desk" | "viewer">("desk");
   const [zebra, setZebra] = useState(false);
+  const [motion, setMotion] = useState<"system" | "reduce">("system");
   const [pull, setPull] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -98,6 +100,9 @@ function Shell({ base, section, name }: Props) {
     setAccent(storedAccent());
     setRole(storedRole());
     setZebra(storedZebra());
+    setMotion(storedMotion());
+    const onMotion = (event: Event) => setMotion((event as CustomEvent<string>).detail === "reduce" ? "reduce" : "system");
+    window.addEventListener("crmv4:motion", onMotion);
     const onRole = (event: Event) => setRole((event as CustomEvent<string>).detail === "viewer" ? "viewer" : "desk");
     const onZebra = (event: Event) => setZebra(Boolean((event as CustomEvent<boolean>).detail));
     window.addEventListener("crmv4:role", onRole);
@@ -108,6 +113,7 @@ function Shell({ base, section, name }: Props) {
       window.removeEventListener("crmv4:accent", onAccent);
       window.removeEventListener("crmv4:role", onRole);
       window.removeEventListener("crmv4:zebra", onZebra);
+      window.removeEventListener("crmv4:motion", onMotion);
     };
   }, []);
 
@@ -183,7 +189,7 @@ function Shell({ base, section, name }: Props) {
   });
 
   return (
-    <div data-crmv4-root="" data-theme={theme} data-accent={accent} data-role={role} data-zebra={zebra ? "1" : "0"} data-density={density} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
+    <div data-crmv4-root="" data-theme={theme} data-accent={accent} data-role={role} data-zebra={zebra ? "1" : "0"} data-motion={motion} data-density={density} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
       <a className="c4-skip" href="#c4-main">{v4("skipContent")}</a>
       <OfflineBanner v4={v4} />
       <IdleWarning v4={v4} />
@@ -272,7 +278,7 @@ function Shell({ base, section, name }: Props) {
                 <p className="c4-page-sub">{known ? subtitle(view) : tx("comingSoonBody")}</p>
                 <FreshnessBar v4={v4} />
               </div>
-              <form action={crmv4Href(base, "customers")} className="c4-page-search" role="search">
+              <form action={crmv4Href(base, "customers")} className="c4-page-search c4-search-luxe" role="search">
                 <input name="q" defaultValue={q} placeholder={tx("search")} aria-label={tx("search")} className="c4-field" />
               </form>
             </div>
@@ -323,7 +329,8 @@ function Shell({ base, section, name }: Props) {
         </div>
       </div>
 
-      <aside className="c4-rail" aria-label={v4("admin")}>
+      <aside className="c4-rail c4-rail-luxe" aria-label={v4("admin")}>
+        <CallTarget v4={v4} />
         <button type="button" className="c4-rail-btn" aria-label={name}>
           <span className="c4-avatar">{initials(name)}</span>
           <span>{v4("admin")}</span>
@@ -463,6 +470,7 @@ function Shell({ base, section, name }: Props) {
           <ScratchNotes tx={tx} v4={v4} notes={scratch} setNotes={setScratch} />
         </Drawer>
       )}
+      <Fab base={base} v4={v4} onSearch={() => setPaletteOpen(true)} />
       <CommandPalette base={base} open={paletteOpen} onClose={() => setPaletteOpen(false)} v4={v4} />
       <ShortcutHelp open={helpOpen} onClose={() => setHelpOpen(false)} v4={v4} />
       <HelpCenter open={guideOpen} onClose={() => setGuideOpen(false)} v4={v4} />

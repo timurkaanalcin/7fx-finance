@@ -13,6 +13,7 @@ import { Customer360, DuplicateScreen, RetentionForm, RoundRobinPreview, Stateme
 import { ContactLine, DocumentsCenter, LocalTime, NoteTemplates, Pipeline, PresenceBadge, TradingOverview, columnPreset, parseOperators } from "../round3";
 import { CompareBoard, QuickChips, ValueSpark, WorkspaceTabs, pushWorkspace } from "../round4";
 import { BirthdayList, BulkNote, CallbackButton, DeskSwitch, JourneyMap, NoteBody, SearchHistory, WinLossCard, customerSegment, notePinned, rememberSearch, toggleNotePin } from "../round5";
+import { AgingBoard, ConversionStat, DepositorBoard, DocGallery, DomainBoard, EquityCurve, ExpiryNote, RiskBadge, StreakBoard, TeamThread, WeeklyDigest, copyFilterLink } from "../round6";
 import { Card, Chip, Field, Lab, Msg, Pager, State, Status, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, statusTone, useJson, when, type Tx, type UserRow } from "../kit";
 
 const COLUMNS = ["customer", "country", "desk", "sale", "retention", "balance", "status"] as const;
@@ -174,6 +175,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
           <button type="button" className="c4-chip" data-on={followUp === "overdue" ? "1" : "0"} onClick={() => setQuery({ followUp: followUp === "overdue" ? "" : "overdue" })}>{v4("followUpDue")}</button>
           <button type="button" className="c4-chip" data-on={pinnedOnly ? "1" : "0"} onClick={() => setPinnedOnly((on) => !on)}>{v4("pinnedOnly")}</button>
           <button type="button" className="c4-btn" onClick={() => setQuery({ status: "", saleStatus: "", retentionStatus: "", country: "", presence: "", ftd: "", sort: "", followUp: "" })}>{v4("clearFilters")}</button>
+          <button type="button" className="c4-btn" onClick={() => void copyFilterLink({ status, saleStatus, retentionStatus, country, presence, ftd, sort, q })}>{v4("shareFilters")}</button>
           <button type="button" className="c4-btn" aria-expanded={settingsOpen} onClick={() => setSettingsOpen((open) => !open)}>{v4("tableSettings")}</button>
           <button type="button" className="c4-btn" onClick={() => setQuery({ sort: sort === "name" ? "" : "name" })}>{v4("sortName")}</button>
           <button type="button" className="c4-btn" onClick={() => setQuery({ sort: sort === "balance" ? "" : "balance" })}>{v4("sortBalance")}</button>
@@ -251,6 +253,14 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
         <BulkBar ids={selected} v4={v4} tx={tx} onDone={() => { setSelected([]); data.reload(); memory.setTags(readTags()); }} />
         <BulkNote ids={selected} v4={v4} tx={tx} onDone={() => { setSelected([]); data.reload(); }} />
         <BirthdayList rows={shown} v4={v4} />
+        <ConversionStat rows={shown} v4={v4} />
+        <div className="c4-book-grid">
+          <AgingBoard rows={shown} v4={v4} />
+          <DomainBoard rows={shown} v4={v4} />
+          <DepositorBoard rows={shown} v4={v4} locale={locale} />
+          <WeeklyDigest rows={shown} v4={v4} tx={tx} />
+        </div>
+        <StreakBoard v4={v4} />
         <form
           key={`${saleStatus}|${retentionStatus}|${country}|${presence}|${ftd}`}
           className="c4-filters c4-filter-sheet"
@@ -397,6 +407,8 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
             <h2>{u.name || "—"}</h2>
             <p className="c4-muted c4-meta">{v4("customerId")} {u.id}</p>
             <ContactLine email={u.email} phone={u.phone} v4={v4} />
+            <RiskBadge row={u} v4={v4} />
+            <ExpiryNote expiresAt={(u as UserRow & { expiresAt?: string | null }).expiresAt} v4={v4} />
             <PresenceBadge lastSeen={(u as UserRow & { lastSeenAt?: string | null }).lastSeenAt} lastLogin={(u as UserRow & { lastLoginAt?: string | null }).lastLoginAt} v4={v4} locale={locale} />
             <LocalTime country={u.country} v4={v4} />
           </div>
@@ -423,7 +435,7 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           <Field label={tx("ftd")} value={u.ftd ? tx("yes") : tx("no")} />
         </div>
       )}
-      {u && <div className="c4-detail-tools"><JourneyMap id={id} v4={v4} /><WinLossCard id={id} v4={v4} /><CallbackButton id={id} name={u.name || u.email || ""} v4={v4} tx={tx} /><ValueSpark id={id} tx={tx} v4={v4} locale={locale} /><RetentionForm id={id} tx={tx} v4={v4} onDone={user.reload} /><StatementView id={id} tx={tx} v4={v4} locale={locale} /><NoteTemplates v4={v4} onUse={async (body) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { addNote: body }); user.reload(); }} /><DocumentsCenter id={id} email={u.email || ""} tx={tx} v4={v4} locale={locale} /><TradingOverview id={id} tx={tx} v4={v4} locale={locale} /></div>}
+      {u && <div className="c4-detail-tools"><JourneyMap id={id} v4={v4} /><WinLossCard id={id} v4={v4} /><EquityCurve id={id} v4={v4} /><DocGallery id={id} v4={v4} /><TeamThread id={id} name="" v4={v4} tx={tx} /><CallbackButton id={id} name={u.name || u.email || ""} v4={v4} tx={tx} /><ValueSpark id={id} tx={tx} v4={v4} locale={locale} /><RetentionForm id={id} tx={tx} v4={v4} onDone={user.reload} /><StatementView id={id} tx={tx} v4={v4} locale={locale} /><NoteTemplates v4={v4} onUse={async (body) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { addNote: body }); user.reload(); }} /><DocumentsCenter id={id} email={u.email || ""} tx={tx} v4={v4} locale={locale} /><TradingOverview id={id} tx={tx} v4={v4} locale={locale} /></div>}
       <div className="c4-with-side">
         <nav className="c4-side" aria-label={tx("customers")}>
           {PARTS.map((item) => (

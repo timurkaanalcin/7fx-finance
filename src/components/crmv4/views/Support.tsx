@@ -8,6 +8,7 @@ import { ReviewDialog, TicketMeta, exportCurrent } from "../round1";
 import { MacroBar } from "../round2";
 import { groupBy, setTicketAssignee, ticketAssignee } from "../round3";
 import { CsatPicker } from "../round4";
+import { SlaHeat, ticketCategory } from "../round6";
 import { Card, Chip, Lab, Msg, Sheet, State, Status, SwipeRow, money, sendJson, statusTone, useJson, when, type Tx } from "../kit";
 
 type Ticket = { id: string; kind: string; amount?: number; currency?: string; status?: string; customer?: string; openedAt?: string };
@@ -66,6 +67,7 @@ function Tickets({ tx, locale, q, status, setQuery }: { tx: Tx; locale: string; 
         <button type="button" className="c4-btn" onClick={() => void exportCurrent("tickets-page", "tickets.csv", ["customer", "kind", "amount", "status"], list.map((row) => [String(row.customer || ""), String(row.kind || ""), String(row.amount ?? ""), String(row.status || "")]))}>{v4("exportCsv")}</button>
         <button type="button" className="c4-chip" data-on={merged ? "1" : "0"} onClick={() => setMerged((on) => !on)}>{v4("mergeView")}</button>
       </div>
+      <SlaHeat v4={v4} />
       <State loading={data.loading} error={data.error} empty={!data.loading && !list.length} tx={tx} onRetry={data.reload} />
       <div className="c4-stack">
         {list.map((row) => (
@@ -74,7 +76,7 @@ function Tickets({ tx, locale, q, status, setQuery }: { tx: Tx; locale: string; 
               <strong>{row.customer || "—"}</strong>
               <Status tone={statusTone(row.status)}>{row.status}</Status>
             </div>
-            <p className="c4-muted c4-meta">{row.kind}</p>
+            <p className="c4-muted c4-meta">{row.kind}{ticketCategory(`${row.kind || ""} ${row.customer || ""}`) ? ` · ${ticketCategory(`${row.kind || ""} ${row.customer || ""}`)}` : ""}</p>
             <TicketMeta id={`${row.kind}-${row.id}`} openedAt={row.openedAt} v4={v4} />
             <CsatPicker id={`${row.kind}-${row.id}`} v4={v4} />
             <label className="c4-lab"><span>{v4("ticketAssign")}</span>
