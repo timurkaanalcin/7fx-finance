@@ -3078,17 +3078,23 @@
 
 @media (max-width: 767px) {
   [data-crmv4-root] .c4-lead-luxe,
-  [data-crmv4-root] .c4-lead-bulk { margin-inline: 8px; }
+  [data-crmv4-root] .c4-lead-bulk { margin-inline: 8px; min-width: 0; max-width: 100%; }
   [data-crmv4-root] .c4-phone-only { display: inline-flex; }
   [data-crmv4-root] .c4-lead-board {
     display: flex;
     grid-template-columns: none;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     overflow: auto;
     scroll-snap-type: x mandatory;
+    contain: paint;
     padding-bottom: 8px;
   }
   [data-crmv4-root] .c4-lead-col {
     flex: 0 0 86%;
+    min-width: 0;
+    max-width: 86%;
     scroll-snap-align: start;
   }
 }
@@ -4014,4 +4020,185 @@
 
 @media (max-width: 767px) {
   [data-crmv4-root] .c4-dos-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+[data-crmv4-root] .c4-board,
+[data-crmv4-root] .c4-help-drawer,
+[data-crmv4-root] .c4-sheet-keys {
+  min-width: 0;
+  font-weight: 400;
+  border: 1px solid rgba(166, 133, 78, 0.45);
+  border-radius: 16px;
+  background:
+    linear-gradient(165deg, rgba(166, 133, 78, 0.12), transparent 48%),
+    #fffdf8;
+}
+
+[data-crmv4-root] .c4-board {
+  display: grid;
+  gap: 10px;
+  max-width: 100%;
+  margin: 8px 12px 12px;
+  padding: 12px;
+}
+
+[data-crmv4-root] .c4-board .c4-title,
+[data-crmv4-root] .c4-board h3,
+[data-crmv4-root] .c4-help-drawer h2,
+[data-crmv4-root] .c4-help-drawer h3,
+[data-crmv4-root] .c4-sheet-keys h2 {
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+[data-crmv4-root] .c4-board .c4-meta,
+[data-crmv4-root] .c4-help-drawer .c4-meta,
+[data-crmv4-root] .c4-sheet-keys .c4-meta,
+[data-crmv4-root] .c4-help-topic p,
+[data-crmv4-root] .c4-tip p {
+  color: var(--c4-accent-ink);
+  font-weight: 400;
+}
+
+[data-crmv4-root] .c4-board-tools .c4-field {
+  width: auto;
+  flex: 1 1 180px;
+  max-width: 100%;
+}
+
+[data-crmv4-root] .c4-board-cols {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: auto;
+  scroll-snap-type: x mandatory;
+  contain: paint;
+  padding-bottom: 2px;
+}
+
+[data-crmv4-root] .c4-board-col {
+  flex: 0 0 220px;
+  width: 220px;
+  max-width: 84%;
+  scroll-snap-align: start;
+  min-width: 0;
+  overflow: hidden;
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--c4-line);
+  border-radius: 12px;
+  background: rgba(255, 253, 248, 0.78);
+}
+
+[data-crmv4-root] .c4-board-card {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid var(--c4-line);
+  border-radius: 10px;
+  background: var(--c4-card);
+}
+
+[data-crmv4-root] .c4-board[data-density="compact"] .c4-board-card {
+  gap: 2px;
+  padding: 6px;
+}
+
+[data-crmv4-root] .c4-board-card strong,
+[data-crmv4-root] .c4-board-card .c4-meta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-crmv4-root] .c4-board-card .c4-btn,
+[data-crmv4-root] .c4-board-card .c4-select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+[data-crmv4-root] .c4-board-confirm {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid rgba(166, 133, 78, 0.55);
+  border-radius: 12px;
+  background: rgba(166, 133, 78, 0.1);
+}
+
+[data-crmv4-root] .c4-tip-list { display: grid; gap: 6px; min-width: 0; }
+
+[data-crmv4-root] .c4-tip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  padding: 8px;
+  border-radius: 10px;
+  background: rgba(166, 133, 78, 0.1);
+}
+
+[data-crmv4-root] .c4-tip p { flex: 1 1 180px; min-width: 0; margin: 0; }
+
+[data-crmv4-root] .c4-help-topic {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 8px 0;
+  border-top: 1px solid var(--c4-line);
+}
+
+[data-crmv4-root] .c4-help-topic p,
+[data-crmv4-root] .c4-sheet-keys li { margin: 0; line-height: 1.45; }
+
+[data-crmv4-root] .c4-sheet-keys .c4-shortcut-list { margin: 0; padding: 0; list-style: none; }
+
+[data-crmv4-root] .c4-sheet-keys kbd {
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+}
+
+[data-crmv4-root] .c4-sheet-keys li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+  min-width: 0;
+  padding: 4px 0;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-board,
+[data-crmv4-root][data-theme="dark"] .c4-board-col,
+[data-crmv4-root][data-theme="dark"] .c4-board-card,
+[data-crmv4-root][data-theme="dark"] .c4-help-drawer,
+[data-crmv4-root][data-theme="dark"] .c4-sheet-keys {
+  background: #221f1b;
+  color: #f6f1e8;
+}
+
+@media (min-width: 1100px) {
+  [data-crmv4-root] .c4-board-cols {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    overflow: visible;
+    scroll-snap-type: none;
+    contain: none;
+  }
+  [data-crmv4-root] .c4-board-col {
+    flex: none;
+    width: auto;
+    max-width: none;
+    overflow: visible;
+  }
 }
