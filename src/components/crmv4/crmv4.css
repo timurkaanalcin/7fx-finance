@@ -2591,6 +2591,83 @@
   [data-crmv4-root] .c4-task-row .c4-row { flex-wrap: wrap; }
 }
 
+[data-crmv4-root] .c4-fin-luxe .c4-card,
+[data-crmv4-root] .c4-doc-luxe .c4-card,
+[data-crmv4-root] .c4-note-luxe {
+  border: 1px solid rgba(166, 133, 78, 0.4);
+  border-radius: 18px;
+}
+
+[data-crmv4-root] .c4-fin-hero {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 8px 15px 0;
+}
+
+[data-crmv4-root] .c4-fin-metric {
+  padding: 14px 16px;
+  border: 1px solid rgba(166, 133, 78, 0.45);
+  border-radius: 16px;
+  background:
+    linear-gradient(160deg, rgba(166, 133, 78, 0.18), transparent 55%),
+    #fffdf8;
+}
+
+[data-crmv4-root] .c4-fin-metric span {
+  color: #7d7368;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root] .c4-fin-metric strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 26px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+}
+
+[data-crmv4-root] .c4-fin-row[data-status="PENDING"] { box-shadow: inset 3px 0 0 #a6854e; }
+[data-crmv4-root] .c4-fin-row[data-status="APPROVED"] { box-shadow: inset 3px 0 0 #1f8a4c; }
+[data-crmv4-root] .c4-fin-row[data-status="REJECTED"] { box-shadow: inset 3px 0 0 #de260b; }
+[data-crmv4-root] .c4-fin-row[data-top="1"] { background: rgba(166, 133, 78, 0.12); }
+[data-crmv4-root] .c4-fin-row[data-look="1"] { outline: 1px solid #a6854e; }
+
+[data-crmv4-root] .c4-fin-detail {
+  margin: 8px 15px;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(166, 133, 78, 0.45);
+  background: #fffdf8;
+}
+
+[data-crmv4-root] .c4-note-line,
+[data-crmv4-root] .c4-doc-line {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0;
+  padding: 10px 12px;
+  border: 1px solid #e6dccf;
+  border-radius: 14px;
+  background: #fffdf8;
+}
+
+[data-crmv4-root] .c4-note-line[data-mark="gold"] { box-shadow: inset 3px 0 0 #a6854e; }
+
+[data-crmv4-root][data-theme="dark"] .c4-fin-metric,
+[data-crmv4-root][data-theme="dark"] .c4-fin-detail,
+[data-crmv4-root][data-theme="dark"] .c4-note-line,
+[data-crmv4-root][data-theme="dark"] .c4-doc-line { background: #221f1b; color: #f6f1e8; }
+
+@media (max-width: 767px) {
+  [data-crmv4-root] .c4-fin-hero { grid-template-columns: minmax(0, 1fr); margin-inline: 8px; }
+  [data-crmv4-root] .c4-fin-metric strong { font-size: 22px; }
+  [data-crmv4-root] .c4-mob-list .c4-swipe-link { border: 1px solid rgba(166, 133, 78, 0.35); border-radius: 14px; padding: 10px; }
+}
+
 @keyframes c4-shimmer {
   from { background-position: 100% 0; }
   to { background-position: -100% 0; }
