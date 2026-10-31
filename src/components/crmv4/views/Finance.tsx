@@ -13,7 +13,9 @@ import { crmv4Text } from "@/lib/crmv4/copy";
 import { DailyClose } from "../round11";
 import { byAge, inBand, methodName } from "@/lib/crmv4/round15";
 import { FinanceChrome, ReviewChecks, queueAgeHours, queueMarks, readLastReason, rememberReason, useSecondLook } from "../round15";
+import { useListBar } from "../round19";
 
+const FINANCE_COLS = ["amount", "method", "date", "status"];
 type MoneyRow = { id: string; amount?: number; currency?: string; status?: string; createdAt?: string; method?: string; user?: { name?: string; email?: string } };
 type LedgerRow = { id: string; amount?: number; type?: string; currency?: string; trader?: string; createdAt?: string; comment?: string };
 
@@ -30,6 +32,7 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
   const [oldest, setOldest] = useState(false);
   const look = useSecondLook();
   const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale, key);
+  const list = useListBar("finance", FINANCE_COLS, { amount: tx("amount"), method: tx("method"), date: tx("date"), status: tx("status") }, v4);
   const endpoint = tab === "withdrawals" ? "/api/admin/withdrawals" : tab === "balance" ? "/api/admin/balance-requests" : tab === "ledger" ? "/api/admin/transactions" : "/api/admin/deposits";
   const url = tab === "ledger"
     ? `/api/admin/transactions?limit=${TAKE}&skip=${skip}&q=${encodeURIComponent(q)}`
@@ -99,15 +102,16 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
       {!data.loading && tab !== "ledger" && visible.length === 0 && <p className="c4-empty-gold">{v4("emptyQueue")}</p>}
       {tab === "ledger" ? <Ledger rows={rows as LedgerRow[]} tx={tx} locale={locale} /> : (
         <>
-          <div className="c4-desk c4-table-wrap" tabIndex={0} onKeyDown={queue.onKeyDown}>
+          {list.bar}
+          <div className="c4-desk c4-table-wrap c4-list-sticky" data-dense={list.prefs.dense ? "1" : "0"} tabIndex={0} onKeyDown={queue.onKeyDown}>
             <table className="c4-table">
               <thead>
                 <tr>
                   <th>{tx("customer")}</th>
-                  <th>{tx("amount")}</th>
-                  <th>{tx("method")}</th>
-                  <th>{tx("date")}</th>
-                  <th>{tx("status")}</th>
+                  {list.prefs.show("amount") && <th>{tx("amount")}</th>}
+                  {list.prefs.show("method") && <th>{tx("method")}</th>}
+                  {list.prefs.show("date") && <th>{tx("date")}</th>}
+                  {list.prefs.show("status") && <th>{tx("status")}</th>}
                   <th />
                 </tr>
               </thead>
@@ -127,10 +131,10 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
                         <button type="button" className="c4-chip" data-on={look.ids.includes(row.id) ? "1" : "0"} onClick={() => look.toggle(row.id)}>{v4("secondLook")}</button>
                         <ReviewChecks id={row.id} v4={v4} />
                       </td>
-                      <td>{money(row.amount, row.currency, locale)}</td>
-                      <td>{methodName(row.method as unknown)}</td>
-                      <td>{when(row.createdAt, locale)}</td>
-                      <td><Status tone={statusTone(row.status)}>{row.status}</Status></td>
+                      {list.prefs.show("amount") && <td>{money(row.amount, row.currency, locale)}</td>}
+                      {list.prefs.show("method") && <td>{methodName(row.method as unknown)}</td>}
+                      {list.prefs.show("date") && <td>{when(row.createdAt, locale)}</td>}
+                      {list.prefs.show("status") && <td><Status tone={statusTone(row.status)}>{row.status}</Status></td>}
                       <td>
                         {row.status === "PENDING" && (
                           <div className="c4-row">

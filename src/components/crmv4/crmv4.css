@@ -2893,3 +2893,59 @@
 @media (min-width: 1024px) {
   [data-crmv4-root] .c4-perf-cards { display: none; }
 }
+
+[data-crmv4-root] .c4-watch-luxe,
+[data-crmv4-root] .c4-list-bar {
+  border: 1px solid rgba(166, 133, 78, 0.4);
+  border-radius: 18px;
+  background:
+    linear-gradient(165deg, rgba(166, 133, 78, 0.12), transparent 46%),
+    #fffdf8;
+}
+
+[data-crmv4-root] .c4-list-bar { margin: 8px 15px; padding: 10px 12px; }
+[data-crmv4-root] .c4-list-sticky {
+  max-height: 420px;
+  overflow: auto;
+}
+[data-crmv4-root] .c4-list-sticky thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #fffdf8;
+}
+[data-crmv4-root] .c4-watch-card,
+[data-crmv4-root] tr[data-flag="1"] { box-shadow: inset 3px 0 0 #a6854e; }
+[data-crmv4-root] tr[data-kind="large"] { background: rgba(166, 133, 78, 0.1); }
+
+[data-crmv4-root] .c4-watch-cards {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0 12px 12px;
+  list-style: none;
+}
+[data-crmv4-root] .c4-watch-card {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid rgba(166, 133, 78, 0.35);
+  border-radius: 14px;
+  background: #fff;
+}
+[data-crmv4-root] .c4-watch-phone { display: none; }
+
+[data-crmv4-root][data-theme="dark"] .c4-watch-luxe,
+[data-crmv4-root][data-theme="dark"] .c4-list-bar,
+[data-crmv4-root][data-theme="dark"] .c4-watch-card,
+[data-crmv4-root][data-theme="dark"] .c4-list-sticky thead th {
+  background: #221f1b;
+  color: #f6f1e8;
+}
+
+@media (min-width: 1024px) {
+  [data-crmv4-root] .c4-watch-cards { display: none; }
+}
+@media (max-width: 1023px) {
+  [data-crmv4-root] .c4-watch-phone { display: block; }
+}
