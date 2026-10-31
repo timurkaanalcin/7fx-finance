@@ -9,6 +9,7 @@ import { readJson, writeJson } from "@/lib/crmv4/local";
 import { moveItem, type FilterRule } from "@/lib/crmv4/round1";
 import { crmv4Href } from "@/lib/crmv4/sections";
 import { ActivityTimeline, BulkBar, CustomerDeskTable, FilterBuilder, ReviewDialog, duplicateEmails, readTags, rememberCustomer, useDeskMemory, visibleCustomers, type Col as DeskCol } from "../round1";
+import { Customer360, DuplicateScreen, RetentionForm, RoundRobinPreview, StatementView, pushUndo } from "../round2";
 import { Card, Chip, Field, Lab, Msg, Pager, State, Status, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, statusTone, useJson, when, type Tx, type UserRow } from "../kit";
 
 const COLUMNS = ["customer", "country", "desk", "sale", "retention", "balance", "status"] as const;
@@ -61,6 +62,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
   const [pinnedOnly, setPinnedOnly] = useState(false);
   const [relative, setRelative] = useState(false);
   const [viewName, setViewName] = useState("");
+  const [inspectId, setInspectId] = useState("");
   const memory = useDeskMemory();
   const v4 = (key: CrmV4CopyKey) => crmv4Text(locale, key);
   const shown = visibleCustomers(sorted, rules, memory.tags, memory.pins, pinnedOnly);
@@ -270,11 +272,20 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
           onToggleAll={() => setSelected(selected.length === shown.length ? [] : shown.map((row) => row.id))}
           tags={memory.tags}
           pins={memory.pins}
-          onPin={(id) => memory.setPins(memory.pins.includes(id) ? memory.pins.filter((item) => item !== id) : [...memory.pins, id])}
+          onPin={(id) => {
+            const prev = memory.pins;
+            const next = prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id];
+            memory.setPins(next);
+            pushUndo(v4("pin"), () => memory.setPins(prev));
+          }}
           relative={relative}
           duplicates={duplicates}
           onSale={async (id, sale) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { saleStatus: sale }); data.reload(); }}
+          onInspect={setInspectId}
         />
+        <RoundRobinPreview ids={selected} v4={v4} tx={tx} onApplied={() => { setSelected([]); data.reload(); }} />
+        <DuplicateScreen v4={v4} tx={tx} />
+        {inspectId && <Customer360 base={base} id={inspectId} tx={tx} v4={v4} locale={locale} onClose={() => setInspectId("")} />}
         <Pager skip={skip} take={take} hasMore={Boolean(data.data?.hasMore)} total={data.data?.total} tx={tx} onPage={(next) => setQuery({ skip: next ? String(next) : "" })} />
       </Card>
     </div>
@@ -338,7 +349,7 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
     <div className="c4-stack">
       <State loading={user.loading} error={user.error} empty={!user.loading && !u} tx={tx} onRetry={user.reload} />
       {u && (
-        <header className="c4-strip">
+        <header className="c4-strip c4-strip-luxe">
           <Link href={crmv4Href(base, "customers")} className="c4-btn c4-pill">{tx("back")}</Link>
           <button type="button" className="c4-btn" aria-label={v4("prevCustomer")} disabled={!neighbors.prev} onClick={() => neighbors.prev && router.push(crmv4Href(base, `customers/${neighbors.prev}`))}>‹</button>
           <button type="button" className="c4-btn" aria-label={v4("nextCustomer")} disabled={!neighbors.next} onClick={() => neighbors.next && router.push(crmv4Href(base, `customers/${neighbors.next}`))}>›</button>
@@ -369,6 +380,7 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           <Field label={tx("ftd")} value={u.ftd ? tx("yes") : tx("no")} />
         </div>
       )}
+      {u && <div className="c4-detail-tools"><RetentionForm id={id} tx={tx} v4={v4} onDone={user.reload} /><StatementView id={id} tx={tx} v4={v4} locale={locale} /></div>}
       <div className="c4-with-side">
         <nav className="c4-side" aria-label={tx("customers")}>
           {PARTS.map((item) => (

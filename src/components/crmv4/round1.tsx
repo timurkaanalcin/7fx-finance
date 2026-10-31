@@ -180,7 +180,7 @@ export function FilterBuilder({ rules, onChange, v4 }: { rules: FilterRule[]; on
 
 export function CustomerDeskTable({
   base, rows, tx, locale, v4, columns, dense, widths, onResize, selected, onToggle, onToggleAll,
-  tags, pins, onPin, relative, duplicates, onSale,
+  tags, pins, onPin, relative, duplicates, onSale, onInspect,
 }: {
   base: string;
   rows: UserRow[];
@@ -200,6 +200,7 @@ export function CustomerDeskTable({
   relative: boolean;
   duplicates: Set<string>;
   onSale: (id: string, sale: string) => void;
+  onInspect?: (id: string) => void;
 }) {
   const [cursor, setCursor] = useState(0);
   const [noteFor, setNoteFor] = useState("");
@@ -278,6 +279,7 @@ export function CustomerDeskTable({
                             {duplicates.has(email) && <span className="c4-status" data-tone="warn">{v4("duplicate")}</span>}
                             {(tags[row.id] || []).map((tag) => <span key={tag} className="c4-tag">{tag}</span>)}
                             <button type="button" className="c4-btn" aria-pressed={pins.includes(row.id)} onClick={() => onPin(row.id)}>{pins.includes(row.id) ? v4("unpin") : v4("pin")}</button>
+                            {onInspect && <button type="button" className="c4-btn" onClick={() => onInspect(row.id)}>{v4("open360")}</button>}
                           </div>
                         </>
                       )}

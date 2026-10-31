@@ -4,6 +4,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { JOB_TITLE_KEYS, jobTitleLabel } from "@/lib/job-titles";
 import { API_KEY_MIGRATION_SQL } from "@/lib/crmv2/control";
+import { crmv4Text } from "@/lib/crmv4/copy";
+import { AuditDiff, SessionList } from "../round2";
 import { Card, Chip, Field, Lab, Msg, Pager, State, Status, TAKE, sendJson, statusTone, useJson, when, type Tx } from "../kit";
 
 const TABS = ["status", "services", "logs", "backups", "keys", "admins"] as const;
@@ -183,10 +185,11 @@ function LogPanel({ tx, locale }: { tx: Tx; locale: string }) {
               <Status tone={row.level === "error" ? "bad" : row.level === "warn" ? "warn" : "info"}>{row.level}</Status>
             </div>
             <div className="c4-muted">{row.actor || "—"} · {row.target || "—"} · {when(row.at, locale)}</div>
-            <pre className="c4-note" style={{ whiteSpace: "pre-wrap", marginTop: 8 }}>{JSON.stringify(row.detail, null, 2)}</pre>
+            <AuditDiff detail={row.detail} v4={(key) => crmv4Text(locale, key)} />
           </li>
         ))}
       </ul>
+      {source === "login" && <SessionList v4={(key) => crmv4Text(locale, key)} locale={locale} />}
       <Pager skip={skip} take={TAKE} hasMore={Boolean(data.data?.hasMore)} tx={tx} onPage={(next) => setQuery({ skip: next ? String(next) : "" })} />
     </Card>
   );

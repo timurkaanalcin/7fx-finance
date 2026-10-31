@@ -5,10 +5,11 @@ import { useState } from "react";
 import { approvalBody, approvalEndpoint } from "@/lib/crmv2/payload";
 import { crmv4Text } from "@/lib/crmv4/copy";
 import { ReviewDialog, TicketMeta, exportCurrent } from "../round1";
+import { MacroBar } from "../round2";
 import { Card, Chip, Lab, Msg, Sheet, State, Status, SwipeRow, money, sendJson, statusTone, useJson, when, type Tx } from "../kit";
 
 type Ticket = { id: string; kind: string; amount?: number; currency?: string; status?: string; customer?: string; openedAt?: string };
-type Thread = { traderId?: string; trader?: string; messages?: { body?: string }[] };
+type Thread = { traderId?: string; trader?: string; messages?: { body?: string; workerId?: string | null; createdAt?: string }[]; presence?: { customerTyping?: boolean; adminLastReadAt?: string | null } };
 type ChatMessage = { id: string; body?: string; workerName?: string | null; workerId?: string | null; automatic?: boolean; createdAt?: string };
 type Doc = { id: string; name?: string; docType?: string; status?: string; trader?: string; traderId?: string; createdAt?: string };
 
@@ -63,7 +64,7 @@ function Tickets({ tx, locale, q, status, setQuery }: { tx: Tx; locale: string; 
       <State loading={data.loading} error={data.error} empty={!data.loading && !list.length} tx={tx} onRetry={data.reload} />
       <div className="c4-stack">
         {list.map((row) => (
-          <article key={`${row.kind}-${row.id}`} className="c4-ticket">
+          <article key={`${row.kind}-${row.id}`} className="c4-ticket c4-ticket-luxe">
             <div className="c4-row c4-between">
               <strong>{row.customer || "—"}</strong>
               <Status tone={statusTone(row.status)}>{row.status}</Status>
@@ -127,7 +128,10 @@ function Chat({ tx, locale, q, userId, setQuery }: { tx: Tx; locale: string; q: 
   const list = useJson<{ threads?: Thread[] }>(`/api/admin/chat?take=30&q=${encodeURIComponent(q)}`);
   const thread = useJson<{ threads?: { messages?: ChatMessage[]; trader?: string }[] }>(userId ? `/api/admin/chat?userId=${encodeURIComponent(userId)}&take=40` : null);
   const [msg, setMsg] = useState("");
+  const presence = useJson<{ presence?: { customerTyping?: boolean; adminLastReadAt?: string | null } }>(userId ? `/api/admin/chat/presence?userId=${encodeURIComponent(userId)}` : null);
+  const [draft, setDraft] = useState("");
   const messages = thread.data?.threads?.[0]?.messages || [];
+  const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale, key);
   return (
     <div className="c4-split">
       <Card title={tx("chat")}>
@@ -136,7 +140,7 @@ function Chat({ tx, locale, q, userId, setQuery }: { tx: Tx; locale: string; q: 
           {(list.data?.threads || []).map((row) => (
             <li key={row.traderId}>
               <button type="button" className="c4-btn" style={{ width: "100%", textAlign: "start", borderRadius: 8 }} onClick={() => setQuery({ tab: "chat", user: row.traderId || "" })}>
-                <div>{row.trader || row.traderId}</div>
+                <div className="c4-row c4-between"><span>{row.trader || row.traderId}</span>{row.presence?.customerTyping ? <span className="c4-status" data-tone="info">{v4("typingNow")}</span> : (!row.presence?.adminLastReadAt ? <span className="c4-status" data-tone="warn">{v4("unreadThread")}</span> : null)}</div>
                 <div className="c4-muted">{row.messages?.[row.messages.length - 1]?.body || ""}</div>
               </button>
             </li>
@@ -160,17 +164,24 @@ function Chat({ tx, locale, q, userId, setQuery }: { tx: Tx; locale: string; q: 
             style={{ padding: 16 }}
             onSubmit={async (event) => {
               event.preventDefault();
-              const message = String(new FormData(event.currentTarget).get("message") || "");
+              const message = draft.trim();
+              if (!message) return;
               const res = await sendJson("/api/admin/chat", "POST", { userId, message });
               setMsg(res.ok ? tx("replySent") : res.error || tx("failed"));
               if (res.ok) {
-                event.currentTarget.reset();
+                setDraft("");
+                await fetch("/api/admin/chat/presence", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId, typing: false, markAdminRead: true }) });
                 thread.reload();
                 list.reload();
               }
             }}
           >
-            <Lab label={tx("writeReply")}><textarea name="message" required rows={3} className="c4-field" /></Lab>
+            {presence.data?.presence?.customerTyping && <p className="c4-muted">{v4("typingNow")}</p>}
+            <MacroBar v4={v4} onInsert={setDraft} />
+            <Lab label={tx("writeReply")}><textarea name="message" required rows={3} className="c4-field" value={draft} onChange={(event) => {
+              setDraft(event.target.value);
+              void fetch("/api/admin/chat/presence", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId, typing: true }) });
+            }} /></Lab>
             <button type="submit" className="c4-btn c4-btn-hot">{tx("sendReply")}</button>
             <Msg text={msg} />
           </form>
