@@ -12,12 +12,13 @@ import { ActivityTimeline, BulkBar, CustomerDeskTable, FilterBuilder, ReviewDial
 import { Customer360, DuplicateScreen, RetentionForm, RoundRobinPreview, StatementView, pushUndo } from "../round2";
 import { ContactLine, DocumentsCenter, LocalTime, NoteTemplates, Pipeline, PresenceBadge, TradingOverview, columnPreset, parseOperators } from "../round3";
 import { CompareBoard, QuickChips, ValueSpark, WorkspaceTabs, pushWorkspace } from "../round4";
-import { BirthdayList, BulkNote, CallbackButton, DeskSwitch, JourneyMap, NoteBody, SearchHistory, WinLossCard, customerSegment, notePinned, rememberSearch, toggleNotePin } from "../round5";
+import { BirthdayList, BulkNote, CallbackButton, DeskSwitch, JourneyMap, SearchHistory, WinLossCard, customerSegment, notePinned, rememberSearch, toggleNotePin } from "../round5";
 import { AgingBoard, ConversionStat, DepositorBoard, DocGallery, DomainBoard, EquityCurve, ExpiryNote, RiskBadge, StreakBoard, TeamThread, WeeklyDigest, copyFilterLink } from "../round6";
 import { CompletenessMeter, ImportPreview, InlineProfile, LangBadge, SourceBoard, StaleList, StatusWatch, TagCloud, exportTimeline } from "../round7";
 import { filterActivity } from "@/lib/crmv4/round7";
 import { fuzzyHit } from "@/lib/crmv4/round8";
 import { RatioCard, toggleWatch, watchIds } from "../round8";
+import { DocStage, FREEZE_PRESETS, KYC_PRESETS, KycChecklist, OnboardTrack, ReasonChips, RichNote, WelcomeList } from "../round9";
 import { Card, Chip, Field, Lab, Msg, Pager, State, Status, SwipeRow, TAKE, auditExport, downloadCsv, money, plClass, sendJson, statusTone, useJson, when, type Tx, type UserRow } from "../kit";
 
 const COLUMNS = ["customer", "country", "desk", "sale", "retention", "balance", "status"] as const;
@@ -265,6 +266,17 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
         )}
         <BulkBar ids={selected} v4={v4} tx={tx} onDone={() => { setSelected([]); data.reload(); memory.setTags(readTags()); }} />
         <BulkNote ids={selected} v4={v4} tx={tx} onDone={() => { setSelected([]); data.reload(); }} />
+        <div className="c4-row c4-pad">
+          {FREEZE_PRESETS.map((preset) => (
+            <button key={preset} type="button" className="c4-chip" onClick={async () => {
+              if (!selected.length) return;
+              for (const item of selected) await sendJson(`/api/admin/users/${encodeURIComponent(item)}`, "PATCH", { addNote: preset });
+              await sendJson("/api/admin/users", "POST", { action: "bulk", bulkAction: "freeze", userIds: selected });
+              setSelected([]);
+              data.reload();
+            }}>{preset}</button>
+          ))}
+        </div>
         <BirthdayList rows={shown} v4={v4} />
         <ConversionStat rows={shown} v4={v4} />
         <div className="c4-book-grid">
@@ -431,6 +443,8 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
             <LangBadge language={u.language} v4={v4} />
             <button type="button" className="c4-btn" onClick={() => { toggleWatch(id); setWatching(watchIds().includes(id)); }}>{watching ? v4("watchlist") : v4("watchAdd")}</button>
             <RatioCard id={id} v4={v4} />
+            <OnboardTrack row={u} v4={v4} />
+            <WelcomeList id={id} v4={v4} />
             <ExpiryNote expiresAt={(u as UserRow & { expiresAt?: string | null }).expiresAt} v4={v4} />
             <PresenceBadge lastSeen={(u as UserRow & { lastSeenAt?: string | null }).lastSeenAt} lastLogin={(u as UserRow & { lastLoginAt?: string | null }).lastLoginAt} v4={v4} locale={locale} />
             <LocalTime country={u.country} v4={v4} />
@@ -717,7 +731,7 @@ function NoteList({ rows, tx, locale }: { rows: NoteRow[]; tx: Tx; locale: strin
     <ul data-pins={pinTick}>
       {ordered.map((row) => (
         <li key={row.id} style={{ padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }} data-pinned={pins.includes(row.id) ? "1" : "0"}>
-          <NoteBody body={row.body || ""} />
+          <RichNote body={row.body || ""} />
           <div className="c4-row">
             <span className="c4-muted">{row.authorName || "—"} · {row.team || tx("generalNote")} · {when(row.createdAt, locale)}</span>
             <button type="button" className="c4-btn" onClick={() => { toggleNotePin(row.id); setPinTick((n) => n + 1); }}>{pins.includes(row.id) ? v4("unpinNote") : v4("pinNote")}</button>
@@ -819,7 +833,9 @@ function Files({ id, email, tx, locale }: { id: string; email: string; tx: Tx; l
   const docs = useJson<{ documents?: DocRow[] }>(email ? `/api/admin/documents?q=${encodeURIComponent(email)}&take=40` : null);
   const files = useJson<{ documents?: FileRow[] }>(`/api/admin/customer-documents?userId=${encodeURIComponent(id)}&take=40`);
   const [msg, setMsg] = useState("");
-  const [zoom, setZoom] = useState<null | { title: string; src?: string; id?: string }>(null);
+  const [zoom, setZoom] = useState<null | { title: string; src?: string; id?: string; pdf?: boolean }>(null);
+  const [compare, setCompare] = useState<string[]>([]);
+  const [kycReason, setKycReason] = useState("");
   const v4 = (key: CrmV4CopyKey) => crmv4Text(locale, key);
   const mine = (docs.data?.documents || []).filter((row) => row.traderId === id);
   return (
@@ -870,15 +886,19 @@ function Files({ id, email, tx, locale }: { id: string; email: string; tx: Tx; l
           ))}
         </ul>
         {!docs.loading && mine.length === 0 && <p className="c4-empty-luxe">{tx("noneYet")}</p>}
+        <KycChecklist id={id} v4={v4} />
+        <ReasonChips presets={KYC_PRESETS} v4={v4} onPick={setKycReason} />
+        {kycReason && <p className="c4-muted c4-pad">{kycReason}</p>}
         {zoom && (
           <ReviewDialog
             title={zoom.title}
             src={zoom.src}
+            pdf={zoom.pdf}
             v4={v4}
             tx={tx}
             onClose={() => setZoom(null)}
             onApprove={zoom.id ? () => { void review(zoom.id || "", "APPROVED", docs.reload, setMsg, tx); setZoom(null); } : undefined}
-            onReject={zoom.id ? () => { void review(zoom.id || "", "REJECTED", docs.reload, setMsg, tx); setZoom(null); } : undefined}
+            onReject={zoom.id ? () => { void review(zoom.id || "", "REJECTED", docs.reload, setMsg, tx, kycReason); setZoom(null); } : undefined}
           />
         )}
       </Card>
@@ -904,21 +924,27 @@ function Files({ id, email, tx, locale }: { id: string; email: string; tx: Tx; l
           {(files.data?.documents || []).map((row) => (
             <li key={row.id} className="c4-row" style={{ justifyContent: "space-between", padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
               <span>{row.title || row.fileName}</span>
-              <button type="button" className="c4-btn" onClick={() => setZoom({ title: row.title || row.fileName || "", src: `/api/admin/customer-documents/${row.id}` })}>{v4("zoom")}</button>
+              <button type="button" className="c4-btn" onClick={() => setZoom({ title: row.title || row.fileName || "", src: `/api/admin/customer-documents/${row.id}`, pdf: String(row.mime || row.fileName || "").includes("pdf") })}>{v4("zoom")}</button>
+              <button type="button" className="c4-btn" onClick={() => setCompare((list) => list.includes(row.id) ? list.filter((item) => item !== row.id) : [...list, row.id].slice(-2))}>{v4("compareDocs")}</button>
               <a href={`/api/admin/customer-documents/${row.id}`}>{tx("download")}</a>
             </li>
           ))}
         </ul>
+        {compare.length > 0 && (
+          <div className="c4-compare-grid">
+            {compare.map((fileId) => <DocStage key={fileId} src={`/api/admin/customer-documents/${fileId}`} pdf={String((files.data?.documents || []).find((row) => row.id === fileId)?.fileName || "").includes("pdf")} v4={v4} />)}
+          </div>
+        )}
       </Card>
     </div>
   );
 }
 
 type DocRow = { id: string; name?: string; docType?: string; status?: string; traderId?: string; createdAt?: string };
-type FileRow = { id: string; title?: string; fileName?: string };
+type FileRow = { id: string; title?: string; fileName?: string; mime?: string };
 
-async function review(id: string, status: string, reload: () => void, setMsg: (v: string) => void, tx: Tx) {
-  const res = await sendJson("/api/admin/documents", "POST", { action: "review", id, status });
+async function review(id: string, status: string, reload: () => void, setMsg: (v: string) => void, tx: Tx, note?: string) {
+  const res = await sendJson("/api/admin/documents", "POST", { action: "review", id, status, ...(note ? { note } : {}) });
   setMsg(res.ok ? tx("docReviewed") : res.error || tx("failed"));
   if (res.ok) reload();
 }
