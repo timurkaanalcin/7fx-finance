@@ -25,7 +25,8 @@ import { BulkRemind, EditLog, EmailHintLine, HandoffNote, NoteCloud, SimilarList
 import { BulkUntag, ContactSummary, DncFlag, DocAsk, Fold, KeyFacts, LiveBook, MarginGauge, MiniNav, MonthStatement, PreferTime, ProfileList, QuickSwitch, ShareViewButton, TagManager, TxMini, isDnc } from "../round12";
 import { DocDesk } from "../round15";
 import { LeadDesk } from "../round16";
-import { ContactFeed, EntryQuality, applySplit, emailOk } from "../round17";
+import { EntryQuality, applySplit, emailOk } from "../round17";
+import { DayTimeline } from "../round44";
 import { StatementSheet } from "../round21";
 import { CohortBoard, OnboardCard } from "../round24";
 import { ListDesk, RecordHead, applyList, useLists } from "../round31";
@@ -637,7 +638,7 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           {part === "notes" && <Notes id={id} notes={user.data?.notes || []} tx={tx} locale={locale} onDone={user.reload} />}
           {part === "trades" && <Trades id={id} tx={tx} locale={locale} />}
           {u && part === "access" && <Access id={id} user={u} tx={tx} onDone={user.reload} />}
-          {part === "activity" && <ContactFeed id={id} notes={user.data?.notes || []} events={user.data?.activityEvents || []} v4={v4} locale={locale} />}
+          {part === "activity" && <DayTimeline id={id} notes={user.data?.notes || []} events={user.data?.activityEvents || []} v4={v4} locale={locale} />}
         </div>
       </div>
       <nav className="c4-record-foot" aria-label={v4("phoneFoot")}>
