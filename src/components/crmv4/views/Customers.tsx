@@ -8,7 +8,7 @@ import { crmv4Text, type CrmV4CopyKey } from "@/lib/crmv4/copy";
 import { readJson, writeJson } from "@/lib/crmv4/local";
 import { moveItem, type FilterRule } from "@/lib/crmv4/round1";
 import { crmv4Href } from "@/lib/crmv4/sections";
-import { BulkBar, FilterBuilder, ReviewDialog, readTags, rememberCustomer, useDeskMemory, visibleCustomers, type Col as DeskCol } from "../round1";
+import { FilterBuilder, ReviewDialog, rememberCustomer, useDeskMemory, visibleCustomers, type Col as DeskCol } from "../round1";
 import { Customer360, DuplicateScreen, RetentionForm, RoundRobinPreview, StatementView } from "../round2";
 import { ContactLine, DocumentsCenter, LocalTime, NoteTemplates, PresenceBadge, TradingOverview, columnPreset, parseOperators } from "../round3";
 import { PipelineDesk } from "../round41";
@@ -34,6 +34,8 @@ import { LuxList, NoteStudio } from "../round34";
 import { FinanceBook } from "../round36";
 import { KycStudio } from "../round37";
 import { Dossier, useEscape } from "../round40";
+import { toggleOne, togglePage } from "@/lib/crmv4/round42";
+import { BulkDock, RecordThread } from "../round42";
 import { rememberView } from "../round25";
 import { LifeLine } from "../round26";
 import { sameEntry } from "@/lib/crmv4/round17";
@@ -347,7 +349,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
             {memory.recent.map((row) => <Link key={row.id} className="c4-tag" href={crmv4Href(base, `customers/${row.id}`)}>{row.name || row.email}</Link>)}
           </div>
         )}
-        <BulkBar ids={selected} v4={v4} tx={tx} onDone={() => { setSelected([]); data.reload(); memory.setTags(readTags()); }} />
+        <BulkDock rows={tableRows} selected={selected} lists={smartLists} v4={v4} tx={tx} onReload={() => data.reload()} onClear={() => setSelected([])} />
         <BulkNote ids={selected} v4={v4} tx={tx} onDone={() => { setSelected([]); data.reload(); }} />
         <div className="c4-row c4-pad">
           {FREEZE_PRESETS.map((preset) => (
@@ -414,7 +416,16 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
           <button type="submit" className="c4-btn c4-btn-hot">{tx("applyWord")}</button>
         </form>
         <State loading={data.loading} error={data.error} empty={!data.loading && tableRows.length === 0} tx={tx} onRetry={data.reload} hint={rows.length ? v4("emptyHint") : undefined} />
-        <LuxList base={base} rows={tableRows} tx={tx} locale={locale} v4={v4} />
+        <LuxList
+          base={base}
+          rows={tableRows}
+          tx={tx}
+          locale={locale}
+          v4={v4}
+          selected={selected}
+          onToggle={(id) => setSelected((current) => toggleOne(current, id))}
+          onTogglePage={() => setSelected((current) => togglePage(tableRows.map((row) => row.id), current))}
+        />
         {tagManagerOn && <TagManager tags={memory.tags} onChange={memory.setTags} v4={v4} />}
         {selected.length >= 2 && <CompareDesk rows={shown.filter((row) => selected.includes(row.id))} base={base} v4={v4} locale={locale} />}
         {pipelineOn && <PipelineDesk rows={shown} v4={v4} onMove={async (id, status) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { saleStatus: status }); data.reload(); }} />}
@@ -517,6 +528,7 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
           locale={locale}
         />
       )}
+      {u && part === "profile" && <RecordThread userId={id} v4={v4} tx={tx} locale={locale} />}
       {u && (
         <RecordHead
           base={base}

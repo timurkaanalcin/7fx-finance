@@ -48,7 +48,16 @@ function cell(col: ListCol, row: UserRow, locale: string, tx: Tx): string {
   return row.active === false ? tx("chipFrozen") : tx("chipActive");
 }
 
-export function LuxList({ base, rows, tx, locale, v4 }: { base: string; rows: UserRow[]; tx: Tx; locale: string; v4: V4 }) {
+export function LuxList({ base, rows, tx, locale, v4, selected, onToggle, onTogglePage }: {
+  base: string;
+  rows: UserRow[];
+  tx: Tx;
+  locale: string;
+  v4: V4;
+  selected: string[];
+  onToggle: (id: string) => void;
+  onTogglePage: () => void;
+}) {
   const [pref, setPref] = useState(readCols(null));
   useEffect(() => { setPref(readCols(readJson(COL_KEY, null))); }, []);
   function save(next: typeof pref) {
@@ -68,16 +77,23 @@ export function LuxList({ base, rows, tx, locale, v4 }: { base: string; rows: Us
           </label>
         ))}
         <button type="button" className="c4-btn" aria-pressed={pref.dense} onClick={() => save(setDense(pref, !pref.dense))}>{pref.dense ? v4("luxDense") : v4("luxRoomy")}</button>
+        <button type="button" className="c4-btn" data-on={rows.length > 0 && rows.every((row) => selected.includes(row.id)) ? "1" : "0"} onClick={onTogglePage}>{v4("bkPage")}</button>
       </div>
       {!rows.length && <p className="c4-empty-gold">{v4("luxEmpty")}</p>}
       <div className="c4-lux-desk">
         <table className="c4-table">
           <thead>
-            <tr>{pref.columns.map((col) => <th key={col}>{v4(LABEL[col])}</th>)}</tr>
+            <tr>
+              <th className="c4-check"><span className="c4-sr">{v4("bkPage")}</span></th>
+              {pref.columns.map((col) => <th key={col}>{v4(LABEL[col])}</th>)}
+            </tr>
           </thead>
           <tbody>
             {rows.map((row) => (
-              <tr key={row.id}>
+              <tr key={row.id} data-pick={selected.includes(row.id) ? "1" : "0"}>
+                <td className="c4-check">
+                  <input type="checkbox" checked={selected.includes(row.id)} aria-label={row.name || row.email || row.id} onChange={() => onToggle(row.id)} />
+                </td>
                 {pref.columns.map((col) => (
                   <td key={col}>
                     {col === "customer" ? <Link href={crmv4Href(base, `customers/${row.id}`)}>{cell(col, row, locale, tx)}</Link> : cell(col, row, locale, tx)}
@@ -91,8 +107,11 @@ export function LuxList({ base, rows, tx, locale, v4 }: { base: string; rows: Us
       </div>
       <ul className="c4-lux-cards">
         {rows.map((row) => (
-          <li key={row.id}>
-            <Link href={crmv4Href(base, `customers/${row.id}`)}>{row.name || "—"}</Link>
+          <li key={row.id} data-pick={selected.includes(row.id) ? "1" : "0"}>
+            <label className="c4-row">
+              <input type="checkbox" checked={selected.includes(row.id)} aria-label={row.name || row.email || row.id} onChange={() => onToggle(row.id)} />
+              <Link href={crmv4Href(base, `customers/${row.id}`)}>{row.name || "—"}</Link>
+            </label>
             {pref.columns.filter((col) => col !== "customer").map((col) => (
               <p key={col}><span className="c4-muted">{v4(LABEL[col])}</span> {cell(col, row, locale, tx)}</p>
             ))}
