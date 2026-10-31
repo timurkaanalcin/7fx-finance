@@ -8,6 +8,7 @@ import { Bars, Card, Chip, Field, Kpi, Lab, Msg, Sheet, State, auditExport, down
 import { HomeDesk } from "../desk/panels";
 import { RiskWatch, TeamBoard } from "../desk/later";
 import { FxDesk } from "../desk/statement";
+import { AlertCenter } from "../desk/people";
 import { EntryQuality, emailOk } from "../desk/feed";
 import { useV3 } from "../desk/store";
 
@@ -73,6 +74,7 @@ export default function Overview({ base, tx, locale }: Props) {
           </div>
         </div>
       )}
+      <AlertCenter base={base} />
       <FxDesk locale={locale} />
       <HomeDesk base={base} locale={locale} />
       <RiskWatch base={base} />
