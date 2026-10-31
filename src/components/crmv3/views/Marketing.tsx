@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Card, Lab, Msg, State, sendJson, useJson, type Tx } from "../kit";
 import { MarketDesk } from "../desk/panels";
+import { SegmentDesk } from "../desk/notices";
 
 type Template = { id: string; name?: string; subject?: string; body?: string; active?: boolean };
 
@@ -17,6 +18,7 @@ export default function Marketing({ tx }: { tx: Tx }) {
   const current = templates.find((row) => row.id === picked) || null;
   return (
     <div className="c3-stack">
+      <SegmentDesk tx={tx} />
       <p className="c3-muted">{tx("marketingLead")}</p>
       <MarketDesk />
       <Card title={tx("affiliates")}>

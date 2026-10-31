@@ -10,7 +10,7 @@ import { crmv2Text, type CrmV2CopyKey } from "@/lib/crmv2/copy";
 import { crmv3Text, type CrmV3CopyKey } from "@/lib/crmv3/copy";
 import { CRM_V3_MORE, CRM_V3_SECTIONS, CRM_V3_TABS, crmv3Href, type CrmV3SectionId } from "@/lib/crmv3/sections";
 import BrandLogo from "@/components/landing/BrandLogo";
-import { Sheet, sendJson, useJson, when } from "./kit";
+import { Sheet } from "./kit";
 import { CommandPalette, ShortcutHelp, ShortcutHost } from "./desk/command";
 import { DeskFooter } from "./desk/later";
 import { QuickSheet } from "./desk/statement";
@@ -22,6 +22,7 @@ import { DepositDesk, InboxDesk } from "./desk/deposit";
 import { InsightsHome, PrefsHub } from "./desk/insights";
 import { AgendaPage } from "./desk/book";
 import { DeskStaff } from "./desk/today";
+import { NoticeDesk, useNotices } from "./desk/notices";
 import { readJson } from "@/lib/crmv3/bridge";
 import { RAIL_KEY, readFold } from "@/lib/crmv3/nav";
 import { MoreNav, RailNav } from "./desk/nav";
@@ -65,15 +66,13 @@ function Shell({ base, section, name }: Props) {
   const [quick, setQuick] = useState(false);
   const [folded, setFolded] = useState(false);
   const [railQuery, setRailQuery] = useState("");
-  const [noteQuery, setNoteQuery] = useState("");
-  const [unreadOnly, setUnreadOnly] = useState(false);
   const [banner] = useLocal<string>("crmv3-banner", "");
   const [idle, setIdle] = useState(false);
   const [offline, setOffline] = useState(false);
   const [trail, setTrail] = useState<string[]>([]);
   const params = useSearchParams();
   const q = params.get("q") || "";
-  const notes = useJson<{ items?: { id: string; title?: string; body?: string; readAt?: string | null; createdAt?: string }[]; unread?: number }>(notesOpen ? "/api/notifications?take=20" : null);
+  const notices = useNotices();
 
   const [shownName, setShownName] = useState("");
   useEffect(() => {
@@ -215,19 +214,19 @@ function Shell({ base, section, name }: Props) {
       </aside>
 
       <div className="c3-body">
-        <header className="c3-header">
+        <header className="c3-header" data-bar="1">
           <BrandLogo tone={theme === "light" ? "ink" : "paper"} height={24} className="c3-logo" />
           <div className="c3-header-copy">
             <p className="c3-kicker">{v3("v3mark")}</p>
             <h1 className="c3-heading">{heading}</h1>
           </div>
-          <form action={crmv3Href(base, "customers")} className="c3-header-search">
-            <input name="q" defaultValue={q} placeholder={tx("search")} aria-label={tx("search")} className="c3-field" />
+          <form action={crmv3Href(base, "customers")} className="c3-header-search" role="search">
+            <input name="q" defaultValue={q} placeholder={v3("barSearch")} aria-label={v3("barSearch")} className="c3-field" />
           </form>
           <button type="button" className="c3-fab" aria-label={v3("searchFab")} onClick={() => setSearchOpen((open) => !open)}>⌕</button>
           {searchOpen && (
             <form action={crmv3Href(base, "customers")} className="c3-float" role="search">
-              <input name="q" defaultValue={q} placeholder={tx("search")} aria-label={tx("search")} className="c3-field" autoFocus />
+              <input name="q" defaultValue={q} placeholder={v3("barSearch")} aria-label={v3("barSearch")} className="c3-field" autoFocus />
               <button type="button" className="c3-btn" onClick={() => setSearchOpen(false)}>{tx("close")}</button>
             </form>
           )}
@@ -235,8 +234,9 @@ function Shell({ base, section, name }: Props) {
           <button type="button" className="c3-icon-btn" onClick={toggleTheme} aria-label={theme === "dark" ? tx("themeLight") : tx("themeDark")}>
             {theme === "dark" ? "Lt" : "Dk"}
           </button>
+          <Link href={crmv3Href(base, "me")} className="c3-desk-name">{shownName || name || v3("barProfile")}</Link>
           <button type="button" className="c3-icon-btn" onClick={() => setNotesOpen(true)} aria-label={tx("notifications")}>
-            {typeof notes.data?.unread === "number" && notes.data.unread > 0 ? notes.data.unread : "•"}
+            {notices.unread > 0 ? notices.unread : "•"}
           </button>
           <div className="c3-lang-slot">
             <LanguageSwitcher compact tone={theme === "dark" ? "dark" : "crm"} />
@@ -327,37 +327,8 @@ function Shell({ base, section, name }: Props) {
       <CommandPalette base={base} open={palette} onClose={() => setPalette(false)} />
       <ShortcutHelp open={help} onClose={() => setHelp(false)} />
       {notesOpen && (
-        <Sheet title={tx("notifications")} onClose={() => setNotesOpen(false)} closeLabel={tx("close")}>
-          <div className="c3-stack">
-            <input className="c3-field" aria-label={v3("noteSearch")} placeholder={v3("noteSearch")} value={noteQuery} onChange={(event) => setNoteQuery(event.target.value)} />
-            <button type="button" className="c3-chip" data-on={unreadOnly ? "1" : "0"} onClick={() => setUnreadOnly((on) => !on)}>{v3("unreadOnly")}</button>
-            <p className="c3-muted">{v3("unreadHint")}</p>
-            <button
-              type="button"
-              className="c3-btn"
-              onClick={async () => {
-                await sendJson("/api/notifications", "PATCH", { all: true });
-                notes.reload();
-              }}
-            >
-              {tx("markRead")}{typeof notes.data?.unread === "number" ? ` · ${notes.data.unread}` : ""}
-            </button>
-            {(notes.data?.items || []).filter((item) => {
-              if (unreadOnly && item.readAt) return false;
-              const blob = `${item.title || ""} ${item.body || ""}`.toLowerCase();
-              return blob.includes(noteQuery.trim().toLowerCase());
-            }).map((item) => (
-              <div key={item.id} className="c3-note">
-                <div>{item.title || tx("notifications")}</div>
-                <div className="c3-muted">{item.body}</div>
-                <div className="c3-muted c3-meta">{when(item.createdAt, locale)}{item.readAt ? "" : ` · ${tx("unread")}`}</div>
-                {!item.readAt && (
-                  <button type="button" className="c3-btn" onClick={async () => { await sendJson("/api/notifications", "PATCH", { id: item.id }); notes.reload(); }}>{v3("markOne")}</button>
-                )}
-              </div>
-            ))}
-            {!notes.loading && !(notes.data?.items || []).length && <p className="c3-muted">{tx("noneYet")}</p>}
-          </div>
+        <Sheet title={v3("noticeTitle")} onClose={() => setNotesOpen(false)} closeLabel={tx("close")}>
+          <NoticeDesk base={base} locale={locale} tx={tx} notices={notices} />
         </Sheet>
       )}
     </div>
