@@ -13,6 +13,7 @@ import {
 } from "@/lib/membership";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
 import { allocateUniqueAccountLoginId } from "@/lib/account-login-id";
+import { syncUserAffiliateName } from "@/lib/lead-origin-store";
 import { recordLedger } from "@/lib/ledger";
 import { FxError, appendFxNote, convertAmountToUsd, type UsdConversion } from "@/lib/fx-usd";
 import { clientErrorMessage } from "@/lib/security/public-error";
@@ -381,6 +382,7 @@ export async function POST(req: Request) {
       note: body.note ? String(body.note).slice(0, 500) : null,
       meta: { email, role },
     });
+    if (role === "TRADER") await syncUserAffiliateName(user);
 
     return NextResponse.json({
       ok: true,

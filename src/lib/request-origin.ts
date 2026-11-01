@@ -1,4 +1,5 @@
 import { CRM_HOSTNAMES } from "@/lib/crm-host";
+import { configuredSiteHosts, configuredSiteOrigins, fallbackSiteOrigin } from "@/lib/site-origin";
 
 /**
  * Public site origin for redirects and shareable links.
@@ -22,20 +23,10 @@ export function publicRequestOrigin(req: Request): string {
     return `${proto}://${host}`;
   }
 
-  const env =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    process.env.APP_URL ||
-    process.env.NEXT_PUBLIC_APP_URL ||
-    "";
-  if (env) {
-    try {
-      return new URL(env).origin;
-    } catch {
-      /* ignore bad env */
-    }
-  }
+  const configured = configuredSiteOrigins()[0];
+  if (configured) return configured;
 
-  // Last resort — prefer known production host over broken internal bind.
+  // Last resort — prefer the request URL over a broken internal bind, then the site env.
   try {
     const fromReq = new URL(req.url).origin;
     if (!fromReq.includes("0.0.0.0") && !fromReq.includes("127.0.0.1")) {
@@ -44,7 +35,7 @@ export function publicRequestOrigin(req: Request): string {
   } catch {
     /* ignore */
   }
-  return "https://7fx.customer.org.tr";
+  return fallbackSiteOrigin();
 }
 
 export function publicAbsoluteUrl(req: Request, path: string): string {
@@ -90,7 +81,7 @@ export function isTrustedRedirectHost(hostname: string): boolean {
   const h = hostname.trim().toLowerCase().replace(/\.$/, "");
   if (!h || h.includes("..") || !/^[a-z0-9.-]+$/.test(h)) return false;
   if (h === "localhost" || h === "127.0.0.1") return true;
-  if (PRODUCTION_REDIRECT_HOSTS.has(h) || CRM_HOSTNAMES.has(h)) return true;
+  if (PRODUCTION_REDIRECT_HOSTS.has(h) || CRM_HOSTNAMES.has(h) || configuredSiteHosts().includes(h)) return true;
   if (h === "crm7fx.localhost" || h.endsWith(".crm7fx.localhost")) return true;
   if (h === VERCEL_PROJECT_HOST || VERCEL_PREVIEW_HOST.test(h)) return true;
   return false;
@@ -138,7 +129,7 @@ export function locationForRequest(req: { url: string; headers: HeaderSource }, 
     } catch {
       /* ignore */
     }
-    if (!origin) origin = "https://7fx.customer.org.tr";
+    if (!origin) origin = fallbackSiteOrigin();
   }
   const p = path.startsWith("/") ? path : `/${path}`;
   return `${origin}${p}`;

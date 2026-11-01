@@ -1,3 +1,5 @@
+import { fallbackSiteOrigin } from "@/lib/site-origin";
+
 /**
  * Optional FAQ / LLM helper. The customer live-support route does not call this
  * on every message: opening acknowledgements live in support-autoreply.ts.
@@ -47,10 +49,20 @@ export function faqAnswer(msg: string): string {
   return "Bu soruyu otomatik olarak yanıtlayamıyorum. Canlı temsilciye bağlanmak için 'temsilci' yazabilirsiniz.";
 }
 
-const SYSTEM = `You are the 7FX live-support assistant on 7fx.customer.org.tr. Reply in the customer's language, briefly.
+function supportHost(): string {
+  try {
+    return new URL(fallbackSiteOrigin()).host;
+  } catch {
+    return "7fx.customer.org.tr";
+  }
+}
+
+function systemPrompt(): string {
+  return `You are the 7FX live-support assistant on ${supportHost()}. Reply in the customer's language, briefly.
 Only use this site information:
 ${FAQ.map((f) => "- " + f.answer).join("\n")}
 Rules: Never invent or state account balances, positions, transactions, personal data, licences, regulators, returns, profits or guarantees. Never give investment advice. If the question needs account-specific data or anything not covered above, say you cannot confirm it and that the customer can type "temsilci" to reach a live agent.`;
+}
 
 export async function aiReply(msg: string, history: { from: "customer" | "support"; body: string }[]): Promise<string> {
   const key = process.env.OPENAI_API_KEY;
@@ -67,7 +79,7 @@ export async function aiReply(msg: string, history: { from: "customer" | "suppor
         temperature: 0.2,
         max_tokens: 350,
         messages: [
-          { role: "system", content: SYSTEM },
+          { role: "system", content: systemPrompt() },
           ...history.slice(-8).map((h) => ({ role: h.from === "customer" ? "user" : "assistant", content: h.body.slice(0, 1500) })),
           { role: "user", content: msg.slice(0, 1500) },
         ],

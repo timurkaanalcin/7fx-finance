@@ -1,5 +1,6 @@
 import webpush from "web-push";
 import { prisma } from "@/lib/prisma";
+import { fallbackSiteOrigin } from "@/lib/site-origin";
 
 let vapidReady: boolean | null = null;
 
@@ -21,7 +22,7 @@ function ensureVapid(): boolean {
   if (!pub || !priv) return (vapidReady = false);
   try {
     webpush.setVapidDetails(
-      process.env.VAPID_SUBJECT?.trim() || "mailto:support@7fx.customer.org.tr",
+      process.env.VAPID_SUBJECT?.trim() || `mailto:support@${new URL(fallbackSiteOrigin()).hostname}`,
       pub,
       priv
     );

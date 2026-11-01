@@ -48,14 +48,14 @@ const USER_OWNED = new Set([
   "Account", "UserNote", "Order", "Position", "DepositRequest", "BalanceRequest", "WithdrawalRequest",
   "BalanceLedger", "Communication", "ClientActivityEvent", "DocumentRecord", "Reminder", "AutoLoginLink",
   "LoginEvent", "ChatThreadState", "ChatAttachment", "Notification", "PushSubscription", "CustomerDocument",
-  "AiMembership",
+  "AiMembership", "LeadOrigin",
 ]);
 const WHERE_OPS = new Set([
   "findUnique", "findUniqueOrThrow", "findFirst", "findFirstOrThrow", "findMany", "count", "aggregate", "groupBy",
   "update", "updateMany", "delete", "deleteMany", "upsert",
 ]);
 const READ_OPS = new Set(["findFirst", "findMany", "count", "aggregate", "groupBy"]);
-const TEST_REL = new Set(["Account", "UserNote", "Order", "Position", "DepositRequest", "BalanceRequest", "WithdrawalRequest", "BalanceLedger", "Communication", "ClientActivityEvent", "DocumentRecord", "LoginEvent", "ChatThreadState"]);
+const TEST_REL = new Set(["Account", "UserNote", "Order", "Position", "DepositRequest", "BalanceRequest", "WithdrawalRequest", "BalanceLedger", "Communication", "ClientActivityEvent", "DocumentRecord", "LoginEvent", "ChatThreadState", "LeadOrigin"]);
 const g2 = globalThis as unknown as { __7fxScopeMw?: boolean };
 if (!g2.__7fxScopeMw) {
   g2.__7fxScopeMw = true;

@@ -4,6 +4,7 @@ import { allocateUniqueAccountLoginId } from "@/lib/account-login-id";
 import { prisma } from "@/lib/prisma";
 import { normalizeAccountCurrency } from "@/lib/membership";
 import { isPlaceholderEmail } from "./map";
+import { syncDeclaredSource } from "@/lib/lead-origin-store";
 import type { DuplicateMode, ImportRowResult, RowValidation } from "./types";
 
 function randomPassword(len = 12): string {
@@ -154,6 +155,7 @@ export async function executeImport(opts: {
             return updatedUser;
           });
 
+          await syncDeclaredSource(user.id, m.source);
           results.push({
             rowIndex: v.rowIndex,
             status: "updated",
@@ -208,6 +210,7 @@ export async function executeImport(opts: {
               address,
             },
           });
+          await syncDeclaredSource(user.id, m.source);
           results.push({
             rowIndex: v.rowIndex,
             status: "updated",
@@ -269,6 +272,7 @@ export async function executeImport(opts: {
           return createdUser;
         });
 
+        await syncDeclaredSource(user.id, m.source);
         results.push({
           rowIndex: v.rowIndex,
           status: "created",

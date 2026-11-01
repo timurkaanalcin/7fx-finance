@@ -11,6 +11,9 @@ import {
 } from "@/lib/system-settings";
 import { allocateUniqueAccountLoginId } from "@/lib/account-login-id";
 import { jobTitleSchema } from "@/lib/job-titles";
+import { clientIpFromHeaders } from "@/lib/presence";
+import { readOriginPayload } from "@/lib/lead-origin";
+import { recordLeadOrigin } from "@/lib/lead-origin-store";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -93,6 +96,20 @@ export async function POST(req: Request) {
           },
         },
       },
+    });
+
+    const origin = readOriginPayload(body as Record<string, unknown>, req.headers, { browser: true });
+    const visitorIp = clientIpFromHeaders(req.headers);
+    await recordLeadOrigin({
+      userId: user.id,
+      signals: { ...origin.signals, browser: true },
+      declaredSource: origin.declared,
+      affToken: origin.affToken,
+      streamRef: origin.streamRef,
+      leadIp: visitorIp,
+      intakeIp: visitorIp,
+      intakeUserAgent: req.headers.get("user-agent"),
+      linkAffiliateA: true,
     });
 
     await recordLoginEvent({ userId: user.id, success: true, method: "register" });

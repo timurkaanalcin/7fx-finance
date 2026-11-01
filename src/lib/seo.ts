@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import {
-  PRIMARY_ORIGIN,
+  primaryOrigin,
   isIndexableHost,
   isMarketingPath,
   metadataOrigin,
@@ -44,7 +44,7 @@ function card(title: string, description: string, url: string): Pick<Metadata, "
 export function marketingMetadata(hostHeader: string | null, path: string): Metadata {
   const host = normalizeHost(hostHeader);
   const indexable = isIndexableHost(host) && isMarketingPath(path);
-  const origin = indexable ? metadataOrigin(host) : PRIMARY_ORIGIN;
+  const origin = indexable ? metadataOrigin(host) : primaryOrigin();
   const url = path === "/" ? origin : `${origin}${path}`;
   const copy =
     MARKETING_COPY[path] ||
@@ -67,9 +67,9 @@ export function marketingMetadata(hostHeader: string | null, path: string): Meta
 
 /** English document title, description, and social card for pages that stay out of the index. */
 export function privateEnglishMetadata(title: string, description: string, path: string): Metadata {
-  const url = `${PRIMARY_ORIGIN}${path.startsWith("/") ? path : `/${path}`}`;
+  const url = `${primaryOrigin()}${path.startsWith("/") ? path : `/${path}`}`;
   return {
-    metadataBase: new URL(PRIMARY_ORIGIN),
+    metadataBase: new URL(primaryOrigin()),
     title: { absolute: title },
     description,
     robots: { index: false, follow: false },
@@ -84,8 +84,8 @@ export function organizationJsonLd(origin: string): string {
       {
         "@type": "Organization",
         name: "7FX",
-        url: PRIMARY_ORIGIN,
-        logo: `${PRIMARY_ORIGIN}/icons/v3/icon-512.png`,
+        url: primaryOrigin(),
+        logo: `${primaryOrigin()}/icons/v3/icon-512.png`,
       },
       {
         "@type": "WebSite",
@@ -93,7 +93,7 @@ export function organizationJsonLd(origin: string): string {
         url: origin,
         inLanguage: "en",
         description: DESCRIPTION,
-        publisher: { "@type": "Organization", name: "7FX", url: PRIMARY_ORIGIN },
+        publisher: { "@type": "Organization", name: "7FX", url: primaryOrigin() },
       },
     ],
   };

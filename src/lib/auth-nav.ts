@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { postLoginPath } from "./auth";
-import { hostnameFromRequest, isCrmHostname, MAIN_SITE_ORIGIN } from "./crm-host";
+import { hostnameFromRequest, isCrmHostname, mainSiteOrigin } from "./crm-host";
 import { publicAbsoluteUrl } from "./request-origin";
 
 /** Browser form POST (mobile Safari / WebView). JSON API clients stay on JSON. */
@@ -61,7 +61,7 @@ export function loginLandingPath(
   const host = hostnameFromRequest({ headers: { get: (n) => req.headers.get(n) } });
   if (isCrmHostname(host)) {
     if (user.role === "ADMIN" && !user.crmReadOnly) return "/izcrm";
-    return `${MAIN_SITE_ORIGIN}/trade`;
+    return `${mainSiteOrigin()}/trade`;
   }
   return postLoginPath(user);
 }

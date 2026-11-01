@@ -1,3 +1,5 @@
+import { configuredSiteOrigins } from "@/lib/site-origin";
+
 /** Allowed browser Origins for credentialed / mutating API calls in production. */
 export const API_ALLOWED_ORIGINS = new Set(
   [
@@ -8,8 +10,6 @@ export const API_ALLOWED_ORIGINS = new Set(
     "https://7fx.login.org.tr",
     "https://7fx-finance.vercel.app",
     "https://7fx-finance-production.up.railway.app",
-    process.env.NEXT_PUBLIC_SITE_ORIGIN,
-    process.env.MAIN_SITE_ORIGIN,
     // local / preview
     "http://localhost:3000",
     "http://127.0.0.1:3000",
@@ -20,7 +20,7 @@ export function isAllowedApiOrigin(origin: string | null): boolean {
   // Missing Origin: same-origin navigations, curl, some WebViews.
   // Literal "null": opaque origin sent by Android WebView / WKWebView.
   if (!origin || origin === "null") return true;
-  if (API_ALLOWED_ORIGINS.has(origin)) return true;
+  if (API_ALLOWED_ORIGINS.has(origin) || configuredSiteOrigins().includes(origin)) return true;
   // Capacitor / WebView
   if (origin.startsWith("capacitor://") || origin.startsWith("ionic://")) return true;
   if (origin === "http://localhost" || origin === "https://localhost") return true;

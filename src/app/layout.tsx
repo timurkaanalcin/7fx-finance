@@ -7,7 +7,7 @@ import { inter } from "@/lib/fonts";
 import { LOCALE_META, publicLocaleFromCookie, type Locale } from "@/lib/i18n/locales";
 import type { Dict } from "@/lib/i18n/types";
 import { DESCRIPTION, OG_ALT, OG_IMAGE, TITLE } from "@/lib/seo";
-import { PRIMARY_ORIGIN } from "@/lib/seo-hosts";
+import { primaryOrigin } from "@/lib/seo-hosts";
 
 async function publicDict(locale: Locale): Promise<Dict | undefined> {
   if (locale === "ru") return (await import("@/lib/i18n/dictionaries/ru")).ru;
@@ -27,7 +27,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL(PRIMARY_ORIGIN),
+  metadataBase: new URL(primaryOrigin()),
   title: "7FX",
   description: DESCRIPTION,
   manifest: "/site.webmanifest",

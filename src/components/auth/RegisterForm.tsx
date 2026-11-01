@@ -20,6 +20,31 @@ import {
 } from "@/lib/auth-fields";
 import { AuthAlert, FieldMessage, PasswordMeter, PasswordToggle } from "@/components/auth/AuthBits";
 
+function browserOrigin() {
+  if (typeof window === "undefined") return undefined;
+  const q = new URLSearchParams(window.location.search);
+  const g = (key: string) => q.get(key) || "";
+  return {
+    referrer: document.referrer || "",
+    landingUrl: window.location.href.slice(0, 2000),
+    utmSource: g("utm_source"),
+    utmMedium: g("utm_medium"),
+    utmCampaign: g("utm_campaign"),
+    utmContent: g("utm_content"),
+    utmTerm: g("utm_term"),
+    fbclid: g("fbclid"),
+    gclid: g("gclid"),
+    ttclid: g("ttclid"),
+    msclkid: g("msclkid"),
+    wbraid: g("wbraid"),
+    gbraid: g("gbraid"),
+    source: g("source"),
+    aff: g("aff") || g("affiliate"),
+    stream: g("stream"),
+    userAgent: (navigator.userAgent || "").slice(0, 512),
+  };
+}
+
 const inputClass =
   "fx-auth-input w-full rounded-xl border border-[rgba(16,20,37,0.12)] bg-[#ffffff] px-3.5 py-3 text-base text-[#111111] outline-none transition placeholder:text-[#8b93a7] hover:border-[#111111]/40 focus:border-[#111111] focus:shadow-[0_0_0_3px_rgba(17,17,17,0.15)]";
 
@@ -122,6 +147,7 @@ export default function RegisterForm() {
           phone: phone || undefined,
           jobTitle: jobTitle || null,
           referralCode: referralCode.trim(),
+          origin: browserOrigin(),
         }),
       });
       const data = await res.json();
