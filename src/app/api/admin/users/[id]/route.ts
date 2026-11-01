@@ -13,6 +13,7 @@ import { isAccountLoginId } from "@/lib/account-login-id";
 import { recordLedger } from "@/lib/ledger";
 import { jobTitleSchema } from "@/lib/job-titles";
 import { ensureDemoSeed } from "@/lib/ensure-seed";
+import { syncUserAffiliateName } from "@/lib/lead-origin-store";
 import { noteVisibilityWhere } from "@/lib/comment-teams";
 import { crmPageWindow, pagedOrLegacy, traderDetailScope } from "@/lib/trader-list";
 
@@ -636,6 +637,12 @@ export async function PATCH(req: Request, ctx: Ctx) {
       targetId: id,
       meta: data,
     });
+  }
+  if (
+    user.role === "TRADER" &&
+    ("affiliateA" in data || "affiliateB" in data || "affiliateC" in data || "campaign" in data)
+  ) {
+    await syncUserAffiliateName(user);
   }
 
   return NextResponse.json({

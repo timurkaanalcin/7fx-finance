@@ -137,6 +137,8 @@ model User {
   createdLoginLinks  AutoLoginLink[]  @relation("AutoLoginCreator")
   loginEvents        LoginEvent[]
   chatThreadState    ChatThreadState?
+  /// Real traffic-origin capture (referrer, click ids, detected source). Additive.
+  leadOrigin         LeadOrigin?
 
   @@index([lastSeenAt])
   @@index([assigneeId])
@@ -688,4 +690,94 @@ model AiMembership {
 
   @@index([userId])
   @@index([status])
+}
+
+/// Affiliate partner account. Source key matches the name on the Affiliates report
+/// (User.affiliateA, else B, else C, else campaign). Additive — leads keep working
+/// when no partner row exists.
+model AffiliatePartner {
+  id                   String            @id @default(cuid())
+  sourceKey            String            @unique @db.VarChar(120)
+  name                 String            @db.VarChar(120)
+  surname              String?           @db.VarChar(120)
+  email                String?           @db.VarChar(191)
+  token                String            @unique @db.VarChar(64)
+  active               Boolean           @default(true)
+  checkOnFraud         Boolean           @default(false)
+  allowDuplicatePhones Boolean           @default(false)
+  /// Newline or comma separated caller IPs allowed to post leads
+  allowedIps           String?           @db.Text
+  /// Declared networks this partner may send (google, taboola, …)
+  allowedSources       String?           @db.Text
+  note                 String?           @db.Text
+  /// Postback template stored for the partner. The CRM does not call it.
+  callbackUrl          String?           @db.Text
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+  streams              AffiliateStream[]
+  origins              LeadOrigin[]
+
+  @@index([active])
+}
+
+/// A traffic stream (offer / landing) belonging to one partner.
+model AffiliateStream {
+  id             String           @id @default(cuid())
+  affiliateId    String
+  affiliate      AffiliatePartner @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  name           String           @db.VarChar(120)
+  declaredSource String           @db.VarChar(80)
+  landingUrl     String?          @db.Text
+  active         Boolean          @default(true)
+  note           String?          @db.Text
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  origins        LeadOrigin[]
+
+  @@index([affiliateId])
+}
+
+/// Per-lead declared source vs signals that show where the visit actually came from.
+model LeadOrigin {
+  id              String            @id @default(cuid())
+  userId          String            @unique @db.VarChar(191)
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  affiliateId     String?
+  affiliate       AffiliatePartner? @relation(fields: [affiliateId], references: [id], onDelete: SetNull)
+  streamId        String?
+  stream          AffiliateStream?  @relation(fields: [streamId], references: [id], onDelete: SetNull)
+  declaredSource  String?           @db.VarChar(120)
+  detectedSource  String?           @db.VarChar(80)
+  mismatch        Boolean           @default(false)
+  fraudFlag       Boolean           @default(false)
+  referrer        String?           @db.Text
+  landingUrl      String?           @db.Text
+  utmSource       String?           @db.VarChar(120)
+  utmMedium       String?           @db.VarChar(120)
+  utmCampaign     String?           @db.VarChar(191)
+  utmContent      String?           @db.VarChar(191)
+  utmTerm         String?           @db.VarChar(191)
+  fbclid          String?           @db.VarChar(255)
+  gclid           String?           @db.VarChar(255)
+  ttclid          String?           @db.VarChar(255)
+  msclkid         String?           @db.VarChar(255)
+  userAgent       String?           @db.VarChar(512)
+  inAppBrowser    String?           @db.VarChar(32)
+  ip              String?           @db.VarChar(64)
+  country         String?           @db.VarChar(8)
+  countryName     String?           @db.VarChar(96)
+  region          String?           @db.VarChar(128)
+  city            String?           @db.VarChar(128)
+  /// IP of the server that posted the lead (affiliate API), not the visitor
+  intakeIp        String?           @db.VarChar(64)
+  intakeUserAgent String?           @db.VarChar(512)
+  rawSignals      String?           @db.Text
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([affiliateId])
+  @@index([streamId])
+  @@index([declaredSource])
+  @@index([detectedSource])
+  @@index([mismatch])
 }
