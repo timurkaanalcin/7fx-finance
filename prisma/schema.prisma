@@ -137,6 +137,7 @@ model User {
   createdLoginLinks  AutoLoginLink[]  @relation("AutoLoginCreator")
   loginEvents        LoginEvent[]
   chatThreadState    ChatThreadState?
+  routingTask        LeadRoutingTask?
   /// Real traffic-origin capture (referrer, click ids, detected source). Additive.
   leadOrigin         LeadOrigin?
 
@@ -210,6 +211,10 @@ model Position {
   takeProfit   Float?
   profit       Float     @default(0)
   margin       Float     @default(0)
+  /// Effective opening notional/margin; retained if account leverage or profile changes.
+  appliedLeverage Float?
+  /// Opening margin profile id; margin itself is the durable opening snapshot.
+  marginPolicy String? @db.VarChar(96)
   status       String    @default("OPEN") // OPEN | CLOSED
   openedAt     DateTime  @default(now())
   closedAt     DateTime?
@@ -429,6 +434,10 @@ model Communication {
   type        String   @default("NOTE") // CHAT | CALL | NOTE
   title       String?
   description String   @db.Text
+  /// Original staff composition when delivery translation was explicitly used.
+  originalDescription String? @db.Text
+  /// Versioned translation provenance, bound to hashes of original and delivered text.
+  translationMetadata String? @db.Text
   workerName  String?
   workerId    String?
   createdAt   DateTime @default(now())
@@ -486,16 +495,20 @@ model Reminder {
 /// Singleton app/system settings (id = "default")
 model SystemSettings {
   id                String   @id @default("default")
-  /// Required invite / referral code for public registration (digits)
-  referralCode      String   @default("213950812") @db.VarChar(64)
+  /// Optional invite code configured by an MFX administrator
+  referralCode      String   @default("") @db.VarChar(64)
   /// When true, public registration requires a valid referral code
-  referralRequired  Boolean  @default(true)
+  referralRequired  Boolean  @default(false)
   /// When true, admins can open the trader terminal as that user (default ON)
   terminalImpersonationEnabled Boolean @default(true)
   /// JSON: { valid: string[], invalid: string[], potential: string[] } saleStatus / potentialStatus lists
   leadStatusMappingJson String? @db.Text
+  /// JSON configuration for the public terminal footer ticker
+  terminalTickerConfigJson String? @db.Text
   /// JSON lead auto-classification rules (working hours, allowed countries, age)
   leadRulesJson     String?  @db.Text
+  /// Optional reference margin rules. Disabled until explicitly configured by an owner.
+  marginPolicyJson String? @db.Text
   updatedAt         DateTime @updatedAt
 }
 
@@ -690,6 +703,168 @@ model AiMembership {
 
   @@index([userId])
   @@index([status])
+}
+
+/// Saved aggregate CRM report. No customer identities or authentication material.
+/// Present on the live database. Not used by this build; kept so db push does not drop it.
+model CrmSnapshot {
+  id            String   @id @default(cuid())
+  label         String   @db.VarChar(120)
+  rangeFrom     DateTime
+  rangeTo       DateTime
+  payloadJson   String   @db.LongText
+  createdById   String   @db.VarChar(191)
+  createdByName String   @db.VarChar(191)
+  createdAt     DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+/// Incoming-lead distribution. Match fields are optional exact matches (AND).
+/// Present on the live database. Not used by this build; kept so db push does not drop it.
+model LeadRoutingRule {
+  id               String   @id @default(cuid())
+  name             String   @db.VarChar(120)
+  active           Boolean  @default(true)
+  priority         Int      @default(100)
+  affiliateMatch   String?  @db.VarChar(120)
+  countryMatch     String?  @db.VarChar(8)
+  campaignMatch    String?  @db.VarChar(120)
+  targetMode       String   @default("EMPLOYEES") @db.VarChar(16)
+  employeeIdsJson  String?  @db.Text
+  deskId           String?  @db.VarChar(191)
+  dailyCap         Int?
+  roundRobinCursor Int      @default(0)
+  assignedDay      String?  @db.VarChar(10)
+  assignedToday    Int      @default(0)
+  createdById      String   @db.VarChar(191)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  tasks            LeadRoutingTask[]
+
+  @@index([active, priority])
+}
+
+/// Durable create-time intent. Existing customers are never backfilled here.
+/// Present on the live database. Not used by this build; kept so db push does not drop it.
+model LeadRoutingTask {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status      String   @default("PENDING") @db.VarChar(16)
+  reason      String?  @db.VarChar(64)
+  ruleId      String?
+  rule        LeadRoutingRule? @relation(fields: [ruleId], references: [id], onDelete: SetNull)
+  employeeId  String?  @db.VarChar(191)
+  attempts    Int      @default(0)
+  createdAt   DateTime @default(now())
+  processedAt DateTime?
+
+  @@index([status, createdAt])
+}
+
+/// Owner-editable presentation only. Draft data never appears in the public design API.
+/// Present on the live database. Not used by this build; kept so db push does not drop it.
+model DesignStudio {
+  id            String   @id @default("mfx")
+  draftJson     String   @db.LongText
+  publishedJson String?  @db.LongText
+  revision      Int      @default(0)
+  updatedAt     DateTime @updatedAt
+  publishedAt   DateTime?
+}
+
+/// Explicitly published design revisions; restore copies a revision to draft only.
+/// Present on the live database. Not used by this build; kept so db push does not drop it.
+model DesignStudioVersion {
+  id          String   @id @default(cuid())
+  revision    Int      @unique
+  configJson  String   @db.LongText
+  createdById String   @db.VarChar(191)
+  note        String   @db.VarChar(240)
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+/// Affiliate profile (traffic source settings). Affiliate name = User.affiliateA value.
+/// Created lazily on first detail view; token is the secret for the lead-ingest API.
+/// Present on the live database. Not used by this build; kept so db push does not drop it.
+model AffiliateProfile {
+  id                    String   @id @default(cuid())
+  name                  String   @unique @db.VarChar(120)
+  firstName             String?  @db.VarChar(80)
+  lastName              String?  @db.VarChar(80)
+  email                 String?  @db.VarChar(191)
+  token                 String   @unique @db.VarChar(64)
+  active                Boolean  @default(true)
+  allowDuplicateMobile  Boolean  @default(false)
+  checkOnFraud          Boolean  @default(true)
+  /// Allowed request IPs (whitelist). Empty = any IP. One per line or comma.
+  availableIps          String?  @db.Text
+  /// Allowed sources. Empty = any source. One per line or comma.
+  availableSources      String?  @db.Text
+  note                  String?  @db.Text
+  /// Postback URL template: {uuid} {event} {status} {is_ftd} are replaced.
+  callbackUrl           String?  @db.VarChar(500)
+  /// When true, POST /api/leads/{token} also returns a one-time auto-login URL for the lead.
+  autoLogin             Boolean  @default(false)
+  createdById           String?  @db.VarChar(191)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([token])
+}
+
+/// Lead-ingest API audit per affiliate (accept / reject + reason + request IP).
+/// Present on the live database. Not used by this build; kept so db push does not drop it.
+model AffiliateIngestLog {
+  id        String   @id @default(cuid())
+  profileId String   @db.VarChar(191)
+  ok        Boolean
+  reason    String?  @db.VarChar(120)
+  userId    String?  @db.VarChar(191)
+  email     String?  @db.VarChar(191)
+  ip        String?  @db.VarChar(64)
+  createdAt DateTime @default(now())
+
+  @@index([profileId, createdAt])
+}
+
+/// CRM session screen recording (Operational actions). Chunks uploaded by the staff browser.
+/// Present on the live database. Not used by this build; kept so db push does not drop it.
+model SessionRecording {
+  id           String   @id @default(cuid())
+  userId       String   @db.VarChar(191)
+  userName     String?  @db.VarChar(120)
+  userEmail    String?  @db.VarChar(191)
+  sessionId    String?  @db.VarChar(64)
+  mime         String   @default("video/webm;codecs=vp8,opus") @db.VarChar(80)
+  hasAudio     Boolean  @default(false)
+  size         Int      @default(0)
+  chunkCount   Int      @default(0)
+  durationMs   Int      @default(0)
+  active       Boolean  @default(true)
+  completedAt  DateTime?
+  createdAt    DateTime @default(now())
+
+  chunks       SessionRecordingChunk[]
+  @@index([userId, createdAt])
+  @@index([createdAt])
+  @@index([active])
+}
+
+model SessionRecordingChunk {
+  id          String   @id @default(cuid())
+  recordingId String   @db.VarChar(191)
+  recording   SessionRecording @relation(fields: [recordingId], references: [id], onDelete: Cascade)
+  seq         Int
+  size        Int
+  data        Bytes    @db.LongBlob
+  createdAt   DateTime @default(now())
+
+  @@unique([recordingId, seq])
+  @@index([recordingId])
 }
 
 /// Affiliate partner account. Source key matches the name on the Affiliates report
