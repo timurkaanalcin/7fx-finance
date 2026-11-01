@@ -1,3 +1,5 @@
+import { fallbackSiteOrigin } from "@/lib/site-origin";
+
 /**
  * Auto-login links are opened as a top-level navigation (CRM copy, email, another domain).
  * The session cookie is host-only, so the redirect must stay on the host that set it.
@@ -68,20 +70,8 @@ export function autoLoginOrigin(req: { url: string; headers: HeaderSource }): st
   }
   if (requestOrigin) return requestOrigin;
 
-  // No browser host at all (internal bind). Last-resort canonical origin.
-  const env =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    process.env.APP_URL ||
-    process.env.NEXT_PUBLIC_APP_URL ||
-    "";
-  if (env) {
-    try {
-      return new URL(env).origin;
-    } catch {
-      /* ignore */
-    }
-  }
-  return "https://7fx.customer.org.tr";
+  // No browser host at all (internal bind). Canonical origin from APP_URL / MAIN_SITE_ORIGIN.
+  return fallbackSiteOrigin();
 }
 
 export function autoLoginRedirectUrl(req: { url: string; headers: HeaderSource }, path: string): URL {

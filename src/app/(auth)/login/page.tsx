@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { getSession, requireUser, destroySession, postLoginPath } from "@/lib/auth";
-import { hostnameFromRequest, isCrmHostname, MAIN_SITE_ORIGIN } from "@/lib/crm-host";
+import { hostnameFromRequest, isCrmHostname, mainSiteOrigin } from "@/lib/crm-host";
 import AuthShell from "@/components/auth/AuthShell";
 import LoginForm from "@/components/auth/LoginForm";
 import { publicAuthMetadata } from "@/lib/i18n/public-meta";
@@ -23,7 +23,7 @@ export default async function LoginPage() {
       const loc = (path: string) =>
         locationForRequest({ url: "http://0.0.0.0/", headers: { get: (name) => h.get(name) } }, path);
       if (isCrmHostname(host)) {
-        redirect(loc(user.role === "ADMIN" ? "/izcrm" : `${MAIN_SITE_ORIGIN}/trade`));
+        redirect(loc(user.role === "ADMIN" ? "/izcrm" : `${mainSiteOrigin()}/trade`));
       }
       // TEMP: postLoginPath /izcrm stays on main host until Natro crm7fx is live
       redirect(loc(postLoginPath(user)));

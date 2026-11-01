@@ -1,3 +1,5 @@
+import { configuredSiteHosts, configuredSiteOrigin } from "@/lib/site-origin";
+
 /** Public hosts that should appear in search. Admin/login hosts are noindex. */
 export const INDEXABLE_HOSTS = ["7fx.customer.org.tr", "7fx.financeunit.co"] as const;
 
@@ -9,7 +11,12 @@ export const KNOWN_HOSTS = [
   "crm7fx.customer.org.tr",
 ] as const;
 
+/** Historical default. primaryOrigin() follows APP_URL / MAIN_SITE_ORIGIN when set. */
 export const PRIMARY_ORIGIN = "https://7fx.customer.org.tr";
+
+export function primaryOrigin(): string {
+  return configuredSiteOrigin() || PRIMARY_ORIGIN;
+}
 
 /** Paths a crawler may index on an indexable host. */
 export const MARKETING_PATHS = [
@@ -31,12 +38,21 @@ export function normalizeHost(raw: string | null | undefined): string {
 }
 
 export function isIndexableHost(host: string): boolean {
-  return (INDEXABLE_HOSTS as readonly string[]).includes(host);
+  if ((INDEXABLE_HOSTS as readonly string[]).includes(host)) return true;
+  const configured = configuredSiteOrigin();
+  if (!configured) return false;
+  try {
+    return new URL(configured).hostname.toLowerCase() === host;
+  } catch {
+    return false;
+  }
 }
 
 export function metadataOrigin(host: string): string {
-  if ((KNOWN_HOSTS as readonly string[]).includes(host)) return `https://${host}`;
-  return PRIMARY_ORIGIN;
+  if ((KNOWN_HOSTS as readonly string[]).includes(host) || configuredSiteHosts().includes(host)) {
+    return `https://${host}`;
+  }
+  return primaryOrigin();
 }
 
 export function isMarketingPath(pathname: string): boolean {

@@ -1,10 +1,18 @@
-/** CRM-dedicated hosts (admin UI). Main trading site stays on 7fx.customer.org.tr. */
+import { configuredSiteOrigin } from "@/lib/site-origin";
+
+/** CRM-dedicated hosts (admin UI). The trading site is the request host, or APP_URL / MAIN_SITE_ORIGIN. */
 export const CRM_HOSTNAMES = new Set([
   "crm7fx.customer.org.tr",
 ]);
 
+/** Historical default when no site env is set. Prefer mainSiteOrigin() for redirects. */
 export const MAIN_SITE_ORIGIN = "https://7fx.customer.org.tr";
 export const CRM_SITE_ORIGIN = "https://crm7fx.customer.org.tr";
+
+/** Main trading origin. APP_URL and MAIN_SITE_ORIGIN win over the 7fx default. */
+export function mainSiteOrigin(): string {
+  return configuredSiteOrigin() || MAIN_SITE_ORIGIN;
+}
 
 export function hostnameFromRequest(req: { headers: { get: (n: string) => string | null } }): string {
   const raw =
