@@ -204,6 +204,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-color-tags": ["Color tags", "Renk etiketleri", "Farbmarken", "Цветные метки", "وسوم اللون"],
   "crmv3-color-assign": ["Color assign", "Renk ataması", "Farbzuweisung", "Назначение цвета", "إسناد اللون"],
   "crmv3-trade-side-hide": ["Trade side", "İşlem yönü", "Handelsseite", "Сторона сделки", "جهة الصفقة"],
+  "crmv3-saved-views": ["Saved views", "Kayıtlı görünümler", "Gespeicherte Ansichten", "Сохранённые виды", "عروض محفوظة"],
+  "crmv3-kyc-status-hide": ["KYC status", "KYC durumu", "KYC-Status", "Статус KYC", "حالة التحقق"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
