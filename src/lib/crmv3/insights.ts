@@ -132,6 +132,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-vip-rule": ["VIP rule", "VIP kuralı", "VIP-Regel", "Правило VIP", "قاعدة كبار العملاء"],
   "crmv3-vip-pins": ["VIP pins", "VIP sabitlemeleri", "VIP-Pins", "Закрепления VIP", "تثبيت كبار العملاء"],
   "crmv3-handoff-packet": ["Handoff packet", "Devir paketi", "Übergabepaket", "Пакет передачи", "حزمة التسليم"],
+  "crmv3-desk-clocks": ["Desk clocks", "Masa saatleri", "Tischuhren", "Часы стола", "ساعات المكتب"],
+  "crmv3-snippets": ["Follow-up snippets", "Takip metinleri", "Nachfass-Texte", "Тексты для ответа", "نصوص المتابعة"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;

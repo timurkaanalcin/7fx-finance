@@ -149,6 +149,8 @@ export function CommandPalette({ base, open, onClose }: { base: string; open: bo
       { id: "winloss", label: v3("wnTitle"), href: crmv3Href(base, "winloss") },
       { id: "vip", label: v3("vwTitle"), href: crmv3Href(base, "vip") },
       { id: "packet", label: v3("pkTitle"), href: crmv3Href(base, "packet") },
+      { id: "clocks", label: v3("ckTitle"), href: crmv3Href(base, "clocks") },
+      { id: "snippets", label: v3("snTitle"), href: crmv3Href(base, "snippets") },
       { id: "gallery", label: v3("glTitle"), href: crmv3Href(base, "gallery") },
       { id: "history", label: v3("hsTitle"), href: crmv3Href(base, "history") },
       { id: "reports", label: v3("reportsTitle"), href: crmv3Href(base, "reports") },
