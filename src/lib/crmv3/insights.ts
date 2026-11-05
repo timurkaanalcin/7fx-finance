@@ -201,6 +201,9 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-dep-method-hide": ["Deposit method", "Yatırma yöntemi", "Einzahlungsmethode", "Метод депозита", "طريقة الإيداع"],
   "crmv3-check-polish": ["Checklist", "Kontrol listesi", "Checkliste", "Список проверки", "قائمة تحقق"],
   "crmv3-case-priority-hide": ["Case priority", "Vaka önceliği", "Fallpriorität", "Приоритет дела", "أولوية الحالة"],
+  "crmv3-color-tags": ["Color tags", "Renk etiketleri", "Farbmarken", "Цветные метки", "وسوم اللون"],
+  "crmv3-color-assign": ["Color assign", "Renk ataması", "Farbzuweisung", "Назначение цвета", "إسناد اللون"],
+  "crmv3-trade-side-hide": ["Trade side", "İşlem yönü", "Handelsseite", "Сторона сделки", "جهة الصفقة"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
