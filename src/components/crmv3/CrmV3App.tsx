@@ -26,6 +26,7 @@ import { NoticeDesk, useNotices } from "./desk/notices";
 import { HelpDrawer } from "./desk/board";
 import { DayDesk } from "./desk/period";
 import { RiskDesk } from "./desk/risk";
+import { AffiliateDesk } from "./desk/tickets";
 import { readJson } from "@/lib/crmv3/bridge";
 import { RAIL_KEY, readFold } from "@/lib/crmv3/nav";
 import { MoreNav, RailNav } from "./desk/nav";
@@ -169,6 +170,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "inbox") return v3("inboxTitle");
     if (tab === "reports") return v3("reportsTitle");
     if (tab === "insights") return v3("insTitle");
+    if (tab === "affiliates") return v3("afTitle");
     if (tab === "agenda") return v3("agTitle");
     if (tab === "day") return v3("dayTitle");
     if (tab === "roster") return v3("staffTitle");
@@ -293,6 +295,7 @@ function Shell({ base, section, name }: Props) {
             {view === "inbox" && <InboxDesk tx={tx} locale={locale} />}
             {view === "reports" && <ReportsPage locale={locale} />}
             {view === "insights" && <InsightsHome locale={locale} />}
+            {view === "affiliates" && <AffiliateDesk base={base} locale={locale} />}
             {view === "agenda" && <AgendaPage base={base} locale={locale} />}
             {view === "day" && <DayDesk base={base} name={name} locale={locale} />}
             {view === "roster" && <DeskStaff />}

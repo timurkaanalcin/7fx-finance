@@ -110,6 +110,7 @@ export function CommandPalette({ base, open, onClose }: { base: string; open: bo
       { id: "reports", label: v3("reportsTitle"), href: crmv3Href(base, "reports") },
       { id: "goals", label: v3("goalsTitle"), href: crmv3Href(base, "goals") },
       { id: "support", label: label("support"), href: crmv3Href(base, "support") },
+      { id: "affiliates", label: v3("afTitle"), href: crmv3Href(base, "affiliates") },
     ];
   }, [base, locale, v3]);
   const hits = useMemo(() => {

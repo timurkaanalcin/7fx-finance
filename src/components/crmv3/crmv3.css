@@ -2420,3 +2420,105 @@
 }
 
 [data-crmv3-root] .c3-feed-line p { margin: 0; }
+
+[data-crmv3-root] .c3-inbox,
+[data-crmv3-root] .c3-aff,
+[data-crmv3-root] .c3-aff-card,
+[data-crmv3-root] .c3-ticket-detail,
+[data-crmv3-root] .c3-ticket-confirm,
+[data-crmv3-root] .c3-ticket-row {
+  min-width: 0;
+  max-width: 100%;
+}
+
+[data-crmv3-root] .c3-inbox,
+[data-crmv3-root] .c3-aff {
+  display: grid;
+  gap: var(--c3-2);
+  padding: var(--c3-3);
+  border: 1px solid var(--c3-line);
+  border-radius: var(--c3-radius);
+  background: var(--c3-card);
+  overflow-x: clip;
+}
+
+[data-crmv3-root] .c3-inbox h2,
+[data-crmv3-root] .c3-inbox h3,
+[data-crmv3-root] .c3-aff h2,
+[data-crmv3-root] .c3-aff h3 { margin: 0; }
+
+[data-crmv3-root] .c3-inbox .c3-btn,
+[data-crmv3-root] .c3-inbox .c3-field,
+[data-crmv3-root] .c3-inbox .c3-chip,
+[data-crmv3-root] .c3-aff .c3-btn,
+[data-crmv3-root] .c3-aff .c3-field,
+[data-crmv3-root] .c3-aff .c3-chip { min-height: 44px; }
+
+[data-crmv3-root] .c3-ticket-list {
+  display: grid;
+  gap: var(--c3-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv3-root] .c3-ticket-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--c3-2);
+  align-items: center;
+  width: 100%;
+  padding: var(--c3-2);
+  border: 1px solid var(--c3-line);
+  border-radius: 12px;
+  background: var(--c3-elev);
+  color: inherit;
+  text-align: start;
+  overflow-wrap: anywhere;
+}
+
+[data-crmv3-root] .c3-ticket-row[data-on="1"] { border-color: var(--c3-gold); }
+
+[data-crmv3-root] .c3-sla {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 var(--c3-2);
+  border-radius: 999px;
+  border: 1px solid var(--c3-line);
+  background: var(--c3-gold-soft);
+}
+
+[data-crmv3-root] .c3-sla[data-sla="breached"] { color: var(--c3-neg); }
+[data-crmv3-root] .c3-sla[data-sla="due"] { color: var(--c3-gold); }
+[data-crmv3-root] .c3-sla[data-sla="ok"] { color: var(--c3-pos); }
+
+[data-crmv3-root] .c3-ticket-detail,
+[data-crmv3-root] .c3-ticket-confirm,
+[data-crmv3-root] .c3-aff-card {
+  display: grid;
+  gap: var(--c3-2);
+  padding: var(--c3-3);
+  border: 1px solid var(--c3-line);
+  border-radius: var(--c3-radius);
+  background: var(--c3-elev);
+  overflow-x: clip;
+}
+
+[data-crmv3-root] .c3-aff-grid {
+  display: grid;
+  gap: var(--c3-2);
+  grid-template-columns: 1fr;
+}
+
+[data-crmv3-root] .c3-aff-card ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--c3-1);
+}
+
+@media (min-width: 768px) {
+  [data-crmv3-root] .c3-aff-grid { grid-template-columns: 1fr 1fr; }
+}
