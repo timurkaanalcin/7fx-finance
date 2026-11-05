@@ -60,7 +60,7 @@ export function storeLayout(layout: OverviewLayout) {
   writeJson(LAYOUT_KEY, layout);
 }
 
-export function DeskArrange({ layout, onChange }: { layout: OverviewLayout; onChange: (next: OverviewLayout) => void }) {
+export function DeskArrange({ layout, onChange, locked = false }: { layout: OverviewLayout; onChange: (next: OverviewLayout) => void; locked?: boolean }) {
   const v3 = useV3();
   return (
     <section className="c3-card" aria-label={v3("arrangeTitle")} data-arrange="1">
@@ -73,17 +73,17 @@ export function DeskArrange({ layout, onChange }: { layout: OverviewLayout; onCh
           return (
             <li key={id} data-on={on ? "1" : "0"}>
               <label className="c3-row">
-                <input type="checkbox" checked={on} aria-label={`${v3("arrangeShow")} ${name}`} onChange={() => onChange(toggleHidden(layout, id))} />
+                <input type="checkbox" checked={on} disabled={locked} aria-label={`${v3("arrangeShow")} ${name}`} onChange={() => onChange(toggleHidden(layout, id))} />
                 <span>{name}</span>
               </label>
-              <button type="button" className="c3-btn" aria-label={`${v3("arrangeUp")} ${name}`} disabled={index === 0} onClick={() => onChange(moveCard(layout, id, -1))}>{v3("arrangeUp")}</button>
-              <button type="button" className="c3-btn" aria-label={`${v3("arrangeDown")} ${name}`} disabled={index === layout.order.length - 1} onClick={() => onChange(moveCard(layout, id, 1))}>{v3("arrangeDown")}</button>
+              <button type="button" className="c3-btn" aria-label={`${v3("arrangeUp")} ${name}`} disabled={locked || index === 0} onClick={() => onChange(moveCard(layout, id, -1))}>{v3("arrangeUp")}</button>
+              <button type="button" className="c3-btn" aria-label={`${v3("arrangeDown")} ${name}`} disabled={locked || index === layout.order.length - 1} onClick={() => onChange(moveCard(layout, id, 1))}>{v3("arrangeDown")}</button>
             </li>
           );
         })}
       </ul>
       <div className="c3-pad">
-        <button type="button" className="c3-btn" onClick={() => onChange(defaultLayout())}>{v3("arrangeReset")}</button>
+        <button type="button" className="c3-btn" disabled={locked} onClick={() => onChange(defaultLayout())}>{v3("arrangeReset")}</button>
       </div>
     </section>
   );

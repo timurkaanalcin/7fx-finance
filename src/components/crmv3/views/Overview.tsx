@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ledgerBody } from "@/lib/crmv2/payload";
+import { readJson } from "@/lib/crmv3/bridge";
+import { LOCK_KEY, readLock, shownLayout } from "@/lib/crmv3/desklock";
 import { crmv3Href } from "@/lib/crmv3/sections";
 import { Bars, Card, Chip, Field, Kpi, Lab, Msg, Sheet, State, auditExport, downloadCsv, fmtNum, money, sendJson, useJson, when, type Tx, type UserRow } from "../kit";
 import { useHomeCards } from "../desk/panels";
@@ -28,8 +30,24 @@ export default function Overview({ base, tx, locale, name }: Props) {
   const [tab, setTab] = useState<"home" | "insights">("home");
   const home = useHomeCards({ base, locale });
   const [layout, setLayout] = useState(defaultLayout);
-  useEffect(() => { setLayout(loadLayout()); }, []);
+  const [layoutLocked, setLayoutLocked] = useState(false);
+  useEffect(() => {
+    const apply = () => {
+      const lock = readLock(readJson(LOCK_KEY, null));
+      setLayoutLocked(lock.locked);
+      setLayout(shownLayout(lock, loadLayout()));
+    };
+    apply();
+    window.addEventListener("crmv3:layout-lock", apply);
+    return () => window.removeEventListener("crmv3:layout-lock", apply);
+  }, []);
   function commit(next: ReturnType<typeof defaultLayout>) {
+    const lock = readLock(readJson(LOCK_KEY, null));
+    if (lock.locked) {
+      setLayoutLocked(true);
+      setLayout(shownLayout(lock, loadLayout()));
+      return;
+    }
     setLayout(next);
     storeLayout(next);
   }
@@ -96,7 +114,7 @@ export default function Overview({ base, tx, locale, name }: Props) {
           </div>
         </div>
       )}
-      <DeskArrange layout={layout} onChange={commit} />
+      <DeskArrange layout={layout} locked={layoutLocked} onChange={commit} />
       {shown.map((id) => <div key={id} data-card={id}>{cards[id]}</div>)}
       {!shown.length && <p className="c3-empty" role="status">{v3("arrangeEmpty")}</p>}
       {sheet === "add" && <AddCustomer tx={tx} onClose={() => setSheet(null)} onDone={users.reload} />}

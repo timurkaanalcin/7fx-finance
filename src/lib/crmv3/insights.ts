@@ -189,6 +189,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-ticket-channel-hide": ["Channel glance", "Kanal bakışı", "Kanalblick", "Обзор канала", "لمحة القناة"],
   "crmv3-watch-words": ["Watch words", "İzleme sözleri", "Beobachtungswörter", "Слова наблюдения", "كلمات المراقبة"],
   "crmv3-lang-hide": ["Language glance", "Dil bakışı", "Sprachblick", "Обзор языка", "لمحة اللغة"],
+  "crmv3-layout-lock": ["Layout lock", "Düzen kilidi", "Layout-Sperre", "Блокировка раскладки", "قفل التخطيط"],
+  "crmv3-ib-status-hide": ["IB status", "IB durumu", "IB-Status", "Статус IB", "حالة الوسيط"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
