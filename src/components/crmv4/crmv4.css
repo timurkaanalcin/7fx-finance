@@ -13089,3 +13089,149 @@
   [data-crmv4-root] .c4-ticket-glance .c4-chip,
   [data-crmv4-root] .c4-tz-blank { min-height: 44px; }
 }
+
+[data-crmv4-root] .c4-row-density,
+[data-crmv4-root] .c4-ib-country {
+  display: grid;
+  gap: 12px;
+  margin: 12px;
+  padding: 16px;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+  border: 1px solid rgba(166, 133, 78, 0.5);
+  border-radius: 18px;
+  background: #f7f4ee;
+  color: #1c1a17;
+  font-weight: 400;
+}
+
+[data-crmv4-root][data-glass="soft"] .c4-row-density,
+[data-crmv4-root][data-glass="soft"] .c4-ib-country { background: rgba(247, 244, 238, 0.72); }
+
+[data-crmv4-root] .c4-row-density .c4-title,
+[data-crmv4-root] .c4-ib-country .c4-title {
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+[data-crmv4-root] .c4-density-logo[data-logo="mono"] {
+  margin: 0;
+  color: #1c1a17;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  font-size: 12px;
+  line-height: 1;
+}
+
+[data-crmv4-root] .c4-row-density .c4-meta,
+[data-crmv4-root] .c4-ib-country .c4-meta,
+[data-crmv4-root] .c4-row-density .c4-pay-kicker,
+[data-crmv4-root] .c4-ib-country .c4-pay-kicker {
+  color: #7a5e30;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+[data-crmv4-root] .c4-row-density .c4-lab,
+[data-crmv4-root] .c4-ib-country .c4-lab,
+[data-crmv4-root] .c4-row-density .c4-field,
+[data-crmv4-root] .c4-ib-country .c4-field,
+[data-crmv4-root] .c4-row-density .c4-row,
+[data-crmv4-root] .c4-ib-country .c4-row {
+  min-width: 0;
+  max-width: 100%;
+}
+
+[data-crmv4-root] .c4-row-density .c4-field,
+[data-crmv4-root] .c4-ib-country .c4-field { width: 100%; }
+
+[data-crmv4-root] .c4-row-density .c4-row,
+[data-crmv4-root] .c4-ib-country .c4-row { flex-wrap: wrap; }
+
+[data-crmv4-root] .c4-density-rows,
+[data-crmv4-root] .c4-ic-rows {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-width: 0;
+}
+
+[data-crmv4-root] .c4-density-card,
+[data-crmv4-root] .c4-ic-rows li,
+[data-crmv4-root] .c4-ic-blank {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  max-width: 100%;
+  padding: 16px;
+  border: 1px solid rgba(166, 133, 78, 0.35);
+  border-radius: 14px;
+  background: #fffdf8;
+  color: inherit;
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+
+[data-crmv4-root][data-row-density="compact"] .c4-density-card,
+[data-crmv4-root][data-row-density="compact"] .c4-queue-card,
+[data-crmv4-root][data-row-density="compact"] .c4-table td { padding-top: 8px; padding-bottom: 8px; }
+
+[data-crmv4-root][data-row-density="dense"] .c4-density-card,
+[data-crmv4-root][data-row-density="dense"] .c4-queue-card,
+[data-crmv4-root][data-row-density="dense"] .c4-table td { padding-top: 4px; padding-bottom: 4px; }
+
+[data-crmv4-root] .c4-ic-blank[data-on="1"] { box-shadow: inset 2px 0 0 #a6854e; }
+
+[data-crmv4-root] .c4-ic-blank { width: 100%; text-align: start; cursor: pointer; }
+
+[data-crmv4-root] .c4-ic-pair {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+[data-crmv4-root] .c4-ib-country .c4-chip {
+  height: auto;
+  min-height: 24px;
+  white-space: normal;
+  text-align: start;
+  max-width: 100%;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-row-density,
+[data-crmv4-root][data-theme="dark"] .c4-ib-country {
+  background: #161412;
+  color: #f6f1e8;
+  border-color: rgba(212, 188, 134, 0.38);
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-density-logo { color: #f6f1e8; }
+
+[data-crmv4-root][data-theme="dark"] .c4-density-card,
+[data-crmv4-root][data-theme="dark"] .c4-ic-rows li,
+[data-crmv4-root][data-theme="dark"] .c4-ic-blank { background: #221f1b; color: #f6f1e8; }
+
+[data-crmv4-root][data-theme="dark"] .c4-row-density .c4-meta,
+[data-crmv4-root][data-theme="dark"] .c4-ib-country .c4-meta,
+[data-crmv4-root][data-theme="dark"] .c4-row-density .c4-pay-kicker,
+[data-crmv4-root][data-theme="dark"] .c4-ib-country .c4-pay-kicker { color: #d4bc86; }
+
+@media (max-width: 767px) {
+  [data-crmv4-root] .c4-row-density,
+  [data-crmv4-root] .c4-ib-country { margin: 8px; padding: 12px; }
+  [data-crmv4-root] .c4-row-density .c4-btn,
+  [data-crmv4-root] .c4-ib-country .c4-btn,
+  [data-crmv4-root] .c4-row-density .c4-chip,
+  [data-crmv4-root] .c4-ib-country .c4-chip,
+  [data-crmv4-root] .c4-ic-blank { min-height: 44px; }
+}
