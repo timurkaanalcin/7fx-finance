@@ -83,6 +83,7 @@ import { ReminderChips, SourceGlance } from "./round92";
 import { AssigneeGlance, TagPalette } from "./round93";
 import { DocStatusGlance, FilterPresets } from "./round94";
 import { SessionNote, WithdrawalGlance } from "./round95";
+import { DepStatusGlance, PinRail } from "./round96";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv4/round78";
 import { PAUSE_KEY, shieldOn } from "@/lib/crmv4/round74";
@@ -500,6 +501,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "docstatus") return v4("dsTitle");
     if (tab === "sessionnote") return v4("syTitle");
     if (tab === "wdstatus") return v4("wzTitle");
+    if (tab === "pinrail") return v4("rlTitle");
+    if (tab === "depstatus") return v4("dzTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -624,6 +627,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "docstatus") return v4("dsSub");
     if (tab === "sessionnote") return v4("sySub");
     if (tab === "wdstatus") return v4("wzSub");
+    if (tab === "pinrail") return v4("rlSub");
+    if (tab === "depstatus") return v4("dzSub");
     return "";
   }
 
@@ -869,6 +874,8 @@ function Shell({ base, section, name }: Props) {
             {view === "docstatus" && <DocStatusGlance base={base} v4={v4} />}
             {view === "sessionnote" && <SessionNote v4={v4} />}
             {view === "wdstatus" && <WithdrawalGlance base={base} v4={v4} />}
+            {view === "pinrail" && <PinRail base={base} v4={v4} />}
+            {view === "depstatus" && <DepStatusGlance base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
