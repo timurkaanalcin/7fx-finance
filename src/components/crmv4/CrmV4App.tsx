@@ -95,6 +95,7 @@ import { DepositMethod, SnoozeList } from "./round104";
 import { CasePriority, CheckPolish } from "./round105";
 import { ColorTags, TradeSide } from "./round106";
 import { KycStatus, SavedViews } from "./round107";
+import { FollowQueue, TicketStatus } from "./round108";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv4/round78";
@@ -546,6 +547,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "tradeside") return v4("ysTitle");
     if (tab === "savedviews") return v4("dvTitle");
     if (tab === "kycstatus") return v4("kyTitle");
+    if (tab === "followqueue") return v4("ffTitle");
+    if (tab === "ticketstatus") return v4("tzTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -694,6 +697,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "tradeside") return v4("ysSub");
     if (tab === "savedviews") return v4("dvSub");
     if (tab === "kycstatus") return v4("kySub");
+    if (tab === "followqueue") return v4("ffSub");
+    if (tab === "ticketstatus") return v4("tzSub");
     return "";
   }
 
@@ -963,6 +968,8 @@ function Shell({ base, section, name }: Props) {
             {view === "tradeside" && <TradeSide base={base} v4={v4} />}
             {view === "savedviews" && <SavedViews v4={v4} />}
             {view === "kycstatus" && <KycStatus base={base} v4={v4} />}
+            {view === "followqueue" && <FollowQueue base={base} v4={v4} />}
+            {view === "ticketstatus" && <TicketStatus base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
