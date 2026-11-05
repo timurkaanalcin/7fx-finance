@@ -2791,3 +2791,22 @@
   [data-crmv3-root] .c3-thread-split { grid-template-columns: minmax(0, 220px) minmax(0, 1fr); }
   [data-crmv3-root] .c3-today-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
+
+[data-crmv3-root] .c3-paper-grid {
+  display: grid;
+  gap: var(--c3-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv3-root] .c3-paper-checks {
+  display: grid;
+  gap: var(--c3-1);
+  margin: 0;
+  padding: var(--c3-2);
+  border: 1px solid var(--c3-line);
+  border-radius: 12px;
+}
+
+[data-crmv3-root] .c3-paper-checks legend { padding: 0; }

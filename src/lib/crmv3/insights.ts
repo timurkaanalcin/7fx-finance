@@ -84,6 +84,7 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-segment-cards": ["Segment pins", "Segment sabitlemeleri", "Segment-Pins", "Закрепления сегментов", "تثبيت الشرائح"],
   "crmv3-thread-drafts": ["Thread drafts", "Yazışma taslakları", "Entwürfe", "Черновики", "مسودات"],
   "crmv3-thread-canned": ["Saved replies", "Kayıtlı yanıtlar", "Gespeicherte Antworten", "Сохранённые ответы", "ردود محفوظة"],
+  "crmv3-gallery-checks": ["Document checklist", "Belge listesi", "Dokumentenliste", "Список документов", "قائمة الوثائق"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
