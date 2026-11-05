@@ -5,12 +5,15 @@ import { useEffect, useState } from "react";
 import type { CrmV3CopyKey } from "@/lib/crmv3/copy";
 import { filterFeed, mergeFeed, readJson, writeJson, type CallLog, type FeedKind } from "@/lib/crmv3/bridge";
 import { useEscape } from "@/lib/crmv3/focus";
+import { ROLE_KEY, deskRole } from "@/lib/crmv3/inbox-sla";
 import {
+  filterFlags,
   findDay,
   frequentPeople,
   groupDays,
   kycWithDeposits,
   largeDeposits,
+  pendingDoc,
   readCount,
   readNotes,
   readThresholds,
@@ -18,6 +21,7 @@ import {
   writeNote,
   type CashRow,
   type ReviewNote,
+  type RiskKind,
 } from "@/lib/crmv3/risk";
 import { crmv3Href } from "@/lib/crmv3/sections";
 import { money, sendJson, useJson, when, type Tx } from "../kit";
@@ -32,10 +36,16 @@ const CALL_KEY = "crmv3-call-log";
 const PIN_KEY = "crmv3-feed-pins";
 
 const KIND_LABEL: Record<FeedKind, CrmV3CopyKey> = {
-  note: "feedNotes",
-  call: "feedCalls",
-  status: "feedStatus",
-  money: "feedMoney",
+  note: "tlNote",
+  call: "tlCall",
+  status: "tlStatus",
+  money: "tlMoney",
+};
+
+const FLAG_LABEL: Record<RiskKind, CrmV3CopyKey> = {
+  large: "rkLarge",
+  frequent: "rkFrequent",
+  kyc: "rkKyc",
 };
 
 type Deposit = { id: string; amount?: number | null; currency?: string | null; userId?: string | null; user?: { id?: string | null; name?: string | null } | null };
@@ -56,7 +66,8 @@ export function RiskDesk({ base, tx, locale }: { base: string; tx: Tx; locale: s
   const v3 = useV3();
   const deposits = useJson<{ requests?: Deposit[] }>("/api/admin/deposits?take=80");
   const withdrawals = useJson<{ requests?: Deposit[] }>("/api/admin/withdrawals?take=80");
-  const people = useJson<{ users?: Person[] }>("/api/admin/users?view=table&take=80&meta=0&role=TRADER");
+  // The table view omits document status, which these flags need.
+  const people = useJson<{ users?: Person[] }>("/api/admin/users?take=80&meta=0&role=TRADER");
   const docs = useJson<{ documents?: Doc[] }>("/api/admin/documents?status=PENDING&take=40");
   const [thresholds, setThresholds] = useState<Record<string, number>>({});
   const [code, setCode] = useState("");
@@ -66,6 +77,9 @@ export function RiskDesk({ base, tx, locale }: { base: string; tx: Tx; locale: s
   const [notes, setNotes] = useState<Record<string, ReviewNote>>({});
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [saved, setSaved] = useState("");
+  const [kind, setKind] = useState<"" | RiskKind>("");
+  const [query, setQuery] = useState("");
+  const [viewer, setViewer] = useState(false);
   const [pending, setPending] = useState<{ docId: string; name: string; status: "APPROVED" | "REJECTED" } | null>(null);
   const [reason, setReason] = useState("");
   const [busy, setBusy] = useState(false);
@@ -78,6 +92,10 @@ export function RiskDesk({ base, tx, locale }: { base: string; tx: Tx; locale: s
     setCount(nextCount);
     setCountDraft(String(nextCount));
     setNotes(readNotes(readJson(NOTE_KEY, {})));
+    setViewer(deskRole(readJson(ROLE_KEY, "desk")) === "viewer");
+    const onRole = () => setViewer(deskRole(readJson(ROLE_KEY, "desk")) === "viewer");
+    window.addEventListener("crmv3:desk-role", onRole);
+    return () => window.removeEventListener("crmv3:desk-role", onRole);
   }, []);
   const depositRows = asCash(deposits.data?.requests || []);
   const withdrawalRows = asCash(withdrawals.data?.requests || []);
@@ -92,6 +110,16 @@ export function RiskDesk({ base, tx, locale }: { base: string; tx: Tx; locale: s
   const large = largeDeposits(depositRows, thresholds);
   const frequent = frequentPeople(withdrawalRows, count);
   const kyc = kycWithDeposits(users, depositRows);
+  const flags = [
+    ...large.map((row) => ({ kind: "large" as const, id: row.id, name: String(row.name || row.userId || row.id) })),
+    ...frequent.map((row) => ({ kind: "frequent" as const, id: row.userId, name: row.name })),
+    ...kyc.map((row) => ({ kind: "kyc" as const, id: row.id, name: row.name })),
+  ];
+  const shownIds = new Set(filterFlags(flags, kind, query).map((flag) => `${flag.kind}:${flag.id}`));
+  const largeShown = large.filter((row) => shownIds.has(`large:${row.id}`));
+  const frequentShown = frequent.filter((row) => shownIds.has(`frequent:${row.userId}`));
+  const kycShown = kyc.filter((row) => shownIds.has(`kyc:${row.id}`));
+  const filtering = Boolean(kind || query.trim());
 
   function saveNote(id: string) {
     const next = writeNote(notes, id, drafts[id] ?? notes[id]?.body ?? "", new Date().toISOString());
@@ -101,7 +129,7 @@ export function RiskDesk({ base, tx, locale }: { base: string; tx: Tx; locale: s
   }
 
   async function confirmReview() {
-    if (!pending || busy) return;
+    if (!pending || busy || viewer) return;
     setBusy(true);
     try {
       const note = reason.trim();
@@ -127,11 +155,31 @@ export function RiskDesk({ base, tx, locale }: { base: string; tx: Tx; locale: s
       <h2 className="c3-title">{v3("rkTitle")}</h2>
       <p className="c3-muted">{v3("rkHint")}</p>
       <p className="c3-muted">{v3("rkLoaded")} {depositRows.length} · {withdrawalRows.length} · {users.length}</p>
+      <div className="c3-row">
+        <button type="button" className="c3-chip" data-on={viewer ? "1" : "0"} aria-pressed={viewer} onClick={() => {
+          const next = viewer ? "desk" : "viewer";
+          writeJson(ROLE_KEY, next);
+          setViewer(!viewer);
+          window.dispatchEvent(new Event("crmv3:desk-role"));
+        }}>{v3("inViewerChip")}</button>
+      </div>
+      {viewer && <p className="c3-muted">{v3("rkViewer")}</p>}
+      <div className="c3-row" role="group" aria-label={v3("rkAll")}>
+        <button type="button" className="c3-chip" data-on={kind ? "0" : "1"} onClick={() => setKind("")}>{v3("rkAll")}</button>
+        {(["large", "frequent", "kyc"] as const).map((item) => (
+          <button key={item} type="button" className="c3-chip" data-on={kind === item ? "1" : "0"} onClick={() => setKind(item)}>{v3(FLAG_LABEL[item])} {flags.filter((flag) => flag.kind === item).length}</button>
+        ))}
+      </div>
+      <label className="c3-lab">
+        <span>{v3("rkSearch")}</span>
+        <input className="c3-field" aria-label={v3("rkSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
+      </label>
+      {filtering && !shownIds.size && <p className="c3-empty">{kind === "large" ? v3("rkLargeEmpty") : kind === "frequent" ? v3("rkFrequentEmpty") : kind === "kyc" ? v3("rkKycEmpty") : v3("rkEmpty")}</p>}
       <article className="c3-risk-card">
         <h3 className="c3-title">{v3("rkThreshold")}</h3>
         <p className="c3-muted">{v3("rkThresholdHint")}</p>
         <div className="c3-row">
-          <select className="c3-select" aria-label={v3("rkThreshold")} value={code} onChange={(event) => { setCode(event.target.value); setLimit(thresholds[event.target.value] ? String(thresholds[event.target.value]) : ""); }}>
+          <select className="c3-select" aria-label={v3("rkCurrency")} value={code} onChange={(event) => { setCode(event.target.value); setLimit(thresholds[event.target.value] ? String(thresholds[event.target.value]) : ""); }}>
             <option value="" />
             {currencies.map((item) => <option key={item} value={item}>{item}{thresholds[item] ? ` · ${thresholds[item]}` : ""}</option>)}
           </select>
@@ -162,10 +210,10 @@ export function RiskDesk({ base, tx, locale }: { base: string; tx: Tx; locale: s
           }}>{v3("rkSaveCount")}</button>
         </div>
       </article>
-      <article className="c3-risk-card" data-risk-block="large">
+      {(!filtering || largeShown.length > 0) && <article className="c3-risk-card" data-risk-block="large">
         <h3 className="c3-title">{v3("rkLarge")} <span className="c3-count">{large.length}</span></h3>
-        {!large.length && <p className="c3-muted">{v3("rkLargeEmpty")}</p>}
-        {large.map((row) => (
+        {!filtering && !large.length && <p className="c3-muted">{v3("rkLargeEmpty")}</p>}
+        {largeShown.map((row) => (
           <Flag
             key={row.id}
             id={`large-${row.id}`}
@@ -179,11 +227,11 @@ export function RiskDesk({ base, tx, locale }: { base: string; tx: Tx; locale: s
             onSave={() => saveNote(`large-${row.id}`)}
           />
         ))}
-      </article>
-      <article className="c3-risk-card" data-risk-block="frequent">
+      </article>}
+      {(!filtering || frequentShown.length > 0) && <article className="c3-risk-card" data-risk-block="frequent">
         <h3 className="c3-title">{v3("rkFrequent")} <span className="c3-count">{frequent.length}</span></h3>
-        {!frequent.length && <p className="c3-muted">{v3("rkFrequentEmpty")}</p>}
-        {frequent.map((row) => (
+        {!filtering && !frequent.length && <p className="c3-muted">{v3("rkFrequentEmpty")}</p>}
+        {frequentShown.map((row) => (
           <Flag
             key={row.userId}
             id={`frequent-${row.userId}`}
@@ -197,12 +245,12 @@ export function RiskDesk({ base, tx, locale }: { base: string; tx: Tx; locale: s
             onSave={() => saveNote(`frequent-${row.userId}`)}
           />
         ))}
-      </article>
-      <article className="c3-risk-card" data-risk-block="kyc">
+      </article>}
+      {(!filtering || kycShown.length > 0) && <article className="c3-risk-card" data-risk-block="kyc">
         <h3 className="c3-title">{v3("rkKyc")} <span className="c3-count">{kyc.length}</span></h3>
-        {!kyc.length && <p className="c3-muted">{v3("rkKycEmpty")}</p>}
-        {kyc.map((row) => {
-          const doc = pendingDocs.find((item) => String(item.traderId || "") === row.id);
+        {!filtering && !kyc.length && <p className="c3-muted">{v3("rkKycEmpty")}</p>}
+        {kycShown.map((row) => {
+          const doc = pendingDoc(pendingDocs, row.id);
           return (
             <Flag
               key={row.id}
@@ -215,12 +263,13 @@ export function RiskDesk({ base, tx, locale }: { base: string; tx: Tx; locale: s
               v3={v3}
               onNote={(value) => setDrafts((current) => ({ ...current, [`kyc-${row.id}`]: value }))}
               onSave={() => saveNote(`kyc-${row.id}`)}
-              review={doc ? () => setPending({ docId: doc.id, name: row.name, status: "APPROVED" }) : undefined}
+              review={doc && !viewer ? () => setPending({ docId: doc.id, name: row.name, status: "APPROVED" }) : undefined}
               noDoc={!doc}
+              held={Boolean(doc && viewer)}
             />
           );
         })}
-      </article>
+      </article>}
       {pending && (
         <section className="c3-risk-confirm" role="dialog" aria-label={v3("rkConfirmTitle")} data-confirm="review">
           <h3 className="c3-title">{v3("rkConfirmTitle")}</h3>
@@ -235,7 +284,7 @@ export function RiskDesk({ base, tx, locale }: { base: string; tx: Tx; locale: s
           </label>
           <label className="c3-lab">
             <span>{v3("rkReason")}</span>
-            <input className="c3-field" aria-label={v3("rkReason")} value={reason} onChange={(event) => setReason(event.target.value)} />
+            <input className="c3-field" aria-label={v3("rkReason")} aria-required={false} value={reason} onChange={(event) => setReason(event.target.value)} />
           </label>
           <p className="c3-muted">{v3("rkReasonHint")}</p>
           <div className="c3-row">
@@ -249,7 +298,7 @@ export function RiskDesk({ base, tx, locale }: { base: string; tx: Tx; locale: s
   );
 }
 
-function Flag({ id, title, detail, href, note, saved, v3, onNote, onSave, review, noDoc }: {
+function Flag({ id, title, detail, href, note, saved, v3, onNote, onSave, review, noDoc, held }: {
   id: string;
   title: string;
   detail: string;
@@ -261,6 +310,7 @@ function Flag({ id, title, detail, href, note, saved, v3, onNote, onSave, review
   onSave: () => void;
   review?: () => void;
   noDoc?: boolean;
+  held?: boolean;
 }) {
   return (
     <div className="c3-risk-flag" data-flag={id}>
@@ -278,7 +328,7 @@ function Flag({ id, title, detail, href, note, saved, v3, onNote, onSave, review
       </div>
       {saved && <p className="c3-muted">{v3("rkNoteSaved")}</p>}
       {noDoc && <p className="c3-muted">{v3("rkNoDoc")}</p>}
-      {!review && !noDoc && <p className="c3-muted">{v3("rkNoStatus")}</p>}
+      {!review && !noDoc && !held && <p className="c3-muted">{v3("rkNoStatus")}</p>}
     </div>
   );
 }
@@ -347,8 +397,8 @@ export function DayTimeline({ id, notes, events, locale }: {
         ))}
       </div>
       <div className="c3-row">
-        <input className="c3-field" type="date" aria-label={v3("tlJump")} value={jump} onChange={(event) => setJump(event.target.value)} />
-        <button type="button" className="c3-btn" onClick={goToDay}>{v3("tlJump")}</button>
+        <input className="c3-field" type="date" aria-label={v3("tlJump")} value={jump} onChange={(event) => { setJump(event.target.value); setMissing(false); }} />
+        <button type="button" className="c3-btn" onClick={goToDay}>{v3("tlGo")}</button>
       </div>
       {missing && <p className="c3-muted">{v3("tlMissing")}</p>}
       {!shown.length && <p className="c3-muted">{v3("tlEmpty")}</p>}
