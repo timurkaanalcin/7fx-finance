@@ -85,6 +85,7 @@ export function WithdrawDesk({ base, v4, tx, locale }: { base: string; v4: V4; t
     <section className="c4-wd-luxe" aria-label={v4("wdDesk")} data-wd="1">
       <h2 className="c4-title">{v4("wdDesk")}</h2>
       <p className="c4-muted">{v4("wdHint")}</p>
+      <p><Link className="c4-btn" href={crmv4Href(base, "payout")}>{v4("pqTitle")}</Link></p>
       <div className="c4-kyc-split">
         <div>
           <h3 className="c4-title">{v4("wdQueue")}</h3>
@@ -168,6 +169,8 @@ export function DeskSearch({ base, open, onClose, v4, locale }: { base: string; 
     { id: "finance", label: v4("financeNav"), href: crmv4Href(base, "finance") },
     { id: "kyc", label: v4("kycDesk"), href: crmv4Href(base, "kyc") },
     { id: "withdraw", label: v4("wdDesk"), href: crmv4Href(base, "withdraw") },
+    { id: "payout", label: v4("pqTitle"), href: crmv4Href(base, "payout") },
+    { id: "access", label: v4("axTitle"), href: crmv4Href(base, "access") },
     { id: "reports", label: v4("reportsTitle"), href: crmv4Href(base, "reports") },
     { id: "goals", label: v4("goalsTitle"), href: crmv4Href(base, "goals") },
     { id: "support", label: v4("subSupport"), href: crmv4Href(base, "support") },
