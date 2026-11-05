@@ -44,6 +44,7 @@ import { HealthStrip, ScratchBoard } from "./desk/health";
 import { IntroducerBoard, JumpHistory } from "./desk/introducer";
 import { ExpiryWatch, PanelDensityStrip } from "./desk/expiry";
 import { RejectBoard, VaultPad } from "./desk/rejects";
+import { CheatSheet, HeatStrip } from "./desk/heatmap";
 import { CHROME_KEY, GOLD_KEY, readChrome, readGold, type ChromeMode, type GoldLevel } from "@/lib/crmv3/triage";
 import { readJson, writeJson } from "@/lib/crmv3/bridge";
 import { JUMP_KEY, pushJump, readJumps } from "@/lib/crmv3/introducer";
@@ -233,6 +234,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "density") return v3("lyTitle");
     if (tab === "rejects") return v3("rjTitle");
     if (tab === "vault") return v3("vhTitle");
+    if (tab === "heatmap") return v3("htTitle");
+    if (tab === "cheats") return v3("csTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -394,6 +397,8 @@ function Shell({ base, section, name }: Props) {
             {view === "density" && <PanelDensityStrip />}
             {view === "rejects" && <RejectBoard base={base} locale={locale} tx={tx} />}
             {view === "vault" && <VaultPad />}
+            {view === "heatmap" && <HeatStrip tx={tx} />}
+            {view === "cheats" && <CheatSheet />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}

@@ -3551,3 +3551,51 @@
   [data-crmv3-root] .c3-reject-cards,
   [data-crmv3-root] .c3-vault-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+[data-crmv3-root] .c3-heat-cells,
+[data-crmv3-root] .c3-cheat-list {
+  display: grid;
+  gap: var(--c3-2);
+  margin: var(--c3-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv3-root] .c3-heat-cell,
+[data-crmv3-root] .c3-cheat-card {
+  min-width: 0;
+  padding: var(--c3-2);
+  border: 1px solid var(--c3-line);
+  border-radius: 12px;
+  background: var(--c3-card);
+}
+
+[data-crmv3-root] .c3-heat-count {
+  min-width: 28px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid #7a5e30;
+  color: #7a5e30;
+  text-align: center;
+}
+
+[data-crmv3-root] .c3-heat-cell[data-hot="1"] { border-color: #7a5e30; }
+[data-crmv3-root] .c3-heat-cell[data-pinned="1"],
+[data-crmv3-root] .c3-cheat-card[data-pinned="1"] { box-shadow: inset 2px 0 0 #7a5e30; }
+
+[data-crmv3-root] .c3-cheat-keys {
+  margin: 0;
+  color: #7a5e30;
+  font-size: 12px;
+}
+
+[data-crmv3-root] .c3-heat-strip .c3-lab,
+[data-crmv3-root] .c3-cheat-pad .c3-lab { flex: 1 1 220px; max-width: 100%; }
+
+[data-crmv3-root] .c3-heat-strip .c3-field,
+[data-crmv3-root] .c3-cheat-pad .c3-field { width: 100%; max-width: 100%; }
+
+@media (min-width: 768px) {
+  [data-crmv3-root] .c3-heat-cells,
+  [data-crmv3-root] .c3-cheat-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

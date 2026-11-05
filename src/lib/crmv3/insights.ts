@@ -115,6 +115,9 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-panel-density": ["Panel density", "Panel yoğunluğu", "Paneldichte", "Плотность панелей", "كثافة اللوحات"],
   "crmv3-reject-pins": ["Pinned rejected orders", "Sabitlenen reddedilen emirler", "Angeheftete abgelehnte Orders", "Закреплённые отклонённые ордера", "الأوامر المرفوضة المثبتة"],
   "crmv3-vault-hints": ["Vault labels", "Kasa etiketleri", "Tresorlabels", "Метки хранилища", "تسميات الخزنة"],
+  "crmv3-heat-pins": ["Pinned heatmap cells", "Sabitlenen ısı hücreleri", "Angeheftete Wärmezellen", "Закреплённые ячейки", "الخلايا المثبتة"],
+  "crmv3-heat-mode": ["Heatmap grouping", "Isı gruplaması", "Wärmegruppierung", "Группировка карты", "تجميع الخريطة"],
+  "crmv3-cheat-sheet": ["Desk tips", "Masa ipuçları", "Tischtipps", "Подсказки стола", "نصائح المكتب"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
