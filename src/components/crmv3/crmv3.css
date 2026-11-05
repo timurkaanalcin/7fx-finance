@@ -3187,3 +3187,77 @@
 @media (min-width: 768px) {
   [data-crmv3-root] .c3-pipe-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+[data-crmv3-root][data-gold="soft"],
+[data-crmv3-root][data-theme="light"][data-gold="soft"] {
+  --c3-gold: #c4b49a;
+  --c3-gold-soft: rgba(196, 180, 154, 0.18);
+}
+
+[data-crmv3-root][data-gold="deep"],
+[data-crmv3-root][data-theme="light"][data-gold="deep"] {
+  --c3-gold: #7a5e30;
+  --c3-gold-soft: rgba(122, 94, 48, 0.16);
+}
+
+[data-crmv3-root][data-chrome="dense"] {
+  --c3-3: 12px;
+  --c3-4: 16px;
+}
+
+[data-crmv3-root] .c3-triage-desk,
+[data-crmv3-root] .c3-accent-strip { min-width: 0; }
+
+[data-crmv3-root] .c3-triage-cards {
+  display: grid;
+  gap: var(--c3-2);
+  margin: var(--c3-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv3-root] .c3-triage-card {
+  min-width: 0;
+  padding: var(--c3-2);
+  border: 1px solid var(--c3-line);
+  border-radius: 12px;
+  background: var(--c3-card);
+}
+
+[data-crmv3-root] .c3-triage-card[data-pinned="1"] { border-color: #7a5e30; }
+
+[data-crmv3-root] .c3-triage-unread { color: var(--c3-gold); font-weight: 600; }
+
+[data-crmv3-root] .c3-triage-desk .c3-lab { flex: 1 1 220px; max-width: 100%; }
+
+[data-crmv3-root] .c3-triage-desk .c3-select,
+[data-crmv3-root] .c3-triage-desk .c3-field { width: 100%; max-width: 100%; }
+
+[data-crmv3-root] .c3-swatch,
+[data-crmv3-root] .c3-accent-preview span {
+  display: inline-flex;
+  min-width: 72px;
+  min-height: var(--c3-touch);
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
+
+[data-crmv3-root] .c3-swatch[data-gold="soft"],
+[data-crmv3-root] .c3-accent-preview span[data-gold="soft"] { background: #c4b49a; color: #1c1a17; }
+
+[data-crmv3-root] .c3-swatch[data-gold="desk"],
+[data-crmv3-root] .c3-accent-preview span[data-gold="desk"] { background: #a6854e; color: #fffdf8; }
+
+[data-crmv3-root] .c3-swatch[data-gold="deep"],
+[data-crmv3-root] .c3-accent-preview span[data-gold="deep"] { background: #7a5e30; color: #fffdf8; }
+
+[data-crmv3-root] .c3-accent-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--c3-2);
+}
+
+@media (min-width: 768px) {
+  [data-crmv3-root] .c3-triage-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

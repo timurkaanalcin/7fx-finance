@@ -37,6 +37,8 @@ import { DeskPad, TradeBlotter } from "./desk/blotter";
 import { CaseQueue, ShortcutRail } from "./desk/cases";
 import { PayoutBoard, ShiftSheet } from "./desk/shift";
 import { LeadBoard, QuietDesk } from "./desk/leads";
+import { AccentStrip, TriageBoard } from "./desk/triage";
+import { CHROME_KEY, GOLD_KEY, readChrome, readGold, type ChromeMode, type GoldLevel } from "@/lib/crmv3/triage";
 import { readJson } from "@/lib/crmv3/bridge";
 import { RAIL_KEY, readFold } from "@/lib/crmv3/nav";
 import { MoreNav, RailNav } from "./desk/nav";
@@ -72,6 +74,8 @@ function Shell({ base, section, name }: Props) {
   const [notesOpen, setNotesOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [gold, setGold] = useState<GoldLevel>("desk");
+  const [chrome, setChrome] = useState<ChromeMode>("roomy");
   const [pull, setPull] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -107,6 +111,21 @@ function Shell({ base, section, name }: Props) {
   }, []);
 
   useEffect(() => { setFolded(readFold(window.localStorage.getItem(RAIL_KEY))); }, []);
+
+  useEffect(() => {
+    const applyGold = (event?: Event) => setGold(readGold(event ? (event as CustomEvent).detail : readJson(GOLD_KEY, "desk")));
+    const applyChrome = (event?: Event) => setChrome(readChrome(event ? (event as CustomEvent).detail : readJson(CHROME_KEY, "roomy")));
+    applyGold();
+    applyChrome();
+    const onGold = (event: Event) => applyGold(event);
+    const onChrome = (event: Event) => applyChrome(event);
+    window.addEventListener("crmv3:gold", onGold);
+    window.addEventListener("crmv3:chrome", onChrome);
+    return () => {
+      window.removeEventListener("crmv3:gold", onGold);
+      window.removeEventListener("crmv3:chrome", onChrome);
+    };
+  }, []);
 
   useEffect(() => {
     if (!searchOpen) return;
@@ -186,6 +205,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "handoff") return v3("shTitle");
     if (tab === "leads") return v3("ldTitle");
     if (tab === "quiet") return v3("qfTitle");
+    if (tab === "triage") return v3("trTitle");
+    if (tab === "accents") return v3("acTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -226,7 +247,7 @@ function Shell({ base, section, name }: Props) {
   }, [view, id]);
 
   return (
-    <div data-crmv3-root="" data-theme={theme} data-fold={folded ? "1" : "0"} data-crmv3-view={id ? `${view}/${id}` : view} className="c3-app font-normal">
+    <div data-crmv3-root="" data-theme={theme} data-gold={gold} data-chrome={chrome} data-fold={folded ? "1" : "0"} data-crmv3-view={id ? `${view}/${id}` : view} className="c3-app font-normal">
       <a className="c3-skip" href="#c3-main">{v3("skipMain")}</a>
       <ShortcutHost base={base} onPalette={() => setPalette(true)} onHelp={(open) => { setHelp(open); if (open) setGuide(false); }} />
       <aside className="c3-rail">
@@ -328,6 +349,8 @@ function Shell({ base, section, name }: Props) {
             {view === "handoff" && <ShiftSheet tx={tx} />}
             {view === "leads" && <LeadBoard base={base} tx={tx} />}
             {view === "quiet" && <QuietDesk />}
+            {view === "triage" && <TriageBoard base={base} locale={locale} tx={tx} />}
+            {view === "accents" && <AccentStrip />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}

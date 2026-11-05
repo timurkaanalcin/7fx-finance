@@ -98,6 +98,10 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-alert-mute": ["Muted alerts", "Sessiz uyarılar", "Stummgeschaltete Hinweise", "Отключённые сигналы", "تنبيهات صامتة"],
   "crmv3-focus-flag": ["Focus", "Odak", "Fokus", "Фокус", "التركيز"],
   "crmv3-quiet-hours": ["Quiet hours", "Sessiz saatler", "Ruhezeiten", "Тихие часы", "ساعات الهدوء"],
+  "crmv3-triage-pins": ["Triage pins", "Ayrım sabitleme", "Triage-Pins", "Закрепления разбора", "تثبيت الفرز"],
+  "crmv3-triage-snooze": ["Triage snooze", "Ayrım erteleme", "Triage-Schlummern", "Отложить разбор", "تأجيل الفرز"],
+  "crmv3-gold-intensity": ["Gold intensity", "Altın yoğunluğu", "Goldstärke", "Насыщенность золота", "شدة الذهب"],
+  "crmv3-chrome-density": ["Chrome density", "Krom yoğunluğu", "Chromdichte", "Плотность хрома", "كثافة الإطار"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
