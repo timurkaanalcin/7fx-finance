@@ -137,6 +137,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-pulse-hide": ["Hidden queue chips", "Gizlenen kuyruk çipleri", "Versteckte Warteschlangen", "Скрытые чипы очереди", "رقائق الطابور المخفية"],
   "crmv3-route-swatches": ["Route colors", "Rota renkleri", "Routenfarben", "Цвета маршрутов", "ألوان المسارات"],
   "crmv3-panel-scale": ["Panel text", "Panel yazısı", "Paneltext", "Текст панели", "نص اللوحة"],
+  "crmv3-quiet-pause": ["Quiet pause", "Sessiz duraklatma", "Ruhepause", "Пауза тишины", "إيقاف الهدوء"],
+  "crmv3-sticky-notes": ["Customer notes", "Müşteri notları", "Kundennotizen", "Заметки клиента", "ملاحظات العميل"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;

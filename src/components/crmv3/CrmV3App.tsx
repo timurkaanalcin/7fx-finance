@@ -54,7 +54,10 @@ import { HandoffPacket, VipWatch } from "./desk/vip";
 import { DeskClocks, SnippetPad } from "./desk/clocks";
 import { QueuePulse, RouteSwatches } from "./desk/pulse";
 import { FontScale, WeekAgenda } from "./desk/week";
+import { QuietShield, StickyPad } from "./desk/shield";
 import { SCALE_KEY, readScale, type PanelScale } from "@/lib/crmv3/week";
+import { PAUSE_KEY, shieldOn } from "@/lib/crmv3/shield";
+import { QUIET_KEY, readQuiet } from "@/lib/crmv3/leads";
 import { CHROME_KEY, GOLD_KEY, readChrome, readGold, type ChromeMode, type GoldLevel } from "@/lib/crmv3/triage";
 import { readJson, writeJson } from "@/lib/crmv3/bridge";
 import { JUMP_KEY, pushJump, readJumps } from "@/lib/crmv3/introducer";
@@ -99,6 +102,7 @@ function Shell({ base, section, name }: Props) {
   const [panel, setPanel] = useState<PanelDensity>("desk");
   const [glass, setGlass] = useState<GlassMode>("soft");
   const [scale, setScale] = useState<PanelScale>("desk");
+  const [shield, setShield] = useState(false);
   const [pull, setPull] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -187,12 +191,24 @@ function Shell({ base, section, name }: Props) {
       const detail = (event as CustomEvent<{ ok: boolean; error: string }>).detail;
       if (!detail) return;
       const item = { id: Date.now(), ok: detail.ok, text: detail.ok ? tx("saved") : detail.error || tx("failed") };
+      if (shieldOn(readQuiet(readJson(QUIET_KEY, {})), readJson(PAUSE_KEY, ""), new Date())) return;
       setToasts((list) => [...list.slice(-2), item]);
       window.setTimeout(() => setToasts((list) => list.filter((row) => row.id !== item.id)), 2400);
     };
     window.addEventListener("crmv3:toast", onToast);
     return () => window.removeEventListener("crmv3:toast", onToast);
   }, [tx]);
+
+  useEffect(() => {
+    const read = () => setShield(shieldOn(readQuiet(readJson(QUIET_KEY, {})), readJson(PAUSE_KEY, ""), new Date()));
+    read();
+    const timer = window.setInterval(read, 30000);
+    window.addEventListener("crmv3:quiet", read);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener("crmv3:quiet", read);
+    };
+  }, []);
 
   useEffect(() => {
     if (window.localStorage.getItem("crmv3-motion") === "reduce") {
@@ -277,6 +293,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "swatches") return v3("swTitle");
     if (tab === "week") return v3("wkTitle");
     if (tab === "scale") return v3("tyTitle");
+    if (tab === "shield") return v3("qhTitle");
+    if (tab === "stickies") return v3("cnTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -397,9 +415,9 @@ function Shell({ base, section, name }: Props) {
           }}
         >
           <div className="c3-pull" data-on={pull > 8 || refreshing ? "1" : "0"}>{refreshing ? v3("refreshing") : v3("pullHint")}</div>
-          {banner && <p className="c3-banner">{banner}</p>}
-          {offline && <p className="c3-banner">{v3("offlineWord")}</p>}
-          {!offline && idle && <p className="c3-banner">{v3("idleWord")} {v3("idleStay")}</p>}
+          {banner && !shield && <p className="c3-banner">{banner}</p>}
+          {offline && !shield && <p className="c3-banner">{v3("offlineWord")}</p>}
+          {!offline && idle && !shield && <p className="c3-banner">{v3("idleWord")} {v3("idleStay")}</p>}
           <div className="c3-stage">
             {view === "overview" && <Overview base={base} tx={tx} locale={locale} name={shownName || name} />}
             {view === "customers" && !id && <Customers base={base} tx={tx} locale={locale} q={q} />}
@@ -458,6 +476,8 @@ function Shell({ base, section, name }: Props) {
             {view === "swatches" && <RouteSwatches base={base} />}
             {view === "week" && <WeekAgenda base={base} locale={locale} tx={tx} />}
             {view === "scale" && <FontScale />}
+            {view === "shield" && <QuietShield />}
+            {view === "stickies" && <StickyPad base={base} />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
