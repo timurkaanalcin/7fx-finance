@@ -42,6 +42,7 @@ import { DayStrip, DenseList } from "./round51";
 import { NoticeCenter, TagBoard, useLocalInboxCount } from "./round52";
 import { DeskPad, TradeBlotter } from "./round53";
 import { CaseQueue, ShortcutRail } from "./round54";
+import { PayoutBoard, ShiftSheet } from "./round55";
 import { lastView, playPing, rememberView, soundEnabled, ticketAlertsOn } from "./round7";
 import { resolvedTheme, storedContrast, storedFont, storedFreeze, themeMode } from "./round8";
 import { readBrand } from "./round10";
@@ -302,6 +303,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "pad") return v4("pdTitle");
     if (tab === "cases") return v4("cqTitle");
     if (tab === "shortcuts") return v4("scTitle");
+    if (tab === "payboard") return v4("pbTitle");
+    if (tab === "handoff") return v4("shTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -344,6 +347,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "pad") return v4("pdSub");
     if (tab === "cases") return v4("cqSub");
     if (tab === "shortcuts") return v4("scSub");
+    if (tab === "payboard") return v4("pbSub");
+    if (tab === "handoff") return v4("shSub");
     return "";
   }
 
@@ -507,6 +512,8 @@ function Shell({ base, section, name }: Props) {
             {view === "pad" && <DeskPad base={base} v4={v4} tx={tx} />}
             {view === "cases" && <CaseQueue base={base} v4={v4} locale={locale} tx={tx} />}
             {view === "shortcuts" && <ShortcutRail base={base} v4={v4} />}
+            {view === "payboard" && <PayoutBoard base={base} v4={v4} locale={locale} tx={tx} />}
+            {view === "handoff" && <ShiftSheet v4={v4} tx={tx} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
