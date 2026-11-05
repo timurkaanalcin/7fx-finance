@@ -17,7 +17,7 @@ import { DepositDesk, InboxDesk } from "./round29";
 import { InsightsHome, PrefsHub } from "./round32";
 import { AgendaPage } from "./round33";
 import { DeskStaff } from "./round35";
-import { DeskBar, NoticeDesk, useNotices } from "./round38";
+import { DeskBar } from "./round38";
 import { GroupedMenu, PageRail } from "./round30";
 import { DeskFoot } from "./round18";
 import { HelpDrawer, ShortcutsSheet } from "./round41";
@@ -39,6 +39,7 @@ import { FundingDesk } from "./round48";
 import { ThreadDesk } from "./round49";
 import { GalleryDesk, HistoryDesk } from "./round50";
 import { DayStrip, DenseList } from "./round51";
+import { NoticeCenter, TagBoard, useLocalInboxCount } from "./round52";
 import { lastView, playPing, rememberView, soundEnabled, ticketAlertsOn } from "./round7";
 import { resolvedTheme, storedContrast, storedFont, storedFreeze, themeMode } from "./round8";
 import { readBrand } from "./round10";
@@ -120,7 +121,7 @@ function Shell({ base, section, name }: Props) {
   const params = useSearchParams();
   const q = params.get("q") || "";
   const notes = useJson<{ items?: { id: string; title?: string; body?: string; readAt?: string | null; createdAt?: string }[]; unread?: number }>("/api/notifications?take=20");
-  const notices = useNotices();
+  const inboxUnread = useLocalInboxCount();
   const stats = useJson<{ kpis?: { pendingDeposits?: number; pendingBalanceRequests?: number } }>("/api/admin/stats");
   const reminders = useJson<{ reminders?: Reminder[] }>(remindersOpen ? "/api/admin/calendar?take=80" : null);
   const pending = (stats.data?.kpis?.pendingDeposits || 0) + (stats.data?.kpis?.pendingBalanceRequests || 0);
@@ -293,6 +294,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "gallery") return v4("glTitle");
     if (tab === "history") return v4("hsTitle");
     if (tab === "dense") return v4("dnTitle");
+    if (tab === "notices") return v4("ibTitle");
+    if (tab === "tags") return v4("tgTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -329,6 +332,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "gallery") return v4("glSub");
     if (tab === "history") return v4("hsSub");
     if (tab === "dense") return v4("dnSub");
+    if (tab === "notices") return v4("ibSub");
+    if (tab === "tags") return v4("tgSub");
     return "";
   }
 
@@ -399,7 +404,7 @@ function Shell({ base, section, name }: Props) {
             </div>
           </div>
         </nav>
-        <DeskBar base={base} name={name} theme={theme} onTheme={toggleTheme} onNotes={() => setNotesOpen(true)} unread={notices.unread} v4={v4} tx={tx} />
+        <DeskBar base={base} name={name} theme={theme} onTheme={toggleTheme} onNotes={() => setNotesOpen(true)} unread={inboxUnread} v4={v4} tx={tx} />
         <div className="c4-top-tools">
           <button type="button" className="c4-rail-btn c4-plus" aria-label={v4("quickPlus")} onClick={() => setQuickOpen(true)}>+</button>
           <button type="button" className="c4-rail-btn" aria-label={v4("palette")} onClick={() => setPaletteOpen(true)}>
@@ -407,7 +412,7 @@ function Shell({ base, section, name }: Props) {
           </button>
           <button type="button" className="c4-rail-btn" aria-label={tx("notifications")} onClick={() => setNotesOpen(true)}>
             <BellIcon />
-            {notices.unread > 0 && <span className="c4-rail-badge">{notices.unread}</span>}
+            {inboxUnread > 0 && <span className="c4-rail-badge">{inboxUnread}</span>}
           </button>
           <button type="button" className="c4-rail-btn" aria-label={v4("openMenu")} onClick={() => setMore(true)}>
             <MenuIcon />
@@ -486,6 +491,8 @@ function Shell({ base, section, name }: Props) {
             {view === "gallery" && <GalleryDesk base={base} v4={v4} tx={tx} locale={locale} />}
             {view === "history" && <HistoryDesk v4={v4} tx={tx} locale={locale} />}
             {view === "dense" && <DenseList base={base} v4={v4} tx={tx} />}
+            {view === "notices" && <NoticeCenter base={base} v4={v4} locale={locale} tx={tx} />}
+            {view === "tags" && <TagBoard base={base} v4={v4} tx={tx} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
@@ -517,7 +524,7 @@ function Shell({ base, section, name }: Props) {
         </button>
         <button type="button" className="c4-rail-btn" aria-label={tx("notifications")} onClick={() => setNotesOpen(true)}>
           <BellIcon />
-          {notices.unread > 0 && <span className="c4-rail-badge">{notices.unread}</span>}
+          {inboxUnread > 0 && <span className="c4-rail-badge">{inboxUnread}</span>}
           <span>{tx("notifications")}</span>
         </button>
         <button type="button" className="c4-rail-btn" aria-label={v4("reminders")} onClick={() => setRemindersOpen(true)}>
@@ -601,8 +608,8 @@ function Shell({ base, section, name }: Props) {
       )}
 
       {notesOpen && (
-        <Drawer title={v4("noteTitle")} className="c4-inbox" onClose={() => setNotesOpen(false)} closeLabel={tx("close")}>
-          <NoticeDesk base={base} v4={v4} locale={locale} tx={tx} notices={notices} />
+        <Drawer title={v4("ibTitle")} className="c4-inbox" onClose={() => setNotesOpen(false)} closeLabel={tx("close")}>
+          <NoticeCenter base={base} v4={v4} locale={locale} tx={tx} placed="drawer" />
         </Drawer>
       )}
 

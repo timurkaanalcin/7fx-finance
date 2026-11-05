@@ -3,7 +3,7 @@
 export const RAIL_KEY = "crmv4-rail-fold";
 
 export const NAV_SECTIONS = [
-  { id: "work", ids: ["overview", "customers", "dense", "positions", "support", "inbox", "thread", "marketing", "agenda"] },
+  { id: "work", ids: ["overview", "customers", "dense", "notices", "tags", "positions", "support", "inbox", "thread", "marketing", "agenda"] },
   { id: "money", ids: ["finance", "deposit", "withdraw", "payout", "funding", "goals"] },
   { id: "compliance", ids: ["kyc", "gallery", "risk", "logs", "history"] },
   { id: "insights", ids: ["insights", "reports", "affiliates"] },
