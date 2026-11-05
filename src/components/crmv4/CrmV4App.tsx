@@ -89,6 +89,7 @@ import { ChannelGlance as TicketChannels, RecentJumps } from "./round98";
 import { LanguageGlance, WatchWords } from "./round99";
 import { IbStatusGlance, LayoutLock } from "./round100";
 import { DocTypeMix, DraftStash } from "./round101";
+import { FocusCustomer, OrderTypeGlance } from "./round102";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv4/round78";
@@ -528,6 +529,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ibstatus") return v4("bxTitle");
     if (tab === "draftstash") return v4("dfTitle");
     if (tab === "doctypemix") return v4("kmTitle");
+    if (tab === "focuscustomer") return v4("fcTitle");
+    if (tab === "ordertype") return v4("oyTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -664,6 +667,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ibstatus") return v4("bxSub");
     if (tab === "draftstash") return v4("dfSub");
     if (tab === "doctypemix") return v4("kmSub");
+    if (tab === "focuscustomer") return v4("fcSub");
+    if (tab === "ordertype") return v4("oySub");
     return "";
   }
 
@@ -921,6 +926,8 @@ function Shell({ base, section, name }: Props) {
             {view === "ibstatus" && <IbStatusGlance base={base} v4={v4} />}
             {view === "draftstash" && <DraftStash v4={v4} />}
             {view === "doctypemix" && <DocTypeMix base={base} v4={v4} />}
+            {view === "focuscustomer" && <FocusCustomer base={base} v4={v4} />}
+            {view === "ordertype" && <OrderTypeGlance base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
