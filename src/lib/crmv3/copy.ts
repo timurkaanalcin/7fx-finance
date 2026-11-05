@@ -43,6 +43,7 @@ import { EXPIRY_AR, EXPIRY_DE, EXPIRY_EN, EXPIRY_RU, EXPIRY_TR } from "@/lib/crm
 import { REJECT_AR, REJECT_DE, REJECT_EN, REJECT_RU, REJECT_TR } from "@/lib/crmv3/copy-rejects";
 import { HEAT_AR, HEAT_DE, HEAT_EN, HEAT_RU, HEAT_TR } from "@/lib/crmv3/copy-heatmap";
 import { DIGEST_AR, DIGEST_DE, DIGEST_EN, DIGEST_RU, DIGEST_TR } from "@/lib/crmv3/copy-digest";
+import { COMPARE_AR, COMPARE_DE, COMPARE_EN, COMPARE_RU, COMPARE_TR } from "@/lib/crmv3/copy-compare";
 
 const enBase = {
   money: "Money",
@@ -53,7 +54,7 @@ const enBase = {
   openRow: "Open",
 };
 
-const en = { ...enBase, ...DESK_EN, ...LATER_EN, ...CASH_EN, ...PEOPLE_EN, ...GOALS_EN, ...LINE_EN, ...REVIEW_EN, ...WD_EN, ...DEP_EN, ...NAV_EN, ...LISTS_EN, ...INSIGHTS_EN, ...BOOK_EN, ...TABLE_EN, ...TODAY_EN, ...LEDGER_EN, ...GALLERY_EN, ...NOTICE_EN, ...SYSTEM_EN, ...DOSSIER_EN, ...BOARD_EN, ...PICK_EN, ...PERIOD_EN, ...RISK_EN, ...INBOX_EN, ...PAY_EN, ...FUND_EN, ...THREAD_EN, ...PAPER_EN, ...DENSE_EN, ...BOARD52_EN, ...BLOT_EN, ...CASE_EN, ...SHIFT_EN, ...LEAD_EN, ...TRIAGE_EN, ...SOP_EN, ...ALERT_EN, ...HEALTH_EN, ...INTRO_EN, ...EXPIRY_EN, ...REJECT_EN, ...HEAT_EN, ...DIGEST_EN };
+const en = { ...enBase, ...DESK_EN, ...LATER_EN, ...CASH_EN, ...PEOPLE_EN, ...GOALS_EN, ...LINE_EN, ...REVIEW_EN, ...WD_EN, ...DEP_EN, ...NAV_EN, ...LISTS_EN, ...INSIGHTS_EN, ...BOOK_EN, ...TABLE_EN, ...TODAY_EN, ...LEDGER_EN, ...GALLERY_EN, ...NOTICE_EN, ...SYSTEM_EN, ...DOSSIER_EN, ...BOARD_EN, ...PICK_EN, ...PERIOD_EN, ...RISK_EN, ...INBOX_EN, ...PAY_EN, ...FUND_EN, ...THREAD_EN, ...PAPER_EN, ...DENSE_EN, ...BOARD52_EN, ...BLOT_EN, ...CASE_EN, ...SHIFT_EN, ...LEAD_EN, ...TRIAGE_EN, ...SOP_EN, ...ALERT_EN, ...HEALTH_EN, ...INTRO_EN, ...EXPIRY_EN, ...REJECT_EN, ...HEAT_EN, ...DIGEST_EN, ...COMPARE_EN };
 
 const trBase: typeof enBase = {
   money: "Para",
@@ -64,7 +65,7 @@ const trBase: typeof enBase = {
   openRow: "Aç",
 };
 
-const tr = { ...trBase, ...DESK_TR, ...LATER_TR, ...CASH_TR, ...PEOPLE_TR, ...GOALS_TR, ...LINE_TR, ...REVIEW_TR, ...WD_TR, ...DEP_TR, ...NAV_TR, ...LISTS_TR, ...INSIGHTS_TR, ...BOOK_TR, ...TABLE_TR, ...TODAY_TR, ...LEDGER_TR, ...GALLERY_TR, ...NOTICE_TR, ...SYSTEM_TR, ...DOSSIER_TR, ...BOARD_TR, ...PICK_TR, ...PERIOD_TR, ...RISK_TR, ...INBOX_TR, ...PAY_TR, ...FUND_TR, ...THREAD_TR, ...PAPER_TR, ...DENSE_TR, ...BOARD52_TR, ...BLOT_TR, ...CASE_TR, ...SHIFT_TR, ...LEAD_TR, ...TRIAGE_TR, ...SOP_TR, ...ALERT_TR, ...HEALTH_TR, ...INTRO_TR, ...EXPIRY_TR, ...REJECT_TR, ...HEAT_TR, ...DIGEST_TR };
+const tr = { ...trBase, ...DESK_TR, ...LATER_TR, ...CASH_TR, ...PEOPLE_TR, ...GOALS_TR, ...LINE_TR, ...REVIEW_TR, ...WD_TR, ...DEP_TR, ...NAV_TR, ...LISTS_TR, ...INSIGHTS_TR, ...BOOK_TR, ...TABLE_TR, ...TODAY_TR, ...LEDGER_TR, ...GALLERY_TR, ...NOTICE_TR, ...SYSTEM_TR, ...DOSSIER_TR, ...BOARD_TR, ...PICK_TR, ...PERIOD_TR, ...RISK_TR, ...INBOX_TR, ...PAY_TR, ...FUND_TR, ...THREAD_TR, ...PAPER_TR, ...DENSE_TR, ...BOARD52_TR, ...BLOT_TR, ...CASE_TR, ...SHIFT_TR, ...LEAD_TR, ...TRIAGE_TR, ...SOP_TR, ...ALERT_TR, ...HEALTH_TR, ...INTRO_TR, ...EXPIRY_TR, ...REJECT_TR, ...HEAT_TR, ...DIGEST_TR, ...COMPARE_TR };
 
 const deBase: typeof enBase = {
   money: "Geld",
@@ -75,7 +76,7 @@ const deBase: typeof enBase = {
   openRow: "Öffnen",
 };
 
-const de = { ...deBase, ...DESK_DE, ...LATER_DE, ...CASH_DE, ...PEOPLE_DE, ...GOALS_DE, ...LINE_DE, ...REVIEW_DE, ...WD_DE, ...DEP_DE, ...NAV_DE, ...LISTS_DE, ...INSIGHTS_DE, ...BOOK_DE, ...TABLE_DE, ...TODAY_DE, ...LEDGER_DE, ...GALLERY_DE, ...NOTICE_DE, ...SYSTEM_DE, ...DOSSIER_DE, ...BOARD_DE, ...PICK_DE, ...PERIOD_DE, ...RISK_DE, ...INBOX_DE, ...PAY_DE, ...FUND_DE, ...THREAD_DE, ...PAPER_DE, ...DENSE_DE, ...BOARD52_DE, ...BLOT_DE, ...CASE_DE, ...SHIFT_DE, ...LEAD_DE, ...TRIAGE_DE, ...SOP_DE, ...ALERT_DE, ...HEALTH_DE, ...INTRO_DE, ...EXPIRY_DE, ...REJECT_DE, ...HEAT_DE, ...DIGEST_DE };
+const de = { ...deBase, ...DESK_DE, ...LATER_DE, ...CASH_DE, ...PEOPLE_DE, ...GOALS_DE, ...LINE_DE, ...REVIEW_DE, ...WD_DE, ...DEP_DE, ...NAV_DE, ...LISTS_DE, ...INSIGHTS_DE, ...BOOK_DE, ...TABLE_DE, ...TODAY_DE, ...LEDGER_DE, ...GALLERY_DE, ...NOTICE_DE, ...SYSTEM_DE, ...DOSSIER_DE, ...BOARD_DE, ...PICK_DE, ...PERIOD_DE, ...RISK_DE, ...INBOX_DE, ...PAY_DE, ...FUND_DE, ...THREAD_DE, ...PAPER_DE, ...DENSE_DE, ...BOARD52_DE, ...BLOT_DE, ...CASE_DE, ...SHIFT_DE, ...LEAD_DE, ...TRIAGE_DE, ...SOP_DE, ...ALERT_DE, ...HEALTH_DE, ...INTRO_DE, ...EXPIRY_DE, ...REJECT_DE, ...HEAT_DE, ...DIGEST_DE, ...COMPARE_DE };
 
 const ruBase: typeof enBase = {
   money: "Деньги",
@@ -86,7 +87,7 @@ const ruBase: typeof enBase = {
   openRow: "Открыть",
 };
 
-const ru = { ...ruBase, ...DESK_RU, ...LATER_RU, ...CASH_RU, ...PEOPLE_RU, ...GOALS_RU, ...LINE_RU, ...REVIEW_RU, ...WD_RU, ...DEP_RU, ...NAV_RU, ...LISTS_RU, ...INSIGHTS_RU, ...BOOK_RU, ...TABLE_RU, ...TODAY_RU, ...LEDGER_RU, ...GALLERY_RU, ...NOTICE_RU, ...SYSTEM_RU, ...DOSSIER_RU, ...BOARD_RU, ...PICK_RU, ...PERIOD_RU, ...RISK_RU, ...INBOX_RU, ...PAY_RU, ...FUND_RU, ...THREAD_RU, ...PAPER_RU, ...DENSE_RU, ...BOARD52_RU, ...BLOT_RU, ...CASE_RU, ...SHIFT_RU, ...LEAD_RU, ...TRIAGE_RU, ...SOP_RU, ...ALERT_RU, ...HEALTH_RU, ...INTRO_RU, ...EXPIRY_RU, ...REJECT_RU, ...HEAT_RU, ...DIGEST_RU };
+const ru = { ...ruBase, ...DESK_RU, ...LATER_RU, ...CASH_RU, ...PEOPLE_RU, ...GOALS_RU, ...LINE_RU, ...REVIEW_RU, ...WD_RU, ...DEP_RU, ...NAV_RU, ...LISTS_RU, ...INSIGHTS_RU, ...BOOK_RU, ...TABLE_RU, ...TODAY_RU, ...LEDGER_RU, ...GALLERY_RU, ...NOTICE_RU, ...SYSTEM_RU, ...DOSSIER_RU, ...BOARD_RU, ...PICK_RU, ...PERIOD_RU, ...RISK_RU, ...INBOX_RU, ...PAY_RU, ...FUND_RU, ...THREAD_RU, ...PAPER_RU, ...DENSE_RU, ...BOARD52_RU, ...BLOT_RU, ...CASE_RU, ...SHIFT_RU, ...LEAD_RU, ...TRIAGE_RU, ...SOP_RU, ...ALERT_RU, ...HEALTH_RU, ...INTRO_RU, ...EXPIRY_RU, ...REJECT_RU, ...HEAT_RU, ...DIGEST_RU, ...COMPARE_RU };
 
 const arBase: typeof enBase = {
   money: "المال",
@@ -97,7 +98,7 @@ const arBase: typeof enBase = {
   openRow: "فتح",
 };
 
-const ar = { ...arBase, ...DESK_AR, ...LATER_AR, ...CASH_AR, ...PEOPLE_AR, ...GOALS_AR, ...LINE_AR, ...REVIEW_AR, ...WD_AR, ...DEP_AR, ...NAV_AR, ...LISTS_AR, ...INSIGHTS_AR, ...BOOK_AR, ...TABLE_AR, ...TODAY_AR, ...LEDGER_AR, ...GALLERY_AR, ...NOTICE_AR, ...SYSTEM_AR, ...DOSSIER_AR, ...BOARD_AR, ...PICK_AR, ...PERIOD_AR, ...RISK_AR, ...INBOX_AR, ...PAY_AR, ...FUND_AR, ...THREAD_AR, ...PAPER_AR, ...DENSE_AR, ...BOARD52_AR, ...BLOT_AR, ...CASE_AR, ...SHIFT_AR, ...LEAD_AR, ...TRIAGE_AR, ...SOP_AR, ...ALERT_AR, ...HEALTH_AR, ...INTRO_AR, ...EXPIRY_AR, ...REJECT_AR, ...HEAT_AR, ...DIGEST_AR };
+const ar = { ...arBase, ...DESK_AR, ...LATER_AR, ...CASH_AR, ...PEOPLE_AR, ...GOALS_AR, ...LINE_AR, ...REVIEW_AR, ...WD_AR, ...DEP_AR, ...NAV_AR, ...LISTS_AR, ...INSIGHTS_AR, ...BOOK_AR, ...TABLE_AR, ...TODAY_AR, ...LEDGER_AR, ...GALLERY_AR, ...NOTICE_AR, ...SYSTEM_AR, ...DOSSIER_AR, ...BOARD_AR, ...PICK_AR, ...PERIOD_AR, ...RISK_AR, ...INBOX_AR, ...PAY_AR, ...FUND_AR, ...THREAD_AR, ...PAPER_AR, ...DENSE_AR, ...BOARD52_AR, ...BLOT_AR, ...CASE_AR, ...SHIFT_AR, ...LEAD_AR, ...TRIAGE_AR, ...SOP_AR, ...ALERT_AR, ...HEALTH_AR, ...INTRO_AR, ...EXPIRY_AR, ...REJECT_AR, ...HEAT_AR, ...DIGEST_AR, ...COMPARE_AR };
 
 export const CRM_V3_COPY = { en, tr, de, ru, ar };
 
