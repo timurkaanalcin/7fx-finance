@@ -6260,3 +6260,24 @@
 [data-crmv3-root] .c3-trade-side .c3-chip,
 [data-crmv3-root] .c3-trade-side .c3-field,
 [data-crmv3-root] .c3-ys-blank { min-height: 44px; }
+
+[data-crmv3-root] .c3-saved-views,
+[data-crmv3-root] .c3-kyc-status { display: grid; gap: 12px; }
+[data-crmv3-root] .c3-view-list,
+[data-crmv3-root] .c3-ky-rows { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+[data-crmv3-root] .c3-view-card,
+[data-crmv3-root] .c3-ky-rows li,
+[data-crmv3-root] .c3-ky-pair,
+[data-crmv3-root] .c3-ky-blank {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, #7a5e30 28%, transparent); border-radius: 12px;
+}
+[data-crmv3-root] .c3-saved-views .c3-row,
+[data-crmv3-root] .c3-kyc-status .c3-row { flex-wrap: wrap; }
+[data-crmv3-root] .c3-saved-views .c3-btn,
+[data-crmv3-root] .c3-saved-views .c3-chip,
+[data-crmv3-root] .c3-saved-views .c3-field,
+[data-crmv3-root] .c3-kyc-status .c3-btn,
+[data-crmv3-root] .c3-kyc-status .c3-chip,
+[data-crmv3-root] .c3-kyc-status .c3-field,
+[data-crmv3-root] .c3-ky-blank { min-height: 44px; }
