@@ -193,6 +193,8 @@ export function CommandPalette({ base, open, onClose }: { base: string; open: bo
       { id: "zeroglance", label: v3("bzTitle"), href: crmv3Href(base, "zeroglance") },
       { id: "reminders", label: v3("rmTitle"), href: crmv3Href(base, "reminders") },
       { id: "sourceglance", label: v3("lsTitle"), href: crmv3Href(base, "sourceglance") },
+      { id: "tagpalette", label: v3("plTitle"), href: crmv3Href(base, "tagpalette") },
+      { id: "assignee", label: v3("gnTitle"), href: crmv3Href(base, "assignee") },
       { id: "gallery", label: v3("glTitle"), href: crmv3Href(base, "gallery") },
       { id: "history", label: v3("hsTitle"), href: crmv3Href(base, "history") },
       { id: "reports", label: v3("reportsTitle"), href: crmv3Href(base, "reports") },
