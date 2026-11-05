@@ -225,6 +225,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-ticket-assign-hide": ["Ticket assignees", "Talep sorumluları", "Ticket-Zuständige", "Исполнители заявок", "مكلّفو التذاكر"],
   "crmv3-callback-polish": ["Callback queue", "Geri arama kuyruğu", "Rückrufwarteschlange", "Очередь обратных звонков", "طابور المعاودة"],
   "crmv3-case-priority-polish-hide": ["Case priorities", "Vaka öncelikleri", "Fallprioritäten", "Приоритеты дел", "أولويات القضايا"],
+  "crmv3-visit-log": ["Visit log", "Ziyaret günlüğü", "Besuchsprotokoll", "Журнал визитов", "سجل الزيارات"],
+  "crmv3-kyc-doc-status-hide": ["Document statuses", "Belge durumları", "Dokumentstatus", "Статусы документов", "حالات المستندات"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
