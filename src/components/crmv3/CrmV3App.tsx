@@ -52,6 +52,7 @@ import { DupeStrip, MeetingPrep } from "./desk/dupes";
 import { SourceMix, WinLog } from "./desk/mix";
 import { HandoffPacket, VipWatch } from "./desk/vip";
 import { DeskClocks, SnippetPad } from "./desk/clocks";
+import { QueuePulse, RouteSwatches } from "./desk/pulse";
 import { CHROME_KEY, GOLD_KEY, readChrome, readGold, type ChromeMode, type GoldLevel } from "@/lib/crmv3/triage";
 import { readJson, writeJson } from "@/lib/crmv3/bridge";
 import { JUMP_KEY, pushJump, readJumps } from "@/lib/crmv3/introducer";
@@ -264,6 +265,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "packet") return v3("pkTitle");
     if (tab === "clocks") return v3("ckTitle");
     if (tab === "snippets") return v3("snTitle");
+    if (tab === "pulse") return v3("puTitle");
+    if (tab === "swatches") return v3("swTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -441,6 +444,8 @@ function Shell({ base, section, name }: Props) {
             {view === "packet" && <HandoffPacket />}
             {view === "clocks" && <DeskClocks />}
             {view === "snippets" && <SnippetPad />}
+            {view === "pulse" && <QueuePulse base={base} tx={tx} />}
+            {view === "swatches" && <RouteSwatches base={base} />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
