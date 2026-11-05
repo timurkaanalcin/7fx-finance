@@ -49,6 +49,8 @@ import { DepositBoard, SopPad } from "./round58";
 import { AlertDesk, FolderPad } from "./round59";
 import { HealthStrip, ScratchBoard } from "./round60";
 import { IntroducerBoard, JumpHistory } from "./round61";
+import { ExpiryWatch, PanelDensityStrip } from "./round62";
+import { PANEL_KEY, readPanel, type PanelDensity } from "@/lib/crmv4/round62";
 import { JUMP_KEY, pushJump, readJumps } from "@/lib/crmv4/round61";
 import { CHROME_KEY, GOLD_KEY, readChrome, readGold, type ChromeMode, type GoldLevel } from "@/lib/crmv4/round57";
 import { FOCUS_FLAG, MUTE_KEY, QUIET_KEY, nowMinutes, readFocusFlag, readMute, readQuiet, shouldAlert } from "@/lib/crmv4/round56";
@@ -125,6 +127,7 @@ function Shell({ base, section, name }: Props) {
   const [freeze, setFreeze] = useState(false);
   const [focus, setFocus] = useState(false);
   const [gold, setGold] = useState<GoldLevel>("desk");
+  const [panel, setPanel] = useState<PanelDensity>("desk");
   const [chrome, setChrome] = useState<ChromeMode>("roomy");
   const [brand, setBrand] = useState("");
   const ticketSeen = useRef(0);
@@ -173,10 +176,13 @@ function Shell({ base, section, name }: Props) {
     setFocus(readFocusFlag(readJson(FOCUS_FLAG, false)));
     setGold(readGold(readJson(GOLD_KEY, "desk")));
     setChrome(readChrome(readJson(CHROME_KEY, "roomy")));
+    setPanel(readPanel(readJson(PANEL_KEY, "desk")));
     const onGold = (event: Event) => setGold(readGold((event as CustomEvent).detail));
     const onChrome = (event: Event) => setChrome(readChrome((event as CustomEvent).detail));
+    const onPanel = (event: Event) => setPanel(readPanel((event as CustomEvent).detail));
     window.addEventListener("crmv4:gold", onGold);
     window.addEventListener("crmv4:chrome", onChrome);
+    window.addEventListener("crmv4:panel", onPanel);
     setZebra(storedZebra());
     setMotion(storedMotion());
     const onMotion = (event: Event) => setMotion((event as CustomEvent<string>).detail === "reduce" ? "reduce" : "system");
@@ -200,6 +206,7 @@ function Shell({ base, section, name }: Props) {
       window.removeEventListener("crmv4:focus", onFocus);
       window.removeEventListener("crmv4:gold", onGold);
       window.removeEventListener("crmv4:chrome", onChrome);
+      window.removeEventListener("crmv4:panel", onPanel);
       window.removeEventListener("crmv4:brand", onBrand);
       media.removeEventListener("change", onMode);
     };
@@ -355,6 +362,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "scratch") return v4("sbTitle");
     if (tab === "ibpay") return v4("cmTitle");
     if (tab === "jumps") return v4("jpTitle");
+    if (tab === "expiry") return v4("exTitle");
+    if (tab === "density") return v4("lyTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -411,6 +420,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "scratch") return v4("sbSub");
     if (tab === "ibpay") return v4("cmSub");
     if (tab === "jumps") return v4("jpSub");
+    if (tab === "expiry") return v4("exSub");
+    if (tab === "density") return v4("lySub");
     return "";
   }
 
@@ -423,7 +434,7 @@ function Shell({ base, section, name }: Props) {
   for (const item of CRM_V4_SECTIONS) names[item.id] = label(item.id);
 
   return (
-    <div data-crmv4-root="" data-theme={theme} data-accent={accent} data-role={role} data-zebra={zebra ? "1" : "0"} data-motion={motion} data-compact={compact ? "1" : "0"} data-font={font} data-contrast={contrast ? "1" : "0"} data-freeze={freeze ? "1" : "0"} data-focus={focus ? "1" : "0"} data-gold={gold} data-chrome={chrome} data-density={density} data-fold={folded ? "1" : "0"} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
+    <div data-crmv4-root="" data-theme={theme} data-accent={accent} data-role={role} data-zebra={zebra ? "1" : "0"} data-motion={motion} data-compact={compact ? "1" : "0"} data-font={font} data-contrast={contrast ? "1" : "0"} data-freeze={freeze ? "1" : "0"} data-focus={focus ? "1" : "0"} data-gold={gold} data-chrome={chrome} data-panel={panel} data-density={density} data-fold={folded ? "1" : "0"} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
       <a className="c4-skip" href="#c4-main">{v4("skipContent")}</a>
       <OfflineBanner v4={v4} />
       <IdleWarning v4={v4} />
@@ -588,6 +599,8 @@ function Shell({ base, section, name }: Props) {
             {view === "scratch" && <ScratchBoard v4={v4} />}
             {view === "ibpay" && <IntroducerBoard base={base} v4={v4} locale={locale} tx={tx} />}
             {view === "jumps" && <JumpHistory base={base} v4={v4} />}
+            {view === "expiry" && <ExpiryWatch base={base} v4={v4} locale={locale} tx={tx} />}
+            {view === "density" && <PanelDensityStrip v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
