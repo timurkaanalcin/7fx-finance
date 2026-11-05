@@ -106,6 +106,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-risk-mute": ["Muted severities", "Sessiz şiddetler", "Stumme Schwere", "Скрытые уровни", "الشدات المكتومة"],
   "crmv3-risk-ack": ["Acknowledged alerts", "Onaylanan uyarılar", "Zur Kenntnis genommene Hinweise", "Подтверждённые сигналы", "التنبيهات المقرّة"],
   "crmv3-bookmark-folders": ["Bookmark folders", "Yer imi klasörleri", "Lesezeichenordner", "Папки закладок", "مجلدات الإشارات"],
+  "crmv3-health-watch": ["Watched customers", "İzlenen müşteriler", "Beobachtete Kunden", "Наблюдаемые клиенты", "العملاء تحت المراقبة"],
+  "crmv3-scratchboard": ["Scratchboard", "Not tahtası", "Notiztafel", "Черновая доска", "لوحة الملاحظات"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
