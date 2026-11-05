@@ -169,6 +169,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-priority-hide": ["Priority glance", "Öncelik bakışı", "Prioritätsblick", "Обзор приоритета", "لمحة الأولوية"],
   "crmv3-desk-check": ["Checklist", "Kontrol listesi", "Checkliste", "Список", "قائمة تحقق"],
   "crmv3-country-hide": ["Country glance", "Ülke bakışı", "Länderblick", "Обзор стран", "لمحة البلد"],
+  "crmv3-scratch-pads": ["Scratch pad", "Karalama", "Notizblock", "Черновик", "مسودة"],
+  "crmv3-order-status-hide": ["Status glance", "Durum bakışı", "Statusblick", "Обзор статуса", "لمحة الحالة"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
