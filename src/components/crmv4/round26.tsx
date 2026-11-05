@@ -85,7 +85,7 @@ export function storeLayout(layout: OverviewLayout) {
   writeJson(LAYOUT_KEY, layout);
 }
 
-export function DeskArrange({ layout, v4, onChange }: { layout: OverviewLayout; v4: V4; onChange: (next: OverviewLayout) => void }) {
+export function DeskArrange({ layout, v4, onChange, locked = false }: { layout: OverviewLayout; v4: V4; onChange: (next: OverviewLayout) => void; locked?: boolean }) {
   return (
     <section className="c4-arrange-luxe" aria-label={v4("arrangeTitle")} data-arrange="1">
       <h3 className="c4-title">{v4("arrangeTitle")}</h3>
@@ -97,16 +97,16 @@ export function DeskArrange({ layout, v4, onChange }: { layout: OverviewLayout; 
           return (
             <li key={id} data-on={on ? "1" : "0"}>
               <label className="c4-row">
-                <input type="checkbox" checked={on} aria-label={`${v4("arrangeShow")} ${name}`} onChange={() => onChange(toggleHidden(layout, id))} />
+                <input type="checkbox" checked={on} disabled={locked} aria-label={`${v4("arrangeShow")} ${name}`} onChange={() => onChange(toggleHidden(layout, id))} />
                 <span>{name}</span>
               </label>
-              <button type="button" className="c4-btn" aria-label={`${v4("arrangeUp")} ${name}`} disabled={index === 0} onClick={() => onChange(moveCard(layout, id, -1))}>{v4("arrangeUp")}</button>
-              <button type="button" className="c4-btn" aria-label={`${v4("arrangeDown")} ${name}`} disabled={index === layout.order.length - 1} onClick={() => onChange(moveCard(layout, id, 1))}>{v4("arrangeDown")}</button>
+              <button type="button" className="c4-btn" aria-label={`${v4("arrangeUp")} ${name}`} disabled={locked || index === 0} onClick={() => onChange(moveCard(layout, id, -1))}>{v4("arrangeUp")}</button>
+              <button type="button" className="c4-btn" aria-label={`${v4("arrangeDown")} ${name}`} disabled={locked || index === layout.order.length - 1} onClick={() => onChange(moveCard(layout, id, 1))}>{v4("arrangeDown")}</button>
             </li>
           );
         })}
       </ul>
-      <button type="button" className="c4-btn" onClick={() => onChange(defaultLayout())}>{v4("arrangeReset")}</button>
+      <button type="button" className="c4-btn" disabled={locked} onClick={() => onChange(defaultLayout())}>{v4("arrangeReset")}</button>
     </section>
   );
 }

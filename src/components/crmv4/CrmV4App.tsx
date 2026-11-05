@@ -87,6 +87,7 @@ import { DepStatusGlance, PinRail } from "./round96";
 import { MuteList, SymbolGlance } from "./round97";
 import { ChannelGlance as TicketChannels, RecentJumps } from "./round98";
 import { LanguageGlance, WatchWords } from "./round99";
+import { IbStatusGlance, LayoutLock } from "./round100";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv4/round78";
@@ -522,6 +523,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ticketchannel") return v4("tcTitle");
     if (tab === "watchwords") return v4("wwTitle");
     if (tab === "langglance") return v4("lgTitle");
+    if (tab === "layoutlock") return v4("lxTitle");
+    if (tab === "ibstatus") return v4("bxTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -654,6 +657,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ticketchannel") return v4("tcSub");
     if (tab === "watchwords") return v4("wwSub");
     if (tab === "langglance") return v4("lgSub");
+    if (tab === "layoutlock") return v4("lxSub");
+    if (tab === "ibstatus") return v4("bxSub");
     return "";
   }
 
@@ -907,6 +912,8 @@ function Shell({ base, section, name }: Props) {
             {view === "ticketchannel" && <TicketChannels base={base} v4={v4} />}
             {view === "watchwords" && <WatchWords v4={v4} />}
             {view === "langglance" && <LanguageGlance base={base} v4={v4} />}
+            {view === "layoutlock" && <LayoutLock v4={v4} />}
+            {view === "ibstatus" && <IbStatusGlance base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

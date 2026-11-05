@@ -23,6 +23,7 @@ import { Watchlist } from "../round19";
 import { FxDesk } from "../round22";
 import { AlertCenter } from "../round23";
 import { DeskArrange, loadLayout, orderedCards, storeLayout } from "../round26";
+import { LOCK_KEY, readLock, shownLayout } from "@/lib/crmv4/round100";
 import { TodayHero } from "../round35";
 import { TodayStrip } from "../round49";
 import { defaultLayout, type OverviewLayout } from "@/lib/crmv4/round26";
@@ -39,8 +40,16 @@ export default function Overview({ base, tx, locale, name }: Props) {
   const [tab, setTab] = useState<"home" | "insights" | "desks">("home");
   const [kpiOn, setKpiOn] = useState<string[]>(["customers", "aum", "volume", "pending"]);
   const [layout, setLayout] = useState<OverviewLayout>(defaultLayout());
+  const [layoutLocked, setLayoutLocked] = useState(false);
   useEffect(() => {
-    setLayout(loadLayout());
+    const apply = () => {
+      const lock = readLock(readJson(LOCK_KEY, null));
+      setLayoutLocked(lock.locked);
+      setLayout(shownLayout(lock, loadLayout()));
+    };
+    apply();
+    window.addEventListener("crmv4:layout-lock", apply);
+    return () => window.removeEventListener("crmv4:layout-lock", apply);
   }, []);
   useEffect(() => {
     setKpiOn(readKpis());
@@ -57,6 +66,12 @@ export default function Overview({ base, tx, locale, name }: Props) {
   const banner = finance.data?.kpis?.income ?? aum;
   const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale, key);
   function commit(next: OverviewLayout) {
+    const lock = readLock(readJson(LOCK_KEY, null));
+    if (lock.locked) {
+      setLayoutLocked(true);
+      setLayout(shownLayout(lock, loadLayout()));
+      return;
+    }
     setLayout(next);
     storeLayout(next);
   }
@@ -131,7 +146,7 @@ export default function Overview({ base, tx, locale, name }: Props) {
         <DeskBoard locale={locale} v4={(key) => crmv4Text(locale, key)} tx={tx} />
       ) : (
         <div className="c4-stack">
-          <DeskArrange layout={layout} v4={v4} onChange={commit} />
+          <DeskArrange layout={layout} v4={v4} locked={layoutLocked} onChange={commit} />
           {shown.map((id) => <div key={id} data-card={id}>{cards[id]}</div>)}
           {!shown.length && <p className="c4-empty-gold">{v4("arrangeEmpty")}</p>}
         </div>
