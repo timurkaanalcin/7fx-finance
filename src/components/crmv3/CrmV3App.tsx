@@ -50,6 +50,7 @@ import { DeskCompare, EodList } from "./desk/compare";
 import { CallScripts, StaleWatch } from "./desk/stale";
 import { DupeStrip, MeetingPrep } from "./desk/dupes";
 import { SourceMix, WinLog } from "./desk/mix";
+import { HandoffPacket, VipWatch } from "./desk/vip";
 import { CHROME_KEY, GOLD_KEY, readChrome, readGold, type ChromeMode, type GoldLevel } from "@/lib/crmv3/triage";
 import { readJson, writeJson } from "@/lib/crmv3/bridge";
 import { JUMP_KEY, pushJump, readJumps } from "@/lib/crmv3/introducer";
@@ -258,6 +259,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "prep") return v3("mpTitle");
     if (tab === "referrals") return v3("sxTitle");
     if (tab === "winloss") return v3("wnTitle");
+    if (tab === "vip") return v3("vwTitle");
+    if (tab === "packet") return v3("pkTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -431,6 +434,8 @@ function Shell({ base, section, name }: Props) {
             {view === "prep" && <MeetingPrep tx={tx} />}
             {view === "referrals" && <SourceMix base={base} tx={tx} />}
             {view === "winloss" && <WinLog tx={tx} />}
+            {view === "vip" && <VipWatch base={base} locale={locale} tx={tx} />}
+            {view === "packet" && <HandoffPacket />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
