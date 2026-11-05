@@ -191,6 +191,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-lang-hide": ["Language glance", "Dil bakışı", "Sprachblick", "Обзор языка", "لمحة اللغة"],
   "crmv3-layout-lock": ["Layout lock", "Düzen kilidi", "Layout-Sperre", "Блокировка раскладки", "قفل التخطيط"],
   "crmv3-ib-status-hide": ["IB status", "IB durumu", "IB-Status", "Статус IB", "حالة الوسيط"],
+  "crmv3-draft-stash": ["Draft stash", "Taslak cebi", "Entwurfsfach", "Карман черновиков", "جيب المسودات"],
+  "crmv3-doc-mix-hide": ["Type mix", "Tür karışımı", "Typenmix", "Смесь типов", "مزيج الأنواع"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
