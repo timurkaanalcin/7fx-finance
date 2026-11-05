@@ -6502,3 +6502,149 @@
   [data-crmv4-root] .c4-dep-board .c4-chip,
   [data-crmv4-root] .c4-sop-pad .c4-chip { min-height: 44px; }
 }
+
+[data-crmv4-root] .c4-alert-desk,
+[data-crmv4-root] .c4-folder-pad {
+  display: grid;
+  gap: 12px;
+  margin: 12px;
+  padding: 16px;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+  border: 1px solid rgba(166, 133, 78, 0.5);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(166, 133, 78, 0.14), transparent 36%),
+    #f7f4ee;
+  color: #1c1a17;
+  font-weight: 400;
+}
+
+[data-crmv4-root][data-chrome="dense"] .c4-alert-desk,
+[data-crmv4-root][data-chrome="dense"] .c4-folder-pad {
+  gap: 8px;
+  padding: 10px;
+}
+
+[data-crmv4-root] .c4-alert-desk .c4-title,
+[data-crmv4-root] .c4-folder-pad .c4-title {
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+[data-crmv4-root] .c4-alert-desk .c4-meta,
+[data-crmv4-root] .c4-folder-pad .c4-meta,
+[data-crmv4-root] .c4-alert-desk .c4-pay-kicker,
+[data-crmv4-root] .c4-folder-pad .c4-pay-kicker {
+  color: #7a5e30;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+[data-crmv4-root] .c4-alert-desk .c4-lab,
+[data-crmv4-root] .c4-folder-pad .c4-lab,
+[data-crmv4-root] .c4-alert-desk .c4-field,
+[data-crmv4-root] .c4-folder-pad .c4-field,
+[data-crmv4-root] .c4-alert-desk .c4-select,
+[data-crmv4-root] .c4-folder-pad .c4-select,
+[data-crmv4-root] .c4-alert-desk .c4-row,
+[data-crmv4-root] .c4-folder-pad .c4-row {
+  min-width: 0;
+  max-width: 100%;
+}
+
+[data-crmv4-root] .c4-alert-desk .c4-field,
+[data-crmv4-root] .c4-folder-pad .c4-field,
+[data-crmv4-root] .c4-alert-desk .c4-select,
+[data-crmv4-root] .c4-folder-pad .c4-select { width: 100%; }
+
+[data-crmv4-root] .c4-alert-cards,
+[data-crmv4-root] .c4-folder-list,
+[data-crmv4-root] .c4-folder-children,
+[data-crmv4-root] .c4-folder-links {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-width: 0;
+}
+
+[data-crmv4-root] .c4-alert-card,
+[data-crmv4-root] .c4-folder-card {
+  min-width: 0;
+  max-width: 100%;
+  padding: 12px;
+  border: 1px solid rgba(166, 133, 78, 0.35);
+  border-radius: 14px;
+  background: #fffdf8;
+  overflow-wrap: anywhere;
+}
+
+[data-crmv4-root] .c4-folder-card .c4-folder-card { margin-inline-start: 12px; }
+
+[data-crmv4-root] .c4-alert-card strong,
+[data-crmv4-root] .c4-folder-card strong { font-weight: 500; }
+
+[data-crmv4-root] .c4-alert-severity {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 1px 8px;
+  border: 1px solid rgba(166, 133, 78, 0.55);
+  border-radius: 999px;
+  color: #7a5e30;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+[data-crmv4-root] .c4-alert-card[data-severity="error"] { box-shadow: inset 2px 0 0 #7a5e30; }
+[data-crmv4-root] .c4-alert-card[data-acked="1"] { box-shadow: inset 2px 0 0 #a6854e; }
+
+[data-crmv4-root] .c4-folder-links li {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  [data-crmv4-root] .c4-alert-cards,
+  [data-crmv4-root] .c4-folder-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  [data-crmv4-root] .c4-folder-children { grid-template-columns: minmax(0, 1fr); }
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-alert-desk,
+[data-crmv4-root][data-theme="dark"] .c4-folder-pad {
+  background:
+    linear-gradient(180deg, rgba(212, 188, 134, 0.16), transparent 42%),
+    #161412;
+  color: #f6f1e8;
+  border-color: rgba(212, 188, 134, 0.38);
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-alert-card,
+[data-crmv4-root][data-theme="dark"] .c4-folder-card {
+  background: #221f1b;
+  color: #f6f1e8;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-alert-desk .c4-meta,
+[data-crmv4-root][data-theme="dark"] .c4-folder-pad .c4-meta,
+[data-crmv4-root][data-theme="dark"] .c4-alert-desk .c4-pay-kicker,
+[data-crmv4-root][data-theme="dark"] .c4-folder-pad .c4-pay-kicker,
+[data-crmv4-root][data-theme="dark"] .c4-alert-severity { color: #d4bc86; }
+
+@media (max-width: 767px) {
+  [data-crmv4-root] .c4-alert-desk,
+  [data-crmv4-root] .c4-folder-pad { margin: 8px; padding: 12px; }
+  [data-crmv4-root][data-chrome="dense"] .c4-alert-desk,
+  [data-crmv4-root][data-chrome="dense"] .c4-folder-pad { padding: 8px; }
+  [data-crmv4-root] .c4-folder-card .c4-folder-card { margin-inline-start: 0; }
+  [data-crmv4-root] .c4-alert-desk .c4-btn,
+  [data-crmv4-root] .c4-folder-pad .c4-btn,
+  [data-crmv4-root] .c4-alert-desk .c4-chip,
+  [data-crmv4-root] .c4-folder-pad .c4-chip { min-height: 44px; }
+}
