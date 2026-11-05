@@ -85,6 +85,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-thread-drafts": ["Thread drafts", "Yazışma taslakları", "Entwürfe", "Черновики", "مسودات"],
   "crmv3-thread-canned": ["Saved replies", "Kayıtlı yanıtlar", "Gespeicherte Antworten", "Сохранённые ответы", "ردود محفوظة"],
   "crmv3-gallery-checks": ["Document checklist", "Belge listesi", "Dokumentenliste", "Список документов", "قائمة الوثائق"],
+  "crmv3-dense-columns": ["Dense columns", "Sıkı sütunlar", "Dichte Spalten", "Плотные колонки", "أعمدة كثيفة"],
+  "crmv3-day-done": ["Day done", "Gün tamam", "Tag erledigt", "День сделан", "اليوم تم"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;

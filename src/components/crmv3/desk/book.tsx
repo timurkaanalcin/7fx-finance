@@ -21,6 +21,7 @@ import {
 } from "@/lib/crmv3/book";
 import { crmv3Href } from "@/lib/crmv3/sections";
 import { Status, useJson, when } from "../kit";
+import { DayStrip } from "./dense";
 import { useV3, type V3 } from "./store";
 
 function pnlText(value: number | null, locale: string): string {
@@ -98,6 +99,8 @@ export function AgendaPage({ base, locale }: { base: string; locale: string }) {
     writeJson(FOLLOW_KEY, next);
   }
   return (
+    <div className="c3-stack">
+    <DayStrip base={base} locale={locale} />
     <section className="c3-agenda" aria-label={v3("agTitle")} data-agenda="1">
       <h2 className="c3-title">{v3("agTitle")}</h2>
       <p className="c3-muted">{v3("agHint")}</p>
@@ -125,6 +128,7 @@ export function AgendaPage({ base, locale }: { base: string; locale: string }) {
         })}
       </div>
     </section>
+    </div>
   );
 }
 
