@@ -103,6 +103,9 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-gold-intensity": ["Gold intensity", "Altın yoğunluğu", "Goldstärke", "Насыщенность золота", "شدة الذهب"],
   "crmv3-chrome-density": ["Chrome density", "Krom yoğunluğu", "Chromdichte", "Плотность хрома", "كثافة الإطار"],
   "crmv3-sop-lists": ["Desk checklists", "Masa listeleri", "Tischlisten", "Списки стола", "قوائم المكتب"],
+  "crmv3-risk-mute": ["Muted severities", "Sessiz şiddetler", "Stumme Schwere", "Скрытые уровни", "الشدات المكتومة"],
+  "crmv3-risk-ack": ["Acknowledged alerts", "Onaylanan uyarılar", "Zur Kenntnis genommene Hinweise", "Подтверждённые сигналы", "التنبيهات المقرّة"],
+  "crmv3-bookmark-folders": ["Bookmark folders", "Yer imi klasörleri", "Lesezeichenordner", "Папки закладок", "مجلدات الإشارات"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
