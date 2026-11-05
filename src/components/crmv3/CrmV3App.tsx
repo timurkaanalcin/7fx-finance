@@ -31,6 +31,7 @@ import { AccessDesk, PayoutDesk } from "./desk/payout";
 import { FundingDesk } from "./desk/funding";
 import { ThreadDesk } from "./desk/thread";
 import { GalleryDesk, HistoryDesk } from "./desk/papers";
+import { DenseList } from "./desk/dense";
 import { readJson } from "@/lib/crmv3/bridge";
 import { RAIL_KEY, readFold } from "@/lib/crmv3/nav";
 import { MoreNav, RailNav } from "./desk/nav";
@@ -169,6 +170,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "goals") return v3("goalsTitle");
     if (tab === "kyc") return v3("kycDesk");
     if (tab === "gallery") return v3("glTitle");
+    if (tab === "dense") return v3("dnTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -300,6 +302,7 @@ function Shell({ base, section, name }: Props) {
             {view === "goals" && <GoalsPage locale={locale} />}
             {view === "kyc" && <KycDesk tx={tx} locale={locale} />}
             {view === "gallery" && <GalleryDesk base={base} tx={tx} locale={locale} />}
+            {view === "dense" && <DenseList base={base} tx={tx} />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}

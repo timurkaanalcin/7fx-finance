@@ -2810,3 +2810,102 @@
 }
 
 [data-crmv3-root] .c3-paper-checks legend { padding: 0; }
+
+[data-crmv3-root] .c3-dense .c3-lab { flex: 1 1 220px; max-width: 100%; }
+
+[data-crmv3-root] .c3-dense .c3-select { width: 100%; max-width: 100%; }
+
+[data-crmv3-root] .c3-dense-wrap { min-width: 0; }
+
+[data-crmv3-root] .c3-dense-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+[data-crmv3-root] .c3-dense-table th,
+[data-crmv3-root] .c3-dense-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--c3-line);
+  text-align: start;
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+}
+
+[data-crmv3-root] .c3-dense-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--c3-card);
+  color: var(--c3-muted);
+  font-weight: 600;
+}
+
+[data-crmv3-root] .c3-dense-table tr[data-on="1"] { background: var(--c3-gold-soft); }
+
+[data-crmv3-root] .c3-dense-results {
+  display: grid;
+  gap: var(--c3-1);
+  margin: var(--c3-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv3-root] .c3-dense-results li[data-ok="0"] { color: #7a5e30; }
+
+[data-crmv3-root] .c3-daystrip-row {
+  display: grid;
+  gap: var(--c3-2);
+}
+
+[data-crmv3-root] .c3-day-card {
+  min-width: 0;
+  padding: var(--c3-2);
+  border: 1px solid var(--c3-line);
+  border-radius: 12px;
+  background: var(--c3-card);
+}
+
+[data-crmv3-root] .c3-day-card[data-today="1"] { border-color: var(--c3-gold); }
+
+[data-crmv3-root] .c3-day-card[data-overdue="1"] { border-style: dashed; border-color: #7a5e30; }
+
+[data-crmv3-root] .c3-day-card ul {
+  display: grid;
+  gap: var(--c3-1);
+  margin: var(--c3-1) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv3-root] .c3-day-card li[data-done="1"] { opacity: 0.55; }
+
+@media (max-width: 767px) {
+  [data-crmv3-root] .c3-dense-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  [data-crmv3-root] .c3-dense-table,
+  [data-crmv3-root] .c3-dense-table tbody,
+  [data-crmv3-root] .c3-dense-table tr,
+  [data-crmv3-root] .c3-dense-table td {
+    display: block;
+    width: 100%;
+  }
+
+  [data-crmv3-root] .c3-dense-table tr {
+    margin-bottom: var(--c3-2);
+    border: 1px solid var(--c3-line);
+    border-radius: 12px;
+  }
+}
+
+@media (min-width: 768px) {
+  [data-crmv3-root] .c3-daystrip-row { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+}
