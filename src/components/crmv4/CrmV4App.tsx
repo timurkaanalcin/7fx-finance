@@ -48,6 +48,8 @@ import { AccentStrip, TriageBoard } from "./round57";
 import { DepositBoard, SopPad } from "./round58";
 import { AlertDesk, FolderPad } from "./round59";
 import { HealthStrip, ScratchBoard } from "./round60";
+import { IntroducerBoard, JumpHistory } from "./round61";
+import { JUMP_KEY, pushJump, readJumps } from "@/lib/crmv4/round61";
 import { CHROME_KEY, GOLD_KEY, readChrome, readGold, type ChromeMode, type GoldLevel } from "@/lib/crmv4/round57";
 import { FOCUS_FLAG, MUTE_KEY, QUIET_KEY, nowMinutes, readFocusFlag, readMute, readQuiet, shouldAlert } from "@/lib/crmv4/round56";
 import { lastView, playPing, rememberView, soundEnabled, ticketAlertsOn } from "./round7";
@@ -253,6 +255,11 @@ function Shell({ base, section, name }: Props) {
     const previous = lastView();
     if (previous && previous !== path && view === "overview" && !id) setResume(previous);
     rememberView(path);
+    if (CRM_V4_SECTIONS.some((item) => item.id === view)) {
+      const jumps = pushJump(readJumps(readJson(JUMP_KEY, [])), view, new Date().toISOString(), CRM_V4_SECTIONS.map((item) => item.id));
+      writeJson(JUMP_KEY, jumps);
+      window.dispatchEvent(new Event("crmv4:jumps"));
+    }
     const next = [...readTrail().filter((item) => item !== path), path].slice(-8);
     window.sessionStorage.setItem("crmv4-trail", JSON.stringify(next));
     setTrail(next);
@@ -346,6 +353,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "folders") return v4("bmTitle");
     if (tab === "health") return v4("hlTitle");
     if (tab === "scratch") return v4("sbTitle");
+    if (tab === "ibpay") return v4("cmTitle");
+    if (tab === "jumps") return v4("jpTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -400,6 +409,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "folders") return v4("bmSub");
     if (tab === "health") return v4("hlSub");
     if (tab === "scratch") return v4("sbSub");
+    if (tab === "ibpay") return v4("cmSub");
+    if (tab === "jumps") return v4("jpSub");
     return "";
   }
 
@@ -575,6 +586,8 @@ function Shell({ base, section, name }: Props) {
             {view === "folders" && <FolderPad base={base} v4={v4} />}
             {view === "health" && <HealthStrip base={base} v4={v4} locale={locale} tx={tx} />}
             {view === "scratch" && <ScratchBoard v4={v4} />}
+            {view === "ibpay" && <IntroducerBoard base={base} v4={v4} locale={locale} tx={tx} />}
+            {view === "jumps" && <JumpHistory base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
