@@ -3261,3 +3261,57 @@
 @media (min-width: 768px) {
   [data-crmv3-root] .c3-triage-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+[data-crmv3-root] .c3-dep-cards,
+[data-crmv3-root] .c3-dep-totals ul,
+[data-crmv3-root] .c3-sop-lists,
+[data-crmv3-root] .c3-sop-steps {
+  display: grid;
+  gap: var(--c3-2);
+  margin: var(--c3-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv3-root] .c3-dep-card,
+[data-crmv3-root] .c3-dep-totals li,
+[data-crmv3-root] .c3-sop-list {
+  min-width: 0;
+  padding: var(--c3-2);
+  border: 1px solid var(--c3-line);
+  border-radius: 12px;
+  background: var(--c3-card);
+}
+
+[data-crmv3-root] .c3-dep-totals li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--c3-2);
+}
+
+[data-crmv3-root] .c3-dep-totals li[data-currency="none"] { border-style: dashed; border-color: #7a5e30; }
+
+[data-crmv3-root] .c3-dep-status[data-status="REJECTED"] { color: #8f2d2d; }
+[data-crmv3-root] .c3-dep-status[data-status="APPROVED"] { color: #145c3a; }
+
+[data-crmv3-root] .c3-sop-list[data-pinned="1"] { border-color: #7a5e30; }
+
+[data-crmv3-root] .c3-sop-step {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--c3-2);
+}
+
+[data-crmv3-root] .c3-dep-board .c3-lab,
+[data-crmv3-root] .c3-sop-pad .c3-lab { flex: 1 1 220px; max-width: 100%; }
+
+[data-crmv3-root] .c3-dep-board .c3-field,
+[data-crmv3-root] .c3-sop-pad .c3-field { width: 100%; max-width: 100%; }
+
+@media (min-width: 768px) {
+  [data-crmv3-root] .c3-dep-cards,
+  [data-crmv3-root] .c3-sop-lists { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  [data-crmv3-root] .c3-dep-totals ul { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
