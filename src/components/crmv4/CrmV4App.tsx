@@ -97,6 +97,7 @@ import { ColorTags, TradeSide } from "./round106";
 import { KycStatus, SavedViews } from "./round107";
 import { FollowQueue, TicketStatus } from "./round108";
 import { IbCountry, RowDensityDesk } from "./round109";
+import { AuditDayStrip, CsvColumnDesk } from "./round110";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -558,6 +559,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ticketstatus") return v4("tzTitle");
     if (tab === "rowdensity") return v4("rdTitle");
     if (tab === "ibcountry") return v4("icTitle");
+    if (tab === "csvpresets") return v4("xvTitle");
+    if (tab === "auditdays") return v4("uyTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -710,6 +713,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ticketstatus") return v4("tzSub");
     if (tab === "rowdensity") return v4("rdSub");
     if (tab === "ibcountry") return v4("icSub");
+    if (tab === "csvpresets") return v4("xvSub");
+    if (tab === "auditdays") return v4("uySub");
     return "";
   }
 
@@ -983,6 +988,8 @@ function Shell({ base, section, name }: Props) {
             {view === "ticketstatus" && <TicketStatus base={base} v4={v4} />}
             {view === "rowdensity" && <RowDensityDesk v4={v4} />}
             {view === "ibcountry" && <IbCountry base={base} v4={v4} />}
+            {view === "csvpresets" && <CsvColumnDesk base={base} v4={v4} />}
+            {view === "auditdays" && <AuditDayStrip base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
