@@ -83,6 +83,7 @@ export function DepositDesk({ base, v4, tx, locale }: { base: string; v4: V4; tx
     <section className="c4-dep-luxe" aria-label={v4("depDesk")} data-dep="1">
       <h2 className="c4-title">{v4("depDesk")}</h2>
       <p className="c4-muted">{v4("depHint")}</p>
+      <p><Link className="c4-btn" href={crmv4Href(base, "funding")}>{v4("fuTitle")}</Link></p>
       <div className="c4-kyc-split">
         <div>
           <h3 className="c4-title">{v4("depQueue")}</h3>
