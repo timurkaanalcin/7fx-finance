@@ -149,6 +149,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-mail-density": ["Inbox density", "Gelen kutusu sıklığı", "Postdichte", "Плотность почты", "كثافة البريد"],
   "crmv3-call-pack": ["Call pack", "Arama paketi", "Anrufpaket", "Пакет звонка", "حزمة المكالمة"],
   "crmv3-currency-hide": ["Currency chips", "Para birimi çipleri", "Währungs-Chips", "Фильтры валют", "شرائح العملة"],
+  "crmv3-desk-bookmarks": ["Bookmark bar", "Yer imi çubuğu", "Lesezeichenleiste", "Полоса закладок", "شريط الإشارات"],
+  "crmv3-kyc-hide": ["KYC glance", "KYC bakışı", "KYC-Blick", "Обзор KYC", "لمحة التحقق"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
