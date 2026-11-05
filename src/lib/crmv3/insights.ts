@@ -241,6 +241,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-tkt-stat-hide": ["Ticket statuses", "Bilet durumları", "Ticketstatus", "Статусы тикетов", "حالات التذاكر"],
   "crmv3-supply-notes": ["Supply notes", "Malzeme notları", "Vorratsnotizen", "Заметки о запасах", "ملاحظات المخزن"],
   "crmv3-kyc-sg-hide": ["KYC statuses", "KYC durumları", "KYC-Status", "Статусы KYC", "حالات التحقق"],
+  "crmv3-room-notes": ["Room notes", "Oda notları", "Raumnotizen", "Заметки о комнате", "ملاحظات الغرفة"],
+  "crmv3-side-sg-hide": ["Trade sides", "İşlem yönleri", "Handelsseiten", "Стороны сделок", "جهات الصفقات"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
