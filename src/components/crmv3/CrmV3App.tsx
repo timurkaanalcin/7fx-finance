@@ -88,6 +88,7 @@ import { DepositMethod, SnoozeList } from "./desk/snoozelist";
 import { CasePriority, CheckPolish } from "./desk/checkpolish";
 import { ColorTags, TradeSide } from "./desk/colortags";
 import { KycStatus, SavedViews } from "./desk/savedviews";
+import { FollowQueue, TicketStatus } from "./desk/followqueue";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv3/deskfocus";
 import { EDGE_KEY, readEdge, type Accent } from "@/lib/crmv3/edge";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv3/risklist";
@@ -422,6 +423,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "tradeside") return v3("ysTitle");
     if (tab === "savedviews") return v3("dvTitle");
     if (tab === "kycstatus") return v3("kyTitle");
+    if (tab === "followqueue") return v3("ffTitle");
+    if (tab === "ticketstatus") return v3("tzTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -682,6 +685,8 @@ function Shell({ base, section, name }: Props) {
             {view === "tradeside" && <TradeSide base={base} />}
             {view === "savedviews" && <SavedViews />}
             {view === "kycstatus" && <KycStatus base={base} />}
+            {view === "followqueue" && <FollowQueue base={base} />}
+            {view === "ticketstatus" && <TicketStatus base={base} />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
