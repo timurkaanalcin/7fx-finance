@@ -5,15 +5,15 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { approvalBody, approvalEndpoint } from "@/lib/crmv2/payload";
 import { crmv4Text } from "@/lib/crmv4/copy";
 import { ReviewDialog, TicketMeta } from "../round1";
-import { MacroBar } from "../round2";
 import { groupBy, setTicketAssignee, ticketAssignee } from "../round3";
 import { CsatPicker } from "../round4";
 import { SlaHeat, ticketCategory } from "../round6";
-import { CsatTrend, FirstTimer, ReplyTemplates, ResponseStat, bulkTicketUpdate, escalated, exportChat, internalNote, saveInternalNote, toggleEscalated } from "../round9";
+import { CsatTrend, FirstTimer, ResponseStat, bulkTicketUpdate, escalated, exportChat, toggleEscalated } from "../round9";
 import { ApprovalTimes, BacklogTrend } from "../round11";
 import { SlaBadge, ViewerHint, ticketExport } from "../round14";
 import { Card, Chip, Lab, Msg, Sheet, State, Status, SwipeRow, money, sendJson, statusTone, useJson, when, type Tx } from "../kit";
 import { TicketInbox } from "../round45";
+import { ThreadPanel } from "../round49";
 import { rememberView } from "../round25";
 import { crmv4Href } from "@/lib/crmv4/sections";
 
@@ -198,11 +198,7 @@ function Tickets({ tx, locale, q, status, openId, setQuery }: { tx: Tx; locale: 
 function Chat({ tx, locale, q, userId, setQuery }: { tx: Tx; locale: string; q: string; userId: string; setQuery: (next: Record<string, string>) => void }) {
   const list = useJson<{ threads?: Thread[] }>(`/api/admin/chat?take=30&q=${encodeURIComponent(q)}`);
   const thread = useJson<{ threads?: { messages?: ChatMessage[]; trader?: string }[] }>(userId ? `/api/admin/chat?userId=${encodeURIComponent(userId)}&take=40` : null);
-  const [msg, setMsg] = useState("");
-  const presence = useJson<{ presence?: { customerTyping?: boolean; adminLastReadAt?: string | null } }>(userId ? `/api/admin/chat/presence?userId=${encodeURIComponent(userId)}` : null);
-  const [draft, setDraft] = useState("");
   const [chatQ, setChatQ] = useState("");
-  const [internal, setInternal] = useState("");
   const messages = thread.data?.threads?.[0]?.messages || [];
   const visible = messages.filter((row) => !chatQ.trim() || String(row.body || "").toLowerCase().includes(chatQ.trim().toLowerCase()));
   const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale, key);
@@ -229,47 +225,15 @@ function Chat({ tx, locale, q, userId, setQuery }: { tx: Tx; locale: string; q: 
           <button type="button" className="c4-btn" onClick={() => void exportChat(messages)}>{v4("exportChat")}</button>
         </div>
         <ResponseStat messages={messages} v4={v4} />
-        <ul>
-          {visible.map((row) => (
-            <li key={row.id} style={{ padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
-              <div>{row.body}</div>
-              <div className="c4-muted">{row.workerName || tx("customerMsg")}{row.automatic ? ` · ${tx("automatic")}` : ""} · {when(row.createdAt, locale)}</div>
-            </li>
-          ))}
-        </ul>
-        {userId && (
-          <form
-            className="c4-form"
-            style={{ padding: 16 }}
-            onSubmit={async (event) => {
-              event.preventDefault();
-              const message = draft.trim();
-              if (!message) return;
-              const res = await sendJson("/api/admin/chat", "POST", { userId, message });
-              setMsg(res.ok ? tx("replySent") : res.error || tx("failed"));
-              if (res.ok) {
-                setDraft("");
-                await fetch("/api/admin/chat/presence", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId, typing: false, markAdminRead: true }) });
-                thread.reload();
-                list.reload();
-              }
-            }}
-          >
-            {presence.data?.presence?.customerTyping && <p className="c4-muted">{v4("typingNow")}</p>}
-            <MacroBar v4={v4} onInsert={setDraft} />
-            <ReplyTemplates customer={thread.data?.threads?.[0]?.trader || ""} kind="chat" v4={v4} onInsert={setDraft} />
-            <label className="c4-lab"><span>{v4("internalNote")}</span>
-              <textarea className="c4-field" rows={2} value={internal || (userId ? internalNote(userId) : "")} aria-label={v4("internalNote")} onChange={(event) => setInternal(event.target.value)} onBlur={() => userId && saveInternalNote(userId, internal)} />
-            </label>
-            <p className="c4-muted">{v4("publicReply")}</p>
-            <Lab label={tx("writeReply")}><textarea name="message" required rows={3} className="c4-field" value={draft} onChange={(event) => {
-              setDraft(event.target.value);
-              void fetch("/api/admin/chat/presence", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId, typing: true }) });
-            }} /></Lab>
-            <button type="submit" className="c4-btn c4-btn-hot">{tx("sendReply")}</button>
-            <Msg text={msg} />
-          </form>
-        )}
+        <ThreadPanel
+          userId={userId}
+          name={thread.data?.threads?.[0]?.trader || ""}
+          messages={visible}
+          v4={v4}
+          tx={tx}
+          locale={locale}
+          onSent={() => { thread.reload(); list.reload(); }}
+        />
       </Card>
     </div>
   );
