@@ -176,6 +176,7 @@ export function DeskSearch({ base, open, onClose, v4, locale }: { base: string; 
     { id: "thread", label: v4("cvTitle"), href: crmv4Href(base, "thread") },
     { id: "gallery", label: v4("glTitle"), href: crmv4Href(base, "gallery") },
     { id: "history", label: v4("hsTitle"), href: crmv4Href(base, "history") },
+    { id: "dense", label: v4("dnTitle"), href: crmv4Href(base, "dense") },
     { id: "reports", label: v4("reportsTitle"), href: crmv4Href(base, "reports") },
     { id: "goals", label: v4("goalsTitle"), href: crmv4Href(base, "goals") },
     { id: "support", label: v4("subSupport"), href: crmv4Href(base, "support") },
