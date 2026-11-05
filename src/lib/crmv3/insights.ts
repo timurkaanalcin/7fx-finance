@@ -221,6 +221,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-wd-method-hide": ["Withdrawal methods", "Çekim yöntemleri", "Auszahlungsmethoden", "Методы вывода", "طرق السحب"],
   "crmv3-meeting-notes": ["Meeting notes", "Toplantı notları", "Besprechungsnotizen", "Заметки встречи", "ملاحظات الاجتماع"],
   "crmv3-order-status-polish-hide": ["Order statuses", "Emir durumları", "Orderstatus", "Статусы заявок", "حالات الأوامر"],
+  "crmv3-quick-dial": ["Quick dial", "Hızlı arama", "Schnellwahl", "Быстрый набор", "اتصال سريع"],
+  "crmv3-ticket-assign-hide": ["Ticket assignees", "Talep sorumluları", "Ticket-Zuständige", "Исполнители заявок", "مكلّفو التذاكر"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
