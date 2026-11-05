@@ -9051,3 +9051,154 @@
   [data-crmv4-root] .c4-risk-watch .c4-chip,
   [data-crmv4-root] .c4-mail-density .c4-chip { min-height: 44px; }
 }
+
+[data-crmv4-root] .c4-call-pack,
+[data-crmv4-root] .c4-currency-chips {
+  display: grid;
+  gap: 12px;
+  margin: 12px;
+  padding: 16px;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+  border: 1px solid rgba(166, 133, 78, 0.5);
+  border-radius: 18px;
+  background: #f7f4ee;
+  color: #1c1a17;
+  font-weight: 400;
+}
+
+[data-crmv4-root][data-glass="soft"] .c4-call-pack,
+[data-crmv4-root][data-glass="soft"] .c4-currency-chips { background: rgba(247, 244, 238, 0.72); }
+
+[data-crmv4-root] .c4-call-pack .c4-title,
+[data-crmv4-root] .c4-currency-chips .c4-title {
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+[data-crmv4-root] .c4-call-pack .c4-meta,
+[data-crmv4-root] .c4-currency-chips .c4-meta,
+[data-crmv4-root] .c4-call-pack .c4-pay-kicker,
+[data-crmv4-root] .c4-currency-chips .c4-pay-kicker,
+[data-crmv4-root] .c4-currency-card h3 {
+  color: #7a5e30;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+[data-crmv4-root] .c4-currency-card h3 {
+  margin: 0;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root] .c4-call-pack .c4-lab,
+[data-crmv4-root] .c4-currency-chips .c4-lab,
+[data-crmv4-root] .c4-call-pack .c4-field,
+[data-crmv4-root] .c4-currency-chips .c4-field,
+[data-crmv4-root] .c4-call-pack .c4-select,
+[data-crmv4-root] .c4-call-pack .c4-row,
+[data-crmv4-root] .c4-currency-chips .c4-row {
+  min-width: 0;
+  max-width: 100%;
+}
+
+[data-crmv4-root] .c4-call-pack .c4-field,
+[data-crmv4-root] .c4-currency-chips .c4-field,
+[data-crmv4-root] .c4-call-pack .c4-select { width: 100%; }
+
+[data-crmv4-root] .c4-call-pack .c4-row,
+[data-crmv4-root] .c4-currency-chips .c4-row { flex-wrap: wrap; }
+
+[data-crmv4-root] .c4-call-list,
+[data-crmv4-root] .c4-currency-lines,
+[data-crmv4-root] .c4-currency-rows {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-width: 0;
+}
+
+[data-crmv4-root] .c4-call-card,
+[data-crmv4-root] .c4-currency-card,
+[data-crmv4-root] .c4-currency-lines li,
+[data-crmv4-root] .c4-currency-rows li {
+  min-width: 0;
+  max-width: 100%;
+  padding: 12px;
+  border: 1px solid rgba(166, 133, 78, 0.35);
+  border-radius: 14px;
+  background: #fffdf8;
+  overflow-wrap: anywhere;
+}
+
+[data-crmv4-root] .c4-call-card[data-pinned="1"] { box-shadow: inset 2px 0 0 #a6854e; }
+
+[data-crmv4-root] .c4-currency-board {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+[data-crmv4-root] .c4-currency-pair {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+[data-crmv4-root] .c4-currency-lines li,
+[data-crmv4-root] .c4-currency-rows li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+[data-crmv4-root] .c4-currency-total {
+  margin: 0;
+  color: #7a5e30;
+  font-weight: 500;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 768px) {
+  [data-crmv4-root] .c4-call-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  [data-crmv4-root] .c4-currency-board { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-call-pack,
+[data-crmv4-root][data-theme="dark"] .c4-currency-chips {
+  background: #161412;
+  color: #f6f1e8;
+  border-color: rgba(212, 188, 134, 0.38);
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-call-card,
+[data-crmv4-root][data-theme="dark"] .c4-currency-card,
+[data-crmv4-root][data-theme="dark"] .c4-currency-lines li,
+[data-crmv4-root][data-theme="dark"] .c4-currency-rows li { background: #221f1b; color: #f6f1e8; }
+
+[data-crmv4-root][data-theme="dark"] .c4-call-pack .c4-meta,
+[data-crmv4-root][data-theme="dark"] .c4-currency-chips .c4-meta,
+[data-crmv4-root][data-theme="dark"] .c4-call-pack .c4-pay-kicker,
+[data-crmv4-root][data-theme="dark"] .c4-currency-chips .c4-pay-kicker,
+[data-crmv4-root][data-theme="dark"] .c4-currency-card h3,
+[data-crmv4-root][data-theme="dark"] .c4-currency-total { color: #d4bc86; }
+
+@media (max-width: 767px) {
+  [data-crmv4-root] .c4-call-pack,
+  [data-crmv4-root] .c4-currency-chips { margin: 8px; padding: 12px; }
+  [data-crmv4-root] .c4-call-pack .c4-btn,
+  [data-crmv4-root] .c4-currency-chips .c4-btn,
+  [data-crmv4-root] .c4-call-pack .c4-chip,
+  [data-crmv4-root] .c4-currency-chips .c4-chip { min-height: 44px; }
+}
