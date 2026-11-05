@@ -210,6 +210,9 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-ticket-status-hide": ["Ticket status", "Bilet durumu", "Ticketstatus", "Статус тикета", "حالة التذكرة"],
   "crmv3-row-density": ["Row density", "Satır sıklığı", "Zeilendichte", "Плотность строк", "كثافة الصفوف"],
   "crmv3-ib-country-hide": ["IB country", "IB ülkesi", "IB-Land", "Страна IB", "بلد الوسيط"],
+  "crmv3-csv-presets": ["CSV columns", "CSV sütunları", "CSV-Spalten", "Столбцы CSV", "أعمدة CSV"],
+  "crmv3-csv-columns": ["CSV choice", "CSV seçimi", "CSV-Wahl", "Выбор CSV", "اختيار CSV"],
+  "crmv3-audit-day-hide": ["Audit days", "Denetim günleri", "Protokolltage", "Дни журнала", "أيام السجل"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
