@@ -6,7 +6,7 @@ export const NAV_SECTIONS = [
   { id: "work", ids: ["overview", "customers", "positions", "support", "agenda", "day", "inbox", "marketing"] },
   { id: "money", ids: ["finance", "deposit", "withdraw", "goals"] },
   { id: "compliance", ids: ["kyc", "risk", "logs"] },
-  { id: "insights", ids: ["reports", "insights"] },
+  { id: "insights", ids: ["reports", "insights", "affiliates"] },
   { id: "desk", ids: ["settings", "me", "prefs", "roster", "control"] },
 ] as const;
 

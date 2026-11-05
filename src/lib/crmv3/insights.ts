@@ -74,6 +74,10 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-risk-thresholds": ["Risk thresholds", "Risk eşikleri", "Risikogrenzen", "Пороги риска", "حدود المخاطر"],
   "crmv3-risk-count": ["Withdrawal count", "Çekim sayısı", "Auszahlungszahl", "Число выводов", "عدد السحوبات"],
   "crmv3-risk-notes": ["Risk notes", "Risk notları", "Risikonotizen", "Заметки риска", "ملاحظات المخاطر"],
+  "crmv3-sla-hours": ["Hour limit", "Saat sınırı", "Stundenlimit", "Предел в часах", "حد الساعات"],
+  "crmv3-ticket-views": ["Ticket views", "Talep görünümleri", "Ticket-Ansichten", "Виды заявок", "عروض الطلبات"],
+  "crmv3-ticket-due": ["Due-soon window", "Yakında penceresi", "Fenster bald fällig", "Окно «скоро»", "نافذة القرب"],
+  "crmv3-desk-role": ["Viewer preview", "İzleyici önizlemesi", "Betrachtervorschau", "Режим просмотра", "معاينة المشاهد"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;

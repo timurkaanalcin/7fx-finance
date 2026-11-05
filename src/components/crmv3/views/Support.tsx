@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { approvalBody, approvalEndpoint } from "@/lib/crmv2/payload";
 import { Card, Chip, Lab, Msg, Sheet, State, Status, SwipeRow, money, sendJson, statusTone, useJson, when, type Tx } from "../kit";
 import { TicketExtras } from "../desk/panels";
+import { TicketInbox } from "../desk/tickets";
 import { rememberView } from "../desk/goals";
 import { crmv3Href } from "@/lib/crmv3/sections";
 
@@ -34,6 +35,7 @@ export default function Support({ base, tx, locale, q }: { base: string; tx: Tx;
         <Chip on={tab === "kyc"} onClick={() => setQuery({ tab: "kyc" })}>{tx("kycQueue")}</Chip>
         <Chip on={tab === "files"} onClick={() => setQuery({ tab: "files" })}>{tx("evrak")}</Chip>
       </div>
+      {tab === "tickets" && <TicketInbox tx={tx} locale={locale} />}
       {tab === "tickets" && <Tickets base={base} tx={tx} locale={locale} q={q} status={params.get("status") || "PENDING"} openId={params.get("open") || ""} setQuery={setQuery} />}
       {tab === "chat" && <Chat tx={tx} locale={locale} q={q} userId={params.get("user") || ""} setQuery={setQuery} />}
       {tab === "kyc" && <Kyc tx={tx} locale={locale} q={q} />}
