@@ -2421,6 +2421,20 @@
 
 [data-crmv3-root] .c3-feed-line p { margin: 0; }
 
+[data-crmv3-root] .c3-type-mark {
+  width: 10px;
+  height: 10px;
+  margin-top: 6px;
+  border-radius: 999px;
+  background: var(--c3-muted);
+  flex: 0 0 auto;
+}
+
+[data-crmv3-root] .c3-type-mark[data-kind="call"] { background: var(--c3-gold); }
+[data-crmv3-root] .c3-type-mark[data-kind="status"] { background: var(--c3-ink); }
+[data-crmv3-root] .c3-type-mark[data-kind="money"] { background: var(--c3-pos); }
+[data-crmv3-root] .c3-type-mark[data-kind="note"] { background: var(--c3-muted); }
+
 [data-crmv3-root] .c3-inbox,
 [data-crmv3-root] .c3-aff,
 [data-crmv3-root] .c3-aff-card,

@@ -125,11 +125,34 @@ export function readNotes(raw: unknown): Record<string, ReviewNote> {
 }
 
 export function writeNote(map: Record<string, ReviewNote>, id: string, body: string, at: string): Record<string, ReviewNote> {
-  const text = body.trim();
+  const text = body.trim().slice(0, 500);
   const next = { ...map };
   if (!id || !text) delete next[id];
   else next[id] = { body: text, at };
   return next;
+}
+
+export type RiskKind = "large" | "frequent" | "kyc";
+
+export type RiskFlag = { kind: RiskKind; id: string; name: string };
+
+/** Kind and name stay on the flags already built. Neither asks for another list. */
+export function filterFlags(flags: readonly RiskFlag[], kind: "" | RiskKind, text: string): RiskFlag[] {
+  const query = text.trim().toLowerCase();
+  return flags.filter((flag) => {
+    if (kind && flag.kind !== kind) return false;
+    if (!query) return true;
+    return flag.name.toLowerCase().includes(query);
+  });
+}
+
+export function pendingDoc<T extends { traderId?: string | null; status?: string | null }>(docs: readonly T[], userId: string): T | null {
+  return docs.find((doc) => String(doc.traderId || "") === userId && String(doc.status || "").toUpperCase() === "PENDING") || null;
+}
+
+export function filterKind<T extends { kind: string }>(items: readonly T[], kind: string): T[] {
+  if (!kind) return items.slice();
+  return items.filter((item) => item.kind === kind);
 }
 
 export function groupDays<T extends { at: string }>(items: readonly T[]): { day: string; items: T[] }[] {
@@ -139,6 +162,9 @@ export function groupDays<T extends { at: string }>(items: readonly T[]): { day:
     const key = /^\d{4}-\d{2}-\d{2}$/.test(day) ? day : "";
     if (!map[key]) map[key] = [];
     map[key].push(item);
+  }
+  for (const key of Object.keys(map)) {
+    map[key].sort((a, b) => String(b.at).localeCompare(String(a.at)));
   }
   const keys = Object.keys(map).sort((a, b) => {
     if (!a) return 1;
