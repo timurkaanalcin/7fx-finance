@@ -91,6 +91,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-tag-board-pins": ["Pinned tags", "Sabit etiketler", "Angeheftete Marken", "Закреплённые метки", "وسوم مثبتة"],
   "crmv3-tag-board-hidden": ["Hidden tags", "Gizli etiketler", "Versteckte Marken", "Скрытые метки", "وسوم مخفية"],
   "crmv3-desk-pad": ["Desk pad", "Masa notu", "Tischblock", "Блокнот стола", "دفتر المكتب"],
+  "crmv3-case-pins": ["Case pins", "Dosya sabitleme", "Fall-Pins", "Закрепления дел", "تثبيت الملفات"],
+  "crmv3-shortcuts": ["Shortcut rail", "Kısayol şeridi", "Kurzleiste", "Полоса ярлыков", "شريط الاختصارات"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
