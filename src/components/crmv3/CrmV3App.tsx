@@ -30,6 +30,7 @@ import { AffiliateDesk } from "./desk/tickets";
 import { AccessDesk, PayoutDesk } from "./desk/payout";
 import { FundingDesk } from "./desk/funding";
 import { ThreadDesk } from "./desk/thread";
+import { GalleryDesk, HistoryDesk } from "./desk/papers";
 import { readJson } from "@/lib/crmv3/bridge";
 import { RAIL_KEY, readFold } from "@/lib/crmv3/nav";
 import { MoreNav, RailNav } from "./desk/nav";
@@ -167,6 +168,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "me") return v3("staffProfile");
     if (tab === "goals") return v3("goalsTitle");
     if (tab === "kyc") return v3("kycDesk");
+    if (tab === "gallery") return v3("glTitle");
+    if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
     if (tab === "payout") return v3("pqTitle");
@@ -296,6 +299,8 @@ function Shell({ base, section, name }: Props) {
             {view === "me" && <StaffPage signInName={name} base={base} locale={locale} />}
             {view === "goals" && <GoalsPage locale={locale} />}
             {view === "kyc" && <KycDesk tx={tx} locale={locale} />}
+            {view === "gallery" && <GalleryDesk base={base} tx={tx} locale={locale} />}
+            {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
             {view === "payout" && <PayoutDesk base={base} tx={tx} locale={locale} />}
