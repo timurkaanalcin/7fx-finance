@@ -56,6 +56,7 @@ import { GlassToggle, OvernightDigest } from "./round65";
 import { DeskCompare, EodList } from "./round66";
 import { CallScripts, StaleWatch } from "./round67";
 import { DupeStrip, MeetingPrep } from "./round68";
+import { SourceMix, WinLog } from "./round69";
 import { GLASS_KEY, readGlass, type GlassMode } from "@/lib/crmv4/round65";
 import { PANEL_KEY, readPanel, type PanelDensity } from "@/lib/crmv4/round62";
 import { JUMP_KEY, pushJump, readJumps } from "@/lib/crmv4/round61";
@@ -388,6 +389,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "scripts") return v4("tkTitle");
     if (tab === "dupes") return v4("dpTitle");
     if (tab === "prep") return v4("mpTitle");
+    if (tab === "sources") return v4("sxTitle");
+    if (tab === "winlog") return v4("wnTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -458,6 +461,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "scripts") return v4("tkSub");
     if (tab === "dupes") return v4("dpSub");
     if (tab === "prep") return v4("mpSub");
+    if (tab === "sources") return v4("sxSub");
+    if (tab === "winlog") return v4("wnSub");
     return "";
   }
 
@@ -649,6 +654,8 @@ function Shell({ base, section, name }: Props) {
             {view === "scripts" && <CallScripts v4={v4} />}
             {view === "dupes" && <DupeStrip base={base} v4={v4} locale={locale} tx={tx} />}
             {view === "prep" && <MeetingPrep v4={v4} tx={tx} />}
+            {view === "sources" && <SourceMix base={base} v4={v4} tx={tx} />}
+            {view === "winlog" && <WinLog v4={v4} tx={tx} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
