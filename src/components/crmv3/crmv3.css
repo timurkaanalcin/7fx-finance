@@ -4111,3 +4111,76 @@
   [data-crmv3-root] .c3-pulse-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   [data-crmv3-root] .c3-swatch-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+[data-crmv3-root][data-scale="small"] .c3-stage,
+[data-crmv3-root][data-scale="small"] .c3-stage .c3-title,
+[data-crmv3-root][data-scale="small"] .c3-stage .c3-btn,
+[data-crmv3-root][data-scale="small"] .c3-stage .c3-chip,
+[data-crmv3-root][data-scale="small"] .c3-stage .c3-field { font-size: 13px; }
+
+[data-crmv3-root][data-scale="large"] .c3-stage,
+[data-crmv3-root][data-scale="large"] .c3-stage .c3-title,
+[data-crmv3-root][data-scale="large"] .c3-stage .c3-btn,
+[data-crmv3-root][data-scale="large"] .c3-stage .c3-chip,
+[data-crmv3-root][data-scale="large"] .c3-stage .c3-field { font-size: 18px; }
+
+[data-crmv3-root] .c3-week-strip,
+[data-crmv3-root] .c3-scale-strip {
+  display: grid;
+  gap: var(--c3-3);
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+[data-crmv3-root] .c3-week-list,
+[data-crmv3-root] .c3-week-items {
+  display: grid;
+  gap: var(--c3-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-width: 0;
+}
+
+[data-crmv3-root] .c3-week-card {
+  min-width: 0;
+  max-width: 100%;
+  padding: var(--c3-3);
+  border: 1px solid var(--c3-line);
+  border-radius: 12px;
+  background: var(--c3-card);
+  overflow-wrap: break-word;
+}
+
+[data-crmv3-root] .c3-week-card[data-today="1"] { box-shadow: inset 2px 0 0 #7a5e30; }
+[data-crmv3-root] .c3-week-items li[data-done="1"] { opacity: 0.72; }
+
+[data-crmv3-root] .c3-scale-preview {
+  margin: 0;
+  color: #7a5e30;
+  font-size: 1.15em;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+[data-crmv3-root] .c3-week-strip .c3-lab,
+[data-crmv3-root] .c3-scale-strip .c3-lab { flex: 1 1 220px; max-width: 100%; }
+
+[data-crmv3-root] .c3-week-strip .c3-field { width: 100%; max-width: 100%; }
+
+[data-crmv3-root] .c3-week-strip .c3-row,
+[data-crmv3-root] .c3-scale-strip .c3-row { flex-wrap: wrap; }
+
+[data-crmv3-root] .c3-week-strip .c3-btn,
+[data-crmv3-root] .c3-week-strip .c3-field,
+[data-crmv3-root] .c3-scale-strip .c3-btn,
+[data-crmv3-root] .c3-scale-strip .c3-chip { min-height: 44px; }
+
+@media (min-width: 768px) {
+  [data-crmv3-root] .c3-week-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1400px) {
+  [data-crmv3-root] .c3-week-list { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+}
