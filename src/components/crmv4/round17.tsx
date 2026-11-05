@@ -5,7 +5,6 @@ import type { CrmV4CopyKey } from "@/lib/crmv4/copy";
 import { readJson, writeJson } from "@/lib/crmv4/local";
 import {
   callCount,
-  dayBucket,
   emailOk,
   filterFeed,
   formScore,
@@ -18,24 +17,13 @@ import {
   sameEntry,
   splitName,
   type CallLog,
-  type FeedKind,
 } from "@/lib/crmv4/round17";
 import { downloadCsv, useJson, when } from "./kit";
+import { RecordTimeline } from "./round47";
 
 export type V4 = (key: CrmV4CopyKey) => string;
 const CALL_KEY = "crmv4-call-log";
 const PIN_KEY = "crmv4-feed-pins";
-
-const KIND_LABEL: Record<FeedKind, CrmV4CopyKey> = {
-  note: "feedNotes",
-  call: "feedCalls",
-  status: "feedStatus",
-  money: "feedMoney",
-};
-
-function todayStamp() {
-  return new Date().toISOString().slice(0, 10);
-}
 
 export function ContactFeed({ id, notes, events, v4, locale }: {
   id: string;
@@ -47,7 +35,6 @@ export function ContactFeed({ id, notes, events, v4, locale }: {
   const money = useJson<{ transactions?: { id: string; type?: string; amount?: number; currency?: string; createdAt?: string; comment?: string }[] }>(`/api/admin/transactions?userId=${encodeURIComponent(id)}&limit=20`);
   const [calls, setCalls] = useState<CallLog[]>([]);
   const [pins, setPins] = useState<string[]>([]);
-  const [kind, setKind] = useState<"" | FeedKind>("");
   const [query, setQuery] = useState("");
   const [outcome, setOutcome] = useState("reached");
   const [minutes, setMinutes] = useState("");
@@ -59,8 +46,7 @@ export function ContactFeed({ id, notes, events, v4, locale }: {
     setPins(readJson<string[]>(PIN_KEY, []));
   }, [id]);
   const items = mergeFeed({ notes, events, calls, money: money.data?.transactions || [] });
-  const shown = pinFirst(filterFeed(items, kind, query), pins);
-  const today = todayStamp();
+  const shown = pinFirst(filterFeed(items, "", query), pins);
   const latest = lastContact(items);
 
   function saveCall(event: FormEvent) {
@@ -122,25 +108,10 @@ export function ContactFeed({ id, notes, events, v4, locale }: {
         <button type="submit" className="c4-btn c4-btn-hot">{v4("logCall")}</button>
       </form>
       <div className="c4-row c4-pad">
-        <button type="button" className="c4-chip" data-on={kind === "" ? "1" : "0"} onClick={() => setKind("")}>{v4("feedAll")}</button>
-        {(["note", "call", "status", "money"] as const).map((item) => (
-          <button key={item} type="button" className="c4-chip" data-on={kind === item ? "1" : "0"} onClick={() => setKind(item)}>{v4(KIND_LABEL[item])}</button>
-        ))}
         <input className="c4-field" aria-label={v4("feedSearch")} placeholder={v4("feedSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
         <button type="button" className="c4-btn" onClick={() => downloadCsv("contact-history.csv", ["kind", "at", "title", "detail"], shown.map((row) => [row.kind, row.at, row.title, row.detail]))}>{v4("feedCsv")}</button>
       </div>
-      <ol className="c4-feed">
-        {shown.map((item) => (
-          <li key={item.id} className="c4-feed-item" data-kind={item.kind} data-pin={pins.includes(item.id) ? "1" : "0"}>
-            <span className="c4-muted">{dayBucket(item.at, today) === "today" ? v4("feedToday") : v4("feedEarlier")}</span>
-            <strong>{v4(KIND_LABEL[item.kind])}</strong>
-            <p>{item.title || "—"}</p>
-            <p className="c4-muted">{item.detail} · {when(item.at, locale)}</p>
-            <button type="button" className="c4-btn" aria-pressed={pins.includes(item.id)} onClick={() => togglePin(item.id)}>{v4("pinItem")}</button>
-          </li>
-        ))}
-      </ol>
-      {!shown.length && <p className="c4-empty-gold">{v4("feedTitle")}</p>}
+      <RecordTimeline items={shown} v4={v4} locale={locale} pins={pins} onPin={togglePin} />
     </section>
   );
 }

@@ -4836,3 +4836,144 @@
 
 [data-crmv4-root][data-motion="reduce"] .c4-pay-row,
 [data-crmv4-root][data-motion="reduce"] .c4-access-card { transition: none; }
+
+[data-crmv4-root] .c4-risk-desk,
+[data-crmv4-root] .c4-dayline {
+  display: grid;
+  gap: 12px;
+  margin: 12px;
+  padding: 16px;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+  border: 1px solid rgba(166, 133, 78, 0.5);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(166, 133, 78, 0.14), transparent 36%),
+    #f7f4ee;
+  color: #1c1a17;
+  font-weight: 400;
+}
+
+[data-crmv4-root] .c4-risk-desk .c4-title,
+[data-crmv4-root] .c4-dayline .c4-title,
+[data-crmv4-root] .c4-risk-card strong,
+[data-crmv4-root] .c4-day-item strong {
+  margin: 0;
+  font-weight: 500;
+}
+
+[data-crmv4-root] .c4-risk-desk .c4-meta,
+[data-crmv4-root] .c4-dayline .c4-meta,
+[data-crmv4-root] .c4-risk-desk .c4-pay-kicker,
+[data-crmv4-root] .c4-day-group .c4-title {
+  color: #7a5e30;
+  font-weight: 400;
+  font-size: 12px;
+}
+
+[data-crmv4-root] .c4-risk-tools,
+[data-crmv4-root] .c4-risk-card-top,
+[data-crmv4-root] .c4-day-item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-end;
+  min-width: 0;
+  max-width: 100%;
+}
+
+[data-crmv4-root] .c4-risk-desk .c4-lab,
+[data-crmv4-root] .c4-dayline .c4-lab {
+  flex: 1 1 140px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+[data-crmv4-root] .c4-risk-desk .c4-field,
+[data-crmv4-root] .c4-risk-desk .c4-select,
+[data-crmv4-root] .c4-dayline .c4-field {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+[data-crmv4-root] .c4-risk-list,
+[data-crmv4-root] .c4-day-group ol,
+[data-crmv4-root] .c4-risk-sums {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-width: 0;
+}
+
+[data-crmv4-root] .c4-risk-card,
+[data-crmv4-root] .c4-day-group {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+  padding: 12px;
+  border: 1px solid rgba(166, 133, 78, 0.35);
+  border-radius: 14px;
+  background: #fffdf8;
+}
+
+[data-crmv4-root] .c4-risk-card p,
+[data-crmv4-root] .c4-day-copy p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+[data-crmv4-root] .c4-day-copy { min-width: 0; flex: 1 1 160px; }
+
+[data-crmv4-root] .c4-type-icon {
+  width: 8px;
+  height: 8px;
+  margin-top: 6px;
+  flex: 0 0 auto;
+  background: #a6854e;
+}
+
+[data-crmv4-root] .c4-type-icon[data-kind="note"] { border-radius: 1px; }
+[data-crmv4-root] .c4-type-icon[data-kind="call"] { border-radius: 50%; }
+[data-crmv4-root] .c4-type-icon[data-kind="status"] { transform: rotate(45deg); }
+[data-crmv4-root] .c4-type-icon[data-kind="money"] { border-radius: 8px 1px; }
+
+[data-crmv4-root] .c4-risk-sums li { overflow-wrap: anywhere; }
+
+[data-crmv4-root][data-theme="dark"] .c4-risk-desk,
+[data-crmv4-root][data-theme="dark"] .c4-dayline {
+  background:
+    linear-gradient(180deg, rgba(212, 188, 134, 0.16), transparent 42%),
+    #161412;
+  color: #f6f1e8;
+  border-color: rgba(212, 188, 134, 0.38);
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-risk-card,
+[data-crmv4-root][data-theme="dark"] .c4-day-group {
+  background: #221f1b;
+  color: #f6f1e8;
+  border-color: rgba(212, 188, 134, 0.28);
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-risk-desk .c4-meta,
+[data-crmv4-root][data-theme="dark"] .c4-dayline .c4-meta,
+[data-crmv4-root][data-theme="dark"] .c4-risk-desk .c4-pay-kicker,
+[data-crmv4-root][data-theme="dark"] .c4-day-group .c4-title { color: #d4bc86; }
+
+@media (max-width: 767px) {
+  [data-crmv4-root] .c4-risk-desk,
+  [data-crmv4-root] .c4-dayline { margin: 8px; padding: 12px; }
+  [data-crmv4-root] .c4-risk-desk .c4-btn,
+  [data-crmv4-root] .c4-dayline .c4-btn,
+  [data-crmv4-root] .c4-risk-desk .c4-chip,
+  [data-crmv4-root] .c4-dayline .c4-chip { min-height: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-type-icon { transform: none; }
+}
