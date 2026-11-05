@@ -93,6 +93,7 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-desk-pad": ["Desk pad", "Masa notu", "Tischblock", "Блокнот стола", "دفتر المكتب"],
   "crmv3-case-pins": ["Case pins", "Dosya sabitleme", "Fall-Pins", "Закрепления дел", "تثبيت الملفات"],
   "crmv3-shortcuts": ["Shortcut rail", "Kısayol şeridi", "Kurzleiste", "Полоса ярлыков", "شريط الاختصارات"],
+  "crmv3-shift-handoff": ["Shift handoff", "Vardiya devri", "Schichtübergabe", "Передача смены", "تسليم الوردية"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;

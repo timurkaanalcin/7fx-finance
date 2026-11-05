@@ -35,6 +35,7 @@ import { DenseList } from "./desk/dense";
 import { NoticeCenter, TagBoard } from "./desk/inbox-board";
 import { DeskPad, TradeBlotter } from "./desk/blotter";
 import { CaseQueue, ShortcutRail } from "./desk/cases";
+import { PayoutBoard, ShiftSheet } from "./desk/shift";
 import { readJson } from "@/lib/crmv3/bridge";
 import { RAIL_KEY, readFold } from "@/lib/crmv3/nav";
 import { MoreNav, RailNav } from "./desk/nav";
@@ -180,6 +181,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "pad") return v3("pdTitle");
     if (tab === "cases") return v3("cqTitle");
     if (tab === "shortcuts") return v3("scTitle");
+    if (tab === "payboard") return v3("pbTitle");
+    if (tab === "handoff") return v3("shTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -318,6 +321,8 @@ function Shell({ base, section, name }: Props) {
             {view === "pad" && <DeskPad base={base} tx={tx} />}
             {view === "cases" && <CaseQueue base={base} locale={locale} tx={tx} />}
             {view === "shortcuts" && <ShortcutRail base={base} tx={tx} />}
+            {view === "payboard" && <PayoutBoard base={base} locale={locale} tx={tx} />}
+            {view === "handoff" && <ShiftSheet tx={tx} />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
