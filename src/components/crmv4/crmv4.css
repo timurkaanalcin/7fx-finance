@@ -4551,3 +4551,288 @@
   background: #221f1b;
   color: #f6f1e8;
 }
+
+[data-crmv4-root] .c4-payout-desk,
+[data-crmv4-root] .c4-access-desk {
+  display: grid;
+  gap: 14px;
+  margin: 12px;
+  padding: 18px 16px 16px;
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid rgba(166, 133, 78, 0.5);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(166, 133, 78, 0.16), transparent 38%),
+    #f7f4ee;
+  color: #1c1a17;
+  font-weight: 400;
+  box-shadow: 0 16px 40px rgba(42, 38, 34, 0.05);
+}
+
+[data-crmv4-root] .c4-pay-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+[data-crmv4-root] .c4-pay-kicker {
+  margin: 0 0 2px;
+  color: #7a5e30;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root] .c4-payout-desk .c4-title,
+[data-crmv4-root] .c4-access-desk .c4-title {
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+[data-crmv4-root] .c4-pay-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+  gap: 10px;
+}
+
+[data-crmv4-root] .c4-pay-kpi {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(166, 133, 78, 0.35);
+  border-radius: 14px;
+  background: #fffdf8;
+}
+
+[data-crmv4-root] .c4-pay-kpi strong {
+  font-weight: 500;
+  font-size: 20px;
+  letter-spacing: 0;
+}
+
+[data-crmv4-root] .c4-pay-kpi[data-status="PENDING"] { box-shadow: inset 0 -2px 0 #a6854e; }
+
+[data-crmv4-root] .c4-payout-desk .c4-row,
+[data-crmv4-root] .c4-access-desk .c4-row {
+  align-items: flex-end;
+  min-width: 0;
+}
+
+[data-crmv4-root] .c4-payout-desk .c4-lab,
+[data-crmv4-root] .c4-access-desk .c4-lab {
+  flex: 1 1 180px;
+  max-width: 280px;
+  min-width: 0;
+}
+
+[data-crmv4-root] .c4-payout-desk .c4-field,
+[data-crmv4-root] .c4-access-desk .c4-field {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+[data-crmv4-root] .c4-pay-list,
+[data-crmv4-root] .c4-access-list,
+[data-crmv4-root] .c4-note-list,
+[data-crmv4-root] .c4-flag-grid {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv4-root] .c4-pay-row,
+[data-crmv4-root] .c4-access-card {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  padding: 12px 12px 12px 14px;
+  border: 1px solid rgba(166, 133, 78, 0.28);
+  border-radius: 14px;
+  background: rgba(255, 253, 248, 0.92);
+  color: inherit;
+  text-align: start;
+  transition: background 160ms ease, box-shadow 160ms ease;
+}
+
+[data-crmv4-root] .c4-pay-row strong,
+[data-crmv4-root] .c4-access-card strong {
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+[data-crmv4-root] .c4-pay-row[data-on="1"],
+[data-crmv4-root] .c4-access-card[data-on="1"] {
+  box-shadow: inset 3px 0 0 #a6854e;
+  background: rgba(166, 133, 78, 0.1);
+}
+
+[data-crmv4-root] .c4-status-pill,
+[data-crmv4-root] .c4-flag {
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(166, 133, 78, 0.45);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+[data-crmv4-root] .c4-status-pill[data-status="PENDING"] {
+  color: #7a5e30;
+  background: rgba(166, 133, 78, 0.16);
+}
+
+[data-crmv4-root] .c4-status-pill[data-status="APPROVED"] {
+  color: #1f6b45;
+  background: rgba(47, 122, 79, 0.12);
+  border-color: rgba(47, 122, 79, 0.35);
+}
+
+[data-crmv4-root] .c4-status-pill[data-status="REJECTED"] {
+  color: #8a3b32;
+  background: rgba(160, 70, 60, 0.12);
+  border-color: rgba(160, 70, 60, 0.35);
+}
+
+[data-crmv4-root] .c4-flag[data-on="1"] {
+  color: #7a5e30;
+  background: rgba(166, 133, 78, 0.16);
+}
+
+[data-crmv4-root] .c4-flag[data-on="0"] {
+  color: #5f564e;
+  background: transparent;
+}
+
+[data-crmv4-root] .c4-level {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+
+[data-crmv4-root] .c4-level i {
+  width: 8px;
+  height: 8px;
+  border-radius: 99px;
+  background: #e6dccf;
+}
+
+[data-crmv4-root] .c4-level i[data-on="1"] { background: #a6854e; }
+
+[data-crmv4-root] .c4-pay-detail,
+[data-crmv4-root] .c4-pay-confirm,
+[data-crmv4-root] .c4-note-desk {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid rgba(166, 133, 78, 0.4);
+  border-radius: 16px;
+  background: #fffdf8;
+}
+
+[data-crmv4-root] .c4-pay-empty {
+  margin: 0;
+  padding: 22px 16px;
+  border: 1px dashed rgba(166, 133, 78, 0.65);
+  border-radius: 16px;
+  color: #7a5e30;
+  text-align: center;
+}
+
+[data-crmv4-root] .c4-pay-view {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+[data-crmv4-root] .c4-note-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  padding: 8px 0;
+  border-top: 1px solid rgba(166, 133, 78, 0.25);
+}
+
+[data-crmv4-root] .c4-note-row[data-read="0"] strong { color: #7a5e30; }
+
+[data-crmv4-root] .c4-payout-desk :focus-visible,
+[data-crmv4-root] .c4-access-desk :focus-visible {
+  outline: 2px solid #a6854e;
+  outline-offset: 2px;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-payout-desk,
+[data-crmv4-root][data-theme="dark"] .c4-access-desk {
+  background:
+    linear-gradient(180deg, rgba(212, 188, 134, 0.16), transparent 42%),
+    #161412;
+  color: #f6f1e8;
+  border-color: rgba(212, 188, 134, 0.38);
+  box-shadow: none;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-pay-kicker,
+[data-crmv4-root][data-theme="dark"] .c4-pay-empty,
+[data-crmv4-root][data-theme="dark"] .c4-note-row[data-read="0"] strong,
+[data-crmv4-root][data-theme="dark"] .c4-status-pill[data-status="PENDING"],
+[data-crmv4-root][data-theme="dark"] .c4-flag[data-on="1"] {
+  color: #d4bc86;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-pay-kpi,
+[data-crmv4-root][data-theme="dark"] .c4-pay-row,
+[data-crmv4-root][data-theme="dark"] .c4-access-card,
+[data-crmv4-root][data-theme="dark"] .c4-pay-detail,
+[data-crmv4-root][data-theme="dark"] .c4-pay-confirm,
+[data-crmv4-root][data-theme="dark"] .c4-note-desk {
+  background: #221f1b;
+  color: #f6f1e8;
+  border-color: rgba(212, 188, 134, 0.28);
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-status-pill[data-status="APPROVED"] { color: #8ee0b5; }
+[data-crmv4-root][data-theme="dark"] .c4-status-pill[data-status="REJECTED"] { color: #ffb0a8; }
+[data-crmv4-root][data-theme="dark"] .c4-level i { background: #3c342c; }
+[data-crmv4-root][data-theme="dark"] .c4-level i[data-on="1"] { background: #d4bc86; }
+
+@media (max-width: 767px) {
+  [data-crmv4-root] .c4-payout-desk,
+  [data-crmv4-root] .c4-access-desk {
+    margin: 8px;
+    padding: 14px 12px;
+  }
+  [data-crmv4-root] .c4-pay-kpis { grid-template-columns: 1fr; }
+  [data-crmv4-root] .c4-payout-desk .c4-lab,
+  [data-crmv4-root] .c4-access-desk .c4-lab { max-width: 100%; }
+  [data-crmv4-root] .c4-pay-row,
+  [data-crmv4-root] .c4-access-card,
+  [data-crmv4-root] .c4-payout-desk .c4-btn,
+  [data-crmv4-root] .c4-access-desk .c4-btn,
+  [data-crmv4-root] .c4-payout-desk .c4-chip,
+  [data-crmv4-root] .c4-access-desk .c4-chip {
+    min-height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-pay-row,
+  [data-crmv4-root] .c4-access-card { transition: none; }
+}
+
+[data-crmv4-root][data-motion="reduce"] .c4-pay-row,
+[data-crmv4-root][data-motion="reduce"] .c4-access-card { transition: none; }
