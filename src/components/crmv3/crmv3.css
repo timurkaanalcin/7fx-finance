@@ -2677,3 +2677,53 @@
   [data-crmv3-root] .c3-flag-grid { grid-template-columns: 1fr 1fr; }
   [data-crmv3-root] .c3-access-list { grid-template-columns: 1fr 1fr; }
 }
+
+[data-crmv3-root] .c3-fund-split {
+  display: grid;
+  gap: var(--c3-2);
+  grid-template-columns: 1fr;
+}
+
+[data-crmv3-root] .c3-seg {
+  display: grid;
+  gap: var(--c3-2);
+  padding: var(--c3-3);
+  border: 1px solid var(--c3-line);
+  border-radius: var(--c3-radius);
+  background: var(--c3-card);
+  overflow-x: clip;
+}
+
+[data-crmv3-root] .c3-seg h2,
+[data-crmv3-root] .c3-seg h3 { margin: 0; }
+
+[data-crmv3-root] .c3-seg .c3-btn,
+[data-crmv3-root] .c3-seg .c3-chip { min-height: 44px; }
+
+[data-crmv3-root] .c3-seg-grid,
+[data-crmv3-root] .c3-seg-names {
+  display: grid;
+  gap: var(--c3-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv3-root] .c3-seg-card {
+  display: grid;
+  gap: var(--c3-1);
+  min-width: 0;
+  padding: var(--c3-3);
+  border: 1px solid var(--c3-line);
+  border-radius: 12px;
+  background: var(--c3-elev);
+}
+
+[data-crmv3-root] .c3-seg-card[data-pin="1"] { border-color: var(--c3-gold); }
+
+[data-crmv3-root] .c3-seg-card strong { font-size: 20px; line-height: 28px; }
+
+@media (min-width: 768px) {
+  [data-crmv3-root] .c3-fund-split { grid-template-columns: 1fr 1fr; }
+  [data-crmv3-root] .c3-seg-grid { grid-template-columns: 1fr 1fr; }
+}

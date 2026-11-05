@@ -28,6 +28,7 @@ import { DayDesk } from "./desk/period";
 import { RiskDesk } from "./desk/risk";
 import { AffiliateDesk } from "./desk/tickets";
 import { AccessDesk, PayoutDesk } from "./desk/payout";
+import { FundingDesk } from "./desk/funding";
 import { readJson } from "@/lib/crmv3/bridge";
 import { RAIL_KEY, readFold } from "@/lib/crmv3/nav";
 import { MoreNav, RailNav } from "./desk/nav";
@@ -169,6 +170,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "withdraw") return v3("wdDesk");
     if (tab === "payout") return v3("pqTitle");
     if (tab === "deposit") return v3("depDesk");
+    if (tab === "funding") return v3("fuTitle");
     if (tab === "inbox") return v3("inboxTitle");
     if (tab === "reports") return v3("reportsTitle");
     if (tab === "insights") return v3("insTitle");
@@ -296,6 +298,7 @@ function Shell({ base, section, name }: Props) {
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
             {view === "payout" && <PayoutDesk base={base} tx={tx} locale={locale} />}
             {view === "deposit" && <DepositDesk base={base} tx={tx} locale={locale} />}
+            {view === "funding" && <FundingDesk base={base} tx={tx} locale={locale} />}
             {view === "inbox" && <InboxDesk tx={tx} locale={locale} />}
             {view === "reports" && <ReportsPage locale={locale} />}
             {view === "insights" && <InsightsHome locale={locale} />}
