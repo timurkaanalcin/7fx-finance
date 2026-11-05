@@ -163,6 +163,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-reason-hide": ["Reason glance", "Gerekçe bakışı", "Grundblick", "Обзор причин", "لمحة السبب"],
   "crmv3-utc-marks": ["UTC marks", "UTC işaretleri", "UTC-Marken", "Метки UTC", "علامات UTC"],
   "crmv3-channel-hide": ["Channel glance", "Kanal bakışı", "Kanalblick", "Обзор каналов", "لمحة القناة"],
+  "crmv3-status-banners": ["Status banner", "Durum bandı", "Statusbanner", "Полоса статуса", "شريط الحالة"],
+  "crmv3-doctype-hide": ["Type glance", "Tür bakışı", "Typblick", "Обзор типов", "لمحة النوع"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
