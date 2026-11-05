@@ -110,6 +110,7 @@ import { LockerNotes, TradeSymbols } from "./round119";
 import { CourierNotes, IbCountries } from "./round120";
 import { DepositMethods, VisitorNotes } from "./round121";
 import { MailNotes, WithdrawalStatuses } from "./round122";
+import { ReceptionNotes, TicketStatuses } from "./round123";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -597,6 +598,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "depglance") return v4("dmgTitle");
     if (tab === "mailroom") return v4("mlrTitle");
     if (tab === "wdsg") return v4("wsgTitle");
+    if (tab === "reception") return v4("rxnTitle");
+    if (tab === "tktsg") return v4("tksTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -775,6 +778,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "depglance") return v4("dmgSub");
     if (tab === "mailroom") return v4("mlrSub");
     if (tab === "wdsg") return v4("wsgSub");
+    if (tab === "reception") return v4("rxnSub");
+    if (tab === "tktsg") return v4("tksSub");
     return "";
   }
 
@@ -1074,6 +1079,8 @@ function Shell({ base, section, name }: Props) {
             {view === "depglance" && <DepositMethods base={base} v4={v4} />}
             {view === "mailroom" && <MailNotes v4={v4} />}
             {view === "wdsg" && <WithdrawalStatuses base={base} v4={v4} />}
+            {view === "reception" && <ReceptionNotes v4={v4} />}
+            {view === "tktsg" && <TicketStatuses base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
