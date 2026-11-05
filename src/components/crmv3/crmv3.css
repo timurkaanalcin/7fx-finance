@@ -5747,3 +5747,83 @@
 @media (min-width: 768px) {
   [data-crmv3-root] .c3-palette-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+[data-crmv3-root] .c3-filter-presets,
+[data-crmv3-root] .c3-doc-status {
+  display: grid;
+  gap: var(--c3-3);
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+[data-crmv3-root] .c3-preset-list,
+[data-crmv3-root] .c3-doc-rows {
+  display: grid;
+  gap: var(--c3-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-width: 0;
+}
+
+[data-crmv3-root] .c3-preset-card,
+[data-crmv3-root] .c3-doc-rows li,
+[data-crmv3-root] .c3-doc-blank {
+  display: grid;
+  gap: var(--c3-2);
+  min-width: 0;
+  max-width: 100%;
+  padding: var(--c3-3);
+  border: 1px solid var(--c3-line);
+  border-radius: 12px;
+  background: var(--c3-card);
+  color: inherit;
+  overflow-wrap: anywhere;
+}
+
+[data-crmv3-root] .c3-preset-card[data-pinned="1"] {
+  border-color: var(--c3-gold);
+  box-shadow: inset 2px 0 0 var(--c3-gold);
+}
+
+[data-crmv3-root] .c3-doc-blank {
+  width: 100%;
+  text-align: start;
+  cursor: pointer;
+}
+
+[data-crmv3-root] .c3-doc-blank[data-on="1"] {
+  border-color: var(--c3-gold);
+  background: var(--c3-gold);
+  color: var(--c3-gold-ink);
+}
+
+[data-crmv3-root] .c3-doc-pair {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+[data-crmv3-root] .c3-filter-presets .c3-lab,
+[data-crmv3-root] .c3-doc-status .c3-lab { flex: 1 1 220px; min-width: 0; max-width: 100%; }
+
+[data-crmv3-root] .c3-filter-presets .c3-field,
+[data-crmv3-root] .c3-doc-status .c3-field { width: 100%; max-width: 100%; }
+
+[data-crmv3-root] .c3-filter-presets .c3-row,
+[data-crmv3-root] .c3-doc-status .c3-row { flex-wrap: wrap; }
+
+[data-crmv3-root] .c3-filter-presets .c3-btn,
+[data-crmv3-root] .c3-filter-presets .c3-chip,
+[data-crmv3-root] .c3-filter-presets .c3-field,
+[data-crmv3-root] .c3-doc-status .c3-btn,
+[data-crmv3-root] .c3-doc-status .c3-chip,
+[data-crmv3-root] .c3-doc-status .c3-field,
+[data-crmv3-root] .c3-doc-blank { min-height: 44px; }
+
+@media (min-width: 768px) {
+  [data-crmv3-root] .c3-preset-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
