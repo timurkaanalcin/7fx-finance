@@ -63,6 +63,7 @@ import { QueuePulse, RouteSwatches } from "./round72";
 import { FontScale, WeekAgenda } from "./round73";
 import { QuietShield, StickyPad } from "./round74";
 import { LedgerGlance, ShiftCheck } from "./round75";
+import { DocPulse, PriorityLane } from "./round76";
 import { PAUSE_KEY, shieldOn } from "@/lib/crmv4/round74";
 import { SCALE_KEY, readScale, type PanelScale } from "@/lib/crmv4/round73";
 import { GLASS_KEY, readGlass, type GlassMode } from "@/lib/crmv4/round65";
@@ -428,6 +429,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "stickies") return v4("cnTitle");
     if (tab === "shiftlist") return v4("sfTitle");
     if (tab === "glance") return v4("gcTitle");
+    if (tab === "lane") return v4("lnTitle");
+    if (tab === "docpulse") return v4("xpTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -512,6 +515,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "stickies") return v4("cnSub");
     if (tab === "shiftlist") return v4("sfSub");
     if (tab === "glance") return v4("gcSub");
+    if (tab === "lane") return v4("lnSub");
+    if (tab === "docpulse") return v4("xpSub");
     return "";
   }
 
@@ -717,6 +722,8 @@ function Shell({ base, section, name }: Props) {
             {view === "stickies" && <StickyPad base={base} v4={v4} />}
             {view === "shiftlist" && <ShiftCheck v4={v4} />}
             {view === "glance" && <LedgerGlance base={base} v4={v4} tx={tx} />}
+            {view === "lane" && <PriorityLane base={base} v4={v4} />}
+            {view === "docpulse" && <DocPulse base={base} v4={v4} tx={tx} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
