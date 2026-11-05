@@ -129,6 +129,9 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-meeting-prep": ["Meeting bullets", "Toplantı maddeleri", "Sitzungspunkte", "Пункты встречи", "نقاط الاجتماع"],
   "crmv3-referral-pins": ["Pinned sources", "Sabitlenen kaynaklar", "Angeheftete Quellen", "Закреплённые источники", "المصادر المثبتة"],
   "crmv3-winloss-log": ["Win and loss notes", "Kazanç ve kayıp notları", "Gewinn- und Verlustnotizen", "Заметки выигрыша и потери", "ملاحظات الربح والخسارة"],
+  "crmv3-vip-rule": ["VIP rule", "VIP kuralı", "VIP-Regel", "Правило VIP", "قاعدة كبار العملاء"],
+  "crmv3-vip-pins": ["VIP pins", "VIP sabitlemeleri", "VIP-Pins", "Закрепления VIP", "تثبيت كبار العملاء"],
+  "crmv3-handoff-packet": ["Handoff packet", "Devir paketi", "Übergabepaket", "Пакет передачи", "حزمة التسليم"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
