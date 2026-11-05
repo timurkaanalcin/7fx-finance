@@ -109,6 +109,7 @@ import { LeadSources, ParkingNotes } from "./round118";
 import { LockerNotes, TradeSymbols } from "./round119";
 import { CourierNotes, IbCountries } from "./round120";
 import { DepositMethods, VisitorNotes } from "./round121";
+import { MailNotes, WithdrawalStatuses } from "./round122";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -594,6 +595,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ibctry") return v4("ibgTitle");
     if (tab === "visitor") return v4("bdgTitle");
     if (tab === "depglance") return v4("dmgTitle");
+    if (tab === "mailroom") return v4("mlrTitle");
+    if (tab === "wdsg") return v4("wsgTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -770,6 +773,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ibctry") return v4("ibgSub");
     if (tab === "visitor") return v4("bdgSub");
     if (tab === "depglance") return v4("dmgSub");
+    if (tab === "mailroom") return v4("mlrSub");
+    if (tab === "wdsg") return v4("wsgSub");
     return "";
   }
 
@@ -1067,6 +1072,8 @@ function Shell({ base, section, name }: Props) {
             {view === "ibctry" && <IbCountries base={base} v4={v4} />}
             {view === "visitor" && <VisitorNotes v4={v4} />}
             {view === "depglance" && <DepositMethods base={base} v4={v4} />}
+            {view === "mailroom" && <MailNotes v4={v4} />}
+            {view === "wdsg" && <WithdrawalStatuses base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
