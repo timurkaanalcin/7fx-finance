@@ -61,6 +61,8 @@ import { HandoffPacket, VipWatch } from "./round70";
 import { DeskClocks, SnippetPad } from "./round71";
 import { QueuePulse, RouteSwatches } from "./round72";
 import { FontScale, WeekAgenda } from "./round73";
+import { QuietShield, StickyPad } from "./round74";
+import { PAUSE_KEY, shieldOn } from "@/lib/crmv4/round74";
 import { SCALE_KEY, readScale, type PanelScale } from "@/lib/crmv4/round73";
 import { GLASS_KEY, readGlass, type GlassMode } from "@/lib/crmv4/round65";
 import { PANEL_KEY, readPanel, type PanelDensity } from "@/lib/crmv4/round62";
@@ -134,6 +136,7 @@ function Shell({ base, section, name }: Props) {
   const [zebra, setZebra] = useState(false);
   const [motion, setMotion] = useState<"system" | "reduce">("system");
   const [resume, setResume] = useState("");
+  const [shield, setShield] = useState(false);
   const [compact, setCompact] = useState(false);
   const [font, setFont] = useState<"sm" | "md" | "lg">("md");
   const [contrast, setContrast] = useState(false);
@@ -244,6 +247,17 @@ function Shell({ base, section, name }: Props) {
     return () => window.removeEventListener("crmv4:staff-prefs", read);
   }, []);
 
+  useEffect(() => {
+    const read = () => setShield(shieldOn(readQuiet(readJson(QUIET_KEY, {})), readJson(PAUSE_KEY, ""), new Date()));
+    read();
+    const timer = window.setInterval(read, 30000);
+    window.addEventListener("crmv4:quiet", read);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener("crmv4:quiet", read);
+    };
+  }, []);
+
   function alertNow(kind: string) {
     const quiet = readQuiet(readJson(QUIET_KEY, {}));
     return shouldAlert({
@@ -301,6 +315,7 @@ function Shell({ base, section, name }: Props) {
       const item = { id: Date.now(), ok: detail.ok, text: detail.ok ? tx("saved") : detail.error || tx("failed") };
       rememberToast(item.text, item.ok);
       setToastsLog(toastHistory());
+      if (shieldOn(readQuiet(readJson(QUIET_KEY, {})), readJson(PAUSE_KEY, ""), new Date())) return;
       setToasts((list) => [...list.slice(-2), item]);
       window.setTimeout(() => setToasts((list) => list.filter((row) => row.id !== item.id)), 2400);
     };
@@ -408,6 +423,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "swatches") return v4("swTitle");
     if (tab === "week") return v4("wkTitle");
     if (tab === "scale") return v4("tyTitle");
+    if (tab === "shield") return v4("qhTitle");
+    if (tab === "stickies") return v4("cnTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -488,6 +505,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "swatches") return v4("swSub");
     if (tab === "week") return v4("wkSub");
     if (tab === "scale") return v4("tySub");
+    if (tab === "shield") return v4("qhSub");
+    if (tab === "stickies") return v4("cnSub");
     return "";
   }
 
@@ -502,7 +521,7 @@ function Shell({ base, section, name }: Props) {
   return (
     <div data-crmv4-root="" data-theme={theme} data-accent={accent} data-role={role} data-zebra={zebra ? "1" : "0"} data-motion={motion} data-compact={compact ? "1" : "0"} data-font={font} data-contrast={contrast ? "1" : "0"} data-freeze={freeze ? "1" : "0"} data-focus={focus ? "1" : "0"} data-gold={gold} data-chrome={chrome} data-panel={panel} data-glass={glass} data-scale={scale} data-density={density} data-fold={folded ? "1" : "0"} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
       <a className="c4-skip" href="#c4-main">{v4("skipContent")}</a>
-      <OfflineBanner v4={v4} />
+      <OfflineBanner v4={v4} quiet={shield} />
       <IdleWarning v4={v4} />
       <ShortcutHost base={base} v4={v4} onPalette={() => setPaletteOpen(true)} onHelp={setHelpOpen} onSheet={() => setSheetOpen(true)} />
       <Tour v4={v4} />
@@ -615,7 +634,7 @@ function Shell({ base, section, name }: Props) {
             }}
           >
             <div className="c4-pull" data-on={pull > 8 || refreshing ? "1" : "0"}>{refreshing ? v4("refreshing") : v4("pullHint")}</div>
-            {resume && (
+              {resume && !shield && (
               <p className="c4-resume">
                 <span className="c4-resume-path">{resume}</span>
                 <button type="button" className="c4-btn" onClick={() => { window.location.assign(resume); }}>{v4("resumeView")}</button>
@@ -689,6 +708,8 @@ function Shell({ base, section, name }: Props) {
             {view === "swatches" && <RouteSwatches base={base} v4={v4} />}
             {view === "week" && <WeekAgenda base={base} v4={v4} locale={locale} tx={tx} />}
             {view === "scale" && <FontScale v4={v4} />}
+            {view === "shield" && <QuietShield v4={v4} />}
+            {view === "stickies" && <StickyPad base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

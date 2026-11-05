@@ -351,7 +351,7 @@ export function SessionList({ v4, locale }: { v4: V4; locale: string }) {
   );
 }
 
-export function OfflineBanner({ v4 }: { v4: V4 }) {
+export function OfflineBanner({ v4, quiet = false }: { v4: V4; quiet?: boolean }) {
   const [offline, setOffline] = useState(false);
   const [back, setBack] = useState(false);
   useEffect(() => {
@@ -362,7 +362,7 @@ export function OfflineBanner({ v4 }: { v4: V4 }) {
     if (typeof navigator !== "undefined" && navigator.onLine === false) setOffline(true);
     return () => { window.removeEventListener("offline", down); window.removeEventListener("online", up); };
   }, []);
-  if (!offline && !back) return null;
+  if (quiet || (!offline && !back)) return null;
   return <p className="c4-offline" role="status" data-on={offline ? "0" : "1"}>{offline ? v4("offline") : v4("onlineAgain")}</p>;
 }
 
