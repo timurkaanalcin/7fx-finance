@@ -27,6 +27,7 @@ import { HelpDrawer } from "./desk/board";
 import { DayDesk } from "./desk/period";
 import { RiskDesk } from "./desk/risk";
 import { AffiliateDesk } from "./desk/tickets";
+import { AccessDesk, PayoutDesk } from "./desk/payout";
 import { readJson } from "@/lib/crmv3/bridge";
 import { RAIL_KEY, readFold } from "@/lib/crmv3/nav";
 import { MoreNav, RailNav } from "./desk/nav";
@@ -166,6 +167,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "kyc") return v3("kycDesk");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
+    if (tab === "payout") return v3("pqTitle");
     if (tab === "deposit") return v3("depDesk");
     if (tab === "inbox") return v3("inboxTitle");
     if (tab === "reports") return v3("reportsTitle");
@@ -174,6 +176,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "agenda") return v3("agTitle");
     if (tab === "day") return v3("dayTitle");
     if (tab === "roster") return v3("staffTitle");
+    if (tab === "access") return v3("axTitle");
     if (tab === "prefs") return v3("prefTitle");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -291,6 +294,7 @@ function Shell({ base, section, name }: Props) {
             {view === "kyc" && <KycDesk tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
+            {view === "payout" && <PayoutDesk base={base} tx={tx} locale={locale} />}
             {view === "deposit" && <DepositDesk base={base} tx={tx} locale={locale} />}
             {view === "inbox" && <InboxDesk tx={tx} locale={locale} />}
             {view === "reports" && <ReportsPage locale={locale} />}
@@ -299,6 +303,7 @@ function Shell({ base, section, name }: Props) {
             {view === "agenda" && <AgendaPage base={base} locale={locale} />}
             {view === "day" && <DayDesk base={base} name={name} locale={locale} />}
             {view === "roster" && <DeskStaff />}
+            {view === "access" && <AccessDesk base={base} tx={tx} locale={locale} />}
             {view === "prefs" && <PrefsHub locale={locale} />}
             {view === "logs" && <Logs tx={tx} locale={locale} q={q} />}
             {view === "control" && <Control tx={tx} locale={locale} />}
