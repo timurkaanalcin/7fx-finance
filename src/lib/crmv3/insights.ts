@@ -197,6 +197,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-order-type-hide": ["Order type", "Emir türü", "Ordertyp", "Тип ордера", "نوع الأمر"],
   "crmv3-bookmark-board": ["Bookmark board", "Yer imi panosu", "Lesezeichenbrett", "Доска закладок", "لوحة الإشارات"],
   "crmv3-wd-glance-hide": ["Withdrawal status", "Çekim durumu", "Auszahlungsstatus", "Статус вывода", "حالة السحب"],
+  "crmv3-customer-snooze": ["Snooze list", "Erteleme listesi", "Pausenliste", "Список отложенных", "قائمة التأجيل"],
+  "crmv3-dep-method-hide": ["Deposit method", "Yatırma yöntemi", "Einzahlungsmethode", "Метод депозита", "طريقة الإيداع"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
