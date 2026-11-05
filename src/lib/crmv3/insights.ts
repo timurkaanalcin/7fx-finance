@@ -147,6 +147,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-call-tags": ["Call outcomes", "Arama sonuçları", "Anrufergebnisse", "Итоги звонка", "نتائج الاتصال"],
   "crmv3-risk-watch": ["Risk watch", "Risk izleme", "Risikobeobachtung", "Наблюдение за риском", "مراقبة المخاطر"],
   "crmv3-mail-density": ["Inbox density", "Gelen kutusu sıklığı", "Postdichte", "Плотность почты", "كثافة البريد"],
+  "crmv3-call-pack": ["Call pack", "Arama paketi", "Anrufpaket", "Пакет звонка", "حزمة المكالمة"],
+  "crmv3-currency-hide": ["Currency chips", "Para birimi çipleri", "Währungs-Chips", "Фильтры валют", "شرائح العملة"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
