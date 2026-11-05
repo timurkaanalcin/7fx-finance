@@ -193,6 +193,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-ib-status-hide": ["IB status", "IB durumu", "IB-Status", "Статус IB", "حالة الوسيط"],
   "crmv3-draft-stash": ["Draft stash", "Taslak cebi", "Entwurfsfach", "Карман черновиков", "جيب المسودات"],
   "crmv3-doc-mix-hide": ["Type mix", "Tür karışımı", "Typenmix", "Смесь типов", "مزيج الأنواع"],
+  "crmv3-focus-customer": ["Focus customer", "Odak müşteri", "Fokus-Kunde", "Клиент в фокусе", "عميل التركيز"],
+  "crmv3-order-type-hide": ["Order type", "Emir türü", "Ordertyp", "Тип ордера", "نوع الأمر"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
