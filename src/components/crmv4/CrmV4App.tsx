@@ -107,6 +107,7 @@ import { CallbackQueue, CasePriorities } from "./round116";
 import { DocumentStatuses, VisitLog } from "./round117";
 import { LeadSources, ParkingNotes } from "./round118";
 import { LockerNotes, TradeSymbols } from "./round119";
+import { CourierNotes, IbCountries } from "./round120";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -588,6 +589,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "leadsrc") return v4("lsgTitle");
     if (tab === "locker") return v4("lokTitle");
     if (tab === "tradesym") return v4("tsyTitle");
+    if (tab === "courier") return v4("crrTitle");
+    if (tab === "ibctry") return v4("ibgTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -760,6 +763,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "leadsrc") return v4("lsgSub");
     if (tab === "locker") return v4("lokSub");
     if (tab === "tradesym") return v4("tsySub");
+    if (tab === "courier") return v4("crrSub");
+    if (tab === "ibctry") return v4("ibgSub");
     return "";
   }
 
@@ -1053,6 +1058,8 @@ function Shell({ base, section, name }: Props) {
             {view === "leadsrc" && <LeadSources base={base} v4={v4} />}
             {view === "locker" && <LockerNotes v4={v4} />}
             {view === "tradesym" && <TradeSymbols base={base} v4={v4} />}
+            {view === "courier" && <CourierNotes v4={v4} />}
+            {view === "ibctry" && <IbCountries base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
