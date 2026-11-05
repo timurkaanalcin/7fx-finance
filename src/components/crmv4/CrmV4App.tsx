@@ -99,6 +99,7 @@ import { FollowQueue, TicketStatus } from "./round108";
 import { IbCountry, RowDensityDesk } from "./round109";
 import { AuditDayStrip, CsvColumnDesk } from "./round110";
 import { ReminderPolish, RiskGlance } from "./round111";
+import { DepositCurrencies, HandoffPolish } from "./round112";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -564,6 +565,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "auditdays") return v4("uyTitle");
     if (tab === "remindpolish") return v4("hcTitle");
     if (tab === "riskglance") return v4("vpTitle");
+    if (tab === "handoffpolish") return v4("hpTitle");
+    if (tab === "depcurrency") return v4("qcTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -720,6 +723,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "auditdays") return v4("uySub");
     if (tab === "remindpolish") return v4("hcSub");
     if (tab === "riskglance") return v4("vpSub");
+    if (tab === "handoffpolish") return v4("hpSub");
+    if (tab === "depcurrency") return v4("qcSub");
     return "";
   }
 
@@ -997,6 +1002,8 @@ function Shell({ base, section, name }: Props) {
             {view === "auditdays" && <AuditDayStrip base={base} v4={v4} />}
             {view === "remindpolish" && <ReminderPolish v4={v4} />}
             {view === "riskglance" && <RiskGlance base={base} v4={v4} />}
+            {view === "handoffpolish" && <HandoffPolish base={base} v4={v4} />}
+            {view === "depcurrency" && <DepositCurrencies base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
