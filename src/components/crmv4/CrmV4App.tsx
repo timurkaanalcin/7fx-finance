@@ -70,6 +70,7 @@ import { CallPack, CurrencyChips } from "./round79";
 import { BookmarkBar, KycGlance } from "./round80";
 import { SideGlance, SnoozeStrip } from "./round81";
 import { FocusDesk, SupportPulse } from "./round82";
+import { IbGlance, PinBoard } from "./round83";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv4/round78";
 import { PAUSE_KEY, shieldOn } from "@/lib/crmv4/round74";
@@ -461,6 +462,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "sideglance") return v4("sdTitle");
     if (tab === "focusmode") return v4("fmTitle");
     if (tab === "suppulse") return v4("qpTitle");
+    if (tab === "pinboard") return v4("pnTitle");
+    if (tab === "ibglance") return v4("igTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -559,6 +562,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "sideglance") return v4("sdSub");
     if (tab === "focusmode") return v4("fmSub");
     if (tab === "suppulse") return v4("qpSub");
+    if (tab === "pinboard") return v4("pnSub");
+    if (tab === "ibglance") return v4("igSub");
     return "";
   }
 
@@ -778,6 +783,8 @@ function Shell({ base, section, name }: Props) {
             {view === "sideglance" && <SideGlance base={base} v4={v4} />}
             {view === "focusmode" && <FocusDesk v4={v4} />}
             {view === "suppulse" && <SupportPulse base={base} v4={v4} />}
+            {view === "pinboard" && <PinBoard v4={v4} />}
+            {view === "ibglance" && <IbGlance base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
