@@ -108,6 +108,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-bookmark-folders": ["Bookmark folders", "Yer imi klasörleri", "Lesezeichenordner", "Папки закладок", "مجلدات الإشارات"],
   "crmv3-health-watch": ["Watched customers", "İzlenen müşteriler", "Beobachtete Kunden", "Наблюдаемые клиенты", "العملاء تحت المراقبة"],
   "crmv3-scratchboard": ["Scratchboard", "Not tahtası", "Notiztafel", "Черновая доска", "لوحة الملاحظات"],
+  "crmv3-ib-marks": ["Introducer marks", "Tanıtıcı işaretleri", "Vermittlermarken", "Отметки посредника", "علامات المعرّف"],
+  "crmv3-jump-history": ["Recent routes", "Son yollar", "Letzte Routen", "Недавние маршруты", "المسارات الأخيرة"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
