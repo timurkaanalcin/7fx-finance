@@ -3354,3 +3354,47 @@
 @media (min-width: 768px) {
   [data-crmv3-root] .c3-alert-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+[data-crmv3-root] .c3-health-cards,
+[data-crmv3-root] .c3-health-totals ul,
+[data-crmv3-root] .c3-health-marks,
+[data-crmv3-root] .c3-scratch-notes {
+  display: grid;
+  gap: var(--c3-2);
+  margin: var(--c3-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv3-root] .c3-health-card,
+[data-crmv3-root] .c3-health-totals li,
+[data-crmv3-root] .c3-scratch-note {
+  min-width: 0;
+  padding: var(--c3-2);
+  border: 1px solid var(--c3-line);
+  border-radius: 12px;
+  background: var(--c3-card);
+}
+
+[data-crmv3-root] .c3-health-totals li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--c3-2);
+}
+
+[data-crmv3-root] .c3-health-totals li[data-currency="none"] { border-style: dashed; border-color: #7a5e30; }
+[data-crmv3-root] .c3-health-card[data-watched="1"],
+[data-crmv3-root] .c3-scratch-note[data-pinned="1"] { border-color: #7a5e30; }
+
+[data-crmv3-root] .c3-health-strip .c3-lab,
+[data-crmv3-root] .c3-scratch-board .c3-lab { flex: 1 1 220px; max-width: 100%; }
+
+[data-crmv3-root] .c3-health-strip .c3-field,
+[data-crmv3-root] .c3-scratch-board .c3-field { width: 100%; max-width: 100%; }
+
+@media (min-width: 768px) {
+  [data-crmv3-root] .c3-health-cards,
+  [data-crmv3-root] .c3-scratch-notes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  [data-crmv3-root] .c3-health-totals ul { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}

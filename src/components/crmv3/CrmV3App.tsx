@@ -40,6 +40,7 @@ import { LeadBoard, QuietDesk } from "./desk/leads";
 import { AccentStrip, TriageBoard } from "./desk/triage";
 import { DepositBoard, SopPad } from "./desk/sop";
 import { AlertDesk, FolderPad } from "./desk/alerts";
+import { HealthStrip, ScratchBoard } from "./desk/health";
 import { CHROME_KEY, GOLD_KEY, readChrome, readGold, type ChromeMode, type GoldLevel } from "@/lib/crmv3/triage";
 import { readJson } from "@/lib/crmv3/bridge";
 import { RAIL_KEY, readFold } from "@/lib/crmv3/nav";
@@ -213,6 +214,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "sop") return v3("sopTitle");
     if (tab === "alerts") return v3("raTitle");
     if (tab === "folders") return v3("bmTitle");
+    if (tab === "health") return v3("hlTitle");
+    if (tab === "scratch") return v3("sbTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -361,6 +364,8 @@ function Shell({ base, section, name }: Props) {
             {view === "sop" && <SopPad />}
             {view === "alerts" && <AlertDesk locale={locale} tx={tx} />}
             {view === "folders" && <FolderPad base={base} />}
+            {view === "health" && <HealthStrip base={base} locale={locale} tx={tx} />}
+            {view === "scratch" && <ScratchBoard />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
