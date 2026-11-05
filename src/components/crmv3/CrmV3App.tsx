@@ -84,6 +84,7 @@ import { IbStatusGlance, LayoutLock } from "./desk/desklock";
 import { DocTypeMix, DraftStash } from "./desk/drafts";
 import { FocusCustomer, OrderTypeGlance } from "./desk/focuscustomer";
 import { BookmarkBoard, WithdrawalStatus } from "./desk/bookmarkboard";
+import { DepositMethod, SnoozeList } from "./desk/snoozelist";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv3/deskfocus";
 import { EDGE_KEY, readEdge, type Accent } from "@/lib/crmv3/edge";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv3/risklist";
@@ -410,6 +411,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ordertype") return v3("oyTitle");
     if (tab === "bookmarks") return v3("bqTitle");
     if (tab === "wdglance") return v3("wxTitle");
+    if (tab === "snoozelist") return v3("nqTitle");
+    if (tab === "depmethod") return v3("mgTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -662,6 +665,8 @@ function Shell({ base, section, name }: Props) {
             {view === "ordertype" && <OrderTypeGlance base={base} />}
             {view === "bookmarks" && <BookmarkBoard base={base} />}
             {view === "wdglance" && <WithdrawalStatus base={base} />}
+            {view === "snoozelist" && <SnoozeList base={base} />}
+            {view === "depmethod" && <DepositMethod base={base} />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
