@@ -64,6 +64,7 @@ import { FontScale, WeekAgenda } from "./round73";
 import { QuietShield, StickyPad } from "./round74";
 import { LedgerGlance, ShiftCheck } from "./round75";
 import { DocPulse, PriorityLane } from "./round76";
+import { CallOutcomes, EdgeStrip } from "./round77";
 import { PAUSE_KEY, shieldOn } from "@/lib/crmv4/round74";
 import { SCALE_KEY, readScale, type PanelScale } from "@/lib/crmv4/round73";
 import { GLASS_KEY, readGlass, type GlassMode } from "@/lib/crmv4/round65";
@@ -431,6 +432,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "glance") return v4("gcTitle");
     if (tab === "lane") return v4("lnTitle");
     if (tab === "docpulse") return v4("xpTitle");
+    if (tab === "edge") return v4("egTitle");
+    if (tab === "outcomes") return v4("ocTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -517,6 +520,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "glance") return v4("gcSub");
     if (tab === "lane") return v4("lnSub");
     if (tab === "docpulse") return v4("xpSub");
+    if (tab === "edge") return v4("egSub");
+    if (tab === "outcomes") return v4("ocSub");
     return "";
   }
 
@@ -724,6 +729,8 @@ function Shell({ base, section, name }: Props) {
             {view === "glance" && <LedgerGlance base={base} v4={v4} tx={tx} />}
             {view === "lane" && <PriorityLane base={base} v4={v4} />}
             {view === "docpulse" && <DocPulse base={base} v4={v4} tx={tx} />}
+            {view === "edge" && <EdgeStrip v4={v4} />}
+            {view === "outcomes" && <CallOutcomes base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
