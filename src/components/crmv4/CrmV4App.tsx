@@ -53,6 +53,7 @@ import { ExpiryWatch, PanelDensityStrip } from "./round62";
 import { RejectBoard, VaultPad } from "./round63";
 import { CheatSheet, HeatStrip } from "./round64";
 import { GlassToggle, OvernightDigest } from "./round65";
+import { DeskCompare, EodList } from "./round66";
 import { GLASS_KEY, readGlass, type GlassMode } from "@/lib/crmv4/round65";
 import { PANEL_KEY, readPanel, type PanelDensity } from "@/lib/crmv4/round62";
 import { JUMP_KEY, pushJump, readJumps } from "@/lib/crmv4/round61";
@@ -379,6 +380,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "cheats") return v4("csTitle");
     if (tab === "digest") return v4("odTitle");
     if (tab === "glass") return v4("gsTitle");
+    if (tab === "compare") return v4("mcTitle");
+    if (tab === "eod") return v4("eodTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -443,6 +446,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "cheats") return v4("csSub");
     if (tab === "digest") return v4("odSub");
     if (tab === "glass") return v4("gsSub");
+    if (tab === "compare") return v4("mcSub");
+    if (tab === "eod") return v4("eodSub");
     return "";
   }
 
@@ -628,6 +633,8 @@ function Shell({ base, section, name }: Props) {
             {view === "cheats" && <CheatSheet v4={v4} />}
             {view === "digest" && <OvernightDigest v4={v4} />}
             {view === "glass" && <GlassToggle v4={v4} />}
+            {view === "compare" && <DeskCompare v4={v4} locale={locale} tx={tx} />}
+            {view === "eod" && <EodList v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

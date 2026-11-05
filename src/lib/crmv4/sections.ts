@@ -57,6 +57,8 @@ export const CRM_V4_SECTIONS = [
   { id: "cheats", path: "cheats" },
   { id: "digest", path: "digest" },
   { id: "glass", path: "glass" },
+  { id: "compare", path: "compare" },
+  { id: "eod", path: "eod" },
 ] as const;
 
 export type CrmV4SectionId = (typeof CRM_V4_SECTIONS)[number]["id"];
@@ -77,7 +79,7 @@ export const CRM_V4_NAV = [
   { id: "logs", path: "logs", sub: "subLogs" },
 ] as const;
 
-export const CRM_V4_MORE = ["positions", "marketing", "goals", "kyc", "risk", "withdraw", "deposit", "inbox", "agenda", "reports", "insights", "affiliates", "payout", "funding", "thread", "gallery", "history", "dense", "notices", "tags", "blotter", "pad", "cases", "shortcuts", "payboard", "handoff", "leads", "quiet", "triage", "accents", "depboard", "sop", "alerts", "folders", "health", "scratch", "ibpay", "jumps", "expiry", "density", "rejects", "vault", "heatmap", "cheats", "digest", "glass", "access", "settings", "me", "day", "prefs", "roster", "logs", "control"] as const;
+export const CRM_V4_MORE = ["positions", "marketing", "goals", "kyc", "risk", "withdraw", "deposit", "inbox", "agenda", "reports", "insights", "affiliates", "payout", "funding", "thread", "gallery", "history", "dense", "notices", "tags", "blotter", "pad", "cases", "shortcuts", "payboard", "handoff", "leads", "quiet", "triage", "accents", "depboard", "sop", "alerts", "folders", "health", "scratch", "ibpay", "jumps", "expiry", "density", "rejects", "vault", "heatmap", "cheats", "digest", "glass", "compare", "eod", "access", "settings", "me", "day", "prefs", "roster", "logs", "control"] as const;
 
 export function crmv4Href(base: string, path: string, query?: Record<string, string>): string {
   const root = base.replace(/\/+$/, "") || "/crmv4";
