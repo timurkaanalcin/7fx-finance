@@ -199,6 +199,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-wd-glance-hide": ["Withdrawal status", "Çekim durumu", "Auszahlungsstatus", "Статус вывода", "حالة السحب"],
   "crmv3-customer-snooze": ["Snooze list", "Erteleme listesi", "Pausenliste", "Список отложенных", "قائمة التأجيل"],
   "crmv3-dep-method-hide": ["Deposit method", "Yatırma yöntemi", "Einzahlungsmethode", "Метод депозита", "طريقة الإيداع"],
+  "crmv3-check-polish": ["Checklist", "Kontrol listesi", "Checkliste", "Список проверки", "قائمة تحقق"],
+  "crmv3-case-priority-hide": ["Case priority", "Vaka önceliği", "Fallpriorität", "Приоритет дела", "أولوية الحالة"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;

@@ -6212,3 +6212,26 @@
 [data-crmv3-root] .c3-dep-method .c3-chip,
 [data-crmv3-root] .c3-dep-method .c3-field,
 [data-crmv3-root] .c3-mg-blank { min-height: 44px; }
+
+[data-crmv3-root] .c3-check-polish,
+[data-crmv3-root] .c3-case-priority { display: grid; gap: 12px; }
+[data-crmv3-root] .c3-check-list,
+[data-crmv3-root] .c3-zq-rows { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+[data-crmv3-root] .c3-check-card,
+[data-crmv3-root] .c3-zq-rows li,
+[data-crmv3-root] .c3-zq-pair,
+[data-crmv3-root] .c3-zq-blank {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, #7a5e30 28%, transparent); border-radius: 12px;
+}
+[data-crmv3-root] .c3-check-card[data-pinned="1"],
+[data-crmv3-root] .c3-check-card[data-done="1"] { box-shadow: inset 2px 0 0 #7a5e30; }
+[data-crmv3-root] .c3-check-polish .c3-row,
+[data-crmv3-root] .c3-case-priority .c3-row { flex-wrap: wrap; }
+[data-crmv3-root] .c3-check-polish .c3-btn,
+[data-crmv3-root] .c3-check-polish .c3-chip,
+[data-crmv3-root] .c3-check-polish .c3-field,
+[data-crmv3-root] .c3-case-priority .c3-btn,
+[data-crmv3-root] .c3-case-priority .c3-chip,
+[data-crmv3-root] .c3-case-priority .c3-field,
+[data-crmv3-root] .c3-zq-blank { min-height: 44px; }
