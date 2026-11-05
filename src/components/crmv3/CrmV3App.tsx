@@ -41,8 +41,10 @@ import { AccentStrip, TriageBoard } from "./desk/triage";
 import { DepositBoard, SopPad } from "./desk/sop";
 import { AlertDesk, FolderPad } from "./desk/alerts";
 import { HealthStrip, ScratchBoard } from "./desk/health";
+import { IntroducerBoard, JumpHistory } from "./desk/introducer";
 import { CHROME_KEY, GOLD_KEY, readChrome, readGold, type ChromeMode, type GoldLevel } from "@/lib/crmv3/triage";
-import { readJson } from "@/lib/crmv3/bridge";
+import { readJson, writeJson } from "@/lib/crmv3/bridge";
+import { JUMP_KEY, pushJump, readJumps } from "@/lib/crmv3/introducer";
 import { RAIL_KEY, readFold } from "@/lib/crmv3/nav";
 import { MoreNav, RailNav } from "./desk/nav";
 import { useLocal } from "./desk/store";
@@ -216,6 +218,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "folders") return v3("bmTitle");
     if (tab === "health") return v3("hlTitle");
     if (tab === "scratch") return v3("sbTitle");
+    if (tab === "ibpay") return v3("cmTitle");
+    if (tab === "jumps") return v3("jpTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -253,6 +257,11 @@ function Shell({ base, section, name }: Props) {
     const next = [...prev.filter((item) => item !== path), path].slice(-8);
     window.sessionStorage.setItem("crmv3-trail", JSON.stringify(next));
     setTrail(next);
+    if (CRM_V3_SECTIONS.some((item) => item.id === view)) {
+      const jumps = pushJump(readJumps(readJson(JUMP_KEY, [])), view, new Date().toISOString(), CRM_V3_SECTIONS.map((item) => item.id));
+      writeJson(JUMP_KEY, jumps);
+      window.dispatchEvent(new Event("crmv3:jumps"));
+    }
   }, [view, id]);
 
   return (
@@ -366,6 +375,8 @@ function Shell({ base, section, name }: Props) {
             {view === "folders" && <FolderPad base={base} />}
             {view === "health" && <HealthStrip base={base} locale={locale} tx={tx} />}
             {view === "scratch" && <ScratchBoard />}
+            {view === "ibpay" && <IntroducerBoard base={base} locale={locale} tx={tx} />}
+            {view === "jumps" && <JumpHistory base={base} />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
