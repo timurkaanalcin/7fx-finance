@@ -38,6 +38,7 @@ import { CaseQueue, ShortcutRail } from "./desk/cases";
 import { PayoutBoard, ShiftSheet } from "./desk/shift";
 import { LeadBoard, QuietDesk } from "./desk/leads";
 import { AccentStrip, TriageBoard } from "./desk/triage";
+import { DepositBoard, SopPad } from "./desk/sop";
 import { CHROME_KEY, GOLD_KEY, readChrome, readGold, type ChromeMode, type GoldLevel } from "@/lib/crmv3/triage";
 import { readJson } from "@/lib/crmv3/bridge";
 import { RAIL_KEY, readFold } from "@/lib/crmv3/nav";
@@ -207,6 +208,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "quiet") return v3("qfTitle");
     if (tab === "triage") return v3("trTitle");
     if (tab === "accents") return v3("acTitle");
+    if (tab === "depboard") return v3("dbTitle");
+    if (tab === "sop") return v3("sopTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -351,6 +354,8 @@ function Shell({ base, section, name }: Props) {
             {view === "quiet" && <QuietDesk />}
             {view === "triage" && <TriageBoard base={base} locale={locale} tx={tx} />}
             {view === "accents" && <AccentStrip />}
+            {view === "depboard" && <DepositBoard base={base} locale={locale} tx={tx} />}
+            {view === "sop" && <SopPad />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}

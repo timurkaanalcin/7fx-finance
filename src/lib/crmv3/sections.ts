@@ -14,6 +14,8 @@ export const CRM_V3_SECTIONS = [
   { id: "quiet", path: "quiet" },
   { id: "triage", path: "triage" },
   { id: "accents", path: "accents" },
+  { id: "depboard", path: "depboard" },
+  { id: "sop", path: "sop" },
   { id: "finance", path: "finance" },
   { id: "positions", path: "positions" },
   { id: "support", path: "support" },
@@ -51,7 +53,7 @@ export const CRM_V3_COMING_SOON = ["campaignSend"] as const;
 /** Bottom bar on phones and tablets. Finance is labeled Money in the chrome. */
 export const CRM_V3_TABS = ["overview", "customers", "finance", "support"] as const;
 
-export const CRM_V3_MORE = ["positions", "marketing", "goals", "kyc", "gallery", "history", "risk", "withdraw", "payout", "deposit", "funding", "inbox", "thread", "agenda", "day", "dense", "notices", "tags", "blotter", "pad", "cases", "shortcuts", "payboard", "handoff", "leads", "quiet", "triage", "accents", "reports", "insights", "affiliates", "settings", "me", "prefs", "roster", "access", "logs", "control"] as const;
+export const CRM_V3_MORE = ["positions", "marketing", "goals", "kyc", "gallery", "history", "risk", "withdraw", "payout", "deposit", "funding", "inbox", "thread", "agenda", "day", "dense", "notices", "tags", "blotter", "pad", "cases", "shortcuts", "payboard", "handoff", "leads", "quiet", "triage", "accents", "depboard", "sop", "reports", "insights", "affiliates", "settings", "me", "prefs", "roster", "access", "logs", "control"] as const;
 
 export function crmv3Href(base: string, path: string, query?: Record<string, string>): string {
   const root = base.replace(/\/+$/, "") || "/crmv3";
