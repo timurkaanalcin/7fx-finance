@@ -139,6 +139,8 @@ export function CommandPalette({ base, open, onClose }: { base: string; open: bo
       { id: "cheats", label: v3("csTitle"), href: crmv3Href(base, "cheats") },
       { id: "digest", label: v3("odTitle"), href: crmv3Href(base, "digest") },
       { id: "glass", label: v3("gsTitle"), href: crmv3Href(base, "glass") },
+      { id: "compare", label: v3("mcTitle"), href: crmv3Href(base, "compare") },
+      { id: "eod", label: v3("eodTitle"), href: crmv3Href(base, "eod") },
       { id: "gallery", label: v3("glTitle"), href: crmv3Href(base, "gallery") },
       { id: "history", label: v3("hsTitle"), href: crmv3Href(base, "history") },
       { id: "reports", label: v3("reportsTitle"), href: crmv3Href(base, "reports") },

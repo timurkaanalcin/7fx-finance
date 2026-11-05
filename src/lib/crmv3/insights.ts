@@ -120,6 +120,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-cheat-sheet": ["Desk tips", "Masa ipuçları", "Tischtipps", "Подсказки стола", "نصائح المكتب"],
   "crmv3-digest-hide": ["Hidden digest rows", "Gizlenen özet satırları", "Versteckte Übersicht", "Скрытые строки сводки", "صفوف الملخص المخفية"],
   "crmv3-panel-glass": ["Panel glass", "Pano camı", "Flächenglas", "Стекло панелей", "زجاج اللوحات"],
+  "crmv3-desk-hide": ["Hidden desks", "Gizlenen masalar", "Versteckte Tische", "Скрытые столы", "المكاتب المخفية"],
+  "crmv3-eod-steps": ["End of day steps", "Gün sonu adımları", "Tagesabschluss", "Шаги конца дня", "خطوات نهاية اليوم"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
