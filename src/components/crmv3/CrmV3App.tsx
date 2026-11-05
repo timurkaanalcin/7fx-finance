@@ -80,6 +80,7 @@ import { DepStatusGlance, PinRail } from "./desk/rail";
 import { MuteList, SymbolGlance } from "./desk/mute";
 import { RecentJumps, TicketChannels } from "./desk/jumps";
 import { LanguageGlance, WatchWords } from "./desk/words";
+import { IbStatusGlance, LayoutLock } from "./desk/desklock";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv3/deskfocus";
 import { EDGE_KEY, readEdge, type Accent } from "@/lib/crmv3/edge";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv3/risklist";
@@ -398,6 +399,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ticketchannel") return v3("tcTitle");
     if (tab === "watchwords") return v3("wwTitle");
     if (tab === "langglance") return v3("lgTitle");
+    if (tab === "layoutlock") return v3("lxTitle");
+    if (tab === "ibstatus") return v3("bxTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -642,6 +645,8 @@ function Shell({ base, section, name }: Props) {
             {view === "ticketchannel" && <TicketChannels base={base} />}
             {view === "watchwords" && <WatchWords />}
             {view === "langglance" && <LanguageGlance base={base} />}
+            {view === "layoutlock" && <LayoutLock />}
+            {view === "ibstatus" && <IbStatusGlance base={base} />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
