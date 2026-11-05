@@ -76,6 +76,7 @@ import { ReasonGlance, VoiceTray } from "./round85";
 import { ChannelGlance, UtcMarks } from "./round86";
 import { StatusBanner, TypeGlance } from "./round87";
 import { PriorityGlance, QuickLinks } from "./round88";
+import { CountryGlance, DeskCheck } from "./round89";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv4/round78";
 import { PAUSE_KEY, shieldOn } from "@/lib/crmv4/round74";
@@ -479,6 +480,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "doctype") return v4("dgTitle");
     if (tab === "quicklinks") return v4("qkTitle");
     if (tab === "prioglance") return v4("pgTitle");
+    if (tab === "checklist") return v4("chTitle");
+    if (tab === "countryglance") return v4("cyTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -589,6 +592,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "doctype") return v4("dgSub");
     if (tab === "quicklinks") return v4("qkSub");
     if (tab === "prioglance") return v4("pgSub");
+    if (tab === "checklist") return v4("chSub");
+    if (tab === "countryglance") return v4("cySub");
     return "";
   }
 
@@ -820,6 +825,8 @@ function Shell({ base, section, name }: Props) {
             {view === "doctype" && <TypeGlance base={base} v4={v4} />}
             {view === "quicklinks" && <QuickLinks v4={v4} />}
             {view === "prioglance" && <PriorityGlance base={base} v4={v4} />}
+            {view === "checklist" && <DeskCheck v4={v4} />}
+            {view === "countryglance" && <CountryGlance base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
