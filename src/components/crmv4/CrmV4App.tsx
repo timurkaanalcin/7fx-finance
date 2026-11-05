@@ -103,6 +103,7 @@ import { DepositCurrencies, HandoffPolish } from "./round112";
 import { StaffPolish, WithdrawalMethods } from "./round113";
 import { MeetingNotes, OrderStatuses } from "./round114";
 import { QuickDial, TicketAssignees } from "./round115";
+import { CallbackQueue, CasePriorities } from "./round116";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -576,6 +577,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "orderstat") return v4("jqTitle");
     if (tab === "quickdial") return v4("qdTitle");
     if (tab === "ticketassign") return v4("taTitle");
+    if (tab === "callbackqueue") return v4("cbTitle");
+    if (tab === "casepriopolish") return v4("zpTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -740,6 +743,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "orderstat") return v4("jqSub");
     if (tab === "quickdial") return v4("qdSub");
     if (tab === "ticketassign") return v4("taSub");
+    if (tab === "callbackqueue") return v4("cbSub");
+    if (tab === "casepriopolish") return v4("zpSub");
     return "";
   }
 
@@ -1025,6 +1030,8 @@ function Shell({ base, section, name }: Props) {
             {view === "orderstat" && <OrderStatuses base={base} v4={v4} />}
             {view === "quickdial" && <QuickDial v4={v4} />}
             {view === "ticketassign" && <TicketAssignees base={base} v4={v4} />}
+            {view === "callbackqueue" && <CallbackQueue v4={v4} />}
+            {view === "casepriopolish" && <CasePriorities base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
