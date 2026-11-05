@@ -7,7 +7,7 @@ export const NAV_SECTIONS = [
   { id: "money", ids: ["finance", "deposit", "funding", "withdraw", "payout", "payboard", "depboard", "ibpay", "ibglance", "goals", "pulse", "glance", "curchips"] },
   { id: "compliance", ids: ["kyc", "gallery", "history", "risk", "logs", "alerts", "expiry", "docpulse", "kycglance"] },
   { id: "insights", ids: ["reports", "insights", "affiliates"] },
-  { id: "desk", ids: ["settings", "me", "prefs", "roster", "access", "control", "handoff", "quiet", "accents", "sop", "folders", "scratch", "jumps", "density", "vault", "cheats", "digest", "glass", "eod", "scripts", "prep", "winloss", "packet", "clocks", "snippets", "swatches", "scale", "shield", "stickies", "shiftlist", "edge", "outcomes", "maildense", "callpack", "markbar", "focusmode", "pinboard"] },
+  { id: "desk", ids: ["settings", "me", "prefs", "roster", "access", "control", "handoff", "quiet", "accents", "sop", "folders", "scratch", "jumps", "density", "vault", "cheats", "digest", "glass", "eod", "scripts", "prep", "winloss", "packet", "clocks", "snippets", "swatches", "scale", "shield", "stickies", "shiftlist", "edge", "outcomes", "maildense", "callpack", "markbar", "focusmode", "pinboard", "desktimer", "licglance"] },
 ] as const;
 
 export type NavSectionId = (typeof NAV_SECTIONS)[number]["id"];
