@@ -73,6 +73,7 @@ import { FocusDesk, SupportPulse } from "./round82";
 import { IbGlance, PinBoard } from "./round83";
 import { DeskTimer, LicenseGlance } from "./round84";
 import { ReasonGlance, VoiceTray } from "./round85";
+import { ChannelGlance, UtcMarks } from "./round86";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv4/round78";
 import { PAUSE_KEY, shieldOn } from "@/lib/crmv4/round74";
@@ -470,6 +471,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "licglance") return v4("lcTitle");
     if (tab === "voicetray") return v4("vsTitle");
     if (tab === "wdreason") return v4("wrTitle");
+    if (tab === "utcmark") return v4("cdTitle");
+    if (tab === "depchannel") return v4("dcTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -574,6 +577,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "licglance") return v4("lcSub");
     if (tab === "voicetray") return v4("vsSub");
     if (tab === "wdreason") return v4("wrSub");
+    if (tab === "utcmark") return v4("cdSub");
+    if (tab === "depchannel") return v4("dcSub");
     return "";
   }
 
@@ -799,6 +804,8 @@ function Shell({ base, section, name }: Props) {
             {view === "licglance" && <LicenseGlance base={base} v4={v4} />}
             {view === "voicetray" && <VoiceTray v4={v4} />}
             {view === "wdreason" && <ReasonGlance base={base} v4={v4} />}
+            {view === "utcmark" && <UtcMarks v4={v4} />}
+            {view === "depchannel" && <ChannelGlance base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
