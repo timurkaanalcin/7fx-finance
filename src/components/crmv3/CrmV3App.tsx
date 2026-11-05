@@ -53,6 +53,8 @@ import { SourceMix, WinLog } from "./desk/mix";
 import { HandoffPacket, VipWatch } from "./desk/vip";
 import { DeskClocks, SnippetPad } from "./desk/clocks";
 import { QueuePulse, RouteSwatches } from "./desk/pulse";
+import { FontScale, WeekAgenda } from "./desk/week";
+import { SCALE_KEY, readScale, type PanelScale } from "@/lib/crmv3/week";
 import { CHROME_KEY, GOLD_KEY, readChrome, readGold, type ChromeMode, type GoldLevel } from "@/lib/crmv3/triage";
 import { readJson, writeJson } from "@/lib/crmv3/bridge";
 import { JUMP_KEY, pushJump, readJumps } from "@/lib/crmv3/introducer";
@@ -96,6 +98,7 @@ function Shell({ base, section, name }: Props) {
   const [chrome, setChrome] = useState<ChromeMode>("roomy");
   const [panel, setPanel] = useState<PanelDensity>("desk");
   const [glass, setGlass] = useState<GlassMode>("soft");
+  const [scale, setScale] = useState<PanelScale>("desk");
   const [pull, setPull] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -137,23 +140,28 @@ function Shell({ base, section, name }: Props) {
     const applyChrome = (event?: Event) => setChrome(readChrome(event ? (event as CustomEvent).detail : readJson(CHROME_KEY, "roomy")));
     const applyPanel = (event?: Event) => setPanel(readPanel(event ? (event as CustomEvent).detail : readJson(PANEL_KEY, "desk")));
     const applyGlass = (event?: Event) => setGlass(readGlass(event ? (event as CustomEvent).detail : readJson(GLASS_KEY, "soft")));
+    const applyScale = (event?: Event) => setScale(readScale(event ? (event as CustomEvent).detail : readJson(SCALE_KEY, "desk")));
     applyGold();
     applyChrome();
     applyPanel();
     applyGlass();
+    applyScale();
     const onGold = (event: Event) => applyGold(event);
     const onChrome = (event: Event) => applyChrome(event);
     const onPanel = (event: Event) => applyPanel(event);
     const onGlass = (event: Event) => applyGlass(event);
+    const onScale = (event: Event) => applyScale(event);
     window.addEventListener("crmv3:gold", onGold);
     window.addEventListener("crmv3:chrome", onChrome);
     window.addEventListener("crmv3:panel", onPanel);
     window.addEventListener("crmv3:glass", onGlass);
+    window.addEventListener("crmv3:scale", onScale);
     return () => {
       window.removeEventListener("crmv3:gold", onGold);
       window.removeEventListener("crmv3:chrome", onChrome);
       window.removeEventListener("crmv3:panel", onPanel);
       window.removeEventListener("crmv3:glass", onGlass);
+      window.removeEventListener("crmv3:scale", onScale);
     };
   }, []);
 
@@ -267,6 +275,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "snippets") return v3("snTitle");
     if (tab === "pulse") return v3("puTitle");
     if (tab === "swatches") return v3("swTitle");
+    if (tab === "week") return v3("wkTitle");
+    if (tab === "scale") return v3("tyTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -312,7 +322,7 @@ function Shell({ base, section, name }: Props) {
   }, [view, id]);
 
   return (
-    <div data-crmv3-root="" data-theme={theme} data-gold={gold} data-chrome={chrome} data-panel={panel} data-glass={glass} data-fold={folded ? "1" : "0"} data-crmv3-view={id ? `${view}/${id}` : view} className="c3-app font-normal">
+    <div data-crmv3-root="" data-theme={theme} data-gold={gold} data-chrome={chrome} data-panel={panel} data-glass={glass} data-scale={scale} data-fold={folded ? "1" : "0"} data-crmv3-view={id ? `${view}/${id}` : view} className="c3-app font-normal">
       <a className="c3-skip" href="#c3-main">{v3("skipMain")}</a>
       <ShortcutHost base={base} onPalette={() => setPalette(true)} onHelp={(open) => { setHelp(open); if (open) setGuide(false); }} />
       <aside className="c3-rail">
@@ -446,6 +456,8 @@ function Shell({ base, section, name }: Props) {
             {view === "snippets" && <SnippetPad />}
             {view === "pulse" && <QueuePulse base={base} tx={tx} />}
             {view === "swatches" && <RouteSwatches base={base} />}
+            {view === "week" && <WeekAgenda base={base} locale={locale} tx={tx} />}
+            {view === "scale" && <FontScale />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
