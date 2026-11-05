@@ -217,6 +217,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-risk-glance-hide": ["Customer risk", "Müşteri riski", "Kundenrisiko", "Риск клиента", "خطر العميل"],
   "crmv3-handoff-polish": ["Shift handoff", "Vardiya devri", "Schichtübergabe", "Передача смены", "تسليم الوردية"],
   "crmv3-deposit-currency-hide": ["Deposit currencies", "Yatırım para birimleri", "Einzahlungswährungen", "Валюты депозитов", "عملات الإيداع"],
+  "crmv3-staff-polish": ["Staff roster", "Personel listesi", "Personalliste", "Список сотрудников", "قائمة الموظفين"],
+  "crmv3-wd-method-hide": ["Withdrawal methods", "Çekim yöntemleri", "Auszahlungsmethoden", "Методы вывода", "طرق السحب"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
