@@ -43,6 +43,7 @@ import { AlertDesk, FolderPad } from "./desk/alerts";
 import { HealthStrip, ScratchBoard } from "./desk/health";
 import { IntroducerBoard, JumpHistory } from "./desk/introducer";
 import { ExpiryWatch, PanelDensityStrip } from "./desk/expiry";
+import { RejectBoard, VaultPad } from "./desk/rejects";
 import { CHROME_KEY, GOLD_KEY, readChrome, readGold, type ChromeMode, type GoldLevel } from "@/lib/crmv3/triage";
 import { readJson, writeJson } from "@/lib/crmv3/bridge";
 import { JUMP_KEY, pushJump, readJumps } from "@/lib/crmv3/introducer";
@@ -230,6 +231,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "jumps") return v3("jpTitle");
     if (tab === "expiry") return v3("exTitle");
     if (tab === "density") return v3("lyTitle");
+    if (tab === "rejects") return v3("rjTitle");
+    if (tab === "vault") return v3("vhTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -389,6 +392,8 @@ function Shell({ base, section, name }: Props) {
             {view === "jumps" && <JumpHistory base={base} />}
             {view === "expiry" && <ExpiryWatch base={base} locale={locale} tx={tx} />}
             {view === "density" && <PanelDensityStrip />}
+            {view === "rejects" && <RejectBoard base={base} locale={locale} tx={tx} />}
+            {view === "vault" && <VaultPad />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}

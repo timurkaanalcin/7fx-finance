@@ -3516,3 +3516,38 @@
 @media (min-width: 768px) {
   [data-crmv3-root] .c3-expiry-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+[data-crmv3-root] .c3-reject-cards,
+[data-crmv3-root] .c3-vault-list {
+  display: grid;
+  gap: var(--c3-2);
+  margin: var(--c3-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv3-root] .c3-reject-card,
+[data-crmv3-root] .c3-vault-card {
+  min-width: 0;
+  padding: var(--c3-2);
+  border: 1px solid var(--c3-line);
+  border-radius: 12px;
+  background: var(--c3-card);
+}
+
+[data-crmv3-root] .c3-reject-status[data-status="REJECTED"],
+[data-crmv3-root] .c3-reject-status[data-status="CANCELLED"] { color: #8f2d2d; }
+[data-crmv3-root] .c3-reject-card[data-pinned="1"],
+[data-crmv3-root] .c3-vault-card[data-pinned="1"] { border-color: #7a5e30; }
+[data-crmv3-root] [data-vault-warn] { color: #8f2d2d; }
+
+[data-crmv3-root] .c3-reject-desk .c3-lab,
+[data-crmv3-root] .c3-vault-pad .c3-lab { flex: 1 1 220px; max-width: 100%; }
+
+[data-crmv3-root] .c3-reject-desk .c3-field,
+[data-crmv3-root] .c3-vault-pad .c3-field { width: 100%; max-width: 100%; }
+
+@media (min-width: 768px) {
+  [data-crmv3-root] .c3-reject-cards,
+  [data-crmv3-root] .c3-vault-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
