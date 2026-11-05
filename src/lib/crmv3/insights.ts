@@ -161,6 +161,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-license-hide": ["License glance", "Lisans bakışı", "Lizenzblick", "Обзор лицензий", "لمحة الترخيص"],
   "crmv3-voice-snippets": ["Voice tray", "Ses tepsisi", "Sprachablage", "Голосовой лоток", "درج الصوت"],
   "crmv3-reason-hide": ["Reason glance", "Gerekçe bakışı", "Grundblick", "Обзор причин", "لمحة السبب"],
+  "crmv3-utc-marks": ["UTC marks", "UTC işaretleri", "UTC-Marken", "Метки UTC", "علامات UTC"],
+  "crmv3-channel-hide": ["Channel glance", "Kanal bakışı", "Kanalblick", "Обзор каналов", "لمحة القناة"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
