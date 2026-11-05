@@ -3,9 +3,9 @@
 export const RAIL_KEY = "crmv3-rail-fold";
 
 export const NAV_SECTIONS = [
-  { id: "work", ids: ["overview", "customers", "dense", "notices", "tags", "blotter", "pad", "cases", "shortcuts", "leads", "triage", "positions", "support", "agenda", "day", "inbox", "thread", "marketing", "health", "rejects", "heatmap", "compare", "stale", "dupes", "referrals", "vip", "week"] },
+  { id: "work", ids: ["overview", "customers", "dense", "notices", "tags", "blotter", "pad", "cases", "shortcuts", "leads", "triage", "positions", "support", "agenda", "day", "inbox", "thread", "marketing", "health", "rejects", "heatmap", "compare", "stale", "dupes", "referrals", "vip", "week", "lane"] },
   { id: "money", ids: ["finance", "deposit", "funding", "withdraw", "payout", "payboard", "depboard", "ibpay", "goals", "pulse", "glance"] },
-  { id: "compliance", ids: ["kyc", "gallery", "history", "risk", "logs", "alerts", "expiry"] },
+  { id: "compliance", ids: ["kyc", "gallery", "history", "risk", "logs", "alerts", "expiry", "docpulse"] },
   { id: "insights", ids: ["reports", "insights", "affiliates"] },
   { id: "desk", ids: ["settings", "me", "prefs", "roster", "access", "control", "handoff", "quiet", "accents", "sop", "folders", "scratch", "jumps", "density", "vault", "cheats", "digest", "glass", "eod", "scripts", "prep", "winloss", "packet", "clocks", "snippets", "swatches", "scale", "shield", "stickies", "shiftlist"] },
 ] as const;
