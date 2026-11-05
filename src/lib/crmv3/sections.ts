@@ -54,6 +54,8 @@ export const CRM_V3_SECTIONS = [
   { id: "docpulse", path: "docpulse" },
   { id: "edge", path: "edge" },
   { id: "outcomes", path: "outcomes" },
+  { id: "riskwatch", path: "riskwatch" },
+  { id: "maildense", path: "maildense" },
   { id: "finance", path: "finance" },
   { id: "positions", path: "positions" },
   { id: "support", path: "support" },
@@ -91,7 +93,7 @@ export const CRM_V3_COMING_SOON = ["campaignSend"] as const;
 /** Bottom bar on phones and tablets. Finance is labeled Money in the chrome. */
 export const CRM_V3_TABS = ["overview", "customers", "finance", "support"] as const;
 
-export const CRM_V3_MORE = ["positions", "marketing", "goals", "kyc", "gallery", "history", "risk", "withdraw", "payout", "deposit", "funding", "inbox", "thread", "agenda", "day", "dense", "notices", "tags", "blotter", "pad", "cases", "shortcuts", "payboard", "handoff", "leads", "quiet", "triage", "accents", "depboard", "sop", "alerts", "folders", "health", "scratch", "ibpay", "jumps", "expiry", "density", "rejects", "vault", "heatmap", "cheats", "digest", "glass", "compare", "eod", "stale", "scripts", "dupes", "prep", "referrals", "winloss", "vip", "packet", "clocks", "snippets", "pulse", "swatches", "week", "scale", "shield", "stickies", "shiftlist", "glance", "lane", "docpulse", "edge", "outcomes", "reports", "insights", "affiliates", "settings", "me", "prefs", "roster", "access", "logs", "control"] as const;
+export const CRM_V3_MORE = ["positions", "marketing", "goals", "kyc", "gallery", "history", "risk", "withdraw", "payout", "deposit", "funding", "inbox", "thread", "agenda", "day", "dense", "notices", "tags", "blotter", "pad", "cases", "shortcuts", "payboard", "handoff", "leads", "quiet", "triage", "accents", "depboard", "sop", "alerts", "folders", "health", "scratch", "ibpay", "jumps", "expiry", "density", "rejects", "vault", "heatmap", "cheats", "digest", "glass", "compare", "eod", "stale", "scripts", "dupes", "prep", "referrals", "winloss", "vip", "packet", "clocks", "snippets", "pulse", "swatches", "week", "scale", "shield", "stickies", "shiftlist", "glance", "lane", "docpulse", "edge", "outcomes", "riskwatch", "maildense", "reports", "insights", "affiliates", "settings", "me", "prefs", "roster", "access", "logs", "control"] as const;
 
 export function crmv3Href(base: string, path: string, query?: Record<string, string>): string {
   const root = base.replace(/\/+$/, "") || "/crmv3";

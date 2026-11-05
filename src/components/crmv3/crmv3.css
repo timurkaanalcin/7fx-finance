@@ -4444,3 +4444,88 @@
 @media (min-width: 768px) {
   [data-crmv3-root] .c3-outcome-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+[data-crmv3-root][data-mail="compact"] [data-inbox="1"] .c3-arrange-list > li,
+[data-crmv3-root][data-mail="compact"] [data-inbox="1"] .c3-line-day li,
+[data-crmv3-root][data-mail="compact"] .c3-thread-line,
+[data-crmv3-root][data-mail="compact"] .c3-notice-card,
+[data-crmv3-root][data-mail="compact"] .c3-notice-rows li,
+[data-crmv3-root][data-mail="compact"] .c3-mail-preview li {
+  padding: 4px 8px;
+}
+
+[data-crmv3-root][data-mail="roomy"] [data-inbox="1"] .c3-arrange-list > li,
+[data-crmv3-root][data-mail="roomy"] [data-inbox="1"] .c3-line-day li,
+[data-crmv3-root][data-mail="roomy"] .c3-thread-line,
+[data-crmv3-root][data-mail="roomy"] .c3-notice-card,
+[data-crmv3-root][data-mail="roomy"] .c3-notice-rows li,
+[data-crmv3-root][data-mail="roomy"] .c3-mail-preview li {
+  padding: 16px 18px;
+}
+
+[data-crmv3-root][data-mail="compact"] [data-inbox="1"] .c3-arrange-list,
+[data-crmv3-root][data-mail="compact"] [data-inbox="1"] .c3-line-day ol,
+[data-crmv3-root][data-mail="compact"] .c3-thread-list,
+[data-crmv3-root][data-mail="compact"] .c3-notice-cards,
+[data-crmv3-root][data-mail="compact"] .c3-notice-rows,
+[data-crmv3-root][data-mail="compact"] .c3-mail-preview { gap: 4px; }
+
+[data-crmv3-root][data-mail="roomy"] [data-inbox="1"] .c3-arrange-list,
+[data-crmv3-root][data-mail="roomy"] [data-inbox="1"] .c3-line-day ol,
+[data-crmv3-root][data-mail="roomy"] .c3-thread-list,
+[data-crmv3-root][data-mail="roomy"] .c3-notice-cards,
+[data-crmv3-root][data-mail="roomy"] .c3-notice-rows,
+[data-crmv3-root][data-mail="roomy"] .c3-mail-preview { gap: 14px; }
+
+[data-crmv3-root] .c3-risk-watch,
+[data-crmv3-root] .c3-mail-density {
+  display: grid;
+  gap: var(--c3-3);
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+[data-crmv3-root] .c3-risk-list,
+[data-crmv3-root] .c3-mail-preview {
+  display: grid;
+  gap: var(--c3-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-width: 0;
+}
+
+[data-crmv3-root] .c3-risk-card,
+[data-crmv3-root] .c3-mail-preview li {
+  min-width: 0;
+  max-width: 100%;
+  padding: var(--c3-3);
+  border: 1px solid var(--c3-line);
+  border-radius: 12px;
+  background: var(--c3-card);
+  overflow-wrap: anywhere;
+}
+
+[data-crmv3-root] .c3-risk-card[data-pinned="1"] { box-shadow: inset 2px 0 0 #7a5e30; }
+
+[data-crmv3-root] .c3-risk-watch .c3-lab { flex: 1 1 220px; min-width: 0; max-width: 100%; }
+
+[data-crmv3-root] .c3-mail-density .c3-row { min-width: 0; max-width: 100%; }
+
+[data-crmv3-root] .c3-risk-watch .c3-field,
+[data-crmv3-root] .c3-risk-watch .c3-select { width: 100%; max-width: 100%; }
+
+[data-crmv3-root] .c3-risk-watch .c3-row,
+[data-crmv3-root] .c3-mail-density .c3-row { flex-wrap: wrap; }
+
+[data-crmv3-root] .c3-risk-watch .c3-btn,
+[data-crmv3-root] .c3-risk-watch .c3-chip,
+[data-crmv3-root] .c3-risk-watch .c3-field,
+[data-crmv3-root] .c3-risk-watch .c3-select,
+[data-crmv3-root] .c3-mail-density .c3-btn,
+[data-crmv3-root] .c3-mail-density .c3-chip { min-height: 44px; }
+
+@media (min-width: 768px) {
+  [data-crmv3-root] .c3-risk-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

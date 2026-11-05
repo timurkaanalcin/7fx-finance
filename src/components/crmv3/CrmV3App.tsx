@@ -58,7 +58,9 @@ import { QuietShield, StickyPad } from "./desk/shield";
 import { LedgerGlance, ShiftCheck } from "./desk/shiftlist";
 import { DocPulse, PriorityLane } from "./desk/lane";
 import { CallOutcomes, EdgeStrip } from "./desk/edge";
+import { MailDensityStrip, RiskWatch } from "./desk/watch";
 import { EDGE_KEY, readEdge, type Accent } from "@/lib/crmv3/edge";
+import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv3/risklist";
 import { SCALE_KEY, readScale, type PanelScale } from "@/lib/crmv3/week";
 import { PAUSE_KEY, shieldOn } from "@/lib/crmv3/shield";
 import { QUIET_KEY, readQuiet } from "@/lib/crmv3/leads";
@@ -108,6 +110,7 @@ function Shell({ base, section, name }: Props) {
   const [scale, setScale] = useState<PanelScale>("desk");
   const [shield, setShield] = useState(false);
   const [edge, setEdge] = useState<Accent>("champagne");
+  const [mail, setMail] = useState<MailDensity>("desk");
   const [pull, setPull] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -223,6 +226,13 @@ function Shell({ base, section, name }: Props) {
   }, []);
 
   useEffect(() => {
+    const apply = (event?: Event) => setMail(readDensity(event ? (event as CustomEvent).detail : readJson(MAIL_KEY, "desk")));
+    apply();
+    window.addEventListener("crmv3:mail", apply);
+    return () => window.removeEventListener("crmv3:mail", apply);
+  }, []);
+
+  useEffect(() => {
     if (window.localStorage.getItem("crmv3-motion") === "reduce") {
       document.querySelector("[data-crmv3-root]")?.setAttribute("data-motion", "reduce");
     }
@@ -313,6 +323,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "docpulse") return v3("xpTitle");
     if (tab === "edge") return v3("egTitle");
     if (tab === "outcomes") return v3("ocTitle");
+    if (tab === "riskwatch") return v3("rwTitle");
+    if (tab === "maildense") return v3("mdTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -358,7 +370,7 @@ function Shell({ base, section, name }: Props) {
   }, [view, id]);
 
   return (
-    <div data-crmv3-root="" data-theme={theme} data-gold={gold} data-chrome={chrome} data-panel={panel} data-glass={glass} data-scale={scale} data-edge={edge} data-fold={folded ? "1" : "0"} data-crmv3-view={id ? `${view}/${id}` : view} className="c3-app font-normal">
+    <div data-crmv3-root="" data-theme={theme} data-gold={gold} data-chrome={chrome} data-panel={panel} data-glass={glass} data-scale={scale} data-edge={edge} data-mail={mail} data-fold={folded ? "1" : "0"} data-crmv3-view={id ? `${view}/${id}` : view} className="c3-app font-normal">
       <a className="c3-skip" href="#c3-main">{v3("skipMain")}</a>
       <ShortcutHost base={base} onPalette={() => setPalette(true)} onHelp={(open) => { setHelp(open); if (open) setGuide(false); }} />
       <aside className="c3-rail">
@@ -502,6 +514,8 @@ function Shell({ base, section, name }: Props) {
             {view === "docpulse" && <DocPulse base={base} tx={tx} />}
             {view === "edge" && <EdgeStrip />}
             {view === "outcomes" && <CallOutcomes base={base} />}
+            {view === "riskwatch" && <RiskWatch base={base} />}
+            {view === "maildense" && <MailDensityStrip />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}

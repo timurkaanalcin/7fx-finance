@@ -145,6 +145,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-docpulse-hide": ["Hidden document chips", "Gizlenen belge çipleri", "Versteckte Dokumentchips", "Скрытые чипы документов", "رقائق المستند المخفية"],
   "crmv3-accent": ["Chrome edge", "Krom kenarı", "Chromkante", "Кромка хрома", "حافة الإطار"],
   "crmv3-call-tags": ["Call outcomes", "Arama sonuçları", "Anrufergebnisse", "Итоги звонка", "نتائج الاتصال"],
+  "crmv3-risk-watch": ["Risk watch", "Risk izleme", "Risikobeobachtung", "Наблюдение за риском", "مراقبة المخاطر"],
+  "crmv3-mail-density": ["Inbox density", "Gelen kutusu sıklığı", "Postdichte", "Плотность почты", "كثافة البريد"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
