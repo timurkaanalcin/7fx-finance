@@ -143,6 +143,8 @@ export function CommandPalette({ base, open, onClose }: { base: string; open: bo
       { id: "eod", label: v3("eodTitle"), href: crmv3Href(base, "eod") },
       { id: "stale", label: v3("slTitle"), href: crmv3Href(base, "stale") },
       { id: "scripts", label: v3("tkTitle"), href: crmv3Href(base, "scripts") },
+      { id: "dupes", label: v3("dpTitle"), href: crmv3Href(base, "dupes") },
+      { id: "prep", label: v3("mpTitle"), href: crmv3Href(base, "prep") },
       { id: "gallery", label: v3("glTitle"), href: crmv3Href(base, "gallery") },
       { id: "history", label: v3("hsTitle"), href: crmv3Href(base, "history") },
       { id: "reports", label: v3("reportsTitle"), href: crmv3Href(base, "reports") },
