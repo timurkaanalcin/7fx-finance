@@ -155,6 +155,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-side-hide": ["Side glance", "Yön bakışı", "Seitenblick", "Стороны сделок", "لمحة الاتجاه"],
   "crmv3-desk-focus": ["Desk focus", "Masa odağı", "Tischfokus", "Фокус стола", "تركيز المكتب"],
   "crmv3-queue-hide": ["Support pulse", "Destek nabzı", "Support-Puls", "Пульс поддержки", "نبض الدعم"],
+  "crmv3-pinboard": ["Pinboard", "Pano", "Pinnwand", "Доска", "لوحة الدبابيس"],
+  "crmv3-ib-hide": ["IB glance", "IB bakışı", "IB-Blick", "Обзор IB", "لمحة الشريك"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
