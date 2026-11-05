@@ -58,6 +58,7 @@ import { CallScripts, StaleWatch } from "./round67";
 import { DupeStrip, MeetingPrep } from "./round68";
 import { SourceMix, WinLog } from "./round69";
 import { HandoffPacket, VipWatch } from "./round70";
+import { DeskClocks, SnippetPad } from "./round71";
 import { GLASS_KEY, readGlass, type GlassMode } from "@/lib/crmv4/round65";
 import { PANEL_KEY, readPanel, type PanelDensity } from "@/lib/crmv4/round62";
 import { JUMP_KEY, pushJump, readJumps } from "@/lib/crmv4/round61";
@@ -394,6 +395,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "winlog") return v4("wnTitle");
     if (tab === "vip") return v4("vwTitle");
     if (tab === "packet") return v4("pkTitle");
+    if (tab === "clocks") return v4("ckTitle");
+    if (tab === "snippets") return v4("snTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -468,6 +471,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "winlog") return v4("wnSub");
     if (tab === "vip") return v4("vwSub");
     if (tab === "packet") return v4("pkSub");
+    if (tab === "clocks") return v4("ckSub");
+    if (tab === "snippets") return v4("snSub");
     return "";
   }
 
@@ -663,6 +668,8 @@ function Shell({ base, section, name }: Props) {
             {view === "winlog" && <WinLog v4={v4} tx={tx} />}
             {view === "vip" && <VipWatch base={base} v4={v4} locale={locale} tx={tx} />}
             {view === "packet" && <HandoffPacket v4={v4} />}
+            {view === "clocks" && <DeskClocks v4={v4} />}
+            {view === "snippets" && <SnippetPad v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
