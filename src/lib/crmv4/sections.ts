@@ -87,6 +87,8 @@ export const CRM_V4_SECTIONS = [
   { id: "curchips", path: "curchips" },
   { id: "markbar", path: "markbar" },
   { id: "kycglance", path: "kycglance" },
+  { id: "snooze", path: "snooze" },
+  { id: "sideglance", path: "sideglance" },
 ] as const;
 
 export type CrmV4SectionId = (typeof CRM_V4_SECTIONS)[number]["id"];
@@ -107,7 +109,7 @@ export const CRM_V4_NAV = [
   { id: "logs", path: "logs", sub: "subLogs" },
 ] as const;
 
-export const CRM_V4_MORE = ["positions", "marketing", "goals", "kyc", "risk", "withdraw", "deposit", "inbox", "agenda", "reports", "insights", "affiliates", "payout", "funding", "thread", "gallery", "history", "dense", "notices", "tags", "blotter", "pad", "cases", "shortcuts", "payboard", "handoff", "leads", "quiet", "triage", "accents", "depboard", "sop", "alerts", "folders", "health", "scratch", "ibpay", "jumps", "expiry", "density", "rejects", "vault", "heatmap", "cheats", "digest", "glass", "compare", "eod", "stale", "scripts", "dupes", "prep", "sources", "winlog", "vip", "packet", "clocks", "snippets", "pulse", "swatches", "week", "scale", "shield", "stickies", "shiftlist", "glance", "lane", "docpulse", "edge", "outcomes", "riskwatch", "maildense", "callpack", "curchips", "markbar", "kycglance", "access", "settings", "me", "day", "prefs", "roster", "logs", "control"] as const;
+export const CRM_V4_MORE = ["positions", "marketing", "goals", "kyc", "risk", "withdraw", "deposit", "inbox", "agenda", "reports", "insights", "affiliates", "payout", "funding", "thread", "gallery", "history", "dense", "notices", "tags", "blotter", "pad", "cases", "shortcuts", "payboard", "handoff", "leads", "quiet", "triage", "accents", "depboard", "sop", "alerts", "folders", "health", "scratch", "ibpay", "jumps", "expiry", "density", "rejects", "vault", "heatmap", "cheats", "digest", "glass", "compare", "eod", "stale", "scripts", "dupes", "prep", "sources", "winlog", "vip", "packet", "clocks", "snippets", "pulse", "swatches", "week", "scale", "shield", "stickies", "shiftlist", "glance", "lane", "docpulse", "edge", "outcomes", "riskwatch", "maildense", "callpack", "curchips", "markbar", "kycglance", "snooze", "sideglance", "access", "settings", "me", "day", "prefs", "roster", "logs", "control"] as const;
 
 export function crmv4Href(base: string, path: string, query?: Record<string, string>): string {
   const root = base.replace(/\/+$/, "") || "/crmv4";

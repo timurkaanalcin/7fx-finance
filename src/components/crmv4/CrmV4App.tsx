@@ -68,6 +68,7 @@ import { CallOutcomes, EdgeStrip } from "./round77";
 import { MailDensityStrip, RiskWatch } from "./round78";
 import { CallPack, CurrencyChips } from "./round79";
 import { BookmarkBar, KycGlance } from "./round80";
+import { SideGlance, SnoozeStrip } from "./round81";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv4/round78";
 import { PAUSE_KEY, shieldOn } from "@/lib/crmv4/round74";
 import { SCALE_KEY, readScale, type PanelScale } from "@/lib/crmv4/round73";
@@ -449,6 +450,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "curchips") return v4("ccTitle");
     if (tab === "markbar") return v4("mbTitle");
     if (tab === "kycglance") return v4("kgTitle");
+    if (tab === "snooze") return v4("szTitle");
+    if (tab === "sideglance") return v4("sdTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -543,6 +546,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "curchips") return v4("ccSub");
     if (tab === "markbar") return v4("mbSub");
     if (tab === "kycglance") return v4("kgSub");
+    if (tab === "snooze") return v4("szSub");
+    if (tab === "sideglance") return v4("sdSub");
     return "";
   }
 
@@ -758,6 +763,8 @@ function Shell({ base, section, name }: Props) {
             {view === "curchips" && <CurrencyChips base={base} v4={v4} locale={locale} />}
             {view === "markbar" && <BookmarkBar base={base} v4={v4} names={names} />}
             {view === "kycglance" && <KycGlance base={base} v4={v4} />}
+            {view === "snooze" && <SnoozeStrip base={base} v4={v4} locale={locale} />}
+            {view === "sideglance" && <SideGlance base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
