@@ -101,6 +101,7 @@ import { DocumentStatuses, VisitLog } from "./desk/visitlog";
 import { LeadSources, ParkingNotes } from "./desk/parkspot";
 import { LockerNotes, TradeSymbols } from "./desk/locker";
 import { CourierNotes, IbCountries } from "./desk/courier";
+import { DepositMethods, VisitorNotes } from "./desk/visitor";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv3/rowdensity";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv3/deskfocus";
 import { EDGE_KEY, readEdge, type Accent } from "@/lib/crmv3/edge";
@@ -470,6 +471,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "tradesym") return v3("tsyTitle");
     if (tab === "courier") return v3("crrTitle");
     if (tab === "ibctry") return v3("ibgTitle");
+    if (tab === "visitor") return v3("bdgTitle");
+    if (tab === "depglance") return v3("dmgTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -756,6 +759,8 @@ function Shell({ base, section, name }: Props) {
             {view === "tradesym" && <TradeSymbols base={base} />}
             {view === "courier" && <CourierNotes />}
             {view === "ibctry" && <IbCountries base={base} />}
+            {view === "visitor" && <VisitorNotes />}
+            {view === "depglance" && <DepositMethods base={base} />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
