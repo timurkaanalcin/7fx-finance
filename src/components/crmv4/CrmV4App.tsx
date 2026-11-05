@@ -36,6 +36,7 @@ import { AffiliateDesk } from "./round45";
 import { AccessDesk, PayoutDesk } from "./round46";
 import { RiskDesk } from "./round47";
 import { FundingDesk } from "./round48";
+import { ThreadDesk } from "./round49";
 import { lastView, playPing, rememberView, soundEnabled, ticketAlertsOn } from "./round7";
 import { resolvedTheme, storedContrast, storedFont, storedFreeze, themeMode } from "./round8";
 import { readBrand } from "./round10";
@@ -286,6 +287,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "access") return v4("axTitle");
     if (tab === "risk") return v4("rkTitle");
     if (tab === "funding") return v4("fuTitle");
+    if (tab === "thread") return v4("cvTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -318,6 +320,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "access") return v4("axSub");
     if (tab === "risk") return v4("rkSub");
     if (tab === "funding") return v4("fuSub");
+    if (tab === "thread") return v4("cvSub");
     return "";
   }
 
@@ -471,6 +474,7 @@ function Shell({ base, section, name }: Props) {
             {view === "access" && <AccessDesk v4={v4} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} v4={v4} tx={tx} locale={locale} />}
             {view === "funding" && <FundingDesk base={base} v4={v4} tx={tx} locale={locale} />}
+            {view === "thread" && <ThreadDesk v4={v4} tx={tx} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
             {view === "agenda" && <AgendaPage base={base} v4={v4} locale={locale} />}

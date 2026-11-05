@@ -24,6 +24,7 @@ import { FxDesk } from "../round22";
 import { AlertCenter } from "../round23";
 import { DeskArrange, loadLayout, orderedCards, storeLayout } from "../round26";
 import { TodayHero } from "../round35";
+import { TodayStrip } from "../round49";
 import { defaultLayout, type OverviewLayout } from "@/lib/crmv4/round26";
 import { Bars, Card, Chip, Field, Kpi, Lab, Msg, Sheet, State, auditExport, downloadCsv, fmtNum, localeTag, money, sendJson, useJson, when, type Tx, type UserRow } from "../kit";
 
@@ -100,6 +101,7 @@ export default function Overview({ base, tx, locale, name }: Props) {
   const shown = orderedCards(layout);
   return (
     <div className="c4-stack c4-exec">
+      <TodayStrip base={base} v4={v4} locale={locale} />
       <TodayHero base={base} name={name || ""} v4={v4} locale={locale} />
       <ExecHero name={name || ""} customers={kpis?.users} aum={typeof aum === "number" ? aum : undefined} volume={kpis?.totalVolume} pending={pending} locale={locale} labels={{ customers: tx("kpiCustomers"), aum: tx("kpiAum"), volume: tx("kpiVolume"), pending: tx("kpiPending") }} v4={(key) => crmv4Text(locale, key)} />
       <DeskLanding name={name || ""} v4={(key) => crmv4Text(locale, key)} />
