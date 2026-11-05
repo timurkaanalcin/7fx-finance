@@ -106,6 +106,7 @@ import { QuickDial, TicketAssignees } from "./round115";
 import { CallbackQueue, CasePriorities } from "./round116";
 import { DocumentStatuses, VisitLog } from "./round117";
 import { LeadSources, ParkingNotes } from "./round118";
+import { LockerNotes, TradeSymbols } from "./round119";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -585,6 +586,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "kycdocstat") return v4("ydTitle");
     if (tab === "parkspot") return v4("bayTitle");
     if (tab === "leadsrc") return v4("lsgTitle");
+    if (tab === "locker") return v4("lokTitle");
+    if (tab === "tradesym") return v4("tsyTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -755,6 +758,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "kycdocstat") return v4("ydSub");
     if (tab === "parkspot") return v4("baySub");
     if (tab === "leadsrc") return v4("lsgSub");
+    if (tab === "locker") return v4("lokSub");
+    if (tab === "tradesym") return v4("tsySub");
     return "";
   }
 
@@ -1046,6 +1051,8 @@ function Shell({ base, section, name }: Props) {
             {view === "kycdocstat" && <DocumentStatuses base={base} v4={v4} />}
             {view === "parkspot" && <ParkingNotes v4={v4} />}
             {view === "leadsrc" && <LeadSources base={base} v4={v4} />}
+            {view === "locker" && <LockerNotes v4={v4} />}
+            {view === "tradesym" && <TradeSymbols base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
