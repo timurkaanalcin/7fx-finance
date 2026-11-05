@@ -94,6 +94,10 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-case-pins": ["Case pins", "Dosya sabitleme", "Fall-Pins", "Закрепления дел", "تثبيت الملفات"],
   "crmv3-shortcuts": ["Shortcut rail", "Kısayol şeridi", "Kurzleiste", "Полоса ярлыков", "شريط الاختصارات"],
   "crmv3-shift-handoff": ["Shift handoff", "Vardiya devri", "Schichtübergabe", "Передача смены", "تسليم الوردية"],
+  "crmv3-lead-watch": ["Lead watch", "Aday izleme", "Lead-Beobachtung", "Наблюдение за лидом", "متابعة العميل"],
+  "crmv3-alert-mute": ["Muted alerts", "Sessiz uyarılar", "Stummgeschaltete Hinweise", "Отключённые сигналы", "تنبيهات صامتة"],
+  "crmv3-focus-flag": ["Focus", "Odak", "Fokus", "Фокус", "التركيز"],
+  "crmv3-quiet-hours": ["Quiet hours", "Sessiz saatler", "Ruhezeiten", "Тихие часы", "ساعات الهدوء"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
