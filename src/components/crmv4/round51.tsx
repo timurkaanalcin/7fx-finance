@@ -9,6 +9,7 @@ import {
   DENSE_FIELDS,
   allIds,
   cell,
+  DONE_KEY,
   dayItems,
   dayWindow,
   filterRows,
@@ -33,7 +34,6 @@ import { sendJson, useJson, type Tx } from "./kit";
 export type V4 = (key: CrmV4CopyKey) => string;
 
 const COLUMN_KEY = "crmv4-dense-columns";
-const DONE_KEY = "crmv4-day-done";
 
 const FIELD_LABEL: Record<DenseField, CrmV4CopyKey> = {
   email: "dnEmail",

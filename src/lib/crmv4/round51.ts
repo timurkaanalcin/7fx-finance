@@ -1,5 +1,7 @@
 /** Dense customer rows and the agenda day strip. Both use loaded rows only. */
 
+export const DONE_KEY = "crmv4-day-done";
+
 export const DENSE_FIELDS = ["email", "country", "desk", "saleStatus", "documentsStatus", "currency"] as const;
 export type DenseField = (typeof DENSE_FIELDS)[number];
 
