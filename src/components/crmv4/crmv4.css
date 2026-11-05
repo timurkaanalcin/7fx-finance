@@ -6934,3 +6934,160 @@
   [data-crmv4-root] .c4-ib-board .c4-chip,
   [data-crmv4-root] .c4-jump-pad .c4-chip { min-height: 44px; }
 }
+
+[data-crmv4-root] .c4-expiry-desk,
+[data-crmv4-root] .c4-panel-strip {
+  display: grid;
+  gap: 12px;
+  margin: 12px;
+  padding: 16px;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+  border: 1px solid rgba(166, 133, 78, 0.5);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(166, 133, 78, 0.14), transparent 36%),
+    #f7f4ee;
+  color: #1c1a17;
+  font-weight: 400;
+}
+
+[data-crmv4-root][data-panel="roomy"] .c4-expiry-desk,
+[data-crmv4-root][data-panel="roomy"] .c4-panel-strip {
+  gap: 16px;
+  padding: 20px;
+}
+
+[data-crmv4-root][data-panel="compact"] .c4-expiry-desk,
+[data-crmv4-root][data-panel="compact"] .c4-panel-strip {
+  gap: 6px;
+  padding: 8px;
+}
+
+[data-crmv4-root] .c4-expiry-desk .c4-title,
+[data-crmv4-root] .c4-panel-strip .c4-title {
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+[data-crmv4-root] .c4-expiry-desk .c4-meta,
+[data-crmv4-root] .c4-panel-strip .c4-meta,
+[data-crmv4-root] .c4-expiry-desk .c4-pay-kicker,
+[data-crmv4-root] .c4-panel-strip .c4-pay-kicker {
+  color: #7a5e30;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+[data-crmv4-root] .c4-expiry-desk .c4-lab,
+[data-crmv4-root] .c4-panel-strip .c4-lab,
+[data-crmv4-root] .c4-expiry-desk .c4-field,
+[data-crmv4-root] .c4-expiry-desk .c4-row,
+[data-crmv4-root] .c4-panel-strip .c4-row {
+  min-width: 0;
+  max-width: 100%;
+}
+
+[data-crmv4-root] .c4-expiry-desk .c4-field { width: 100%; }
+
+[data-crmv4-root] .c4-expiry-cards {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-width: 0;
+}
+
+[data-crmv4-root] .c4-expiry-card {
+  min-width: 0;
+  max-width: 100%;
+  padding: 12px;
+  border: 1px solid rgba(166, 133, 78, 0.35);
+  border-radius: 14px;
+  background: #fffdf8;
+  overflow-wrap: anywhere;
+}
+
+[data-crmv4-root][data-panel="compact"] .c4-expiry-card { padding: 8px; }
+[data-crmv4-root][data-panel="roomy"] .c4-expiry-card { padding: 16px; }
+
+[data-crmv4-root] .c4-expiry-card strong { font-weight: 500; }
+
+[data-crmv4-root] .c4-expiry-due {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 1px 8px;
+  border: 1px solid rgba(166, 133, 78, 0.55);
+  border-radius: 999px;
+  color: #7a5e30;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+[data-crmv4-root] .c4-expiry-card[data-due="due"] { box-shadow: inset 2px 0 0 #7a5e30; }
+
+[data-crmv4-root] .c4-panel-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+[data-crmv4-root] .c4-panel-preview span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 4px 12px;
+  border: 1px solid rgba(166, 133, 78, 0.55);
+  border-radius: 999px;
+  color: #7a5e30;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+[data-crmv4-root] .c4-panel-preview span[data-panel="roomy"] { padding: 8px 18px; }
+[data-crmv4-root] .c4-panel-preview span[data-panel="compact"] { padding: 2px 8px; }
+[data-crmv4-root] .c4-panel-preview span[data-on="1"] { background: #7a5e30; color: #fffdf8; }
+
+@media (min-width: 768px) {
+  [data-crmv4-root] .c4-expiry-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-expiry-desk,
+[data-crmv4-root][data-theme="dark"] .c4-panel-strip {
+  background:
+    linear-gradient(180deg, rgba(212, 188, 134, 0.16), transparent 42%),
+    #161412;
+  color: #f6f1e8;
+  border-color: rgba(212, 188, 134, 0.38);
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-expiry-card {
+  background: #221f1b;
+  color: #f6f1e8;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-expiry-desk .c4-meta,
+[data-crmv4-root][data-theme="dark"] .c4-panel-strip .c4-meta,
+[data-crmv4-root][data-theme="dark"] .c4-expiry-desk .c4-pay-kicker,
+[data-crmv4-root][data-theme="dark"] .c4-panel-strip .c4-pay-kicker,
+[data-crmv4-root][data-theme="dark"] .c4-expiry-due,
+[data-crmv4-root][data-theme="dark"] .c4-panel-preview span { color: #d4bc86; }
+
+[data-crmv4-root][data-theme="dark"] .c4-panel-preview span[data-on="1"] { background: #7a5e30; color: #fffdf8; }
+
+@media (max-width: 767px) {
+  [data-crmv4-root] .c4-expiry-desk,
+  [data-crmv4-root] .c4-panel-strip { margin: 8px; padding: 12px; }
+  [data-crmv4-root][data-panel="compact"] .c4-expiry-desk,
+  [data-crmv4-root][data-panel="compact"] .c4-panel-strip { padding: 8px; }
+  [data-crmv4-root] .c4-expiry-desk .c4-btn,
+  [data-crmv4-root] .c4-panel-strip .c4-btn,
+  [data-crmv4-root] .c4-expiry-desk .c4-chip,
+  [data-crmv4-root] .c4-panel-strip .c4-chip { min-height: 44px; }
+}
