@@ -45,10 +45,12 @@ import { IntroducerBoard, JumpHistory } from "./desk/introducer";
 import { ExpiryWatch, PanelDensityStrip } from "./desk/expiry";
 import { RejectBoard, VaultPad } from "./desk/rejects";
 import { CheatSheet, HeatStrip } from "./desk/heatmap";
+import { GlassToggle, OvernightDigest } from "./desk/digest";
 import { CHROME_KEY, GOLD_KEY, readChrome, readGold, type ChromeMode, type GoldLevel } from "@/lib/crmv3/triage";
 import { readJson, writeJson } from "@/lib/crmv3/bridge";
 import { JUMP_KEY, pushJump, readJumps } from "@/lib/crmv3/introducer";
 import { PANEL_KEY, readPanel, type PanelDensity } from "@/lib/crmv3/expiry";
+import { GLASS_KEY, readGlass, type GlassMode } from "@/lib/crmv3/digest";
 import { RAIL_KEY, readFold } from "@/lib/crmv3/nav";
 import { MoreNav, RailNav } from "./desk/nav";
 import { useLocal } from "./desk/store";
@@ -86,6 +88,7 @@ function Shell({ base, section, name }: Props) {
   const [gold, setGold] = useState<GoldLevel>("desk");
   const [chrome, setChrome] = useState<ChromeMode>("roomy");
   const [panel, setPanel] = useState<PanelDensity>("desk");
+  const [glass, setGlass] = useState<GlassMode>("soft");
   const [pull, setPull] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -126,19 +129,24 @@ function Shell({ base, section, name }: Props) {
     const applyGold = (event?: Event) => setGold(readGold(event ? (event as CustomEvent).detail : readJson(GOLD_KEY, "desk")));
     const applyChrome = (event?: Event) => setChrome(readChrome(event ? (event as CustomEvent).detail : readJson(CHROME_KEY, "roomy")));
     const applyPanel = (event?: Event) => setPanel(readPanel(event ? (event as CustomEvent).detail : readJson(PANEL_KEY, "desk")));
+    const applyGlass = (event?: Event) => setGlass(readGlass(event ? (event as CustomEvent).detail : readJson(GLASS_KEY, "soft")));
     applyGold();
     applyChrome();
     applyPanel();
+    applyGlass();
     const onGold = (event: Event) => applyGold(event);
     const onChrome = (event: Event) => applyChrome(event);
     const onPanel = (event: Event) => applyPanel(event);
+    const onGlass = (event: Event) => applyGlass(event);
     window.addEventListener("crmv3:gold", onGold);
     window.addEventListener("crmv3:chrome", onChrome);
     window.addEventListener("crmv3:panel", onPanel);
+    window.addEventListener("crmv3:glass", onGlass);
     return () => {
       window.removeEventListener("crmv3:gold", onGold);
       window.removeEventListener("crmv3:chrome", onChrome);
       window.removeEventListener("crmv3:panel", onPanel);
+      window.removeEventListener("crmv3:glass", onGlass);
     };
   }, []);
 
@@ -236,6 +244,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "vault") return v3("vhTitle");
     if (tab === "heatmap") return v3("htTitle");
     if (tab === "cheats") return v3("csTitle");
+    if (tab === "digest") return v3("odTitle");
+    if (tab === "glass") return v3("gsTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -281,7 +291,7 @@ function Shell({ base, section, name }: Props) {
   }, [view, id]);
 
   return (
-    <div data-crmv3-root="" data-theme={theme} data-gold={gold} data-chrome={chrome} data-panel={panel} data-fold={folded ? "1" : "0"} data-crmv3-view={id ? `${view}/${id}` : view} className="c3-app font-normal">
+    <div data-crmv3-root="" data-theme={theme} data-gold={gold} data-chrome={chrome} data-panel={panel} data-glass={glass} data-fold={folded ? "1" : "0"} data-crmv3-view={id ? `${view}/${id}` : view} className="c3-app font-normal">
       <a className="c3-skip" href="#c3-main">{v3("skipMain")}</a>
       <ShortcutHost base={base} onPalette={() => setPalette(true)} onHelp={(open) => { setHelp(open); if (open) setGuide(false); }} />
       <aside className="c3-rail">
@@ -399,6 +409,8 @@ function Shell({ base, section, name }: Props) {
             {view === "vault" && <VaultPad />}
             {view === "heatmap" && <HeatStrip tx={tx} />}
             {view === "cheats" && <CheatSheet />}
+            {view === "digest" && <OvernightDigest />}
+            {view === "glass" && <GlassToggle />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}

@@ -118,6 +118,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-heat-pins": ["Pinned heatmap cells", "Sabitlenen ısı hücreleri", "Angeheftete Wärmezellen", "Закреплённые ячейки", "الخلايا المثبتة"],
   "crmv3-heat-mode": ["Heatmap grouping", "Isı gruplaması", "Wärmegruppierung", "Группировка карты", "تجميع الخريطة"],
   "crmv3-cheat-sheet": ["Desk tips", "Masa ipuçları", "Tischtipps", "Подсказки стола", "نصائح المكتب"],
+  "crmv3-digest-hide": ["Hidden digest rows", "Gizlenen özet satırları", "Versteckte Übersicht", "Скрытые строки сводки", "صفوف الملخص المخفية"],
+  "crmv3-panel-glass": ["Panel glass", "Pano camı", "Flächenglas", "Стекло панелей", "زجاج اللوحات"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
