@@ -75,6 +75,7 @@ import { ContactChips, ZeroGlance } from "./desk/contact";
 import { ReminderChips, SourceGlance } from "./desk/remind";
 import { AssigneeGlance, TagPalette } from "./desk/palette";
 import { DocStatusGlance, FilterPresets } from "./desk/preset";
+import { SessionNote, WithdrawalGlance } from "./desk/session";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv3/deskfocus";
 import { EDGE_KEY, readEdge, type Accent } from "@/lib/crmv3/edge";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv3/risklist";
@@ -382,6 +383,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "assignee") return v3("gnTitle");
     if (tab === "filterpresets") return v3("fpTitle");
     if (tab === "docstatus") return v3("dsTitle");
+    if (tab === "sessionnote") return v3("syTitle");
+    if (tab === "wdstatus") return v3("wzTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -607,6 +610,8 @@ function Shell({ base, section, name }: Props) {
             {view === "assignee" && <AssigneeGlance base={base} />}
             {view === "filterpresets" && <FilterPresets />}
             {view === "docstatus" && <DocStatusGlance base={base} />}
+            {view === "sessionnote" && <SessionNote />}
+            {view === "wdstatus" && <WithdrawalGlance base={base} />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}

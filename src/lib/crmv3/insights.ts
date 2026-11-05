@@ -179,6 +179,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-assignee-hide": ["Assignee glance", "Atanan bakışı", "Zuständigkeitsblick", "Обзор исполнителя", "لمحة المكلَّف"],
   "crmv3-filter-presets": ["Filter presets", "Süzgeç hazırları", "Filtervorlagen", "Шаблоны фильтра", "قوالب التصفية"],
   "crmv3-doc-status-hide": ["Status glance", "Durum bakışı", "Statusblick", "Обзор статуса", "لمحة الحالة"],
+  "crmv3-session-note": ["Session note", "Oturum notu", "Sitzungsnotiz", "Заметка сессии", "ملاحظة الجلسة"],
+  "crmv3-wd-status-hide": ["Status glance", "Durum bakışı", "Statusblick", "Обзор статуса", "لمحة الحالة"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
