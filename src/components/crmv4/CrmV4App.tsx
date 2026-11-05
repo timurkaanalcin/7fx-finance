@@ -78,6 +78,7 @@ import { StatusBanner, TypeGlance } from "./round87";
 import { PriorityGlance, QuickLinks } from "./round88";
 import { CountryGlance, DeskCheck } from "./round89";
 import { OrderGlance, ScratchPads } from "./round90";
+import { ContactChips, ZeroGlance } from "./round91";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv4/round78";
 import { PAUSE_KEY, shieldOn } from "@/lib/crmv4/round74";
@@ -485,6 +486,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "countryglance") return v4("cyTitle");
     if (tab === "scratchpad") return v4("npTitle");
     if (tab === "orderstatus") return v4("ogTitle");
+    if (tab === "contacts") return v4("ctTitle");
+    if (tab === "zeroglance") return v4("bzTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -599,6 +602,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "countryglance") return v4("cySub");
     if (tab === "scratchpad") return v4("npSub");
     if (tab === "orderstatus") return v4("ogSub");
+    if (tab === "contacts") return v4("ctSub");
+    if (tab === "zeroglance") return v4("bzSub");
     return "";
   }
 
@@ -834,6 +839,8 @@ function Shell({ base, section, name }: Props) {
             {view === "countryglance" && <CountryGlance base={base} v4={v4} />}
             {view === "scratchpad" && <ScratchPads v4={v4} />}
             {view === "orderstatus" && <OrderGlance base={base} v4={v4} />}
+            {view === "contacts" && <ContactChips v4={v4} />}
+            {view === "zeroglance" && <ZeroGlance base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
