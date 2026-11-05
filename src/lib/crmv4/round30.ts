@@ -5,9 +5,9 @@ export const RAIL_KEY = "crmv4-rail-fold";
 export const NAV_SECTIONS = [
   { id: "work", ids: ["overview", "customers", "dense", "notices", "tags", "blotter", "pad", "cases", "shortcuts", "leads", "triage", "positions", "support", "inbox", "thread", "marketing", "agenda"] },
   { id: "money", ids: ["finance", "deposit", "withdraw", "payout", "payboard", "funding", "goals", "depboard"] },
-  { id: "compliance", ids: ["kyc", "gallery", "risk", "logs", "history"] },
+  { id: "compliance", ids: ["kyc", "gallery", "risk", "logs", "history", "alerts"] },
   { id: "insights", ids: ["insights", "reports", "affiliates"] },
-  { id: "desk", ids: ["settings", "me", "day", "control", "prefs", "roster", "access", "handoff", "quiet", "accents", "sop"] },
+  { id: "desk", ids: ["settings", "me", "day", "control", "prefs", "roster", "access", "handoff", "quiet", "accents", "sop", "folders"] },
 ] as const;
 
 export type NavSectionId = (typeof NAV_SECTIONS)[number]["id"];

@@ -46,6 +46,7 @@ import { PayoutBoard, ShiftSheet } from "./round55";
 import { LeadBoard, QuietDesk } from "./round56";
 import { AccentStrip, TriageBoard } from "./round57";
 import { DepositBoard, SopPad } from "./round58";
+import { AlertDesk, FolderPad } from "./round59";
 import { CHROME_KEY, GOLD_KEY, readChrome, readGold, type ChromeMode, type GoldLevel } from "@/lib/crmv4/round57";
 import { FOCUS_FLAG, MUTE_KEY, QUIET_KEY, nowMinutes, readFocusFlag, readMute, readQuiet, shouldAlert } from "@/lib/crmv4/round56";
 import { lastView, playPing, rememberView, soundEnabled, ticketAlertsOn } from "./round7";
@@ -340,6 +341,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "accents") return v4("acTitle");
     if (tab === "depboard") return v4("dbTitle");
     if (tab === "sop") return v4("sopTitle");
+    if (tab === "alerts") return v4("raTitle");
+    if (tab === "folders") return v4("bmTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -390,6 +393,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "accents") return v4("acSub");
     if (tab === "depboard") return v4("dbSub");
     if (tab === "sop") return v4("sopSub");
+    if (tab === "alerts") return v4("raSub");
+    if (tab === "folders") return v4("bmSub");
     return "";
   }
 
@@ -561,6 +566,8 @@ function Shell({ base, section, name }: Props) {
             {view === "accents" && <AccentStrip v4={v4} />}
             {view === "depboard" && <DepositBoard base={base} v4={v4} locale={locale} tx={tx} />}
             {view === "sop" && <SopPad v4={v4} />}
+            {view === "alerts" && <AlertDesk v4={v4} locale={locale} tx={tx} />}
+            {view === "folders" && <FolderPad base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
