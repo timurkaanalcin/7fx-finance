@@ -69,6 +69,7 @@ import { ReasonGlance, VoiceTray } from "./desk/voice";
 import { ChannelGlance, UtcMarks } from "./desk/utc";
 import { StatusBanner, TypeGlance } from "./desk/banner";
 import { PriorityGlance, QuickLinks } from "./desk/links";
+import { CountryGlance, DeskCheck } from "./desk/check";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv3/deskfocus";
 import { EDGE_KEY, readEdge, type Accent } from "@/lib/crmv3/edge";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv3/risklist";
@@ -364,6 +365,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "doctype") return v3("dgTitle");
     if (tab === "quicklinks") return v3("qkTitle");
     if (tab === "prioglance") return v3("pgTitle");
+    if (tab === "checklist") return v3("chTitle");
+    if (tab === "countryglance") return v3("cyTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -577,6 +580,8 @@ function Shell({ base, section, name }: Props) {
             {view === "doctype" && <TypeGlance base={base} />}
             {view === "quicklinks" && <QuickLinks />}
             {view === "prioglance" && <PriorityGlance base={base} />}
+            {view === "checklist" && <DeskCheck />}
+            {view === "countryglance" && <CountryGlance base={base} />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
