@@ -3443,3 +3443,76 @@
   [data-crmv3-root] .c3-jump-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   [data-crmv3-root] .c3-ib-totals ul { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
+
+[data-crmv3-root] .c3-expiry-desk,
+[data-crmv3-root] .c3-panel-strip {
+  display: grid;
+  gap: var(--c3-2);
+  min-width: 0;
+  max-width: 100%;
+}
+
+[data-crmv3-root][data-panel="roomy"] .c3-expiry-desk,
+[data-crmv3-root][data-panel="roomy"] .c3-panel-strip { gap: 16px; }
+
+[data-crmv3-root][data-panel="compact"] .c3-expiry-desk,
+[data-crmv3-root][data-panel="compact"] .c3-panel-strip { gap: 6px; }
+
+[data-crmv3-root] .c3-expiry-cards {
+  display: grid;
+  gap: var(--c3-2);
+  margin: var(--c3-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv3-root] .c3-expiry-card {
+  min-width: 0;
+  padding: var(--c3-2);
+  border: 1px solid var(--c3-line);
+  border-radius: 12px;
+  background: var(--c3-card);
+}
+
+[data-crmv3-root][data-panel="roomy"] .c3-expiry-card { padding: 20px; }
+[data-crmv3-root][data-panel="compact"] .c3-expiry-card { padding: 8px; }
+[data-crmv3-root] .c3-expiry-card[data-due="due"] { box-shadow: inset 2px 0 0 #7a5e30; }
+
+[data-crmv3-root] .c3-expiry-due {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 1px 8px;
+  border: 1px solid #7a5e30;
+  border-radius: 999px;
+  color: #7a5e30;
+  font-size: 12px;
+}
+
+[data-crmv3-root] .c3-panel-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--c3-2);
+  min-width: 0;
+}
+
+[data-crmv3-root] .c3-panel-preview span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 4px 12px;
+  border: 1px solid #7a5e30;
+  border-radius: 999px;
+  color: #7a5e30;
+}
+
+[data-crmv3-root] .c3-panel-preview span[data-panel="roomy"] { padding: 8px 18px; }
+[data-crmv3-root] .c3-panel-preview span[data-panel="compact"] { padding: 2px 8px; }
+[data-crmv3-root] .c3-panel-preview span[data-on="1"] { background: #7a5e30; color: #fffdf8; }
+
+[data-crmv3-root] .c3-expiry-desk .c3-lab,
+[data-crmv3-root] .c3-expiry-desk .c3-field { width: 100%; max-width: 100%; min-width: 0; }
+
+@media (min-width: 768px) {
+  [data-crmv3-root] .c3-expiry-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

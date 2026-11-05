@@ -110,6 +110,9 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-scratchboard": ["Scratchboard", "Not tahtası", "Notiztafel", "Черновая доска", "لوحة الملاحظات"],
   "crmv3-ib-marks": ["Introducer marks", "Tanıtıcı işaretleri", "Vermittlermarken", "Отметки посредника", "علامات المعرّف"],
   "crmv3-jump-history": ["Recent routes", "Son yollar", "Letzte Routen", "Недавние маршруты", "المسارات الأخيرة"],
+  "crmv3-doc-snooze": ["Document snooze", "Belge erteleme", "Dokument-Schlummern", "Отложить документ", "تأجيل المستند"],
+  "crmv3-doc-window": ["Document window", "Belge penceresi", "Dokumentfenster", "Окно документа", "نافذة المستند"],
+  "crmv3-panel-density": ["Panel density", "Panel yoğunluğu", "Paneldichte", "Плотность панелей", "كثافة اللوحات"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
