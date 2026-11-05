@@ -55,6 +55,7 @@ import { DeskClocks, SnippetPad } from "./desk/clocks";
 import { QueuePulse, RouteSwatches } from "./desk/pulse";
 import { FontScale, WeekAgenda } from "./desk/week";
 import { QuietShield, StickyPad } from "./desk/shield";
+import { LedgerGlance, ShiftCheck } from "./desk/shiftlist";
 import { SCALE_KEY, readScale, type PanelScale } from "@/lib/crmv3/week";
 import { PAUSE_KEY, shieldOn } from "@/lib/crmv3/shield";
 import { QUIET_KEY, readQuiet } from "@/lib/crmv3/leads";
@@ -295,6 +296,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "scale") return v3("tyTitle");
     if (tab === "shield") return v3("qhTitle");
     if (tab === "stickies") return v3("cnTitle");
+    if (tab === "shiftlist") return v3("sfTitle");
+    if (tab === "glance") return v3("gcTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -478,6 +481,8 @@ function Shell({ base, section, name }: Props) {
             {view === "scale" && <FontScale />}
             {view === "shield" && <QuietShield />}
             {view === "stickies" && <StickyPad base={base} />}
+            {view === "shiftlist" && <ShiftCheck />}
+            {view === "glance" && <LedgerGlance base={base} tx={tx} />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
