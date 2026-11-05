@@ -234,7 +234,8 @@ type Deposit = { amount?: number | null; currency?: string | null; userId?: stri
 
 export function AffiliateDesk({ base, locale }: { base: string; locale: string }) {
   const v3 = useV3();
-  const people = useJson<{ users?: User[] }>("/api/admin/users?view=table&take=80&meta=0&role=TRADER");
+  // The table view leaves introducer names off the row. This page needs those names.
+  const people = useJson<{ users?: User[] }>("/api/admin/users?take=80&role=TRADER");
   const deposits = useJson<{ requests?: Deposit[] }>("/api/admin/deposits?take=80");
   const users = people.data?.users || [];
   const cash = (deposits.data?.requests || []).map((row) => ({
