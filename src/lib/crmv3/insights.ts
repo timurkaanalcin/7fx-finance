@@ -208,6 +208,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-kyc-status-hide": ["KYC status", "KYC durumu", "KYC-Status", "Статус KYC", "حالة التحقق"],
   "crmv3-follow-queue": ["Follow-up queue", "Takip kuyruğu", "Nachfass-Warteschlange", "Очередь повторных", "طابور المتابعة"],
   "crmv3-ticket-status-hide": ["Ticket status", "Bilet durumu", "Ticketstatus", "Статус тикета", "حالة التذكرة"],
+  "crmv3-row-density": ["Row density", "Satır sıklığı", "Zeilendichte", "Плотность строк", "كثافة الصفوف"],
+  "crmv3-ib-country-hide": ["IB country", "IB ülkesi", "IB-Land", "Страна IB", "بلد الوسيط"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;

@@ -89,6 +89,8 @@ import { CasePriority, CheckPolish } from "./desk/checkpolish";
 import { ColorTags, TradeSide } from "./desk/colortags";
 import { KycStatus, SavedViews } from "./desk/savedviews";
 import { FollowQueue, TicketStatus } from "./desk/followqueue";
+import { IbCountry, RowDensityDesk } from "./desk/rowdensity";
+import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv3/rowdensity";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv3/deskfocus";
 import { EDGE_KEY, readEdge, type Accent } from "@/lib/crmv3/edge";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv3/risklist";
@@ -144,6 +146,7 @@ function Shell({ base, section, name }: Props) {
   const [edge, setEdge] = useState<Accent>("champagne");
   const [mail, setMail] = useState<MailDensity>("desk");
   const [deskFocus, setDeskFocus] = useState<FocusPanel[]>([]);
+  const [rowDensity, setRowDensity] = useState<RowDensity>("comfortable");
   const [pull, setPull] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -270,6 +273,13 @@ function Shell({ base, section, name }: Props) {
     apply();
     window.addEventListener("crmv3:desk-focus", apply);
     return () => window.removeEventListener("crmv3:desk-focus", apply);
+  }, []);
+
+  useEffect(() => {
+    const apply = () => setRowDensity(activeDensity(readJson(ROW_DENSITY_KEY, "")));
+    apply();
+    window.addEventListener("crmv3:row-density", apply);
+    return () => window.removeEventListener("crmv3:row-density", apply);
   }, []);
 
   useEffect(() => {
@@ -425,6 +435,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "kycstatus") return v3("kyTitle");
     if (tab === "followqueue") return v3("ffTitle");
     if (tab === "ticketstatus") return v3("tzTitle");
+    if (tab === "rowdensity") return v3("rdTitle");
+    if (tab === "ibcountry") return v3("icTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -479,7 +491,7 @@ function Shell({ base, section, name }: Props) {
   }, [view]);
 
   return (
-    <div data-crmv3-root="" data-theme={theme} data-gold={gold} data-chrome={chrome} data-panel={panel} data-glass={glass} data-scale={scale} data-edge={edge} data-mail={mail} data-focus-sections={deskFocus.includes("sections") ? "1" : "0"} data-focus-rail={deskFocus.includes("rail") ? "1" : "0"} data-focus-tools={deskFocus.includes("tools") ? "1" : "0"} data-fold={folded ? "1" : "0"} data-crmv3-view={id ? `${view}/${id}` : view} className="c3-app font-normal">
+    <div data-crmv3-root="" data-theme={theme} data-gold={gold} data-chrome={chrome} data-panel={panel} data-glass={glass} data-scale={scale} data-edge={edge} data-mail={mail} data-focus-sections={deskFocus.includes("sections") ? "1" : "0"} data-focus-rail={deskFocus.includes("rail") ? "1" : "0"} data-focus-tools={deskFocus.includes("tools") ? "1" : "0"} data-row-density={rowDensity} data-fold={folded ? "1" : "0"} data-crmv3-view={id ? `${view}/${id}` : view} className="c3-app font-normal">
       <a className="c3-skip" href="#c3-main">{v3("skipMain")}</a>
       <ShortcutHost base={base} onPalette={() => setPalette(true)} onHelp={(open) => { setHelp(open); if (open) setGuide(false); }} />
       <aside className="c3-rail">
@@ -687,6 +699,8 @@ function Shell({ base, section, name }: Props) {
             {view === "kycstatus" && <KycStatus base={base} />}
             {view === "followqueue" && <FollowQueue base={base} />}
             {view === "ticketstatus" && <TicketStatus base={base} />}
+            {view === "rowdensity" && <RowDensityDesk />}
+            {view === "ibcountry" && <IbCountry base={base} />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
