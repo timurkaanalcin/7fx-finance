@@ -2727,3 +2727,67 @@
   [data-crmv3-root] .c3-fund-split { grid-template-columns: 1fr 1fr; }
   [data-crmv3-root] .c3-seg-grid { grid-template-columns: 1fr 1fr; }
 }
+
+[data-crmv3-root] .c3-thread,
+[data-crmv3-root] .c3-today-strip {
+  display: grid;
+  gap: var(--c3-2);
+  min-width: 0;
+  padding: var(--c3-3);
+  border: 1px solid var(--c3-line);
+  border-radius: var(--c3-radius);
+  background: var(--c3-card);
+  overflow-x: clip;
+}
+
+[data-crmv3-root] .c3-thread h2,
+[data-crmv3-root] .c3-today-strip h2 { margin: 0; }
+
+[data-crmv3-root] .c3-thread .c3-btn,
+[data-crmv3-root] .c3-thread .c3-field,
+[data-crmv3-root] .c3-thread .c3-chip,
+[data-crmv3-root] .c3-today-strip .c3-btn { min-height: 44px; }
+
+[data-crmv3-root] .c3-thread-split {
+  display: grid;
+  gap: var(--c3-2);
+  grid-template-columns: 1fr;
+  min-width: 0;
+}
+
+[data-crmv3-root] .c3-thread-list,
+[data-crmv3-root] .c3-thread-people,
+[data-crmv3-root] .c3-today-grid {
+  display: grid;
+  gap: var(--c3-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv3-root] .c3-thread-line,
+[data-crmv3-root] .c3-today-card {
+  display: grid;
+  gap: var(--c3-1);
+  min-width: 0;
+  padding: var(--c3-2);
+  border: 1px solid var(--c3-line);
+  border-radius: 12px;
+  background: var(--c3-elev);
+  overflow-wrap: anywhere;
+}
+
+[data-crmv3-root] .c3-thread-line p { margin: 0; }
+
+[data-crmv3-root] .c3-thread-line[data-who="customer"] { border-inline-start: 3px solid var(--c3-gold); }
+[data-crmv3-root] .c3-thread-line[data-who="staff"] { border-inline-start: 3px solid var(--c3-ink); }
+[data-crmv3-root] .c3-thread-line[data-who="auto"] { border-inline-start: 3px solid var(--c3-muted); }
+
+[data-crmv3-root] .c3-today-card strong { font-size: 20px; line-height: 28px; }
+
+[data-crmv3-root] .c3-today-card[data-empty="1"] { border-style: dashed; }
+
+@media (min-width: 768px) {
+  [data-crmv3-root] .c3-thread-split { grid-template-columns: minmax(0, 220px) minmax(0, 1fr); }
+  [data-crmv3-root] .c3-today-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
