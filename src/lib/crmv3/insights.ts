@@ -181,6 +181,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-doc-status-hide": ["Status glance", "Durum bakışı", "Statusblick", "Обзор статуса", "لمحة الحالة"],
   "crmv3-session-note": ["Session note", "Oturum notu", "Sitzungsnotiz", "Заметка сессии", "ملاحظة الجلسة"],
   "crmv3-wd-status-hide": ["Status glance", "Durum bakışı", "Statusblick", "Обзор статуса", "لمحة الحالة"],
+  "crmv3-pin-rail": ["Pin rail", "Sabit ray", "Pin-Leiste", "Рельс ярлыков", "سكة الاختصارات"],
+  "crmv3-dep-status-hide": ["Status glance", "Durum bakışı", "Statusblick", "Обзор статуса", "لمحة الحالة"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
