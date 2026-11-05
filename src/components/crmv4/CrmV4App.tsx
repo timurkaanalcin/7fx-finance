@@ -50,6 +50,7 @@ import { AlertDesk, FolderPad } from "./round59";
 import { HealthStrip, ScratchBoard } from "./round60";
 import { IntroducerBoard, JumpHistory } from "./round61";
 import { ExpiryWatch, PanelDensityStrip } from "./round62";
+import { RejectBoard, VaultPad } from "./round63";
 import { PANEL_KEY, readPanel, type PanelDensity } from "@/lib/crmv4/round62";
 import { JUMP_KEY, pushJump, readJumps } from "@/lib/crmv4/round61";
 import { CHROME_KEY, GOLD_KEY, readChrome, readGold, type ChromeMode, type GoldLevel } from "@/lib/crmv4/round57";
@@ -364,6 +365,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "jumps") return v4("jpTitle");
     if (tab === "expiry") return v4("exTitle");
     if (tab === "density") return v4("lyTitle");
+    if (tab === "rejects") return v4("rjTitle");
+    if (tab === "vault") return v4("vhTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -422,6 +425,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "jumps") return v4("jpSub");
     if (tab === "expiry") return v4("exSub");
     if (tab === "density") return v4("lySub");
+    if (tab === "rejects") return v4("rjSub");
+    if (tab === "vault") return v4("vhSub");
     return "";
   }
 
@@ -601,6 +606,8 @@ function Shell({ base, section, name }: Props) {
             {view === "jumps" && <JumpHistory base={base} v4={v4} />}
             {view === "expiry" && <ExpiryWatch base={base} v4={v4} locale={locale} tx={tx} />}
             {view === "density" && <PanelDensityStrip v4={v4} />}
+            {view === "rejects" && <RejectBoard base={base} v4={v4} locale={locale} tx={tx} />}
+            {view === "vault" && <VaultPad v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
