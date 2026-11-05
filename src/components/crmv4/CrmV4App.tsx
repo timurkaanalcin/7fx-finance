@@ -67,6 +67,7 @@ import { DocPulse, PriorityLane } from "./round76";
 import { CallOutcomes, EdgeStrip } from "./round77";
 import { MailDensityStrip, RiskWatch } from "./round78";
 import { CallPack, CurrencyChips } from "./round79";
+import { BookmarkBar, KycGlance } from "./round80";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv4/round78";
 import { PAUSE_KEY, shieldOn } from "@/lib/crmv4/round74";
 import { SCALE_KEY, readScale, type PanelScale } from "@/lib/crmv4/round73";
@@ -446,6 +447,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "maildense") return v4("mdTitle");
     if (tab === "callpack") return v4("cpTitle");
     if (tab === "curchips") return v4("ccTitle");
+    if (tab === "markbar") return v4("mbTitle");
+    if (tab === "kycglance") return v4("kgTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -538,6 +541,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "maildense") return v4("mdSub");
     if (tab === "callpack") return v4("cpSub");
     if (tab === "curchips") return v4("ccSub");
+    if (tab === "markbar") return v4("mbSub");
+    if (tab === "kycglance") return v4("kgSub");
     return "";
   }
 
@@ -751,6 +756,8 @@ function Shell({ base, section, name }: Props) {
             {view === "maildense" && <MailDensityStrip v4={v4} />}
             {view === "callpack" && <CallPack base={base} v4={v4} />}
             {view === "curchips" && <CurrencyChips base={base} v4={v4} locale={locale} />}
+            {view === "markbar" && <BookmarkBar base={base} v4={v4} names={names} />}
+            {view === "kycglance" && <KycGlance base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
