@@ -55,6 +55,7 @@ import { CheatSheet, HeatStrip } from "./round64";
 import { GlassToggle, OvernightDigest } from "./round65";
 import { DeskCompare, EodList } from "./round66";
 import { CallScripts, StaleWatch } from "./round67";
+import { DupeStrip, MeetingPrep } from "./round68";
 import { GLASS_KEY, readGlass, type GlassMode } from "@/lib/crmv4/round65";
 import { PANEL_KEY, readPanel, type PanelDensity } from "@/lib/crmv4/round62";
 import { JUMP_KEY, pushJump, readJumps } from "@/lib/crmv4/round61";
@@ -385,6 +386,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "eod") return v4("eodTitle");
     if (tab === "stale") return v4("slTitle");
     if (tab === "scripts") return v4("tkTitle");
+    if (tab === "dupes") return v4("dpTitle");
+    if (tab === "prep") return v4("mpTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -453,6 +456,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "eod") return v4("eodSub");
     if (tab === "stale") return v4("slSub");
     if (tab === "scripts") return v4("tkSub");
+    if (tab === "dupes") return v4("dpSub");
+    if (tab === "prep") return v4("mpSub");
     return "";
   }
 
@@ -642,6 +647,8 @@ function Shell({ base, section, name }: Props) {
             {view === "eod" && <EodList v4={v4} />}
             {view === "stale" && <StaleWatch base={base} v4={v4} locale={locale} tx={tx} />}
             {view === "scripts" && <CallScripts v4={v4} />}
+            {view === "dupes" && <DupeStrip base={base} v4={v4} locale={locale} tx={tx} />}
+            {view === "prep" && <MeetingPrep v4={v4} tx={tx} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
