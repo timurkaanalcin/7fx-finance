@@ -233,6 +233,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-trade-symbol-hide": ["Trade symbols", "İşlem sembolleri", "Handelssymbole", "Символы сделок", "رموز الصفقات"],
   "crmv3-courier-notes": ["Courier notes", "Kurye notları", "Kuriernotizen", "Заметки курьера", "ملاحظات الساعي"],
   "crmv3-ib-ctry-hide": ["IB countries", "IB ülkeleri", "IB-Länder", "Страны IB", "بلدان الوسطاء"],
+  "crmv3-visitor-notes": ["Visitor notes", "Ziyaretçi notları", "Besuchernotizen", "Заметки о посетителе", "ملاحظات الزائر"],
+  "crmv3-dep-glance-hide": ["Deposit methods", "Yatırma yöntemleri", "Einzahlungsmethoden", "Способы депозита", "طرق الإيداع"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
