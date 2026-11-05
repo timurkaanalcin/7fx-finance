@@ -96,6 +96,8 @@ import { CasePriority, CheckPolish } from "./round105";
 import { ColorTags, TradeSide } from "./round106";
 import { KycStatus, SavedViews } from "./round107";
 import { FollowQueue, TicketStatus } from "./round108";
+import { IbCountry, RowDensityDesk } from "./round109";
+import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv4/round78";
@@ -159,6 +161,7 @@ function Shell({ base, section, name }: Props) {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [quickOpen, setQuickOpen] = useState(false);
   const [density, setDensity] = useState<"comfortable" | "compact">("comfortable");
+  const [rowDensity, setRowDensity] = useState<RowDensity>("comfortable");
   const [shownName, setShownName] = useState("");
   const [trail, setTrail] = useState<string[]>([]);
   const [toastsLog, setToastsLog] = useState<{ id: number; text: string; ok: boolean }[]>([]);
@@ -229,6 +232,9 @@ function Shell({ base, section, name }: Props) {
     setDensity(densityMode());
     const onDensity = () => setDensity(densityMode());
     window.addEventListener("crmv4:density", onDensity);
+    const applyRow = () => setRowDensity(activeDensity(readJson(ROW_DENSITY_KEY, "")));
+    applyRow();
+    window.addEventListener("crmv4:row-density", applyRow);
     setTrail(readTrail());
     setToastsLog(toastHistory());
     setScratch(readJson<Scratch[]>(NOTES_KEY, []));
@@ -281,6 +287,7 @@ function Shell({ base, section, name }: Props) {
       window.removeEventListener("crmv4:freeze", onFreeze);
       window.removeEventListener("crmv4:theme-mode", onMode);
       window.removeEventListener("crmv4:density", onDensity);
+      window.removeEventListener("crmv4:row-density", applyRow);
       window.removeEventListener("crmv4:focus", onFocus);
       window.removeEventListener("crmv4:gold", onGold);
       window.removeEventListener("crmv4:chrome", onChrome);
@@ -549,6 +556,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "kycstatus") return v4("kyTitle");
     if (tab === "followqueue") return v4("ffTitle");
     if (tab === "ticketstatus") return v4("tzTitle");
+    if (tab === "rowdensity") return v4("rdTitle");
+    if (tab === "ibcountry") return v4("icTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -699,6 +708,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "kycstatus") return v4("kySub");
     if (tab === "followqueue") return v4("ffSub");
     if (tab === "ticketstatus") return v4("tzSub");
+    if (tab === "rowdensity") return v4("rdSub");
+    if (tab === "ibcountry") return v4("icSub");
     return "";
   }
 
@@ -711,7 +722,7 @@ function Shell({ base, section, name }: Props) {
   for (const item of CRM_V4_SECTIONS) names[item.id] = label(item.id);
 
   return (
-    <div data-crmv4-root="" data-theme={theme} data-accent={accent} data-role={role} data-zebra={zebra ? "1" : "0"} data-motion={motion} data-compact={compact ? "1" : "0"} data-font={font} data-contrast={contrast ? "1" : "0"} data-freeze={freeze ? "1" : "0"} data-focus={focus ? "1" : "0"} data-gold={gold} data-chrome={chrome} data-panel={panel} data-glass={glass} data-scale={scale} data-mail={mail} data-focus-sections={deskFocus.includes("sections") ? "1" : "0"} data-focus-rail={deskFocus.includes("rail") ? "1" : "0"} data-focus-tools={deskFocus.includes("tools") ? "1" : "0"} data-density={density} data-fold={folded ? "1" : "0"} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
+    <div data-crmv4-root="" data-theme={theme} data-accent={accent} data-role={role} data-zebra={zebra ? "1" : "0"} data-motion={motion} data-compact={compact ? "1" : "0"} data-font={font} data-contrast={contrast ? "1" : "0"} data-freeze={freeze ? "1" : "0"} data-focus={focus ? "1" : "0"} data-gold={gold} data-chrome={chrome} data-panel={panel} data-glass={glass} data-scale={scale} data-mail={mail} data-focus-sections={deskFocus.includes("sections") ? "1" : "0"} data-focus-rail={deskFocus.includes("rail") ? "1" : "0"} data-focus-tools={deskFocus.includes("tools") ? "1" : "0"} data-density={density} data-row-density={rowDensity} data-fold={folded ? "1" : "0"} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
       <a className="c4-skip" href="#c4-main">{v4("skipContent")}</a>
       <OfflineBanner v4={v4} quiet={shield} />
       <IdleWarning v4={v4} />
@@ -970,6 +981,8 @@ function Shell({ base, section, name }: Props) {
             {view === "kycstatus" && <KycStatus base={base} v4={v4} />}
             {view === "followqueue" && <FollowQueue base={base} v4={v4} />}
             {view === "ticketstatus" && <TicketStatus base={base} v4={v4} />}
+            {view === "rowdensity" && <RowDensityDesk v4={v4} />}
+            {view === "ibcountry" && <IbCountry base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
