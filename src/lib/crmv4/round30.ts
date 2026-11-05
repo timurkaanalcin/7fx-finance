@@ -7,7 +7,7 @@ export const NAV_SECTIONS = [
   { id: "money", ids: ["finance", "deposit", "withdraw", "payout", "payboard", "funding", "goals", "depboard", "ibpay"] },
   { id: "compliance", ids: ["kyc", "gallery", "risk", "logs", "history", "alerts", "expiry"] },
   { id: "insights", ids: ["insights", "reports", "affiliates"] },
-  { id: "desk", ids: ["settings", "me", "day", "control", "prefs", "roster", "access", "handoff", "quiet", "accents", "sop", "folders", "scratch", "jumps", "density", "vault", "cheats"] },
+  { id: "desk", ids: ["settings", "me", "day", "control", "prefs", "roster", "access", "handoff", "quiet", "accents", "sop", "folders", "scratch", "jumps", "density", "vault", "cheats", "digest", "glass"] },
 ] as const;
 
 export type NavSectionId = (typeof NAV_SECTIONS)[number]["id"];

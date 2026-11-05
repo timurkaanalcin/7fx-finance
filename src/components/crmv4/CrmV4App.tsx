@@ -52,6 +52,8 @@ import { IntroducerBoard, JumpHistory } from "./round61";
 import { ExpiryWatch, PanelDensityStrip } from "./round62";
 import { RejectBoard, VaultPad } from "./round63";
 import { CheatSheet, HeatStrip } from "./round64";
+import { GlassToggle, OvernightDigest } from "./round65";
+import { GLASS_KEY, readGlass, type GlassMode } from "@/lib/crmv4/round65";
 import { PANEL_KEY, readPanel, type PanelDensity } from "@/lib/crmv4/round62";
 import { JUMP_KEY, pushJump, readJumps } from "@/lib/crmv4/round61";
 import { CHROME_KEY, GOLD_KEY, readChrome, readGold, type ChromeMode, type GoldLevel } from "@/lib/crmv4/round57";
@@ -130,6 +132,7 @@ function Shell({ base, section, name }: Props) {
   const [focus, setFocus] = useState(false);
   const [gold, setGold] = useState<GoldLevel>("desk");
   const [panel, setPanel] = useState<PanelDensity>("desk");
+  const [glass, setGlass] = useState<GlassMode>("soft");
   const [chrome, setChrome] = useState<ChromeMode>("roomy");
   const [brand, setBrand] = useState("");
   const ticketSeen = useRef(0);
@@ -179,12 +182,15 @@ function Shell({ base, section, name }: Props) {
     setGold(readGold(readJson(GOLD_KEY, "desk")));
     setChrome(readChrome(readJson(CHROME_KEY, "roomy")));
     setPanel(readPanel(readJson(PANEL_KEY, "desk")));
+    setGlass(readGlass(readJson(GLASS_KEY, "soft")));
     const onGold = (event: Event) => setGold(readGold((event as CustomEvent).detail));
     const onChrome = (event: Event) => setChrome(readChrome((event as CustomEvent).detail));
     const onPanel = (event: Event) => setPanel(readPanel((event as CustomEvent).detail));
+    const onGlass = (event: Event) => setGlass(readGlass((event as CustomEvent).detail));
     window.addEventListener("crmv4:gold", onGold);
     window.addEventListener("crmv4:chrome", onChrome);
     window.addEventListener("crmv4:panel", onPanel);
+    window.addEventListener("crmv4:glass", onGlass);
     setZebra(storedZebra());
     setMotion(storedMotion());
     const onMotion = (event: Event) => setMotion((event as CustomEvent<string>).detail === "reduce" ? "reduce" : "system");
@@ -209,6 +215,7 @@ function Shell({ base, section, name }: Props) {
       window.removeEventListener("crmv4:gold", onGold);
       window.removeEventListener("crmv4:chrome", onChrome);
       window.removeEventListener("crmv4:panel", onPanel);
+      window.removeEventListener("crmv4:glass", onGlass);
       window.removeEventListener("crmv4:brand", onBrand);
       media.removeEventListener("change", onMode);
     };
@@ -370,6 +377,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "vault") return v4("vhTitle");
     if (tab === "heatmap") return v4("htTitle");
     if (tab === "cheats") return v4("csTitle");
+    if (tab === "digest") return v4("odTitle");
+    if (tab === "glass") return v4("gsTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -432,6 +441,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "vault") return v4("vhSub");
     if (tab === "heatmap") return v4("htSub");
     if (tab === "cheats") return v4("csSub");
+    if (tab === "digest") return v4("odSub");
+    if (tab === "glass") return v4("gsSub");
     return "";
   }
 
@@ -444,7 +455,7 @@ function Shell({ base, section, name }: Props) {
   for (const item of CRM_V4_SECTIONS) names[item.id] = label(item.id);
 
   return (
-    <div data-crmv4-root="" data-theme={theme} data-accent={accent} data-role={role} data-zebra={zebra ? "1" : "0"} data-motion={motion} data-compact={compact ? "1" : "0"} data-font={font} data-contrast={contrast ? "1" : "0"} data-freeze={freeze ? "1" : "0"} data-focus={focus ? "1" : "0"} data-gold={gold} data-chrome={chrome} data-panel={panel} data-density={density} data-fold={folded ? "1" : "0"} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
+    <div data-crmv4-root="" data-theme={theme} data-accent={accent} data-role={role} data-zebra={zebra ? "1" : "0"} data-motion={motion} data-compact={compact ? "1" : "0"} data-font={font} data-contrast={contrast ? "1" : "0"} data-freeze={freeze ? "1" : "0"} data-focus={focus ? "1" : "0"} data-gold={gold} data-chrome={chrome} data-panel={panel} data-glass={glass} data-density={density} data-fold={folded ? "1" : "0"} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
       <a className="c4-skip" href="#c4-main">{v4("skipContent")}</a>
       <OfflineBanner v4={v4} />
       <IdleWarning v4={v4} />
@@ -615,6 +626,8 @@ function Shell({ base, section, name }: Props) {
             {view === "vault" && <VaultPad v4={v4} />}
             {view === "heatmap" && <HeatStrip v4={v4} tx={tx} />}
             {view === "cheats" && <CheatSheet v4={v4} />}
+            {view === "digest" && <OvernightDigest v4={v4} />}
+            {view === "glass" && <GlassToggle v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
