@@ -90,6 +90,7 @@ import { LanguageGlance, WatchWords } from "./round99";
 import { IbStatusGlance, LayoutLock } from "./round100";
 import { DocTypeMix, DraftStash } from "./round101";
 import { FocusCustomer, OrderTypeGlance } from "./round102";
+import { BookmarkBoard, WithdrawalStatus } from "./round103";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv4/round78";
@@ -531,6 +532,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "doctypemix") return v4("kmTitle");
     if (tab === "focuscustomer") return v4("fcTitle");
     if (tab === "ordertype") return v4("oyTitle");
+    if (tab === "bookmarks") return v4("bqTitle");
+    if (tab === "wdglance") return v4("wxTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -669,6 +672,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "doctypemix") return v4("kmSub");
     if (tab === "focuscustomer") return v4("fcSub");
     if (tab === "ordertype") return v4("oySub");
+    if (tab === "bookmarks") return v4("bqSub");
+    if (tab === "wdglance") return v4("wxSub");
     return "";
   }
 
@@ -928,6 +933,8 @@ function Shell({ base, section, name }: Props) {
             {view === "doctypemix" && <DocTypeMix base={base} v4={v4} />}
             {view === "focuscustomer" && <FocusCustomer base={base} v4={v4} />}
             {view === "ordertype" && <OrderTypeGlance base={base} v4={v4} />}
+            {view === "bookmarks" && <BookmarkBoard base={base} v4={v4} />}
+            {view === "wdglance" && <WithdrawalStatus base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
