@@ -61,6 +61,7 @@ import { CallOutcomes, EdgeStrip } from "./desk/edge";
 import { MailDensityStrip, RiskWatch } from "./desk/watch";
 import { CallPack, CurrencyChips } from "./desk/pack";
 import { BookmarkBar, KycGlance } from "./desk/marks";
+import { SideGlance, SnoozeStrip } from "./desk/snooze";
 import { EDGE_KEY, readEdge, type Accent } from "@/lib/crmv3/edge";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv3/risklist";
 import { SCALE_KEY, readScale, type PanelScale } from "@/lib/crmv3/week";
@@ -331,6 +332,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "curchips") return v3("ccTitle");
     if (tab === "markbar") return v3("mbTitle");
     if (tab === "kycglance") return v3("kgTitle");
+    if (tab === "snooze") return v3("szTitle");
+    if (tab === "sideglance") return v3("sdTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -526,6 +529,8 @@ function Shell({ base, section, name }: Props) {
             {view === "curchips" && <CurrencyChips base={base} locale={locale} />}
             {view === "markbar" && <BookmarkBar base={base} names={names} />}
             {view === "kycglance" && <KycGlance base={base} />}
+            {view === "snooze" && <SnoozeStrip base={base} locale={locale} />}
+            {view === "sideglance" && <SideGlance base={base} />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
