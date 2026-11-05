@@ -65,6 +65,7 @@ import { SideGlance, SnoozeStrip } from "./desk/snooze";
 import { FocusDesk, SupportPulse } from "./desk/focus";
 import { IbGlance, PinBoard } from "./desk/pin";
 import { DeskTimer, LicenseGlance } from "./desk/timer";
+import { ReasonGlance, VoiceTray } from "./desk/voice";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv3/deskfocus";
 import { EDGE_KEY, readEdge, type Accent } from "@/lib/crmv3/edge";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv3/risklist";
@@ -352,6 +353,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ibglance") return v3("igTitle");
     if (tab === "desktimer") return v3("dtTitle");
     if (tab === "licglance") return v3("lcTitle");
+    if (tab === "voicetray") return v3("vsTitle");
+    if (tab === "wdreason") return v3("wrTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -557,6 +560,8 @@ function Shell({ base, section, name }: Props) {
             {view === "ibglance" && <IbGlance base={base} />}
             {view === "desktimer" && <DeskTimer />}
             {view === "licglance" && <LicenseGlance base={base} />}
+            {view === "voicetray" && <VoiceTray />}
+            {view === "wdreason" && <ReasonGlance base={base} />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}

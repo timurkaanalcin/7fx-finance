@@ -177,6 +177,8 @@ export function CommandPalette({ base, open, onClose }: { base: string; open: bo
       { id: "ibglance", label: v3("igTitle"), href: crmv3Href(base, "ibglance") },
       { id: "desktimer", label: v3("dtTitle"), href: crmv3Href(base, "desktimer") },
       { id: "licglance", label: v3("lcTitle"), href: crmv3Href(base, "licglance") },
+      { id: "voicetray", label: v3("vsTitle"), href: crmv3Href(base, "voicetray") },
+      { id: "wdreason", label: v3("wrTitle"), href: crmv3Href(base, "wdreason") },
       { id: "gallery", label: v3("glTitle"), href: crmv3Href(base, "gallery") },
       { id: "history", label: v3("hsTitle"), href: crmv3Href(base, "history") },
       { id: "reports", label: v3("reportsTitle"), href: crmv3Href(base, "reports") },
