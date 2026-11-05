@@ -62,6 +62,8 @@ import { MailDensityStrip, RiskWatch } from "./desk/watch";
 import { CallPack, CurrencyChips } from "./desk/pack";
 import { BookmarkBar, KycGlance } from "./desk/marks";
 import { SideGlance, SnoozeStrip } from "./desk/snooze";
+import { FocusDesk, SupportPulse } from "./desk/focus";
+import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv3/deskfocus";
 import { EDGE_KEY, readEdge, type Accent } from "@/lib/crmv3/edge";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv3/risklist";
 import { SCALE_KEY, readScale, type PanelScale } from "@/lib/crmv3/week";
@@ -114,6 +116,7 @@ function Shell({ base, section, name }: Props) {
   const [shield, setShield] = useState(false);
   const [edge, setEdge] = useState<Accent>("champagne");
   const [mail, setMail] = useState<MailDensity>("desk");
+  const [deskFocus, setDeskFocus] = useState<FocusPanel[]>([]);
   const [pull, setPull] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -236,6 +239,13 @@ function Shell({ base, section, name }: Props) {
   }, []);
 
   useEffect(() => {
+    const apply = (event?: Event) => setDeskFocus(readFocus(event ? (event as CustomEvent).detail : readJson(FOCUS_KEY, [])));
+    apply();
+    window.addEventListener("crmv3:desk-focus", apply);
+    return () => window.removeEventListener("crmv3:desk-focus", apply);
+  }, []);
+
+  useEffect(() => {
     if (window.localStorage.getItem("crmv3-motion") === "reduce") {
       document.querySelector("[data-crmv3-root]")?.setAttribute("data-motion", "reduce");
     }
@@ -334,6 +344,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "kycglance") return v3("kgTitle");
     if (tab === "snooze") return v3("szTitle");
     if (tab === "sideglance") return v3("sdTitle");
+    if (tab === "focusmode") return v3("fmTitle");
+    if (tab === "suppulse") return v3("qpTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -379,7 +391,7 @@ function Shell({ base, section, name }: Props) {
   }, [view, id]);
 
   return (
-    <div data-crmv3-root="" data-theme={theme} data-gold={gold} data-chrome={chrome} data-panel={panel} data-glass={glass} data-scale={scale} data-edge={edge} data-mail={mail} data-fold={folded ? "1" : "0"} data-crmv3-view={id ? `${view}/${id}` : view} className="c3-app font-normal">
+    <div data-crmv3-root="" data-theme={theme} data-gold={gold} data-chrome={chrome} data-panel={panel} data-glass={glass} data-scale={scale} data-edge={edge} data-mail={mail} data-focus-sections={deskFocus.includes("sections") ? "1" : "0"} data-focus-rail={deskFocus.includes("rail") ? "1" : "0"} data-focus-tools={deskFocus.includes("tools") ? "1" : "0"} data-fold={folded ? "1" : "0"} data-crmv3-view={id ? `${view}/${id}` : view} className="c3-app font-normal">
       <a className="c3-skip" href="#c3-main">{v3("skipMain")}</a>
       <ShortcutHost base={base} onPalette={() => setPalette(true)} onHelp={(open) => { setHelp(open); if (open) setGuide(false); }} />
       <aside className="c3-rail">
@@ -408,27 +420,29 @@ function Shell({ base, section, name }: Props) {
             <p className="c3-kicker">{v3("v3mark")}</p>
             <h1 className="c3-heading">{heading}</h1>
           </div>
-          <form action={crmv3Href(base, "customers")} className="c3-header-search" role="search">
-            <input name="q" defaultValue={q} placeholder={v3("barSearch")} aria-label={v3("barSearch")} className="c3-field" />
-          </form>
-          <button type="button" className="c3-fab" aria-label={v3("searchFab")} onClick={() => setSearchOpen((open) => !open)}>⌕</button>
-          {searchOpen && (
-            <form action={crmv3Href(base, "customers")} className="c3-float" role="search">
-              <input name="q" defaultValue={q} placeholder={v3("barSearch")} aria-label={v3("barSearch")} className="c3-field" autoFocus />
-              <button type="button" className="c3-btn" onClick={() => setSearchOpen(false)}>{tx("close")}</button>
+          <div className="c3-top-tools">
+            <form action={crmv3Href(base, "customers")} className="c3-header-search" role="search">
+              <input name="q" defaultValue={q} placeholder={v3("barSearch")} aria-label={v3("barSearch")} className="c3-field" />
             </form>
-          )}
-          <button type="button" className="c3-icon-btn c3-plus-phone" onClick={() => setQuick(true)} aria-label={v3("quickPlus")}>+</button>
-          <button type="button" className="c3-icon-btn" onClick={toggleTheme} aria-label={theme === "dark" ? tx("themeLight") : tx("themeDark")}>
-            {theme === "dark" ? "Lt" : "Dk"}
-          </button>
-          <Link href={crmv3Href(base, "me")} className="c3-desk-name">{shownName || name || v3("barProfile")}</Link>
-          <button type="button" className="c3-icon-btn c3-help-btn" onClick={() => setGuide(true)} aria-label={v3("hdTitle")}>?</button>
-          <button type="button" className="c3-icon-btn" onClick={() => setNotesOpen(true)} aria-label={tx("notifications")}>
-            {notices.unread > 0 ? notices.unread : "•"}
-          </button>
-          <div className="c3-lang-slot">
-            <LanguageSwitcher compact tone={theme === "dark" ? "dark" : "crm"} />
+            <button type="button" className="c3-fab" aria-label={v3("searchFab")} onClick={() => setSearchOpen((open) => !open)}>⌕</button>
+            {searchOpen && (
+              <form action={crmv3Href(base, "customers")} className="c3-float" role="search">
+                <input name="q" defaultValue={q} placeholder={v3("barSearch")} aria-label={v3("barSearch")} className="c3-field" autoFocus />
+                <button type="button" className="c3-btn" onClick={() => setSearchOpen(false)}>{tx("close")}</button>
+              </form>
+            )}
+            <button type="button" className="c3-icon-btn c3-plus-phone" onClick={() => setQuick(true)} aria-label={v3("quickPlus")}>+</button>
+            <button type="button" className="c3-icon-btn" onClick={toggleTheme} aria-label={theme === "dark" ? tx("themeLight") : tx("themeDark")}>
+              {theme === "dark" ? "Lt" : "Dk"}
+            </button>
+            <Link href={crmv3Href(base, "me")} className="c3-desk-name">{shownName || name || v3("barProfile")}</Link>
+            <button type="button" className="c3-icon-btn c3-help-btn" onClick={() => setGuide(true)} aria-label={v3("hdTitle")}>?</button>
+            <button type="button" className="c3-icon-btn" onClick={() => setNotesOpen(true)} aria-label={tx("notifications")}>
+              {notices.unread > 0 ? notices.unread : "•"}
+            </button>
+            <div className="c3-lang-slot">
+              <LanguageSwitcher compact tone={theme === "dark" ? "dark" : "crm"} />
+            </div>
           </div>
           <TopTrail base={base} view={view} id={id} heading={heading} openId={params.get("open") || ""} trail={trail} />
         </header>
@@ -531,6 +545,8 @@ function Shell({ base, section, name }: Props) {
             {view === "kycglance" && <KycGlance base={base} />}
             {view === "snooze" && <SnoozeStrip base={base} locale={locale} />}
             {view === "sideglance" && <SideGlance base={base} />}
+            {view === "focusmode" && <FocusDesk />}
+            {view === "suppulse" && <SupportPulse base={base} />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
@@ -560,7 +576,7 @@ function Shell({ base, section, name }: Props) {
         <DeskFooter section={heading} name={name} onHelp={() => setHelp(true)} />
       </div>
 
-      <nav className="c3-tabs" aria-label={tx("panel")}>
+      <nav className="c3-tabs c3-icon-rail" aria-label={tx("panel")}>
         {CRM_V3_TABS.map((tab) => (
           <Link key={tab} href={crmv3Href(base, tab === "overview" ? "" : tab)} data-on={view === tab ? "1" : "0"} className="c3-tab" aria-current={view === tab ? "page" : undefined}>
             {label(tab)}

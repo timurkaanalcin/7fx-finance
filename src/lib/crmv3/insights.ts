@@ -153,6 +153,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-kyc-hide": ["KYC glance", "KYC bakışı", "KYC-Blick", "Обзор KYC", "لمحة التحقق"],
   "crmv3-follow-snooze": ["Follow-up snooze", "Takip erteleme", "Nachfass-Pause", "Отложить повтор", "تأجيل المتابعة"],
   "crmv3-side-hide": ["Side glance", "Yön bakışı", "Seitenblick", "Стороны сделок", "لمحة الاتجاه"],
+  "crmv3-desk-focus": ["Desk focus", "Masa odağı", "Tischfokus", "Фокус стола", "تركيز المكتب"],
+  "crmv3-queue-hide": ["Support pulse", "Destek nabzı", "Support-Puls", "Пульс поддержки", "نبض الدعم"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
