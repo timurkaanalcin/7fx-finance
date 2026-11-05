@@ -59,6 +59,7 @@ import { LedgerGlance, ShiftCheck } from "./desk/shiftlist";
 import { DocPulse, PriorityLane } from "./desk/lane";
 import { CallOutcomes, EdgeStrip } from "./desk/edge";
 import { MailDensityStrip, RiskWatch } from "./desk/watch";
+import { CallPack, CurrencyChips } from "./desk/pack";
 import { EDGE_KEY, readEdge, type Accent } from "@/lib/crmv3/edge";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv3/risklist";
 import { SCALE_KEY, readScale, type PanelScale } from "@/lib/crmv3/week";
@@ -325,6 +326,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "outcomes") return v3("ocTitle");
     if (tab === "riskwatch") return v3("rwTitle");
     if (tab === "maildense") return v3("mdTitle");
+    if (tab === "callpack") return v3("cpTitle");
+    if (tab === "curchips") return v3("ccTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -516,6 +519,8 @@ function Shell({ base, section, name }: Props) {
             {view === "outcomes" && <CallOutcomes base={base} />}
             {view === "riskwatch" && <RiskWatch base={base} />}
             {view === "maildense" && <MailDensityStrip />}
+            {view === "callpack" && <CallPack base={base} />}
+            {view === "curchips" && <CurrencyChips base={base} locale={locale} />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
