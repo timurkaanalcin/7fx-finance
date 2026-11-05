@@ -29,6 +29,7 @@ import { RiskDesk } from "./desk/risk";
 import { AffiliateDesk } from "./desk/tickets";
 import { AccessDesk, PayoutDesk } from "./desk/payout";
 import { FundingDesk } from "./desk/funding";
+import { ThreadDesk } from "./desk/thread";
 import { readJson } from "@/lib/crmv3/bridge";
 import { RAIL_KEY, readFold } from "@/lib/crmv3/nav";
 import { MoreNav, RailNav } from "./desk/nav";
@@ -172,6 +173,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "deposit") return v3("depDesk");
     if (tab === "funding") return v3("fuTitle");
     if (tab === "inbox") return v3("inboxTitle");
+    if (tab === "thread") return v3("cvTitle");
     if (tab === "reports") return v3("reportsTitle");
     if (tab === "insights") return v3("insTitle");
     if (tab === "affiliates") return v3("afTitle");
@@ -300,6 +302,7 @@ function Shell({ base, section, name }: Props) {
             {view === "deposit" && <DepositDesk base={base} tx={tx} locale={locale} />}
             {view === "funding" && <FundingDesk base={base} tx={tx} locale={locale} />}
             {view === "inbox" && <InboxDesk tx={tx} locale={locale} />}
+            {view === "thread" && <ThreadDesk tx={tx} locale={locale} />}
             {view === "reports" && <ReportsPage locale={locale} />}
             {view === "insights" && <InsightsHome locale={locale} />}
             {view === "affiliates" && <AffiliateDesk base={base} locale={locale} />}

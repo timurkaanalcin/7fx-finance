@@ -6,6 +6,7 @@ import { approvalBody, approvalEndpoint } from "@/lib/crmv2/payload";
 import { Card, Chip, Lab, Msg, Sheet, State, Status, SwipeRow, money, sendJson, statusTone, useJson, when, type Tx } from "../kit";
 import { TicketExtras } from "../desk/panels";
 import { TicketInbox } from "../desk/tickets";
+import { ThreadPanel } from "../desk/thread";
 import { rememberView } from "../desk/goals";
 import { crmv3Href } from "@/lib/crmv3/sections";
 
@@ -128,7 +129,6 @@ function Tickets({ base, tx, locale, q, status, openId, setQuery }: { base: stri
 function Chat({ tx, locale, q, userId, setQuery }: { tx: Tx; locale: string; q: string; userId: string; setQuery: (next: Record<string, string>) => void }) {
   const list = useJson<{ threads?: Thread[] }>(`/api/admin/chat?take=30&q=${encodeURIComponent(q)}`);
   const thread = useJson<{ threads?: { messages?: ChatMessage[]; trader?: string }[] }>(userId ? `/api/admin/chat?userId=${encodeURIComponent(userId)}&take=40` : null);
-  const [msg, setMsg] = useState("");
   const messages = thread.data?.threads?.[0]?.messages || [];
   return (
     <div className="c3-split">
@@ -145,39 +145,14 @@ function Chat({ tx, locale, q, userId, setQuery }: { tx: Tx; locale: string; q: 
           ))}
         </ul>
       </Card>
-      <Card title={thread.data?.threads?.[0]?.trader || tx("noThread")}>
-        {!userId && <p className="c3-muted" style={{ padding: 16 }}>{tx("noThread")}</p>}
-        <State loading={thread.loading} error={thread.error} empty={Boolean(userId) && !thread.loading && messages.length === 0} tx={tx} onRetry={thread.reload} />
-        <ul>
-          {messages.map((row) => (
-            <li key={row.id} style={{ padding: "8px 16px", borderTop: "1px solid var(--c3-line)" }}>
-              <div>{row.body}</div>
-              <div className="c3-muted">{row.workerName || tx("customerMsg")}{row.automatic ? ` · ${tx("automatic")}` : ""} · {when(row.createdAt, locale)}</div>
-            </li>
-          ))}
-        </ul>
-        {userId && (
-          <form
-            className="c3-form"
-            style={{ padding: 16 }}
-            onSubmit={async (event) => {
-              event.preventDefault();
-              const message = String(new FormData(event.currentTarget).get("message") || "");
-              const res = await sendJson("/api/admin/chat", "POST", { userId, message });
-              setMsg(res.ok ? tx("replySent") : res.error || tx("failed"));
-              if (res.ok) {
-                event.currentTarget.reset();
-                thread.reload();
-                list.reload();
-              }
-            }}
-          >
-            <Lab label={tx("writeReply")}><textarea name="message" required rows={3} className="c3-field" /></Lab>
-            <button type="submit" className="c3-btn c3-btn-hot">{tx("sendReply")}</button>
-            <Msg text={msg} />
-          </form>
-        )}
-      </Card>
+      <ThreadPanel
+        userId={userId}
+        name={thread.data?.threads?.[0]?.trader || ""}
+        messages={messages}
+        tx={tx}
+        locale={locale}
+        onSent={() => { thread.reload(); list.reload(); }}
+      />
     </div>
   );
 }

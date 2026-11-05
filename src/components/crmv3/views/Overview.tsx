@@ -14,6 +14,7 @@ import { defaultLayout, type OverviewCard } from "@/lib/crmv3/line";
 import { EntryQuality, emailOk } from "../desk/feed";
 import { useV3 } from "../desk/store";
 import { TodayHero } from "../desk/today";
+import { TodayStrip } from "../desk/thread";
 
 type Props = { base: string; tx: Tx; locale: string; name?: string };
 
@@ -48,6 +49,7 @@ export default function Overview({ base, tx, locale, name }: Props) {
   return (
     <div className="c3-stack">
       <TodayHero base={base} name={name || ""} locale={locale} />
+      <TodayStrip base={base} locale={locale} />
       <div className="c3-row">
         <Chip on={tab === "home"} onClick={() => setTab("home")}>{tx("overview")}</Chip>
         <Chip on={tab === "insights"} onClick={() => setTab("insights")}>{tx("insights")}</Chip>
