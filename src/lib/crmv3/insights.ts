@@ -90,6 +90,7 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-inbox-local-read": ["Notice read marks", "Bildirim okundu", "Hinweis gelesen", "Прочтение уведомлений", "قراءة الإشعارات"],
   "crmv3-tag-board-pins": ["Pinned tags", "Sabit etiketler", "Angeheftete Marken", "Закреплённые метки", "وسوم مثبتة"],
   "crmv3-tag-board-hidden": ["Hidden tags", "Gizli etiketler", "Versteckte Marken", "Скрытые метки", "وسوم مخفية"],
+  "crmv3-desk-pad": ["Desk pad", "Masa notu", "Tischblock", "Блокнот стола", "دفتر المكتب"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
