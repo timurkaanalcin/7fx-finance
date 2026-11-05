@@ -77,6 +77,7 @@ import { AssigneeGlance, TagPalette } from "./desk/palette";
 import { DocStatusGlance, FilterPresets } from "./desk/preset";
 import { SessionNote, WithdrawalGlance } from "./desk/session";
 import { DepStatusGlance, PinRail } from "./desk/rail";
+import { MuteList, SymbolGlance } from "./desk/mute";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv3/deskfocus";
 import { EDGE_KEY, readEdge, type Accent } from "@/lib/crmv3/edge";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv3/risklist";
@@ -388,6 +389,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "wdstatus") return v3("wzTitle");
     if (tab === "pinrail") return v3("rlTitle");
     if (tab === "depstatus") return v3("dzTitle");
+    if (tab === "mutelist") return v3("muTitle");
+    if (tab === "symbolglance") return v3("ymTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -617,6 +620,8 @@ function Shell({ base, section, name }: Props) {
             {view === "wdstatus" && <WithdrawalGlance base={base} />}
             {view === "pinrail" && <PinRail base={base} />}
             {view === "depstatus" && <DepStatusGlance base={base} />}
+            {view === "mutelist" && <MuteList base={base} />}
+            {view === "symbolglance" && <SymbolGlance base={base} />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}

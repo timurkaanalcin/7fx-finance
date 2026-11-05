@@ -183,6 +183,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-wd-status-hide": ["Status glance", "Durum bakışı", "Statusblick", "Обзор статуса", "لمحة الحالة"],
   "crmv3-pin-rail": ["Pin rail", "Sabit ray", "Pin-Leiste", "Рельс ярлыков", "سكة الاختصارات"],
   "crmv3-dep-status-hide": ["Status glance", "Durum bakışı", "Statusblick", "Обзор статуса", "لمحة الحالة"],
+  "crmv3-mute-ids": ["Mute list", "Sessiz listesi", "Stummliste", "Список без звука", "قائمة الكتم"],
+  "crmv3-symbol-hide": ["Symbol glance", "Sembol bakışı", "Symbolblick", "Обзор символа", "لمحة الرمز"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
