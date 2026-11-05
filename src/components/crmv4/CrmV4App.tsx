@@ -85,6 +85,8 @@ import { DocStatusGlance, FilterPresets } from "./round94";
 import { SessionNote, WithdrawalGlance } from "./round95";
 import { DepStatusGlance, PinRail } from "./round96";
 import { MuteList, SymbolGlance } from "./round97";
+import { ChannelGlance as TicketChannels, RecentJumps } from "./round98";
+import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv4/round78";
 import { PAUSE_KEY, shieldOn } from "@/lib/crmv4/round74";
@@ -188,6 +190,15 @@ function Shell({ base, section, name }: Props) {
   const reminders = useJson<{ reminders?: Reminder[] }>(remindersOpen ? "/api/admin/calendar?take=80" : null);
   const pending = (stats.data?.kpis?.pendingDeposits || 0) + (stats.data?.kpis?.pendingBalanceRequests || 0);
   const unread = notes.data?.unread || 0;
+
+  useEffect(() => {
+    const current = readVisits(readJson(RECENT_JUMP_KEY, []));
+    const next = pushVisit(current, String(view), new Date().toISOString());
+    const same = next.length === current.length && next.every((item, index) => item.section === current[index]?.section && item.at === current[index]?.at);
+    if (same) return;
+    writeJson(RECENT_JUMP_KEY, next);
+    window.dispatchEvent(new Event("crmv4:jumps"));
+  }, [view]);
 
   useEffect(() => {
     const mode = themeMode();
@@ -506,6 +517,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "depstatus") return v4("dzTitle");
     if (tab === "mutelist") return v4("muTitle");
     if (tab === "symbolglance") return v4("ymTitle");
+    if (tab === "recentjumps") return v4("jvTitle");
+    if (tab === "ticketchannel") return v4("tcTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -634,6 +647,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "depstatus") return v4("dzSub");
     if (tab === "mutelist") return v4("muSub");
     if (tab === "symbolglance") return v4("ymSub");
+    if (tab === "recentjumps") return v4("jvSub");
+    if (tab === "ticketchannel") return v4("tcSub");
     return "";
   }
 
@@ -883,6 +898,8 @@ function Shell({ base, section, name }: Props) {
             {view === "depstatus" && <DepStatusGlance base={base} v4={v4} />}
             {view === "mutelist" && <MuteList base={base} v4={v4} />}
             {view === "symbolglance" && <SymbolGlance base={base} v4={v4} />}
+            {view === "recentjumps" && <RecentJumps base={base} v4={v4} />}
+            {view === "ticketchannel" && <TicketChannels base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
