@@ -122,6 +122,9 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-panel-glass": ["Panel glass", "Pano camı", "Flächenglas", "Стекло панелей", "زجاج اللوحات"],
   "crmv3-desk-hide": ["Hidden desks", "Gizlenen masalar", "Versteckte Tische", "Скрытые столы", "المكاتب المخفية"],
   "crmv3-eod-steps": ["End of day steps", "Gün sonu adımları", "Tagesabschluss", "Шаги конца дня", "خطوات نهاية اليوم"],
+  "crmv3-stale-window": ["Stale window", "Durgun pencere", "Inaktivitätsfenster", "Окно неактивности", "نافذة الخمول"],
+  "crmv3-stale-watch": ["Watched stale accounts", "İzlenen durgun hesaplar", "Beobachtete inaktive Konten", "Наблюдаемые неактивные", "الحسابات الخاملة المراقبة"],
+  "crmv3-call-scripts": ["Call scripts", "Arama metinleri", "Anruftexte", "Скрипты звонка", "نصوص المكالمة"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
