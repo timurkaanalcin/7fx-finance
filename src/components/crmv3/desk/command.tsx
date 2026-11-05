@@ -191,6 +191,8 @@ export function CommandPalette({ base, open, onClose }: { base: string; open: bo
       { id: "orderstatus", label: v3("ogTitle"), href: crmv3Href(base, "orderstatus") },
       { id: "contacts", label: v3("ctTitle"), href: crmv3Href(base, "contacts") },
       { id: "zeroglance", label: v3("bzTitle"), href: crmv3Href(base, "zeroglance") },
+      { id: "reminders", label: v3("rmTitle"), href: crmv3Href(base, "reminders") },
+      { id: "sourceglance", label: v3("lsTitle"), href: crmv3Href(base, "sourceglance") },
       { id: "gallery", label: v3("glTitle"), href: crmv3Href(base, "gallery") },
       { id: "history", label: v3("hsTitle"), href: crmv3Href(base, "history") },
       { id: "reports", label: v3("reportsTitle"), href: crmv3Href(base, "reports") },
