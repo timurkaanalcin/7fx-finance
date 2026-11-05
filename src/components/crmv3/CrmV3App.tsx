@@ -73,6 +73,7 @@ import { CountryGlance, DeskCheck } from "./desk/check";
 import { OrderGlance, ScratchPads } from "./desk/notepad";
 import { ContactChips, ZeroGlance } from "./desk/contact";
 import { ReminderChips, SourceGlance } from "./desk/remind";
+import { AssigneeGlance, TagPalette } from "./desk/palette";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv3/deskfocus";
 import { EDGE_KEY, readEdge, type Accent } from "@/lib/crmv3/edge";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv3/risklist";
@@ -376,6 +377,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "zeroglance") return v3("bzTitle");
     if (tab === "reminders") return v3("rmTitle");
     if (tab === "sourceglance") return v3("lsTitle");
+    if (tab === "tagpalette") return v3("plTitle");
+    if (tab === "assignee") return v3("gnTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -597,6 +600,8 @@ function Shell({ base, section, name }: Props) {
             {view === "zeroglance" && <ZeroGlance base={base} />}
             {view === "reminders" && <ReminderChips />}
             {view === "sourceglance" && <SourceGlance base={base} />}
+            {view === "tagpalette" && <TagPalette />}
+            {view === "assignee" && <AssigneeGlance base={base} />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
