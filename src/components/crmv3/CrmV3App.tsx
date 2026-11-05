@@ -99,6 +99,7 @@ import { QuickDial, TicketAssignees } from "./desk/quickdial";
 import { CallbackQueue, CasePriorities } from "./desk/callbackqueue";
 import { DocumentStatuses, VisitLog } from "./desk/visitlog";
 import { LeadSources, ParkingNotes } from "./desk/parkspot";
+import { LockerNotes, TradeSymbols } from "./desk/locker";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv3/rowdensity";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv3/deskfocus";
 import { EDGE_KEY, readEdge, type Accent } from "@/lib/crmv3/edge";
@@ -464,6 +465,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "kycdocstat") return v3("ydTitle");
     if (tab === "parkspot") return v3("bayTitle");
     if (tab === "leadsrc") return v3("lsgTitle");
+    if (tab === "locker") return v3("lokTitle");
+    if (tab === "tradesym") return v3("tsyTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -746,6 +749,8 @@ function Shell({ base, section, name }: Props) {
             {view === "kycdocstat" && <DocumentStatuses base={base} />}
             {view === "parkspot" && <ParkingNotes />}
             {view === "leadsrc" && <LeadSources base={base} />}
+            {view === "locker" && <LockerNotes />}
+            {view === "tradesym" && <TradeSymbols base={base} />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
