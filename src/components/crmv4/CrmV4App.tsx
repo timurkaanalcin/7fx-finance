@@ -38,6 +38,7 @@ import { RiskDesk } from "./round47";
 import { FundingDesk } from "./round48";
 import { ThreadDesk } from "./round49";
 import { GalleryDesk, HistoryDesk } from "./round50";
+import { DayStrip, DenseList } from "./round51";
 import { lastView, playPing, rememberView, soundEnabled, ticketAlertsOn } from "./round7";
 import { resolvedTheme, storedContrast, storedFont, storedFreeze, themeMode } from "./round8";
 import { readBrand } from "./round10";
@@ -291,6 +292,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "thread") return v4("cvTitle");
     if (tab === "gallery") return v4("glTitle");
     if (tab === "history") return v4("hsTitle");
+    if (tab === "dense") return v4("dnTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -326,6 +328,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "thread") return v4("cvSub");
     if (tab === "gallery") return v4("glSub");
     if (tab === "history") return v4("hsSub");
+    if (tab === "dense") return v4("dnSub");
     return "";
   }
 
@@ -482,6 +485,8 @@ function Shell({ base, section, name }: Props) {
             {view === "thread" && <ThreadDesk v4={v4} tx={tx} locale={locale} />}
             {view === "gallery" && <GalleryDesk base={base} v4={v4} tx={tx} locale={locale} />}
             {view === "history" && <HistoryDesk v4={v4} tx={tx} locale={locale} />}
+            {view === "dense" && <DenseList base={base} v4={v4} tx={tx} />}
+            {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
             {view === "agenda" && <AgendaPage base={base} v4={v4} locale={locale} />}

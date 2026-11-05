@@ -5326,3 +5326,147 @@
   [data-crmv4-root] .c4-gallery-desk .c4-chip,
   [data-crmv4-root] .c4-history-desk .c4-chip { min-height: 44px; }
 }
+
+[data-crmv4-root] .c4-dense-desk,
+[data-crmv4-root] .c4-daystrip {
+  display: grid;
+  gap: 12px;
+  margin: 12px;
+  padding: 16px;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+  border: 1px solid rgba(166, 133, 78, 0.5);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(166, 133, 78, 0.14), transparent 36%),
+    #f7f4ee;
+  color: #1c1a17;
+  font-weight: 400;
+}
+
+[data-crmv4-root] .c4-dense-desk .c4-title,
+[data-crmv4-root] .c4-daystrip .c4-title,
+[data-crmv4-root] .c4-day-card .c4-title {
+  margin: 0;
+  font-weight: 500;
+}
+
+[data-crmv4-root] .c4-dense-desk .c4-meta,
+[data-crmv4-root] .c4-daystrip .c4-meta,
+[data-crmv4-root] .c4-dense-desk .c4-pay-kicker,
+[data-crmv4-root] .c4-daystrip .c4-pay-kicker {
+  color: #7a5e30;
+  font-weight: 400;
+  font-size: 12px;
+}
+
+[data-crmv4-root] .c4-dense-wrap {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+[data-crmv4-root] .c4-dense-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-weight: 400;
+}
+
+[data-crmv4-root] .c4-dense-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 6px 8px;
+  background: #fffdf8;
+  color: #7a5e30;
+  font-weight: 500;
+  font-size: 12px;
+  text-align: start;
+  border-bottom: 1px solid rgba(166, 133, 78, 0.45);
+}
+
+[data-crmv4-root] .c4-dense-table td {
+  padding: 4px 8px;
+  border-bottom: 1px solid rgba(166, 133, 78, 0.22);
+  overflow-wrap: anywhere;
+}
+
+[data-crmv4-root] .c4-dense-table tr[data-on="1"] td { background: rgba(166, 133, 78, 0.1); }
+
+[data-crmv4-root] .c4-dense-results,
+[data-crmv4-root] .c4-day-card ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-width: 0;
+}
+
+[data-crmv4-root] .c4-dense-results li[data-ok="0"] { color: #8a3b32; }
+[data-crmv4-root] .c4-dense-results li[data-ok="1"] { color: #1f6b45; }
+
+[data-crmv4-root] .c4-daystrip-row {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  [data-crmv4-root] .c4-daystrip-row { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+}
+
+[data-crmv4-root] .c4-day-card {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid rgba(166, 133, 78, 0.35);
+  border-radius: 14px;
+  background: #fffdf8;
+}
+
+[data-crmv4-root] .c4-day-card[data-today="1"] { box-shadow: inset 0 -2px 0 #a6854e; }
+[data-crmv4-root] .c4-day-card[data-overdue="1"] { border-style: dashed; }
+[data-crmv4-root] .c4-day-card li { display: grid; gap: 4px; min-width: 0; }
+[data-crmv4-root] .c4-day-card li[data-done="1"] { opacity: 0.55; }
+[data-crmv4-root] .c4-day-card a { overflow-wrap: anywhere; }
+
+[data-crmv4-root] .c4-dense-desk .c4-lab,
+[data-crmv4-root] .c4-dense-desk .c4-field,
+[data-crmv4-root] .c4-dense-desk .c4-select { min-width: 0; max-width: 100%; }
+
+[data-crmv4-root][data-theme="dark"] .c4-dense-desk,
+[data-crmv4-root][data-theme="dark"] .c4-daystrip {
+  background:
+    linear-gradient(180deg, rgba(212, 188, 134, 0.16), transparent 42%),
+    #161412;
+  color: #f6f1e8;
+  border-color: rgba(212, 188, 134, 0.38);
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-dense-table th,
+[data-crmv4-root][data-theme="dark"] .c4-day-card {
+  background: #221f1b;
+  color: #f6f1e8;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-dense-desk .c4-meta,
+[data-crmv4-root][data-theme="dark"] .c4-daystrip .c4-meta,
+[data-crmv4-root][data-theme="dark"] .c4-dense-desk .c4-pay-kicker,
+[data-crmv4-root][data-theme="dark"] .c4-daystrip .c4-pay-kicker,
+[data-crmv4-root][data-theme="dark"] .c4-dense-table th { color: #d4bc86; }
+
+[data-crmv4-root][data-theme="dark"] .c4-dense-results li[data-ok="1"] { color: #8ee0b5; }
+[data-crmv4-root][data-theme="dark"] .c4-dense-results li[data-ok="0"] { color: #ffb0a8; }
+
+@media (max-width: 767px) {
+  [data-crmv4-root] .c4-dense-desk,
+  [data-crmv4-root] .c4-daystrip { margin: 8px; padding: 12px; }
+  [data-crmv4-root] .c4-dense-desk .c4-btn,
+  [data-crmv4-root] .c4-daystrip .c4-btn,
+  [data-crmv4-root] .c4-dense-desk .c4-chip { min-height: 44px; }
+}
