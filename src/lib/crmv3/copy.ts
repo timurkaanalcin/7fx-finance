@@ -74,6 +74,7 @@ import { PL_AR, PL_DE, PL_EN, PL_RU, PL_TR } from "@/lib/crmv3/copy-palette";
 import { FP_AR, FP_DE, FP_EN, FP_RU, FP_TR } from "@/lib/crmv3/copy-preset";
 import { SY_AR, SY_DE, SY_EN, SY_RU, SY_TR } from "@/lib/crmv3/copy-session";
 import { RL_AR, RL_DE, RL_EN, RL_RU, RL_TR } from "@/lib/crmv3/copy-rail";
+import { MU_AR, MU_DE, MU_EN, MU_RU, MU_TR } from "@/lib/crmv3/copy-mute";
 
 const enBase = {
   money: "Money",
@@ -84,7 +85,7 @@ const enBase = {
   openRow: "Open",
 };
 
-const en = { ...enBase, ...DESK_EN, ...LATER_EN, ...CASH_EN, ...PEOPLE_EN, ...GOALS_EN, ...LINE_EN, ...REVIEW_EN, ...WD_EN, ...DEP_EN, ...NAV_EN, ...LISTS_EN, ...INSIGHTS_EN, ...BOOK_EN, ...TABLE_EN, ...TODAY_EN, ...LEDGER_EN, ...GALLERY_EN, ...NOTICE_EN, ...SYSTEM_EN, ...DOSSIER_EN, ...BOARD_EN, ...PICK_EN, ...PERIOD_EN, ...RISK_EN, ...INBOX_EN, ...PAY_EN, ...FUND_EN, ...THREAD_EN, ...PAPER_EN, ...DENSE_EN, ...BOARD52_EN, ...BLOT_EN, ...CASE_EN, ...SHIFT_EN, ...LEAD_EN, ...TRIAGE_EN, ...SOP_EN, ...ALERT_EN, ...HEALTH_EN, ...INTRO_EN, ...EXPIRY_EN, ...REJECT_EN, ...HEAT_EN, ...DIGEST_EN, ...COMPARE_EN, ...STALE_EN, ...DUPE_EN, ...MIX_EN, ...VIP_EN, ...CLOCK_EN, ...PULSE_EN, ...WEEK_EN, ...SHIELD_EN, ...LIST_EN, ...LANE_EN, ...EDGE_EN, ...RW_EN, ...PACK_EN, ...MARK_EN, ...SZ_EN, ...FM_EN, ...PIN_EN, ...DT_EN, ...VS_EN, ...UM_EN, ...BN_EN, ...QK_EN, ...CH_EN, ...NP_EN, ...CT_EN, ...RM_EN, ...PL_EN, ...FP_EN, ...SY_EN, ...RL_EN };
+const en = { ...enBase, ...DESK_EN, ...LATER_EN, ...CASH_EN, ...PEOPLE_EN, ...GOALS_EN, ...LINE_EN, ...REVIEW_EN, ...WD_EN, ...DEP_EN, ...NAV_EN, ...LISTS_EN, ...INSIGHTS_EN, ...BOOK_EN, ...TABLE_EN, ...TODAY_EN, ...LEDGER_EN, ...GALLERY_EN, ...NOTICE_EN, ...SYSTEM_EN, ...DOSSIER_EN, ...BOARD_EN, ...PICK_EN, ...PERIOD_EN, ...RISK_EN, ...INBOX_EN, ...PAY_EN, ...FUND_EN, ...THREAD_EN, ...PAPER_EN, ...DENSE_EN, ...BOARD52_EN, ...BLOT_EN, ...CASE_EN, ...SHIFT_EN, ...LEAD_EN, ...TRIAGE_EN, ...SOP_EN, ...ALERT_EN, ...HEALTH_EN, ...INTRO_EN, ...EXPIRY_EN, ...REJECT_EN, ...HEAT_EN, ...DIGEST_EN, ...COMPARE_EN, ...STALE_EN, ...DUPE_EN, ...MIX_EN, ...VIP_EN, ...CLOCK_EN, ...PULSE_EN, ...WEEK_EN, ...SHIELD_EN, ...LIST_EN, ...LANE_EN, ...EDGE_EN, ...RW_EN, ...PACK_EN, ...MARK_EN, ...SZ_EN, ...FM_EN, ...PIN_EN, ...DT_EN, ...VS_EN, ...UM_EN, ...BN_EN, ...QK_EN, ...CH_EN, ...NP_EN, ...CT_EN, ...RM_EN, ...PL_EN, ...FP_EN, ...SY_EN, ...RL_EN, ...MU_EN };
 
 const trBase: typeof enBase = {
   money: "Para",
@@ -95,7 +96,7 @@ const trBase: typeof enBase = {
   openRow: "Aç",
 };
 
-const tr = { ...trBase, ...DESK_TR, ...LATER_TR, ...CASH_TR, ...PEOPLE_TR, ...GOALS_TR, ...LINE_TR, ...REVIEW_TR, ...WD_TR, ...DEP_TR, ...NAV_TR, ...LISTS_TR, ...INSIGHTS_TR, ...BOOK_TR, ...TABLE_TR, ...TODAY_TR, ...LEDGER_TR, ...GALLERY_TR, ...NOTICE_TR, ...SYSTEM_TR, ...DOSSIER_TR, ...BOARD_TR, ...PICK_TR, ...PERIOD_TR, ...RISK_TR, ...INBOX_TR, ...PAY_TR, ...FUND_TR, ...THREAD_TR, ...PAPER_TR, ...DENSE_TR, ...BOARD52_TR, ...BLOT_TR, ...CASE_TR, ...SHIFT_TR, ...LEAD_TR, ...TRIAGE_TR, ...SOP_TR, ...ALERT_TR, ...HEALTH_TR, ...INTRO_TR, ...EXPIRY_TR, ...REJECT_TR, ...HEAT_TR, ...DIGEST_TR, ...COMPARE_TR, ...STALE_TR, ...DUPE_TR, ...MIX_TR, ...VIP_TR, ...CLOCK_TR, ...PULSE_TR, ...WEEK_TR, ...SHIELD_TR, ...LIST_TR, ...LANE_TR, ...EDGE_TR, ...RW_TR, ...PACK_TR, ...MARK_TR, ...SZ_TR, ...FM_TR, ...PIN_TR, ...DT_TR, ...VS_TR, ...UM_TR, ...BN_TR, ...QK_TR, ...CH_TR, ...NP_TR, ...CT_TR, ...RM_TR, ...PL_TR, ...FP_TR, ...SY_TR, ...RL_TR };
+const tr = { ...trBase, ...DESK_TR, ...LATER_TR, ...CASH_TR, ...PEOPLE_TR, ...GOALS_TR, ...LINE_TR, ...REVIEW_TR, ...WD_TR, ...DEP_TR, ...NAV_TR, ...LISTS_TR, ...INSIGHTS_TR, ...BOOK_TR, ...TABLE_TR, ...TODAY_TR, ...LEDGER_TR, ...GALLERY_TR, ...NOTICE_TR, ...SYSTEM_TR, ...DOSSIER_TR, ...BOARD_TR, ...PICK_TR, ...PERIOD_TR, ...RISK_TR, ...INBOX_TR, ...PAY_TR, ...FUND_TR, ...THREAD_TR, ...PAPER_TR, ...DENSE_TR, ...BOARD52_TR, ...BLOT_TR, ...CASE_TR, ...SHIFT_TR, ...LEAD_TR, ...TRIAGE_TR, ...SOP_TR, ...ALERT_TR, ...HEALTH_TR, ...INTRO_TR, ...EXPIRY_TR, ...REJECT_TR, ...HEAT_TR, ...DIGEST_TR, ...COMPARE_TR, ...STALE_TR, ...DUPE_TR, ...MIX_TR, ...VIP_TR, ...CLOCK_TR, ...PULSE_TR, ...WEEK_TR, ...SHIELD_TR, ...LIST_TR, ...LANE_TR, ...EDGE_TR, ...RW_TR, ...PACK_TR, ...MARK_TR, ...SZ_TR, ...FM_TR, ...PIN_TR, ...DT_TR, ...VS_TR, ...UM_TR, ...BN_TR, ...QK_TR, ...CH_TR, ...NP_TR, ...CT_TR, ...RM_TR, ...PL_TR, ...FP_TR, ...SY_TR, ...RL_TR, ...MU_TR };
 
 const deBase: typeof enBase = {
   money: "Geld",
@@ -106,7 +107,7 @@ const deBase: typeof enBase = {
   openRow: "Öffnen",
 };
 
-const de = { ...deBase, ...DESK_DE, ...LATER_DE, ...CASH_DE, ...PEOPLE_DE, ...GOALS_DE, ...LINE_DE, ...REVIEW_DE, ...WD_DE, ...DEP_DE, ...NAV_DE, ...LISTS_DE, ...INSIGHTS_DE, ...BOOK_DE, ...TABLE_DE, ...TODAY_DE, ...LEDGER_DE, ...GALLERY_DE, ...NOTICE_DE, ...SYSTEM_DE, ...DOSSIER_DE, ...BOARD_DE, ...PICK_DE, ...PERIOD_DE, ...RISK_DE, ...INBOX_DE, ...PAY_DE, ...FUND_DE, ...THREAD_DE, ...PAPER_DE, ...DENSE_DE, ...BOARD52_DE, ...BLOT_DE, ...CASE_DE, ...SHIFT_DE, ...LEAD_DE, ...TRIAGE_DE, ...SOP_DE, ...ALERT_DE, ...HEALTH_DE, ...INTRO_DE, ...EXPIRY_DE, ...REJECT_DE, ...HEAT_DE, ...DIGEST_DE, ...COMPARE_DE, ...STALE_DE, ...DUPE_DE, ...MIX_DE, ...VIP_DE, ...CLOCK_DE, ...PULSE_DE, ...WEEK_DE, ...SHIELD_DE, ...LIST_DE, ...LANE_DE, ...EDGE_DE, ...RW_DE, ...PACK_DE, ...MARK_DE, ...SZ_DE, ...FM_DE, ...PIN_DE, ...DT_DE, ...VS_DE, ...UM_DE, ...BN_DE, ...QK_DE, ...CH_DE, ...NP_DE, ...CT_DE, ...RM_DE, ...PL_DE, ...FP_DE, ...SY_DE, ...RL_DE };
+const de = { ...deBase, ...DESK_DE, ...LATER_DE, ...CASH_DE, ...PEOPLE_DE, ...GOALS_DE, ...LINE_DE, ...REVIEW_DE, ...WD_DE, ...DEP_DE, ...NAV_DE, ...LISTS_DE, ...INSIGHTS_DE, ...BOOK_DE, ...TABLE_DE, ...TODAY_DE, ...LEDGER_DE, ...GALLERY_DE, ...NOTICE_DE, ...SYSTEM_DE, ...DOSSIER_DE, ...BOARD_DE, ...PICK_DE, ...PERIOD_DE, ...RISK_DE, ...INBOX_DE, ...PAY_DE, ...FUND_DE, ...THREAD_DE, ...PAPER_DE, ...DENSE_DE, ...BOARD52_DE, ...BLOT_DE, ...CASE_DE, ...SHIFT_DE, ...LEAD_DE, ...TRIAGE_DE, ...SOP_DE, ...ALERT_DE, ...HEALTH_DE, ...INTRO_DE, ...EXPIRY_DE, ...REJECT_DE, ...HEAT_DE, ...DIGEST_DE, ...COMPARE_DE, ...STALE_DE, ...DUPE_DE, ...MIX_DE, ...VIP_DE, ...CLOCK_DE, ...PULSE_DE, ...WEEK_DE, ...SHIELD_DE, ...LIST_DE, ...LANE_DE, ...EDGE_DE, ...RW_DE, ...PACK_DE, ...MARK_DE, ...SZ_DE, ...FM_DE, ...PIN_DE, ...DT_DE, ...VS_DE, ...UM_DE, ...BN_DE, ...QK_DE, ...CH_DE, ...NP_DE, ...CT_DE, ...RM_DE, ...PL_DE, ...FP_DE, ...SY_DE, ...RL_DE, ...MU_DE };
 
 const ruBase: typeof enBase = {
   money: "Деньги",
@@ -117,7 +118,7 @@ const ruBase: typeof enBase = {
   openRow: "Открыть",
 };
 
-const ru = { ...ruBase, ...DESK_RU, ...LATER_RU, ...CASH_RU, ...PEOPLE_RU, ...GOALS_RU, ...LINE_RU, ...REVIEW_RU, ...WD_RU, ...DEP_RU, ...NAV_RU, ...LISTS_RU, ...INSIGHTS_RU, ...BOOK_RU, ...TABLE_RU, ...TODAY_RU, ...LEDGER_RU, ...GALLERY_RU, ...NOTICE_RU, ...SYSTEM_RU, ...DOSSIER_RU, ...BOARD_RU, ...PICK_RU, ...PERIOD_RU, ...RISK_RU, ...INBOX_RU, ...PAY_RU, ...FUND_RU, ...THREAD_RU, ...PAPER_RU, ...DENSE_RU, ...BOARD52_RU, ...BLOT_RU, ...CASE_RU, ...SHIFT_RU, ...LEAD_RU, ...TRIAGE_RU, ...SOP_RU, ...ALERT_RU, ...HEALTH_RU, ...INTRO_RU, ...EXPIRY_RU, ...REJECT_RU, ...HEAT_RU, ...DIGEST_RU, ...COMPARE_RU, ...STALE_RU, ...DUPE_RU, ...MIX_RU, ...VIP_RU, ...CLOCK_RU, ...PULSE_RU, ...WEEK_RU, ...SHIELD_RU, ...LIST_RU, ...LANE_RU, ...EDGE_RU, ...RW_RU, ...PACK_RU, ...MARK_RU, ...SZ_RU, ...FM_RU, ...PIN_RU, ...DT_RU, ...VS_RU, ...UM_RU, ...BN_RU, ...QK_RU, ...CH_RU, ...NP_RU, ...CT_RU, ...RM_RU, ...PL_RU, ...FP_RU, ...SY_RU, ...RL_RU };
+const ru = { ...ruBase, ...DESK_RU, ...LATER_RU, ...CASH_RU, ...PEOPLE_RU, ...GOALS_RU, ...LINE_RU, ...REVIEW_RU, ...WD_RU, ...DEP_RU, ...NAV_RU, ...LISTS_RU, ...INSIGHTS_RU, ...BOOK_RU, ...TABLE_RU, ...TODAY_RU, ...LEDGER_RU, ...GALLERY_RU, ...NOTICE_RU, ...SYSTEM_RU, ...DOSSIER_RU, ...BOARD_RU, ...PICK_RU, ...PERIOD_RU, ...RISK_RU, ...INBOX_RU, ...PAY_RU, ...FUND_RU, ...THREAD_RU, ...PAPER_RU, ...DENSE_RU, ...BOARD52_RU, ...BLOT_RU, ...CASE_RU, ...SHIFT_RU, ...LEAD_RU, ...TRIAGE_RU, ...SOP_RU, ...ALERT_RU, ...HEALTH_RU, ...INTRO_RU, ...EXPIRY_RU, ...REJECT_RU, ...HEAT_RU, ...DIGEST_RU, ...COMPARE_RU, ...STALE_RU, ...DUPE_RU, ...MIX_RU, ...VIP_RU, ...CLOCK_RU, ...PULSE_RU, ...WEEK_RU, ...SHIELD_RU, ...LIST_RU, ...LANE_RU, ...EDGE_RU, ...RW_RU, ...PACK_RU, ...MARK_RU, ...SZ_RU, ...FM_RU, ...PIN_RU, ...DT_RU, ...VS_RU, ...UM_RU, ...BN_RU, ...QK_RU, ...CH_RU, ...NP_RU, ...CT_RU, ...RM_RU, ...PL_RU, ...FP_RU, ...SY_RU, ...RL_RU, ...MU_RU };
 
 const arBase: typeof enBase = {
   money: "المال",
@@ -128,7 +129,7 @@ const arBase: typeof enBase = {
   openRow: "فتح",
 };
 
-const ar = { ...arBase, ...DESK_AR, ...LATER_AR, ...CASH_AR, ...PEOPLE_AR, ...GOALS_AR, ...LINE_AR, ...REVIEW_AR, ...WD_AR, ...DEP_AR, ...NAV_AR, ...LISTS_AR, ...INSIGHTS_AR, ...BOOK_AR, ...TABLE_AR, ...TODAY_AR, ...LEDGER_AR, ...GALLERY_AR, ...NOTICE_AR, ...SYSTEM_AR, ...DOSSIER_AR, ...BOARD_AR, ...PICK_AR, ...PERIOD_AR, ...RISK_AR, ...INBOX_AR, ...PAY_AR, ...FUND_AR, ...THREAD_AR, ...PAPER_AR, ...DENSE_AR, ...BOARD52_AR, ...BLOT_AR, ...CASE_AR, ...SHIFT_AR, ...LEAD_AR, ...TRIAGE_AR, ...SOP_AR, ...ALERT_AR, ...HEALTH_AR, ...INTRO_AR, ...EXPIRY_AR, ...REJECT_AR, ...HEAT_AR, ...DIGEST_AR, ...COMPARE_AR, ...STALE_AR, ...DUPE_AR, ...MIX_AR, ...VIP_AR, ...CLOCK_AR, ...PULSE_AR, ...WEEK_AR, ...SHIELD_AR, ...LIST_AR, ...LANE_AR, ...EDGE_AR, ...RW_AR, ...PACK_AR, ...MARK_AR, ...SZ_AR, ...FM_AR, ...PIN_AR, ...DT_AR, ...VS_AR, ...UM_AR, ...BN_AR, ...QK_AR, ...CH_AR, ...NP_AR, ...CT_AR, ...RM_AR, ...PL_AR, ...FP_AR, ...SY_AR, ...RL_AR };
+const ar = { ...arBase, ...DESK_AR, ...LATER_AR, ...CASH_AR, ...PEOPLE_AR, ...GOALS_AR, ...LINE_AR, ...REVIEW_AR, ...WD_AR, ...DEP_AR, ...NAV_AR, ...LISTS_AR, ...INSIGHTS_AR, ...BOOK_AR, ...TABLE_AR, ...TODAY_AR, ...LEDGER_AR, ...GALLERY_AR, ...NOTICE_AR, ...SYSTEM_AR, ...DOSSIER_AR, ...BOARD_AR, ...PICK_AR, ...PERIOD_AR, ...RISK_AR, ...INBOX_AR, ...PAY_AR, ...FUND_AR, ...THREAD_AR, ...PAPER_AR, ...DENSE_AR, ...BOARD52_AR, ...BLOT_AR, ...CASE_AR, ...SHIFT_AR, ...LEAD_AR, ...TRIAGE_AR, ...SOP_AR, ...ALERT_AR, ...HEALTH_AR, ...INTRO_AR, ...EXPIRY_AR, ...REJECT_AR, ...HEAT_AR, ...DIGEST_AR, ...COMPARE_AR, ...STALE_AR, ...DUPE_AR, ...MIX_AR, ...VIP_AR, ...CLOCK_AR, ...PULSE_AR, ...WEEK_AR, ...SHIELD_AR, ...LIST_AR, ...LANE_AR, ...EDGE_AR, ...RW_AR, ...PACK_AR, ...MARK_AR, ...SZ_AR, ...FM_AR, ...PIN_AR, ...DT_AR, ...VS_AR, ...UM_AR, ...BN_AR, ...QK_AR, ...CH_AR, ...NP_AR, ...CT_AR, ...RM_AR, ...PL_AR, ...FP_AR, ...SY_AR, ...RL_AR, ...MU_AR };
 
 export const CRM_V3_COPY = { en, tr, de, ru, ar };
 
