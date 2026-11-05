@@ -93,6 +93,7 @@ import { IbCountry, RowDensityDesk } from "./desk/rowdensity";
 import { AuditDayStrip, CsvColumnDesk } from "./desk/csvpresets";
 import { ReminderPolish, RiskGlance } from "./desk/remindpolish";
 import { DepositCurrencies, HandoffPolish } from "./desk/handoffpolish";
+import { StaffPolish, WithdrawalMethods } from "./desk/staffpolish";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv3/rowdensity";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv3/deskfocus";
 import { EDGE_KEY, readEdge, type Accent } from "@/lib/crmv3/edge";
@@ -446,6 +447,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "riskglance") return v3("vpTitle");
     if (tab === "handoffpolish") return v3("hpTitle");
     if (tab === "depcurrency") return v3("qcTitle");
+    if (tab === "staffpolish") return v3("spTitle");
+    if (tab === "wdmethod") return v3("wgTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -716,6 +719,8 @@ function Shell({ base, section, name }: Props) {
             {view === "riskglance" && <RiskGlance base={base} />}
             {view === "handoffpolish" && <HandoffPolish base={base} />}
             {view === "depcurrency" && <DepositCurrencies base={base} />}
+            {view === "staffpolish" && <StaffPolish base={base} />}
+            {view === "wdmethod" && <WithdrawalMethods base={base} />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
