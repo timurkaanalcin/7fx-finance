@@ -107,6 +107,7 @@ import { ReceptionNotes, TicketStatuses } from "./desk/reception";
 import { KycStatuses, SupplyNotes } from "./desk/supply";
 import { RoomNotes, TradeSides } from "./desk/confroom";
 import { AffiliateChannels, BreakNotes } from "./desk/breakroom";
+import { LeadStatuses, LoungeNotes } from "./desk/lounge";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv3/rowdensity";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv3/deskfocus";
 import { EDGE_KEY, readEdge, type Accent } from "@/lib/crmv3/edge";
@@ -488,6 +489,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "sidesg") return v3("sdgTitle");
     if (tab === "breakroom") return v3("brkTitle");
     if (tab === "affchan") return v3("acgTitle");
+    if (tab === "lounge") return v3("lngTitle");
+    if (tab === "leadstat") return v3("ldsTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -786,6 +789,8 @@ function Shell({ base, section, name }: Props) {
             {view === "sidesg" && <TradeSides base={base} />}
             {view === "breakroom" && <BreakNotes />}
             {view === "affchan" && <AffiliateChannels base={base} />}
+            {view === "lounge" && <LoungeNotes />}
+            {view === "leadstat" && <LeadStatuses base={base} />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}

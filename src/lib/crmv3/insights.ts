@@ -245,6 +245,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-side-sg-hide": ["Trade sides", "İşlem yönleri", "Handelsseiten", "Стороны сделок", "جهات الصفقات"],
   "crmv3-break-notes": ["Break notes", "Mola notları", "Pausennotizen", "Заметки о перерыве", "ملاحظات الاستراحة"],
   "crmv3-aff-channel-hide": ["Affiliate channels", "Ortak kanalları", "Partnerkanäle", "Каналы партнёров", "قنوات الشركاء"],
+  "crmv3-lounge-notes": ["Lounge notes", "Salon notları", "Loungebotizen", "Заметки лобби", "ملاحظات الصالة"],
+  "crmv3-lead-stat-hide": ["Lead statuses", "Lead durumları", "Lead-Status", "Статусы лидов", "حالات العملاء المحتملين"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
