@@ -113,6 +113,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-doc-snooze": ["Document snooze", "Belge erteleme", "Dokument-Schlummern", "Отложить документ", "تأجيل المستند"],
   "crmv3-doc-window": ["Document window", "Belge penceresi", "Dokumentfenster", "Окно документа", "نافذة المستند"],
   "crmv3-panel-density": ["Panel density", "Panel yoğunluğu", "Paneldichte", "Плотность панелей", "كثافة اللوحات"],
+  "crmv3-reject-pins": ["Pinned rejected orders", "Sabitlenen reddedilen emirler", "Angeheftete abgelehnte Orders", "Закреплённые отклонённые ордера", "الأوامر المرفوضة المثبتة"],
+  "crmv3-vault-hints": ["Vault labels", "Kasa etiketleri", "Tresorlabels", "Метки хранилища", "تسميات الخزنة"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
