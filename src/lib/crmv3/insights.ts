@@ -78,6 +78,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-ticket-views": ["Ticket views", "Talep görünümleri", "Ticket-Ansichten", "Виды заявок", "عروض الطلبات"],
   "crmv3-ticket-due": ["Due-soon window", "Yakında penceresi", "Fenster bald fällig", "Окно «скоро»", "نافذة القرب"],
   "crmv3-desk-role": ["Viewer preview", "İzleyici önizlemesi", "Betrachtervorschau", "Режим просмотра", "معاينة المشاهد"],
+  "crmv3-payout-views": ["Withdrawal views", "Çekim görünümleri", "Auszahlungsansichten", "Виды выводов", "عروض السحب"],
+  "crmv3-access-views": ["Permission views", "Yetki görünümleri", "Rechte-Ansichten", "Виды прав", "عروض الصلاحيات"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
