@@ -48,6 +48,7 @@ import { CheatSheet, HeatStrip } from "./desk/heatmap";
 import { GlassToggle, OvernightDigest } from "./desk/digest";
 import { DeskCompare, EodList } from "./desk/compare";
 import { CallScripts, StaleWatch } from "./desk/stale";
+import { DupeStrip, MeetingPrep } from "./desk/dupes";
 import { CHROME_KEY, GOLD_KEY, readChrome, readGold, type ChromeMode, type GoldLevel } from "@/lib/crmv3/triage";
 import { readJson, writeJson } from "@/lib/crmv3/bridge";
 import { JUMP_KEY, pushJump, readJumps } from "@/lib/crmv3/introducer";
@@ -252,6 +253,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "eod") return v3("eodTitle");
     if (tab === "stale") return v3("slTitle");
     if (tab === "scripts") return v3("tkTitle");
+    if (tab === "dupes") return v3("dpTitle");
+    if (tab === "prep") return v3("mpTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -421,6 +424,8 @@ function Shell({ base, section, name }: Props) {
             {view === "eod" && <EodList />}
             {view === "stale" && <StaleWatch base={base} locale={locale} tx={tx} />}
             {view === "scripts" && <CallScripts />}
+            {view === "dupes" && <DupeStrip base={base} locale={locale} tx={tx} />}
+            {view === "prep" && <MeetingPrep tx={tx} />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}

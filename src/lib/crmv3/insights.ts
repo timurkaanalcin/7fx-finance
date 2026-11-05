@@ -125,6 +125,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-stale-window": ["Stale window", "Durgun pencere", "Inaktivitätsfenster", "Окно неактивности", "نافذة الخمول"],
   "crmv3-stale-watch": ["Watched stale accounts", "İzlenen durgun hesaplar", "Beobachtete inaktive Konten", "Наблюдаемые неактивные", "الحسابات الخاملة المراقبة"],
   "crmv3-call-scripts": ["Call scripts", "Arama metinleri", "Anruftexte", "Скрипты звонка", "نصوص المكالمة"],
+  "crmv3-dupe-dismiss": ["Dismissed matches", "Gizlenen eşleşmeler", "Ausgeblendete Treffer", "Скрытые совпадения", "التطابقات المخفية"],
+  "crmv3-meeting-prep": ["Meeting bullets", "Toplantı maddeleri", "Sitzungspunkte", "Пункты встречи", "نقاط الاجتماع"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
