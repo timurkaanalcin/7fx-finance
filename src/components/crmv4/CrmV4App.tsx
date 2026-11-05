@@ -82,6 +82,7 @@ import { ContactChips, ZeroGlance } from "./round91";
 import { ReminderChips, SourceGlance } from "./round92";
 import { AssigneeGlance, TagPalette } from "./round93";
 import { DocStatusGlance, FilterPresets } from "./round94";
+import { SessionNote, WithdrawalGlance } from "./round95";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv4/round78";
 import { PAUSE_KEY, shieldOn } from "@/lib/crmv4/round74";
@@ -497,6 +498,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "assignee") return v4("gnTitle");
     if (tab === "filterpresets") return v4("fpTitle");
     if (tab === "docstatus") return v4("dsTitle");
+    if (tab === "sessionnote") return v4("syTitle");
+    if (tab === "wdstatus") return v4("wzTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -619,6 +622,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "assignee") return v4("gnSub");
     if (tab === "filterpresets") return v4("fpSub");
     if (tab === "docstatus") return v4("dsSub");
+    if (tab === "sessionnote") return v4("sySub");
+    if (tab === "wdstatus") return v4("wzSub");
     return "";
   }
 
@@ -862,6 +867,8 @@ function Shell({ base, section, name }: Props) {
             {view === "assignee" && <AssigneeGlance base={base} v4={v4} />}
             {view === "filterpresets" && <FilterPresets v4={v4} />}
             {view === "docstatus" && <DocStatusGlance base={base} v4={v4} />}
+            {view === "sessionnote" && <SessionNote v4={v4} />}
+            {view === "wdstatus" && <WithdrawalGlance base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
