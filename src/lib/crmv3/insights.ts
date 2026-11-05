@@ -185,6 +185,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-dep-status-hide": ["Status glance", "Durum bakışı", "Statusblick", "Обзор статуса", "لمحة الحالة"],
   "crmv3-mute-ids": ["Mute list", "Sessiz listesi", "Stummliste", "Список без звука", "قائمة الكتم"],
   "crmv3-symbol-hide": ["Symbol glance", "Sembol bakışı", "Symbolblick", "Обзор символа", "لمحة الرمز"],
+  "crmv3-recent-jumps": ["Recent jumps", "Son sıçramalar", "Letzte Sprünge", "Недавние переходы", "القفزات الأخيرة"],
+  "crmv3-ticket-channel-hide": ["Channel glance", "Kanal bakışı", "Kanalblick", "Обзор канала", "لمحة القناة"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
