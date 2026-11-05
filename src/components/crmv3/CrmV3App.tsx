@@ -78,6 +78,7 @@ import { DocStatusGlance, FilterPresets } from "./desk/preset";
 import { SessionNote, WithdrawalGlance } from "./desk/session";
 import { DepStatusGlance, PinRail } from "./desk/rail";
 import { MuteList, SymbolGlance } from "./desk/mute";
+import { RecentJumps, TicketChannels } from "./desk/jumps";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv3/deskfocus";
 import { EDGE_KEY, readEdge, type Accent } from "@/lib/crmv3/edge";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv3/risklist";
@@ -87,6 +88,7 @@ import { QUIET_KEY, readQuiet } from "@/lib/crmv3/leads";
 import { CHROME_KEY, GOLD_KEY, readChrome, readGold, type ChromeMode, type GoldLevel } from "@/lib/crmv3/triage";
 import { readJson, writeJson } from "@/lib/crmv3/bridge";
 import { JUMP_KEY, pushJump, readJumps } from "@/lib/crmv3/introducer";
+import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv3/jumps";
 import { PANEL_KEY, readPanel, type PanelDensity } from "@/lib/crmv3/expiry";
 import { GLASS_KEY, readGlass, type GlassMode } from "@/lib/crmv3/digest";
 import { RAIL_KEY, readFold } from "@/lib/crmv3/nav";
@@ -391,6 +393,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "depstatus") return v3("dzTitle");
     if (tab === "mutelist") return v3("muTitle");
     if (tab === "symbolglance") return v3("ymTitle");
+    if (tab === "recentjumps") return v3("jvTitle");
+    if (tab === "ticketchannel") return v3("tcTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -434,6 +438,15 @@ function Shell({ base, section, name }: Props) {
       window.dispatchEvent(new Event("crmv3:jumps"));
     }
   }, [view, id]);
+
+  useEffect(() => {
+    const current = readVisits(readJson(RECENT_JUMP_KEY, []));
+    const next = pushVisit(current, String(view), new Date().toISOString());
+    const same = next.length === current.length && next.every((item, index) => item.section === current[index]?.section && item.at === current[index]?.at);
+    if (same) return;
+    writeJson(RECENT_JUMP_KEY, next);
+    window.dispatchEvent(new Event("crmv3:recent-jumps"));
+  }, [view]);
 
   return (
     <div data-crmv3-root="" data-theme={theme} data-gold={gold} data-chrome={chrome} data-panel={panel} data-glass={glass} data-scale={scale} data-edge={edge} data-mail={mail} data-focus-sections={deskFocus.includes("sections") ? "1" : "0"} data-focus-rail={deskFocus.includes("rail") ? "1" : "0"} data-focus-tools={deskFocus.includes("tools") ? "1" : "0"} data-fold={folded ? "1" : "0"} data-crmv3-view={id ? `${view}/${id}` : view} className="c3-app font-normal">
@@ -622,6 +635,8 @@ function Shell({ base, section, name }: Props) {
             {view === "depstatus" && <DepStatusGlance base={base} />}
             {view === "mutelist" && <MuteList base={base} />}
             {view === "symbolglance" && <SymbolGlance base={base} />}
+            {view === "recentjumps" && <RecentJumps base={base} />}
+            {view === "ticketchannel" && <TicketChannels base={base} />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
