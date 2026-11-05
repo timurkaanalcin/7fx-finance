@@ -2909,3 +2909,59 @@
 @media (min-width: 768px) {
   [data-crmv3-root] .c3-daystrip-row { grid-template-columns: repeat(7, minmax(0, 1fr)); }
 }
+
+[data-crmv3-root] .c3-notice-cards,
+[data-crmv3-root] .c3-tag-people {
+  display: grid;
+  gap: var(--c3-2);
+  margin: var(--c3-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv3-root] .c3-notice-card,
+[data-crmv3-root] .c3-tag-person {
+  min-width: 0;
+  padding: var(--c3-2);
+  border: 1px solid var(--c3-line);
+  border-radius: 12px;
+  background: var(--c3-card);
+}
+
+[data-crmv3-root] .c3-notice-card[data-read="1"] { opacity: 0.62; }
+
+[data-crmv3-root] .c3-notice-title {
+  margin: var(--c3-1) 0;
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+
+[data-crmv3-root] .c3-tag-chip,
+[data-crmv3-root] .c3-tag-pill {
+  display: inline-flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--c3-1);
+}
+
+[data-crmv3-root] .c3-tag-chip {
+  padding: 4px;
+  border: 1px solid var(--c3-line);
+  border-radius: 12px;
+}
+
+[data-crmv3-root] .c3-tag-chip[data-pinned="1"] { border-color: #7a5e30; }
+
+[data-crmv3-root] .c3-tag-pill[data-on="1"] { color: var(--c3-gold); }
+
+[data-crmv3-root] .c3-tag-board .c3-lab,
+[data-crmv3-root] .c3-notice-center .c3-lab { flex: 1 1 220px; max-width: 100%; }
+
+[data-crmv3-root] .c3-tag-board .c3-select,
+[data-crmv3-root] .c3-tag-board .c3-field { width: 100%; max-width: 100%; }
+
+@media (min-width: 768px) {
+  [data-crmv3-root] .c3-notice-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  [data-crmv3-root] .c3-tag-people { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

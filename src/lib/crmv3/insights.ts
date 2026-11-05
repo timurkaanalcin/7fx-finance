@@ -87,6 +87,9 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-gallery-checks": ["Document checklist", "Belge listesi", "Dokumentenliste", "Список документов", "قائمة الوثائق"],
   "crmv3-dense-columns": ["Dense columns", "Sıkı sütunlar", "Dichte Spalten", "Плотные колонки", "أعمدة كثيفة"],
   "crmv3-day-done": ["Day done", "Gün tamam", "Tag erledigt", "День сделан", "اليوم تم"],
+  "crmv3-inbox-local-read": ["Notice read marks", "Bildirim okundu", "Hinweis gelesen", "Прочтение уведомлений", "قراءة الإشعارات"],
+  "crmv3-tag-board-pins": ["Pinned tags", "Sabit etiketler", "Angeheftete Marken", "Закреплённые метки", "وسوم مثبتة"],
+  "crmv3-tag-board-hidden": ["Hidden tags", "Gizli etiketler", "Versteckte Marken", "Скрытые метки", "وسوم مخفية"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
