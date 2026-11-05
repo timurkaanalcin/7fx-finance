@@ -3,11 +3,11 @@
 export const RAIL_KEY = "crmv4-rail-fold";
 
 export const NAV_SECTIONS = [
-  { id: "work", ids: ["overview", "customers", "countryglance", "dense", "notices", "tags", "blotter", "symbolglance", "orderstatus", "pad", "cases", "shortcuts", "leads", "sourceglance", "triage", "positions", "support", "assignee", "prioglance", "suppulse", "inbox", "thread", "marketing", "agenda", "health", "rejects", "heatmap", "compare", "stale", "dupes", "vip", "week", "lane", "riskwatch", "snooze", "sideglance"] },
+  { id: "work", ids: ["overview", "customers", "countryglance", "dense", "notices", "tags", "blotter", "symbolglance", "orderstatus", "pad", "cases", "shortcuts", "leads", "sourceglance", "triage", "positions", "support", "ticketchannel", "assignee", "prioglance", "suppulse", "inbox", "thread", "marketing", "agenda", "health", "rejects", "heatmap", "compare", "stale", "dupes", "vip", "week", "lane", "riskwatch", "snooze", "sideglance"] },
   { id: "money", ids: ["finance", "deposit", "withdraw", "payout", "payboard", "wdreason", "wdstatus", "funding", "goals", "depboard", "depstatus", "depchannel", "ibpay", "ibglance", "pulse", "glance", "curchips", "zeroglance"] },
   { id: "compliance", ids: ["kyc", "doctype", "docstatus", "gallery", "risk", "logs", "history", "alerts", "expiry", "docpulse", "kycglance"] },
   { id: "insights", ids: ["insights", "reports", "affiliates", "sources"] },
-  { id: "desk", ids: ["settings", "me", "day", "control", "prefs", "roster", "access", "handoff", "quiet", "accents", "sop", "folders", "scratch", "jumps", "density", "vault", "cheats", "digest", "glass", "eod", "scripts", "prep", "winlog", "packet", "clocks", "snippets", "swatches", "scale", "shield", "stickies", "shiftlist", "edge", "outcomes", "maildense", "callpack", "markbar", "focusmode", "pinboard", "desktimer", "licglance", "voicetray", "utcmark", "statusbanner", "quicklinks", "checklist", "scratchpad", "contacts", "reminders", "tagpalette", "filterpresets", "sessionnote", "pinrail", "mutelist"] },
+  { id: "desk", ids: ["settings", "me", "day", "control", "prefs", "roster", "access", "handoff", "quiet", "accents", "sop", "folders", "scratch", "jumps", "density", "vault", "cheats", "digest", "glass", "eod", "scripts", "prep", "winlog", "packet", "clocks", "snippets", "swatches", "scale", "shield", "stickies", "shiftlist", "edge", "outcomes", "maildense", "callpack", "markbar", "focusmode", "pinboard", "desktimer", "licglance", "voicetray", "utcmark", "statusbanner", "quicklinks", "checklist", "scratchpad", "contacts", "reminders", "tagpalette", "filterpresets", "sessionnote", "pinrail", "mutelist", "recentjumps"] },
 ] as const;
 
 export type NavSectionId = (typeof NAV_SECTIONS)[number]["id"];
