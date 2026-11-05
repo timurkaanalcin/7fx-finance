@@ -235,6 +235,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-ib-ctry-hide": ["IB countries", "IB ülkeleri", "IB-Länder", "Страны IB", "بلدان الوسطاء"],
   "crmv3-visitor-notes": ["Visitor notes", "Ziyaretçi notları", "Besuchernotizen", "Заметки о посетителе", "ملاحظات الزائر"],
   "crmv3-dep-glance-hide": ["Deposit methods", "Yatırma yöntemleri", "Einzahlungsmethoden", "Способы депозита", "طرق الإيداع"],
+  "crmv3-mail-notes": ["Mail notes", "Posta notları", "Postnotizen", "Заметки почты", "ملاحظات البريد"],
+  "crmv3-wd-stat-hide": ["Withdrawal statuses", "Çekim durumları", "Auszahlungsstatus", "Статусы вывода", "حالات السحب"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
