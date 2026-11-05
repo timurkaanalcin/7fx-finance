@@ -3,11 +3,11 @@
 export const RAIL_KEY = "crmv4-rail-fold";
 
 export const NAV_SECTIONS = [
-  { id: "work", ids: ["overview", "customers", "dense", "notices", "tags", "blotter", "pad", "cases", "shortcuts", "leads", "triage", "positions", "support", "inbox", "thread", "marketing", "agenda", "health", "rejects", "heatmap", "compare"] },
+  { id: "work", ids: ["overview", "customers", "dense", "notices", "tags", "blotter", "pad", "cases", "shortcuts", "leads", "triage", "positions", "support", "inbox", "thread", "marketing", "agenda", "health", "rejects", "heatmap", "compare", "stale"] },
   { id: "money", ids: ["finance", "deposit", "withdraw", "payout", "payboard", "funding", "goals", "depboard", "ibpay"] },
   { id: "compliance", ids: ["kyc", "gallery", "risk", "logs", "history", "alerts", "expiry"] },
   { id: "insights", ids: ["insights", "reports", "affiliates"] },
-  { id: "desk", ids: ["settings", "me", "day", "control", "prefs", "roster", "access", "handoff", "quiet", "accents", "sop", "folders", "scratch", "jumps", "density", "vault", "cheats", "digest", "glass", "eod"] },
+  { id: "desk", ids: ["settings", "me", "day", "control", "prefs", "roster", "access", "handoff", "quiet", "accents", "sop", "folders", "scratch", "jumps", "density", "vault", "cheats", "digest", "glass", "eod", "scripts"] },
 ] as const;
 
 export type NavSectionId = (typeof NAV_SECTIONS)[number]["id"];
