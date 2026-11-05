@@ -96,6 +96,7 @@ import { DepositCurrencies, HandoffPolish } from "./desk/handoffpolish";
 import { StaffPolish, WithdrawalMethods } from "./desk/staffpolish";
 import { MeetingNotes, OrderStatuses } from "./desk/meetnotes";
 import { QuickDial, TicketAssignees } from "./desk/quickdial";
+import { CallbackQueue, CasePriorities } from "./desk/callbackqueue";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv3/rowdensity";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv3/deskfocus";
 import { EDGE_KEY, readEdge, type Accent } from "@/lib/crmv3/edge";
@@ -455,6 +456,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "orderstat") return v3("jqTitle");
     if (tab === "quickdial") return v3("qdTitle");
     if (tab === "ticketassign") return v3("taTitle");
+    if (tab === "callbackqueue") return v3("cbTitle");
+    if (tab === "casepriopolish") return v3("zpTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -731,6 +734,8 @@ function Shell({ base, section, name }: Props) {
             {view === "orderstat" && <OrderStatuses base={base} />}
             {view === "quickdial" && <QuickDial />}
             {view === "ticketassign" && <TicketAssignees base={base} />}
+            {view === "callbackqueue" && <CallbackQueue />}
+            {view === "casepriopolish" && <CasePriorities base={base} />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
