@@ -42,9 +42,11 @@ import { DepositBoard, SopPad } from "./desk/sop";
 import { AlertDesk, FolderPad } from "./desk/alerts";
 import { HealthStrip, ScratchBoard } from "./desk/health";
 import { IntroducerBoard, JumpHistory } from "./desk/introducer";
+import { ExpiryWatch, PanelDensityStrip } from "./desk/expiry";
 import { CHROME_KEY, GOLD_KEY, readChrome, readGold, type ChromeMode, type GoldLevel } from "@/lib/crmv3/triage";
 import { readJson, writeJson } from "@/lib/crmv3/bridge";
 import { JUMP_KEY, pushJump, readJumps } from "@/lib/crmv3/introducer";
+import { PANEL_KEY, readPanel, type PanelDensity } from "@/lib/crmv3/expiry";
 import { RAIL_KEY, readFold } from "@/lib/crmv3/nav";
 import { MoreNav, RailNav } from "./desk/nav";
 import { useLocal } from "./desk/store";
@@ -81,6 +83,7 @@ function Shell({ base, section, name }: Props) {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [gold, setGold] = useState<GoldLevel>("desk");
   const [chrome, setChrome] = useState<ChromeMode>("roomy");
+  const [panel, setPanel] = useState<PanelDensity>("desk");
   const [pull, setPull] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -120,15 +123,20 @@ function Shell({ base, section, name }: Props) {
   useEffect(() => {
     const applyGold = (event?: Event) => setGold(readGold(event ? (event as CustomEvent).detail : readJson(GOLD_KEY, "desk")));
     const applyChrome = (event?: Event) => setChrome(readChrome(event ? (event as CustomEvent).detail : readJson(CHROME_KEY, "roomy")));
+    const applyPanel = (event?: Event) => setPanel(readPanel(event ? (event as CustomEvent).detail : readJson(PANEL_KEY, "desk")));
     applyGold();
     applyChrome();
+    applyPanel();
     const onGold = (event: Event) => applyGold(event);
     const onChrome = (event: Event) => applyChrome(event);
+    const onPanel = (event: Event) => applyPanel(event);
     window.addEventListener("crmv3:gold", onGold);
     window.addEventListener("crmv3:chrome", onChrome);
+    window.addEventListener("crmv3:panel", onPanel);
     return () => {
       window.removeEventListener("crmv3:gold", onGold);
       window.removeEventListener("crmv3:chrome", onChrome);
+      window.removeEventListener("crmv3:panel", onPanel);
     };
   }, []);
 
@@ -220,6 +228,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "scratch") return v3("sbTitle");
     if (tab === "ibpay") return v3("cmTitle");
     if (tab === "jumps") return v3("jpTitle");
+    if (tab === "expiry") return v3("exTitle");
+    if (tab === "density") return v3("lyTitle");
     if (tab === "history") return v3("hsTitle");
     if (tab === "risk") return v3("rkTitle");
     if (tab === "withdraw") return v3("wdDesk");
@@ -265,7 +275,7 @@ function Shell({ base, section, name }: Props) {
   }, [view, id]);
 
   return (
-    <div data-crmv3-root="" data-theme={theme} data-gold={gold} data-chrome={chrome} data-fold={folded ? "1" : "0"} data-crmv3-view={id ? `${view}/${id}` : view} className="c3-app font-normal">
+    <div data-crmv3-root="" data-theme={theme} data-gold={gold} data-chrome={chrome} data-panel={panel} data-fold={folded ? "1" : "0"} data-crmv3-view={id ? `${view}/${id}` : view} className="c3-app font-normal">
       <a className="c3-skip" href="#c3-main">{v3("skipMain")}</a>
       <ShortcutHost base={base} onPalette={() => setPalette(true)} onHelp={(open) => { setHelp(open); if (open) setGuide(false); }} />
       <aside className="c3-rail">
@@ -377,6 +387,8 @@ function Shell({ base, section, name }: Props) {
             {view === "scratch" && <ScratchBoard />}
             {view === "ibpay" && <IntroducerBoard base={base} locale={locale} tx={tx} />}
             {view === "jumps" && <JumpHistory base={base} />}
+            {view === "expiry" && <ExpiryWatch base={base} locale={locale} tx={tx} />}
+            {view === "density" && <PanelDensityStrip />}
             {view === "history" && <HistoryDesk base={base} tx={tx} locale={locale} />}
             {view === "risk" && <RiskDesk base={base} tx={tx} locale={locale} />}
             {view === "withdraw" && <WithdrawDesk base={base} tx={tx} locale={locale} />}
