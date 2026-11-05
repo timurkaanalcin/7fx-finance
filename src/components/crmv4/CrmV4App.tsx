@@ -100,6 +100,7 @@ import { IbCountry, RowDensityDesk } from "./round109";
 import { AuditDayStrip, CsvColumnDesk } from "./round110";
 import { ReminderPolish, RiskGlance } from "./round111";
 import { DepositCurrencies, HandoffPolish } from "./round112";
+import { StaffPolish, WithdrawalMethods } from "./round113";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -567,6 +568,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "riskglance") return v4("vpTitle");
     if (tab === "handoffpolish") return v4("hpTitle");
     if (tab === "depcurrency") return v4("qcTitle");
+    if (tab === "staffpolish") return v4("spTitle");
+    if (tab === "wdmethod") return v4("wgTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -725,6 +728,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "riskglance") return v4("vpSub");
     if (tab === "handoffpolish") return v4("hpSub");
     if (tab === "depcurrency") return v4("qcSub");
+    if (tab === "staffpolish") return v4("spSub");
+    if (tab === "wdmethod") return v4("wgSub");
     return "";
   }
 
@@ -1004,6 +1009,8 @@ function Shell({ base, section, name }: Props) {
             {view === "riskglance" && <RiskGlance base={base} v4={v4} />}
             {view === "handoffpolish" && <HandoffPolish base={base} v4={v4} />}
             {view === "depcurrency" && <DepositCurrencies base={base} v4={v4} />}
+            {view === "staffpolish" && <StaffPolish base={base} v4={v4} />}
+            {view === "wdmethod" && <WithdrawalMethods base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
