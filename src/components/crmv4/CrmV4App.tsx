@@ -43,6 +43,8 @@ import { NoticeCenter, TagBoard, useLocalInboxCount } from "./round52";
 import { DeskPad, TradeBlotter } from "./round53";
 import { CaseQueue, ShortcutRail } from "./round54";
 import { PayoutBoard, ShiftSheet } from "./round55";
+import { LeadBoard, QuietDesk } from "./round56";
+import { FOCUS_FLAG, MUTE_KEY, QUIET_KEY, nowMinutes, readFocusFlag, readMute, readQuiet, shouldAlert } from "@/lib/crmv4/round56";
 import { lastView, playPing, rememberView, soundEnabled, ticketAlertsOn } from "./round7";
 import { resolvedTheme, storedContrast, storedFont, storedFreeze, themeMode } from "./round8";
 import { readBrand } from "./round10";
@@ -123,7 +125,7 @@ function Shell({ base, section, name }: Props) {
   const [scratch, setScratch] = useState<Scratch[]>([]);
   const params = useSearchParams();
   const q = params.get("q") || "";
-  const notes = useJson<{ items?: { id: string; title?: string; body?: string; readAt?: string | null; createdAt?: string }[]; unread?: number }>("/api/notifications?take=20");
+  const notes = useJson<{ items?: { id: string; kind?: string; title?: string; body?: string; readAt?: string | null; createdAt?: string }[]; unread?: number }>("/api/notifications?take=20");
   const inboxUnread = useLocalInboxCount();
   const stats = useJson<{ kpis?: { pendingDeposits?: number; pendingBalanceRequests?: number } }>("/api/admin/stats");
   const reminders = useJson<{ reminders?: Reminder[] }>(remindersOpen ? "/api/admin/calendar?take=80" : null);
@@ -159,6 +161,7 @@ function Shell({ base, section, name }: Props) {
     window.addEventListener("crmv4:focus", onFocus);
     window.addEventListener("crmv4:brand", onBrand);
     setRole(storedRole());
+    setFocus(readFocusFlag(readJson(FOCUS_FLAG, false)));
     setZebra(storedZebra());
     setMotion(storedMotion());
     const onMotion = (event: Event) => setMotion((event as CustomEvent<string>).detail === "reduce" ? "reduce" : "system");
@@ -195,12 +198,25 @@ function Shell({ base, section, name }: Props) {
     return () => window.removeEventListener("crmv4:staff-prefs", read);
   }, []);
 
+  function alertNow(kind: string) {
+    const quiet = readQuiet(readJson(QUIET_KEY, {}));
+    return shouldAlert({
+      kind,
+      muted: readMute(readJson(MUTE_KEY, [])),
+      focus: readFocusFlag(readJson(FOCUS_FLAG, false)),
+      start: quiet.start,
+      end: quiet.end,
+      nowMin: nowMinutes(new Date()),
+    });
+  }
+
   useEffect(() => {
     const baseTitle = "CRM v4";
     document.title = unread > 0 ? `(${unread}) ${baseTitle}` : baseTitle;
-    if (unread > ticketSeen.current && soundEnabled()) playPing();
+    const kind = String((notes.data?.items || []).find((row) => !row.readAt)?.kind || "info");
+    if (unread > ticketSeen.current && soundEnabled() && alertNow(kind)) playPing();
     ticketSeen.current = unread;
-  }, [unread]);
+  }, [unread, notes.data]);
 
   useEffect(() => {
     if (!ticketAlertsOn()) return;
@@ -211,7 +227,7 @@ function Shell({ base, section, name }: Props) {
       const body = await res.json() as { tickets?: unknown[] };
       const count = (body.tickets || []).length;
       const seen = Number(window.sessionStorage.getItem("crmv4-ticket-count") || "0");
-      if (count > seen) new Notification(v4("ticketNotify"));
+      if (count > seen && alertNow("ticket")) new Notification(v4("ticketNotify"));
       window.sessionStorage.setItem("crmv4-ticket-count", String(count));
     }, 60000);
     return () => window.clearInterval(id);
@@ -305,6 +321,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "shortcuts") return v4("scTitle");
     if (tab === "payboard") return v4("pbTitle");
     if (tab === "handoff") return v4("shTitle");
+    if (tab === "leads") return v4("ldTitle");
+    if (tab === "quiet") return v4("qfTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -349,6 +367,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "shortcuts") return v4("scSub");
     if (tab === "payboard") return v4("pbSub");
     if (tab === "handoff") return v4("shSub");
+    if (tab === "leads") return v4("ldSub");
+    if (tab === "quiet") return v4("qfSub");
     return "";
   }
 
@@ -514,6 +534,8 @@ function Shell({ base, section, name }: Props) {
             {view === "shortcuts" && <ShortcutRail base={base} v4={v4} />}
             {view === "payboard" && <PayoutBoard base={base} v4={v4} locale={locale} tx={tx} />}
             {view === "handoff" && <ShiftSheet v4={v4} tx={tx} />}
+            {view === "leads" && <LeadBoard base={base} v4={v4} tx={tx} />}
+            {view === "quiet" && <QuietDesk v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
