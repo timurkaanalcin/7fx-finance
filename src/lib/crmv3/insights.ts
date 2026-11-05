@@ -213,6 +213,8 @@ const CATALOG: Record<string, readonly [string, string, string, string, string]>
   "crmv3-csv-presets": ["CSV columns", "CSV sütunları", "CSV-Spalten", "Столбцы CSV", "أعمدة CSV"],
   "crmv3-csv-columns": ["CSV choice", "CSV seçimi", "CSV-Wahl", "Выбор CSV", "اختيار CSV"],
   "crmv3-audit-day-hide": ["Audit days", "Denetim günleri", "Protokolltage", "Дни журнала", "أيام السجل"],
+  "crmv3-reminder-polish": ["Reminder chips", "Anımsatıcı çipleri", "Erinnerungschips", "Чипы напоминаний", "رقائق التذكير"],
+  "crmv3-risk-glance-hide": ["Customer risk", "Müşteri riski", "Kundenrisiko", "Риск клиента", "خطر العميل"],
 };
 
 const LOCALE_INDEX = { en: 0, tr: 1, de: 2, ru: 3, ar: 4 } as const;
