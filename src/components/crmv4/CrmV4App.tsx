@@ -40,6 +40,7 @@ import { ThreadDesk } from "./round49";
 import { GalleryDesk, HistoryDesk } from "./round50";
 import { DayStrip, DenseList } from "./round51";
 import { NoticeCenter, TagBoard, useLocalInboxCount } from "./round52";
+import { DeskPad, TradeBlotter } from "./round53";
 import { lastView, playPing, rememberView, soundEnabled, ticketAlertsOn } from "./round7";
 import { resolvedTheme, storedContrast, storedFont, storedFreeze, themeMode } from "./round8";
 import { readBrand } from "./round10";
@@ -296,6 +297,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "dense") return v4("dnTitle");
     if (tab === "notices") return v4("ibTitle");
     if (tab === "tags") return v4("tgTitle");
+    if (tab === "blotter") return v4("blTitle");
+    if (tab === "pad") return v4("pdTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -334,6 +337,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "dense") return v4("dnSub");
     if (tab === "notices") return v4("ibSub");
     if (tab === "tags") return v4("tgSub");
+    if (tab === "blotter") return v4("blSub");
+    if (tab === "pad") return v4("pdSub");
     return "";
   }
 
@@ -493,6 +498,8 @@ function Shell({ base, section, name }: Props) {
             {view === "dense" && <DenseList base={base} v4={v4} tx={tx} />}
             {view === "notices" && <NoticeCenter base={base} v4={v4} locale={locale} tx={tx} />}
             {view === "tags" && <TagBoard base={base} v4={v4} tx={tx} />}
+            {view === "blotter" && <TradeBlotter base={base} v4={v4} locale={locale} tx={tx} />}
+            {view === "pad" && <DeskPad base={base} v4={v4} tx={tx} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
