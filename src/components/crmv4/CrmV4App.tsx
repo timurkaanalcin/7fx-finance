@@ -69,6 +69,8 @@ import { MailDensityStrip, RiskWatch } from "./round78";
 import { CallPack, CurrencyChips } from "./round79";
 import { BookmarkBar, KycGlance } from "./round80";
 import { SideGlance, SnoozeStrip } from "./round81";
+import { FocusDesk, SupportPulse } from "./round82";
+import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
 import { MAIL_KEY, readDensity, type MailDensity } from "@/lib/crmv4/round78";
 import { PAUSE_KEY, shieldOn } from "@/lib/crmv4/round74";
 import { SCALE_KEY, readScale, type PanelScale } from "@/lib/crmv4/round73";
@@ -155,6 +157,7 @@ function Shell({ base, section, name }: Props) {
   const [glass, setGlass] = useState<GlassMode>("soft");
   const [scale, setScale] = useState<PanelScale>("desk");
   const [mail, setMail] = useState<MailDensity>("desk");
+  const [deskFocus, setDeskFocus] = useState<FocusPanel[]>([]);
   const [chrome, setChrome] = useState<ChromeMode>("roomy");
   const [brand, setBrand] = useState("");
   const ticketSeen = useRef(0);
@@ -207,18 +210,21 @@ function Shell({ base, section, name }: Props) {
     setGlass(readGlass(readJson(GLASS_KEY, "soft")));
     setScale(readScale(readJson(SCALE_KEY, "desk")));
     setMail(readDensity(readJson(MAIL_KEY, "desk")));
+    setDeskFocus(readFocus(readJson(FOCUS_KEY, [])));
     const onGold = (event: Event) => setGold(readGold((event as CustomEvent).detail));
     const onChrome = (event: Event) => setChrome(readChrome((event as CustomEvent).detail));
     const onPanel = (event: Event) => setPanel(readPanel((event as CustomEvent).detail));
     const onGlass = (event: Event) => setGlass(readGlass((event as CustomEvent).detail));
     const onScale = (event: Event) => setScale(readScale((event as CustomEvent).detail));
     const onMail = (event: Event) => setMail(readDensity((event as CustomEvent).detail));
+    const onDeskFocus = (event: Event) => setDeskFocus(readFocus((event as CustomEvent).detail));
     window.addEventListener("crmv4:gold", onGold);
     window.addEventListener("crmv4:chrome", onChrome);
     window.addEventListener("crmv4:panel", onPanel);
     window.addEventListener("crmv4:glass", onGlass);
     window.addEventListener("crmv4:scale", onScale);
     window.addEventListener("crmv4:mail", onMail);
+    window.addEventListener("crmv4:desk-focus", onDeskFocus);
     setZebra(storedZebra());
     setMotion(storedMotion());
     const onMotion = (event: Event) => setMotion((event as CustomEvent<string>).detail === "reduce" ? "reduce" : "system");
@@ -245,6 +251,7 @@ function Shell({ base, section, name }: Props) {
       window.removeEventListener("crmv4:panel", onPanel);
       window.removeEventListener("crmv4:glass", onGlass);
       window.removeEventListener("crmv4:mail", onMail);
+      window.removeEventListener("crmv4:desk-focus", onDeskFocus);
       window.removeEventListener("crmv4:brand", onBrand);
       media.removeEventListener("change", onMode);
     };
@@ -452,6 +459,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "kycglance") return v4("kgTitle");
     if (tab === "snooze") return v4("szTitle");
     if (tab === "sideglance") return v4("sdTitle");
+    if (tab === "focusmode") return v4("fmTitle");
+    if (tab === "suppulse") return v4("qpTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -548,6 +557,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "kycglance") return v4("kgSub");
     if (tab === "snooze") return v4("szSub");
     if (tab === "sideglance") return v4("sdSub");
+    if (tab === "focusmode") return v4("fmSub");
+    if (tab === "suppulse") return v4("qpSub");
     return "";
   }
 
@@ -560,7 +571,7 @@ function Shell({ base, section, name }: Props) {
   for (const item of CRM_V4_SECTIONS) names[item.id] = label(item.id);
 
   return (
-    <div data-crmv4-root="" data-theme={theme} data-accent={accent} data-role={role} data-zebra={zebra ? "1" : "0"} data-motion={motion} data-compact={compact ? "1" : "0"} data-font={font} data-contrast={contrast ? "1" : "0"} data-freeze={freeze ? "1" : "0"} data-focus={focus ? "1" : "0"} data-gold={gold} data-chrome={chrome} data-panel={panel} data-glass={glass} data-scale={scale} data-mail={mail} data-density={density} data-fold={folded ? "1" : "0"} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
+    <div data-crmv4-root="" data-theme={theme} data-accent={accent} data-role={role} data-zebra={zebra ? "1" : "0"} data-motion={motion} data-compact={compact ? "1" : "0"} data-font={font} data-contrast={contrast ? "1" : "0"} data-freeze={freeze ? "1" : "0"} data-focus={focus ? "1" : "0"} data-gold={gold} data-chrome={chrome} data-panel={panel} data-glass={glass} data-scale={scale} data-mail={mail} data-focus-sections={deskFocus.includes("sections") ? "1" : "0"} data-focus-rail={deskFocus.includes("rail") ? "1" : "0"} data-focus-tools={deskFocus.includes("tools") ? "1" : "0"} data-density={density} data-fold={folded ? "1" : "0"} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
       <a className="c4-skip" href="#c4-main">{v4("skipContent")}</a>
       <OfflineBanner v4={v4} quiet={shield} />
       <IdleWarning v4={v4} />
@@ -765,6 +776,8 @@ function Shell({ base, section, name }: Props) {
             {view === "kycglance" && <KycGlance base={base} v4={v4} />}
             {view === "snooze" && <SnoozeStrip base={base} v4={v4} locale={locale} />}
             {view === "sideglance" && <SideGlance base={base} v4={v4} />}
+            {view === "focusmode" && <FocusDesk v4={v4} />}
+            {view === "suppulse" && <SupportPulse base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
