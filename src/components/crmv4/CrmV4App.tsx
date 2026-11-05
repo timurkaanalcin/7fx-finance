@@ -60,6 +60,8 @@ import { SourceMix, WinLog } from "./round69";
 import { HandoffPacket, VipWatch } from "./round70";
 import { DeskClocks, SnippetPad } from "./round71";
 import { QueuePulse, RouteSwatches } from "./round72";
+import { FontScale, WeekAgenda } from "./round73";
+import { SCALE_KEY, readScale, type PanelScale } from "@/lib/crmv4/round73";
 import { GLASS_KEY, readGlass, type GlassMode } from "@/lib/crmv4/round65";
 import { PANEL_KEY, readPanel, type PanelDensity } from "@/lib/crmv4/round62";
 import { JUMP_KEY, pushJump, readJumps } from "@/lib/crmv4/round61";
@@ -140,6 +142,7 @@ function Shell({ base, section, name }: Props) {
   const [gold, setGold] = useState<GoldLevel>("desk");
   const [panel, setPanel] = useState<PanelDensity>("desk");
   const [glass, setGlass] = useState<GlassMode>("soft");
+  const [scale, setScale] = useState<PanelScale>("desk");
   const [chrome, setChrome] = useState<ChromeMode>("roomy");
   const [brand, setBrand] = useState("");
   const ticketSeen = useRef(0);
@@ -190,14 +193,17 @@ function Shell({ base, section, name }: Props) {
     setChrome(readChrome(readJson(CHROME_KEY, "roomy")));
     setPanel(readPanel(readJson(PANEL_KEY, "desk")));
     setGlass(readGlass(readJson(GLASS_KEY, "soft")));
+    setScale(readScale(readJson(SCALE_KEY, "desk")));
     const onGold = (event: Event) => setGold(readGold((event as CustomEvent).detail));
     const onChrome = (event: Event) => setChrome(readChrome((event as CustomEvent).detail));
     const onPanel = (event: Event) => setPanel(readPanel((event as CustomEvent).detail));
     const onGlass = (event: Event) => setGlass(readGlass((event as CustomEvent).detail));
+    const onScale = (event: Event) => setScale(readScale((event as CustomEvent).detail));
     window.addEventListener("crmv4:gold", onGold);
     window.addEventListener("crmv4:chrome", onChrome);
     window.addEventListener("crmv4:panel", onPanel);
     window.addEventListener("crmv4:glass", onGlass);
+    window.addEventListener("crmv4:scale", onScale);
     setZebra(storedZebra());
     setMotion(storedMotion());
     const onMotion = (event: Event) => setMotion((event as CustomEvent<string>).detail === "reduce" ? "reduce" : "system");
@@ -400,6 +406,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "snippets") return v4("snTitle");
     if (tab === "pulse") return v4("puTitle");
     if (tab === "swatches") return v4("swTitle");
+    if (tab === "week") return v4("wkTitle");
+    if (tab === "scale") return v4("tyTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -478,6 +486,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "snippets") return v4("snSub");
     if (tab === "pulse") return v4("puSub");
     if (tab === "swatches") return v4("swSub");
+    if (tab === "week") return v4("wkSub");
+    if (tab === "scale") return v4("tySub");
     return "";
   }
 
@@ -490,7 +500,7 @@ function Shell({ base, section, name }: Props) {
   for (const item of CRM_V4_SECTIONS) names[item.id] = label(item.id);
 
   return (
-    <div data-crmv4-root="" data-theme={theme} data-accent={accent} data-role={role} data-zebra={zebra ? "1" : "0"} data-motion={motion} data-compact={compact ? "1" : "0"} data-font={font} data-contrast={contrast ? "1" : "0"} data-freeze={freeze ? "1" : "0"} data-focus={focus ? "1" : "0"} data-gold={gold} data-chrome={chrome} data-panel={panel} data-glass={glass} data-density={density} data-fold={folded ? "1" : "0"} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
+    <div data-crmv4-root="" data-theme={theme} data-accent={accent} data-role={role} data-zebra={zebra ? "1" : "0"} data-motion={motion} data-compact={compact ? "1" : "0"} data-font={font} data-contrast={contrast ? "1" : "0"} data-freeze={freeze ? "1" : "0"} data-focus={focus ? "1" : "0"} data-gold={gold} data-chrome={chrome} data-panel={panel} data-glass={glass} data-scale={scale} data-density={density} data-fold={folded ? "1" : "0"} data-crmv4-view={id ? `${view}/${id}` : view} className="c4-app font-normal">
       <a className="c4-skip" href="#c4-main">{v4("skipContent")}</a>
       <OfflineBanner v4={v4} />
       <IdleWarning v4={v4} />
@@ -677,6 +687,8 @@ function Shell({ base, section, name }: Props) {
             {view === "snippets" && <SnippetPad v4={v4} />}
             {view === "pulse" && <QueuePulse base={base} v4={v4} tx={tx} />}
             {view === "swatches" && <RouteSwatches base={base} v4={v4} />}
+            {view === "week" && <WeekAgenda base={base} v4={v4} locale={locale} tx={tx} />}
+            {view === "scale" && <FontScale v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
