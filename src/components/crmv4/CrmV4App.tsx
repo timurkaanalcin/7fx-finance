@@ -124,6 +124,7 @@ import { BellSlips, TradingGroups } from "./round133";
 import { BrokerNames, LampCards } from "./round134";
 import { HostCards, TradingServers } from "./round135";
 import { CallWindows, CustomerTimezones } from "./round136";
+import { ArrivalCards, CustomerCities } from "./round137";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -639,6 +640,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "server") return v4("tsvTitle");
     if (tab === "callwin") return v4("cwnTitle");
     if (tab === "zones") return v4("zonTitle");
+    if (tab === "arrival") return v4("arrTitle");
+    if (tab === "cities") return v4("citTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -845,6 +848,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "server") return v4("tsvSub");
     if (tab === "callwin") return v4("cwnSub");
     if (tab === "zones") return v4("zonSub");
+    if (tab === "arrival") return v4("arrSub");
+    if (tab === "cities") return v4("citSub");
     return "";
   }
 
@@ -1176,6 +1181,8 @@ function Shell({ base, section, name }: Props) {
             {view === "server" && <TradingServers base={base} v4={v4} />}
             {view === "callwin" && <CallWindows v4={v4} />}
             {view === "zones" && <CustomerTimezones base={base} v4={v4} />}
+            {view === "arrival" && <ArrivalCards v4={v4} />}
+            {view === "cities" && <CustomerCities base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
