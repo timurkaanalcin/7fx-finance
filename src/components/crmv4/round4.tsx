@@ -143,8 +143,9 @@ export function FreshnessBar({ v4 }: { v4: V4 }) {
   }, [sec]);
   const label = at ? new Date(at).toISOString().slice(11, 16) : "—";
   return (
-    <div className="c4-fresh">
-      <span>{v4("freshness")} {label}</span>
+    <div className="c4-fresh c4-fresh-crest">
+      <span className="c4-fresh-mark" aria-hidden="true" />
+      <span className="c4-fresh-time">{v4("freshness")} {label}</span>
       <button type="button" className="c4-btn" onClick={() => window.dispatchEvent(new Event("crmv4:refresh"))}>{v4("refreshNow")}</button>
       <select className="c4-select" aria-label={v4("freshness")} value={String(sec)} onChange={(event) => {
         const next = Number(event.target.value) || 0;

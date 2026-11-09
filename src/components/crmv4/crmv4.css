@@ -18852,3 +18852,464 @@
   [data-crmv4-root] .c4-call .c4-btn,
   [data-crmv4-root] .c4-zone .c4-btn { transition: none; }
 }
+
+/* Round 137 — freshness ticket, footer colophon, arrival cards, last cities.
+   Graphite #1c1a17, ivory #f6f1e8, champagne #d4bc86. Chrome pad stays 10px.
+   The logo plate stays monochrome. */
+
+[data-crmv4-root] .c4-fresh.c4-fresh-crest {
+  display: grid;
+  grid-template-columns: 8px minmax(0, 1fr) auto minmax(88px, 140px);
+  align-items: center;
+  gap: 10px 12px;
+  width: min(100%, 560px);
+  min-height: 36px;
+  margin: 10px 0 0;
+  padding: 0 12px 0 0;
+  border: 1px solid #1c1a17;
+  border-radius: 0;
+  background: #fffdf8;
+  color: #1c1a17;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root] .c4-fresh-crest .c4-fresh-mark {
+  width: 3px;
+  height: 100%;
+  min-height: 36px;
+  align-self: stretch;
+  background: #d4bc86;
+}
+
+[data-crmv4-root] .c4-fresh-crest .c4-fresh-time {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-crmv4-root] .c4-fresh-crest .c4-btn,
+[data-crmv4-root] .c4-fresh-crest .c4-select {
+  width: auto;
+  height: 28px;
+  min-height: 28px;
+  margin: 0;
+  border-color: #1c1a17;
+  border-radius: 0;
+  background: transparent;
+  color: #1c1a17;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root] .c4-fresh-crest .c4-btn:hover,
+[data-crmv4-root] .c4-fresh-crest .c4-select:hover { background: #f6f1e8; }
+
+[data-crmv4-root] .c4-fresh-crest .c4-btn:focus-visible,
+[data-crmv4-root] .c4-fresh-crest .c4-select:focus-visible {
+  outline: 2px solid #d4bc86;
+  outline-offset: 2px;
+}
+
+[data-crmv4-root] .c4-foot.c4-foot-luxe.c4-foot-crest {
+  display: grid;
+  grid-template-columns: auto 28px minmax(0, 1.4fr) auto auto auto auto;
+  align-items: center;
+  gap: 0 16px;
+  min-height: 64px;
+  margin: 18px 0 0;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 0;
+  background: #1c1a17;
+  color: #f6f1e8;
+  box-shadow: none;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root] .c4-foot-crest .c4-foot-plate[data-logo="mono"] {
+  margin: 0;
+  color: #f6f1e8;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  line-height: 22px;
+}
+
+[data-crmv4-root] .c4-foot-crest .c4-foot-rule {
+  width: 8px;
+  height: 8px;
+  justify-self: center;
+  background: #d4bc86;
+  transform: rotate(45deg);
+}
+
+[data-crmv4-root] .c4-foot-crest .c4-btn {
+  height: 30px;
+  min-height: 30px;
+  border-color: #d4bc86;
+  border-radius: 0;
+  background: transparent;
+  color: #f6f1e8;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root] .c4-foot-crest .c4-btn:hover { background: #d4bc86; color: #1c1a17; }
+
+[data-crmv4-root] .c4-foot-crest .c4-btn:focus-visible {
+  outline: 2px solid #d4bc86;
+  outline-offset: 2px;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-fresh.c4-fresh-crest {
+  border-color: #d4bc86;
+  background: #1c1a17;
+  color: #f6f1e8;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-fresh-crest .c4-fresh-mark { background: #d4bc86; }
+
+[data-crmv4-root][data-theme="dark"] .c4-fresh-crest .c4-btn,
+[data-crmv4-root][data-theme="dark"] .c4-fresh-crest .c4-select {
+  border-color: #d4bc86;
+  background: transparent;
+  color: #f6f1e8;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-foot.c4-foot-luxe.c4-foot-crest {
+  background: #141210;
+  color: #f6f1e8;
+  box-shadow: inset 0 1px 0 #d4bc86;
+}
+
+[data-crmv4-root] .c4-arrival,
+[data-crmv4-root] .c4-city {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 18px 18px 22px;
+  border: 1px solid #1c1a17;
+  border-radius: 0;
+  background:
+    linear-gradient(#1c1a17, #1c1a17) 0 0 / 100% 4px no-repeat,
+    #fffdf8;
+  color: #1c1a17;
+}
+
+[data-crmv4-root] .c4-arr-head,
+[data-crmv4-root] .c4-cit-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px 16px;
+}
+
+[data-crmv4-root] .c4-arr-plate[data-logo="mono"] {
+  margin: 0;
+  padding: 6px 10px;
+  background: #1c1a17;
+  color: #f6f1e8;
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  line-height: 1;
+}
+
+[data-crmv4-root] .c4-arrival .c4-title,
+[data-crmv4-root] .c4-city .c4-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+[data-crmv4-root] .c4-arrival .c4-title::after,
+[data-crmv4-root] .c4-city .c4-title::after {
+  content: "";
+  display: block;
+  width: 36px;
+  height: 2px;
+  margin-top: 8px;
+  background: #d4bc86;
+}
+
+[data-crmv4-root] .c4-arr-count {
+  margin: 0;
+  color: #7a5e30;
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+[data-crmv4-root] .c4-arr-notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin: 0;
+  padding: 8px 12px;
+  border-inline-start: 3px solid #d4bc86;
+  background: #1c1a17;
+  color: #f6f1e8;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root] .c4-arr-notice .c4-btn {
+  border-color: #d4bc86;
+  color: #f6f1e8;
+  background: transparent;
+}
+
+[data-crmv4-root] .c4-arr-kpi {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+[data-crmv4-root] .c4-arr-kpi .c4-pay-kicker { grid-column: 1 / -1; margin: 0; }
+
+[data-crmv4-root] .c4-arr-meter {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 10px 12px 12px;
+  border: 1px solid #e6dccf;
+  background: #fffdf8;
+}
+
+[data-crmv4-root] .c4-arr-meter[data-tray="waiting"] { box-shadow: inset 3px 0 0 #d4bc86; }
+[data-crmv4-root] .c4-arr-meter[data-tray="held"] { box-shadow: inset 3px 0 0 #7a5e30; }
+[data-crmv4-root] .c4-arr-meter[data-tray="greeted"] { box-shadow: inset 3px 0 0 #1f8a4c; }
+
+[data-crmv4-root] .c4-arr-track,
+[data-crmv4-root] .c4-cit-track {
+  display: block;
+  height: 3px;
+  background: #f3ece2;
+}
+
+[data-crmv4-root] .c4-arr-track i,
+[data-crmv4-root] .c4-cit-track i {
+  display: block;
+  height: 3px;
+  background: #d4bc86;
+}
+
+[data-crmv4-root] .c4-arr-form,
+[data-crmv4-root] .c4-arr-next,
+[data-crmv4-root] .c4-arr-view {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  align-items: end;
+}
+
+[data-crmv4-root] .c4-arrival .c4-field,
+[data-crmv4-root] .c4-city .c4-field,
+[data-crmv4-root] .c4-arrival .c4-btn,
+[data-crmv4-root] .c4-city .c4-btn,
+[data-crmv4-root] .c4-arrival .c4-chip,
+[data-crmv4-root] .c4-city .c4-chip {
+  border-radius: 0;
+}
+
+[data-crmv4-root] .c4-arrival .c4-chip[data-on="1"],
+[data-crmv4-root] .c4-city .c4-chip[data-on="1"] {
+  border-color: #1c1a17;
+  background: #1c1a17;
+  color: #f6f1e8;
+}
+
+[data-crmv4-root] .c4-arrival .c4-btn:focus-visible,
+[data-crmv4-root] .c4-city .c4-btn:focus-visible,
+[data-crmv4-root] .c4-arrival .c4-chip:focus-visible,
+[data-crmv4-root] .c4-city .c4-chip:focus-visible,
+[data-crmv4-root] .c4-arrival .c4-field:focus-visible,
+[data-crmv4-root] .c4-city .c4-field:focus-visible {
+  outline: 2px solid #d4bc86;
+  outline-offset: 2px;
+}
+
+[data-crmv4-root] .c4-arr-rows,
+[data-crmv4-root] .c4-arr-time,
+[data-crmv4-root] .c4-arr-views,
+[data-crmv4-root] .c4-cit-rows {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv4-root] .c4-arr-rows li,
+[data-crmv4-root] .c4-cit-rows li,
+[data-crmv4-root] .c4-arr-time li {
+  display: grid;
+  grid-template-columns: 8px minmax(0, 1fr);
+  gap: 8px 12px;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid #e6dccf;
+  background: #fffdf8;
+}
+
+[data-crmv4-root] .c4-arr-rows li[data-late="1"] { box-shadow: inset 3px 0 0 #de260b; }
+[data-crmv4-root] .c4-arr-spine,
+[data-crmv4-root] .c4-cit-spine { background: #d4bc86; }
+
+[data-crmv4-root] .c4-arr-pips { display: flex; gap: 4px; margin: 0; }
+[data-crmv4-root] .c4-arr-pips i { width: 8px; height: 8px; background: #e6dccf; }
+[data-crmv4-root] .c4-arr-pips i[data-on="1"] { background: #d4bc86; }
+
+[data-crmv4-root] .c4-arr-rows li .c4-row { grid-column: 1 / -1; }
+
+[data-crmv4-root] .c4-arr-hour {
+  color: #7a5e30;
+  font-variant-numeric: tabular-nums;
+}
+
+[data-crmv4-root] .c4-cit-chart {
+  display: flex;
+  align-items: end;
+  gap: 8px;
+  min-height: 120px;
+  margin: 0;
+  padding: 8px 0 0;
+  border-bottom: 1px solid #1c1a17;
+}
+
+[data-crmv4-root] .c4-cit-col {
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+
+[data-crmv4-root] .c4-cit-bar {
+  display: block;
+  width: 18px;
+  background: #1c1a17;
+  box-shadow: inset 0 -3px 0 #d4bc86;
+}
+
+[data-crmv4-root] .c4-cit-blank {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 8px 12px;
+  border: 1px solid #1c1a17;
+  background: transparent;
+  color: inherit;
+  text-align: start;
+}
+
+[data-crmv4-root] .c4-cit-blank[data-on="1"] { background: #1c1a17; color: #f6f1e8; }
+
+[data-crmv4-root] .c4-cit-pair {
+  display: grid;
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid #e6dccf;
+}
+
+[data-crmv4-root] .c4-arrival .c4-pay-empty,
+[data-crmv4-root] .c4-city .c4-pay-empty {
+  margin: 0;
+  padding: 22px 16px;
+  border: 1px dashed #d4bc86;
+  background: #fffdf8;
+  color: #7a5e30;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-arrival,
+[data-crmv4-root][data-theme="dark"] .c4-city {
+  border-color: #d4bc86;
+  background:
+    linear-gradient(#d4bc86, #d4bc86) 0 0 / 100% 4px no-repeat,
+    #1c1a17;
+  color: #f6f1e8;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-arr-meter,
+[data-crmv4-root][data-theme="dark"] .c4-arr-rows li,
+[data-crmv4-root][data-theme="dark"] .c4-cit-rows li,
+[data-crmv4-root][data-theme="dark"] .c4-arr-time li,
+[data-crmv4-root][data-theme="dark"] .c4-cit-pair,
+[data-crmv4-root][data-theme="dark"] .c4-arrival .c4-pay-empty,
+[data-crmv4-root][data-theme="dark"] .c4-city .c4-pay-empty {
+  border-color: rgba(212, 188, 134, 0.35);
+  background: #141210;
+  color: #f6f1e8;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-arrival .c4-chip,
+[data-crmv4-root][data-theme="dark"] .c4-city .c4-chip,
+[data-crmv4-root][data-theme="dark"] .c4-arrival .c4-btn,
+[data-crmv4-root][data-theme="dark"] .c4-city .c4-btn {
+  border-color: #d4bc86;
+  color: #f6f1e8;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-cit-bar { background: #d4bc86; }
+[data-crmv4-root][data-theme="dark"] .c4-arr-track,
+[data-crmv4-root][data-theme="dark"] .c4-cit-track { background: rgba(246, 241, 232, 0.16); }
+
+@media (max-width: 767px) {
+  [data-crmv4-root] .c4-fresh.c4-fresh-crest {
+    grid-template-columns: 8px minmax(0, 1fr);
+    width: 100%;
+    padding-bottom: 8px;
+  }
+  [data-crmv4-root] .c4-fresh-crest .c4-fresh-mark { grid-row: 1 / -1; }
+  [data-crmv4-root] .c4-fresh-crest .c4-btn,
+  [data-crmv4-root] .c4-fresh-crest .c4-select {
+    grid-column: 2;
+    width: 100%;
+    min-height: 44px;
+    height: 44px;
+  }
+  [data-crmv4-root] .c4-foot.c4-foot-luxe.c4-foot-crest {
+    grid-template-columns: auto 16px minmax(0, 1fr);
+    gap: 10px 12px;
+    min-height: 0;
+    padding: 14px 12px calc(env(safe-area-inset-bottom, 0px) + var(--chrome-pad));
+  }
+  [data-crmv4-root] .c4-foot-crest > span:not(.c4-foot-rule),
+  [data-crmv4-root] .c4-foot-crest > time,
+  [data-crmv4-root] .c4-foot-crest .c4-btn {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+  [data-crmv4-root] .c4-foot-crest .c4-btn { min-height: 44px; height: 44px; }
+  [data-crmv4-root] .c4-arrival,
+  [data-crmv4-root] .c4-city { padding: 14px 12px 16px; }
+  [data-crmv4-root] .c4-arr-head,
+  [data-crmv4-root] .c4-cit-head { grid-template-columns: auto minmax(0, 1fr); }
+  [data-crmv4-root] .c4-arr-kpi,
+  [data-crmv4-root] .c4-arr-form,
+  [data-crmv4-root] .c4-arr-next,
+  [data-crmv4-root] .c4-arr-view { grid-template-columns: minmax(0, 1fr); }
+  [data-crmv4-root] .c4-arrival .c4-btn,
+  [data-crmv4-root] .c4-city .c4-btn,
+  [data-crmv4-root] .c4-arrival .c4-chip,
+  [data-crmv4-root] .c4-city .c4-chip,
+  [data-crmv4-root] .c4-cit-blank { min-height: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-fresh-crest .c4-btn,
+  [data-crmv4-root] .c4-foot-crest .c4-btn,
+  [data-crmv4-root] .c4-arrival .c4-btn,
+  [data-crmv4-root] .c4-city .c4-btn { transition: none; }
+}

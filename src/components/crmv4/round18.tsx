@@ -181,7 +181,9 @@ export function DeskFoot({ section, name, v4, onHelp }: { section: string; name:
     return () => window.clearInterval(timer);
   }, []);
   return (
-    <footer className="c4-foot c4-foot-luxe">
+    <footer className="c4-foot c4-foot-luxe c4-foot-crest">
+      <p className="c4-foot-plate" data-logo="mono">7FX</p>
+      <span className="c4-foot-rule" aria-hidden="true" />
       <span>{v4("footer")}</span>
       <span>{v4("footSection")} {section || "—"}</span>
       <span>{v4("footSigned")} {name || "—"}</span>
