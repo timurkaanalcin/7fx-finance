@@ -119,6 +119,7 @@ import { AccountTypes, PantryNotes } from "./round128";
 import { CoatNotes, KycFileStatuses } from "./round129";
 import { ConciergeNotes, RetentionStatuses } from "./round130";
 import { PotentialStatuses, ValetNotes } from "./round131";
+import { PorterSlips, ValidationStatuses } from "./round132";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -624,6 +625,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "retstat") return v4("rtnTitle");
     if (tab === "valet") return v4("vltTitle");
     if (tab === "potstat") return v4("potTitle");
+    if (tab === "porter") return v4("prtTitle");
+    if (tab === "valstat") return v4("vldTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -820,6 +823,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "retstat") return v4("rtnSub");
     if (tab === "valet") return v4("vltSub");
     if (tab === "potstat") return v4("potSub");
+    if (tab === "porter") return v4("prtSub");
+    if (tab === "valstat") return v4("vldSub");
     return "";
   }
 
@@ -912,7 +917,8 @@ function Shell({ base, section, name }: Props) {
       <div className="c4-frame">
         <div className="c4-panel" data-view={view} onScroll={(event) => setCompact(event.currentTarget.scrollTop > 24)}>
           {!id && (
-            <div className="c4-pagehead">
+            <div className="c4-pagehead c4-pagehead-folio">
+              <p className="c4-folio-plate" data-logo="mono" aria-hidden="true">7FX</p>
               <div>
                 <h1 className="c4-page-title">{heading}</h1>
                 {brand ? <p className="c4-brand-line">{brand}</p> : null}
@@ -1137,6 +1143,8 @@ function Shell({ base, section, name }: Props) {
             {view === "retstat" && <RetentionStatuses base={base} v4={v4} />}
             {view === "valet" && <ValetNotes v4={v4} />}
             {view === "potstat" && <PotentialStatuses base={base} v4={v4} />}
+            {view === "porter" && <PorterSlips v4={v4} />}
+            {view === "valstat" && <ValidationStatuses base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
