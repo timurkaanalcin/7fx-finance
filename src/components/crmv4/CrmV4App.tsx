@@ -123,6 +123,7 @@ import { PorterSlips, ValidationStatuses } from "./round132";
 import { BellSlips, TradingGroups } from "./round133";
 import { BrokerNames, LampCards } from "./round134";
 import { HostCards, TradingServers } from "./round135";
+import { CallWindows, CustomerTimezones } from "./round136";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -636,6 +637,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "broker") return v4("bknTitle");
     if (tab === "host") return v4("hstTitle");
     if (tab === "server") return v4("tsvTitle");
+    if (tab === "callwin") return v4("cwnTitle");
+    if (tab === "zones") return v4("zonTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -840,6 +843,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "broker") return v4("bknSub");
     if (tab === "host") return v4("hstSub");
     if (tab === "server") return v4("tsvSub");
+    if (tab === "callwin") return v4("cwnSub");
+    if (tab === "zones") return v4("zonSub");
     return "";
   }
 
@@ -932,15 +937,18 @@ function Shell({ base, section, name }: Props) {
       <div className="c4-frame">
         <div className="c4-panel" data-view={view} onScroll={(event) => setCompact(event.currentTarget.scrollTop > 24)}>
           {!id && (
-            <div className="c4-pagehead c4-pagehead-folio">
-              <p className="c4-folio-plate" data-logo="mono" aria-hidden="true">7FX</p>
-              <div>
+            <div className="c4-pagehead c4-pagehead-folio c4-pagehead-crest">
+              <div className="c4-crest-band">
+                <p className="c4-folio-plate" data-logo="mono" aria-hidden="true">7FX</p>
+                <span className="c4-crest-mark" aria-hidden="true" />
+              </div>
+              <div className="c4-crest-copy">
                 <h1 className="c4-page-title">{heading}</h1>
                 {brand ? <p className="c4-brand-line">{brand}</p> : null}
                 <p className="c4-page-sub">{known ? subtitle(view) : tx("comingSoonBody")}</p>
                 <FreshnessBar v4={v4} />
               </div>
-              <form action={crmv4Href(base, "customers")} className="c4-page-search c4-search-luxe" role="search">
+              <form action={crmv4Href(base, "customers")} className="c4-page-search c4-search-luxe c4-crest-search" role="search">
                 <input name="q" defaultValue={q} placeholder={tx("search")} aria-label={tx("search")} className="c4-field" />
               </form>
             </div>
@@ -1166,6 +1174,8 @@ function Shell({ base, section, name }: Props) {
             {view === "broker" && <BrokerNames base={base} v4={v4} />}
             {view === "host" && <HostCards v4={v4} />}
             {view === "server" && <TradingServers base={base} v4={v4} />}
+            {view === "callwin" && <CallWindows v4={v4} />}
+            {view === "zones" && <CustomerTimezones base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
