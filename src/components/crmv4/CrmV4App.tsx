@@ -117,6 +117,7 @@ import { AffiliateChannels, BreakNotes } from "./round126";
 import { LeadStatuses, LoungeNotes } from "./round127";
 import { AccountTypes, PantryNotes } from "./round128";
 import { CoatNotes, KycFileStatuses } from "./round129";
+import { ConciergeNotes, RetentionStatuses } from "./round130";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -618,6 +619,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "accttype") return v4("atyTitle");
     if (tab === "coat") return v4("cctTitle");
     if (tab === "kycfile") return v4("kflTitle");
+    if (tab === "concierge") return v4("cncTitle");
+    if (tab === "retstat") return v4("rtnTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -810,6 +813,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "accttype") return v4("atySub");
     if (tab === "coat") return v4("cctSub");
     if (tab === "kycfile") return v4("kflSub");
+    if (tab === "concierge") return v4("cncSub");
+    if (tab === "retstat") return v4("rtnSub");
     return "";
   }
 
@@ -1123,6 +1128,8 @@ function Shell({ base, section, name }: Props) {
             {view === "accttype" && <AccountTypes base={base} v4={v4} />}
             {view === "coat" && <CoatNotes v4={v4} />}
             {view === "kycfile" && <KycFileStatuses base={base} v4={v4} />}
+            {view === "concierge" && <ConciergeNotes v4={v4} />}
+            {view === "retstat" && <RetentionStatuses base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
