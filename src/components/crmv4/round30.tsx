@@ -88,7 +88,8 @@ export function PageRail({
   onToggle: () => void;
 }) {
   return (
-    <nav className="c4-page-rail" aria-label={v4("railNav")}>
+    <nav className="c4-page-rail c4-rail-atelier" aria-label={v4("railNav")}>
+      <p className="c4-rail-plate" data-logo="mono" aria-hidden="true">7FX</p>
       <button
         type="button"
         className="c4-rail-fold"
@@ -126,7 +127,8 @@ export function GroupedMenu({
 }) {
   const [query, setQuery] = useState("");
   return (
-    <div className="c4-grouped-menu">
+    <div className="c4-grouped-menu c4-menu-atelier">
+      <p className="c4-rail-plate" data-logo="mono" aria-hidden="true">7FX</p>
       <p className="c4-rail-here"><span className="c4-muted">{v4("railHere")}</span> {names[view] || "—"}</p>
       <label className="c4-lab">
         <span>{v4("railFind")}</span>
