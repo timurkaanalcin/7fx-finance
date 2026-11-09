@@ -122,6 +122,7 @@ import { PotentialStatuses, ValetNotes } from "./round131";
 import { PorterSlips, ValidationStatuses } from "./round132";
 import { BellSlips, TradingGroups } from "./round133";
 import { BrokerNames, LampCards } from "./round134";
+import { HostCards, TradingServers } from "./round135";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -631,6 +632,10 @@ function Shell({ base, section, name }: Props) {
     if (tab === "valstat") return v4("vldTitle");
     if (tab === "bell") return v4("bllTitle");
     if (tab === "trgroup") return v4("tgrTitle");
+    if (tab === "lamp") return v4("lmpTitle");
+    if (tab === "broker") return v4("bknTitle");
+    if (tab === "host") return v4("hstTitle");
+    if (tab === "server") return v4("tsvTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -833,6 +838,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "trgroup") return v4("tgrSub");
     if (tab === "lamp") return v4("lmpSub");
     if (tab === "broker") return v4("bknSub");
+    if (tab === "host") return v4("hstSub");
+    if (tab === "server") return v4("tsvSub");
     return "";
   }
 
@@ -1157,6 +1164,8 @@ function Shell({ base, section, name }: Props) {
             {view === "trgroup" && <TradingGroups base={base} v4={v4} />}
             {view === "lamp" && <LampCards v4={v4} />}
             {view === "broker" && <BrokerNames base={base} v4={v4} />}
+            {view === "host" && <HostCards v4={v4} />}
+            {view === "server" && <TradingServers base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
