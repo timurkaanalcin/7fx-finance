@@ -121,6 +121,7 @@ import { ConciergeNotes, RetentionStatuses } from "./round130";
 import { PotentialStatuses, ValetNotes } from "./round131";
 import { PorterSlips, ValidationStatuses } from "./round132";
 import { BellSlips, TradingGroups } from "./round133";
+import { BrokerNames, LampCards } from "./round134";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -830,6 +831,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "valstat") return v4("vldSub");
     if (tab === "bell") return v4("bllSub");
     if (tab === "trgroup") return v4("tgrSub");
+    if (tab === "lamp") return v4("lmpSub");
+    if (tab === "broker") return v4("bknSub");
     return "";
   }
 
@@ -1152,6 +1155,8 @@ function Shell({ base, section, name }: Props) {
             {view === "valstat" && <ValidationStatuses base={base} v4={v4} />}
             {view === "bell" && <BellSlips v4={v4} />}
             {view === "trgroup" && <TradingGroups base={base} v4={v4} />}
+            {view === "lamp" && <LampCards v4={v4} />}
+            {view === "broker" && <BrokerNames base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
@@ -1174,7 +1179,7 @@ function Shell({ base, section, name }: Props) {
         </div>
       </div>
 
-      <aside className="c4-rail c4-rail-luxe" aria-label={v4("admin")}>
+      <aside className="c4-rail c4-rail-luxe c4-rail-folio" aria-label={v4("admin")}>
         <button type="button" className="c4-rail-btn c4-plus" aria-label={v4("quickPlus")} onClick={() => setQuickOpen(true)}>+</button>
         <CallTarget v4={v4} />
         <button type="button" className="c4-rail-btn" aria-label={`${shownName || name} ${v4("staffProfile")}`} onClick={() => window.location.assign(crmv4Href(base, "me"))}>
@@ -1225,7 +1230,7 @@ function Shell({ base, section, name }: Props) {
         </form>
       </aside>
 
-      <nav className="c4-tabs c4-tabs-luxe" aria-label={tx("panel")}>
+      <nav className="c4-tabs c4-tabs-luxe c4-tabs-folio" aria-label={tx("panel")}>
         {CRM_V4_TABS.map((tab) => (
           <Link key={tab} href={crmv4Href(base, tab === "overview" ? "" : tab)} data-on={view === tab ? "1" : "0"} className="c4-tab" aria-current={view === tab ? "page" : undefined}>
             {label(tab)}
