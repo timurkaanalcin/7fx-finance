@@ -19313,3 +19313,524 @@
   [data-crmv4-root] .c4-arrival .c4-btn,
   [data-crmv4-root] .c4-city .c4-btn { transition: none; }
 }
+
+/* Round 138 — atelier masthead, crest rail, place cards, last browsers.
+   Graphite #1c1a17, ivory #f6f1e8, champagne #d4bc86. Chrome pad stays 10px.
+   The logo plate stays monochrome. */
+
+[data-crmv4-root] .c4-pagehead.c4-pagehead-atelier {
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+  grid-template-areas:
+    "band band"
+    "copy search";
+  gap: 8px 20px;
+  min-height: 132px;
+  padding: 14px 18px 18px 22px;
+  border: 0;
+  border-bottom: 0;
+  background:
+    linear-gradient(#d4bc86, #d4bc86) 0 0 / 100% 2px no-repeat,
+    linear-gradient(#1c1a17, #1c1a17) 0 6px / 100% 1px no-repeat,
+    #fffdf8;
+  box-shadow: inset 8px 0 0 #1c1a17;
+  color: #1c1a17;
+}
+
+[data-crmv4-root] .c4-pagehead-atelier .c4-crest-band {
+  height: auto;
+  min-height: 22px;
+  padding: 8px 0 0;
+}
+
+[data-crmv4-root] .c4-pagehead-atelier .c4-folio-plate[data-logo="mono"] {
+  height: 18px;
+  padding: 0 10px;
+  background: #1c1a17;
+  color: #f6f1e8;
+  letter-spacing: 0.32em;
+  font-size: 10px;
+}
+
+[data-crmv4-root] .c4-pagehead-atelier .c4-crest-mark {
+  width: 7px;
+  height: 7px;
+  background: #d4bc86;
+  box-shadow: 8px 0 0 #1c1a17;
+}
+
+[data-crmv4-root] .c4-pagehead-atelier .c4-crest-copy { padding: 0; }
+
+[data-crmv4-root] .c4-pagehead-atelier .c4-page-title {
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+}
+
+[data-crmv4-root] .c4-pagehead-atelier .c4-page-title::after {
+  width: 72px;
+  height: 2px;
+  margin-top: 10px;
+  background: #d4bc86;
+  box-shadow: 0 5px 0 #1c1a17;
+}
+
+[data-crmv4-root] .c4-pagehead-atelier .c4-page-sub,
+[data-crmv4-root] .c4-pagehead-atelier .c4-brand-line {
+  color: #7a5e30;
+  letter-spacing: 0.06em;
+}
+
+[data-crmv4-root] .c4-pagehead-atelier .c4-crest-search {
+  align-self: end;
+  margin: 0;
+}
+
+[data-crmv4-root] .c4-pagehead-atelier .c4-page-search.c4-search-luxe .c4-field {
+  height: 44px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid #1c1a17;
+  border-bottom: 2px solid #d4bc86;
+  border-radius: 0;
+  background: #fffdf8;
+  color: #1c1a17;
+}
+
+[data-crmv4-root] .c4-pagehead-atelier .c4-field:focus-visible {
+  outline: 2px solid #d4bc86;
+  outline-offset: 2px;
+  border-color: #1c1a17;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-pagehead.c4-pagehead-atelier {
+  background:
+    linear-gradient(#d4bc86, #d4bc86) 0 0 / 100% 2px no-repeat,
+    linear-gradient(#f6f1e8, #f6f1e8) 0 6px / 100% 1px no-repeat,
+    #161412;
+  color: #f6f1e8;
+  box-shadow: inset 8px 0 0 #d4bc86;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-pagehead-atelier .c4-folio-plate[data-logo="mono"] {
+  background: #f6f1e8;
+  color: #1c1a17;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-pagehead-atelier .c4-page-title { color: #f6f1e8; }
+
+[data-crmv4-root][data-theme="dark"] .c4-pagehead-atelier .c4-page-title::after {
+  background: #d4bc86;
+  box-shadow: 0 5px 0 #f6f1e8;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-pagehead-atelier .c4-page-search.c4-search-luxe .c4-field {
+  background: transparent;
+  color: #f6f1e8;
+  border-color: #d4bc86;
+}
+
+@media (min-width: 768px) {
+  [data-crmv4-root]:not([data-focus="1"]):not([data-focus-sections="1"]):not([data-focus-rail="1"]):has(.c4-rail-crest) {
+    grid-template-columns: 196px minmax(0, 1fr) 72px;
+  }
+  [data-crmv4-root][data-fold="1"]:not([data-focus="1"]):not([data-focus-sections="1"]):not([data-focus-rail="1"]):has(.c4-rail-crest) {
+    grid-template-columns: 56px minmax(0, 1fr) 72px;
+  }
+}
+
+[data-crmv4-root] .c4-rail.c4-rail-crest {
+  gap: 0;
+  padding-top: 0;
+  background:
+    linear-gradient(#d4bc86, #d4bc86) 0 0 / 100% 2px no-repeat,
+    #1c1a17;
+}
+
+[data-crmv4-root] .c4-rail-crest > .c4-rail-plate[data-logo="mono"] {
+  width: 100%;
+  height: 28px;
+  margin: 0;
+  background: #1c1a17;
+  color: #f6f1e8;
+  letter-spacing: 0.22em;
+  box-shadow: inset 0 -2px 0 #d4bc86;
+}
+
+[data-crmv4-root] .c4-rail-crest .c4-rail-btn {
+  min-height: 44px;
+  width: 100%;
+  border-radius: 0;
+  border-inline-start: 2px solid transparent;
+}
+
+[data-crmv4-root] .c4-rail-crest .c4-rail-btn span {
+  color: #d4bc86;
+  letter-spacing: 0.04em;
+}
+
+[data-crmv4-root] .c4-rail-crest .c4-rail-btn:hover,
+[data-crmv4-root] .c4-rail-crest .c4-rail-btn:focus-visible {
+  border-inline-start-color: #d4bc86;
+  background: rgba(246, 241, 232, 0.08);
+  color: #f6f1e8;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-rail.c4-rail-crest {
+  background:
+    linear-gradient(#d4bc86, #d4bc86) 0 0 / 100% 2px no-repeat,
+    #0e0d0b;
+}
+
+[data-crmv4-root] .c4-place,
+[data-crmv4-root] .c4-browser {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 18px 18px 22px;
+  border: 1px solid #1c1a17;
+  border-radius: 0;
+  background:
+    linear-gradient(#d4bc86, #d4bc86) 0 0 / 100% 2px no-repeat,
+    linear-gradient(#1c1a17, #1c1a17) 0 6px / 100% 1px no-repeat,
+    #fffdf8;
+  color: #1c1a17;
+  box-shadow: inset 8px 0 0 #1c1a17;
+}
+
+[data-crmv4-root] .c4-plc-head,
+[data-crmv4-root] .c4-brw-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px 16px;
+}
+
+[data-crmv4-root] .c4-plc-plate[data-logo="mono"] {
+  margin: 0;
+  padding: 6px 10px;
+  background: #1c1a17;
+  color: #f6f1e8;
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  line-height: 1;
+}
+
+[data-crmv4-root] .c4-place .c4-title,
+[data-crmv4-root] .c4-browser .c4-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+[data-crmv4-root] .c4-place .c4-title::after,
+[data-crmv4-root] .c4-browser .c4-title::after {
+  content: "";
+  display: block;
+  width: 64px;
+  height: 2px;
+  margin-top: 8px;
+  background: #d4bc86;
+  box-shadow: 0 5px 0 #1c1a17;
+}
+
+[data-crmv4-root] .c4-plc-count {
+  margin: 0;
+  color: #7a5e30;
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+[data-crmv4-root] .c4-plc-notice,
+[data-crmv4-root] .c4-brw-lead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin: 0;
+  padding: 8px 12px;
+  border-inline-start: 3px solid #d4bc86;
+  background: #1c1a17;
+  color: #f6f1e8;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root] .c4-plc-notice .c4-btn {
+  border-color: #d4bc86;
+  color: #f6f1e8;
+  background: transparent;
+}
+
+[data-crmv4-root] .c4-plc-kpi {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+[data-crmv4-root] .c4-plc-kpi .c4-pay-kicker { grid-column: 1 / -1; margin: 0; }
+
+[data-crmv4-root] .c4-plc-meter {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 10px 12px 12px;
+  border: 1px solid #e6dccf;
+  background: #fffdf8;
+}
+
+[data-crmv4-root] .c4-plc-meter[data-tray="waiting"] { box-shadow: inset 3px 0 0 #d4bc86; }
+[data-crmv4-root] .c4-plc-meter[data-tray="seated"] { box-shadow: inset 3px 0 0 #7a5e30; }
+[data-crmv4-root] .c4-plc-meter[data-tray="cleared"] { box-shadow: inset 3px 0 0 #1f8a4c; }
+
+[data-crmv4-root] .c4-plc-chart {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+  padding: 12px 0 4px;
+  border-bottom: 1px solid #1c1a17;
+}
+
+[data-crmv4-root] .c4-plc-chair {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #7a5e30;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+[data-crmv4-root] .c4-plc-back {
+  width: 100%;
+  height: 28px;
+  border: 1px solid #1c1a17;
+  border-bottom: 3px solid #d4bc86;
+  background: transparent;
+}
+
+[data-crmv4-root] .c4-plc-chair[data-filled="1"] .c4-plc-back { background: #1c1a17; }
+[data-crmv4-root] .c4-plc-chair[data-on="1"] .c4-plc-back { background: #d4bc86; border-color: #1c1a17; }
+
+[data-crmv4-root] .c4-plc-track,
+[data-crmv4-root] .c4-brw-track {
+  display: block;
+  height: 3px;
+  background: #f3ece2;
+}
+
+[data-crmv4-root] .c4-plc-track i,
+[data-crmv4-root] .c4-brw-track i {
+  display: block;
+  height: 3px;
+  background: #d4bc86;
+}
+
+[data-crmv4-root] .c4-plc-form,
+[data-crmv4-root] .c4-plc-next,
+[data-crmv4-root] .c4-plc-view {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  align-items: end;
+}
+
+[data-crmv4-root] .c4-place .c4-field,
+[data-crmv4-root] .c4-browser .c4-field,
+[data-crmv4-root] .c4-place .c4-btn,
+[data-crmv4-root] .c4-browser .c4-btn,
+[data-crmv4-root] .c4-place .c4-chip,
+[data-crmv4-root] .c4-browser .c4-chip {
+  border-radius: 0;
+}
+
+[data-crmv4-root] .c4-place .c4-chip[data-on="1"],
+[data-crmv4-root] .c4-browser .c4-chip[data-on="1"] {
+  border-color: #1c1a17;
+  background: #1c1a17;
+  color: #f6f1e8;
+}
+
+[data-crmv4-root] .c4-place .c4-btn:focus-visible,
+[data-crmv4-root] .c4-browser .c4-btn:focus-visible,
+[data-crmv4-root] .c4-place .c4-chip:focus-visible,
+[data-crmv4-root] .c4-browser .c4-chip:focus-visible,
+[data-crmv4-root] .c4-place .c4-field:focus-visible,
+[data-crmv4-root] .c4-browser .c4-field:focus-visible,
+[data-crmv4-root] .c4-plc-chair:focus-visible {
+  outline: 2px solid #d4bc86;
+  outline-offset: 2px;
+}
+
+[data-crmv4-root] .c4-plc-rows,
+[data-crmv4-root] .c4-plc-time,
+[data-crmv4-root] .c4-plc-views,
+[data-crmv4-root] .c4-brw-rows {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv4-root] .c4-plc-rows li,
+[data-crmv4-root] .c4-brw-rows li,
+[data-crmv4-root] .c4-plc-time li {
+  display: grid;
+  grid-template-columns: 8px minmax(0, 1fr);
+  gap: 8px 12px;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid #e6dccf;
+  background: #fffdf8;
+}
+
+[data-crmv4-root] .c4-plc-rows li[data-passed="1"] { box-shadow: inset 3px 0 0 #de260b; }
+[data-crmv4-root] .c4-plc-spine,
+[data-crmv4-root] .c4-brw-spine { background: #d4bc86; }
+[data-crmv4-root] .c4-plc-pips { display: flex; gap: 4px; margin: 0; }
+[data-crmv4-root] .c4-plc-pips i { width: 8px; height: 8px; background: #e6dccf; }
+[data-crmv4-root] .c4-plc-pips i[data-on="1"] { background: #d4bc86; }
+[data-crmv4-root] .c4-plc-rows li .c4-row { grid-column: 1 / -1; }
+[data-crmv4-root] .c4-plc-hour {
+  color: #7a5e30;
+  font-variant-numeric: tabular-nums;
+}
+
+[data-crmv4-root] .c4-brw-chart {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 8px 0 0;
+  border-bottom: 1px solid #1c1a17;
+}
+
+[data-crmv4-root] .c4-brw-col {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr) auto auto;
+  gap: 8px;
+  align-items: center;
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+[data-crmv4-root] .c4-brw-blank {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 8px 12px;
+  border: 1px solid #1c1a17;
+  background: transparent;
+  color: inherit;
+  text-align: start;
+}
+
+[data-crmv4-root] .c4-brw-blank[data-on="1"] { background: #1c1a17; color: #f6f1e8; }
+
+[data-crmv4-root] .c4-brw-pair {
+  display: grid;
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid #e6dccf;
+}
+
+[data-crmv4-root] .c4-place .c4-pay-empty,
+[data-crmv4-root] .c4-browser .c4-pay-empty {
+  margin: 0;
+  padding: 28px 16px;
+  border: 1px dashed #d4bc86;
+  background:
+    linear-gradient(#1c1a17, #1c1a17) 16px 16px / 28px 2px no-repeat,
+    #fffdf8;
+  color: #7a5e30;
+  letter-spacing: 0.12em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-place,
+[data-crmv4-root][data-theme="dark"] .c4-browser {
+  border-color: #d4bc86;
+  background:
+    linear-gradient(#d4bc86, #d4bc86) 0 0 / 100% 2px no-repeat,
+    #1c1a17;
+  color: #f6f1e8;
+  box-shadow: inset 8px 0 0 #d4bc86;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-plc-meter,
+[data-crmv4-root][data-theme="dark"] .c4-plc-rows li,
+[data-crmv4-root][data-theme="dark"] .c4-brw-rows li,
+[data-crmv4-root][data-theme="dark"] .c4-plc-time li,
+[data-crmv4-root][data-theme="dark"] .c4-brw-pair,
+[data-crmv4-root][data-theme="dark"] .c4-place .c4-pay-empty,
+[data-crmv4-root][data-theme="dark"] .c4-browser .c4-pay-empty {
+  border-color: rgba(212, 188, 134, 0.35);
+  background: #141210;
+  color: #f6f1e8;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-place .c4-chip,
+[data-crmv4-root][data-theme="dark"] .c4-browser .c4-chip,
+[data-crmv4-root][data-theme="dark"] .c4-place .c4-btn,
+[data-crmv4-root][data-theme="dark"] .c4-browser .c4-btn {
+  border-color: #d4bc86;
+  color: #f6f1e8;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-plc-back { border-color: #d4bc86; }
+[data-crmv4-root][data-theme="dark"] .c4-plc-chair[data-filled="1"] .c4-plc-back { background: #d4bc86; }
+[data-crmv4-root][data-theme="dark"] .c4-plc-track,
+[data-crmv4-root][data-theme="dark"] .c4-brw-track { background: rgba(246, 241, 232, 0.16); }
+
+@media (max-width: 767px) {
+  [data-crmv4-root] .c4-pagehead.c4-pagehead-atelier {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "band"
+      "copy"
+      "search";
+    margin: 0;
+    padding: 12px 12px 14px 16px;
+    box-shadow: inset 6px 0 0 #1c1a17;
+  }
+  [data-crmv4-root] .c4-pagehead-atelier .c4-crest-search { margin: 0; }
+  [data-crmv4-root] .c4-pagehead-atelier .c4-page-search.c4-search-luxe .c4-field {
+    height: 44px;
+    min-height: 44px;
+  }
+  [data-crmv4-root] .c4-place,
+  [data-crmv4-root] .c4-browser { padding: 14px 12px 16px; }
+  [data-crmv4-root] .c4-plc-head,
+  [data-crmv4-root] .c4-brw-head { grid-template-columns: auto minmax(0, 1fr); }
+  [data-crmv4-root] .c4-plc-kpi,
+  [data-crmv4-root] .c4-plc-form,
+  [data-crmv4-root] .c4-plc-next,
+  [data-crmv4-root] .c4-plc-view { grid-template-columns: minmax(0, 1fr); }
+  [data-crmv4-root] .c4-plc-chart { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  [data-crmv4-root] .c4-brw-col { grid-template-columns: 72px minmax(0, 1fr); }
+  [data-crmv4-root] .c4-place .c4-btn,
+  [data-crmv4-root] .c4-browser .c4-btn,
+  [data-crmv4-root] .c4-place .c4-chip,
+  [data-crmv4-root] .c4-browser .c4-chip,
+  [data-crmv4-root] .c4-brw-blank,
+  [data-crmv4-root] .c4-plc-chair { min-height: 44px; }
+  [data-crmv4-root] .c4-rail-crest .c4-rail-btn { min-height: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-pagehead-atelier .c4-field,
+  [data-crmv4-root] .c4-rail-crest .c4-rail-btn,
+  [data-crmv4-root] .c4-place .c4-btn,
+  [data-crmv4-root] .c4-browser .c4-btn { transition: none; }
+}

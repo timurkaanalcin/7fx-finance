@@ -125,6 +125,7 @@ import { BrokerNames, LampCards } from "./round134";
 import { HostCards, TradingServers } from "./round135";
 import { CallWindows, CustomerTimezones } from "./round136";
 import { ArrivalCards, CustomerCities } from "./round137";
+import { CustomerBrowsers, PlaceCards } from "./round138";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -642,6 +643,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "zones") return v4("zonTitle");
     if (tab === "arrival") return v4("arrTitle");
     if (tab === "cities") return v4("citTitle");
+    if (tab === "place") return v4("plcTitle");
+    if (tab === "browsers") return v4("brwTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -850,6 +853,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "zones") return v4("zonSub");
     if (tab === "arrival") return v4("arrSub");
     if (tab === "cities") return v4("citSub");
+    if (tab === "place") return v4("plcSub");
+    if (tab === "browsers") return v4("brwSub");
     return "";
   }
 
@@ -942,7 +947,7 @@ function Shell({ base, section, name }: Props) {
       <div className="c4-frame">
         <div className="c4-panel" data-view={view} onScroll={(event) => setCompact(event.currentTarget.scrollTop > 24)}>
           {!id && (
-            <div className="c4-pagehead c4-pagehead-folio c4-pagehead-crest">
+            <div className="c4-pagehead c4-pagehead-folio c4-pagehead-crest c4-pagehead-atelier">
               <div className="c4-crest-band">
                 <p className="c4-folio-plate" data-logo="mono" aria-hidden="true">7FX</p>
                 <span className="c4-crest-mark" aria-hidden="true" />
@@ -1183,6 +1188,8 @@ function Shell({ base, section, name }: Props) {
             {view === "zones" && <CustomerTimezones base={base} v4={v4} />}
             {view === "arrival" && <ArrivalCards v4={v4} />}
             {view === "cities" && <CustomerCities base={base} v4={v4} />}
+            {view === "place" && <PlaceCards v4={v4} />}
+            {view === "browsers" && <CustomerBrowsers base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
@@ -1205,7 +1212,8 @@ function Shell({ base, section, name }: Props) {
         </div>
       </div>
 
-      <aside className="c4-rail c4-rail-luxe c4-rail-folio" aria-label={v4("admin")}>
+      <aside className="c4-rail c4-rail-luxe c4-rail-folio c4-rail-crest" aria-label={v4("admin")}>
+        <p className="c4-rail-plate" data-logo="mono" aria-hidden="true">7FX</p>
         <button type="button" className="c4-rail-btn c4-plus" aria-label={v4("quickPlus")} onClick={() => setQuickOpen(true)}>+</button>
         <CallTarget v4={v4} />
         <button type="button" className="c4-rail-btn" aria-label={`${shownName || name} ${v4("staffProfile")}`} onClick={() => window.location.assign(crmv4Href(base, "me"))}>
