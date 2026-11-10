@@ -65,9 +65,15 @@ export function KycDesk({ v4, tx, locale }: { v4: V4; tx: Tx; locale: string }) 
     }
   }
   return (
-    <section className="c4-kyc-luxe" aria-label={v4("kycDesk")} data-kyc="1">
-      <h2 className="c4-title">{v4("kycDesk")}</h2>
-      <p className="c4-muted">{v4("kycHint")}</p>
+    <section className="c4-kyc-luxe c4-kyc-folio" aria-label={v4("kycDesk")} data-kyc="1">
+      <header className="c4-kyc-mast">
+        <div>
+          <p className="c4-kyc-kicker">{v4("kycDesk")}</p>
+          <h2 className="c4-title">{v4("kycDesk")}</h2>
+        </div>
+        <p className="c4-kyc-plate" data-logo="mono">7FX</p>
+      </header>
+      <p className="c4-muted c4-kyc-hint">{v4("kycHint")}</p>
       <div className="c4-kyc-split">
         <div>
           <h3 className="c4-title">{v4("kycQueue")}</h3>
@@ -94,7 +100,7 @@ export function KycDesk({ v4, tx, locale }: { v4: V4; tx: Tx; locale: string }) 
             </ul>
           )}
         </div>
-        <div className="c4-kyc-stage" aria-label={v4("kycPreview")}>
+        <div className="c4-kyc-stage" aria-label={v4("kycPreview")} data-ready={checksDone(box) === CHECK_ITEMS.length ? "1" : "0"}>
           <h3 className="c4-title">{doc?.name || v4("kycPreview")}</h3>
           <p className="c4-muted">{doc ? `${doc.docType || "—"} · ${when(doc.createdAt, locale)}` : v4("kycEmpty")}</p>
           {file ? (
