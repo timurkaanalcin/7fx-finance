@@ -97,12 +97,13 @@ export function GalleryDesk({ base, v4, tx, locale }: { base: string; v4: V4; tx
   }
 
   return (
-    <section className="c4-gallery-desk" aria-label={v4("glTitle")} data-gallery="1">
-      <header className="c4-pay-head">
+    <section className="c4-gallery-desk c4-gallery-folio" aria-label={v4("glTitle")} data-gallery="1">
+      <header className="c4-pay-head c4-folio-mast">
         <div>
-          <p className="c4-pay-kicker">{v4("glSub")}</p>
-          <h2 className="c4-title">{v4("glTitle")}</h2>
+          <p className="c4-pay-kicker c4-folio-kicker">{v4("glSub")}</p>
+          <h2 className="c4-title c4-folio-title">{v4("glTitle")}</h2>
         </div>
+        <p className="c4-folio-plate" data-logo="mono">7FX</p>
         <Link className="c4-btn" href={crmv4Href(base, "kyc")}>{v4("glDeskLink")}</Link>
       </header>
       <p className="c4-meta">{v4("glHint")}</p>
@@ -117,7 +118,7 @@ export function GalleryDesk({ base, v4, tx, locale }: { base: string; v4: V4; tx
           <button key={item} type="button" className="c4-chip" data-on={type === item ? "1" : "0"} onClick={() => setType(item)}>{item}</button>
         ))}
       </div>
-      {!shown.length && <p className="c4-pay-empty">{v4("glEmpty")}</p>}
+      {!shown.length && <p className="c4-pay-empty c4-folio-empty">{v4("glEmpty")}</p>}
       <div className="c4-gallery-split">
         <ul className="c4-gallery-grid">
           {shown.map((row) => (
@@ -216,12 +217,13 @@ export function HistoryDesk({ v4, tx, locale }: { v4: V4; tx: Tx; locale: string
     downloadCsv("history-loaded.csv", ["at", "action", "actor", "target", "level", "currency", "amount"], historyCsv(shown));
   }
   return (
-    <section className="c4-history-desk" aria-label={v4("hsTitle")} data-history="1">
-      <header className="c4-pay-head">
+    <section className="c4-history-desk c4-history-folio" aria-label={v4("hsTitle")} data-history="1">
+      <header className="c4-pay-head c4-folio-mast">
         <div>
-          <p className="c4-pay-kicker">{v4("hsSub")}</p>
-          <h2 className="c4-title">{v4("hsTitle")}</h2>
+          <p className="c4-pay-kicker c4-folio-kicker">{v4("hsSub")}</p>
+          <h2 className="c4-title c4-folio-title">{v4("hsTitle")}</h2>
         </div>
+        <p className="c4-folio-plate" data-logo="mono">7FX</p>
       </header>
       <p className="c4-meta">{v4("hsHint")}</p>
       <p className="c4-meta">{v4("hsShowing")} {shown.length}</p>
@@ -256,7 +258,7 @@ export function HistoryDesk({ v4, tx, locale }: { v4: V4; tx: Tx; locale: string
       </div>
       <p className="c4-meta">{v4("hsCsvHint")}</p>
       {miss && <p className="c4-meta">{v4("hsMissing")}</p>}
-      {!shown.length && <p className="c4-pay-empty">{v4("hsEmpty")}</p>}
+      {!shown.length && <p className="c4-pay-empty c4-folio-empty">{v4("hsEmpty")}</p>}
       {groups.map((group) => (
         <section key={group.day || "none"} className="c4-day-group" id={group.day ? `c4-audit-${group.day}` : undefined}>
           <h3 className="c4-title">{group.day || v4("hsUndated")}</h3>
