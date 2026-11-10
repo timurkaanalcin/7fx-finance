@@ -156,6 +156,7 @@ import { MarquetryTasks, TradeGates } from "./round165";
 import { CloakroomPasses, LoginLatches } from "./round166";
 import { ReadingNooks, WithdrawalBolts } from "./round167";
 import { OrielHours, TrialLamps } from "./round168";
+import { AtelierPasses, BlockNotices } from "./round169";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -734,6 +735,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "bolt") return v4("bltTitle");
     if (tab === "oriel") return v4("orlTitle");
     if (tab === "trial") return v4("trlTitle");
+    if (tab === "atelier") return v4("atpTitle");
+    if (tab === "notice") return v4("nbmTitle");
     if (tab === "plates") return v4("pltTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
@@ -1004,6 +1007,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "bolt") return v4("bltSub");
     if (tab === "oriel") return v4("orlSub");
     if (tab === "trial") return v4("trlSub");
+    if (tab === "atelier") return v4("atpSub");
+    if (tab === "notice") return v4("nbmSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1400,6 +1405,8 @@ function Shell({ base, section, name }: Props) {
             {view === "bolt" && <WithdrawalBolts base={base} v4={v4} />}
             {view === "oriel" && <OrielHours v4={v4} />}
             {view === "trial" && <TrialLamps base={base} v4={v4} />}
+            {view === "atelier" && <AtelierPasses v4={v4} />}
+            {view === "notice" && <BlockNotices base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
