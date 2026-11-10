@@ -158,6 +158,7 @@ import { ReadingNooks, WithdrawalBolts } from "./round167";
 import { OrielHours, TrialLamps } from "./round168";
 import { AtelierPasses, BlockNotices } from "./round169";
 import { ShutterTimes, VestryChits } from "./round170";
+import { ChoirStalls, EmberAges } from "./round171";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -740,6 +741,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "notice") return v4("nbmTitle");
     if (tab === "vestry") return v4("vstTitle");
     if (tab === "shutter") return v4("shtTitle");
+    if (tab === "choir") return v4("chrTitle");
+    if (tab === "ember") return v4("embTitle");
     if (tab === "plates") return v4("pltTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
@@ -1014,6 +1017,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "notice") return v4("nbmSub");
     if (tab === "vestry") return v4("vstSub");
     if (tab === "shutter") return v4("shtSub");
+    if (tab === "choir") return v4("chrSub");
+    if (tab === "ember") return v4("embSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1107,7 +1112,7 @@ function Shell({ base, section, name }: Props) {
       <div className="c4-frame">
         <div className="c4-panel" data-view={view} onScroll={(event) => setCompact(event.currentTarget.scrollTop > 24)}>
           {!id && (
-            <div className="c4-pagehead c4-pagehead-folio c4-pagehead-crest c4-pagehead-atelier c4-pagehead-salon c4-pagehead-gallery c4-pagehead-library c4-pagehead-press c4-pagehead-ribbon c4-pagehead-playbill c4-pagehead-interlude c4-pagehead-slip c4-pagehead-vellum c4-pagehead-quire c4-pagehead-promise c4-pagehead-briefing c4-pagehead-dispatch c4-pagehead-loom c4-pagehead-kiln c4-pagehead-proof c4-pagehead-docket c4-pagehead-quay c4-pagehead-bench c4-pagehead-perch c4-pagehead-hearth c4-pagehead-inkwell c4-pagehead-lacquer c4-pagehead-gilt c4-pagehead-vestry">
+            <div className="c4-pagehead c4-pagehead-folio c4-pagehead-crest c4-pagehead-atelier c4-pagehead-salon c4-pagehead-gallery c4-pagehead-library c4-pagehead-press c4-pagehead-ribbon c4-pagehead-playbill c4-pagehead-interlude c4-pagehead-slip c4-pagehead-vellum c4-pagehead-quire c4-pagehead-promise c4-pagehead-briefing c4-pagehead-dispatch c4-pagehead-loom c4-pagehead-kiln c4-pagehead-proof c4-pagehead-docket c4-pagehead-quay c4-pagehead-bench c4-pagehead-perch c4-pagehead-hearth c4-pagehead-inkwell c4-pagehead-lacquer c4-pagehead-gilt c4-pagehead-vestry c4-pagehead-choir">
               <div className="c4-crest-band">
                 <p className="c4-folio-plate" data-logo="mono" aria-hidden="true">7FX</p>
                 <span className="c4-crest-mark" aria-hidden="true" />
@@ -1414,6 +1419,8 @@ function Shell({ base, section, name }: Props) {
             {view === "notice" && <BlockNotices base={base} v4={v4} />}
             {view === "vestry" && <VestryChits v4={v4} />}
             {view === "shutter" && <ShutterTimes base={base} v4={v4} />}
+            {view === "choir" && <ChoirStalls v4={v4} />}
+            {view === "ember" && <EmberAges base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
