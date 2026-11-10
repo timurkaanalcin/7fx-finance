@@ -31,6 +31,7 @@ export default function Positions({ tx, locale, q }: { tx: Tx; locale: string; q
     router.replace(`?${p.toString()}`);
   }
   return (
+    <div className="c4-book-vine">
     <Card title={tx("positions")}>
       <p className="c4-muted" style={{ padding: "8px 16px 0" }}>{tx("positionsLead")}</p>
       <div className="c4-tools">
@@ -103,5 +104,6 @@ export default function Positions({ tx, locale, q }: { tx: Tx; locale: string; q
         }}>{crmv4Text(locale, "loadMore")}</button>
       )}
     </Card>
+    </div>
   );
 }
