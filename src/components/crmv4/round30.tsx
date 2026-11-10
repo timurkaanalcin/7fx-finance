@@ -88,7 +88,7 @@ export function PageRail({
   onToggle: () => void;
 }) {
   return (
-    <nav className="c4-page-rail c4-rail-atelier" aria-label={v4("railNav")}>
+    <nav className="c4-page-rail c4-rail-atelier c4-rail-inkwell" aria-label={v4("railNav")}>
       <p className="c4-rail-plate" data-logo="mono" aria-hidden="true">7FX</p>
       <button
         type="button"
