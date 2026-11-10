@@ -40969,3 +40969,465 @@
   [data-crmv4-root] .c4-prs-cards > li,
   [data-crmv4-root] .c4-pcm-rows > li { transition: none; }
 }
+
+/* Round 182 — night chimes and referral tokens. Graphite, ivory, champagne. */
+[data-crmv4-root] .c4-nch,
+[data-crmv4-root] .c4-rft {
+  display: grid;
+  gap: 14px;
+  margin: 18px 20px 28px;
+  padding: 0 0 18px;
+  color: #1c1a17;
+  background: #f4efe6;
+  border: 1px solid #1c1a17;
+  border-radius: 18px;
+  box-shadow: 0 22px 48px rgba(28, 26, 23, 0.08);
+}
+
+[data-crmv4-root] .c4-nch-mast,
+[data-crmv4-root] .c4-rft-mast {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 22px 16px;
+  color: #f6f1e8;
+  background:
+    linear-gradient(90deg, transparent, rgba(212, 188, 134, 0.35) 18%, transparent 42%),
+    #1c1a17;
+  border-radius: 18px 18px 0 0;
+}
+
+[data-crmv4-root] .c4-nch-plate[data-logo="mono"] {
+  margin: 0;
+  padding: 8px 10px;
+  color: #1c1a17;
+  background: #f6f1e8;
+  border: 1px solid #d4bc86;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  line-height: 1;
+  filter: grayscale(1);
+}
+
+[data-crmv4-root] .c4-nch-kicker {
+  margin: 0 0 4px;
+  color: #d4bc86;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root] .c4-nch .c4-title,
+[data-crmv4-root] .c4-rft .c4-title {
+  margin: 0;
+  color: #f6f1e8;
+  font-size: 34px;
+  font-weight: 560;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+[data-crmv4-root] .c4-nch-count {
+  min-width: 2.4em;
+  padding: 6px 10px;
+  color: #1c1a17;
+  background: #d4bc86;
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  text-align: center;
+}
+
+[data-crmv4-root] .c4-nch-rules,
+[data-crmv4-root] .c4-nch-notice,
+[data-crmv4-root] .c4-nch-suggest,
+[data-crmv4-root] .c4-rft-lead {
+  margin: 0 18px;
+  padding: 10px 12px;
+  background: #fffdf8;
+  border: 1px solid rgba(28, 26, 23, 0.08);
+  border-radius: 12px;
+}
+
+[data-crmv4-root] .c4-nch-bells {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 18px;
+}
+
+[data-crmv4-root] .c4-nch-bells .c4-nch-notice { margin: 0; }
+
+[data-crmv4-root] .c4-nch-kpi,
+[data-crmv4-root] .c4-nch-chart,
+[data-crmv4-root] .c4-rft-chart {
+  display: grid;
+  gap: 10px;
+  margin: 0 18px;
+}
+
+[data-crmv4-root] .c4-nch-kpi { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+[data-crmv4-root] .c4-nch-kpi > div,
+[data-crmv4-root] .c4-nch-col,
+[data-crmv4-root] .c4-rft-col {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  background: #fffdf8;
+  border: 1px solid rgba(28, 26, 23, 0.08);
+  border-radius: 14px;
+}
+
+[data-crmv4-root] .c4-nch-kpi dt {
+  color: #7a5e30;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root] .c4-nch-kpi dd {
+  margin: 0;
+  font-size: 28px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+}
+
+[data-crmv4-root] .c4-nch-chart { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; }
+
+[data-crmv4-root] .c4-nch-col[data-on="1"] { box-shadow: inset 0 0 0 1px #d4bc86; }
+
+[data-crmv4-root] .c4-nch-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  background: #1c1a17;
+}
+
+[data-crmv4-root] .c4-nch-swatch[data-dye="brass"] { background: #b26a2a; }
+[data-crmv4-root] .c4-nch-swatch[data-dye="coal"] { background: #f6f1e8; border: 1px solid #d4bc86; }
+
+[data-crmv4-root] .c4-nch-track {
+  display: flex;
+  align-items: flex-end;
+  height: 72px;
+  background: rgba(28, 26, 23, 0.06);
+  border-radius: 8px;
+}
+
+[data-crmv4-root] .c4-rft .c4-nch-track {
+  display: block;
+  height: 8px;
+}
+
+[data-crmv4-root] .c4-nch-track i {
+  display: block;
+  width: 100%;
+  height: 8%;
+  background: linear-gradient(#f6f1e8, #d4bc86);
+  border-radius: 8px;
+  transition: height 180ms ease;
+}
+
+[data-crmv4-root] .c4-rft .c4-nch-track i {
+  height: 100%;
+  width: 8%;
+  transition: width 180ms ease;
+}
+
+[data-crmv4-root] .c4-nch-split {
+  display: grid;
+  grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+  gap: 14px;
+  margin: 0 18px;
+}
+
+[data-crmv4-root] .c4-nch-form,
+[data-crmv4-root] .c4-nch-board {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 14px;
+  background: #fffdf8;
+  border: 1px solid rgba(28, 26, 23, 0.08);
+  border-radius: 16px;
+}
+
+[data-crmv4-root] .c4-nch-cards,
+[data-crmv4-root] .c4-rft-rows,
+[data-crmv4-root] .c4-nch-time,
+[data-crmv4-root] .c4-nch-views,
+[data-crmv4-root] .c4-nch-pins {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv4-root] .c4-nch-cards > li,
+[data-crmv4-root] .c4-rft-rows > li,
+[data-crmv4-root] .c4-nch-time > li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px;
+  background: #fffdf8;
+  border: 1px solid rgba(28, 26, 23, 0.08);
+  border-radius: 14px;
+  transition: transform 160ms ease, border-color 160ms ease;
+}
+
+[data-crmv4-root] .c4-nch-cards > li:hover,
+[data-crmv4-root] .c4-rft-rows > li:hover { border-color: #d4bc86; transform: translateY(-1px); }
+
+[data-crmv4-root] .c4-nch-cards > li[data-pinned="1"] { box-shadow: inset 3px 0 0 #7a5e30; }
+[data-crmv4-root] .c4-nch-cards > li[data-foil="ink"] { box-shadow: inset 3px 0 0 #1c1a17; }
+[data-crmv4-root] .c4-nch-cards > li[data-foil="pearl"] { box-shadow: inset 3px 0 0 #d4bc86; }
+[data-crmv4-root] .c4-nch-cards > li[data-foil="copper"] { box-shadow: inset 3px 0 0 #8d8a84; }
+
+[data-crmv4-root] .c4-nch-stub,
+[data-crmv4-root] .c4-nch-clock,
+[data-crmv4-root] .c4-nch-mark {
+  display: grid;
+  place-items: center;
+  min-width: 36px;
+  min-height: 36px;
+  color: #1c1a17;
+  background:
+    radial-gradient(circle at 0 8px, transparent 3px, #f6f1e8 3.5px) left center / 8px 12px repeat-y,
+    #d4bc86;
+  border-radius: 8px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+[data-crmv4-root] .c4-nch-empty {
+  margin: 0;
+  padding: 28px 16px;
+  color: #7a5e30;
+  background:
+    linear-gradient(#d4bc86, #d4bc86) 16px 0 / 2px 100% no-repeat,
+    #fffdf8;
+  border: 1px dashed #d4bc86;
+  border-radius: 14px;
+  text-align: center;
+}
+
+[data-crmv4-root] .c4-rft-bands {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 18px;
+}
+
+[data-crmv4-root] .c4-rft-band {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  background: #fffdf8;
+  border: 1px solid rgba(28, 26, 23, 0.08);
+  border-radius: 999px;
+}
+
+[data-crmv4-root] .c4-rft-band[data-on="1"] { border-color: #d4bc86; background: rgba(212, 188, 134, 0.18); }
+
+[data-crmv4-root] .c4-nch .c4-btn:focus-visible,
+[data-crmv4-root] .c4-rft .c4-btn:focus-visible,
+[data-crmv4-root] .c4-nch .c4-field:focus-visible,
+[data-crmv4-root] .c4-rft .c4-field:focus-visible,
+[data-crmv4-root] .c4-nch .c4-chip:focus-visible,
+[data-crmv4-root] .c4-rft .c4-chip:focus-visible {
+  outline: 2px solid #7a5e30;
+  outline-offset: 2px;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-nch,
+[data-crmv4-root][data-theme="dark"] .c4-rft {
+  color: #f6f1e8;
+  background: #12100e;
+  border-color: #3a342c;
+  box-shadow: none;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-nch .c4-title,
+[data-crmv4-root][data-theme="dark"] .c4-rft .c4-title { color: #f6f1e8; }
+
+[data-crmv4-root][data-theme="dark"] .c4-nch-plate[data-logo="mono"] {
+  color: #1c1a17;
+  background: #f6f1e8;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-nch-kicker,
+[data-crmv4-root][data-theme="dark"] .c4-nch-count { color: #1c1a17; }
+
+[data-crmv4-root][data-theme="dark"] .c4-nch-kicker { color: #d4bc86; }
+
+[data-crmv4-root][data-theme="dark"] .c4-nch-form,
+[data-crmv4-root][data-theme="dark"] .c4-nch-board,
+[data-crmv4-root][data-theme="dark"] .c4-nch-kpi > div,
+[data-crmv4-root][data-theme="dark"] .c4-nch-col,
+[data-crmv4-root][data-theme="dark"] .c4-rft-col,
+[data-crmv4-root][data-theme="dark"] .c4-nch-rules,
+[data-crmv4-root][data-theme="dark"] .c4-nch-notice,
+[data-crmv4-root][data-theme="dark"] .c4-nch-suggest,
+[data-crmv4-root][data-theme="dark"] .c4-rft-lead,
+[data-crmv4-root][data-theme="dark"] .c4-nch-cards > li,
+[data-crmv4-root][data-theme="dark"] .c4-rft-rows > li,
+[data-crmv4-root][data-theme="dark"] .c4-nch-time > li,
+[data-crmv4-root][data-theme="dark"] .c4-nch-empty,
+[data-crmv4-root][data-theme="dark"] .c4-rft-band {
+  color: #f6f1e8;
+  background: #1c1a17;
+  border-color: #3a342c;
+}
+
+@media (max-width: 780px) {
+  [data-crmv4-root] .c4-nch,
+  [data-crmv4-root] .c4-rft { margin: 8px; }
+  [data-crmv4-root] .c4-nch-split,
+  [data-crmv4-root] .c4-nch-kpi,
+  [data-crmv4-root] .c4-nch-chart,
+  [data-crmv4-root] .c4-nch-bells { grid-template-columns: minmax(0, 1fr); }
+  [data-crmv4-root] .c4-nch .c4-btn,
+  [data-crmv4-root] .c4-rft .c4-btn,
+  [data-crmv4-root] .c4-nch .c4-chip,
+  [data-crmv4-root] .c4-rft .c4-chip { min-height: 44px; }
+  [data-crmv4-root] .c4-nch .c4-title,
+  [data-crmv4-root] .c4-rft .c4-title { font-size: 28px; }
+  [data-crmv4-root] .c4-nch-mast,
+  [data-crmv4-root] .c4-rft-mast { align-items: flex-start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-nch-track i,
+  [data-crmv4-root] .c4-nch-cards > li,
+  [data-crmv4-root] .c4-rft-rows > li { transition: none; }
+}
+
+[data-crmv4-root] .c4-nch-swatch[data-dye="mist"] { background: #8d8a84; }
+[data-crmv4-root] .c4-nch-swatch[data-dye="brass"] { background: #d4bc86; }
+[data-crmv4-root] .c4-nch-swatch[data-dye="coal"] { background: #1c1a17; border: 1px solid #d4bc86; }
+[data-crmv4-root] .c4-nch-cards > li[data-foil="pearl"] { box-shadow: inset 3px 0 0 #f6f1e8; }
+[data-crmv4-root] .c4-nch-cards > li[data-foil="copper"] { box-shadow: inset 3px 0 0 #b26a2a; }
+[data-crmv4-root] .c4-nch-cards > li[data-foil="ink"] { box-shadow: inset 3px 0 0 #1c1a17; }
+[data-crmv4-root] .c4-rft-rows > li[data-plus="1"] { box-shadow: inset 3px 0 0 #d4bc86; }
+
+/* Round 182 — goals desk. The month sheet was a pale gold wash.
+   It is now a graphite mast, ivory metric tiles, and a champagne pace bar.
+   Chrome pad stays 10px. The plate stays monochrome. */
+[data-crmv4-root] .c4-goals-night {
+  gap: 16px;
+  margin: 18px 20px 28px;
+  padding: 0 0 18px;
+  color: #1c1a17;
+  background: #f4efe6;
+  border: 1px solid #1c1a17;
+  border-radius: 18px;
+  box-shadow: 0 22px 48px rgba(28, 26, 23, 0.08);
+}
+[data-crmv4-root] .c4-goals-mast {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0;
+  padding: 22px 22px 16px;
+  color: #f6f1e8;
+  background:
+    linear-gradient(90deg, transparent, rgba(212, 188, 134, 0.35) 18%, transparent 42%),
+    #1c1a17;
+  border-radius: 18px 18px 0 0;
+}
+[data-crmv4-root] .c4-goals-plate[data-logo="mono"] {
+  margin: 0;
+  padding: 8px 10px;
+  color: #1c1a17;
+  background: #f6f1e8;
+  border: 1px solid #d4bc86;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  line-height: 1;
+  filter: grayscale(1);
+}
+[data-crmv4-root] .c4-goals-kicker {
+  margin: 0 0 4px;
+  color: #d4bc86;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-goals-night .c4-title { margin: 0; letter-spacing: -0.03em; }
+[data-crmv4-root] .c4-goals-mast .c4-title { color: #f6f1e8; font-size: 34px; font-weight: 560; line-height: 1; }
+[data-crmv4-root] .c4-goals-mast .c4-goal-month { margin: 0; color: #f6f1e8; font-variant-numeric: tabular-nums; }
+[data-crmv4-root] .c4-goals-hint { margin: 0 18px; }
+[data-crmv4-root] .c4-goals-night .c4-goal-grid { margin: 0 18px; gap: 12px; }
+[data-crmv4-root] .c4-goals-night > .c4-title,
+[data-crmv4-root] .c4-goals-night > .c4-btn { margin-left: 18px; margin-right: 18px; }
+[data-crmv4-root] .c4-goals-night .c4-goal-card {
+  gap: 8px;
+  padding: 16px;
+  background: #fffdf8;
+  border: 1px solid rgba(28, 26, 23, 0.08);
+  border-radius: 14px;
+  box-shadow: inset 3px 0 0 #d4bc86;
+  transition: transform 160ms ease, border-color 160ms ease;
+}
+[data-crmv4-root] .c4-goals-night .c4-goal-card:hover { transform: translateY(-1px); border-color: #d4bc86; }
+[data-crmv4-root] .c4-goals-night .c4-goal-card[data-pace="ahead"] { box-shadow: inset 3px 0 0 #d4bc86; }
+[data-crmv4-root] .c4-goals-night .c4-goal-card[data-pace="behind"] { box-shadow: inset 3px 0 0 #1c1a17; }
+[data-crmv4-root] .c4-goals-night .c4-goal-card[data-pace="even"] { box-shadow: inset 3px 0 0 #8d8a84; }
+[data-crmv4-root] .c4-goals-night .c4-goal-card[data-pace="none"] { box-shadow: inset 3px 0 0 transparent; }
+[data-crmv4-root] .c4-goals-night .c4-goal-card .c4-title { font-size: 18px; }
+[data-crmv4-root] .c4-goals-night .c4-goal-card strong { font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
+[data-crmv4-root] .c4-goals-night .c4-onboard-meter {
+  height: 8px;
+  margin: 4px 0 0;
+  background: rgba(28, 26, 23, 0.06);
+  border-radius: 999px;
+}
+[data-crmv4-root] .c4-goals-night .c4-onboard-meter span {
+  background: linear-gradient(90deg, #1c1a17, #d4bc86);
+  border-radius: 999px;
+}
+[data-crmv4-root] .c4-goals-night .c4-field:focus-visible,
+[data-crmv4-root] .c4-goals-night .c4-btn:focus-visible {
+  outline: 2px solid #7a5e30;
+  outline-offset: 2px;
+}
+[data-crmv4-root][data-theme="dark"] .c4-goals-night {
+  color: #f6f1e8;
+  background: #12100e;
+  border-color: #3a342c;
+  box-shadow: none;
+}
+[data-crmv4-root][data-theme="dark"] .c4-goals-night .c4-goal-card {
+  color: #f6f1e8;
+  background: #1c1a17;
+  border-color: #3a342c;
+}
+[data-crmv4-root][data-theme="dark"] .c4-goals-plate[data-logo="mono"] { color: #1c1a17; background: #f6f1e8; }
+@media (max-width: 780px) {
+  [data-crmv4-root] .c4-goals-night,
+  [data-crmv4-root] .c4-nch,
+  [data-crmv4-root] .c4-rft { margin: 8px; }
+  [data-crmv4-root] .c4-goals-mast { align-items: flex-start; }
+  [data-crmv4-root] .c4-goals-night .c4-goal-grid { grid-template-columns: minmax(0, 1fr); }
+  [data-crmv4-root] .c4-goals-night .c4-btn,
+  [data-crmv4-root] .c4-goals-night .c4-field { min-height: 44px; }
+  [data-crmv4-root] .c4-goals-mast .c4-title { font-size: 28px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-goals-night .c4-goal-card,
+  [data-crmv4-root] .c4-nch-track i,
+  [data-crmv4-root] .c4-nch-cards > li,
+  [data-crmv4-root] .c4-rft-rows > li { transition: none; }
+}

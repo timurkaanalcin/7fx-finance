@@ -134,7 +134,7 @@ function Metric({ title, hint, actual, shown, target, estimate, gap, gapShown, p
   const pct = progressPct(actual, target);
   const width = pct == null ? 0 : Math.max(0, Math.min(100, pct));
   return (
-    <article className="c4-goal-card">
+    <article className="c4-goal-card" data-pace={pace}>
       <h3 className="c4-title">{title}</h3>
       {hint ? <p className="c4-muted">{hint}</p> : null}
       <p><span className="c4-muted">{v4("goalMtd")}</span> <strong>{shown}</strong></p>
@@ -172,10 +172,16 @@ export function GoalsPage({ v4, locale }: { v4: V4; locale: string }) {
   const ftdRate = runRate(ftd, span.day, span.days);
   const traderRate = runRate(traders, span.day, span.days);
   return (
-    <section className="c4-goals-luxe" aria-label={v4("goalsTitle")} data-goals="1">
-      <h2 className="c4-title">{v4("goalsTitle")}</h2>
-      <p className="c4-muted">{v4("goalsHint")}</p>
-      <p className="c4-goal-month"><time dateTime={month}>{month}</time> · {v4("goalDay")} {span.day}/{span.days}</p>
+    <section className="c4-goals-luxe c4-goals-night" aria-label={v4("goalsTitle")} data-goals="1">
+      <header className="c4-goals-mast">
+        <p className="c4-goals-plate" data-logo="mono">7FX</p>
+        <div>
+          <p className="c4-goals-kicker">{v4("goalDay")}</p>
+          <h2 className="c4-title">{v4("goalsTitle")}</h2>
+        </div>
+        <p className="c4-goal-month"><time dateTime={month}>{month}</time> · {span.day}/{span.days}</p>
+      </header>
+      <p className="c4-muted c4-goals-hint">{v4("goalsHint")}</p>
       <div className="c4-goal-grid">
         <Metric
           title={v4("goalFtd")}
@@ -205,7 +211,7 @@ export function GoalsPage({ v4, locale }: { v4: V4; locale: string }) {
         />
       </div>
       <h3 className="c4-title">{v4("goalDeposits")}</h3>
-      <p className="c4-muted">{v4("goalDepositHint")}</p>
+      <p className="c4-muted c4-goals-hint">{v4("goalDepositHint")}</p>
       <div className="c4-goal-grid" data-deposits="">
         {currencies.map((currency) => {
           const actual = byCurrency.find((row) => row.currency === currency)?.amount || 0;
