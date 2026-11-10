@@ -193,20 +193,21 @@ export function DayStrip({ base, v4, locale }: { base: string; v4: V4; locale: s
     writeJson(DONE_KEY, next);
   }
   return (
-    <section className="c4-daystrip" aria-label={v4("dyTitle")} data-daystrip="1">
-      <header className="c4-pay-head">
+    <section className="c4-daystrip c4-daystrip-gallery" aria-label={v4("dyTitle")} data-daystrip="1">
+      <header className="c4-daystrip-gallery-mast">
         <div>
-          <p className="c4-pay-kicker">{today}</p>
-          <h2 className="c4-title">{v4("dyTitle")}</h2>
+          <p className="c4-daystrip-gallery-kicker">{today}</p>
+          <h2 className="c4-title c4-daystrip-gallery-title">{v4("dyTitle")}</h2>
         </div>
+        <p className="c4-daystrip-gallery-plate" data-logo="mono">7FX</p>
       </header>
-      <p className="c4-meta">{v4("dyHint")}</p>
-      <div className="c4-row">
+      <p className="c4-meta c4-daystrip-gallery-hint">{v4("dyHint")}</p>
+      <div className="c4-row c4-daystrip-gallery-tools">
         <button type="button" className="c4-btn" onClick={() => setCursor(shiftDay(cursor, -7))}>{v4("dyPrev")}</button>
         <button type="button" className="c4-btn" onClick={() => setCursor(today)}>{v4("dyToday")}</button>
         <button type="button" className="c4-btn" onClick={() => setCursor(shiftDay(cursor, 7))}>{v4("dyNext")}</button>
       </div>
-      <div className="c4-daystrip-row">
+      <div className="c4-daystrip-row c4-daystrip-gallery-row">
         {days.map((day) => {
           const mine = itemsOn(items, day);
           const late = isOverdue(day, today);
