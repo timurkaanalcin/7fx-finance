@@ -30,7 +30,14 @@ export default function Marketing({ tx }: { tx: Tx }) {
   const leads = useLeads();
   const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale, key);
   return (
-    <div className="c4-stack c4-mkt">
+    <div className="c4-stack c4-mkt c4-mkt-folio">
+      <header className="c4-mkt-folio-mast">
+        <p className="c4-mkt-folio-mark" data-logo="mono">7FX</p>
+        <div>
+          <p className="c4-mkt-folio-kicker">{tx("marketing")}</p>
+          <h2 className="c4-title">{tx("marketingLead")}</h2>
+        </div>
+      </header>
       <SegmentBoard v4={v4} />
       <SegmentDesk v4={v4} tx={tx} />
       <p className="c4-muted">{tx("marketingLead")}</p>

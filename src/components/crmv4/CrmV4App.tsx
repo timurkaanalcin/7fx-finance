@@ -164,6 +164,7 @@ import { GlasshouseStools, RetentionSlips } from "./round173";
 import { CountryMarks, OrchardLadders } from "./round174";
 import { PhoneStems, WinterTrellises } from "./round175";
 import { AddressLanes, HerbariumSheets } from "./round176";
+import { RegistryCartouches, RegistryMarks } from "./round177";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -758,6 +759,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "pstems") return v4("pstTitle");
     if (tab === "hbrms") return v4("hbrTitle");
     if (tab === "alane") return v4("alnTitle");
+    if (tab === "crtch") return v4("crtTitle");
+    if (tab === "rgtry") return v4("rgtTitle");
     if (tab === "plates") return v4("pltTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
@@ -1044,6 +1047,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "pstems") return v4("pstSub");
     if (tab === "hbrms") return v4("hbrSub");
     if (tab === "alane") return v4("alnSub");
+    if (tab === "crtch") return v4("crtSub");
+    if (tab === "rgtry") return v4("rgtSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1456,6 +1461,8 @@ function Shell({ base, section, name }: Props) {
             {view === "pstems" && <PhoneStems base={base} v4={v4} />}
             {view === "hbrms" && <HerbariumSheets v4={v4} />}
             {view === "alane" && <AddressLanes base={base} v4={v4} />}
+            {view === "crtch" && <RegistryCartouches v4={v4} />}
+            {view === "rgtry" && <RegistryMarks base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
