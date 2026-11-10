@@ -3,10 +3,30 @@
 import { useState } from "react";
 import { Card, Lab, Msg, State, sendJson, useJson, when, type Tx } from "../kit";
 
+const OPS_TITLE = {
+  desks: "desks",
+  groups: "groups",
+  methods: "methods",
+  assets: "assets",
+  rates: "rates",
+  sponsors: "sponsors",
+  licenses: "licenses",
+  calendar: "calendar",
+  import: "importLeads",
+} as const;
+
 export default function Ops({ tx, area }: { tx: Tx; area: string }) {
+  const titleKey = OPS_TITLE[area as keyof typeof OPS_TITLE] || "workspaceIntro";
   return (
-    <div className="c4-stack">
-      <p className="c4-muted">{tx("workspaceIntro")}</p>
+    <div className="c4-stack c4-ops-workshop" data-ops="1">
+      <header className="c4-ops-mast">
+        <div>
+          <p className="c4-ops-kicker">{tx("workspaceIntro")}</p>
+          <h2 className="c4-ops-title">{tx(titleKey)}</h2>
+        </div>
+        <p className="c4-ops-plate" data-logo="mono">7FX</p>
+      </header>
+      <p className="c4-ops-lead">{tx("workspaceIntro")}</p>
       {area === "desks" && <Desks tx={tx} />}
       {area === "groups" && <Groups tx={tx} />}
       {area === "methods" && <Methods tx={tx} />}
@@ -28,13 +48,13 @@ function Desks({ tx }: { tx: Tx }) {
       <State loading={data.loading} error={data.error} empty={!data.loading && !(data.data?.desks || []).length} tx={tx} onRetry={data.reload} />
       <ul className="c4-card-grid">
         {(data.data?.desks || []).map((row) => (
-          <li key={row.id} className="c4-row" style={{ justifyContent: "space-between", padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
+          <li key={row.id} className="c4-ops-row" data-live={row.active === false ? "off" : "on"}>
             <span>{row.name} {row.code ? `· ${row.code}` : ""}</span>
             <span className="c4-muted">{row.office || ""} {row.active === false ? tx("inactiveWord") : tx("activeWord")}</span>
           </li>
         ))}
       </ul>
-      <form className="c4-form c4-form-2" style={{ padding: 16 }} onSubmit={async (event) => {
+      <form className="c4-form c4-form-2 c4-ops-form" onSubmit={async (event) => {
         event.preventDefault();
         const fd = new FormData(event.currentTarget);
         const res = await sendJson("/api/admin/desks", "POST", { name: fd.get("name"), code: fd.get("code"), office: fd.get("office") });
@@ -59,13 +79,13 @@ function Groups({ tx }: { tx: Tx }) {
       <State loading={data.loading} error={data.error} empty={!data.loading && !(data.data?.groups || []).length} tx={tx} onRetry={data.reload} />
       <ul>
         {(data.data?.groups || []).map((row) => (
-          <li key={row.id} className="c4-row" style={{ justifyContent: "space-between", padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
+          <li key={row.id} className="c4-ops-row" data-live="on">
             <span>{row.name}</span>
             <span className="c4-muted">{tx("customersCount")} {row.customersCount || 0}</span>
           </li>
         ))}
       </ul>
-      <form className="c4-form" style={{ padding: 16 }} onSubmit={async (event) => {
+      <form className="c4-form c4-ops-form" onSubmit={async (event) => {
         event.preventDefault();
         const fd = new FormData(event.currentTarget);
         const res = await sendJson("/api/admin/trading-groups", "POST", { name: fd.get("name"), description: fd.get("description") });
@@ -89,7 +109,7 @@ function Methods({ tx }: { tx: Tx }) {
       <State loading={data.loading} error={data.error} empty={!data.loading && !(data.data?.methods || []).length} tx={tx} onRetry={data.reload} />
       <ul>
         {(data.data?.methods || []).map((row) => (
-          <li key={row.id} className="c4-row" style={{ justifyContent: "space-between", padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
+          <li key={row.id} className="c4-ops-row" data-live={row.active === false ? "off" : "on"}>
             <span>{row.label} · {row.type}</span>
             <button type="button" className="c4-btn" onClick={async () => {
               const res = await sendJson("/api/admin/methods", "PATCH", { id: row.id, active: row.active === false });
@@ -99,7 +119,7 @@ function Methods({ tx }: { tx: Tx }) {
           </li>
         ))}
       </ul>
-      <form className="c4-form c4-form-2" style={{ padding: 16 }} onSubmit={async (event) => {
+      <form className="c4-form c4-form-2 c4-ops-form" onSubmit={async (event) => {
         event.preventDefault();
         const fd = new FormData(event.currentTarget);
         const res = await sendJson("/api/admin/methods", "POST", {
@@ -139,7 +159,7 @@ function Assets({ tx }: { tx: Tx }) {
       <State loading={data.loading} error={data.error} empty={!data.loading && rows.length === 0} tx={tx} onRetry={data.reload} />
       <ul>
         {rows.map((row) => (
-          <li key={row.symbol} className="c4-row" style={{ justifyContent: "space-between", padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
+          <li key={row.symbol} className="c4-ops-row" data-live={row.enabled === false ? "off" : "on"}>
             <span>{row.symbol} · {row.name} · {row.class}</span>
             <button type="button" className="c4-btn" onClick={async () => {
               const res = await sendJson("/api/admin/rates", "PUT", { symbol: row.symbol, enabled: row.enabled === false });
@@ -171,7 +191,7 @@ function Rates({ tx }: { tx: Tx }) {
   return (
     <Card title={tx("rates")}>
       <State loading={data.loading} error={data.error} empty={false} tx={tx} onRetry={data.reload} />
-      <form key={JSON.stringify(g)} className="c4-form c4-form-2" style={{ padding: 16 }} onSubmit={async (event) => {
+      <form key={JSON.stringify(g)} className="c4-form c4-form-2 c4-ops-form" onSubmit={async (event) => {
         event.preventDefault();
         const fd = new FormData(event.currentTarget);
         const global: Record<string, number> = {};
@@ -198,7 +218,7 @@ function Sponsors({ tx }: { tx: Tx }) {
       <State loading={data.loading} error={data.error} empty={!data.loading && !(data.data?.sponsors || []).length} tx={tx} onRetry={data.reload} />
       <ul>
         {(data.data?.sponsors || []).map((row) => (
-          <li key={row.id} className="c4-row" style={{ justifyContent: "space-between", padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
+          <li key={row.id} className="c4-ops-row" data-live="on">
             <span>{row.name}</span>
             <button type="button" className="c4-btn" onClick={async () => {
               const res = await fetch(`/api/admin/sponsors?id=${encodeURIComponent(row.id)}`, { method: "DELETE" });
@@ -208,7 +228,7 @@ function Sponsors({ tx }: { tx: Tx }) {
           </li>
         ))}
       </ul>
-      <form className="c4-form" style={{ padding: 16 }} onSubmit={async (event) => {
+      <form className="c4-form c4-ops-form" onSubmit={async (event) => {
         event.preventDefault();
         const fd = new FormData(event.currentTarget);
         const file = fd.get("logo");
@@ -246,7 +266,7 @@ function Licenses({ tx }: { tx: Tx }) {
       <State loading={data.loading} error={data.error} empty={!data.loading && !(data.data?.licenses || []).length} tx={tx} onRetry={data.reload} />
       <ul>
         {(data.data?.licenses || []).map((row) => (
-          <li key={row.id} className="c4-row" style={{ justifyContent: "space-between", padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
+          <li key={row.id} className="c4-ops-row" data-live="on">
             <span>{row.regulator} · {row.number} · {row.entity}</span>
             <button type="button" className="c4-btn" onClick={async () => {
               const res = await fetch(`/api/admin/licenses?id=${encodeURIComponent(row.id)}`, { method: "DELETE" });
@@ -256,7 +276,7 @@ function Licenses({ tx }: { tx: Tx }) {
           </li>
         ))}
       </ul>
-      <form className="c4-form c4-form-2" style={{ padding: 16 }} onSubmit={async (event) => {
+      <form className="c4-form c4-form-2 c4-ops-form" onSubmit={async (event) => {
         event.preventDefault();
         const fd = new FormData(event.currentTarget);
         const res = await sendJson("/api/admin/licenses", "POST", { regulator: fd.get("regulator"), number: fd.get("number"), entity: fd.get("entity"), registerUrl: fd.get("registerUrl") });
@@ -282,7 +302,7 @@ function Calendar({ tx }: { tx: Tx }) {
       <State loading={data.loading} error={data.error} empty={!data.loading && !(data.data?.reminders || []).length} tx={tx} onRetry={data.reload} />
       <ul>
         {(data.data?.reminders || []).map((row) => (
-          <li key={row.id} className="c4-row" style={{ justifyContent: "space-between", padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
+          <li key={row.id} className="c4-ops-row" data-live="on">
             <span>{row.body} · {row.trader || ""} · {when(row.remindAt, "en")}</span>
             <button type="button" className="c4-btn" onClick={async () => {
               const res = await sendJson("/api/admin/calendar", "POST", { action: "delete", id: row.id });
@@ -292,7 +312,7 @@ function Calendar({ tx }: { tx: Tx }) {
           </li>
         ))}
       </ul>
-      <form className="c4-form" style={{ padding: 16 }} onSubmit={async (event) => {
+      <form className="c4-form c4-ops-form" onSubmit={async (event) => {
         event.preventDefault();
         const fd = new FormData(event.currentTarget);
         const res = await sendJson("/api/admin/calendar", "POST", { body: fd.get("body"), remindAt: fd.get("remindAt"), userId: fd.get("userId"), color: "#7c3aed" });
@@ -318,7 +338,7 @@ function ImportPanel({ tx }: { tx: Tx }) {
   return (
     <Card title={tx("importLeads")}>
       <p className="c4-muted" style={{ padding: "8px 16px 0" }}>{tx("importConfirm")} {tx("maxRows")}</p>
-      <form className="c4-form" style={{ padding: 16 }} onSubmit={async (event) => {
+      <form className="c4-form c4-ops-form" onSubmit={async (event) => {
         event.preventDefault();
         const fd = new FormData(event.currentTarget);
         const res = await fetch("/api/admin/import/parse", { method: "POST", body: fd });
@@ -334,7 +354,7 @@ function ImportPanel({ tx }: { tx: Tx }) {
         <button type="submit" className="c4-btn">{tx("importPreview")}</button>
       </form>
       {parsed && (
-        <form className="c4-form" style={{ padding: 16 }} onSubmit={async (event) => {
+        <form className="c4-form c4-ops-form" onSubmit={async (event) => {
           event.preventDefault();
           const mode = String(new FormData(event.currentTarget).get("duplicateMode") || "skip");
           const preview = await sendJson("/api/admin/import/preview", "POST", {

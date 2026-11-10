@@ -42567,3 +42567,294 @@
   [data-crmv4-root] .c4-slt-track i,
   [data-crmv4-root] .c4-support-parlor .c4-ticket-luxe { transition: none; }
 }
+
+/* Round 187 — vesper bells, server stems, and the operations workshop.
+   Groups, assets, rates, sponsors, licenses, calendar, and import were plain stacked cards.
+   They are now a graphite mast, ivory sheets, and a champagne status rail.
+   Chrome pad stays 10px. The plate stays monochrome. */
+[data-crmv4-root] .c4-vsp,
+[data-crmv4-root] .c4-stm,
+[data-crmv4-root] .c4-ops-workshop {
+  color: #1c1a17;
+}
+[data-crmv4-root] .c4-vsp,
+[data-crmv4-root] .c4-stm {
+  display: grid;
+  gap: 14px;
+  margin: 18px 20px 28px;
+  padding: 22px;
+  background: #f6f1e8;
+  border: 1px solid #1c1a17;
+  border-radius: 22px;
+  box-shadow: 0 18px 36px rgba(28, 26, 23, 0.06);
+}
+[data-crmv4-root] .c4-vsp-mast,
+[data-crmv4-root] .c4-stm-mast,
+[data-crmv4-root] .c4-ops-workshop .c4-ops-mast {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  background: #1c1a17;
+  color: #f6f1e8;
+  border-radius: 16px;
+}
+[data-crmv4-root] .c4-vsp-kicker,
+[data-crmv4-root] .c4-stm-kicker,
+[data-crmv4-root] .c4-ops-workshop .c4-ops-kicker {
+  margin: 0 0 4px;
+  color: #d4bc86;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+[data-crmv4-root] .c4-vsp-mast .c4-title,
+[data-crmv4-root] .c4-stm-mast .c4-title,
+[data-crmv4-root] .c4-ops-workshop .c4-ops-title {
+  margin: 0;
+  color: #f6f1e8;
+  font-size: 34px;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  font-weight: 560;
+}
+[data-crmv4-root] .c4-vsp-mast .c4-title::before,
+[data-crmv4-root] .c4-stm-mast .c4-title::before { display: none; }
+[data-crmv4-root] .c4-vsp-plate[data-logo="mono"],
+[data-crmv4-root] .c4-stm-plate[data-logo="mono"],
+[data-crmv4-root] .c4-ops-workshop .c4-ops-plate[data-logo="mono"] {
+  display: grid;
+  place-items: center;
+  min-width: 64px;
+  height: 64px;
+  margin: 0;
+  padding: 0 10px;
+  background: #f6f1e8;
+  color: #1c1a17;
+  border-radius: 14px;
+  letter-spacing: 0.16em;
+  font-size: 12px;
+  font-weight: 650;
+}
+[data-crmv4-root] .c4-vsp-kpi,
+[data-crmv4-root] .c4-vsp-chart,
+[data-crmv4-root] .c4-vsp-form,
+[data-crmv4-root] .c4-vsp-filters,
+[data-crmv4-root] .c4-vsp-suggest {
+  display: grid;
+  gap: 10px;
+}
+[data-crmv4-root] .c4-vsp-kpi { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+[data-crmv4-root] .c4-vsp-kpi > div,
+[data-crmv4-root] .c4-vsp-cards > li,
+[data-crmv4-root] .c4-stm-rows > li,
+[data-crmv4-root] .c4-vsp-timeline > li {
+  padding: 12px 14px;
+  background: #fffdf8;
+  border: 1px solid #e4dccb;
+  border-radius: 16px;
+  box-shadow: inset 3px 0 0 #d4bc86;
+}
+[data-crmv4-root] .c4-vsp-kpi dt {
+  color: #7a5e30;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-vsp-kpi dd { margin: 4px 0 0; font-size: 22px; }
+[data-crmv4-root] .c4-vsp-chart {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: end;
+}
+[data-crmv4-root] .c4-vsp-track {
+  height: 72px;
+  display: flex;
+  align-items: flex-end;
+  background: #efe6d4;
+  border-radius: 10px;
+}
+[data-crmv4-root] .c4-vsp-track i {
+  display: block;
+  width: 100%;
+  background: #7a5e30;
+  transition: height 180ms ease;
+}
+[data-crmv4-root] .c4-vsp-swatch {
+  display: block;
+  height: 8px;
+  border-radius: 999px;
+  background: #d4bc86;
+}
+[data-crmv4-root] .c4-vsp-swatch[data-tone="ivory"] { background: #f6f1e8; border: 1px solid #1c1a17; }
+[data-crmv4-root] .c4-vsp-swatch[data-tone="ink"] { background: #1c1a17; }
+[data-crmv4-root] .c4-vsp-swatch[data-tone="champagne"] { background: #d4bc86; }
+[data-crmv4-root] .c4-vsp-swatch[data-tone="graphite"] { background: #5c564c; }
+[data-crmv4-root] .c4-vsp-cards > li[data-late="1"] { box-shadow: inset 3px 0 0 #8c3a32; }
+[data-crmv4-root] .c4-vsp-cards > li[data-soon="1"] { box-shadow: inset 3px 0 0 #2f6f4e; }
+[data-crmv4-root] .c4-vsp-cards,
+[data-crmv4-root] .c4-stm-rows,
+[data-crmv4-root] .c4-vsp-timeline,
+[data-crmv4-root] .c4-stm-bands {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-vsp-form,
+[data-crmv4-root] .c4-vsp-filters { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+[data-crmv4-root] .c4-settings-atelier .c4-ops-workshop {
+  width: 100%;
+  box-sizing: border-box;
+  align-self: stretch;
+  margin: 0;
+  padding: 8px 4px 18px;
+  background:
+    radial-gradient(1200px 180px at 0% 0%, rgba(212, 188, 134, 0.18), transparent 60%),
+    #f6f1e8;
+  border: 1px solid #1c1a17;
+  border-radius: 22px;
+  box-shadow: 0 18px 40px rgba(28, 26, 23, 0.06);
+}
+[data-crmv4-root] .c4-ops-workshop .c4-ops-lead {
+  margin: 12px 4px 0;
+  color: #7a5e30;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+[data-crmv4-root] .c4-ops-workshop .c4-card {
+  margin-top: 14px;
+  background: #fffdf8;
+  border: 1px solid #e4dccb;
+  border-radius: 18px;
+  box-shadow: inset 4px 0 0 #d4bc86;
+}
+[data-crmv4-root] .c4-ops-workshop .c4-card-h,
+[data-crmv4-root] .c4-ops-workshop .c4-title {
+  letter-spacing: -0.02em;
+}
+[data-crmv4-root] .c4-ops-workshop .c4-ops-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 8px 12px;
+  padding: 12px 14px;
+  background: #fffdf8;
+  border: 1px solid #e4dccb;
+  border-radius: 14px;
+  box-shadow: inset 3px 0 0 #2f6f4e;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+[data-crmv4-root] .c4-ops-workshop .c4-ops-row[data-live="off"] { box-shadow: inset 3px 0 0 #8c3a32; }
+[data-crmv4-root] .c4-ops-workshop .c4-ops-row:hover,
+[data-crmv4-root] .c4-ops-workshop .c4-ops-row:focus-within {
+  transform: translateY(-1px);
+  outline: 2px solid #7a5e30;
+  outline-offset: 2px;
+}
+[data-crmv4-root] .c4-ops-workshop .c4-ops-form {
+  display: grid;
+  gap: 12px;
+  margin: 8px 12px 16px;
+  padding: 16px;
+  background: #f6f1e8;
+  color: #1c1a17;
+  border-radius: 16px;
+}
+[data-crmv4-root] .c4-ops-workshop .c4-field,
+[data-crmv4-root] .c4-ops-workshop .c4-select {
+  background: #fffdf8;
+  border: 1px solid #1c1a17;
+  border-radius: 12px;
+}
+[data-crmv4-root] .c4-ops-workshop .c4-btn-hot {
+  background: #1c1a17;
+  color: #f6f1e8;
+  border-color: #1c1a17;
+}
+[data-crmv4-root] .c4-ops-workshop .c4-btn-hot:hover { background: #7a5e30; }
+[data-crmv4-root] .c4-ops-workshop .c4-empty,
+[data-crmv4-root] .c4-ops-workshop .c4-empty-luxe,
+[data-crmv4-root] .c4-vsp .c4-empty-gold,
+[data-crmv4-root] .c4-stm .c4-empty-gold {
+  margin: 8px 12px 16px;
+  padding: 28px 16px;
+  border: 1px dashed #1c1a17;
+  border-radius: 16px;
+  background: #fffdf8;
+  color: #7a5e30;
+  text-align: center;
+  letter-spacing: 0.08em;
+}
+[data-crmv4-root] .c4-ops-workshop .c4-muted { color: #7a5e30; }
+[data-crmv4-root] .c4-ops-workshop .c4-field:focus-visible,
+[data-crmv4-root] .c4-ops-workshop .c4-btn:focus-visible,
+[data-crmv4-root] .c4-vsp .c4-field:focus-visible,
+[data-crmv4-root] .c4-stm .c4-btn:focus-visible {
+  outline: 2px solid #7a5e30;
+  outline-offset: 2px;
+}
+[data-crmv4-root][data-theme="dark"] .c4-vsp,
+[data-crmv4-root][data-theme="dark"] .c4-stm,
+[data-crmv4-root][data-theme="dark"] .c4-settings-atelier .c4-ops-workshop {
+  color: #f6f1e8;
+  background: #12100e;
+  border-color: #3a342c;
+  box-shadow: none;
+}
+[data-crmv4-root][data-theme="dark"] .c4-vsp-kpi > div,
+[data-crmv4-root][data-theme="dark"] .c4-vsp-cards > li,
+[data-crmv4-root][data-theme="dark"] .c4-stm-rows > li,
+[data-crmv4-root][data-theme="dark"] .c4-ops-workshop .c4-card,
+[data-crmv4-root][data-theme="dark"] .c4-ops-workshop .c4-ops-row,
+[data-crmv4-root][data-theme="dark"] .c4-ops-workshop .c4-empty,
+[data-crmv4-root][data-theme="dark"] .c4-ops-workshop .c4-ops-form {
+  color: #f6f1e8;
+  background: #1c1a17;
+  border-color: #3a342c;
+}
+[data-crmv4-root][data-theme="dark"] .c4-ops-workshop .c4-field,
+[data-crmv4-root][data-theme="dark"] .c4-ops-workshop .c4-select {
+  background: #12100e;
+  color: #f6f1e8;
+  border-color: #3a342c;
+}
+[data-crmv4-root][data-theme="dark"] .c4-ops-workshop .c4-btn-hot {
+  background: #d4bc86;
+  color: #1c1a17;
+  border-color: #d4bc86;
+}
+[data-crmv4-root][data-theme="dark"] .c4-vsp-plate[data-logo="mono"],
+[data-crmv4-root][data-theme="dark"] .c4-stm-plate[data-logo="mono"],
+[data-crmv4-root][data-theme="dark"] .c4-ops-workshop .c4-ops-plate[data-logo="mono"] {
+  background: #f6f1e8;
+  color: #1c1a17;
+}
+@media (max-width: 780px) {
+  [data-crmv4-root] .c4-vsp,
+  [data-crmv4-root] .c4-stm,
+  [data-crmv4-root] .c4-ops-workshop { margin: 8px; }
+  [data-crmv4-root] .c4-vsp-kpi,
+  [data-crmv4-root] .c4-vsp-chart,
+  [data-crmv4-root] .c4-vsp-form,
+  [data-crmv4-root] .c4-vsp-filters,
+  [data-crmv4-root] .c4-ops-workshop .c4-ops-form { grid-template-columns: minmax(0, 1fr); }
+  [data-crmv4-root] .c4-vsp .c4-btn,
+  [data-crmv4-root] .c4-vsp .c4-field,
+  [data-crmv4-root] .c4-stm .c4-btn,
+  [data-crmv4-root] .c4-stm .c4-field,
+  [data-crmv4-root] .c4-ops-workshop .c4-btn,
+  [data-crmv4-root] .c4-ops-workshop .c4-field,
+  [data-crmv4-root] .c4-ops-workshop .c4-chip { min-height: 44px; }
+  [data-crmv4-root] .c4-vsp-mast .c4-title,
+  [data-crmv4-root] .c4-stm-mast .c4-title,
+  [data-crmv4-root] .c4-ops-workshop .c4-ops-title { font-size: 28px; }
+  [data-crmv4-root] .c4-ops-workshop .c4-ops-row { align-items: flex-start; flex-direction: column; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-vsp-track i,
+  [data-crmv4-root] .c4-ops-workshop .c4-ops-row { transition: none; }
+}
