@@ -30,14 +30,19 @@ export default function Marketing({ tx }: { tx: Tx }) {
   const leads = useLeads();
   const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale, key);
   return (
-    <div className="c4-stack c4-mkt c4-mkt-folio">
-      <header className="c4-mkt-folio-mast">
-        <p className="c4-mkt-folio-mark" data-logo="mono">7FX</p>
+    <div className="c4-stack c4-mkt c4-mkt-folio c4-mkt-salon">
+      <header className="c4-mkt-folio-mast c4-mkt-salon-mast">
         <div>
-          <p className="c4-mkt-folio-kicker">{tx("marketing")}</p>
-          <h2 className="c4-title">{tx("marketingLead")}</h2>
+          <p className="c4-mkt-folio-kicker c4-mkt-salon-kicker">{tx("marketing")}</p>
+          <h2 className="c4-mkt-salon-title">{tx("marketingLead")}</h2>
         </div>
+        <p className="c4-mkt-folio-mark c4-mkt-salon-plate" data-logo="mono">7FX</p>
       </header>
+      <ol className="c4-mkt-salon-index" aria-label={tx("marketing")}>
+        <li data-tone="gold">{tx("affiliates")}</li>
+        <li data-tone="ink">{tx("templates")}</li>
+        <li data-tone="mist">{tx("leads")}</li>
+      </ol>
       <SegmentBoard v4={v4} />
       <SegmentDesk v4={v4} tx={tx} />
       <p className="c4-muted">{tx("marketingLead")}</p>
@@ -70,7 +75,7 @@ export default function Marketing({ tx }: { tx: Tx }) {
             const total = Math.max(1, (row.leads ?? 0));
             const open = openName === row.name;
             return (
-              <li key={row.name} style={{ padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
+              <li key={row.name} className="c4-mkt-salon-row">
                 <button type="button" className="c4-row c4-between" onClick={() => { setOpenName(open ? "" : String(row.name || "")); setDetail(String(row.name || "")); }}>
                   <span>{row.name || "—"}</span>
                   <span className="c4-muted">{tx("leads")} {row.leads ?? 0} · {crmv4Text(locale, "drill")}</span>
@@ -94,7 +99,7 @@ export default function Marketing({ tx }: { tx: Tx }) {
         <State loading={mail.loading} error={mail.error} empty={!mail.loading && templates.length === 0} tx={tx} onRetry={mail.reload} />
         <ul>
           {templates.map((row) => (
-            <li key={row.id} className="c4-row" style={{ justifyContent: "space-between", padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
+            <li key={row.id} className="c4-row c4-mkt-salon-row">
               <button type="button" className="c4-btn" onClick={() => setPicked(row.id)}>{row.name} · {row.subject}</button>
               <button
                 type="button"

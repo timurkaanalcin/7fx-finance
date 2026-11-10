@@ -43388,3 +43388,263 @@
   [data-crmv4-root] .c4-ghk .c4-btn,
   [data-crmv4-root] .c4-cust-parlor .c4-btn { transition: none; }
 }
+
+/* Round 190 — callback windows, invite rings, and the marketing salon.
+   The marketing folio was a thin ivory sheet with a small mark.
+   It is now a graphite mast, an ivory sheet, and a champagne index.
+   Chrome pad stays 10px. The plate stays monochrome. */
+[data-crmv4-root] .c4-cbw,
+[data-crmv4-root] .c4-irg,
+[data-crmv4-root] .c4-mkt-salon {
+  color: #1c1a17;
+}
+[data-crmv4-root] .c4-cbw,
+[data-crmv4-root] .c4-irg {
+  display: grid;
+  gap: 14px;
+  margin: 18px 20px 28px;
+  padding: 22px;
+  background:
+    linear-gradient(#d4bc86, #d4bc86) 22px 0 / 72px 3px no-repeat,
+    #f6f1e8;
+  border: 1px solid #1c1a17;
+  border-radius: 22px;
+  box-shadow: 0 18px 36px rgba(28, 26, 23, 0.06);
+}
+[data-crmv4-root] .c4-cbw-mast,
+[data-crmv4-root] .c4-irg-mast,
+[data-crmv4-root] .c4-mkt-folio.c4-mkt-salon .c4-mkt-salon-mast {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  background: #1c1a17;
+  color: #f6f1e8;
+  border-radius: 16px;
+}
+[data-crmv4-root] .c4-cbw-kicker,
+[data-crmv4-root] .c4-irg-kicker,
+[data-crmv4-root] .c4-mkt-folio.c4-mkt-salon .c4-mkt-salon-kicker {
+  margin: 0 0 4px;
+  color: #d4bc86;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+[data-crmv4-root] .c4-cbw-mast .c4-title,
+[data-crmv4-root] .c4-irg-mast .c4-title,
+[data-crmv4-root] .c4-mkt-salon-title {
+  margin: 0;
+  color: #f6f1e8;
+  font-size: 34px;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  font-weight: 560;
+}
+[data-crmv4-root] .c4-cbw-mast .c4-title::before,
+[data-crmv4-root] .c4-irg-mast .c4-title::before,
+[data-crmv4-root] .c4-mkt-salon-title::before,
+[data-crmv4-root] .c4-mkt-salon-title::after { display: none; }
+[data-crmv4-root] .c4-cbw-plate[data-logo="mono"],
+[data-crmv4-root] .c4-irg-plate[data-logo="mono"],
+[data-crmv4-root] .c4-mkt-salon-plate[data-logo="mono"] {
+  display: grid;
+  place-items: center;
+  min-width: 64px;
+  height: 64px;
+  margin: 0;
+  padding: 0 10px;
+  background: #f6f1e8;
+  color: #1c1a17;
+  border-radius: 14px;
+  letter-spacing: 0.16em;
+  font-size: 12px;
+  font-weight: 650;
+}
+[data-crmv4-root] .c4-mkt-folio.c4-mkt-salon {
+  width: 100%;
+  margin: 16px 20px 28px;
+  padding: 18px;
+  background: #f4efe6;
+  border: 1px solid #1c1a17;
+  border-radius: 24px;
+  box-shadow: 0 22px 40px rgba(28, 26, 23, 0.08);
+}
+[data-crmv4-root] .c4-mkt-salon-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-mkt-salon-index li {
+  min-height: 32px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #fffdf8;
+  border: 1px solid #1c1a17;
+  color: #1c1a17;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-mkt-salon-index li[data-tone="gold"] { box-shadow: inset 0 -2px 0 #d4bc86; }
+[data-crmv4-root] .c4-mkt-salon-index li[data-tone="ink"] { box-shadow: inset 0 -2px 0 #1c1a17; }
+[data-crmv4-root] .c4-mkt-salon-index li[data-tone="mist"] { box-shadow: inset 0 -2px 0 #cfc6b8; }
+[data-crmv4-root] .c4-mkt-folio.c4-mkt-salon .c4-card {
+  background: #fffdf8;
+  border: 1px solid #e4dccb;
+  border-radius: 18px;
+  box-shadow: inset 4px 0 0 #d4bc86;
+}
+[data-crmv4-root] .c4-mkt-salon-row {
+  padding: 12px 16px;
+  border-top: 1px solid #e4dccb;
+  transition: background 160ms ease;
+}
+[data-crmv4-root] .c4-mkt-salon-row:hover { background: #f6f1e8; }
+[data-crmv4-root] .c4-cbw-kpi,
+[data-crmv4-root] .c4-cbw-chart,
+[data-crmv4-root] .c4-cbw-form,
+[data-crmv4-root] .c4-cbw-filters,
+[data-crmv4-root] .c4-cbw-suggest {
+  display: grid;
+  gap: 10px;
+}
+[data-crmv4-root] .c4-cbw-kpi { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+[data-crmv4-root] .c4-cbw-kpi > div,
+[data-crmv4-root] .c4-cbw-cards > li,
+[data-crmv4-root] .c4-irg-rows > li,
+[data-crmv4-root] .c4-cbw-timeline > li {
+  padding: 12px 14px;
+  background: #fffdf8;
+  border: 1px solid #e4dccb;
+  border-radius: 16px;
+  box-shadow: inset 3px 0 0 #d4bc86;
+}
+[data-crmv4-root] .c4-cbw-kpi dt {
+  color: #7a5e30;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-cbw-kpi dd {
+  margin: 4px 0 0;
+  font-size: 22px;
+}
+[data-crmv4-root] .c4-cbw-chart { grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: end; }
+[data-crmv4-root] .c4-cbw-track {
+  height: 72px;
+  display: flex;
+  align-items: flex-end;
+  background: #efe6d4;
+  border-radius: 10px;
+  overflow: hidden;
+}
+[data-crmv4-root] .c4-cbw-track i {
+  display: block;
+  width: 100%;
+  background: #7a5e30;
+  transition: height 180ms ease;
+}
+[data-crmv4-root] .c4-cbw-swatch { width: 14px; height: 14px; border-radius: 50%; background: #d4bc86; }
+[data-crmv4-root] .c4-cbw-swatch[data-tone="paper"] { background: #f6f1e8; border: 1px solid #1c1a17; }
+[data-crmv4-root] .c4-cbw-swatch[data-tone="ink"] { background: #1c1a17; }
+[data-crmv4-root] .c4-cbw-swatch[data-tone="gold"] { background: #d4bc86; }
+[data-crmv4-root] .c4-cbw-swatch[data-tone="mist"] { background: #cfc6b8; }
+[data-crmv4-root] .c4-cbw-cards > li[data-late="1"] { box-shadow: inset 3px 0 0 #8a3b3b; }
+[data-crmv4-root] .c4-cbw-cards > li[data-soon="1"] { box-shadow: inset 3px 0 0 #3e6b4f; }
+[data-crmv4-root] .c4-cbw-cards > li[data-home="1"] { box-shadow: inset 3px 0 0 #d4bc86; }
+[data-crmv4-root] .c4-cbw-cards,
+[data-crmv4-root] .c4-irg-rows,
+[data-crmv4-root] .c4-cbw-timeline,
+[data-crmv4-root] .c4-irg-bands {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-cbw-form,
+[data-crmv4-root] .c4-cbw-filters { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+[data-crmv4-root] .c4-cbw-rules,
+[data-crmv4-root] .c4-irg-rules {
+  margin: 0;
+  color: #7a5e30;
+  line-height: 1.45;
+}
+[data-crmv4-root] .c4-cbw .c4-btn,
+[data-crmv4-root] .c4-irg .c4-btn,
+[data-crmv4-root] .c4-mkt-salon .c4-btn,
+[data-crmv4-root] .c4-cbw .c4-chip,
+[data-crmv4-root] .c4-mkt-salon .c4-chip {
+  min-height: 36px;
+  border-radius: 999px;
+  transition: transform 160ms ease, background 160ms ease;
+}
+[data-crmv4-root] .c4-cbw .c4-btn:hover,
+[data-crmv4-root] .c4-irg .c4-btn:hover,
+[data-crmv4-root] .c4-mkt-salon .c4-btn:hover { transform: translateY(-1px); }
+[data-crmv4-root] .c4-cbw .c4-chip[data-on="1"],
+[data-crmv4-root] .c4-irg .c4-chip[data-on="1"],
+[data-crmv4-root] .c4-mkt-salon .c4-chip[data-on="1"] {
+  background: #d4bc86;
+  color: #1c1a17;
+  border-color: #7a5e30;
+}
+[data-crmv4-root][data-theme="dark"] .c4-cbw,
+[data-crmv4-root][data-theme="dark"] .c4-irg,
+[data-crmv4-root][data-theme="dark"] .c4-mkt-folio.c4-mkt-salon {
+  background: #141210;
+  color: #f6f1e8;
+  border-color: #d4bc86;
+}
+[data-crmv4-root][data-theme="dark"] .c4-cbw-plate[data-logo="mono"],
+[data-crmv4-root][data-theme="dark"] .c4-irg-plate[data-logo="mono"],
+[data-crmv4-root][data-theme="dark"] .c4-mkt-salon-plate[data-logo="mono"] {
+  background: #1c1a17;
+  color: #f6f1e8;
+  border: 1px solid #d4bc86;
+}
+[data-crmv4-root][data-theme="dark"] .c4-cbw-kpi > div,
+[data-crmv4-root][data-theme="dark"] .c4-cbw-cards > li,
+[data-crmv4-root][data-theme="dark"] .c4-irg-rows > li,
+[data-crmv4-root][data-theme="dark"] .c4-mkt-folio.c4-mkt-salon .c4-card {
+  background: #1c1a17;
+  color: #f6f1e8;
+  border-color: #3a342c;
+}
+[data-crmv4-root][data-theme="dark"] .c4-mkt-salon-index li {
+  background: #1c1a17;
+  color: #f6f1e8;
+  border-color: #d4bc86;
+}
+[data-crmv4-root][data-motion="reduce"] .c4-cbw-track i,
+[data-crmv4-root][data-motion="reduce"] .c4-cbw .c4-btn,
+[data-crmv4-root][data-motion="reduce"] .c4-mkt-salon .c4-btn,
+[data-crmv4-root][data-motion="reduce"] .c4-mkt-salon-row { transition: none; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-cbw-kpi,
+  [data-crmv4-root] .c4-cbw-chart,
+  [data-crmv4-root] .c4-cbw-form,
+  [data-crmv4-root] .c4-cbw-filters { grid-template-columns: 1fr; }
+  [data-crmv4-root] .c4-cbw,
+  [data-crmv4-root] .c4-irg,
+  [data-crmv4-root] .c4-mkt-folio.c4-mkt-salon { margin: 10px; padding: 14px; }
+  [data-crmv4-root] .c4-cbw-mast .c4-title,
+  [data-crmv4-root] .c4-irg-mast .c4-title,
+  [data-crmv4-root] .c4-mkt-salon-title { font-size: 28px; }
+  [data-crmv4-root] .c4-cbw-mast,
+  [data-crmv4-root] .c4-irg-mast,
+  [data-crmv4-root] .c4-mkt-salon-mast { align-items: flex-start; flex-direction: column; }
+  [data-crmv4-root] .c4-cbw .c4-btn,
+  [data-crmv4-root] .c4-irg .c4-btn,
+  [data-crmv4-root] .c4-mkt-salon .c4-btn { min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-cbw-track i,
+  [data-crmv4-root] .c4-cbw .c4-btn,
+  [data-crmv4-root] .c4-mkt-salon .c4-btn { transition: none; }
+}
