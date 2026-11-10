@@ -82,12 +82,17 @@ export function WithdrawDesk({ base, v4, tx, locale }: { base: string; v4: V4; t
     }
   }
   return (
-    <section className="c4-wd-luxe" aria-label={v4("wdDesk")} data-wd="1">
-      <h2 className="c4-title">{v4("wdDesk")}</h2>
-      <p className="c4-muted">{v4("wdHint")}</p>
-      <p><Link className="c4-btn" href={crmv4Href(base, "payout")}>{v4("pqTitle")}</Link></p>
-      <div className="c4-kyc-split">
+    <section className="c4-wd-luxe c4-wd-atelier" aria-label={v4("wdDesk")} data-wd="1">
+      <header className="c4-wd-atelier-mast">
         <div>
+          <p className="c4-wd-atelier-kicker">{v4("wdHint")}</p>
+          <h2 className="c4-title c4-wd-atelier-title">{v4("wdDesk")}</h2>
+        </div>
+        <p className="c4-wd-atelier-plate" data-logo="mono">7FX</p>
+      </header>
+      <p className="c4-wd-atelier-link"><Link className="c4-btn" href={crmv4Href(base, "payout")}>{v4("pqTitle")}</Link></p>
+      <div className="c4-kyc-split c4-wd-atelier-split">
+        <div className="c4-wd-atelier-queue">
           <h3 className="c4-title">{v4("wdQueue")}</h3>
           <label className="c4-lab"><span>{v4("wdSearch")}</span><input className="c4-field" aria-label={v4("wdSearch")} value={query} onChange={(event) => setQuery(event.target.value)} /></label>
           {!rows.length && <p className="c4-empty-gold">{v4("wdEmpty")}</p>}
@@ -101,7 +106,7 @@ export function WithdrawDesk({ base, v4, tx, locale }: { base: string; v4: V4; t
             ))}
           </ul>
         </div>
-        <div className="c4-kyc-stage">
+        <div className="c4-kyc-stage c4-wd-atelier-stage">
           {row && (
             <>
               <h3 className="c4-title">{row.user?.name || "—"}</h3>

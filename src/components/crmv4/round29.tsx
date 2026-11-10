@@ -80,12 +80,17 @@ export function DepositDesk({ base, v4, tx, locale }: { base: string; v4: V4; tx
     }
   }
   return (
-    <section className="c4-dep-luxe" aria-label={v4("depDesk")} data-dep="1">
-      <h2 className="c4-title">{v4("depDesk")}</h2>
-      <p className="c4-muted">{v4("depHint")}</p>
-      <p><Link className="c4-btn" href={crmv4Href(base, "funding")}>{v4("fuTitle")}</Link></p>
-      <div className="c4-kyc-split">
+    <section className="c4-dep-luxe c4-dep-atelier" aria-label={v4("depDesk")} data-dep="1">
+      <header className="c4-dep-atelier-mast">
         <div>
+          <p className="c4-dep-atelier-kicker">{v4("depHint")}</p>
+          <h2 className="c4-title c4-dep-atelier-title">{v4("depDesk")}</h2>
+        </div>
+        <p className="c4-dep-atelier-plate" data-logo="mono">7FX</p>
+      </header>
+      <p className="c4-dep-atelier-link"><Link className="c4-btn" href={crmv4Href(base, "funding")}>{v4("fuTitle")}</Link></p>
+      <div className="c4-kyc-split c4-dep-atelier-split">
+        <div className="c4-dep-atelier-queue">
           <h3 className="c4-title">{v4("depQueue")}</h3>
           <label className="c4-lab"><span>{v4("depSearch")}</span><input className="c4-field" aria-label={v4("depSearch")} value={query} onChange={(event) => setQuery(event.target.value)} /></label>
           {!rows.length && <p className="c4-empty-gold">{v4("depEmpty")}</p>}
@@ -99,7 +104,7 @@ export function DepositDesk({ base, v4, tx, locale }: { base: string; v4: V4; tx
             ))}
           </ul>
         </div>
-        <div className="c4-kyc-stage">
+        <div className="c4-kyc-stage c4-dep-atelier-stage">
           {row && (
             <>
               <h3 className="c4-title">{row.user?.name || "—"}</h3>
