@@ -167,24 +167,25 @@ export function RiskDesk({ base, v4, tx, locale }: { base: string; v4: V4; tx: T
   }
 
   return (
-    <section className="c4-risk-desk" aria-label={v4("rkTitle")} data-risk="1">
-      <header className="c4-pay-head">
+    <section className="c4-risk-desk c4-risk-salon" aria-label={v4("rkTitle")} data-risk="1">
+      <header className="c4-pay-head c4-risk-salon-mast">
         <div>
-          <p className="c4-pay-kicker">{v4("rkSub")}</p>
-          <h2 className="c4-title">{v4("rkTitle")}</h2>
+          <p className="c4-pay-kicker c4-risk-salon-kicker">{v4("rkSub")}</p>
+          <h2 className="c4-title c4-risk-salon-title">{v4("rkTitle")}</h2>
         </div>
+        <p className="c4-risk-salon-plate" data-logo="mono">7FX</p>
       </header>
       <p className="c4-meta">{v4("rkHint")}</p>
       {viewer && <p className="c4-meta">{v4("rkViewer")}</p>}
-      <div className="c4-pay-kpis" aria-label={v4("rkLoaded")}>
+      <div className="c4-pay-kpis c4-risk-salon-kpis" aria-label={v4("rkLoaded")}>
         {(["large", "frequent", "kyc"] as const).map((item) => (
-          <article key={item} className="c4-pay-kpi">
+          <article key={item} className="c4-pay-kpi c4-risk-salon-kpi" data-kind={item}>
             <span className="c4-meta">{v4(KIND_LABEL[item])}</span>
             <strong>{flags.filter((flag) => flag.kind === item).length}</strong>
           </article>
         ))}
       </div>
-      <div className="c4-risk-tools">
+      <div className="c4-risk-tools c4-risk-salon-tools">
         <label className="c4-lab">
           <span>{v4("rkCurrency")}</span>
           <select className="c4-select" aria-label={v4("rkCurrency")} value={currency} onChange={(event) => setCurrency(event.target.value)}>
@@ -200,7 +201,7 @@ export function RiskDesk({ base, v4, tx, locale }: { base: string; v4: V4; tx: T
         <button type="button" className="c4-btn" onClick={clearThreshold}>{v4("rkClearThreshold")}</button>
       </div>
       <p className="c4-meta">{v4("rkThresholdHint")}</p>
-      <div className="c4-risk-tools">
+      <div className="c4-risk-tools c4-risk-salon-tools">
         <label className="c4-lab">
           <span>{v4("rkCount")}</span>
           <input className="c4-field" inputMode="numeric" aria-label={v4("rkCount")} value={countDraft} onChange={(event) => setCountDraft(event.target.value)} />
@@ -219,13 +220,13 @@ export function RiskDesk({ base, v4, tx, locale }: { base: string; v4: V4; tx: T
         <input className="c4-field" aria-label={v4("rkSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && <p className="c4-pay-empty">{kind === "large" ? v4("rkLargeEmpty") : kind === "frequent" ? v4("rkFrequentEmpty") : kind === "kyc" ? v4("rkKycEmpty") : v4("rkEmpty")}</p>}
-      <ol className="c4-risk-list">
+      <ol className="c4-risk-list c4-risk-salon-list">
         {shown.map((flag) => {
           const noteKey = `${flag.kind}:${flag.id}`;
           const doc = flag.kind === "kyc" ? pendingDoc(loadedDocs, flag.id) : null;
           const userId = flag.kind === "large" ? depositRows.find((row) => row.id === flag.id)?.userId || "" : flag.id;
           return (
-            <li key={noteKey} className="c4-risk-card" data-kind={flag.kind}>
+            <li key={noteKey} className="c4-risk-card c4-risk-salon-card" data-kind={flag.kind}>
               <div className="c4-risk-card-top">
                 <strong>{flag.name}</strong>
                 <span className="c4-status-pill" data-status={flag.kind === "kyc" ? "PENDING" : "APPROVED"}>{v4(KIND_LABEL[flag.kind])}</span>
@@ -306,8 +307,15 @@ export function RecordTimeline({
     document.getElementById(`c4-day-${day}`)?.scrollIntoView({ block: "nearest" });
   }
   return (
-    <section className="c4-dayline" aria-label={v4("tlShowing")} data-dayline="1">
-      <p className="c4-meta">{v4("tlHint")}</p>
+    <section className="c4-dayline c4-dayline-salon" aria-label={v4("tlShowing")} data-dayline="1">
+      <header className="c4-dayline-salon-mast">
+        <div>
+          <p className="c4-dayline-salon-kicker">{v4("tlHint")}</p>
+          <h2 className="c4-title c4-dayline-salon-title">{v4("tlShowing")}</h2>
+        </div>
+        <p className="c4-dayline-salon-plate" data-logo="mono">7FX</p>
+      </header>
+      <p className="c4-meta c4-dayline-salon-hint">{v4("tlHint")}</p>
       <p className="c4-meta">{v4("tlShowing")} {shown.length}</p>
       <div className="c4-row" role="group" aria-label={v4("tlAll")}>
         <button type="button" className="c4-chip" data-on={kind ? "0" : "1"} onClick={() => setKind("")}>{v4("tlAll")}</button>
@@ -315,7 +323,7 @@ export function RecordTimeline({
           <button key={item} type="button" className="c4-chip" data-on={kind === item ? "1" : "0"} onClick={() => setKind(item)}>{v4(TYPE_LABEL[item])}</button>
         ))}
       </div>
-      <div className="c4-risk-tools">
+      <div className="c4-risk-tools c4-dayline-salon-tools">
         <label className="c4-lab">
           <span>{v4("tlJump")}</span>
           <input className="c4-field" type="date" aria-label={v4("tlJump")} value={jump} onChange={(event) => { setJump(event.target.value); setMiss(false); }} />
@@ -325,7 +333,7 @@ export function RecordTimeline({
       {miss && <p className="c4-meta">{v4("tlMissing")}</p>}
       {!groups.length && <p className="c4-pay-empty">{v4("tlEmpty")}</p>}
       {groups.map((group) => (
-        <section key={group.day || "none"} className="c4-day-group" id={group.day ? `c4-day-${group.day}` : undefined}>
+        <section key={group.day || "none"} className="c4-day-group c4-dayline-salon-day" id={group.day ? `c4-day-${group.day}` : undefined}>
           <h3 className="c4-title">{group.day || v4("tlUndated")}</h3>
           <ol>
             {group.items.map((item) => (
