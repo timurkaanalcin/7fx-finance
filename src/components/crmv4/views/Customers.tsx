@@ -201,7 +201,7 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
   }
 
   return (
-    <div className="c4-stack c4-cust-cloak c4-cust-nook c4-cust-oriel c4-cust-atelier c4-cust-vestry c4-cust-choir c4-cust-arcade c4-cust-stool">
+    <div className="c4-stack c4-cust-cloak c4-cust-nook c4-cust-oriel c4-cust-atelier c4-cust-vestry c4-cust-choir c4-cust-arcade c4-cust-stool c4-cust-ladder">
       <p className="c4-muted">{tx("customersLead")}</p>
       <Card title={tx("customers")} extra={<span className="c4-muted">{typeof data.data?.total === "number" ? `${tx("totalRows")} ${data.data.total}` : ""}</span>}>
         <CohortBoard v4={v4} />
