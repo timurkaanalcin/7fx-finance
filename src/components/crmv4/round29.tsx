@@ -194,10 +194,15 @@ export function InboxDesk({ v4, tx, locale }: { v4: V4; tx: Tx; locale: string }
     }
   }
   return (
-    <section className="c4-inbox-luxe" aria-label={v4("inboxTitle")} data-inbox="1">
-      <h2 className="c4-title">{v4("inboxTitle")}</h2>
-      <p className="c4-muted">{v4("inboxHint")}</p>
-      <div className="c4-kyc-split">
+    <section className="c4-inbox-luxe c4-inbox-gallery" aria-label={v4("inboxTitle")} data-inbox="1">
+      <header className="c4-inbox-gallery-mast">
+        <div>
+          <p className="c4-inbox-gallery-kicker">{v4("inboxHint")}</p>
+          <h2 className="c4-title c4-inbox-gallery-title">{v4("inboxTitle")}</h2>
+        </div>
+        <p className="c4-inbox-gallery-plate" data-logo="mono">7FX</p>
+      </header>
+      <div className="c4-kyc-split c4-inbox-gallery-split">
         <div>
           <label className="c4-lab"><span>{v4("inboxSearch")}</span><input className="c4-field" aria-label={v4("inboxSearch")} value={query} onChange={(event) => setQuery(event.target.value)} /></label>
           {!threads.length && <p className="c4-empty-gold">{v4("inboxEmpty")}</p>}
