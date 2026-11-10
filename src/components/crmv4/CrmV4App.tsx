@@ -174,6 +174,7 @@ import { AffiliateStems, MorningOrders } from "./round183";
 import { InvalidStamps, RetentionKeeps } from "./round184";
 import { CourtesyVows, LeverageSpans } from "./round185";
 import { OwnerPlates, SlateWatches } from "./round186";
+import { ServerStems, VesperBells } from "./round187";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1090,6 +1091,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "span") return v4("spnSub");
     if (tab === "slate") return v4("sltSub");
     if (tab === "ownr") return v4("ownSub");
+    if (tab === "vesper") return v4("vspSub");
+    if (tab === "stem") return v4("stmSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1522,6 +1525,8 @@ function Shell({ base, section, name }: Props) {
             {view === "span" && <LeverageSpans base={base} v4={v4} />}
             {view === "slate" && <SlateWatches v4={v4} />}
             {view === "ownr" && <OwnerPlates base={base} v4={v4} />}
+            {view === "vesper" && <VesperBells v4={v4} />}
+            {view === "stem" && <ServerStems base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
