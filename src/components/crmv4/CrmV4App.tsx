@@ -150,6 +150,7 @@ import { HearthRelays, LoginLanterns } from "./round159";
 import { BinderyStitches, CampaignCloths } from "./round160";
 import { AffiliateRibbons, DocumentProofs } from "./round161";
 import { ContactSeals, QuillReminders } from "./round162";
+import { FollowLamps, WaxFollowUps } from "./round163";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -716,6 +717,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ribbon") return v4("arbTitle");
     if (tab === "quill") return v4("qllTitle");
     if (tab === "seal") return v4("aslTitle");
+    if (tab === "wax") return v4("wxfTitle");
+    if (tab === "lamp") return v4("flmTitle");
     if (tab === "plates") return v4("pltTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
@@ -974,6 +977,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ribbon") return v4("arbSub");
     if (tab === "quill") return v4("qllSub");
     if (tab === "seal") return v4("aslSub");
+    if (tab === "wax") return v4("wxfSub");
+    if (tab === "lamp") return v4("flmSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1067,7 +1072,7 @@ function Shell({ base, section, name }: Props) {
       <div className="c4-frame">
         <div className="c4-panel" data-view={view} onScroll={(event) => setCompact(event.currentTarget.scrollTop > 24)}>
           {!id && (
-            <div className="c4-pagehead c4-pagehead-folio c4-pagehead-crest c4-pagehead-atelier c4-pagehead-salon c4-pagehead-gallery c4-pagehead-library c4-pagehead-press c4-pagehead-ribbon c4-pagehead-playbill c4-pagehead-interlude c4-pagehead-slip c4-pagehead-vellum c4-pagehead-quire c4-pagehead-promise c4-pagehead-briefing c4-pagehead-dispatch c4-pagehead-loom c4-pagehead-kiln c4-pagehead-proof c4-pagehead-docket c4-pagehead-quay c4-pagehead-bench c4-pagehead-perch c4-pagehead-hearth c4-pagehead-inkwell">
+            <div className="c4-pagehead c4-pagehead-folio c4-pagehead-crest c4-pagehead-atelier c4-pagehead-salon c4-pagehead-gallery c4-pagehead-library c4-pagehead-press c4-pagehead-ribbon c4-pagehead-playbill c4-pagehead-interlude c4-pagehead-slip c4-pagehead-vellum c4-pagehead-quire c4-pagehead-promise c4-pagehead-briefing c4-pagehead-dispatch c4-pagehead-loom c4-pagehead-kiln c4-pagehead-proof c4-pagehead-docket c4-pagehead-quay c4-pagehead-bench c4-pagehead-perch c4-pagehead-hearth c4-pagehead-inkwell c4-pagehead-lacquer">
               <div className="c4-crest-band">
                 <p className="c4-folio-plate" data-logo="mono" aria-hidden="true">7FX</p>
                 <span className="c4-crest-mark" aria-hidden="true" />
@@ -1358,6 +1363,8 @@ function Shell({ base, section, name }: Props) {
             {view === "ribbon" && <AffiliateRibbons base={base} v4={v4} />}
             {view === "quill" && <QuillReminders v4={v4} />}
             {view === "seal" && <ContactSeals base={base} v4={v4} />}
+            {view === "wax" && <WaxFollowUps v4={v4} />}
+            {view === "lamp" && <FollowLamps base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
