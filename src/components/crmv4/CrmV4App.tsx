@@ -154,6 +154,7 @@ import { FollowLamps, WaxFollowUps } from "./round163";
 import { FirstMarks, GiltAssignments } from "./round164";
 import { MarquetryTasks, TradeGates } from "./round165";
 import { CloakroomPasses, LoginLatches } from "./round166";
+import { ReadingNooks, WithdrawalBolts } from "./round167";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -728,6 +729,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "gate") return v4("tgnTitle");
     if (tab === "cloak") return v4("clkTitle");
     if (tab === "latch") return v4("ltcTitle");
+    if (tab === "nook") return v4("nokTitle");
+    if (tab === "bolt") return v4("bltTitle");
     if (tab === "plates") return v4("pltTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
@@ -994,6 +997,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "gate") return v4("tgnSub");
     if (tab === "cloak") return v4("clkSub");
     if (tab === "latch") return v4("ltcSub");
+    if (tab === "nook") return v4("nokSub");
+    if (tab === "bolt") return v4("bltSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1386,6 +1391,8 @@ function Shell({ base, section, name }: Props) {
             {view === "gate" && <TradeGates base={base} v4={v4} />}
             {view === "cloak" && <CloakroomPasses v4={v4} />}
             {view === "latch" && <LoginLatches base={base} v4={v4} />}
+            {view === "nook" && <ReadingNooks v4={v4} />}
+            {view === "bolt" && <WithdrawalBolts base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
