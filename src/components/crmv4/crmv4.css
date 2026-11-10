@@ -33647,3 +33647,358 @@
   [data-crmv4-root] .c4-glt-track i,
   [data-crmv4-root] .c4-glt-bar i { transition: none; }
 }
+
+/* Round 165 — overview KPI plates and the marquetry desk.
+   The plain bordered tiles become graphite plates with a champagne rule.
+   The logo plate stays monochrome. Chrome pad stays 10px. */
+
+[data-crmv4-root] .c4-kpis.c4-kpis-marq {
+  gap: 12px;
+}
+
+[data-crmv4-root] .c4-kpis-marq .c4-kpi {
+  position: relative;
+  min-height: 92px;
+  padding: 16px 18px 14px;
+  border: 0;
+  border-radius: 0;
+  background: #1c1a17;
+  color: #f7f1e6;
+  box-shadow: inset 0 3px 0 #d4bc86;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+[data-crmv4-root] .c4-kpis-marq .c4-kpi[data-tone="violet"],
+[data-crmv4-root] .c4-kpis-marq .c4-kpi[data-tone="cyan"],
+[data-crmv4-root] .c4-kpis-marq .c4-kpi[data-tone="amber"],
+[data-crmv4-root] .c4-kpis-marq .c4-kpi[data-tone="emerald"] {
+  box-shadow: inset 0 3px 0 #d4bc86;
+}
+
+[data-crmv4-root] .c4-kpis-marq .c4-kpi::after {
+  content: "";
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  width: 18px;
+  height: 2px;
+  background: #d4bc86;
+  transform-origin: right center;
+  transition: width 180ms ease;
+}
+
+[data-crmv4-root] .c4-kpis-marq .c4-kpi:hover {
+  transform: translateY(-2px);
+  box-shadow: inset 0 3px 0 #d4bc86, 0 10px 24px rgba(28, 26, 23, 0.18);
+}
+
+[data-crmv4-root] .c4-kpis-marq .c4-kpi:hover::after { width: 42px; }
+
+[data-crmv4-root] .c4-kpis-marq .c4-kpi-label {
+  color: #d4bc86;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root] .c4-kpis-marq .c4-kpi-value {
+  margin-top: 8px;
+  color: #f7f1e6;
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+[data-crmv4-root] .c4-kpis-marq .c4-kpi:focus-visible {
+  outline: 2px solid #d4bc86;
+  outline-offset: 3px;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-kpis-marq .c4-kpi {
+  background: #1c1a17;
+  border: 1px solid rgba(212, 188, 134, 0.45);
+  box-shadow: inset 0 3px 0 #d4bc86;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-kpis-marq .c4-kpi[data-tone="violet"],
+[data-crmv4-root][data-theme="dark"] .c4-kpis-marq .c4-kpi[data-tone="cyan"],
+[data-crmv4-root][data-theme="dark"] .c4-kpis-marq .c4-kpi[data-tone="amber"],
+[data-crmv4-root][data-theme="dark"] .c4-kpis-marq .c4-kpi[data-tone="emerald"] {
+  box-shadow: inset 0 3px 0 #7a5e30;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-kpis-marq .c4-kpi:hover {
+  box-shadow: inset 0 3px 0 #d4bc86, 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+[data-crmv4-root] .c4-mrq,
+[data-crmv4-root] .c4-tgn {
+  margin: 8px 20px 24px;
+  padding: 18px;
+  border: 1px solid #1c1a17;
+  background: #fffdf8;
+  color: #1c1a17;
+  box-shadow: 0 3px 0 #d4bc86;
+}
+
+[data-crmv4-root] .c4-mrq-head,
+[data-crmv4-root] .c4-tgn-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+[data-crmv4-root] .c4-mrq-plate[data-logo="mono"] {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin: 0;
+  background: #1c1a17;
+  color: #f7f1e6;
+  letter-spacing: 0.16em;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+[data-crmv4-root] .c4-mrq-kicker {
+  margin: 0;
+  color: #7a5e30;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+[data-crmv4-root] .c4-mrq-count {
+  min-width: 28px;
+  padding: 2px 8px;
+  border: 1px solid #1c1a17;
+  background: #1c1a17;
+  color: #f7f1e6;
+  text-align: center;
+}
+
+[data-crmv4-root] .c4-mrq-notice,
+[data-crmv4-root] .c4-mrq-suggest,
+[data-crmv4-root] .c4-tgn-lead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 8px 10px;
+  border-left: 3px solid #d4bc86;
+  background: #f7f1e6;
+}
+
+[data-crmv4-root] .c4-mrq-kpi,
+[data-crmv4-root] .c4-mrq-form,
+[data-crmv4-root] .c4-mrq-view,
+[data-crmv4-root] .c4-mrq-next,
+[data-crmv4-root] .c4-mrq-chart,
+[data-crmv4-root] .c4-tgn-chart,
+[data-crmv4-root] .c4-tgn-bands {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 12px 0;
+}
+
+[data-crmv4-root] .c4-mrq-chart,
+[data-crmv4-root] .c4-tgn-chart { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+[data-crmv4-root] .c4-mrq-meter,
+[data-crmv4-root] .c4-mrq-col,
+[data-crmv4-root] .c4-tgn-col,
+[data-crmv4-root] .c4-tgn-band {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 8px;
+  border: 1px solid #1c1a17;
+  background: #fffdf8;
+  color: #1c1a17;
+  text-align: start;
+}
+
+[data-crmv4-root] .c4-mrq-col[data-on="1"],
+[data-crmv4-root] .c4-tgn-band[data-on="1"],
+[data-crmv4-root] .c4-mrq .c4-chip[data-on="1"],
+[data-crmv4-root] .c4-tgn .c4-chip[data-on="1"] {
+  background: #1c1a17;
+  color: #f7f1e6;
+  border-color: #d4bc86;
+}
+
+[data-crmv4-root] .c4-mrq-track,
+[data-crmv4-root] .c4-mrq-bar {
+  display: block;
+  height: 6px;
+  background: #efe8dc;
+}
+
+[data-crmv4-root] .c4-mrq-track i,
+[data-crmv4-root] .c4-mrq-bar i {
+  display: block;
+  height: 100%;
+  background: #d4bc86;
+  transition: width 160ms ease;
+}
+
+[data-crmv4-root] .c4-mrq-rows,
+[data-crmv4-root] .c4-tgn-rows,
+[data-crmv4-root] .c4-mrq-views,
+[data-crmv4-root] .c4-mrq-pins,
+[data-crmv4-root] .c4-mrq-time {
+  list-style: none;
+  margin: 8px 0;
+  padding: 0;
+}
+
+[data-crmv4-root] .c4-mrq-rows li,
+[data-crmv4-root] .c4-tgn-rows li,
+[data-crmv4-root] .c4-mrq-time li {
+  display: grid;
+  grid-template-columns: 48px 36px minmax(0, 1fr);
+  gap: 8px 12px;
+  align-items: start;
+  margin: 0 0 8px;
+  padding: 10px;
+  border: 1px solid #1c1a17;
+  background: #fffdf8;
+}
+
+[data-crmv4-root] .c4-mrq-rows li > .c4-row,
+[data-crmv4-root] .c4-tgn-rows li > .c4-meta { grid-column: 1 / -1; }
+
+[data-crmv4-root] .c4-mrq-mark,
+[data-crmv4-root] .c4-mrq-clock,
+[data-crmv4-root] .c4-tgn-face {
+  display: grid;
+  place-items: center;
+  min-height: 36px;
+  background: #1c1a17;
+  color: #f7f1e6;
+  font-variant-numeric: tabular-nums;
+}
+
+[data-crmv4-root] .c4-mrq-marks { display: flex; gap: 3px; padding-top: 12px; }
+[data-crmv4-root] .c4-mrq-marks i {
+  width: 8px;
+  height: 8px;
+  background: #efe8dc;
+}
+[data-crmv4-root] .c4-mrq-marks i[data-on="1"] { background: #d4bc86; }
+
+[data-crmv4-root] .c4-mrq-empty {
+  margin: 12px 0;
+  padding: 18px;
+  border: 1px dashed #7a5e30;
+  color: #7a5e30;
+  text-align: center;
+}
+
+[data-crmv4-root] .c4-mrq .c4-btn,
+[data-crmv4-root] .c4-mrq .c4-chip,
+[data-crmv4-root] .c4-tgn .c4-btn,
+[data-crmv4-root] .c4-tgn .c4-chip {
+  border: 1px solid #1c1a17;
+  border-radius: 0;
+  background: transparent;
+  color: #1c1a17;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+[data-crmv4-root] .c4-mrq .c4-btn:hover,
+[data-crmv4-root] .c4-tgn .c4-btn:hover {
+  background: #1c1a17;
+  color: #f7f1e6;
+}
+
+[data-crmv4-root] .c4-mrq .c4-field,
+[data-crmv4-root] .c4-mrq .c4-select,
+[data-crmv4-root] .c4-tgn .c4-field,
+[data-crmv4-root] .c4-tgn .c4-select {
+  border: 1px solid #1c1a17;
+  border-radius: 0;
+  background: #fffdf8;
+  color: #1c1a17;
+}
+
+[data-crmv4-root] .c4-mrq .c4-btn:focus-visible,
+[data-crmv4-root] .c4-mrq .c4-chip:focus-visible,
+[data-crmv4-root] .c4-tgn .c4-btn:focus-visible,
+[data-crmv4-root] .c4-tgn .c4-field:focus-visible,
+[data-crmv4-root] .c4-kpis-marq .c4-kpi:focus-visible {
+  outline: 2px solid #d4bc86;
+  outline-offset: 2px;
+}
+
+[data-crmv4-root] .c4-mrq-rows li[data-room="atelier"] { box-shadow: inset 3px 0 0 #d4bc86; }
+[data-crmv4-root] .c4-mrq-rows li[data-room="salon"] { box-shadow: inset 3px 0 0 #7a5e30; }
+[data-crmv4-root] .c4-mrq-rows li[data-room="gallery"] { box-shadow: inset 3px 0 0 #1c1a17; }
+[data-crmv4-root] .c4-mrq-rows li[data-room="vault"] { box-shadow: inset 3px 0 0 #cfc6b8; }
+[data-crmv4-root] .c4-tgn-rows li[data-gate="enabled"] { box-shadow: inset 3px 0 0 #d4bc86; }
+[data-crmv4-root] .c4-tgn-rows li[data-gate="locked"] { box-shadow: inset 3px 0 0 #1c1a17; }
+
+[data-crmv4-root][data-theme="dark"] .c4-mrq,
+[data-crmv4-root][data-theme="dark"] .c4-tgn,
+[data-crmv4-root][data-theme="dark"] .c4-mrq-meter,
+[data-crmv4-root][data-theme="dark"] .c4-mrq-col,
+[data-crmv4-root][data-theme="dark"] .c4-tgn-col,
+[data-crmv4-root][data-theme="dark"] .c4-tgn-band,
+[data-crmv4-root][data-theme="dark"] .c4-mrq-rows li,
+[data-crmv4-root][data-theme="dark"] .c4-tgn-rows li,
+[data-crmv4-root][data-theme="dark"] .c4-mrq-notice,
+[data-crmv4-root][data-theme="dark"] .c4-mrq-suggest,
+[data-crmv4-root][data-theme="dark"] .c4-tgn-lead {
+  background: #141210;
+  color: #f7f1e6;
+  border-color: #d4bc86;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-mrq .c4-btn,
+[data-crmv4-root][data-theme="dark"] .c4-mrq .c4-chip,
+[data-crmv4-root][data-theme="dark"] .c4-tgn .c4-btn,
+[data-crmv4-root][data-theme="dark"] .c4-tgn .c4-chip,
+[data-crmv4-root][data-theme="dark"] .c4-mrq .c4-field,
+[data-crmv4-root][data-theme="dark"] .c4-mrq .c4-select,
+[data-crmv4-root][data-theme="dark"] .c4-tgn .c4-field,
+[data-crmv4-root][data-theme="dark"] .c4-tgn .c4-select {
+  background: transparent;
+  color: #f7f1e6;
+  border-color: #d4bc86;
+}
+
+@media (max-width: 767px) {
+  [data-crmv4-root] .c4-kpis.c4-kpis-marq { grid-template-columns: minmax(0, 1fr); }
+  [data-crmv4-root] .c4-kpis-marq .c4-kpi { min-height: 76px; }
+  [data-crmv4-root] .c4-kpis-marq .c4-kpi-value { font-size: 22px; }
+  [data-crmv4-root] .c4-mrq .c4-btn,
+  [data-crmv4-root] .c4-tgn .c4-btn,
+  [data-crmv4-root] .c4-mrq .c4-chip,
+  [data-crmv4-root] .c4-tgn .c4-chip { min-height: 44px; }
+  [data-crmv4-root] .c4-mrq-kpi,
+  [data-crmv4-root] .c4-mrq-form,
+  [data-crmv4-root] .c4-mrq-chart,
+  [data-crmv4-root] .c4-tgn-chart,
+  [data-crmv4-root] .c4-tgn-bands { grid-template-columns: minmax(0, 1fr); }
+  [data-crmv4-root] .c4-mrq,
+  [data-crmv4-root] .c4-tgn { margin: 12px; padding: 14px; }
+  [data-crmv4-root] .c4-mrq-marks { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-mrq .c4-btn,
+  [data-crmv4-root] .c4-mrq .c4-chip,
+  [data-crmv4-root] .c4-tgn .c4-btn,
+  [data-crmv4-root] .c4-mrq-track i,
+  [data-crmv4-root] .c4-mrq-bar i,
+  [data-crmv4-root] .c4-kpis-marq .c4-kpi,
+  [data-crmv4-root] .c4-kpis-marq .c4-kpi::after { transition: none; }
+  [data-crmv4-root] .c4-kpis-marq .c4-kpi:hover { transform: none; }
+}
