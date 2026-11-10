@@ -39844,3 +39844,416 @@
   [data-crmv4-root] .c4-fin-atelier .c4-btn,
   [data-crmv4-root] .c4-fin-atelier .c4-chip { transition: none; }
 }
+
+/* Round 179 — salon frames and desk plates. */
+[data-crmv4-root] .c4-frm,
+[data-crmv4-root] .c4-dkp {
+  display: grid;
+  gap: 14px;
+  margin: 18px 20px 28px;
+  padding: 22px 22px 26px;
+  color: #1c1a17;
+  background:
+    linear-gradient(#d4bc86, #d4bc86) 0 0 / 100% 2px no-repeat,
+    linear-gradient(180deg, #fffdf8 0%, #f6f1e8 100%);
+  border: 1px solid #e6dccf;
+  border-radius: 22px;
+  box-shadow: 0 18px 40px rgba(28, 26, 23, 0.06);
+}
+
+[data-crmv4-root] .c4-frm-head,
+[data-crmv4-root] .c4-dkp-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+[data-crmv4-root] .c4-frm-plate[data-logo="mono"] {
+  margin: 0;
+  padding: 8px 10px;
+  background: #1c1a17;
+  color: #f6f1e8;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  line-height: 1;
+}
+
+[data-crmv4-root] .c4-frm-kicker {
+  margin: 0 0 4px;
+  color: #7a5e30;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root] .c4-frm .c4-title,
+[data-crmv4-root] .c4-dkp .c4-title {
+  margin: 0;
+  font-family: Palatino, "Iowan Old Style", Georgia, serif;
+  font-size: 34px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+[data-crmv4-root] .c4-frm-count {
+  margin: 0;
+  color: #7a5e30;
+  font-variant-numeric: tabular-nums;
+  font-size: 22px;
+}
+
+[data-crmv4-root] .c4-frm-rules,
+[data-crmv4-root] .c4-frm-notice,
+[data-crmv4-root] .c4-frm-suggest,
+[data-crmv4-root] .c4-dkp-lead {
+  margin: 0;
+  padding: 10px 12px;
+  background: #fffdf8;
+  border-radius: 14px;
+}
+
+[data-crmv4-root] .c4-frm-kpi,
+[data-crmv4-root] .c4-frm-chart,
+[data-crmv4-root] .c4-dkp-chart {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+[data-crmv4-root] .c4-frm-meter,
+[data-crmv4-root] .c4-frm-col,
+[data-crmv4-root] .c4-dkp-col {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 12px;
+  background: #fffdf8;
+  border-radius: 16px;
+  box-shadow: inset 3px 0 0 #d4bc86;
+  text-align: start;
+}
+
+[data-crmv4-root] .c4-frm-col {
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+}
+
+[data-crmv4-root] .c4-frm-col[data-on="1"] { background: #f6f1e8; }
+
+[data-crmv4-root] .c4-frm-track,
+[data-crmv4-root] .c4-frm-bar {
+  display: block;
+  height: 4px;
+  background: #efe7da;
+  border-radius: 999px;
+}
+
+[data-crmv4-root] .c4-frm-track i,
+[data-crmv4-root] .c4-frm-bar i {
+  display: block;
+  height: 100%;
+  background: #7a5e30;
+  border-radius: inherit;
+}
+
+[data-crmv4-root] .c4-frm-split {
+  display: grid;
+  grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+  gap: 16px;
+}
+
+[data-crmv4-root] .c4-frm-form,
+[data-crmv4-root] .c4-frm-board {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 14px;
+  background: rgba(255, 253, 248, 0.72);
+  border-radius: 18px;
+}
+
+[data-crmv4-root] .c4-frm-cards,
+[data-crmv4-root] .c4-dkp-rows,
+[data-crmv4-root] .c4-frm-time,
+[data-crmv4-root] .c4-frm-views,
+[data-crmv4-root] .c4-frm-pins {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv4-root] .c4-frm-cards > li,
+[data-crmv4-root] .c4-dkp-rows > li,
+[data-crmv4-root] .c4-frm-time > li {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  background: #fffdf8;
+  border-radius: 16px;
+}
+
+[data-crmv4-root] .c4-frm-cards > li[data-pinned="1"] { box-shadow: inset 3px 0 0 #7a5e30; }
+[data-crmv4-root] .c4-frm-cards > li[data-tone="soot"] { box-shadow: inset 3px 0 0 #1c1a17; }
+[data-crmv4-root] .c4-frm-cards > li[data-tone="honey"] { box-shadow: inset 3px 0 0 #d4bc86; }
+
+[data-crmv4-root] .c4-frm-mark,
+[data-crmv4-root] .c4-frm-clock {
+  color: #7a5e30;
+  font-variant-numeric: tabular-nums;
+}
+
+[data-crmv4-root] .c4-frm-empty {
+  margin: 0;
+  padding: 28px 16px;
+  border: 1px dashed #d4bc86;
+  border-radius: 16px;
+  color: #7a5e30;
+  text-align: center;
+}
+
+[data-crmv4-root] .c4-dkp-bands {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+[data-crmv4-root] .c4-dkp-band {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 8px;
+  background: #fffdf8;
+  border-radius: 12px;
+}
+
+[data-crmv4-root] .c4-frm .c4-btn:focus-visible,
+[data-crmv4-root] .c4-dkp .c4-btn:focus-visible,
+[data-crmv4-root] .c4-frm .c4-field:focus-visible,
+[data-crmv4-root] .c4-dkp .c4-field:focus-visible,
+[data-crmv4-root] .c4-frm .c4-chip:focus-visible,
+[data-crmv4-root] .c4-dkp .c4-chip:focus-visible {
+  outline: 2px solid #7a5e30;
+  outline-offset: 2px;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-frm,
+[data-crmv4-root][data-theme="dark"] .c4-dkp {
+  color: #f6f1e8;
+  background:
+    linear-gradient(#d4bc86, #d4bc86) 0 0 / 100% 2px no-repeat,
+    #12100e;
+  border-color: #2a261f;
+  box-shadow: none;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-frm .c4-title,
+[data-crmv4-root][data-theme="dark"] .c4-dkp .c4-title,
+[data-crmv4-root][data-theme="dark"] .c4-frm-plate[data-logo="mono"] { color: #f6f1e8; }
+
+[data-crmv4-root][data-theme="dark"] .c4-frm-plate[data-logo="mono"] { background: #f6f1e8; color: #1c1a17; }
+
+[data-crmv4-root][data-theme="dark"] .c4-frm-kicker,
+[data-crmv4-root][data-theme="dark"] .c4-frm-count,
+[data-crmv4-root][data-theme="dark"] .c4-frm-empty { color: #d4bc86; }
+
+[data-crmv4-root][data-theme="dark"] .c4-frm-form,
+[data-crmv4-root][data-theme="dark"] .c4-frm-board,
+[data-crmv4-root][data-theme="dark"] .c4-frm-meter,
+[data-crmv4-root][data-theme="dark"] .c4-frm-col,
+[data-crmv4-root][data-theme="dark"] .c4-dkp-col,
+[data-crmv4-root][data-theme="dark"] .c4-dkp-band,
+[data-crmv4-root][data-theme="dark"] .c4-frm-rules,
+[data-crmv4-root][data-theme="dark"] .c4-frm-notice,
+[data-crmv4-root][data-theme="dark"] .c4-frm-suggest,
+[data-crmv4-root][data-theme="dark"] .c4-frm-cards > li,
+[data-crmv4-root][data-theme="dark"] .c4-dkp-rows > li,
+[data-crmv4-root][data-theme="dark"] .c4-frm-time > li,
+[data-crmv4-root][data-theme="dark"] .c4-frm-empty {
+  background: #1c1a17;
+  color: #f6f1e8;
+}
+
+[data-crmv4-root] .c4-frm-cards > li[data-tone="mist"] { box-shadow: inset 3px 0 0 #cfc6b8; }
+
+/* Positions salon — a gallery sheet over the book. */
+[data-crmv4-root] .c4-book-vine.c4-book-salon {
+  margin: 16px 18px 28px;
+  padding: 8px 8px 18px;
+  background:
+    linear-gradient(#d4bc86, #d4bc86) 18px 0 / calc(100% - 36px) 2px no-repeat,
+    linear-gradient(#1c1a17, #1c1a17) 18px 8px / 42px 1px no-repeat,
+    #f7f3ec;
+  border-radius: 28px;
+}
+
+[data-crmv4-root] .c4-book-salon-mast {
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  padding: 22px 18px 4px;
+}
+
+[data-crmv4-root] .c4-book-salon-mark[data-logo="mono"] {
+  margin: 0;
+  padding: 10px 12px;
+  background: #1c1a17;
+  color: #f6f1e8;
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: 0.22em;
+  line-height: 1;
+}
+
+[data-crmv4-root] .c4-book-salon-kicker {
+  margin: 0 0 6px;
+  max-width: 42rem;
+  color: #7a5e30;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root] .c4-book-salon-title {
+  margin: 0;
+  color: #1c1a17;
+  font-family: Palatino, "Iowan Old Style", Georgia, serif;
+  font-size: 40px;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+}
+
+[data-crmv4-root] .c4-book-salon .c4-card {
+  margin-top: 8px;
+  background: #fffdf8;
+  border: 1px solid rgba(122, 94, 48, 0.28);
+  border-radius: 22px;
+  box-shadow: 0 16px 36px rgba(28, 26, 23, 0.05);
+}
+
+[data-crmv4-root] .c4-book-salon .c4-card-h { display: none; }
+
+[data-crmv4-root] .c4-book-salon .c4-tools { padding: 14px 22px 8px; }
+
+[data-crmv4-root] .c4-book-salon .c4-chip,
+[data-crmv4-root] .c4-book-salon .c4-btn {
+  min-height: 36px;
+  border: 1px solid rgba(122, 94, 48, 0.28);
+  border-radius: 999px;
+  background: transparent;
+  color: #1c1a17;
+  transition: transform 160ms ease, color 160ms ease, background 160ms ease;
+}
+
+[data-crmv4-root] .c4-book-salon .c4-chip:hover,
+[data-crmv4-root] .c4-book-salon .c4-btn:hover { color: #7a5e30; transform: translateY(-1px); }
+
+[data-crmv4-root] .c4-book-salon .c4-chip[data-on="1"],
+[data-crmv4-root] .c4-book-salon .c4-chip.on {
+  background: #1c1a17;
+  color: #f6f1e8;
+  border-color: #1c1a17;
+  box-shadow: inset 0 -2px 0 #d4bc86;
+}
+
+[data-crmv4-root] .c4-book-salon .c4-book {
+  margin: 8px 16px 16px;
+  border-radius: 16px;
+  background: #f6f1e8;
+}
+
+[data-crmv4-root] .c4-book-salon .c4-table-luxe th {
+  background: transparent;
+  color: #7a5e30;
+  letter-spacing: 0.14em;
+}
+
+[data-crmv4-root] .c4-book-salon .c4-table-luxe td {
+  background: transparent;
+  border-bottom: 1px solid rgba(122, 94, 48, 0.16);
+}
+
+[data-crmv4-root] .c4-book-salon .c4-table-luxe tbody tr:hover td { background: #fffdf8; }
+
+[data-crmv4-root] .c4-book-salon td[data-side="BUY"],
+[data-crmv4-root] .c4-book-salon td[data-side="SELL"] {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+}
+
+[data-crmv4-root] .c4-book-salon td[data-side="BUY"]::before { background: #1c1a17; }
+[data-crmv4-root] .c4-book-salon td[data-side="SELL"]::before { background: #d4bc86; }
+
+[data-crmv4-root] .c4-book-salon .c4-pl-pos { color: #1c1a17; }
+[data-crmv4-root] .c4-book-salon .c4-pl-neg { color: #7a5e30; }
+
+[data-crmv4-root] .c4-book-salon .c4-mob-list .c4-swipe-link {
+  border-radius: 16px;
+  background: #fffdf8;
+  box-shadow: 0 10px 24px rgba(28, 26, 23, 0.05);
+}
+
+[data-crmv4-root] .c4-book-salon .c4-btn:focus-visible,
+[data-crmv4-root] .c4-book-salon .c4-chip:focus-visible {
+  outline: 2px solid #7a5e30;
+  outline-offset: 2px;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-book-vine.c4-book-salon {
+  background:
+    linear-gradient(#d4bc86, #d4bc86) 18px 0 / calc(100% - 36px) 2px no-repeat,
+    #12100e;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-book-salon-mark[data-logo="mono"] { color: #1c1a17; background: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-book-salon-title,
+[data-crmv4-root][data-theme="dark"] .c4-book-salon .c4-btn,
+[data-crmv4-root][data-theme="dark"] .c4-book-salon .c4-chip,
+[data-crmv4-root][data-theme="dark"] .c4-book-salon .c4-table-luxe td,
+[data-crmv4-root][data-theme="dark"] .c4-book-salon td[data-side="BUY"],
+[data-crmv4-root][data-theme="dark"] .c4-book-salon td[data-side="SELL"] { color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-book-salon-kicker,
+[data-crmv4-root][data-theme="dark"] .c4-book-salon .c4-table-luxe th,
+[data-crmv4-root][data-theme="dark"] .c4-book-salon .c4-pl-neg { color: #d4bc86; }
+[data-crmv4-root][data-theme="dark"] .c4-book-salon .c4-card,
+[data-crmv4-root][data-theme="dark"] .c4-book-salon .c4-book,
+[data-crmv4-root][data-theme="dark"] .c4-book-salon .c4-mob-list .c4-swipe-link {
+  background: #1c1a17;
+  color: #f6f1e8;
+}
+[data-crmv4-root][data-theme="dark"] .c4-book-salon .c4-chip[data-on="1"],
+[data-crmv4-root][data-theme="dark"] .c4-book-salon .c4-chip.on {
+  background: #d4bc86;
+  color: #1c1a17;
+  border-color: #d4bc86;
+}
+
+@media (max-width: 767px) {
+  [data-crmv4-root] .c4-frm,
+  [data-crmv4-root] .c4-dkp,
+  [data-crmv4-root] .c4-book-vine.c4-book-salon { margin: 8px; padding: 14px 12px 18px; }
+  [data-crmv4-root] .c4-frm-split,
+  [data-crmv4-root] .c4-frm-kpi,
+  [data-crmv4-root] .c4-frm-chart,
+  [data-crmv4-root] .c4-dkp-chart { grid-template-columns: minmax(0, 1fr); }
+  [data-crmv4-root] .c4-frm .c4-btn,
+  [data-crmv4-root] .c4-dkp .c4-btn,
+  [data-crmv4-root] .c4-book-salon .c4-btn,
+  [data-crmv4-root] .c4-frm .c4-chip,
+  [data-crmv4-root] .c4-dkp .c4-chip,
+  [data-crmv4-root] .c4-book-salon .c4-chip { min-height: 44px; }
+  [data-crmv4-root] .c4-book-salon-title { font-size: 32px; }
+  [data-crmv4-root] .c4-book-salon-mast { align-items: flex-start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-frm-track i,
+  [data-crmv4-root] .c4-frm-bar i,
+  [data-crmv4-root] .c4-book-salon .c4-btn,
+  [data-crmv4-root] .c4-book-salon .c4-chip { transition: none; }
+}
