@@ -169,6 +169,7 @@ import { AtelierChits, CitySlips } from "./round178";
 import { DeskPlates, SalonFrames } from "./round179";
 import { MailSeals, MapBearings } from "./round180";
 import { PartnerCodes, PressSlips } from "./round181";
+import { NightChimes, ReferralTokens } from "./round182";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -773,6 +774,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "mlsl") return v4("mlsTitle");
     if (tab === "press") return v4("prsTitle");
     if (tab === "pcmk") return v4("pcmTitle");
+    if (tab === "chime") return v4("nchTitle");
+    if (tab === "rftok") return v4("rftTitle");
     if (tab === "plates") return v4("pltTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
@@ -1491,6 +1494,8 @@ function Shell({ base, section, name }: Props) {
             {view === "mlsl" && <MailSeals base={base} v4={v4} />}
             {view === "press" && <PressSlips v4={v4} />}
             {view === "pcmk" && <PartnerCodes base={base} v4={v4} />}
+            {view === "chime" && <NightChimes v4={v4} />}
+            {view === "rftok" && <ReferralTokens base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
