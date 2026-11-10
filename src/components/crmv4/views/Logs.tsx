@@ -30,7 +30,14 @@ export default function Logs({ tx, locale, q }: { tx: Tx; locale: string; q: str
     router.replace(`?${p.toString()}`);
   }
   return (
-    <div className="c4-logs-luxe c4-logs-script c4-logs-gilt c4-logs-herb">
+    <div className="c4-logs-luxe c4-logs-script c4-logs-gilt c4-logs-herb c4-logs-salon">
+    <header className="c4-logs-mast">
+      <div>
+        <p className="c4-logs-kicker">{tx("logsLead")}</p>
+        <h2 className="c4-logs-title">{tx("logs")}</h2>
+      </div>
+      <p className="c4-logs-plate" data-logo="mono">7FX</p>
+    </header>
     <AuditTimeline v4={(key) => crmv4Text(locale, key)} locale={locale} tx={tx} />
     <Card title={tx("logs")}>
       <p className="c4-log-lead">{tx("logsLead")}</p>
