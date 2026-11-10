@@ -176,6 +176,7 @@ import { CourtesyVows, LeverageSpans } from "./round185";
 import { OwnerPlates, SlateWatches } from "./round186";
 import { ServerStems, VesperBells } from "./round187";
 import { IndexSlips, MailHalls } from "./round188";
+import { GalleryHooks, LanguageLanes } from "./round189";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -793,6 +794,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "stem") return v4("stmTitle");
     if (tab === "index") return v4("idxTitle");
     if (tab === "mhall") return v4("mhlTitle");
+    if (tab === "ghook") return v4("ghkTitle");
+    if (tab === "llane") return v4("llnTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1100,6 +1103,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "stem") return v4("stmSub");
     if (tab === "index") return v4("idxSub");
     if (tab === "mhall") return v4("mhlSub");
+    if (tab === "ghook") return v4("ghkSub");
+    if (tab === "llane") return v4("llnSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1536,6 +1541,8 @@ function Shell({ base, section, name }: Props) {
             {view === "stem" && <ServerStems base={base} v4={v4} />}
             {view === "index" && <IndexSlips v4={v4} />}
             {view === "mhall" && <MailHalls base={base} v4={v4} />}
+            {view === "ghook" && <GalleryHooks v4={v4} />}
+            {view === "llane" && <LanguageLanes base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
