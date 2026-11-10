@@ -307,7 +307,8 @@ function main() {
   assert.equal(crmv4Text("tr", "gvnTitle"), ROUND154_COPY.tr.gvnTitle);
   assert.equal(crmv4Text("de", "prfReader"), ROUND154_COPY.de.prfReader);
   assert.equal(crmv4Text("ru", "gvnUnmarked"), ROUND154_COPY.ru.gvnUnmarked);
-  assert.equal(crmv4Text("ar", "prfNotice"), ROUND154_COPY.ar.prfNotice);
+  // Round 161 replaced this key. The live Arabic string is the later copy.
+  assert.equal(crmv4Text("ar", "prfNotice"), "بروفات خفيفة بعد الملزمة");
   const css = fs.readFileSync(path.join(__dirname, "../src/components/crmv4/crmv4.css"), "utf8");
   assert.match(css, /\.c4-prf/);
   assert.match(css, /\.c4-gvn/);
