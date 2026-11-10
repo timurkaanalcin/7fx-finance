@@ -173,6 +173,7 @@ import { NightChimes, ReferralTokens } from "./round182";
 import { AffiliateStems, MorningOrders } from "./round183";
 import { InvalidStamps, RetentionKeeps } from "./round184";
 import { CourtesyVows, LeverageSpans } from "./round185";
+import { OwnerPlates, SlateWatches } from "./round186";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1087,6 +1088,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "istmp") return v4("stpSub");
     if (tab === "vows") return v4("vowSub");
     if (tab === "span") return v4("spnSub");
+    if (tab === "slate") return v4("sltSub");
+    if (tab === "ownr") return v4("ownSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1517,6 +1520,8 @@ function Shell({ base, section, name }: Props) {
             {view === "istmp" && <InvalidStamps base={base} v4={v4} />}
             {view === "vows" && <CourtesyVows v4={v4} />}
             {view === "span" && <LeverageSpans base={base} v4={v4} />}
+            {view === "slate" && <SlateWatches v4={v4} />}
+            {view === "ownr" && <OwnerPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

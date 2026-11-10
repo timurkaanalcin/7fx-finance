@@ -42312,3 +42312,258 @@
 }
 [data-crmv4-root][data-theme="dark"] .c4-logs-salon.c4-logs-herb .c4-log-who,
 [data-crmv4-root][data-theme="dark"] .c4-logs-salon.c4-logs-herb .c4-log-body { color: #f6f1e8; }
+
+/* Round 186 — slate watches, assignee plates, and the support parlor.
+   The support room was a gilt double frame with a gold top rule on each ticket.
+   It is now a graphite mast, ivory cards, and a champagne left rail.
+   Chrome pad stays 10px. The plate stays monochrome. */
+[data-crmv4-root] .c4-slt,
+[data-crmv4-root] .c4-own,
+[data-crmv4-root] .c4-support-parlor {
+  color: #1c1a17;
+}
+[data-crmv4-root] .c4-slt,
+[data-crmv4-root] .c4-own {
+  display: grid;
+  gap: 14px;
+  margin: 18px 20px 28px;
+  padding: 22px;
+  background: #f6f1e8;
+  border: 1px solid #1c1a17;
+  border-radius: 22px;
+  box-shadow: 0 18px 36px rgba(28, 26, 23, 0.06);
+}
+[data-crmv4-root] .c4-slt-mast,
+[data-crmv4-root] .c4-own-mast,
+[data-crmv4-root] .c4-support-parlor .c4-support-mast {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  background: #1c1a17;
+  color: #f6f1e8;
+  border-radius: 16px;
+}
+[data-crmv4-root] .c4-slt-kicker,
+[data-crmv4-root] .c4-own-kicker,
+[data-crmv4-root] .c4-support-parlor .c4-support-kicker {
+  margin: 0 0 4px;
+  color: #d4bc86;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+[data-crmv4-root] .c4-slt-mast .c4-title,
+[data-crmv4-root] .c4-own-mast .c4-title,
+[data-crmv4-root] .c4-support-parlor .c4-support-title {
+  margin: 0;
+  color: #f6f1e8;
+  font-size: 34px;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+[data-crmv4-root] .c4-slt-mast .c4-title::before,
+[data-crmv4-root] .c4-own-mast .c4-title::before { display: none; }
+[data-crmv4-root] .c4-slt-plate[data-logo="mono"],
+[data-crmv4-root] .c4-own-plate[data-logo="mono"],
+[data-crmv4-root] .c4-support-parlor .c4-support-plate[data-logo="mono"] {
+  display: grid;
+  place-items: center;
+  min-width: 64px;
+  height: 64px;
+  margin: 0;
+  padding: 0 10px;
+  background: #f6f1e8;
+  color: #1c1a17;
+  border-radius: 14px;
+  letter-spacing: 0.16em;
+  font-size: 12px;
+  font-weight: 650;
+}
+[data-crmv4-root] .c4-slt-kpi,
+[data-crmv4-root] .c4-slt-chart,
+[data-crmv4-root] .c4-slt-form,
+[data-crmv4-root] .c4-slt-filters,
+[data-crmv4-root] .c4-slt-suggest {
+  display: grid;
+  gap: 10px;
+}
+[data-crmv4-root] .c4-slt-kpi {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+[data-crmv4-root] .c4-slt-kpi > div,
+[data-crmv4-root] .c4-slt-cards > li,
+[data-crmv4-root] .c4-own-rows > li,
+[data-crmv4-root] .c4-slt-timeline > li {
+  padding: 12px 14px;
+  background: #fffdf8;
+  border: 1px solid #e4dccb;
+  border-radius: 16px;
+  box-shadow: inset 3px 0 0 #d4bc86;
+}
+[data-crmv4-root] .c4-slt-kpi dt {
+  color: #7a5e30;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-slt-kpi dd {
+  margin: 4px 0 0;
+  font-size: 22px;
+}
+[data-crmv4-root] .c4-slt-chart {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: end;
+}
+[data-crmv4-root] .c4-slt-track {
+  height: 72px;
+  display: flex;
+  align-items: flex-end;
+  background: #efe6d4;
+  border-radius: 10px;
+  overflow: hidden;
+}
+[data-crmv4-root] .c4-slt-track i {
+  display: block;
+  width: 100%;
+  background: #7a5e30;
+  transition: height 180ms ease;
+}
+[data-crmv4-root] .c4-slt-swatch {
+  display: block;
+  height: 8px;
+  border-radius: 999px;
+  background: #d4bc86;
+}
+[data-crmv4-root] .c4-slt-swatch[data-tint="pearl"] { background: #f6f1e8; border: 1px solid #1c1a17; }
+[data-crmv4-root] .c4-slt-swatch[data-tint="soot"] { background: #1c1a17; }
+[data-crmv4-root] .c4-slt-swatch[data-tint="gilt"] { background: #d4bc86; }
+[data-crmv4-root] .c4-slt-swatch[data-tint="mist"] { background: #cfc6b8; }
+[data-crmv4-root] .c4-slt-cards > li[data-late="1"] { box-shadow: inset 3px 0 0 #8c3a32; }
+[data-crmv4-root] .c4-slt-cards > li[data-soon="1"] { box-shadow: inset 3px 0 0 #2f6f4e; }
+[data-crmv4-root] .c4-slt-cards,
+[data-crmv4-root] .c4-own-rows,
+[data-crmv4-root] .c4-slt-timeline,
+[data-crmv4-root] .c4-own-bands {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-slt-form,
+[data-crmv4-root] .c4-slt-filters {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor {
+  margin: 16px 20px 28px;
+  padding: 18px;
+  background: #f6f1e8;
+  border: 1px solid #1c1a17;
+  border-radius: 24px;
+  box-shadow: 0 18px 40px rgba(28, 26, 23, 0.07);
+}
+[data-crmv4-root] .c4-support-parlor .c4-chip {
+  min-height: 36px;
+  border: 1px solid #1c1a17;
+  border-radius: 999px;
+  background: #fffdf8;
+  color: #1c1a17;
+}
+[data-crmv4-root] .c4-support-parlor .c4-chip[data-on="1"],
+[data-crmv4-root] .c4-support-parlor .c4-chip.on {
+  background: #d4bc86;
+  color: #1c1a17;
+  border-color: #7a5e30;
+  box-shadow: none;
+}
+[data-crmv4-root] .c4-support-parlor .c4-ticket.c4-ticket-luxe {
+  padding: 16px 16px 12px 18px;
+  background: #fffdf8;
+  border: 1px solid #e4dccb;
+  border-radius: 18px;
+  box-shadow: inset 4px 0 0 #d4bc86;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+[data-crmv4-root] .c4-support-parlor .c4-ticket-luxe[data-status="PENDING"] { box-shadow: inset 4px 0 0 #d4bc86; }
+[data-crmv4-root] .c4-support-parlor .c4-ticket-luxe[data-status="APPROVED"] { box-shadow: inset 4px 0 0 #2f6f4e; }
+[data-crmv4-root] .c4-support-parlor .c4-ticket-luxe[data-status="REJECTED"] { box-shadow: inset 4px 0 0 #8c3a32; }
+[data-crmv4-root] .c4-support-parlor .c4-ticket-luxe:hover,
+[data-crmv4-root] .c4-support-parlor .c4-ticket-luxe:focus-visible {
+  transform: translateY(-2px);
+  outline: 2px solid #7a5e30;
+  outline-offset: 3px;
+}
+[data-crmv4-root] .c4-support-parlor .c4-empty-gold {
+  margin: 8px 0 0;
+  padding: 32px 18px;
+  border: 1px dashed #1c1a17;
+  border-radius: 18px;
+  background: #fffdf8;
+  color: #7a5e30;
+  text-align: center;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-support-parlor .c4-muted {
+  color: #7a5e30;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+[data-crmv4-root][data-theme="dark"] .c4-slt,
+[data-crmv4-root][data-theme="dark"] .c4-own,
+[data-crmv4-root][data-theme="dark"] .c4-support-lacquer.c4-support-gilt.c4-support-parlor {
+  color: #f6f1e8;
+  background: #12100e;
+  border-color: #3a342c;
+  box-shadow: none;
+}
+[data-crmv4-root][data-theme="dark"] .c4-slt-kpi > div,
+[data-crmv4-root][data-theme="dark"] .c4-slt-cards > li,
+[data-crmv4-root][data-theme="dark"] .c4-own-rows > li,
+[data-crmv4-root][data-theme="dark"] .c4-support-parlor .c4-ticket.c4-ticket-luxe,
+[data-crmv4-root][data-theme="dark"] .c4-support-parlor .c4-empty-gold {
+  color: #f6f1e8;
+  background: #1c1a17;
+  border-color: #3a342c;
+}
+[data-crmv4-root][data-theme="dark"] .c4-support-parlor .c4-chip {
+  background: #1c1a17;
+  color: #f6f1e8;
+  border-color: #3a342c;
+}
+[data-crmv4-root][data-theme="dark"] .c4-support-parlor .c4-chip[data-on="1"] {
+  background: #d4bc86;
+  color: #1c1a17;
+}
+[data-crmv4-root][data-theme="dark"] .c4-slt-plate[data-logo="mono"],
+[data-crmv4-root][data-theme="dark"] .c4-own-plate[data-logo="mono"],
+[data-crmv4-root][data-theme="dark"] .c4-support-parlor .c4-support-plate[data-logo="mono"] {
+  background: #f6f1e8;
+  color: #1c1a17;
+}
+@media (max-width: 780px) {
+  [data-crmv4-root] .c4-slt,
+  [data-crmv4-root] .c4-own,
+  [data-crmv4-root] .c4-support-parlor { margin: 8px; }
+  [data-crmv4-root] .c4-slt-kpi,
+  [data-crmv4-root] .c4-slt-chart,
+  [data-crmv4-root] .c4-slt-form,
+  [data-crmv4-root] .c4-slt-filters { grid-template-columns: minmax(0, 1fr); }
+  [data-crmv4-root] .c4-slt .c4-btn,
+  [data-crmv4-root] .c4-slt .c4-field,
+  [data-crmv4-root] .c4-own .c4-btn,
+  [data-crmv4-root] .c4-own .c4-field,
+  [data-crmv4-root] .c4-support-parlor .c4-btn,
+  [data-crmv4-root] .c4-support-parlor .c4-field,
+  [data-crmv4-root] .c4-support-parlor .c4-chip { min-height: 44px; }
+  [data-crmv4-root] .c4-slt-mast .c4-title,
+  [data-crmv4-root] .c4-own-mast .c4-title,
+  [data-crmv4-root] .c4-support-parlor .c4-support-title { font-size: 28px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-slt-track i,
+  [data-crmv4-root] .c4-support-parlor .c4-ticket-luxe { transition: none; }
+}
