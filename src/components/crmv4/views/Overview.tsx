@@ -115,7 +115,14 @@ export default function Overview({ base, tx, locale, name }: Props) {
   };
   const shown = orderedCards(layout);
   return (
-    <div className="c4-stack c4-exec">
+    <div className="c4-stack c4-exec c4-exec-salon">
+      <header className="c4-exec-salon-mast">
+        <div>
+          <p className="c4-exec-salon-kicker">{tx("overview")}</p>
+          <h2 className="c4-exec-salon-title">{tx("overviewLead")}</h2>
+        </div>
+        <p className="c4-exec-salon-plate" data-logo="mono">7FX</p>
+      </header>
       <TodayStrip base={base} v4={v4} locale={locale} />
       <TodayHero base={base} name={name || ""} v4={v4} locale={locale} />
       <ExecHero name={name || ""} customers={kpis?.users} aum={typeof aum === "number" ? aum : undefined} volume={kpis?.totalVolume} pending={pending} locale={locale} labels={{ customers: tx("kpiCustomers"), aum: tx("kpiAum"), volume: tx("kpiVolume"), pending: tx("kpiPending") }} v4={(key) => crmv4Text(locale, key)} />
