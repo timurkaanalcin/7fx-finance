@@ -168,6 +168,7 @@ import { RegistryCartouches, RegistryMarks } from "./round177";
 import { AtelierChits, CitySlips } from "./round178";
 import { DeskPlates, SalonFrames } from "./round179";
 import { MailSeals, MapBearings } from "./round180";
+import { PartnerCodes, PressSlips } from "./round181";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -770,6 +771,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "dkplt") return v4("dkpTitle");
     if (tab === "bear") return v4("brgTitle");
     if (tab === "mlsl") return v4("mlsTitle");
+    if (tab === "press") return v4("prsTitle");
+    if (tab === "pcmk") return v4("pcmTitle");
     if (tab === "plates") return v4("pltTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
@@ -1064,6 +1067,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "dkplt") return v4("dkpSub");
     if (tab === "bear") return v4("brgSub");
     if (tab === "mlsl") return v4("mlsSub");
+    if (tab === "press") return v4("prsSub");
+    if (tab === "pcmk") return v4("pcmSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1484,6 +1489,8 @@ function Shell({ base, section, name }: Props) {
             {view === "dkplt" && <DeskPlates base={base} v4={v4} />}
             {view === "bear" && <MapBearings v4={v4} />}
             {view === "mlsl" && <MailSeals base={base} v4={v4} />}
+            {view === "press" && <PressSlips v4={v4} />}
+            {view === "pcmk" && <PartnerCodes base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
@@ -1506,7 +1513,7 @@ function Shell({ base, section, name }: Props) {
         </div>
       </div>
 
-      <aside className="c4-rail c4-rail-luxe c4-rail-folio c4-rail-crest c4-rail-salon c4-rail-gallery c4-rail-library c4-rail-press c4-rail-ribbon c4-rail-playbill c4-rail-interlude c4-rail-slip c4-rail-vellum c4-rail-quire c4-rail-promise c4-rail-briefing c4-rail-dispatch c4-rail-loom c4-rail-kiln c4-rail-proof c4-rail-docket c4-rail-quay c4-rail-bench c4-rail-perch c4-rail-hearth c4-rail-inkwell c4-rail-stool c4-rail-ladder" aria-label={v4("admin")}>
+      <aside className="c4-rail c4-rail-luxe c4-rail-folio c4-rail-crest c4-rail-salon c4-rail-gallery c4-rail-library c4-rail-press c4-rail-ribbon c4-rail-playbill c4-rail-interlude c4-rail-slip c4-rail-vellum c4-rail-quire c4-rail-promise c4-rail-briefing c4-rail-dispatch c4-rail-loom c4-rail-kiln c4-rail-proof c4-rail-docket c4-rail-quay c4-rail-bench c4-rail-perch c4-rail-hearth c4-rail-inkwell c4-rail-stool c4-rail-ladder c4-rail-compositor" aria-label={v4("admin")}>
         <p className="c4-rail-plate" data-logo="mono" aria-hidden="true">7FX</p>
         <button type="button" className="c4-rail-btn c4-plus" aria-label={v4("quickPlus")} onClick={() => setQuickOpen(true)}>+</button>
         <CallTarget v4={v4} />
