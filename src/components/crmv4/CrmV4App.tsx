@@ -149,6 +149,7 @@ import { AviaryPerches, PresenceWatches } from "./round158";
 import { HearthRelays, LoginLanterns } from "./round159";
 import { BinderyStitches, CampaignCloths } from "./round160";
 import { AffiliateRibbons, DocumentProofs } from "./round161";
+import { ContactSeals, QuillReminders } from "./round162";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -713,6 +714,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "cloth") return v4("cclTitle");
     if (tab === "proof") return v4("prfTitle");
     if (tab === "ribbon") return v4("arbTitle");
+    if (tab === "quill") return v4("qllTitle");
+    if (tab === "seal") return v4("aslTitle");
     if (tab === "plates") return v4("pltTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
@@ -969,6 +972,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "cloth") return v4("cclSub");
     if (tab === "proof") return v4("prfSub");
     if (tab === "ribbon") return v4("arbSub");
+    if (tab === "quill") return v4("qllSub");
+    if (tab === "seal") return v4("aslSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1351,6 +1356,8 @@ function Shell({ base, section, name }: Props) {
             {view === "cloth" && <CampaignCloths base={base} v4={v4} />}
             {view === "proof" && <DocumentProofs v4={v4} />}
             {view === "ribbon" && <AffiliateRibbons base={base} v4={v4} />}
+            {view === "quill" && <QuillReminders v4={v4} />}
+            {view === "seal" && <ContactSeals base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

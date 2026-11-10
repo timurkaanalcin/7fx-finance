@@ -30,10 +30,10 @@ export default function Logs({ tx, locale, q }: { tx: Tx; locale: string; q: str
     router.replace(`?${p.toString()}`);
   }
   return (
-    <div className="c4-logs-luxe">
+    <div className="c4-logs-luxe c4-logs-script">
     <AuditTimeline v4={(key) => crmv4Text(locale, key)} locale={locale} tx={tx} />
     <Card title={tx("logs")}>
-      <p className="c4-muted" style={{ padding: "8px 16px 0" }}>{tx("logsLead")}</p>
+      <p className="c4-log-lead">{tx("logsLead")}</p>
       <div className="c4-tools">
         {["", "NOTE", "CALL", "CHAT"].map((item) => (
           <Chip key={item || "all"} on={type === item} onClick={() => setQuery({ type: item })}>
@@ -41,7 +41,7 @@ export default function Logs({ tx, locale, q }: { tx: Tx; locale: string; q: str
           </Chip>
         ))}
       </div>
-      <form className="c4-form c4-form-2" style={{ padding: 16 }} onSubmit={async (event) => {
+      <form className="c4-form c4-form-2 c4-log-form" onSubmit={async (event) => {
         event.preventDefault();
         const fd = new FormData(event.currentTarget);
         const res = await sendJson("/api/admin/communications", "POST", {
@@ -76,10 +76,13 @@ export default function Logs({ tx, locale, q }: { tx: Tx; locale: string; q: str
       <State loading={data.loading} error={data.error} empty={!data.loading && rows.length === 0} tx={tx} onRetry={data.reload} />
       <ul>
         {rows.filter((row) => !worker.trim() || String(row.workerName || "").toLowerCase().includes(worker.trim().toLowerCase())).map((row) => (
-          <li key={row.id} style={{ padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
-            <div>{row.type} · {row.trader || row.title || "—"}</div>
-            <div className="c4-muted">{row.description || row.title}</div>
-            <div className="c4-muted">{when(row.createdAt, locale)} · {row.workerName || ""}</div>
+          <li key={row.id} className="c4-log-line" data-kind={String(row.type || "").toLowerCase()}>
+            <span className="c4-log-kind">{row.type || "—"}</span>
+            <div>
+              <p className="c4-log-who">{row.trader || row.title || "—"}</p>
+              <p className="c4-log-body">{row.description || row.title}</p>
+              <p className="c4-log-meta">{when(row.createdAt, locale)} · {row.workerName || ""}</p>
+            </div>
           </li>
         ))}
       </ul>
