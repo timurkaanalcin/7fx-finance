@@ -167,6 +167,7 @@ import { AddressLanes, HerbariumSheets } from "./round176";
 import { RegistryCartouches, RegistryMarks } from "./round177";
 import { AtelierChits, CitySlips } from "./round178";
 import { DeskPlates, SalonFrames } from "./round179";
+import { MailSeals, MapBearings } from "./round180";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -767,6 +768,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ctysl") return v4("cslTitle");
     if (tab === "frames") return v4("frmTitle");
     if (tab === "dkplt") return v4("dkpTitle");
+    if (tab === "bear") return v4("brgTitle");
+    if (tab === "mlsl") return v4("mlsTitle");
     if (tab === "plates") return v4("pltTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
@@ -1059,6 +1062,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ctysl") return v4("cslSub");
     if (tab === "frames") return v4("frmSub");
     if (tab === "dkplt") return v4("dkpSub");
+    if (tab === "bear") return v4("brgSub");
+    if (tab === "mlsl") return v4("mlsSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1477,6 +1482,8 @@ function Shell({ base, section, name }: Props) {
             {view === "ctysl" && <CitySlips base={base} v4={v4} />}
             {view === "frames" && <SalonFrames v4={v4} />}
             {view === "dkplt" && <DeskPlates base={base} v4={v4} />}
+            {view === "bear" && <MapBearings v4={v4} />}
+            {view === "mlsl" && <MailSeals base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
