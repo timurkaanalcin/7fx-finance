@@ -134,6 +134,7 @@ import { InvalidReasons, RibbonCards } from "./round143";
 import { InvalidSources, PlaybillCards } from "./round144";
 import { InterludeCards, RegistrationVintages } from "./round145";
 import { FolioSlips, NatalMonths } from "./round146";
+import { HouseholdMarks, VellumSlips } from "./round147";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -669,6 +670,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "vintage") return v4("vntTitle");
     if (tab === "folio") return v4("folTitle");
     if (tab === "natal") return v4("ntlTitle");
+    if (tab === "vellum") return v4("vlmTitle");
+    if (tab === "house") return v4("hhdTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -895,6 +898,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "vintage") return v4("vntSub");
     if (tab === "folio") return v4("folSub");
     if (tab === "natal") return v4("ntlSub");
+    if (tab === "vellum") return v4("vlmSub");
+    if (tab === "house") return v4("hhdSub");
     return "";
   }
 
@@ -987,7 +992,7 @@ function Shell({ base, section, name }: Props) {
       <div className="c4-frame">
         <div className="c4-panel" data-view={view} onScroll={(event) => setCompact(event.currentTarget.scrollTop > 24)}>
           {!id && (
-            <div className="c4-pagehead c4-pagehead-folio c4-pagehead-crest c4-pagehead-atelier c4-pagehead-salon c4-pagehead-gallery c4-pagehead-library c4-pagehead-press c4-pagehead-ribbon c4-pagehead-playbill c4-pagehead-interlude c4-pagehead-slip">
+            <div className="c4-pagehead c4-pagehead-folio c4-pagehead-crest c4-pagehead-atelier c4-pagehead-salon c4-pagehead-gallery c4-pagehead-library c4-pagehead-press c4-pagehead-ribbon c4-pagehead-playbill c4-pagehead-interlude c4-pagehead-slip c4-pagehead-vellum">
               <div className="c4-crest-band">
                 <p className="c4-folio-plate" data-logo="mono" aria-hidden="true">7FX</p>
                 <span className="c4-crest-mark" aria-hidden="true" />
@@ -1246,6 +1251,8 @@ function Shell({ base, section, name }: Props) {
             {view === "vintage" && <RegistrationVintages base={base} v4={v4} />}
             {view === "folio" && <FolioSlips v4={v4} />}
             {view === "natal" && <NatalMonths base={base} v4={v4} />}
+            {view === "vellum" && <VellumSlips v4={v4} />}
+            {view === "house" && <HouseholdMarks base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
@@ -1268,7 +1275,7 @@ function Shell({ base, section, name }: Props) {
         </div>
       </div>
 
-      <aside className="c4-rail c4-rail-luxe c4-rail-folio c4-rail-crest c4-rail-salon c4-rail-gallery c4-rail-library c4-rail-press c4-rail-ribbon c4-rail-playbill c4-rail-interlude c4-rail-slip" aria-label={v4("admin")}>
+      <aside className="c4-rail c4-rail-luxe c4-rail-folio c4-rail-crest c4-rail-salon c4-rail-gallery c4-rail-library c4-rail-press c4-rail-ribbon c4-rail-playbill c4-rail-interlude c4-rail-slip c4-rail-vellum" aria-label={v4("admin")}>
         <p className="c4-rail-plate" data-logo="mono" aria-hidden="true">7FX</p>
         <button type="button" className="c4-rail-btn c4-plus" aria-label={v4("quickPlus")} onClick={() => setQuickOpen(true)}>+</button>
         <CallTarget v4={v4} />
