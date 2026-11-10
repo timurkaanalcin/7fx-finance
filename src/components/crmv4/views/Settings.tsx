@@ -35,8 +35,14 @@ export default function Settings({ tx }: { tx: Tx }) {
     router.replace(`?${p.toString()}`);
   }
   return (
-    <div className="c4-stack c4-settings-luxe">
-      <p className="c4-muted">{tx("settingsLead")}</p>
+    <div className="c4-stack c4-settings-luxe c4-settings-atelier">
+      <header className="c4-settings-mast">
+        <div>
+          <p className="c4-settings-kicker">{tx("settingsLead")}</p>
+          <h2 className="c4-settings-title">{tx("settings")}</h2>
+        </div>
+        <p className="c4-settings-plate" data-logo="mono">7FX</p>
+      </header>
       <div className="c4-with-side">
         <PhoneSheet title={v4("sysTitle")} v4={v4}>
         <nav className="c4-side" aria-label={tx("settings")}>

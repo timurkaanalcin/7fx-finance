@@ -171,6 +171,7 @@ import { MailSeals, MapBearings } from "./round180";
 import { PartnerCodes, PressSlips } from "./round181";
 import { NightChimes, ReferralTokens } from "./round182";
 import { AffiliateStems, MorningOrders } from "./round183";
+import { InvalidStamps, RetentionKeeps } from "./round184";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -779,6 +780,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "rftok") return v4("rftTitle");
     if (tab === "morn") return v4("morTitle");
     if (tab === "aaid") return v4("aidTitle");
+    if (tab === "keeps") return v4("kpvTitle");
+    if (tab === "istmp") return v4("stpTitle");
     if (tab === "plates") return v4("pltTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
@@ -1077,6 +1080,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "pcmk") return v4("pcmSub");
     if (tab === "morn") return v4("morSub");
     if (tab === "aaid") return v4("aidSub");
+    if (tab === "keeps") return v4("kpvSub");
+    if (tab === "istmp") return v4("stpSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1503,6 +1508,8 @@ function Shell({ base, section, name }: Props) {
             {view === "rftok" && <ReferralTokens base={base} v4={v4} />}
             {view === "morn" && <MorningOrders v4={v4} />}
             {view === "aaid" && <AffiliateStems base={base} v4={v4} />}
+            {view === "keeps" && <RetentionKeeps v4={v4} />}
+            {view === "istmp" && <InvalidStamps base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
