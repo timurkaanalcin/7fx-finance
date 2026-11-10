@@ -25,8 +25,14 @@ export default function Control({ tx, locale }: { tx: Tx; locale: string }) {
     router.replace(`?${p.toString()}`);
   }
   return (
-    <div className="c4-stack">
-      <p className="c4-muted">{tx("controlLead")}</p>
+    <div className="c4-stack c4-control-atlas" data-atlas="1">
+      <header className="c4-control-mast">
+        <p className="c4-control-mark" data-logo="mono">7FX</p>
+        <div>
+          <p className="c4-control-kicker">{tx("control")}</p>
+          <h2 className="c4-control-title">{tx("controlLead")}</h2>
+        </div>
+      </header>
       <p className="c4-muted">{tx("controlHint")} {tx("classicNote")}</p>
       <div className="c4-row">
         {TABS.map((item) => (
