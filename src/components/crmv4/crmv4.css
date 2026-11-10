@@ -34896,3 +34896,385 @@
   [data-crmv4-root] .c4-blt .c4-btn:active,
   [data-crmv4-root] .c4-cust-nook .c4-tools .c4-btn:active { transform: none; }
 }
+
+/* Round 168 — oriel gallery rail on the customer board, and the sitting desk. */
+[data-crmv4-root] .c4-cust-oriel {
+  background:
+    linear-gradient(90deg, #d4bc86 0 4px, transparent 4px),
+    #f4efe6;
+  border-top: 0;
+}
+
+[data-crmv4-root] .c4-cust-oriel .c4-card {
+  margin: 18px 18px 0 22px;
+  border: 1px solid #1c1a17;
+  border-radius: 0;
+  background: #f7f1e6;
+  box-shadow: 8px 8px 0 #e6dccb;
+}
+
+[data-crmv4-root] .c4-cust-oriel .c4-card-h {
+  min-height: 84px;
+  padding: 22px 24px 16px;
+  border-bottom: 0;
+  background: #1c1a17;
+  color: #f7f1e6;
+}
+
+[data-crmv4-root] .c4-cust-oriel .c4-card-h .c4-title {
+  color: #f7f1e6;
+  font-family: Palatino, "Palatino Linotype", Georgia, serif;
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
+[data-crmv4-root] .c4-cust-oriel .c4-card-h .c4-title::before {
+  display: none;
+}
+
+[data-crmv4-root] .c4-cust-oriel .c4-card-h .c4-title::after {
+  content: "";
+  display: block;
+  width: 72px;
+  height: 2px;
+  margin-top: 10px;
+  background: #d4bc86;
+}
+
+[data-crmv4-root] .c4-cust-oriel .c4-card-h .c4-muted {
+  color: #d4bc86;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root] .c4-cust-oriel .c4-tools {
+  margin: 16px 20px 0;
+  padding: 12px;
+  gap: 10px;
+  background: #fffdf8;
+  border: 1px solid #d4bc86;
+  color: #1c1a17;
+}
+
+[data-crmv4-root] .c4-cust-oriel .c4-tools .c4-btn,
+[data-crmv4-root] .c4-cust-oriel .c4-tools .c4-chip {
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid #7a5e30;
+  border-radius: 999px;
+  background: transparent;
+  color: #1c1a17;
+  letter-spacing: 0.08em;
+  transition: background 180ms ease, color 180ms ease, border-color 180ms ease;
+}
+
+[data-crmv4-root] .c4-cust-oriel .c4-tools .c4-chip[data-on="1"],
+[data-crmv4-root] .c4-cust-oriel .c4-tools .c4-btn-hot,
+[data-crmv4-root] .c4-cust-oriel .c4-tools .c4-btn:hover,
+[data-crmv4-root] .c4-cust-oriel .c4-tools .c4-chip:hover {
+  background: #d4bc86;
+  border-color: #d4bc86;
+  color: #1c1a17;
+}
+
+[data-crmv4-root] .c4-cust-oriel .c4-table th {
+  height: 42px;
+  padding: 0 16px;
+  background: #1c1a17;
+  color: #d4bc86;
+  border-color: #1c1a17;
+  border-bottom: 1px solid #d4bc86;
+  font-family: Palatino, "Palatino Linotype", Georgia, serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root] .c4-cust-oriel .c4-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #e6dccb;
+  background: #fffdf8;
+  color: #1c1a17;
+}
+
+[data-crmv4-root] .c4-cust-oriel .c4-table tr:hover td {
+  background: #f7f1e6;
+}
+
+[data-crmv4-root] .c4-orl,
+[data-crmv4-root] .c4-trl {
+  margin: 20px;
+  padding: 24px 24px 28px;
+  border: 1px solid #1c1a17;
+  background:
+    linear-gradient(90deg, #1c1a17 0 6px, #d4bc86 6px 8px, #fffdf8 8px);
+  color: #1c1a17;
+  box-shadow: 10px 10px 0 #e6dccb;
+}
+
+[data-crmv4-root] .c4-orl-head,
+[data-crmv4-root] .c4-trl-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #d4bc86;
+}
+
+[data-crmv4-root] .c4-orl .c4-title,
+[data-crmv4-root] .c4-trl .c4-title {
+  margin: 0;
+  color: #1c1a17;
+  font-family: Palatino, "Palatino Linotype", Georgia, serif;
+  font-size: 34px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+[data-crmv4-root] .c4-orl .c4-title::before,
+[data-crmv4-root] .c4-trl .c4-title::before {
+  display: none;
+}
+
+[data-crmv4-root] .c4-orl-plate[data-logo="mono"] {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 72px;
+  margin: 0;
+  background: #1c1a17;
+  color: #f7f1e6;
+  border: 0;
+  letter-spacing: 0.22em;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+[data-crmv4-root] .c4-orl-kicker {
+  margin: 0 0 6px;
+  color: #7a5e30;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+[data-crmv4-root] .c4-orl-count {
+  min-width: 36px;
+  padding: 6px 10px;
+  background: #1c1a17;
+  color: #d4bc86;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+[data-crmv4-root] .c4-orl-notice,
+[data-crmv4-root] .c4-orl-suggest,
+[data-crmv4-root] .c4-trl-lead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0;
+  padding: 12px 14px;
+  border-left: 3px solid #d4bc86;
+  background: #f7f1e6;
+  color: #1c1a17;
+}
+
+[data-crmv4-root] .c4-orl-kpi,
+[data-crmv4-root] .c4-orl-form,
+[data-crmv4-root] .c4-orl-chart,
+[data-crmv4-root] .c4-trl-chart,
+[data-crmv4-root] .c4-trl-bands {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+[data-crmv4-root] .c4-orl-form,
+[data-crmv4-root] .c4-trl-chart,
+[data-crmv4-root] .c4-trl-bands {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+[data-crmv4-root] .c4-orl-meter,
+[data-crmv4-root] .c4-orl-col,
+[data-crmv4-root] .c4-trl-col,
+[data-crmv4-root] .c4-trl-band {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid #e6dccb;
+  background: #fffdf8;
+  color: #1c1a17;
+  text-align: left;
+}
+
+[data-crmv4-root] .c4-orl-meter[data-tray="open"] { border-top: 3px solid #1c1a17; }
+[data-crmv4-root] .c4-orl-meter[data-tray="held"] { border-top: 3px solid #7a5e30; }
+[data-crmv4-root] .c4-orl-meter[data-tray="done"] { border-top: 3px solid #d4bc86; }
+[data-crmv4-root] .c4-orl-meter[data-tray="pinned"] { border-top: 3px solid #c4a574; }
+
+[data-crmv4-root] .c4-orl-track,
+[data-crmv4-root] .c4-orl-bar {
+  display: block;
+  height: 2px;
+  background: #e6dccb;
+}
+
+[data-crmv4-root] .c4-orl-track i,
+[data-crmv4-root] .c4-orl-bar i {
+  display: block;
+  height: 2px;
+  background: #7a5e30;
+  transition: width 180ms ease;
+}
+
+[data-crmv4-root] .c4-orl-rows,
+[data-crmv4-root] .c4-trl-rows,
+[data-crmv4-root] .c4-orl-time,
+[data-crmv4-root] .c4-orl-views,
+[data-crmv4-root] .c4-orl-pins {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv4-root] .c4-orl-rows > li,
+[data-crmv4-root] .c4-trl-rows > li,
+[data-crmv4-root] .c4-orl-time > li {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 8px 16px;
+  padding: 16px 16px 16px 18px;
+  border: 1px solid #e6dccb;
+  background: #fffdf8;
+}
+
+[data-crmv4-root] .c4-orl-rows > li[data-tempo="brisk"] { border-left: 4px solid #8e2a1f; }
+[data-crmv4-root] .c4-orl-rows > li[data-tempo="even"] { border-left: 4px solid #7a5e30; }
+[data-crmv4-root] .c4-orl-rows > li[data-tempo="hush"] { border-left: 4px solid #1b5e3b; }
+[data-crmv4-root] .c4-trl-rows > li[data-trial="live"] { border-left: 4px solid #1b5e3b; }
+[data-crmv4-root] .c4-trl-rows > li[data-trial="trial"] { border-left: 4px solid #8e2a1f; }
+
+[data-crmv4-root] .c4-orl-mark,
+[data-crmv4-root] .c4-orl-clock,
+[data-crmv4-root] .c4-trl-face {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  background: #1c1a17;
+  color: #d4bc86;
+  font-family: Palatino, "Palatino Linotype", Georgia, serif;
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+}
+
+[data-crmv4-root] .c4-orl-empty {
+  margin: 16px 0;
+  padding: 36px 18px;
+  border: 1px dashed #7a5e30;
+  background: transparent;
+  color: #7a5e30;
+  font-family: Palatino, "Palatino Linotype", Georgia, serif;
+  font-size: 18px;
+  text-align: center;
+}
+
+[data-crmv4-root] .c4-trl-pair {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+[data-crmv4-root] .c4-trl-pair .c4-trl-band { flex: 1; }
+
+[data-crmv4-root] .c4-orl-col[data-on="1"],
+[data-crmv4-root] .c4-trl-band[data-on="1"] {
+  background: #1c1a17;
+  color: #f7f1e6;
+  border-color: #1c1a17;
+}
+
+[data-crmv4-root] .c4-orl .c4-btn:focus-visible,
+[data-crmv4-root] .c4-orl .c4-chip:focus-visible,
+[data-crmv4-root] .c4-orl .c4-field:focus-visible,
+[data-crmv4-root] .c4-trl .c4-btn:focus-visible,
+[data-crmv4-root] .c4-trl .c4-field:focus-visible,
+[data-crmv4-root] .c4-cust-oriel .c4-btn:focus-visible,
+[data-crmv4-root] .c4-cust-oriel .c4-chip:focus-visible,
+[data-crmv4-root] .c4-cust-oriel .c4-field:focus-visible {
+  outline: 2px solid #d4bc86;
+  outline-offset: 2px;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-cust-oriel {
+  background:
+    linear-gradient(90deg, #d4bc86 0 4px, transparent 4px),
+    #100f0d;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-cust-oriel .c4-card,
+[data-crmv4-root][data-theme="dark"] .c4-cust-oriel .c4-table td {
+  background: #1c1a17;
+  color: #f7f1e6;
+  box-shadow: 8px 8px 0 #0a0908;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-cust-oriel .c4-card-h {
+  background: #0e0d0c;
+  color: #f7f1e6;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-orl,
+[data-crmv4-root][data-theme="dark"] .c4-trl {
+  background:
+    linear-gradient(90deg, #d4bc86 0 6px, #7a5e30 6px 8px, #1c1a17 8px);
+  color: #f7f1e6;
+  border-color: #d4bc86;
+  box-shadow: none;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-orl .c4-title,
+[data-crmv4-root][data-theme="dark"] .c4-trl .c4-title,
+[data-crmv4-root][data-theme="dark"] .c4-orl-meter,
+[data-crmv4-root][data-theme="dark"] .c4-orl-col,
+[data-crmv4-root][data-theme="dark"] .c4-trl-col,
+[data-crmv4-root][data-theme="dark"] .c4-trl-band,
+[data-crmv4-root][data-theme="dark"] .c4-orl-rows > li,
+[data-crmv4-root][data-theme="dark"] .c4-trl-rows > li,
+[data-crmv4-root][data-theme="dark"] .c4-orl-time > li {
+  color: #f7f1e6;
+  background: #141311;
+}
+
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-cust-oriel .c4-card { margin: 12px 12px 0; box-shadow: none; }
+  [data-crmv4-root] .c4-cust-oriel .c4-card-h .c4-title { font-size: 24px; }
+  [data-crmv4-root] .c4-orl-kpi,
+  [data-crmv4-root] .c4-orl-form,
+  [data-crmv4-root] .c4-orl-chart,
+  [data-crmv4-root] .c4-trl-chart,
+  [data-crmv4-root] .c4-trl-bands { grid-template-columns: minmax(0, 1fr); }
+  [data-crmv4-root] .c4-orl,
+  [data-crmv4-root] .c4-trl { margin: 12px; padding: 16px; }
+  [data-crmv4-root] .c4-orl .c4-title,
+  [data-crmv4-root] .c4-trl .c4-title { font-size: 28px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-cust-oriel .c4-tools .c4-btn,
+  [data-crmv4-root] .c4-cust-oriel .c4-tools .c4-chip,
+  [data-crmv4-root] .c4-orl-track i,
+  [data-crmv4-root] .c4-orl-bar i { transition: none; }
+}
