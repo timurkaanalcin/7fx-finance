@@ -147,6 +147,7 @@ import { QuaySlips, TimezoneBelts } from "./round156";
 import { ConservatoryBenches, CountryPlates } from "./round157";
 import { AviaryPerches, PresenceWatches } from "./round158";
 import { HearthRelays, LoginLanterns } from "./round159";
+import { BinderyStitches, CampaignCloths } from "./round160";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -707,6 +708,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "presence") return v4("pswTitle");
     if (tab === "hearth") return v4("hrlTitle");
     if (tab === "lantern") return v4("ltnTitle");
+    if (tab === "stitch") return v4("bstTitle");
+    if (tab === "cloth") return v4("cclTitle");
     if (tab === "plates") return v4("pltTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
@@ -959,6 +962,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "presence") return v4("pswSub");
     if (tab === "hearth") return v4("hrlSub");
     if (tab === "lantern") return v4("ltnSub");
+    if (tab === "stitch") return v4("bstSub");
+    if (tab === "cloth") return v4("cclSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1337,6 +1342,8 @@ function Shell({ base, section, name }: Props) {
             {view === "presence" && <PresenceWatches base={base} v4={v4} />}
             {view === "hearth" && <HearthRelays v4={v4} />}
             {view === "lantern" && <LoginLanterns base={base} v4={v4} />}
+            {view === "stitch" && <BinderyStitches v4={v4} />}
+            {view === "cloth" && <CampaignCloths base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
@@ -1411,7 +1418,7 @@ function Shell({ base, section, name }: Props) {
         </form>
       </aside>
 
-      <nav className="c4-tabs c4-tabs-luxe c4-tabs-folio" aria-label={tx("panel")}>
+      <nav className="c4-tabs c4-tabs-luxe c4-tabs-folio c4-tabs-cellar" aria-label={tx("panel")}>
         {CRM_V4_TABS.map((tab) => (
           <Link key={tab} href={crmv4Href(base, tab === "overview" ? "" : tab)} data-on={view === tab ? "1" : "0"} className="c4-tab" aria-current={view === tab ? "page" : undefined}>
             {label(tab)}
