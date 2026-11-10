@@ -143,6 +143,7 @@ import { LoginBands, LoomTickets } from "./round152";
 import { KilnSlips, UsernameHandles } from "./round153";
 import { GivenNames, PressProofs } from "./round154";
 import { DocketSlips, FamilyNames } from "./round155";
+import { QuaySlips, TimezoneBelts } from "./round156";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -696,6 +697,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "given") return v4("gvnTitle");
     if (tab === "dockets") return v4("dktTitle");
     if (tab === "family") return v4("famTitle");
+    if (tab === "quay") return v4("quyTitle");
+    if (tab === "belts") return v4("zblTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -940,6 +943,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "given") return v4("gvnSub");
     if (tab === "dockets") return v4("dktSub");
     if (tab === "family") return v4("famSub");
+    if (tab === "quay") return v4("quySub");
+    if (tab === "belts") return v4("zblSub");
     return "";
   }
 
@@ -1032,7 +1037,7 @@ function Shell({ base, section, name }: Props) {
       <div className="c4-frame">
         <div className="c4-panel" data-view={view} onScroll={(event) => setCompact(event.currentTarget.scrollTop > 24)}>
           {!id && (
-            <div className="c4-pagehead c4-pagehead-folio c4-pagehead-crest c4-pagehead-atelier c4-pagehead-salon c4-pagehead-gallery c4-pagehead-library c4-pagehead-press c4-pagehead-ribbon c4-pagehead-playbill c4-pagehead-interlude c4-pagehead-slip c4-pagehead-vellum c4-pagehead-quire c4-pagehead-promise c4-pagehead-briefing c4-pagehead-dispatch c4-pagehead-loom c4-pagehead-kiln c4-pagehead-proof c4-pagehead-docket">
+            <div className="c4-pagehead c4-pagehead-folio c4-pagehead-crest c4-pagehead-atelier c4-pagehead-salon c4-pagehead-gallery c4-pagehead-library c4-pagehead-press c4-pagehead-ribbon c4-pagehead-playbill c4-pagehead-interlude c4-pagehead-slip c4-pagehead-vellum c4-pagehead-quire c4-pagehead-promise c4-pagehead-briefing c4-pagehead-dispatch c4-pagehead-loom c4-pagehead-kiln c4-pagehead-proof c4-pagehead-docket c4-pagehead-quay">
               <div className="c4-crest-band">
                 <p className="c4-folio-plate" data-logo="mono" aria-hidden="true">7FX</p>
                 <span className="c4-crest-mark" aria-hidden="true" />
@@ -1309,6 +1314,8 @@ function Shell({ base, section, name }: Props) {
             {view === "given" && <GivenNames base={base} v4={v4} />}
             {view === "dockets" && <DocketSlips v4={v4} />}
             {view === "family" && <FamilyNames base={base} v4={v4} />}
+            {view === "quay" && <QuaySlips v4={v4} />}
+            {view === "belts" && <TimezoneBelts base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
@@ -1331,7 +1338,7 @@ function Shell({ base, section, name }: Props) {
         </div>
       </div>
 
-      <aside className="c4-rail c4-rail-luxe c4-rail-folio c4-rail-crest c4-rail-salon c4-rail-gallery c4-rail-library c4-rail-press c4-rail-ribbon c4-rail-playbill c4-rail-interlude c4-rail-slip c4-rail-vellum c4-rail-quire c4-rail-promise c4-rail-briefing c4-rail-dispatch c4-rail-loom c4-rail-kiln c4-rail-proof c4-rail-docket" aria-label={v4("admin")}>
+      <aside className="c4-rail c4-rail-luxe c4-rail-folio c4-rail-crest c4-rail-salon c4-rail-gallery c4-rail-library c4-rail-press c4-rail-ribbon c4-rail-playbill c4-rail-interlude c4-rail-slip c4-rail-vellum c4-rail-quire c4-rail-promise c4-rail-briefing c4-rail-dispatch c4-rail-loom c4-rail-kiln c4-rail-proof c4-rail-docket c4-rail-quay" aria-label={v4("admin")}>
         <p className="c4-rail-plate" data-logo="mono" aria-hidden="true">7FX</p>
         <button type="button" className="c4-rail-btn c4-plus" aria-label={v4("quickPlus")} onClick={() => setQuickOpen(true)}>+</button>
         <CallTarget v4={v4} />
