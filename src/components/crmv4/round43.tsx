@@ -71,10 +71,15 @@ export function ReportDesk({ v4, locale }: { v4: V4; locale: string }) {
   const regsNow = datedCount(users.map((row) => ({ at: row.createdAt })), windows.currentFrom, windows.currentTo);
   const regsThen = datedCount(users.map((row) => ({ at: row.createdAt })), windows.previousFrom, windows.previousTo);
   return (
-    <section className="c4-report-center c4-report-luxe" aria-label={v4("reportsTitle")} data-reports="1" data-period={kind}>
-      <h2 className="c4-title">{v4("reportsTitle")}</h2>
-      <p className="c4-meta">{v4("rpHint")}</p>
-      <div className="c4-row c4-no-print">
+    <section className="c4-report-center c4-report-luxe c4-report-salon" aria-label={v4("reportsTitle")} data-reports="1" data-period={kind}>
+      <header className="c4-report-salon-mast">
+        <div>
+          <p className="c4-report-salon-kicker">{v4("rpHint")}</p>
+          <h2 className="c4-title c4-report-salon-title">{v4("reportsTitle")}</h2>
+        </div>
+        <p className="c4-report-salon-plate" data-logo="mono">7FX</p>
+      </header>
+      <div className="c4-report-salon-tools c4-row c4-no-print">
         <button type="button" className="c4-chip" data-on={kind === "week" ? "1" : "0"} onClick={() => setKind("week")}>{v4("rpWeek")}</button>
         <button type="button" className="c4-chip" data-on={kind === "month" ? "1" : "0"} onClick={() => setKind("month")}>{v4("rpMonth")}</button>
         <button type="button" className="c4-btn" onClick={printReport}>{v4("reportsPrint")}</button>
@@ -82,7 +87,7 @@ export function ReportDesk({ v4, locale }: { v4: V4; locale: string }) {
       <p className="c4-meta">{v4("rpWindow")} {windows.currentFrom} – {windows.currentTo}</p>
       <p className="c4-meta">{v4("rpPrevious")} {windows.previousFrom} – {windows.previousTo}</p>
       <p className="c4-meta">{v4("rpDiffHint")}</p>
-      <article className="c4-report-card" data-report="registrations">
+      <article className="c4-report-card c4-report-salon-card" data-report="registrations">
         <h3 className="c4-title">{v4("rpRegs")}</h3>
         <p className="c4-meta">{v4("rpRegsHint")}</p>
         <p>{v4("rpWindow")} {regsNow} · {v4("rpPrevious")} {regsThen} · {v4("reportsRows")} {users.length}</p>
@@ -106,7 +111,7 @@ function CompareCard({ title, rows, windows, locale, v4, kind, filename }: {
   const table = currencyCompare(rows, windows);
   const aside = leftOut(rows, windows);
   return (
-    <article className="c4-report-card" data-report={kind}>
+    <article className="c4-report-card c4-report-salon-card" data-report={kind}>
       <h3 className="c4-title">{title}</h3>
       <p className="c4-meta">{v4("reportsRows")} {rows.length}</p>
       {!table.length && <p className="c4-meta">{v4("rpEmpty")}</p>}
