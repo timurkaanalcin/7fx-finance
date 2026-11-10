@@ -43947,3 +43947,262 @@
   [data-crmv4-root] .c4-rvm .c4-btn,
   [data-crmv4-root] .c4-report-salon .c4-btn { transition: none; }
 }
+
+/* Round 192 — quiet holds, dial lanes, and the affiliates salon.
+   The introducer room was a pale sheet of loose cards.
+   It is now a graphite mast, ivory cards, and a champagne rail.
+   Chrome pad stays 10px. The plate stays monochrome. */
+[data-crmv4-root] .c4-qhd,
+[data-crmv4-root] .c4-dln,
+[data-crmv4-root] .c4-aff-salon {
+  color: #1c1a17;
+}
+[data-crmv4-root] .c4-qhd,
+[data-crmv4-root] .c4-dln {
+  display: grid;
+  gap: 14px;
+  margin: 18px 20px 28px;
+  padding: 22px;
+  background:
+    linear-gradient(#d4bc86, #d4bc86) 22px 0 / 72px 3px no-repeat,
+    #f6f1e8;
+  border: 1px solid #1c1a17;
+  border-radius: 22px;
+  box-shadow: 0 18px 36px rgba(28, 26, 23, 0.06);
+}
+[data-crmv4-root] .c4-aff-desk.c4-aff-salon {
+  width: 100%;
+  box-sizing: border-box;
+  gap: 16px;
+  margin: 18px 0 28px;
+  padding: 0 0 18px;
+  background:
+    linear-gradient(180deg, rgba(212, 188, 134, 0.35), transparent 88px),
+    #f7f3ec;
+  border: 1px solid #1c1a17;
+  border-radius: 22px;
+  box-shadow: 0 22px 44px rgba(28, 26, 23, 0.08);
+}
+[data-crmv4-root] .c4-qhd-mast,
+[data-crmv4-root] .c4-dln-mast,
+[data-crmv4-root] .c4-aff-salon-mast {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  background: #1c1a17;
+  color: #f6f1e8;
+  border-radius: 16px;
+}
+[data-crmv4-root] .c4-aff-salon-mast {
+  margin: 0;
+  border-radius: 21px 21px 0 0;
+}
+[data-crmv4-root] .c4-qhd-kicker,
+[data-crmv4-root] .c4-dln-kicker,
+[data-crmv4-root] .c4-aff-salon-kicker {
+  margin: 0 0 4px;
+  color: #d4bc86;
+  letter-spacing: 0.08em;
+  font-size: 12px;
+}
+[data-crmv4-root] .c4-qhd-mast .c4-title,
+[data-crmv4-root] .c4-dln-mast .c4-title,
+[data-crmv4-root] .c4-aff-salon .c4-aff-salon-title {
+  margin: 0;
+  color: #f6f1e8;
+  font-size: 34px;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  font-weight: 560;
+  background: transparent;
+}
+[data-crmv4-root] .c4-qhd-mast .c4-title::before,
+[data-crmv4-root] .c4-dln-mast .c4-title::before,
+[data-crmv4-root] .c4-aff-salon-title::before,
+[data-crmv4-root] .c4-aff-salon-title::after { display: none; }
+[data-crmv4-root] .c4-qhd-plate[data-logo="mono"],
+[data-crmv4-root] .c4-dln-plate[data-logo="mono"],
+[data-crmv4-root] .c4-aff-salon-plate[data-logo="mono"] {
+  margin: 0;
+  padding: 8px 12px;
+  color: #1c1a17;
+  background: #f6f1e8;
+  border: 1px solid #d4bc86;
+  border-radius: 999px;
+  letter-spacing: 0.14em;
+  font-size: 12px;
+  font-weight: 650;
+}
+[data-crmv4-root] .c4-qhd-kpi,
+[data-crmv4-root] .c4-dln-kpi {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+[data-crmv4-root] .c4-qhd-kpi > div,
+[data-crmv4-root] .c4-dln-kpi > div,
+[data-crmv4-root] .c4-qhd-cards > li,
+[data-crmv4-root] .c4-dln-rows > li,
+[data-crmv4-root] .c4-aff-salon-card {
+  background: #fffdf8;
+  border: 1px solid #e4d7c4;
+  border-inline-start: 3px solid #d4bc86;
+  border-radius: 16px;
+  padding: 12px 14px;
+}
+[data-crmv4-root] .c4-qhd-kpi dt,
+[data-crmv4-root] .c4-dln-kpi dt {
+  color: #7a5e30;
+  font-size: 12px;
+}
+[data-crmv4-root] .c4-qhd-kpi dd,
+[data-crmv4-root] .c4-dln-kpi dd {
+  margin: 4px 0 0;
+  font-size: 22px;
+  letter-spacing: -0.03em;
+}
+[data-crmv4-root] .c4-qhd-chart,
+[data-crmv4-root] .c4-dln-chart,
+[data-crmv4-root] .c4-aff-salon .c4-aff-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+[data-crmv4-root] .c4-qhd-track,
+[data-crmv4-root] .c4-dln-track {
+  display: flex;
+  align-items: flex-end;
+  height: 72px;
+  background: #efe6d8;
+  border-radius: 12px;
+  padding: 6px;
+}
+[data-crmv4-root] .c4-qhd-track i,
+[data-crmv4-root] .c4-dln-track i {
+  display: block;
+  width: 100%;
+  background: linear-gradient(#d4bc86, #7a5e30);
+  border-radius: 8px;
+  transition: height 180ms ease;
+}
+[data-crmv4-root] .c4-qhd-form,
+[data-crmv4-root] .c4-qhd-filters,
+[data-crmv4-root] .c4-dln-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+}
+[data-crmv4-root] .c4-qhd-cards > li[data-focus="1"] {
+  outline: 2px solid #7a5e30;
+  outline-offset: 2px;
+}
+[data-crmv4-root] .c4-qhd[data-density="tight"] .c4-qhd-cards > li {
+  padding: 8px 10px;
+}
+[data-crmv4-root] .c4-qhd-cards > li[data-late="1"] { border-inline-start-color: #8a3d32; }
+[data-crmv4-root] .c4-qhd-cards > li[data-soon="1"] { border-inline-start-color: #1b5e3b; }
+[data-crmv4-root] .c4-aff-salon .c4-aff-salon-card .c4-title {
+  color: #1c1a17;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+}
+[data-crmv4-root] .c4-aff-salon-card .c4-title::before,
+[data-crmv4-root] .c4-aff-salon-card .c4-title::after { display: none; }
+[data-crmv4-root] .c4-aff-salon .c4-aff-salon-card ul {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-aff-salon .c4-aff-salon-card li {
+  padding: 6px 0;
+  border-top: 1px solid #e4d7c4;
+}
+[data-crmv4-root] .c4-qhd .c4-btn,
+[data-crmv4-root] .c4-dln .c4-btn,
+[data-crmv4-root] .c4-aff-salon .c4-btn,
+[data-crmv4-root] .c4-qhd .c4-chip,
+[data-crmv4-root] .c4-dln .c4-chip,
+[data-crmv4-root] .c4-aff-salon .c4-chip {
+  min-height: 36px;
+  border-radius: 999px;
+  transition: transform 160ms ease, background 160ms ease;
+}
+[data-crmv4-root] .c4-qhd .c4-btn:hover,
+[data-crmv4-root] .c4-dln .c4-btn:hover,
+[data-crmv4-root] .c4-aff-salon .c4-btn:hover { transform: translateY(-1px); }
+[data-crmv4-root] .c4-qhd .c4-chip[data-on="1"],
+[data-crmv4-root] .c4-dln .c4-chip[data-on="1"],
+[data-crmv4-root] .c4-aff-salon .c4-chip[data-on="1"] {
+  background: #d4bc86;
+  color: #1c1a17;
+  border-color: #7a5e30;
+}
+[data-crmv4-root] .c4-qhd-notice,
+[data-crmv4-root] .c4-dln-notice {
+  margin: 0;
+  padding: 10px 14px;
+  background: #1c1a17;
+  color: #f6f1e8;
+  border-radius: 12px;
+}
+[data-crmv4-root][data-theme="dark"] .c4-qhd,
+[data-crmv4-root][data-theme="dark"] .c4-dln,
+[data-crmv4-root][data-theme="dark"] .c4-aff-desk.c4-aff-salon {
+  background: #141210;
+  color: #f6f1e8;
+  border-color: #d4bc86;
+}
+[data-crmv4-root][data-theme="dark"] .c4-qhd-plate[data-logo="mono"],
+[data-crmv4-root][data-theme="dark"] .c4-dln-plate[data-logo="mono"],
+[data-crmv4-root][data-theme="dark"] .c4-aff-salon-plate[data-logo="mono"] {
+  background: #1c1a17;
+  color: #f6f1e8;
+  border: 1px solid #d4bc86;
+}
+[data-crmv4-root][data-theme="dark"] .c4-qhd-kpi > div,
+[data-crmv4-root][data-theme="dark"] .c4-dln-kpi > div,
+[data-crmv4-root][data-theme="dark"] .c4-qhd-cards > li,
+[data-crmv4-root][data-theme="dark"] .c4-dln-rows > li,
+[data-crmv4-root][data-theme="dark"] .c4-aff-salon-card {
+  background: #1c1a17;
+  color: #f6f1e8;
+  border-color: #3a342c;
+}
+[data-crmv4-root][data-theme="dark"] .c4-aff-salon-card .c4-title { color: #f6f1e8; }
+[data-crmv4-root][data-motion="reduce"] .c4-qhd-track i,
+[data-crmv4-root][data-motion="reduce"] .c4-dln-track i,
+[data-crmv4-root][data-motion="reduce"] .c4-qhd .c4-btn,
+[data-crmv4-root][data-motion="reduce"] .c4-aff-salon .c4-btn { transition: none; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-qhd-kpi,
+  [data-crmv4-root] .c4-dln-kpi,
+  [data-crmv4-root] .c4-qhd-chart,
+  [data-crmv4-root] .c4-dln-chart,
+  [data-crmv4-root] .c4-qhd-form,
+  [data-crmv4-root] .c4-qhd-filters,
+  [data-crmv4-root] .c4-dln-filters,
+  [data-crmv4-root] .c4-aff-salon .c4-aff-grid { grid-template-columns: 1fr; }
+  [data-crmv4-root] .c4-qhd,
+  [data-crmv4-root] .c4-dln,
+  [data-crmv4-root] .c4-aff-desk.c4-aff-salon { margin: 10px 0; padding-bottom: 14px; }
+  [data-crmv4-root] .c4-qhd-mast .c4-title,
+  [data-crmv4-root] .c4-dln-mast .c4-title,
+  [data-crmv4-root] .c4-aff-salon-title { font-size: 28px; }
+  [data-crmv4-root] .c4-qhd-mast,
+  [data-crmv4-root] .c4-dln-mast,
+  [data-crmv4-root] .c4-aff-salon-mast { align-items: flex-start; flex-direction: column; }
+  [data-crmv4-root] .c4-qhd .c4-btn,
+  [data-crmv4-root] .c4-dln .c4-btn,
+  [data-crmv4-root] .c4-aff-salon .c4-btn,
+  [data-crmv4-root] .c4-aff-salon .c4-chip { min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-qhd-track i,
+  [data-crmv4-root] .c4-dln-track i,
+  [data-crmv4-root] .c4-qhd .c4-btn,
+  [data-crmv4-root] .c4-aff-salon .c4-btn { transition: none; }
+}

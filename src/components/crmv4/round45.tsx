@@ -232,14 +232,19 @@ export function AffiliateDesk({ v4, locale }: { v4: V4; locale: string }) {
   for (const row of rows) for (const sum of row.sums) if (!currencies.includes(sum.currency)) currencies.push(sum.currency);
   currencies.sort();
   return (
-    <section className="c4-aff-desk" aria-label={v4("afTitle")} data-affiliates="">
-      <h2 className="c4-title">{v4("afTitle")}</h2>
-      <p className="c4-meta">{v4("afHint")}</p>
+    <section className="c4-aff-desk c4-aff-salon" aria-label={v4("afTitle")} data-affiliates="">
+      <header className="c4-aff-salon-mast">
+        <div>
+          <p className="c4-aff-salon-kicker">{v4("afHint")}</p>
+          <h2 className="c4-title c4-aff-salon-title">{v4("afTitle")}</h2>
+        </div>
+        <p className="c4-aff-salon-plate" data-logo="mono">7FX</p>
+      </header>
       <p className="c4-meta">{v4("afCustomers")} {users.length}</p>
       {!rows.length && <p className="c4-meta">{v4("afEmpty")}</p>}
       <div className="c4-aff-grid">
         {rows.map((row) => (
-          <article key={row.name || "none"} className="c4-aff-card" data-introducer={row.name || "none"}>
+          <article key={row.name || "none"} className="c4-aff-card c4-aff-salon-card" data-introducer={row.name || "none"}>
             <h3 className="c4-title">{row.name || v4("afNone")}</h3>
             <p>{v4("afCustomers")} {row.customers}</p>
             <p>{v4("afFunded")} {row.withDeposit}</p>
