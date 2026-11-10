@@ -180,6 +180,7 @@ import { GalleryHooks, LanguageLanes } from "./round189";
 import { CallbackWindows, InviteRings } from "./round190";
 import { NoticeCrests, ReviewMinutes } from "./round191";
 import { DialLanes, QuietHolds } from "./round192";
+import { CityMarks, SittingBook } from "./round193";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -805,6 +806,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ncts") return v4("nctTitle");
     if (tab === "qhold") return v4("qhdTitle");
     if (tab === "dials") return v4("dlnTitle");
+    if (tab === "sbook") return v4("stbTitle");
+    if (tab === "cmks") return v4("cmkTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1120,6 +1123,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ncts") return v4("nctSub");
     if (tab === "qhold") return v4("qhdSub");
     if (tab === "dials") return v4("dlnSub");
+    if (tab === "sbook") return v4("stbSub");
+    if (tab === "cmks") return v4("cmkSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1564,6 +1569,8 @@ function Shell({ base, section, name }: Props) {
             {view === "ncts" && <NoticeCrests base={base} v4={v4} />}
             {view === "qhold" && <QuietHolds v4={v4} />}
             {view === "dials" && <DialLanes base={base} v4={v4} />}
+            {view === "sbook" && <SittingBook v4={v4} />}
+            {view === "cmks" && <CityMarks base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
