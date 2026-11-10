@@ -134,7 +134,7 @@ export default function Overview({ base, tx, locale, name }: Props) {
       </div>
       <p className="c4-muted">{tx("overviewLead")}</p>
       <KpiPicker v4={(key) => crmv4Text(locale, key)} />
-      <div className="c4-kpis">
+      <div className="c4-kpis c4-kpis-marq">
         {kpiOn.includes("customers") && <Kpi tone="violet" label={tx("kpiCustomers")} value={fmtNum(kpis?.users, locale)} href={crmv4Href(base, "customers")} />}
         {kpiOn.includes("aum") && <Kpi tone="cyan" label={tx("kpiAum")} value={money(aum, "USD", locale)} href={crmv4Href(base, "finance", { tab: "ledger" })} />}
         {kpiOn.includes("volume") && <Kpi tone="amber" label={tx("kpiVolume")} value={fmtNum(kpis?.totalVolume, locale)} href={crmv4Href(base, "positions")} />}
@@ -165,7 +165,7 @@ function Insights({ tx, locale, finance, report }: { tx: Tx; locale: string; fin
   return (
     <div className="c4-stack c4-report-luxe">
       <MiniChart points={trend} label={tx("net")} />
-      <div className="c4-kpis">
+      <div className="c4-kpis c4-kpis-marq">
         <Kpi tone="violet" label={tx("income")} value={money(k.income, "USD", locale)} href="#" />
         <Kpi tone="cyan" label={tx("outcome")} value={money(k.outcome, "USD", locale)} href="#" />
         <Kpi tone="amber" label={tx("net")} value={money(k.net, "USD", locale)} href="#" />
