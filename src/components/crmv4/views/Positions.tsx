@@ -1,8 +1,10 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { crmv4Text } from "@/lib/crmv4/copy";
+import { crmv4Href } from "@/lib/crmv4/sections";
 import { exportCurrent } from "../round1";
 import { MarginWatch, RiskBoard, exportXlsx } from "../round3";
 import { SymbolPop } from "../round5";
@@ -14,6 +16,8 @@ type Row = { id: string; symbol?: string; side?: string; volume?: number; profit
 export default function Positions({ tx, locale, q }: { tx: Tx; locale: string; q: string }) {
   const params = useSearchParams();
   const router = useRouter();
+  const path = usePathname() || "";
+  const root = path.includes("/izcrm/crmv4") ? "/izcrm/crmv4" : "/crmv4";
   const status = (params.get("status") || "OPEN").toUpperCase();
   const skip = Number(params.get("skip") || 0) || 0;
   const data = useJson<{ positions?: Row[]; hasMore?: boolean }>(`/api/admin/positions?status=${encodeURIComponent(status)}&take=${TAKE}&skip=${skip}&q=${encodeURIComponent(q)}`);
@@ -31,14 +35,24 @@ export default function Positions({ tx, locale, q }: { tx: Tx; locale: string; q
     router.replace(`?${p.toString()}`);
   }
   return (
-    <div className="c4-book-vine c4-book-salon c4-book-oratory c4-book-vestibule c4-book-cloister">
-    <header className="c4-book-salon-mast c4-book-oratory-mast c4-book-vestibule-mast c4-book-cloister-mast">
-      <p className="c4-book-salon-mark c4-book-oratory-mark c4-book-vestibule-mark c4-book-cloister-mark" data-logo="mono">7FX</p>
+    <div className="c4-book-vine c4-book-salon c4-book-oratory c4-book-vestibule c4-book-cloister c4-book-mezzanine" data-book="mezzanine">
+    <header className="c4-book-salon-mast c4-book-oratory-mast c4-book-vestibule-mast c4-book-cloister-mast c4-book-mezzanine-mast">
+      <p className="c4-book-salon-mark c4-book-oratory-mark c4-book-vestibule-mark c4-book-cloister-mark c4-book-mezzanine-mark" data-logo="mono">7FX</p>
       <div>
+        <p className="c4-book-mezzanine-kicker">{tx("positionsLead")}</p>
         <p className="c4-book-salon-kicker c4-book-oratory-kicker c4-book-vestibule-kicker c4-book-cloister-kicker">{tx("positionsLead")}</p>
-        <h2 className="c4-book-salon-title c4-book-oratory-title c4-book-vestibule-title c4-book-cloister-title">{tx("positions")}</h2>
+        <h2 className="c4-book-salon-title c4-book-oratory-title c4-book-vestibule-title c4-book-cloister-title c4-book-mezzanine-title">{tx("positions")}</h2>
       </div>
+      <ol className="c4-book-mezzanine-index" aria-label={tx("positions")}>
+        <li data-tone="gold">{tx("open")}</li>
+        <li data-tone="ink">{tx("closed")}</li>
+        <li data-tone="ivory">{tx("all")}</li>
+      </ol>
     </header>
+    <nav className="c4-book-mezzanine-links" aria-label={crmv4Text(locale, "mzrSpine")}>
+      <Link href={crmv4Href(root, "mzrl")}>{crmv4Text(locale, "mzrTitle")}</Link>
+      <Link href={crmv4Href(root, "syct")}>{crmv4Text(locale, "sycTitle")}</Link>
+    </nav>
     <Card title={tx("positions")}>
       <div className="c4-tools">
         {["OPEN", "CLOSED", "ALL"].map((item) => (
