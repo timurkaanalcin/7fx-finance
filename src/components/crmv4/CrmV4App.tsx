@@ -191,6 +191,7 @@ import { AtelierSittings, SurnameCrests } from "./round200";
 import { SalonRecitals, UsernameSeals } from "./round201";
 import { GalleryWalks, TimezoneOffsets } from "./round202";
 import { OratoryCards, VisitorSeals } from "./round203";
+import { AgentScripts, VestibuleBenches } from "./round204";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -838,6 +839,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "tzon") return v4("tznTitle");
     if (tab === "orcd") return v4("orcTitle");
     if (tab === "vsip") return v4("vslTitle");
+    if (tab === "vstb") return v4("vnbTitle");
+    if (tab === "agsc") return v4("agsTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1173,6 +1176,10 @@ function Shell({ base, section, name }: Props) {
     if (tab === "unsl") return v4("unsSub");
     if (tab === "gwlk") return v4("gwkSub");
     if (tab === "tzon") return v4("tznSub");
+    if (tab === "orcd") return v4("orcSub");
+    if (tab === "vsip") return v4("vslSub");
+    if (tab === "vstb") return v4("vnbSub");
+    if (tab === "agsc") return v4("agsSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1266,7 +1273,7 @@ function Shell({ base, section, name }: Props) {
       <div className="c4-frame">
         <div className="c4-panel" data-view={view} onScroll={(event) => setCompact(event.currentTarget.scrollTop > 24)}>
           {!id && (
-            <div className="c4-pagehead c4-pagehead-folio c4-pagehead-crest c4-pagehead-atelier c4-pagehead-salon c4-pagehead-gallery c4-pagehead-library c4-pagehead-press c4-pagehead-ribbon c4-pagehead-playbill c4-pagehead-interlude c4-pagehead-slip c4-pagehead-vellum c4-pagehead-quire c4-pagehead-promise c4-pagehead-briefing c4-pagehead-dispatch c4-pagehead-loom c4-pagehead-kiln c4-pagehead-proof c4-pagehead-docket c4-pagehead-quay c4-pagehead-bench c4-pagehead-perch c4-pagehead-hearth c4-pagehead-inkwell c4-pagehead-lacquer c4-pagehead-gilt c4-pagehead-vestry c4-pagehead-choir c4-pagehead-arcade c4-pagehead-stool c4-pagehead-ladder c4-pagehead-inlay c4-pagehead-atlas c4-pagehead-oratory">
+            <div className="c4-pagehead c4-pagehead-folio c4-pagehead-crest c4-pagehead-atelier c4-pagehead-salon c4-pagehead-gallery c4-pagehead-library c4-pagehead-press c4-pagehead-ribbon c4-pagehead-playbill c4-pagehead-interlude c4-pagehead-slip c4-pagehead-vellum c4-pagehead-quire c4-pagehead-promise c4-pagehead-briefing c4-pagehead-dispatch c4-pagehead-loom c4-pagehead-kiln c4-pagehead-proof c4-pagehead-docket c4-pagehead-quay c4-pagehead-bench c4-pagehead-perch c4-pagehead-hearth c4-pagehead-inkwell c4-pagehead-lacquer c4-pagehead-gilt c4-pagehead-vestry c4-pagehead-choir c4-pagehead-arcade c4-pagehead-stool c4-pagehead-ladder c4-pagehead-inlay c4-pagehead-atlas c4-pagehead-oratory c4-pagehead-vestibule">
               <div className="c4-crest-band">
                 <p className="c4-folio-plate" data-logo="mono" aria-hidden="true">7FX</p>
                 <span className="c4-crest-mark" aria-hidden="true" />
@@ -1639,6 +1646,8 @@ function Shell({ base, section, name }: Props) {
             {view === "tzon" && <TimezoneOffsets base={base} v4={v4} />}
             {view === "orcd" && <OratoryCards v4={v4} />}
             {view === "vsip" && <VisitorSeals base={base} v4={v4} />}
+            {view === "vstb" && <VestibuleBenches v4={v4} />}
+            {view === "agsc" && <AgentScripts base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
@@ -1661,7 +1670,7 @@ function Shell({ base, section, name }: Props) {
         </div>
       </div>
 
-      <aside className="c4-rail c4-rail-luxe c4-rail-folio c4-rail-crest c4-rail-salon c4-rail-gallery c4-rail-library c4-rail-press c4-rail-ribbon c4-rail-playbill c4-rail-interlude c4-rail-slip c4-rail-vellum c4-rail-quire c4-rail-promise c4-rail-briefing c4-rail-dispatch c4-rail-loom c4-rail-kiln c4-rail-proof c4-rail-docket c4-rail-quay c4-rail-bench c4-rail-perch c4-rail-hearth c4-rail-inkwell c4-rail-stool c4-rail-ladder c4-rail-compositor c4-rail-inlay c4-rail-atlas c4-rail-oratory" aria-label={v4("admin")}>
+      <aside className="c4-rail c4-rail-luxe c4-rail-folio c4-rail-crest c4-rail-salon c4-rail-gallery c4-rail-library c4-rail-press c4-rail-ribbon c4-rail-playbill c4-rail-interlude c4-rail-slip c4-rail-vellum c4-rail-quire c4-rail-promise c4-rail-briefing c4-rail-dispatch c4-rail-loom c4-rail-kiln c4-rail-proof c4-rail-docket c4-rail-quay c4-rail-bench c4-rail-perch c4-rail-hearth c4-rail-inkwell c4-rail-stool c4-rail-ladder c4-rail-compositor c4-rail-inlay c4-rail-atlas c4-rail-oratory c4-rail-vestibule" aria-label={v4("admin")}>
         <p className="c4-rail-plate" data-logo="mono" aria-hidden="true">7FX</p>
         <button type="button" className="c4-rail-btn c4-plus" aria-label={v4("quickPlus")} onClick={() => setQuickOpen(true)}>+</button>
         <CallTarget v4={v4} />
