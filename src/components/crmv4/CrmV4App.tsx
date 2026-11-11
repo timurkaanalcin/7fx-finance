@@ -187,6 +187,7 @@ import { EscortSlips, NoteRibbons } from "./round196";
 import { FollowStamps, WaitlistSlots } from "./round197";
 import { HandoffBriefs, PledgeMarks } from "./round198";
 import { FolioWarrants, MailMonograms } from "./round199";
+import { AtelierSittings, SurnameCrests } from "./round200";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -826,6 +827,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "plgm") return v4("pgmTitle");
     if (tab === "flwt") return v4("flwTitle");
     if (tab === "mngm") return v4("mngTitle");
+    if (tab === "sitt") return v4("sitTitle");
+    if (tab === "crst") return v4("crsTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1155,6 +1158,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "plgm") return v4("pgmSub");
     if (tab === "flwt") return v4("flwSub");
     if (tab === "mngm") return v4("mngSub");
+    if (tab === "sitt") return v4("sitSub");
+    if (tab === "crst") return v4("crsSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1613,6 +1618,8 @@ function Shell({ base, section, name }: Props) {
             {view === "plgm" && <PledgeMarks base={base} v4={v4} />}
             {view === "flwt" && <FolioWarrants v4={v4} />}
             {view === "mngm" && <MailMonograms base={base} v4={v4} />}
+            {view === "sitt" && <AtelierSittings v4={v4} />}
+            {view === "crst" && <SurnameCrests base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
