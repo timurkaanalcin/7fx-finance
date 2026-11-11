@@ -31,12 +31,12 @@ export default function Positions({ tx, locale, q }: { tx: Tx; locale: string; q
     router.replace(`?${p.toString()}`);
   }
   return (
-    <div className="c4-book-vine c4-book-salon">
-    <header className="c4-book-salon-mast">
-      <p className="c4-book-salon-mark" data-logo="mono">7FX</p>
+    <div className="c4-book-vine c4-book-salon c4-book-oratory">
+    <header className="c4-book-salon-mast c4-book-oratory-mast">
+      <p className="c4-book-salon-mark c4-book-oratory-mark" data-logo="mono">7FX</p>
       <div>
-        <p className="c4-book-salon-kicker">{tx("positionsLead")}</p>
-        <h2 className="c4-book-salon-title">{tx("positions")}</h2>
+        <p className="c4-book-salon-kicker c4-book-oratory-kicker">{tx("positionsLead")}</p>
+        <h2 className="c4-book-salon-title c4-book-oratory-title">{tx("positions")}</h2>
       </div>
     </header>
     <Card title={tx("positions")}>
