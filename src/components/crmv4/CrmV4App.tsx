@@ -200,6 +200,7 @@ import { LanguageRibbons, NaveBenches } from "./round209";
 import { ApseAlcoves, BrowserCrests } from "./round210";
 import { AccountWafers, TranseptStalls } from "./round211";
 import { AmbulatoryLanterns, CountryLamps } from "./round212";
+import { AddressPlates, NarthexCandles } from "./round213";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -865,6 +866,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "acwf") return v4("acwTitle");
     if (tab === "amln") return v4("alnTitle");
     if (tab === "clmp") return v4("clmTitle");
+    if (tab === "nxcd") return v4("nxcTitle");
+    if (tab === "adpl") return v4("adrTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1220,6 +1223,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "acwf") return v4("acwSub");
     if (tab === "amln") return v4("alnSub");
     if (tab === "clmp") return v4("clmSub");
+    if (tab === "nxcd") return v4("nxcSub");
+    if (tab === "adpl") return v4("adrSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1704,6 +1709,8 @@ function Shell({ base, section, name }: Props) {
             {view === "acwf" && <AccountWafers base={base} v4={v4} />}
             {view === "amln" && <AmbulatoryLanterns v4={v4} />}
             {view === "clmp" && <CountryLamps base={base} v4={v4} />}
+            {view === "nxcd" && <NarthexCandles v4={v4} />}
+            {view === "adpl" && <AddressPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
@@ -1726,7 +1733,7 @@ function Shell({ base, section, name }: Props) {
         </div>
       </div>
 
-      <aside className="c4-rail c4-rail-luxe c4-rail-folio c4-rail-crest c4-rail-salon c4-rail-gallery c4-rail-library c4-rail-press c4-rail-ribbon c4-rail-playbill c4-rail-interlude c4-rail-slip c4-rail-vellum c4-rail-quire c4-rail-promise c4-rail-briefing c4-rail-dispatch c4-rail-loom c4-rail-kiln c4-rail-proof c4-rail-docket c4-rail-quay c4-rail-bench c4-rail-perch c4-rail-hearth c4-rail-inkwell c4-rail-stool c4-rail-ladder c4-rail-compositor c4-rail-inlay c4-rail-atlas c4-rail-oratory c4-rail-vestibule c4-rail-conservatory c4-rail-reading c4-rail-mount c4-rail-cloister c4-rail-apse" aria-label={v4("admin")}>
+      <aside className="c4-rail c4-rail-luxe c4-rail-folio c4-rail-crest c4-rail-salon c4-rail-gallery c4-rail-library c4-rail-press c4-rail-ribbon c4-rail-playbill c4-rail-interlude c4-rail-slip c4-rail-vellum c4-rail-quire c4-rail-promise c4-rail-briefing c4-rail-dispatch c4-rail-loom c4-rail-kiln c4-rail-proof c4-rail-docket c4-rail-quay c4-rail-bench c4-rail-perch c4-rail-hearth c4-rail-inkwell c4-rail-stool c4-rail-ladder c4-rail-compositor c4-rail-inlay c4-rail-atlas c4-rail-oratory c4-rail-vestibule c4-rail-conservatory c4-rail-reading c4-rail-mount c4-rail-cloister c4-rail-apse c4-rail-narthex" aria-label={v4("admin")}>
         <p className="c4-rail-plate" data-logo="mono" aria-hidden="true">7FX</p>
         <button type="button" className="c4-rail-btn c4-plus" aria-label={v4("quickPlus")} onClick={() => setQuickOpen(true)}>+</button>
         <CallTarget v4={v4} />

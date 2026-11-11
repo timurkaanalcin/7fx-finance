@@ -52427,3 +52427,439 @@
   [data-crmv4-root] .c4-clm-index > li:hover,
   [data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-script .c4-log-line:hover { transform: none; }
 }
+
+/* Round 213 — narthex candles, address plates, and an ivory letterpress for the log.
+   Graphite, ivory, and champagne. The logo plate stays monochrome. */
+[data-crmv4-root] .c4-nxc,
+[data-crmv4-root] .c4-adr {
+  margin: 22px 24px 40px;
+  color: #241f1a;
+  background:
+    linear-gradient(90deg, #241f1a 0 4px, #c6a15b 4px 14px, transparent 14px),
+    #fffdf8;
+  border: 1px solid #241f1a;
+  box-shadow: 0 28px 60px rgba(36, 31, 26, 0.1);
+}
+[data-crmv4-root] .c4-nxc-mast,
+[data-crmv4-root] .c4-adr-mast {
+  display: grid;
+  gap: 16px;
+  align-items: end;
+  margin-left: 14px;
+  padding: 28px 28px 18px;
+  background:
+    radial-gradient(circle at 18px 18px, #c6a15b 1px, transparent 1.2px) 0 0 / 16px 16px,
+    #f4efe4;
+  border-bottom: 1px solid #241f1a;
+}
+[data-crmv4-root] .c4-nxc-mast { grid-template-columns: auto minmax(0, 1fr) 72px; }
+[data-crmv4-root] .c4-adr-mast { grid-template-columns: minmax(0, 1fr) 72px; }
+[data-crmv4-root] .c4-nxc-spine,
+[data-crmv4-root] .c4-nxc-kicker,
+[data-crmv4-root] .c4-adr-kicker,
+[data-crmv4-root] .c4-logs-narthex-kicker {
+  margin: 0 0 8px;
+  color: #8a6a3b;
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-nxc-mast .c4-title,
+[data-crmv4-root] .c4-adr-mast .c4-title {
+  margin: 0;
+  padding: 0;
+  color: #241f1a;
+  background: transparent;
+  border: 0;
+  font-family: Palatino, "Palatino Linotype", "Iowan Old Style", Georgia, serif;
+  font-size: 44px;
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 0.95;
+}
+[data-crmv4-root] .c4-nxc-mast .c4-title::after,
+[data-crmv4-root] .c4-adr-mast .c4-title::after {
+  content: "";
+  display: block;
+  width: 120px;
+  height: 1px;
+  margin-top: 14px;
+  background: #241f1a;
+  box-shadow: 0 5px 0 #c6a15b;
+}
+[data-crmv4-root] .c4-nxc-plate[data-logo="mono"],
+[data-crmv4-root] .c4-adr-plate[data-logo="mono"],
+[data-crmv4-root] .c4-adr-mark[data-logo="mono"] {
+  margin: 0;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  color: #241f1a;
+  background: #fffdf8;
+  border: 1px solid #241f1a;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 5px #f4efe4, inset 0 0 0 6px #c6a15b;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+[data-crmv4-root] .c4-nxc-body,
+[data-crmv4-root] .c4-nxc-rules,
+[data-crmv4-root] .c4-adr-rules { margin-left: 14px; padding: 18px 28px 10px; }
+[data-crmv4-root] .c4-nxc-ledger,
+[data-crmv4-root] .c4-adr-ledger {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 8px 14px;
+  padding: 0 28px 16px;
+  list-style: none;
+}
+[data-crmv4-root] .c4-nxc-ledger li,
+[data-crmv4-root] .c4-adr-ledger li {
+  position: relative;
+  padding: 18px 12px 12px;
+  background: #fffdf8;
+  border: 1px solid #e7dcc6;
+  border-radius: 18px 18px 4px 4px;
+}
+[data-crmv4-root] .c4-nxc-ledger li::before,
+[data-crmv4-root] .c4-adr-ledger li::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  width: 18px;
+  height: 18px;
+  border: 1px solid #c6a15b;
+  border-radius: 50%;
+}
+[data-crmv4-root] .c4-nxc-ledger span,
+[data-crmv4-root] .c4-adr-ledger span {
+  display: block;
+  margin-top: 16px;
+  color: #8a6a3b;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-nxc-ledger strong,
+[data-crmv4-root] .c4-adr-ledger strong {
+  font-family: Palatino, "Palatino Linotype", Georgia, serif;
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+}
+[data-crmv4-root] .c4-nxc-track,
+[data-crmv4-root] .c4-adr-track {
+  height: 3px;
+  background: #efe6d4;
+  border-radius: 99px;
+}
+[data-crmv4-root] .c4-nxc-track i,
+[data-crmv4-root] .c4-adr-track i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #8a6a3b, #c6a15b);
+  border-radius: 99px;
+}
+[data-crmv4-root] .c4-nxc-sla,
+[data-crmv4-root] .c4-nxc-suggest,
+[data-crmv4-root] .c4-adr-suggest,
+[data-crmv4-root] .c4-nxc-filters,
+[data-crmv4-root] .c4-adr-filters,
+[data-crmv4-root] .c4-nxc-form,
+[data-crmv4-root] .c4-nxc-views,
+[data-crmv4-root] .c4-nxc-bulk,
+[data-crmv4-root] .c4-adr-bands,
+[data-crmv4-root] .c4-nxc-rail,
+[data-crmv4-root] .c4-adr-rail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-left: 14px;
+  padding: 0 28px 14px;
+}
+[data-crmv4-root] .c4-nxc-notice,
+[data-crmv4-root] .c4-adr-notice {
+  margin: 0 28px 12px 42px;
+  padding: 14px 16px;
+  background: #f4efe4;
+  border-radius: 0 12px 12px 0;
+  box-shadow: inset 4px 0 0 #c6a15b;
+}
+[data-crmv4-root] .c4-nxc-notice[data-late="1"] { box-shadow: inset 4px 0 0 #8a3d32; }
+[data-crmv4-root] .c4-nxc-empty,
+[data-crmv4-root] .c4-adr-empty {
+  margin: 8px 28px 8px 42px;
+  padding: 36px 18px;
+  color: #8a6a3b;
+  background:
+    radial-gradient(circle at 10px 10px, #c6a15b 1.2px, transparent 1.4px) 0 0 / 20px 20px,
+    #f4efe4;
+  border: 1px dashed #c6a15b;
+  border-radius: 16px;
+  text-align: center;
+  letter-spacing: 0.06em;
+}
+[data-crmv4-root] .c4-nxc-book,
+[data-crmv4-root] .c4-nxc-time,
+[data-crmv4-root] .c4-adr-index,
+[data-crmv4-root] .c4-nxc-reminders,
+[data-crmv4-root] .c4-nxc-window {
+  display: grid;
+  gap: 12px;
+  margin: 0 0 0 14px;
+  padding: 0 28px 22px;
+  list-style: none;
+}
+[data-crmv4-root] .c4-nxc-book { grid-template-columns: minmax(0, 1fr); }
+[data-crmv4-root] .c4-adr-index { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+[data-crmv4-root] .c4-nxc-book > li,
+[data-crmv4-root] .c4-nxc-time > li,
+[data-crmv4-root] .c4-adr-index > li {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 16px;
+  padding: 18px;
+  background: #fffdf8;
+  border: 1px solid #e7dcc6;
+  border-radius: 4px 18px 18px 4px;
+  box-shadow: inset 0 0 0 1px #fffdf8;
+  transition: transform 180ms ease, background 180ms ease;
+}
+[data-crmv4-root] .c4-nxc-book > li:hover,
+[data-crmv4-root] .c4-nxc-time > li:hover,
+[data-crmv4-root] .c4-adr-index > li:hover {
+  background: #fbf6ee;
+  transform: translateY(-3px);
+}
+[data-crmv4-root] .c4-nxc-book > li .c4-check span,
+[data-crmv4-root] .c4-nxc-time > li .c4-check span {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  color: #241f1a;
+  background: #f4efe4;
+  border-radius: 50%;
+  font-family: Palatino, Georgia, serif;
+  font-size: 22px;
+}
+[data-crmv4-root] .c4-nxc-book > li[data-focus="1"],
+[data-crmv4-root] .c4-nxc-time > li[data-focus="1"] { outline: 2px solid #8a6a3b; outline-offset: 3px; }
+[data-crmv4-root] .c4-nxc-book > li[data-late="1"] { box-shadow: inset 5px 0 0 #8a3d32; }
+[data-crmv4-root] .c4-nxc-book > li[data-soon="1"] { box-shadow: inset 5px 0 0 #8a6a3b; }
+[data-crmv4-root] .c4-adr-index .c4-meta,
+[data-crmv4-root] .c4-nxc-book .c4-meta,
+[data-crmv4-root] .c4-nxc-time .c4-meta { display: block; margin-top: 4px; }
+[data-crmv4-root] .c4-adr-index > li[data-lane="west"] { box-shadow: inset 0 4px 0 #c6a15b; }
+[data-crmv4-root] .c4-adr-index > li[data-lane="center"] { box-shadow: inset 0 4px 0 #241f1a; }
+[data-crmv4-root] .c4-adr-index > li[data-lane="east"] { box-shadow: inset 0 4px 0 #8a6a3b; }
+[data-crmv4-root] .c4-adr-index > li[data-reviewed="1"] { background: #f7f1e4; }
+[data-crmv4-root] .c4-nxc .c4-field:focus-visible,
+[data-crmv4-root] .c4-nxc .c4-btn:focus-visible,
+[data-crmv4-root] .c4-nxc .c4-chip:focus-visible,
+[data-crmv4-root] .c4-adr .c4-field:focus-visible,
+[data-crmv4-root] .c4-adr .c4-btn:focus-visible,
+[data-crmv4-root] .c4-adr .c4-chip:focus-visible {
+  outline: 2px solid #8a6a3b;
+  outline-offset: 2px;
+}
+[data-crmv4-root] .c4-nxc .c4-chip[data-on="1"],
+[data-crmv4-root] .c4-adr .c4-chip[data-on="1"] {
+  color: #241f1a;
+  background: #c6a15b;
+  border-color: #8a6a3b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-nxc,
+[data-crmv4-root][data-theme="dark"] .c4-adr {
+  color: #f7f3ea;
+  background:
+    linear-gradient(90deg, #c6a15b 0 4px, #8a6a3b 4px 14px, transparent 14px),
+    #161310;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-nxc-mast,
+[data-crmv4-root][data-theme="dark"] .c4-adr-mast,
+[data-crmv4-root][data-theme="dark"] .c4-nxc-ledger li,
+[data-crmv4-root][data-theme="dark"] .c4-adr-ledger li,
+[data-crmv4-root][data-theme="dark"] .c4-nxc-book > li,
+[data-crmv4-root][data-theme="dark"] .c4-nxc-time > li,
+[data-crmv4-root][data-theme="dark"] .c4-adr-index > li {
+  color: #f7f3ea;
+  background: #1c1916;
+  border-color: #3a342c;
+}
+[data-crmv4-root][data-theme="dark"] .c4-nxc-mast .c4-title,
+[data-crmv4-root][data-theme="dark"] .c4-adr-mast .c4-title { color: #f7f3ea; }
+[data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex {
+  margin: 20px 22px 36px;
+  padding: 0 0 28px;
+  color: #241f1a;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 6px no-repeat,
+    #fffdf8;
+  border: 1px solid #241f1a;
+  border-radius: 0 0 18px 18px;
+  box-shadow: 0 30px 64px rgba(36, 31, 26, 0.1);
+}
+[data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex .c4-logs-transept-mast {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  align-items: stretch;
+  background: #f4efe4;
+  color: #241f1a;
+  border-bottom: 1px solid #241f1a;
+}
+[data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex .c4-logs-transept-seal[data-logo="mono"] {
+  order: 0;
+  color: #241f1a;
+  background: #fffdf8;
+  border-right: 1px solid #c6a15b;
+  border-left: 0;
+  font-size: 13px;
+  letter-spacing: 0.22em;
+}
+[data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex .c4-logs-transept-mast > div {
+  order: 1;
+  padding: 28px 28px 16px;
+}
+[data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex .c4-logs-kicker {
+  display: none;
+}
+[data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex .c4-logs-title {
+  color: #241f1a;
+  font-family: Palatino, "Palatino Linotype", "Iowan Old Style", Georgia, serif;
+  font-size: 56px;
+  font-weight: 500;
+  letter-spacing: -0.05em;
+}
+[data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex .c4-logs-title::after {
+  width: 140px;
+  height: 1px;
+  margin-top: 12px;
+  background: #241f1a;
+  box-shadow: 0 6px 0 #c6a15b;
+}
+[data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex .c4-logs-index {
+  grid-column: 1 / -1;
+  order: 3;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-left: 0;
+  border-top: 1px solid #e7dcc6;
+  background: #fffdf8;
+}
+[data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex .c4-logs-index li {
+  min-height: 52px;
+  margin: 10px;
+  padding: 0 12px;
+  place-items: center;
+  color: #241f1a;
+  background: #f4efe4;
+  border: 0;
+  border-radius: 999px;
+  letter-spacing: 0.22em;
+}
+[data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex .c4-logs-index li[data-tone="gold"] { box-shadow: inset 0 -3px 0 #c6a15b; }
+[data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex .c4-logs-index li[data-tone="ink"] { box-shadow: inset 0 -3px 0 #241f1a; }
+[data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex .c4-logs-index li[data-tone="mist"] { box-shadow: inset 0 -3px 0 #8a6a3b; }
+[data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex.c4-logs-luxe.c4-logs-script .c4-card,
+[data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex.c4-logs-script .c4-log-form {
+  margin: 18px 22px 10px;
+  padding: 20px;
+  background: #fffdf8;
+  border: 1px solid #e7dcc6;
+  border-radius: 16px;
+  box-shadow: none;
+}
+[data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex .c4-logs-ledger {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  margin: 8px 22px 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex.c4-logs-luxe.c4-logs-script .c4-log-line {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  margin: 0;
+  padding: 16px 18px;
+  background: #fffdf8;
+  border: 1px solid #e7dcc6;
+  border-radius: 999px 16px 16px 999px;
+  box-shadow: none;
+  transition: transform 180ms ease, background 180ms ease;
+}
+[data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex.c4-logs-script .c4-log-line:hover {
+  transform: translateX(4px);
+  background: #fbf6ee;
+}
+[data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex.c4-logs-script .c4-log-kind {
+  align-self: center;
+  color: #241f1a;
+  background: #f4efe4;
+  border: 1px solid #c6a15b;
+  border-radius: 999px;
+  letter-spacing: 0.16em;
+}
+[data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex .c4-log-line[data-kind="call"] .c4-log-kind { background: #241f1a; color: #f7f3ea; }
+[data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex .c4-log-line[data-kind="chat"] .c4-log-kind { background: #c6a15b; }
+[data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex .c4-chip[data-on="1"] {
+  color: #241f1a;
+  background: #c6a15b;
+  border-color: #8a6a3b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex {
+  color: #f7f3ea;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 6px no-repeat,
+    #161310;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex .c4-logs-transept-mast,
+[data-crmv4-root][data-theme="dark"] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex .c4-logs-title,
+[data-crmv4-root][data-theme="dark"] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex .c4-logs-index {
+  color: #f7f3ea;
+  background: #161310;
+}
+[data-crmv4-root][data-theme="dark"] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex.c4-logs-luxe.c4-logs-script .c4-log-line,
+[data-crmv4-root][data-theme="dark"] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex.c4-logs-luxe.c4-logs-script .c4-card,
+[data-crmv4-root][data-theme="dark"] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex.c4-logs-script .c4-log-form {
+  color: #f7f3ea;
+  background: #1c1916;
+  border-color: #3a342c;
+}
+[data-crmv4-root] .c4-rail-narthex { box-shadow: inset -1px 0 0 #c6a15b; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-nxc-mast,
+  [data-crmv4-root] .c4-adr-mast { grid-template-columns: 48px minmax(0, 1fr); }
+  [data-crmv4-root] .c4-nxc-plate,
+  [data-crmv4-root] .c4-adr-plate { display: none; }
+  [data-crmv4-root] .c4-nxc-ledger,
+  [data-crmv4-root] .c4-adr-ledger,
+  [data-crmv4-root] .c4-adr-index,
+  [data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex .c4-logs-ledger { grid-template-columns: minmax(0, 1fr); }
+  [data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex .c4-logs-transept-mast { grid-template-columns: minmax(0, 1fr); }
+  [data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex .c4-logs-transept-seal[data-logo="mono"] {
+    min-height: 48px;
+    border-right: 0;
+    border-bottom: 1px solid #c6a15b;
+  }
+  [data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex .c4-logs-title { font-size: 34px; }
+  [data-crmv4-root] .c4-nxc-mast .c4-title,
+  [data-crmv4-root] .c4-adr-mast .c4-title { font-size: 30px; }
+  [data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex.c4-logs-script .c4-log-line { border-radius: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-nxc .c4-btn,
+  [data-crmv4-root] .c4-adr .c4-btn,
+  [data-crmv4-root] .c4-nxc-book > li,
+  [data-crmv4-root] .c4-adr-index > li,
+  [data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex .c4-log-line { transition: none; }
+  [data-crmv4-root] .c4-nxc-book > li:hover,
+  [data-crmv4-root] .c4-adr-index > li:hover,
+  [data-crmv4-root] .c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex.c4-logs-script .c4-log-line:hover { transform: none; }
+}
