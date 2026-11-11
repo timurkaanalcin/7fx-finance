@@ -30,15 +30,15 @@ export default function Marketing({ tx }: { tx: Tx }) {
   const leads = useLeads();
   const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale, key);
   return (
-    <div className="c4-stack c4-mkt c4-mkt-folio c4-mkt-salon">
-      <header className="c4-mkt-folio-mast c4-mkt-salon-mast">
+    <div className="c4-stack c4-mkt c4-mkt-folio c4-mkt-salon c4-mkt-mount">
+      <header className="c4-mkt-folio-mast c4-mkt-salon-mast c4-mkt-mount-mast">
         <div>
-          <p className="c4-mkt-folio-kicker c4-mkt-salon-kicker">{tx("marketing")}</p>
-          <h2 className="c4-mkt-salon-title">{tx("marketingLead")}</h2>
+          <p className="c4-mkt-folio-kicker c4-mkt-salon-kicker c4-mkt-mount-kicker">{tx("marketing")}</p>
+          <h2 className="c4-mkt-salon-title c4-mkt-mount-title">{tx("marketingLead")}</h2>
         </div>
-        <p className="c4-mkt-folio-mark c4-mkt-salon-plate" data-logo="mono">7FX</p>
+        <p className="c4-mkt-folio-mark c4-mkt-salon-plate c4-mkt-mount-plate" data-logo="mono">7FX</p>
       </header>
-      <ol className="c4-mkt-salon-index" aria-label={tx("marketing")}>
+      <ol className="c4-mkt-salon-index c4-mkt-mount-index" aria-label={tx("marketing")}>
         <li data-tone="gold">{tx("affiliates")}</li>
         <li data-tone="ink">{tx("templates")}</li>
         <li data-tone="mist">{tx("leads")}</li>
@@ -75,7 +75,7 @@ export default function Marketing({ tx }: { tx: Tx }) {
             const total = Math.max(1, (row.leads ?? 0));
             const open = openName === row.name;
             return (
-              <li key={row.name} className="c4-mkt-salon-row">
+              <li key={row.name} className="c4-mkt-salon-row c4-mkt-mount-row">
                 <button type="button" className="c4-row c4-between" onClick={() => { setOpenName(open ? "" : String(row.name || "")); setDetail(String(row.name || "")); }}>
                   <span>{row.name || "—"}</span>
                   <span className="c4-muted">{tx("leads")} {row.leads ?? 0} · {crmv4Text(locale, "drill")}</span>
