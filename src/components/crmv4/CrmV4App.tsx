@@ -202,6 +202,7 @@ import { AccountWafers, TranseptStalls } from "./round211";
 import { AmbulatoryLanterns, CountryLamps } from "./round212";
 import { AddressPlates, NarthexCandles } from "./round213";
 import { CryptChests, ResidencySeals } from "./round214";
+import { DocumentGrades, InkFolios } from "./round215";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -871,6 +872,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "adpl") return v4("adrTitle");
     if (tab === "crbx") return v4("crbTitle");
     if (tab === "rsdl") return v4("rsdTitle");
+    if (tab === "iflo") return v4("iflTitle");
+    if (tab === "dgrd") return v4("dgrTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1230,6 +1233,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "adpl") return v4("adrSub");
     if (tab === "crbx") return v4("crbSub");
     if (tab === "rsdl") return v4("rsdSub");
+    if (tab === "iflo") return v4("iflSub");
+    if (tab === "dgrd") return v4("dgrSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1718,6 +1723,8 @@ function Shell({ base, section, name }: Props) {
             {view === "adpl" && <AddressPlates base={base} v4={v4} />}
             {view === "crbx" && <CryptChests v4={v4} />}
             {view === "rsdl" && <ResidencySeals base={base} v4={v4} />}
+            {view === "iflo" && <InkFolios v4={v4} />}
+            {view === "dgrd" && <DocumentGrades base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

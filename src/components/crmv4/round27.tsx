@@ -65,12 +65,18 @@ export function KycDesk({ v4, tx, locale }: { v4: V4; tx: Tx; locale: string }) 
     }
   }
   return (
-    <section className="c4-kyc-luxe c4-kyc-folio" aria-label={v4("kycDesk")} data-kyc="1">
+    <section className="c4-kyc-luxe c4-kyc-folio c4-kyc-scriptorium" aria-label={v4("kycDesk")} data-kyc="1">
       <header className="c4-kyc-mast">
         <div>
+          <p className="c4-kyc-scriptorium-kicker">{v4("kycSub")}</p>
           <p className="c4-kyc-kicker">{v4("kycDesk")}</p>
           <h2 className="c4-title">{v4("kycDesk")}</h2>
         </div>
+        <ol className="c4-kyc-scriptorium-index" aria-label={v4("kycDesk")}>
+          <li data-tone="gold">{v4("kycQueue")}</li>
+          <li data-tone="ink">{v4("kycApprove")}</li>
+          <li data-tone="ivory">{v4("kycReject")}</li>
+        </ol>
         <p className="c4-kyc-plate" data-logo="mono">7FX</p>
       </header>
       <p className="c4-muted c4-kyc-hint">{v4("kycHint")}</p>
