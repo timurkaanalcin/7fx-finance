@@ -35,12 +35,19 @@ export default function Support({ tx, locale, q }: { tx: Tx; locale: string; q: 
     router.replace(`?${p.toString()}`);
   }
   return (
-    <div className="c4-stack c4-support-lacquer c4-support-gilt c4-support-parlor c4-support-atlas c4-support-conservatory c4-support-reading">
-      <header className="c4-support-mast c4-support-atlas-mast c4-support-conservatory-mast c4-support-reading-mast">
+    <div className="c4-stack c4-support-lacquer c4-support-gilt c4-support-parlor c4-support-atlas c4-support-conservatory c4-support-reading c4-support-crypt">
+      <header className="c4-support-mast c4-support-atlas-mast c4-support-conservatory-mast c4-support-reading-mast c4-support-crypt-mast">
+        <p className="c4-support-crypt-seal" data-logo="mono">7FX</p>
         <div>
+          <p className="c4-support-crypt-kicker">{tx("supportLead")}</p>
           <p className="c4-support-kicker c4-support-atlas-kicker c4-support-conservatory-kicker c4-support-reading-kicker">{tx("supportLead")}</p>
           <h2 className="c4-support-title c4-support-atlas-title c4-support-conservatory-title c4-support-reading-title">{tx("support")}</h2>
         </div>
+        <ol className="c4-support-crypt-index" aria-label={tx("support")}>
+          <li data-tone="gold">{tx("tickets")}</li>
+          <li data-tone="ink">{tx("chat")}</li>
+          <li data-tone="ivory">{tx("evrak")}</li>
+        </ol>
         <p className="c4-support-plate c4-support-atlas-plate c4-support-conservatory-plate c4-support-reading-plate" data-logo="mono">7FX</p>
       </header>
       <BacklogTrend v4={(key) => crmv4Text(locale, key)} />
