@@ -50359,3 +50359,461 @@
   [data-crmv4-root] .c4-glm-track i,
   [data-crmv4-root] .c4-dvp-track i { transition: none; }
 }
+
+/* Round 208 — cloister stalls on the customers desk, and a positions book
+   that leaves the vestibule gold bar. The book is now a double graphite frame
+   with a champagne hairline, a square seal, and square chips. Chrome pad stays 10px. */
+[data-crmv4-root] .c4-pagehead.c4-pagehead-folio.c4-pagehead-crest.c4-pagehead-atelier.c4-pagehead-salon.c4-pagehead-gallery.c4-pagehead-library.c4-pagehead-press.c4-pagehead-ribbon.c4-pagehead-playbill.c4-pagehead-interlude.c4-pagehead-slip.c4-pagehead-vellum.c4-pagehead-quire.c4-pagehead-promise.c4-pagehead-briefing.c4-pagehead-dispatch.c4-pagehead-loom.c4-pagehead-kiln.c4-pagehead-proof.c4-pagehead-docket.c4-pagehead-quay.c4-pagehead-bench.c4-pagehead-perch.c4-pagehead-hearth.c4-pagehead-inkwell.c4-pagehead-lacquer.c4-pagehead-gilt.c4-pagehead-vestry.c4-pagehead-choir.c4-pagehead-arcade.c4-pagehead-stool.c4-pagehead-ladder.c4-pagehead-inlay.c4-pagehead-atlas.c4-pagehead-oratory.c4-pagehead-vestibule.c4-pagehead-conservatory.c4-pagehead-reading.c4-pagehead-mount.c4-pagehead-cloister {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) minmax(180px, 240px);
+  grid-template-areas: "mark copy search";
+  align-items: center;
+  gap: 0 18px;
+  min-height: 96px;
+  padding: 0 18px 0 0;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 4px 100% no-repeat,
+    #f7f3ea;
+  color: #241f1a;
+  border: 0;
+  border-bottom: 1px solid #241f1a;
+  border-radius: 0;
+  box-shadow: inset 0 -1px 0 #c6a15b;
+}
+[data-crmv4-root] .c4-pagehead-cloister .c4-crest-band {
+  grid-area: mark;
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  margin: 12px 0 12px 16px;
+  padding: 0;
+  background: #f7f3ea;
+  box-shadow: inset 0 0 0 1px #241f1a, inset 0 0 0 5px #f7f3ea, inset 0 0 0 6px #c6a15b;
+}
+[data-crmv4-root] .c4-pagehead-cloister .c4-crest-copy { grid-area: copy; padding: 16px 8px; }
+[data-crmv4-root] .c4-pagehead-cloister .c4-page-search { grid-area: search; margin: 0; padding: 0; align-self: center; }
+[data-crmv4-root] .c4-pagehead-mount.c4-pagehead-cloister .c4-page-title {
+  color: #241f1a;
+  font-family: Palatino, "Iowan Old Style", Georgia, serif;
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+[data-crmv4-root] .c4-pagehead-mount.c4-pagehead-cloister .c4-page-title::after {
+  content: "";
+  display: block;
+  width: 48px;
+  height: 1px;
+  margin-top: 8px;
+  background: #c6a15b;
+}
+[data-crmv4-root] .c4-pagehead-cloister .c4-folio-plate[data-logo="mono"] {
+  color: #241f1a;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  letter-spacing: 0.22em;
+  padding: 0;
+  writing-mode: horizontal-tb;
+  transform: none;
+}
+[data-crmv4-root] .c4-pagehead-cloister .c4-field {
+  background: transparent;
+  color: #241f1a;
+  border: 0;
+  border-bottom: 1px solid #241f1a;
+  border-radius: 0;
+  min-height: 36px;
+}
+[data-crmv4-root] .c4-rail.c4-rail-crest.c4-rail-salon.c4-rail-gallery.c4-rail-library.c4-rail-press.c4-rail-ribbon.c4-rail-playbill.c4-rail-interlude.c4-rail-slip.c4-rail-vellum.c4-rail-quire.c4-rail-promise.c4-rail-briefing.c4-rail-dispatch.c4-rail-loom.c4-rail-kiln.c4-rail-proof.c4-rail-docket.c4-rail-quay.c4-rail-bench.c4-rail-perch.c4-rail-hearth.c4-rail-inkwell.c4-rail-stool.c4-rail-ladder.c4-rail-compositor.c4-rail-inlay.c4-rail-atlas.c4-rail-oratory.c4-rail-vestibule.c4-rail-conservatory.c4-rail-reading.c4-rail-mount.c4-rail-cloister {
+  background: #f7f3ea;
+  color: #241f1a;
+  border-top: 0;
+  box-shadow: inset 4px 0 0 #c6a15b;
+}
+[data-crmv4-root] .c4-rail.c4-rail-cloister .c4-rail-plate[data-logo="mono"] {
+  color: #241f1a;
+  background: transparent;
+  border: 1px solid #241f1a;
+  border-bottom: 1px solid #c6a15b;
+  border-radius: 0;
+  letter-spacing: 0.22em;
+}
+[data-crmv4-root] .c4-rail.c4-rail-cloister .c4-rail-btn { color: #241f1a; background: transparent; border-radius: 0; }
+[data-crmv4-root] .c4-rail.c4-rail-cloister .c4-rail-btn:hover,
+[data-crmv4-root] .c4-rail.c4-rail-cloister .c4-rail-btn:focus-visible { background: #241f1a; color: #f7f3ea; }
+[data-crmv4-root] .c4-book-vine.c4-book-salon.c4-book-oratory.c4-book-vestibule.c4-book-cloister {
+  margin: 20px 24px 36px;
+  padding: 0 0 20px;
+  background: #f7f3ea;
+  color: #241f1a;
+  border: 1px solid #241f1a;
+  border-radius: 0;
+  box-shadow: inset 0 0 0 5px #f7f3ea, inset 0 0 0 6px #c6a15b;
+}
+[data-crmv4-root] .c4-book-cloister .c4-book-vestibule-mast.c4-book-cloister-mast {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  margin: 6px 6px 0;
+  padding: 18px 20px 16px 12px;
+  background: #f7f3ea;
+  color: #241f1a;
+  border-bottom: 1px solid #241f1a;
+  border-radius: 0;
+}
+[data-crmv4-root] .c4-book-cloister .c4-book-cloister-kicker {
+  margin: 0 0 8px;
+  color: #8a6a3b;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 650;
+}
+[data-crmv4-root] .c4-book-cloister .c4-book-cloister-title {
+  margin: 0;
+  color: #241f1a;
+  font-family: Palatino, "Iowan Old Style", Georgia, serif;
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+[data-crmv4-root] .c4-book-cloister .c4-book-cloister-mark[data-logo="mono"] {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin: 0;
+  padding: 0;
+  background: #241f1a;
+  color: #f7f3ea;
+  border: 0;
+  border-radius: 0;
+  letter-spacing: 0.16em;
+  font-size: 11px;
+  font-weight: 650;
+  box-shadow: 0 6px 0 #c6a15b;
+}
+[data-crmv4-root] .c4-book-vestibule.c4-book-cloister .c4-card {
+  margin: 18px 18px 0;
+  background: #fffdf8;
+  border: 1px solid #241f1a;
+  border-top: 1px solid #241f1a;
+  border-radius: 0;
+  box-shadow: none;
+}
+[data-crmv4-root] .c4-book-vestibule.c4-book-cloister .c4-chip,
+[data-crmv4-root] .c4-book-vestibule.c4-book-cloister .c4-btn,
+[data-crmv4-root] .c4-cls .c4-btn,
+[data-crmv4-root] .c4-cls .c4-chip,
+[data-crmv4-root] .c4-syo .c4-btn,
+[data-crmv4-root] .c4-syo .c4-chip {
+  min-height: 36px;
+  border-radius: 0;
+  border: 1px solid #241f1a;
+  background: transparent;
+  color: #241f1a;
+  letter-spacing: 0.06em;
+  transition: background 160ms ease, color 160ms ease;
+}
+[data-crmv4-root] .c4-book-vestibule.c4-book-cloister .c4-chip[data-on="1"],
+[data-crmv4-root] .c4-book-vestibule.c4-book-cloister .c4-chip.on,
+[data-crmv4-root] .c4-cls .c4-chip[data-on="1"],
+[data-crmv4-root] .c4-syo .c4-chip[data-on="1"] {
+  background: #241f1a;
+  color: #f7f3ea;
+  border-color: #241f1a;
+  box-shadow: inset 3px 0 0 #c6a15b;
+}
+[data-crmv4-root] .c4-book-vestibule.c4-book-cloister .c4-chip:hover,
+[data-crmv4-root] .c4-book-vestibule.c4-book-cloister .c4-btn:hover { transform: none; background: #f3ead8; }
+[data-crmv4-root] .c4-book-vestibule.c4-book-cloister .c4-book {
+  margin: 12px 16px 16px;
+  border-radius: 0;
+  background: #fffdf8;
+  border: 1px solid #e6dcc8;
+}
+[data-crmv4-root] .c4-book-vestibule.c4-book-cloister .c4-table-luxe th {
+  background: #f7f3ea;
+  color: #241f1a;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 10px;
+  border-bottom: 2px solid #c6a15b;
+}
+[data-crmv4-root] .c4-book-vestibule.c4-book-cloister .c4-table-luxe td {
+  border-bottom: 1px solid #efe6d6;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+[data-crmv4-root] .c4-book-vestibule.c4-book-cloister .c4-table-luxe tbody tr:hover td { background: #fbf6ee; }
+[data-crmv4-root] .c4-book-vestibule.c4-book-cloister td[data-side="BUY"] { color: #2f6f4e; font-weight: 650; }
+[data-crmv4-root] .c4-book-vestibule.c4-book-cloister td[data-side="SELL"] { color: #8c3a32; font-weight: 650; }
+[data-crmv4-root] .c4-book-vestibule.c4-book-cloister .c4-empty,
+[data-crmv4-root] .c4-book-vestibule.c4-book-cloister .c4-empty-gold,
+[data-crmv4-root] .c4-book-vestibule.c4-book-cloister .c4-empty-luxe,
+[data-crmv4-root] .c4-cls-empty,
+[data-crmv4-root] .c4-syo-empty {
+  margin: 12px 0;
+  padding: 28px 16px;
+  background: #fffdf8;
+  color: #5c564c;
+  border: 1px solid #c6a15b;
+  border-radius: 0;
+  text-align: center;
+}
+[data-crmv4-root] .c4-book-cloister .c4-field:focus-visible,
+[data-crmv4-root] .c4-book-cloister .c4-btn:focus-visible,
+[data-crmv4-root] .c4-book-cloister .c4-chip:focus-visible,
+[data-crmv4-root] .c4-cls .c4-field:focus-visible,
+[data-crmv4-root] .c4-cls .c4-btn:focus-visible,
+[data-crmv4-root] .c4-syo .c4-field:focus-visible,
+[data-crmv4-root] .c4-syo .c4-btn:focus-visible,
+[data-crmv4-root] .c4-pagehead-cloister .c4-field:focus-visible,
+[data-crmv4-root] .c4-rail-cloister .c4-rail-btn:focus-visible {
+  outline: 2px solid #8a6a3b;
+  outline-offset: 2px;
+}
+[data-crmv4-root] .c4-cls,
+[data-crmv4-root] .c4-syo {
+  margin: 20px 24px 36px;
+  background: #f7f3ea;
+  color: #241f1a;
+  border: 1px solid #241f1a;
+  box-shadow: inset 0 0 0 5px #f7f3ea, inset 0 0 0 6px #c6a15b;
+}
+[data-crmv4-root] .c4-cls-mast,
+[data-crmv4-root] .c4-syo-mast {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 22px 16px;
+  border-bottom: 1px solid #241f1a;
+}
+[data-crmv4-root] .c4-cls-spine {
+  margin: 0;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  color: #8a6a3b;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+[data-crmv4-root] .c4-cls-kicker,
+[data-crmv4-root] .c4-syo-kicker {
+  margin: 0 0 6px;
+  color: #8a6a3b;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+[data-crmv4-root] .c4-cls-mast .c4-title,
+[data-crmv4-root] .c4-syo-mast .c4-title {
+  margin: 0;
+  color: #241f1a;
+  font-family: Palatino, "Iowan Old Style", Georgia, serif;
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+[data-crmv4-root] .c4-cls-plate[data-logo="mono"],
+[data-crmv4-root] .c4-syo-plate[data-logo="mono"] {
+  display: grid;
+  place-items: center;
+  min-width: 52px;
+  height: 52px;
+  margin: 0;
+  background: #241f1a;
+  color: #f7f3ea;
+  border-bottom: 4px solid #c6a15b;
+  letter-spacing: 0.18em;
+  font-size: 11px;
+}
+[data-crmv4-root] .c4-cls-body,
+[data-crmv4-root] .c4-syo-rules { padding: 16px 22px 8px; }
+[data-crmv4-root] .c4-cls-ledger,
+[data-crmv4-root] .c4-syo-ledger {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin: 12px 0;
+  padding: 0 22px;
+  list-style: none;
+}
+[data-crmv4-root] .c4-cls-body .c4-cls-ledger { padding: 0; }
+[data-crmv4-root] .c4-cls-ledger li,
+[data-crmv4-root] .c4-syo-ledger li,
+[data-crmv4-root] .c4-cls-book > li,
+[data-crmv4-root] .c4-cls-time > li,
+[data-crmv4-root] .c4-syo-index > li {
+  padding: 12px 14px;
+  background: #fffdf8;
+  border: 1px solid #e6dcc8;
+  border-left: 3px solid #c6a15b;
+}
+[data-crmv4-root] .c4-cls-ledger span,
+[data-crmv4-root] .c4-syo-ledger span { display: block; color: #8a6a3b; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+[data-crmv4-root] .c4-cls-ledger strong,
+[data-crmv4-root] .c4-syo-ledger strong { font-size: 22px; font-weight: 560; }
+[data-crmv4-root] .c4-cls-track,
+[data-crmv4-root] .c4-syo-track { height: 3px; background: #efe6d4; }
+[data-crmv4-root] .c4-cls-track i,
+[data-crmv4-root] .c4-syo-track i { display: block; height: 100%; background: #8a6a3b; }
+[data-crmv4-root] .c4-cls-book,
+[data-crmv4-root] .c4-cls-time,
+[data-crmv4-root] .c4-syo-index {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-syo-index { padding: 0 22px 22px; }
+[data-crmv4-root] .c4-cls-book > li[data-focus="1"],
+[data-crmv4-root] .c4-cls-time > li[data-focus="1"] { border-left-color: #241f1a; }
+[data-crmv4-root] .c4-cls-book > li[data-late="1"] { border-left-color: #8c3a32; }
+[data-crmv4-root] .c4-cls-book > li[data-soon="1"] { border-left-color: #c6a15b; }
+[data-crmv4-root] .c4-cls-book > li[data-house="1"] { background: #fffaf2; }
+[data-crmv4-root] .c4-cls-notice,
+[data-crmv4-root] .c4-syo-notice {
+  margin: 8px 0;
+  padding: 10px 12px;
+  border-inline-start: 3px solid #c6a15b;
+  background: #fffdf8;
+}
+[data-crmv4-root] .c4-cls-notice[data-late="1"] { border-inline-start-color: #8c3a32; }
+[data-crmv4-root] .c4-syo-mark[data-logo="mono"] {
+  margin: 0;
+  color: #241f1a;
+  letter-spacing: 0.18em;
+  font-size: 18px;
+}
+[data-crmv4-root] .c4-cls-form,
+[data-crmv4-root] .c4-cls-filters,
+[data-crmv4-root] .c4-syo-filters,
+[data-crmv4-root] .c4-cls-bulk,
+[data-crmv4-root] .c4-syo-bands {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: end;
+}
+[data-crmv4-root][data-theme="dark"] .c4-pagehead.c4-pagehead-reading.c4-pagehead-mount.c4-pagehead-cloister,
+[data-crmv4-root][data-theme="dark"] .c4-rail.c4-rail-reading.c4-rail-mount.c4-rail-cloister,
+[data-crmv4-root][data-theme="dark"] .c4-book-vine.c4-book-vestibule.c4-book-cloister,
+[data-crmv4-root][data-theme="dark"] .c4-cls,
+[data-crmv4-root][data-theme="dark"] .c4-syo {
+  background: #161310;
+  color: #f7f3ea;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-pagehead-cloister .c4-page-title,
+[data-crmv4-root][data-theme="dark"] .c4-book-cloister .c4-book-cloister-title,
+[data-crmv4-root][data-theme="dark"] .c4-cls-mast .c4-title,
+[data-crmv4-root][data-theme="dark"] .c4-syo-mast .c4-title,
+[data-crmv4-root][data-theme="dark"] .c4-pagehead-cloister .c4-folio-plate[data-logo="mono"],
+[data-crmv4-root][data-theme="dark"] .c4-rail-cloister .c4-rail-btn {
+  background: transparent;
+  color: #f7f3ea;
+}
+[data-crmv4-root][data-theme="dark"] .c4-book-cloister .c4-book-cloister-mark[data-logo="mono"],
+[data-crmv4-root][data-theme="dark"] .c4-cls-plate[data-logo="mono"],
+[data-crmv4-root][data-theme="dark"] .c4-syo-plate[data-logo="mono"] {
+  background: #241f1a;
+  color: #f7f3ea;
+  border: 1px solid #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-cls-ledger li,
+[data-crmv4-root][data-theme="dark"] .c4-syo-ledger li,
+[data-crmv4-root][data-theme="dark"] .c4-cls-book > li,
+[data-crmv4-root][data-theme="dark"] .c4-syo-index > li,
+[data-crmv4-root][data-theme="dark"] .c4-book-vestibule.c4-book-cloister .c4-card,
+[data-crmv4-root][data-theme="dark"] .c4-book-vestibule.c4-book-cloister .c4-table-luxe th {
+  background: #241f1a;
+  color: #f7f3ea;
+  border-color: #3a342c;
+}
+@media (max-width: 768px) {
+  [data-crmv4-root] .c4-pagehead.c4-pagehead-reading.c4-pagehead-mount.c4-pagehead-cloister {
+    grid-template-columns: 1fr;
+    grid-template-areas: "mark" "copy" "search";
+    padding: 0 12px 12px 0;
+  }
+  [data-crmv4-root] .c4-pagehead-cloister .c4-page-title,
+  [data-crmv4-root] .c4-book-cloister .c4-book-cloister-title,
+  [data-crmv4-root] .c4-cls-mast .c4-title,
+  [data-crmv4-root] .c4-syo-mast .c4-title { font-size: 24px; letter-spacing: 0.06em; }
+  [data-crmv4-root] .c4-book-vine.c4-book-cloister,
+  [data-crmv4-root] .c4-cls,
+  [data-crmv4-root] .c4-syo { margin: 10px; }
+  [data-crmv4-root] .c4-book-cloister .c4-book-cloister-mast,
+  [data-crmv4-root] .c4-cls-mast,
+  [data-crmv4-root] .c4-syo-mast { align-items: flex-start; }
+  [data-crmv4-root] .c4-book-cloister .c4-btn,
+  [data-crmv4-root] .c4-cls .c4-btn,
+  [data-crmv4-root] .c4-syo .c4-btn,
+  [data-crmv4-root] .c4-cls .c4-chip,
+  [data-crmv4-root] .c4-syo .c4-chip { min-height: 44px; }
+  [data-crmv4-root] .c4-cls-ledger,
+  [data-crmv4-root] .c4-syo-ledger { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-book-cloister .c4-btn,
+  [data-crmv4-root] .c4-cls .c4-chip,
+  [data-crmv4-root] .c4-syo .c4-chip,
+  [data-crmv4-root] .c4-cls-track i,
+  [data-crmv4-root] .c4-syo-track i { transition: none; }
+}
+[data-crmv4-root] .c4-pagehead-mount.c4-pagehead-cloister .c4-page-title,
+[data-crmv4-root] .c4-book-cloister .c4-book-cloister-title,
+[data-crmv4-root] .c4-cls-mast .c4-title,
+[data-crmv4-root] .c4-syo-mast .c4-title {
+  writing-mode: horizontal-tb;
+}
+[data-crmv4-root][data-theme="dark"] .c4-book-vine.c4-book-salon.c4-book-oratory.c4-book-vestibule.c4-book-cloister,
+[data-crmv4-root][data-theme="dark"] .c4-book-cloister .c4-book-vestibule-mast.c4-book-cloister-mast,
+[data-crmv4-root][data-theme="dark"] .c4-pagehead.c4-pagehead-reading.c4-pagehead-mount.c4-pagehead-cloister {
+  background: #161310;
+  color: #f7f3ea;
+}
+[data-crmv4-root][data-theme="dark"] .c4-book-vestibule.c4-book-cloister .c4-card,
+[data-crmv4-root][data-theme="dark"] .c4-book-vestibule.c4-book-cloister .c4-book,
+[data-crmv4-root][data-theme="dark"] .c4-book-vestibule.c4-book-cloister .c4-empty,
+[data-crmv4-root][data-theme="dark"] .c4-book-vestibule.c4-book-cloister .c4-table-luxe td,
+[data-crmv4-root][data-theme="dark"] .c4-cls-ledger li,
+[data-crmv4-root][data-theme="dark"] .c4-cls-book > li,
+[data-crmv4-root][data-theme="dark"] .c4-syo-ledger li,
+[data-crmv4-root][data-theme="dark"] .c4-syo-index > li,
+[data-crmv4-root][data-theme="dark"] .c4-cls-empty,
+[data-crmv4-root][data-theme="dark"] .c4-syo-empty {
+  background: #241f1a;
+  color: #f7f3ea;
+  border-color: #3a342c;
+}
+[data-crmv4-root][data-theme="dark"] .c4-book-vestibule.c4-book-cloister .c4-chip,
+[data-crmv4-root][data-theme="dark"] .c4-book-vestibule.c4-book-cloister .c4-btn {
+  color: #f7f3ea;
+  border-color: #c6a15b;
+  background: transparent;
+}
+[data-crmv4-root][data-theme="dark"] .c4-book-vestibule.c4-book-cloister .c4-chip[data-on="1"] {
+  background: #c6a15b;
+  color: #161310;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-pagehead.c4-pagehead-folio.c4-pagehead-crest.c4-pagehead-atelier.c4-pagehead-salon.c4-pagehead-gallery.c4-pagehead-library.c4-pagehead-press.c4-pagehead-ribbon.c4-pagehead-playbill.c4-pagehead-interlude.c4-pagehead-slip.c4-pagehead-vellum.c4-pagehead-quire.c4-pagehead-promise.c4-pagehead-briefing.c4-pagehead-dispatch.c4-pagehead-loom.c4-pagehead-kiln.c4-pagehead-proof.c4-pagehead-docket.c4-pagehead-quay.c4-pagehead-bench.c4-pagehead-perch.c4-pagehead-hearth.c4-pagehead-inkwell.c4-pagehead-lacquer.c4-pagehead-gilt.c4-pagehead-vestry.c4-pagehead-choir.c4-pagehead-arcade.c4-pagehead-stool.c4-pagehead-ladder.c4-pagehead-inlay.c4-pagehead-atlas.c4-pagehead-oratory.c4-pagehead-vestibule.c4-pagehead-conservatory.c4-pagehead-reading.c4-pagehead-mount.c4-pagehead-cloister {
+  background: #161310;
+  color: #f7f3ea;
+  border-bottom-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-pagehead-mount.c4-pagehead-cloister .c4-page-title,
+[data-crmv4-root][data-theme="dark"] .c4-pagehead-cloister .c4-folio-plate[data-logo="mono"] {
+  color: #f7f3ea;
+}
