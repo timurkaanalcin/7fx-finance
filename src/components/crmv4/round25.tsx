@@ -172,13 +172,18 @@ export function GoalsPage({ v4, locale }: { v4: V4; locale: string }) {
   const ftdRate = runRate(ftd, span.day, span.days);
   const traderRate = runRate(traders, span.day, span.days);
   return (
-    <section className="c4-goals-luxe c4-goals-night" aria-label={v4("goalsTitle")} data-goals="1">
+    <section className="c4-goals-luxe c4-goals-night c4-goals-gallery" aria-label={v4("goalsTitle")} data-goals="1">
       <header className="c4-goals-mast">
         <p className="c4-goals-plate" data-logo="mono">7FX</p>
         <div>
           <p className="c4-goals-kicker">{v4("goalDay")}</p>
           <h2 className="c4-title">{v4("goalsTitle")}</h2>
         </div>
+        <ol className="c4-goals-gallery-index" aria-label={v4("goalsTitle")}>
+          <li data-pace="ahead">{v4("goalAhead")}</li>
+          <li data-pace="even">{v4("goalEven")}</li>
+          <li data-pace="behind">{v4("goalBehind")}</li>
+        </ol>
         <p className="c4-goal-month"><time dateTime={month}>{month}</time> · {span.day}/{span.days}</p>
       </header>
       <p className="c4-muted c4-goals-hint">{v4("goalsHint")}</p>
