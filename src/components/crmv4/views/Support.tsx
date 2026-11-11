@@ -35,13 +35,13 @@ export default function Support({ tx, locale, q }: { tx: Tx; locale: string; q: 
     router.replace(`?${p.toString()}`);
   }
   return (
-    <div className="c4-stack c4-support-lacquer c4-support-gilt c4-support-parlor c4-support-atlas">
-      <header className="c4-support-mast c4-support-atlas-mast">
+    <div className="c4-stack c4-support-lacquer c4-support-gilt c4-support-parlor c4-support-atlas c4-support-conservatory">
+      <header className="c4-support-mast c4-support-atlas-mast c4-support-conservatory-mast">
         <div>
-          <p className="c4-support-kicker c4-support-atlas-kicker">{tx("supportLead")}</p>
-          <h2 className="c4-support-title c4-support-atlas-title">{tx("support")}</h2>
+          <p className="c4-support-kicker c4-support-atlas-kicker c4-support-conservatory-kicker">{tx("supportLead")}</p>
+          <h2 className="c4-support-title c4-support-atlas-title c4-support-conservatory-title">{tx("support")}</h2>
         </div>
-        <p className="c4-support-plate c4-support-atlas-plate" data-logo="mono">7FX</p>
+        <p className="c4-support-plate c4-support-atlas-plate c4-support-conservatory-plate" data-logo="mono">7FX</p>
       </header>
       <BacklogTrend v4={(key) => crmv4Text(locale, key)} />
       <ApprovalTimes v4={(key) => crmv4Text(locale, key)} />
