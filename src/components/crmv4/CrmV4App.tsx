@@ -216,6 +216,7 @@ import { DentilTiles, VoussoirMarks } from "./round225";
 import { BrocadeSwatches, PennantMarks } from "./round226";
 import { CofferPanels, RosetteMarks } from "./round227";
 import { SacristyDrawers, AntiphonMarks } from "./round228";
+import { AisleNiches, EscutcheonMarks } from "./round229";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -913,6 +914,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "rsst") return v4("rstTitle");
     if (tab === "scdr") return v4("sdrTitle");
     if (tab === "antp") return v4("antTitle");
+    if (tab === "aisl") return v4("ainTitle");
+    if (tab === "esct") return v4("escTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1296,6 +1299,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "rsst") return v4("rstSub");
     if (tab === "scdr") return v4("sdrSub");
     if (tab === "antp") return v4("antSub");
+    if (tab === "aisl") return v4("ainSub");
+    if (tab === "esct") return v4("escSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1812,6 +1817,8 @@ function Shell({ base, section, name }: Props) {
             {view === "rsst" && <RosetteMarks base={base} v4={v4} />}
             {view === "scdr" && <SacristyDrawers v4={v4} />}
             {view === "antp" && <AntiphonMarks base={base} v4={v4} />}
+            {view === "aisl" && <AisleNiches v4={v4} />}
+            {view === "esct" && <EscutcheonMarks base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
