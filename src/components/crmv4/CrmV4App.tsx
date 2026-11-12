@@ -223,6 +223,7 @@ import { DutySlips, ProfileCrests } from "./round232";
 import { HourMarks, LintelWatches } from "./round233";
 import { NoticeBells, TicketSeals } from "./round234";
 import { StageMarks, VisitCards } from "./round235";
+import { DialectMarks, RefectorySlips } from "./round236";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -934,6 +935,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "tsl") return v4("tslTitle");
     if (tab === "vcd") return v4("vcdTitle");
     if (tab === "smk") return v4("smkTitle");
+    if (tab === "rsl") return v4("rfsTitle");
+    if (tab === "dlg") return v4("dlgTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1331,6 +1334,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "tsl") return v4("tslSub");
     if (tab === "vcd") return v4("vcdSub");
     if (tab === "smk") return v4("smkSub");
+    if (tab === "rsl") return v4("rfsSub");
+    if (tab === "dlg") return v4("dlgSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1861,6 +1866,8 @@ function Shell({ base, section, name }: Props) {
             {view === "tsl" && <TicketSeals base={base} v4={v4} />}
             {view === "vcd" && <VisitCards base={base} v4={v4} />}
             {view === "smk" && <StageMarks base={base} v4={v4} />}
+            {view === "rsl" && <RefectorySlips base={base} v4={v4} />}
+            {view === "dlg" && <DialectMarks base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

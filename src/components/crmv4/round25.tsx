@@ -172,7 +172,7 @@ export function GoalsPage({ v4, locale }: { v4: V4; locale: string }) {
   const ftdRate = runRate(ftd, span.day, span.days);
   const traderRate = runRate(traders, span.day, span.days);
   return (
-    <section className="c4-goals-luxe c4-goals-night c4-goals-gallery" aria-label={v4("goalsTitle")} data-goals="1">
+    <section className="c4-goals-luxe c4-goals-night c4-goals-gallery c4-goals-refectory" aria-label={v4("goalsTitle")} data-goals="1" data-desk="refectory">
       <header className="c4-goals-mast">
         <p className="c4-goals-plate" data-logo="mono">7FX</p>
         <div>
