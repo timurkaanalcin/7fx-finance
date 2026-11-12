@@ -274,9 +274,9 @@ function main() {
       assert.ok(ROUND212_COPY[locale][key as keyof typeof ROUND212_COPY.en].length > 0);
     }
   }
-  assert.equal(crmv4Text("tr", "alnTitle"), ROUND212_COPY.tr.alnTitle);
+  assert.equal(crmv4Text("tr", "amlnTitle"), ROUND212_COPY.tr.amlnTitle);
   assert.equal(crmv4Text("de", "clmTitle"), ROUND212_COPY.de.clmTitle);
-  assert.equal(crmv4Text("ru", "alnSub"), ROUND212_COPY.ru.alnSub);
+  assert.equal(crmv4Text("ru", "amlnSub"), ROUND212_COPY.ru.amlnSub);
   assert.equal(crmv4Text("ar", "clmSub"), ROUND212_COPY.ar.clmSub);
   assert.equal(crmv4Text("en", "alnLogo"), "7FX");
 

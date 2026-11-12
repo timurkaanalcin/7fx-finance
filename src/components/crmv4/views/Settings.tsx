@@ -27,7 +27,9 @@ export default function Settings({ tx }: { tx: Tx }) {
   const { locale } = useI18n();
   const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale, key);
   const area = params.get("area") || "general";
+  const [needle, setNeedle] = useState("");
   const system = area === "methods" || area === "desks" || area === "currencies" ? sysSection(area) : null;
+  const areas = AREAS.filter((item) => !needle.trim() || tx(areaLabel(item)).toLowerCase().includes(needle.trim().toLowerCase()) || item.includes(needle.trim().toLowerCase()));
   function setArea(next: string) {
     const p = new URLSearchParams(params.toString());
     if (next === "general") p.delete("area");
@@ -35,29 +37,39 @@ export default function Settings({ tx }: { tx: Tx }) {
     router.replace(`?${p.toString()}`);
   }
   return (
-    <div className="c4-stack c4-settings-luxe c4-settings-atelier c4-settings-loft">
-      <header className="c4-settings-mast c4-settings-loft-mast">
-        <p className="c4-settings-loft-seal" data-logo="mono">7FX</p>
-        <div>
-          <p className="c4-settings-kicker c4-settings-loft-kicker">{tx("settingsLead")}</p>
-          <h2 className="c4-settings-title c4-settings-loft-title">{tx("settings")}</h2>
+    <div className="c4-stack c4-settings-luxe c4-settings-atelier c4-settings-loft c4-settings-parlor" data-desk="parlor">
+      <header className="c4-settings-mast c4-settings-loft-mast c4-settings-parlor-mast">
+        <p className="c4-settings-loft-seal c4-settings-parlor-seal" data-logo="mono">7FX</p>
+        <div className="c4-settings-parlor-copy">
+          <p className="c4-settings-kicker c4-settings-loft-kicker c4-settings-parlor-kicker">{tx("settingsLead")}</p>
+          <h2 className="c4-settings-title c4-settings-loft-title c4-settings-parlor-title">{tx("settings")}</h2>
         </div>
-        <ol className="c4-settings-loft-index" aria-label={tx("settings")}>
+        <ol className="c4-settings-loft-index c4-settings-parlor-index" aria-label={tx("settings")}>
           <li data-tone="gold" data-on={area === "general" ? "1" : "0"}><button type="button" onClick={() => setArea("general")}>{tx("general")}</button></li>
           <li data-tone="ink" data-on={area === "leads" ? "1" : "0"}><button type="button" onClick={() => setArea("leads")}>{tx("leadsMap")}</button></li>
           <li data-tone="ivory" data-on={area === "desks" ? "1" : "0"}><button type="button" onClick={() => setArea("desks")}>{tx("desks")}</button></li>
         </ol>
       </header>
+      <p className="c4-settings-parlor-links">
+        <a href="dty">{v4("dtyTitle")}</a>
+        <a href="pcr">{v4("pcrTitle")}</a>
+        <a href="me">{v4("pcrSub")}</a>
+      </p>
+      <label className="c4-lab c4-settings-parlor-find">
+        <span>{tx("settings")}</span>
+        <input className="c4-field c4-settings-parlor-search" aria-label={tx("settings")} aria-required={false} value={needle} onChange={(event) => setNeedle(event.target.value)} />
+      </label>
       <div className="c4-with-side">
         <PhoneSheet title={v4("sysTitle")} v4={v4}>
-        <nav className="c4-side c4-settings-loft-side" aria-label={tx("settings")}>
-          {AREAS.map((item) => (
+        <nav className="c4-side c4-settings-loft-side c4-settings-parlor-side" aria-label={tx("settings")}>
+          {areas.map((item) => (
             <button key={item} type="button" data-on={area === item ? "1" : "0"} onClick={() => setArea(item)}>{tx(areaLabel(item))}</button>
           ))}
-          <button type="button" data-on={area === "currencies" ? "1" : "0"} onClick={() => setArea("currencies")}>{v4("sysCurrencies")}</button>
+          {!needle.trim() && <button type="button" data-on={area === "currencies" ? "1" : "0"} onClick={() => setArea("currencies")}>{v4("sysCurrencies")}</button>}
         </nav>
         </PhoneSheet>
-        <div className="c4-stack">
+        {!areas.length && <p className="c4-settings-parlor-empty">{v4("setWingEmpty")}</p>}
+        <div className="c4-stack c4-settings-parlor-card">
           {area === "general" && <><General tx={tx} /><LocalPrefs /></>}
           {area === "leads" && <LeadMap tx={tx} />}
           {system && <SystemDesk area={system} tx={tx} v4={v4} />}
