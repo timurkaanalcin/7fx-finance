@@ -55306,7 +55306,7 @@
   background: #1c1916;
   border-color: #8a6a3b;
 }
-[data-crmv4-root] .c4-pagehead-seat.c4-pagehead-loggia {
+[data-crmv4-root] .c4-pagehead-seat.c4-pagehead-loggia.c4-pagehead-belvedere {
   background:
     linear-gradient(#c6a15b, #c6a15b) left 22px top 10px / 72px 2px no-repeat,
     linear-gradient(#241f1a, #241f1a) left 22px top 16px / 36px 1px no-repeat,
@@ -55314,13 +55314,13 @@
   border-bottom: 0;
   box-shadow: inset 0 -1px 0 #c6a15b;
 }
-[data-crmv4-root] .c4-pagehead-loggia .c4-page-title {
+[data-crmv4-root] .c4-pagehead-loggia.c4-pagehead-belvedere .c4-page-title {
   font-family: Palatino, "Iowan Old Style", Georgia, serif;
   font-weight: 500;
   letter-spacing: -0.045em;
   color: #241f1a;
 }
-[data-crmv4-root] .c4-pagehead-loggia .c4-page-title::after {
+[data-crmv4-root] .c4-pagehead-loggia.c4-pagehead-belvedere .c4-page-title::after {
   content: "";
   display: block;
   width: 48px;
@@ -55328,19 +55328,19 @@
   margin-top: 8px;
   background: #c6a15b;
 }
-[data-crmv4-root] .c4-pagehead-loggia .c4-page-sub {
+[data-crmv4-root] .c4-pagehead-loggia.c4-pagehead-belvedere .c4-page-sub {
   color: #8a6a3b;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   font-size: 11px;
 }
-[data-crmv4-root] .c4-rail-seat.c4-rail-loggia {
+[data-crmv4-root] .c4-rail-seat.c4-rail-loggia.c4-rail-belvedere {
   background:
     linear-gradient(#c6a15b, #c6a15b) 0 0 / 3px 100% no-repeat,
     #f4efe6;
   color: #241f1a;
 }
-[data-crmv4-root] .c4-rail-loggia .c4-rail-plate[data-logo="mono"] {
+[data-crmv4-root] .c4-rail-loggia.c4-rail-belvedere .c4-rail-plate[data-logo="mono"] {
   color: #241f1a;
   letter-spacing: 0.22em;
 }
@@ -55437,21 +55437,21 @@
   box-shadow: inset 0 0 0 1px #c6a15b;
   background: #fffdf8;
 }
-[data-crmv4-root][data-theme="dark"] .c4-pagehead-seat.c4-pagehead-loggia {
+[data-crmv4-root][data-theme="dark"] .c4-pagehead-seat.c4-pagehead-loggia.c4-pagehead-belvedere {
   background:
     linear-gradient(#c6a15b, #c6a15b) left 22px top 10px / 72px 2px no-repeat,
     linear-gradient(#8a6a3b, #8a6a3b) left 22px top 16px / 36px 1px no-repeat,
     #1c1916;
   box-shadow: inset 0 -1px 0 #8a6a3b;
 }
-[data-crmv4-root][data-theme="dark"] .c4-pagehead-loggia .c4-page-title { color: #f6f1e8; }
-[data-crmv4-root][data-theme="dark"] .c4-rail-seat.c4-rail-loggia {
+[data-crmv4-root][data-theme="dark"] .c4-pagehead-loggia.c4-pagehead-belvedere .c4-page-title { color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-rail-seat.c4-rail-loggia.c4-rail-belvedere {
   background:
     linear-gradient(#c6a15b, #c6a15b) 0 0 / 3px 100% no-repeat,
     #1c1916;
   color: #f6f1e8;
 }
-[data-crmv4-root][data-theme="dark"] .c4-rail-loggia .c4-rail-plate[data-logo="mono"] { color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-rail-loggia.c4-rail-belvedere .c4-rail-plate[data-logo="mono"] { color: #f6f1e8; }
 [data-crmv4-root][data-theme="dark"] .c4-cust-loggia,
 [data-crmv4-root][data-theme="dark"] .c4-cust-parlor.c4-cust-inlay.c4-cust-apse.c4-cust-seat.c4-cust-loggia .c4-cust-loggia-mast {
   background: #141210;
@@ -55502,7 +55502,7 @@
   [data-crmv4-root] .c4-cust-loggia .c4-card { transition: none; }
 }
 
-[data-crmv4-root] .c4-pagehead.c4-pagehead-folio.c4-pagehead-crest.c4-pagehead-atelier.c4-pagehead-salon.c4-pagehead-gallery.c4-pagehead-library.c4-pagehead-press.c4-pagehead-ribbon.c4-pagehead-playbill.c4-pagehead-interlude.c4-pagehead-slip.c4-pagehead-vellum.c4-pagehead-quire.c4-pagehead-promise.c4-pagehead-briefing.c4-pagehead-dispatch.c4-pagehead-loom.c4-pagehead-kiln.c4-pagehead-proof.c4-pagehead-docket.c4-pagehead-quay.c4-pagehead-bench.c4-pagehead-perch.c4-pagehead-hearth.c4-pagehead-inkwell.c4-pagehead-lacquer.c4-pagehead-gilt.c4-pagehead-vestry.c4-pagehead-choir.c4-pagehead-arcade.c4-pagehead-stool.c4-pagehead-ladder.c4-pagehead-inlay.c4-pagehead-atlas.c4-pagehead-oratory.c4-pagehead-vestibule.c4-pagehead-conservatory.c4-pagehead-reading.c4-pagehead-mount.c4-pagehead-cloister.c4-pagehead-apse.c4-pagehead-seat.c4-pagehead-loggia {
+[data-crmv4-root] .c4-pagehead.c4-pagehead-folio.c4-pagehead-crest.c4-pagehead-atelier.c4-pagehead-salon.c4-pagehead-gallery.c4-pagehead-library.c4-pagehead-press.c4-pagehead-ribbon.c4-pagehead-playbill.c4-pagehead-interlude.c4-pagehead-slip.c4-pagehead-vellum.c4-pagehead-quire.c4-pagehead-promise.c4-pagehead-briefing.c4-pagehead-dispatch.c4-pagehead-loom.c4-pagehead-kiln.c4-pagehead-proof.c4-pagehead-docket.c4-pagehead-quay.c4-pagehead-bench.c4-pagehead-perch.c4-pagehead-hearth.c4-pagehead-inkwell.c4-pagehead-lacquer.c4-pagehead-gilt.c4-pagehead-vestry.c4-pagehead-choir.c4-pagehead-arcade.c4-pagehead-stool.c4-pagehead-ladder.c4-pagehead-inlay.c4-pagehead-atlas.c4-pagehead-oratory.c4-pagehead-vestibule.c4-pagehead-conservatory.c4-pagehead-reading.c4-pagehead-mount.c4-pagehead-cloister.c4-pagehead-apse.c4-pagehead-seat.c4-pagehead-loggia.c4-pagehead-belvedere {
   background:
     linear-gradient(#c6a15b, #c6a15b) left 86px top 12px / 72px 2px no-repeat,
     linear-gradient(#241f1a, #241f1a) left 86px top 18px / 36px 1px no-repeat,
@@ -55512,7 +55512,7 @@
   border-radius: 0;
   box-shadow: inset 0 -1px 0 #c6a15b;
 }
-[data-crmv4-root] .c4-pagehead.c4-pagehead-folio.c4-pagehead-crest.c4-pagehead-atelier.c4-pagehead-salon.c4-pagehead-gallery.c4-pagehead-library.c4-pagehead-press.c4-pagehead-ribbon.c4-pagehead-playbill.c4-pagehead-interlude.c4-pagehead-slip.c4-pagehead-vellum.c4-pagehead-quire.c4-pagehead-promise.c4-pagehead-briefing.c4-pagehead-dispatch.c4-pagehead-loom.c4-pagehead-kiln.c4-pagehead-proof.c4-pagehead-docket.c4-pagehead-quay.c4-pagehead-bench.c4-pagehead-perch.c4-pagehead-hearth.c4-pagehead-inkwell.c4-pagehead-lacquer.c4-pagehead-gilt.c4-pagehead-vestry.c4-pagehead-choir.c4-pagehead-arcade.c4-pagehead-stool.c4-pagehead-ladder.c4-pagehead-inlay.c4-pagehead-atlas.c4-pagehead-oratory.c4-pagehead-vestibule.c4-pagehead-conservatory.c4-pagehead-reading.c4-pagehead-mount.c4-pagehead-cloister.c4-pagehead-apse.c4-pagehead-seat.c4-pagehead-loggia .c4-page-title {
+[data-crmv4-root] .c4-pagehead.c4-pagehead-folio.c4-pagehead-crest.c4-pagehead-atelier.c4-pagehead-salon.c4-pagehead-gallery.c4-pagehead-library.c4-pagehead-press.c4-pagehead-ribbon.c4-pagehead-playbill.c4-pagehead-interlude.c4-pagehead-slip.c4-pagehead-vellum.c4-pagehead-quire.c4-pagehead-promise.c4-pagehead-briefing.c4-pagehead-dispatch.c4-pagehead-loom.c4-pagehead-kiln.c4-pagehead-proof.c4-pagehead-docket.c4-pagehead-quay.c4-pagehead-bench.c4-pagehead-perch.c4-pagehead-hearth.c4-pagehead-inkwell.c4-pagehead-lacquer.c4-pagehead-gilt.c4-pagehead-vestry.c4-pagehead-choir.c4-pagehead-arcade.c4-pagehead-stool.c4-pagehead-ladder.c4-pagehead-inlay.c4-pagehead-atlas.c4-pagehead-oratory.c4-pagehead-vestibule.c4-pagehead-conservatory.c4-pagehead-reading.c4-pagehead-mount.c4-pagehead-cloister.c4-pagehead-apse.c4-pagehead-seat.c4-pagehead-loggia.c4-pagehead-belvedere .c4-page-title {
   color: #241f1a;
   font-family: Palatino, "Iowan Old Style", Georgia, serif;
   font-size: 32px;
@@ -55520,7 +55520,7 @@
   letter-spacing: -0.045em;
   text-transform: none;
 }
-[data-crmv4-root] .c4-pagehead.c4-pagehead-folio.c4-pagehead-crest.c4-pagehead-atelier.c4-pagehead-salon.c4-pagehead-gallery.c4-pagehead-library.c4-pagehead-press.c4-pagehead-ribbon.c4-pagehead-playbill.c4-pagehead-interlude.c4-pagehead-slip.c4-pagehead-vellum.c4-pagehead-quire.c4-pagehead-promise.c4-pagehead-briefing.c4-pagehead-dispatch.c4-pagehead-loom.c4-pagehead-kiln.c4-pagehead-proof.c4-pagehead-docket.c4-pagehead-quay.c4-pagehead-bench.c4-pagehead-perch.c4-pagehead-hearth.c4-pagehead-inkwell.c4-pagehead-lacquer.c4-pagehead-gilt.c4-pagehead-vestry.c4-pagehead-choir.c4-pagehead-arcade.c4-pagehead-stool.c4-pagehead-ladder.c4-pagehead-inlay.c4-pagehead-atlas.c4-pagehead-oratory.c4-pagehead-vestibule.c4-pagehead-conservatory.c4-pagehead-reading.c4-pagehead-mount.c4-pagehead-cloister.c4-pagehead-apse.c4-pagehead-seat.c4-pagehead-loggia .c4-page-title::after {
+[data-crmv4-root] .c4-pagehead.c4-pagehead-folio.c4-pagehead-crest.c4-pagehead-atelier.c4-pagehead-salon.c4-pagehead-gallery.c4-pagehead-library.c4-pagehead-press.c4-pagehead-ribbon.c4-pagehead-playbill.c4-pagehead-interlude.c4-pagehead-slip.c4-pagehead-vellum.c4-pagehead-quire.c4-pagehead-promise.c4-pagehead-briefing.c4-pagehead-dispatch.c4-pagehead-loom.c4-pagehead-kiln.c4-pagehead-proof.c4-pagehead-docket.c4-pagehead-quay.c4-pagehead-bench.c4-pagehead-perch.c4-pagehead-hearth.c4-pagehead-inkwell.c4-pagehead-lacquer.c4-pagehead-gilt.c4-pagehead-vestry.c4-pagehead-choir.c4-pagehead-arcade.c4-pagehead-stool.c4-pagehead-ladder.c4-pagehead-inlay.c4-pagehead-atlas.c4-pagehead-oratory.c4-pagehead-vestibule.c4-pagehead-conservatory.c4-pagehead-reading.c4-pagehead-mount.c4-pagehead-cloister.c4-pagehead-apse.c4-pagehead-seat.c4-pagehead-loggia.c4-pagehead-belvedere .c4-page-title::after {
   content: "";
   display: block;
   width: 48px;
@@ -55528,27 +55528,27 @@
   margin-top: 8px;
   background: #c6a15b;
 }
-[data-crmv4-root] .c4-pagehead.c4-pagehead-folio.c4-pagehead-crest.c4-pagehead-atelier.c4-pagehead-salon.c4-pagehead-gallery.c4-pagehead-library.c4-pagehead-press.c4-pagehead-ribbon.c4-pagehead-playbill.c4-pagehead-interlude.c4-pagehead-slip.c4-pagehead-vellum.c4-pagehead-quire.c4-pagehead-promise.c4-pagehead-briefing.c4-pagehead-dispatch.c4-pagehead-loom.c4-pagehead-kiln.c4-pagehead-proof.c4-pagehead-docket.c4-pagehead-quay.c4-pagehead-bench.c4-pagehead-perch.c4-pagehead-hearth.c4-pagehead-inkwell.c4-pagehead-lacquer.c4-pagehead-gilt.c4-pagehead-vestry.c4-pagehead-choir.c4-pagehead-arcade.c4-pagehead-stool.c4-pagehead-ladder.c4-pagehead-inlay.c4-pagehead-atlas.c4-pagehead-oratory.c4-pagehead-vestibule.c4-pagehead-conservatory.c4-pagehead-reading.c4-pagehead-mount.c4-pagehead-cloister.c4-pagehead-apse.c4-pagehead-seat.c4-pagehead-loggia .c4-page-sub {
+[data-crmv4-root] .c4-pagehead.c4-pagehead-folio.c4-pagehead-crest.c4-pagehead-atelier.c4-pagehead-salon.c4-pagehead-gallery.c4-pagehead-library.c4-pagehead-press.c4-pagehead-ribbon.c4-pagehead-playbill.c4-pagehead-interlude.c4-pagehead-slip.c4-pagehead-vellum.c4-pagehead-quire.c4-pagehead-promise.c4-pagehead-briefing.c4-pagehead-dispatch.c4-pagehead-loom.c4-pagehead-kiln.c4-pagehead-proof.c4-pagehead-docket.c4-pagehead-quay.c4-pagehead-bench.c4-pagehead-perch.c4-pagehead-hearth.c4-pagehead-inkwell.c4-pagehead-lacquer.c4-pagehead-gilt.c4-pagehead-vestry.c4-pagehead-choir.c4-pagehead-arcade.c4-pagehead-stool.c4-pagehead-ladder.c4-pagehead-inlay.c4-pagehead-atlas.c4-pagehead-oratory.c4-pagehead-vestibule.c4-pagehead-conservatory.c4-pagehead-reading.c4-pagehead-mount.c4-pagehead-cloister.c4-pagehead-apse.c4-pagehead-seat.c4-pagehead-loggia.c4-pagehead-belvedere .c4-page-sub {
   color: #8a6a3b;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   font-size: 11px;
 }
-[data-crmv4-root] .c4-pagehead.c4-pagehead-folio.c4-pagehead-crest.c4-pagehead-atelier.c4-pagehead-salon.c4-pagehead-gallery.c4-pagehead-library.c4-pagehead-press.c4-pagehead-ribbon.c4-pagehead-playbill.c4-pagehead-interlude.c4-pagehead-slip.c4-pagehead-vellum.c4-pagehead-quire.c4-pagehead-promise.c4-pagehead-briefing.c4-pagehead-dispatch.c4-pagehead-loom.c4-pagehead-kiln.c4-pagehead-proof.c4-pagehead-docket.c4-pagehead-quay.c4-pagehead-bench.c4-pagehead-perch.c4-pagehead-hearth.c4-pagehead-inkwell.c4-pagehead-lacquer.c4-pagehead-gilt.c4-pagehead-vestry.c4-pagehead-choir.c4-pagehead-arcade.c4-pagehead-stool.c4-pagehead-ladder.c4-pagehead-inlay.c4-pagehead-atlas.c4-pagehead-oratory.c4-pagehead-vestibule.c4-pagehead-conservatory.c4-pagehead-reading.c4-pagehead-mount.c4-pagehead-cloister.c4-pagehead-apse.c4-pagehead-seat.c4-pagehead-loggia .c4-folio-plate[data-logo="mono"] {
+[data-crmv4-root] .c4-pagehead.c4-pagehead-folio.c4-pagehead-crest.c4-pagehead-atelier.c4-pagehead-salon.c4-pagehead-gallery.c4-pagehead-library.c4-pagehead-press.c4-pagehead-ribbon.c4-pagehead-playbill.c4-pagehead-interlude.c4-pagehead-slip.c4-pagehead-vellum.c4-pagehead-quire.c4-pagehead-promise.c4-pagehead-briefing.c4-pagehead-dispatch.c4-pagehead-loom.c4-pagehead-kiln.c4-pagehead-proof.c4-pagehead-docket.c4-pagehead-quay.c4-pagehead-bench.c4-pagehead-perch.c4-pagehead-hearth.c4-pagehead-inkwell.c4-pagehead-lacquer.c4-pagehead-gilt.c4-pagehead-vestry.c4-pagehead-choir.c4-pagehead-arcade.c4-pagehead-stool.c4-pagehead-ladder.c4-pagehead-inlay.c4-pagehead-atlas.c4-pagehead-oratory.c4-pagehead-vestibule.c4-pagehead-conservatory.c4-pagehead-reading.c4-pagehead-mount.c4-pagehead-cloister.c4-pagehead-apse.c4-pagehead-seat.c4-pagehead-loggia.c4-pagehead-belvedere .c4-folio-plate[data-logo="mono"] {
   background: transparent;
   color: #241f1a;
   border: 0;
   letter-spacing: 0.22em;
   filter: none;
 }
-[data-crmv4-root] .c4-pagehead.c4-pagehead-folio.c4-pagehead-crest.c4-pagehead-atelier.c4-pagehead-salon.c4-pagehead-gallery.c4-pagehead-library.c4-pagehead-press.c4-pagehead-ribbon.c4-pagehead-playbill.c4-pagehead-interlude.c4-pagehead-slip.c4-pagehead-vellum.c4-pagehead-quire.c4-pagehead-promise.c4-pagehead-briefing.c4-pagehead-dispatch.c4-pagehead-loom.c4-pagehead-kiln.c4-pagehead-proof.c4-pagehead-docket.c4-pagehead-quay.c4-pagehead-bench.c4-pagehead-perch.c4-pagehead-hearth.c4-pagehead-inkwell.c4-pagehead-lacquer.c4-pagehead-gilt.c4-pagehead-vestry.c4-pagehead-choir.c4-pagehead-arcade.c4-pagehead-stool.c4-pagehead-ladder.c4-pagehead-inlay.c4-pagehead-atlas.c4-pagehead-oratory.c4-pagehead-vestibule.c4-pagehead-conservatory.c4-pagehead-reading.c4-pagehead-mount.c4-pagehead-cloister.c4-pagehead-apse.c4-pagehead-seat.c4-pagehead-loggia .c4-field {
+[data-crmv4-root] .c4-pagehead.c4-pagehead-folio.c4-pagehead-crest.c4-pagehead-atelier.c4-pagehead-salon.c4-pagehead-gallery.c4-pagehead-library.c4-pagehead-press.c4-pagehead-ribbon.c4-pagehead-playbill.c4-pagehead-interlude.c4-pagehead-slip.c4-pagehead-vellum.c4-pagehead-quire.c4-pagehead-promise.c4-pagehead-briefing.c4-pagehead-dispatch.c4-pagehead-loom.c4-pagehead-kiln.c4-pagehead-proof.c4-pagehead-docket.c4-pagehead-quay.c4-pagehead-bench.c4-pagehead-perch.c4-pagehead-hearth.c4-pagehead-inkwell.c4-pagehead-lacquer.c4-pagehead-gilt.c4-pagehead-vestry.c4-pagehead-choir.c4-pagehead-arcade.c4-pagehead-stool.c4-pagehead-ladder.c4-pagehead-inlay.c4-pagehead-atlas.c4-pagehead-oratory.c4-pagehead-vestibule.c4-pagehead-conservatory.c4-pagehead-reading.c4-pagehead-mount.c4-pagehead-cloister.c4-pagehead-apse.c4-pagehead-seat.c4-pagehead-loggia.c4-pagehead-belvedere .c4-field {
   background: #fffdf8;
   color: #241f1a;
   border: 1px solid #e4dccb;
   border-bottom: 1px solid #c6a15b;
   border-radius: 10px;
 }
-[data-crmv4-root] .c4-rail.c4-rail-luxe.c4-rail-folio.c4-rail-crest.c4-rail-salon.c4-rail-gallery.c4-rail-library.c4-rail-press.c4-rail-ribbon.c4-rail-playbill.c4-rail-interlude.c4-rail-slip.c4-rail-vellum.c4-rail-quire.c4-rail-promise.c4-rail-briefing.c4-rail-dispatch.c4-rail-loom.c4-rail-kiln.c4-rail-proof.c4-rail-docket.c4-rail-quay.c4-rail-bench.c4-rail-perch.c4-rail-hearth.c4-rail-inkwell.c4-rail-stool.c4-rail-ladder.c4-rail-compositor.c4-rail-inlay.c4-rail-atlas.c4-rail-oratory.c4-rail-vestibule.c4-rail-conservatory.c4-rail-reading.c4-rail-mount.c4-rail-cloister.c4-rail-apse.c4-rail-narthex.c4-rail-crypt.c4-rail-seat.c4-rail-loggia {
+[data-crmv4-root] .c4-rail.c4-rail-luxe.c4-rail-folio.c4-rail-crest.c4-rail-salon.c4-rail-gallery.c4-rail-library.c4-rail-press.c4-rail-ribbon.c4-rail-playbill.c4-rail-interlude.c4-rail-slip.c4-rail-vellum.c4-rail-quire.c4-rail-promise.c4-rail-briefing.c4-rail-dispatch.c4-rail-loom.c4-rail-kiln.c4-rail-proof.c4-rail-docket.c4-rail-quay.c4-rail-bench.c4-rail-perch.c4-rail-hearth.c4-rail-inkwell.c4-rail-stool.c4-rail-ladder.c4-rail-compositor.c4-rail-inlay.c4-rail-atlas.c4-rail-oratory.c4-rail-vestibule.c4-rail-conservatory.c4-rail-reading.c4-rail-mount.c4-rail-cloister.c4-rail-apse.c4-rail-narthex.c4-rail-crypt.c4-rail-seat.c4-rail-loggia.c4-rail-belvedere {
   background:
     linear-gradient(#c6a15b, #c6a15b) 0 0 / 3px 100% no-repeat,
     #f4efe6;
@@ -55556,21 +55556,21 @@
   border-top: 0;
   box-shadow: none;
 }
-[data-crmv4-root] .c4-rail.c4-rail-luxe.c4-rail-folio.c4-rail-crest.c4-rail-salon.c4-rail-gallery.c4-rail-library.c4-rail-press.c4-rail-ribbon.c4-rail-playbill.c4-rail-interlude.c4-rail-slip.c4-rail-vellum.c4-rail-quire.c4-rail-promise.c4-rail-briefing.c4-rail-dispatch.c4-rail-loom.c4-rail-kiln.c4-rail-proof.c4-rail-docket.c4-rail-quay.c4-rail-bench.c4-rail-perch.c4-rail-hearth.c4-rail-inkwell.c4-rail-stool.c4-rail-ladder.c4-rail-compositor.c4-rail-inlay.c4-rail-atlas.c4-rail-oratory.c4-rail-vestibule.c4-rail-conservatory.c4-rail-reading.c4-rail-mount.c4-rail-cloister.c4-rail-apse.c4-rail-narthex.c4-rail-crypt.c4-rail-seat.c4-rail-loggia .c4-rail-plate[data-logo="mono"] {
+[data-crmv4-root] .c4-rail.c4-rail-luxe.c4-rail-folio.c4-rail-crest.c4-rail-salon.c4-rail-gallery.c4-rail-library.c4-rail-press.c4-rail-ribbon.c4-rail-playbill.c4-rail-interlude.c4-rail-slip.c4-rail-vellum.c4-rail-quire.c4-rail-promise.c4-rail-briefing.c4-rail-dispatch.c4-rail-loom.c4-rail-kiln.c4-rail-proof.c4-rail-docket.c4-rail-quay.c4-rail-bench.c4-rail-perch.c4-rail-hearth.c4-rail-inkwell.c4-rail-stool.c4-rail-ladder.c4-rail-compositor.c4-rail-inlay.c4-rail-atlas.c4-rail-oratory.c4-rail-vestibule.c4-rail-conservatory.c4-rail-reading.c4-rail-mount.c4-rail-cloister.c4-rail-apse.c4-rail-narthex.c4-rail-crypt.c4-rail-seat.c4-rail-loggia.c4-rail-belvedere .c4-rail-plate[data-logo="mono"] {
   color: #241f1a;
   background: transparent;
   letter-spacing: 0.22em;
   filter: none;
 }
-[data-crmv4-root] .c4-rail.c4-rail-luxe.c4-rail-folio.c4-rail-crest.c4-rail-salon.c4-rail-gallery.c4-rail-library.c4-rail-press.c4-rail-ribbon.c4-rail-playbill.c4-rail-interlude.c4-rail-slip.c4-rail-vellum.c4-rail-quire.c4-rail-promise.c4-rail-briefing.c4-rail-dispatch.c4-rail-loom.c4-rail-kiln.c4-rail-proof.c4-rail-docket.c4-rail-quay.c4-rail-bench.c4-rail-perch.c4-rail-hearth.c4-rail-inkwell.c4-rail-stool.c4-rail-ladder.c4-rail-compositor.c4-rail-inlay.c4-rail-atlas.c4-rail-oratory.c4-rail-vestibule.c4-rail-conservatory.c4-rail-reading.c4-rail-mount.c4-rail-cloister.c4-rail-apse.c4-rail-narthex.c4-rail-crypt.c4-rail-seat.c4-rail-loggia .c4-rail-btn {
+[data-crmv4-root] .c4-rail.c4-rail-luxe.c4-rail-folio.c4-rail-crest.c4-rail-salon.c4-rail-gallery.c4-rail-library.c4-rail-press.c4-rail-ribbon.c4-rail-playbill.c4-rail-interlude.c4-rail-slip.c4-rail-vellum.c4-rail-quire.c4-rail-promise.c4-rail-briefing.c4-rail-dispatch.c4-rail-loom.c4-rail-kiln.c4-rail-proof.c4-rail-docket.c4-rail-quay.c4-rail-bench.c4-rail-perch.c4-rail-hearth.c4-rail-inkwell.c4-rail-stool.c4-rail-ladder.c4-rail-compositor.c4-rail-inlay.c4-rail-atlas.c4-rail-oratory.c4-rail-vestibule.c4-rail-conservatory.c4-rail-reading.c4-rail-mount.c4-rail-cloister.c4-rail-apse.c4-rail-narthex.c4-rail-crypt.c4-rail-seat.c4-rail-loggia.c4-rail-belvedere .c4-rail-btn {
   color: #241f1a;
   background: transparent;
 }
-[data-crmv4-root] .c4-rail.c4-rail-luxe.c4-rail-folio.c4-rail-crest.c4-rail-salon.c4-rail-gallery.c4-rail-library.c4-rail-press.c4-rail-ribbon.c4-rail-playbill.c4-rail-interlude.c4-rail-slip.c4-rail-vellum.c4-rail-quire.c4-rail-promise.c4-rail-briefing.c4-rail-dispatch.c4-rail-loom.c4-rail-kiln.c4-rail-proof.c4-rail-docket.c4-rail-quay.c4-rail-bench.c4-rail-perch.c4-rail-hearth.c4-rail-inkwell.c4-rail-stool.c4-rail-ladder.c4-rail-compositor.c4-rail-inlay.c4-rail-atlas.c4-rail-oratory.c4-rail-vestibule.c4-rail-conservatory.c4-rail-reading.c4-rail-mount.c4-rail-cloister.c4-rail-apse.c4-rail-narthex.c4-rail-crypt.c4-rail-seat.c4-rail-loggia .c4-rail-btn:hover {
+[data-crmv4-root] .c4-rail.c4-rail-luxe.c4-rail-folio.c4-rail-crest.c4-rail-salon.c4-rail-gallery.c4-rail-library.c4-rail-press.c4-rail-ribbon.c4-rail-playbill.c4-rail-interlude.c4-rail-slip.c4-rail-vellum.c4-rail-quire.c4-rail-promise.c4-rail-briefing.c4-rail-dispatch.c4-rail-loom.c4-rail-kiln.c4-rail-proof.c4-rail-docket.c4-rail-quay.c4-rail-bench.c4-rail-perch.c4-rail-hearth.c4-rail-inkwell.c4-rail-stool.c4-rail-ladder.c4-rail-compositor.c4-rail-inlay.c4-rail-atlas.c4-rail-oratory.c4-rail-vestibule.c4-rail-conservatory.c4-rail-reading.c4-rail-mount.c4-rail-cloister.c4-rail-apse.c4-rail-narthex.c4-rail-crypt.c4-rail-seat.c4-rail-loggia.c4-rail-belvedere .c4-rail-btn:hover {
   background: #241f1a;
   color: #f7f3ea;
 }
-[data-crmv4-root][data-theme="dark"] .c4-pagehead.c4-pagehead-folio.c4-pagehead-crest.c4-pagehead-atelier.c4-pagehead-salon.c4-pagehead-gallery.c4-pagehead-library.c4-pagehead-press.c4-pagehead-ribbon.c4-pagehead-playbill.c4-pagehead-interlude.c4-pagehead-slip.c4-pagehead-vellum.c4-pagehead-quire.c4-pagehead-promise.c4-pagehead-briefing.c4-pagehead-dispatch.c4-pagehead-loom.c4-pagehead-kiln.c4-pagehead-proof.c4-pagehead-docket.c4-pagehead-quay.c4-pagehead-bench.c4-pagehead-perch.c4-pagehead-hearth.c4-pagehead-inkwell.c4-pagehead-lacquer.c4-pagehead-gilt.c4-pagehead-vestry.c4-pagehead-choir.c4-pagehead-arcade.c4-pagehead-stool.c4-pagehead-ladder.c4-pagehead-inlay.c4-pagehead-atlas.c4-pagehead-oratory.c4-pagehead-vestibule.c4-pagehead-conservatory.c4-pagehead-reading.c4-pagehead-mount.c4-pagehead-cloister.c4-pagehead-apse.c4-pagehead-seat.c4-pagehead-loggia {
+[data-crmv4-root][data-theme="dark"] .c4-pagehead.c4-pagehead-folio.c4-pagehead-crest.c4-pagehead-atelier.c4-pagehead-salon.c4-pagehead-gallery.c4-pagehead-library.c4-pagehead-press.c4-pagehead-ribbon.c4-pagehead-playbill.c4-pagehead-interlude.c4-pagehead-slip.c4-pagehead-vellum.c4-pagehead-quire.c4-pagehead-promise.c4-pagehead-briefing.c4-pagehead-dispatch.c4-pagehead-loom.c4-pagehead-kiln.c4-pagehead-proof.c4-pagehead-docket.c4-pagehead-quay.c4-pagehead-bench.c4-pagehead-perch.c4-pagehead-hearth.c4-pagehead-inkwell.c4-pagehead-lacquer.c4-pagehead-gilt.c4-pagehead-vestry.c4-pagehead-choir.c4-pagehead-arcade.c4-pagehead-stool.c4-pagehead-ladder.c4-pagehead-inlay.c4-pagehead-atlas.c4-pagehead-oratory.c4-pagehead-vestibule.c4-pagehead-conservatory.c4-pagehead-reading.c4-pagehead-mount.c4-pagehead-cloister.c4-pagehead-apse.c4-pagehead-seat.c4-pagehead-loggia.c4-pagehead-belvedere {
   background:
     linear-gradient(#c6a15b, #c6a15b) left 86px top 12px / 72px 2px no-repeat,
     linear-gradient(#8a6a3b, #8a6a3b) left 86px top 18px / 36px 1px no-repeat,
@@ -55578,17 +55578,445 @@
   color: #f6f1e8;
   box-shadow: inset 0 -1px 0 #8a6a3b;
 }
-[data-crmv4-root][data-theme="dark"] .c4-pagehead.c4-pagehead-folio.c4-pagehead-crest.c4-pagehead-atelier.c4-pagehead-salon.c4-pagehead-gallery.c4-pagehead-library.c4-pagehead-press.c4-pagehead-ribbon.c4-pagehead-playbill.c4-pagehead-interlude.c4-pagehead-slip.c4-pagehead-vellum.c4-pagehead-quire.c4-pagehead-promise.c4-pagehead-briefing.c4-pagehead-dispatch.c4-pagehead-loom.c4-pagehead-kiln.c4-pagehead-proof.c4-pagehead-docket.c4-pagehead-quay.c4-pagehead-bench.c4-pagehead-perch.c4-pagehead-hearth.c4-pagehead-inkwell.c4-pagehead-lacquer.c4-pagehead-gilt.c4-pagehead-vestry.c4-pagehead-choir.c4-pagehead-arcade.c4-pagehead-stool.c4-pagehead-ladder.c4-pagehead-inlay.c4-pagehead-atlas.c4-pagehead-oratory.c4-pagehead-vestibule.c4-pagehead-conservatory.c4-pagehead-reading.c4-pagehead-mount.c4-pagehead-cloister.c4-pagehead-apse.c4-pagehead-seat.c4-pagehead-loggia .c4-page-title,
-[data-crmv4-root][data-theme="dark"] .c4-pagehead.c4-pagehead-folio.c4-pagehead-crest.c4-pagehead-atelier.c4-pagehead-salon.c4-pagehead-gallery.c4-pagehead-library.c4-pagehead-press.c4-pagehead-ribbon.c4-pagehead-playbill.c4-pagehead-interlude.c4-pagehead-slip.c4-pagehead-vellum.c4-pagehead-quire.c4-pagehead-promise.c4-pagehead-briefing.c4-pagehead-dispatch.c4-pagehead-loom.c4-pagehead-kiln.c4-pagehead-proof.c4-pagehead-docket.c4-pagehead-quay.c4-pagehead-bench.c4-pagehead-perch.c4-pagehead-hearth.c4-pagehead-inkwell.c4-pagehead-lacquer.c4-pagehead-gilt.c4-pagehead-vestry.c4-pagehead-choir.c4-pagehead-arcade.c4-pagehead-stool.c4-pagehead-ladder.c4-pagehead-inlay.c4-pagehead-atlas.c4-pagehead-oratory.c4-pagehead-vestibule.c4-pagehead-conservatory.c4-pagehead-reading.c4-pagehead-mount.c4-pagehead-cloister.c4-pagehead-apse.c4-pagehead-seat.c4-pagehead-loggia .c4-folio-plate[data-logo="mono"] {
+[data-crmv4-root][data-theme="dark"] .c4-pagehead.c4-pagehead-folio.c4-pagehead-crest.c4-pagehead-atelier.c4-pagehead-salon.c4-pagehead-gallery.c4-pagehead-library.c4-pagehead-press.c4-pagehead-ribbon.c4-pagehead-playbill.c4-pagehead-interlude.c4-pagehead-slip.c4-pagehead-vellum.c4-pagehead-quire.c4-pagehead-promise.c4-pagehead-briefing.c4-pagehead-dispatch.c4-pagehead-loom.c4-pagehead-kiln.c4-pagehead-proof.c4-pagehead-docket.c4-pagehead-quay.c4-pagehead-bench.c4-pagehead-perch.c4-pagehead-hearth.c4-pagehead-inkwell.c4-pagehead-lacquer.c4-pagehead-gilt.c4-pagehead-vestry.c4-pagehead-choir.c4-pagehead-arcade.c4-pagehead-stool.c4-pagehead-ladder.c4-pagehead-inlay.c4-pagehead-atlas.c4-pagehead-oratory.c4-pagehead-vestibule.c4-pagehead-conservatory.c4-pagehead-reading.c4-pagehead-mount.c4-pagehead-cloister.c4-pagehead-apse.c4-pagehead-seat.c4-pagehead-loggia.c4-pagehead-belvedere .c4-page-title,
+[data-crmv4-root][data-theme="dark"] .c4-pagehead.c4-pagehead-folio.c4-pagehead-crest.c4-pagehead-atelier.c4-pagehead-salon.c4-pagehead-gallery.c4-pagehead-library.c4-pagehead-press.c4-pagehead-ribbon.c4-pagehead-playbill.c4-pagehead-interlude.c4-pagehead-slip.c4-pagehead-vellum.c4-pagehead-quire.c4-pagehead-promise.c4-pagehead-briefing.c4-pagehead-dispatch.c4-pagehead-loom.c4-pagehead-kiln.c4-pagehead-proof.c4-pagehead-docket.c4-pagehead-quay.c4-pagehead-bench.c4-pagehead-perch.c4-pagehead-hearth.c4-pagehead-inkwell.c4-pagehead-lacquer.c4-pagehead-gilt.c4-pagehead-vestry.c4-pagehead-choir.c4-pagehead-arcade.c4-pagehead-stool.c4-pagehead-ladder.c4-pagehead-inlay.c4-pagehead-atlas.c4-pagehead-oratory.c4-pagehead-vestibule.c4-pagehead-conservatory.c4-pagehead-reading.c4-pagehead-mount.c4-pagehead-cloister.c4-pagehead-apse.c4-pagehead-seat.c4-pagehead-loggia.c4-pagehead-belvedere .c4-folio-plate[data-logo="mono"] {
   color: #f6f1e8;
 }
-[data-crmv4-root][data-theme="dark"] .c4-rail.c4-rail-luxe.c4-rail-folio.c4-rail-crest.c4-rail-salon.c4-rail-gallery.c4-rail-library.c4-rail-press.c4-rail-ribbon.c4-rail-playbill.c4-rail-interlude.c4-rail-slip.c4-rail-vellum.c4-rail-quire.c4-rail-promise.c4-rail-briefing.c4-rail-dispatch.c4-rail-loom.c4-rail-kiln.c4-rail-proof.c4-rail-docket.c4-rail-quay.c4-rail-bench.c4-rail-perch.c4-rail-hearth.c4-rail-inkwell.c4-rail-stool.c4-rail-ladder.c4-rail-compositor.c4-rail-inlay.c4-rail-atlas.c4-rail-oratory.c4-rail-vestibule.c4-rail-conservatory.c4-rail-reading.c4-rail-mount.c4-rail-cloister.c4-rail-apse.c4-rail-narthex.c4-rail-crypt.c4-rail-seat.c4-rail-loggia {
+[data-crmv4-root][data-theme="dark"] .c4-rail.c4-rail-luxe.c4-rail-folio.c4-rail-crest.c4-rail-salon.c4-rail-gallery.c4-rail-library.c4-rail-press.c4-rail-ribbon.c4-rail-playbill.c4-rail-interlude.c4-rail-slip.c4-rail-vellum.c4-rail-quire.c4-rail-promise.c4-rail-briefing.c4-rail-dispatch.c4-rail-loom.c4-rail-kiln.c4-rail-proof.c4-rail-docket.c4-rail-quay.c4-rail-bench.c4-rail-perch.c4-rail-hearth.c4-rail-inkwell.c4-rail-stool.c4-rail-ladder.c4-rail-compositor.c4-rail-inlay.c4-rail-atlas.c4-rail-oratory.c4-rail-vestibule.c4-rail-conservatory.c4-rail-reading.c4-rail-mount.c4-rail-cloister.c4-rail-apse.c4-rail-narthex.c4-rail-crypt.c4-rail-seat.c4-rail-loggia.c4-rail-belvedere {
   background:
     linear-gradient(#c6a15b, #c6a15b) 0 0 / 3px 100% no-repeat,
     #1c1916;
   color: #f6f1e8;
 }
-[data-crmv4-root][data-theme="dark"] .c4-rail.c4-rail-luxe.c4-rail-folio.c4-rail-crest.c4-rail-salon.c4-rail-gallery.c4-rail-library.c4-rail-press.c4-rail-ribbon.c4-rail-playbill.c4-rail-interlude.c4-rail-slip.c4-rail-vellum.c4-rail-quire.c4-rail-promise.c4-rail-briefing.c4-rail-dispatch.c4-rail-loom.c4-rail-kiln.c4-rail-proof.c4-rail-docket.c4-rail-quay.c4-rail-bench.c4-rail-perch.c4-rail-hearth.c4-rail-inkwell.c4-rail-stool.c4-rail-ladder.c4-rail-compositor.c4-rail-inlay.c4-rail-atlas.c4-rail-oratory.c4-rail-vestibule.c4-rail-conservatory.c4-rail-reading.c4-rail-mount.c4-rail-cloister.c4-rail-apse.c4-rail-narthex.c4-rail-crypt.c4-rail-seat.c4-rail-loggia .c4-rail-plate[data-logo="mono"],
-[data-crmv4-root][data-theme="dark"] .c4-rail.c4-rail-luxe.c4-rail-folio.c4-rail-crest.c4-rail-salon.c4-rail-gallery.c4-rail-library.c4-rail-press.c4-rail-ribbon.c4-rail-playbill.c4-rail-interlude.c4-rail-slip.c4-rail-vellum.c4-rail-quire.c4-rail-promise.c4-rail-briefing.c4-rail-dispatch.c4-rail-loom.c4-rail-kiln.c4-rail-proof.c4-rail-docket.c4-rail-quay.c4-rail-bench.c4-rail-perch.c4-rail-hearth.c4-rail-inkwell.c4-rail-stool.c4-rail-ladder.c4-rail-compositor.c4-rail-inlay.c4-rail-atlas.c4-rail-oratory.c4-rail-vestibule.c4-rail-conservatory.c4-rail-reading.c4-rail-mount.c4-rail-cloister.c4-rail-apse.c4-rail-narthex.c4-rail-crypt.c4-rail-seat.c4-rail-loggia .c4-rail-btn {
+[data-crmv4-root][data-theme="dark"] .c4-rail.c4-rail-luxe.c4-rail-folio.c4-rail-crest.c4-rail-salon.c4-rail-gallery.c4-rail-library.c4-rail-press.c4-rail-ribbon.c4-rail-playbill.c4-rail-interlude.c4-rail-slip.c4-rail-vellum.c4-rail-quire.c4-rail-promise.c4-rail-briefing.c4-rail-dispatch.c4-rail-loom.c4-rail-kiln.c4-rail-proof.c4-rail-docket.c4-rail-quay.c4-rail-bench.c4-rail-perch.c4-rail-hearth.c4-rail-inkwell.c4-rail-stool.c4-rail-ladder.c4-rail-compositor.c4-rail-inlay.c4-rail-atlas.c4-rail-oratory.c4-rail-vestibule.c4-rail-conservatory.c4-rail-reading.c4-rail-mount.c4-rail-cloister.c4-rail-apse.c4-rail-narthex.c4-rail-crypt.c4-rail-seat.c4-rail-loggia.c4-rail-belvedere .c4-rail-plate[data-logo="mono"],
+[data-crmv4-root][data-theme="dark"] .c4-rail.c4-rail-luxe.c4-rail-folio.c4-rail-crest.c4-rail-salon.c4-rail-gallery.c4-rail-library.c4-rail-press.c4-rail-ribbon.c4-rail-playbill.c4-rail-interlude.c4-rail-slip.c4-rail-vellum.c4-rail-quire.c4-rail-promise.c4-rail-briefing.c4-rail-dispatch.c4-rail-loom.c4-rail-kiln.c4-rail-proof.c4-rail-docket.c4-rail-quay.c4-rail-bench.c4-rail-perch.c4-rail-hearth.c4-rail-inkwell.c4-rail-stool.c4-rail-ladder.c4-rail-compositor.c4-rail-inlay.c4-rail-atlas.c4-rail-oratory.c4-rail-vestibule.c4-rail-conservatory.c4-rail-reading.c4-rail-mount.c4-rail-cloister.c4-rail-apse.c4-rail-narthex.c4-rail-crypt.c4-rail-seat.c4-rail-loggia.c4-rail-belvedere .c4-rail-btn {
   color: #f6f1e8;
+}
+
+[data-crmv4-root] .c4-bvs,
+[data-crmv4-root] .c4-kps {
+  color: #241f1a;
+  background:
+    radial-gradient(180px 48px at 12% 0, rgba(198, 161, 91, 0.28), transparent 70%),
+    #f7f3ea;
+  border: 1px solid #241f1a;
+  border-radius: 28px 28px 16px 16px;
+  box-shadow: inset 0 0 0 1px #c6a15b, 0 18px 36px rgba(36, 31, 26, 0.06);
+}
+[data-crmv4-root] .c4-bvs-sheet,
+[data-crmv4-root] .c4-kps-sheet { display: grid; }
+[data-crmv4-root] .c4-bvs-mast,
+[data-crmv4-root] .c4-kps-mast {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0;
+  padding: 22px 24px 18px;
+  background:
+    linear-gradient(180deg, rgba(198, 161, 91, 0.22), transparent 70%),
+    #241f1a;
+  border-radius: 27px 27px 0 0;
+}
+[data-crmv4-root] .c4-bvs-spine {
+  margin: 0;
+  color: #c6a15b;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+[data-crmv4-root] .c4-bvs-kicker,
+[data-crmv4-root] .c4-kps-kicker {
+  margin: 0 0 6px;
+  color: #c6a15b;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-bvs-mast .c4-title,
+[data-crmv4-root] .c4-kps-mast .c4-title {
+  margin: 0;
+  color: #f7f3ea;
+  font-family: Palatino, "Iowan Old Style", Georgia, serif;
+  font-size: 36px;
+  font-weight: 500;
+  letter-spacing: -0.045em;
+}
+[data-crmv4-root] .c4-bvs-plate[data-logo="mono"],
+[data-crmv4-root] .c4-kps-plate[data-logo="mono"],
+[data-crmv4-root] .c4-kps-mark[data-logo="mono"] {
+  color: #241f1a;
+  background: #f3ead7;
+  filter: none;
+}
+[data-crmv4-root] .c4-bvs-plate,
+[data-crmv4-root] .c4-kps-plate {
+  margin: 0;
+  padding: 10px 12px;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  border-radius: 14px 14px 4px 4px;
+}
+[data-crmv4-root] .c4-bvs-body,
+[data-crmv4-root] .c4-kps-body { display: grid; gap: 12px; padding: 18px 20px 22px; }
+[data-crmv4-root] .c4-bvs-rules,
+[data-crmv4-root] .c4-kps-rules { margin: 0; color: #5c564e; }
+[data-crmv4-root] .c4-bvs-notice,
+[data-crmv4-root] .c4-kps-notice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 0;
+  padding: 10px 12px;
+  color: #241f1a;
+  background: #fffdf8;
+  border-left: 3px solid #c6a15b;
+  border-radius: 8px;
+}
+[data-crmv4-root] .c4-bvs-notice[data-late="1"] { border-left-color: #8a3b3b; }
+[data-crmv4-root] .c4-bvs-ledger,
+[data-crmv4-root] .c4-kps-ledger {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-bvs-ledger li,
+[data-crmv4-root] .c4-kps-ledger li {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 12px 12px 10px;
+  background: #fffdf8;
+  border: 1px solid #e4dccb;
+  border-radius: 14px 14px 6px 6px;
+  box-shadow: inset 0 2px 0 #c6a15b;
+}
+[data-crmv4-root] .c4-bvs-ledger span,
+[data-crmv4-root] .c4-kps-ledger span {
+  color: #8a6a3b;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-bvs-ledger strong,
+[data-crmv4-root] .c4-kps-ledger strong { font-size: 22px; font-variant-numeric: tabular-nums; }
+[data-crmv4-root] .c4-bvs-track,
+[data-crmv4-root] .c4-kps-track {
+  height: 4px;
+  background: #e4dccb;
+  border-radius: 999px;
+}
+[data-crmv4-root] .c4-bvs-track i,
+[data-crmv4-root] .c4-kps-track i {
+  display: block;
+  height: 4px;
+  background: #c6a15b;
+  border-radius: 999px;
+  transition: width 180ms ease;
+}
+[data-crmv4-root] .c4-bvs-meter[data-glaze="ivory"] i { background: #8a6a3b; }
+[data-crmv4-root] .c4-bvs-meter[data-glaze="slate"] i { background: #241f1a; }
+[data-crmv4-root] .c4-bvs-meter[data-glaze="gold"] i { background: #c6a15b; }
+[data-crmv4-root] .c4-kps-meter[data-lane="hall"] i { background: #c6a15b; }
+[data-crmv4-root] .c4-kps-meter[data-lane="wing"] i { background: #8a6a3b; }
+[data-crmv4-root] .c4-kps-meter[data-lane="porch"] i { background: #8d8a84; }
+[data-crmv4-root] .c4-bvs-filters,
+[data-crmv4-root] .c4-kps-filters,
+[data-crmv4-root] .c4-bvs-bulk,
+[data-crmv4-root] .c4-kps-bands,
+[data-crmv4-root] .c4-bvs-suggest,
+[data-crmv4-root] .c4-bvs-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: end;
+}
+[data-crmv4-root] .c4-bvs-book,
+[data-crmv4-root] .c4-kps-index {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-bvs-book > li,
+[data-crmv4-root] .c4-kps-index > li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  padding: 12px;
+  background: #fffdf8;
+  border: 1px solid #e4dccb;
+  border-radius: 16px;
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+[data-crmv4-root] .c4-bvs-book > li[data-focus="1"] { border-color: #c6a15b; transform: translateY(-1px); }
+[data-crmv4-root] .c4-bvs-book > li[data-late="1"] { box-shadow: inset 3px 0 0 #8a3b3b; }
+[data-crmv4-root] .c4-bvs-book > li[data-house="1"] { box-shadow: inset 3px 0 0 #c6a15b; }
+[data-crmv4-root] .c4-bvs-empty,
+[data-crmv4-root] .c4-kps-empty {
+  margin: 0;
+  padding: 22px 16px;
+  text-align: center;
+  color: #5c564e;
+  background: #fffdf8;
+  border: 1px dashed #c6a15b;
+  border-radius: 16px;
+}
+[data-crmv4-root] .c4-kps-index strong,
+[data-crmv4-root] .c4-kps-index .c4-meta { display: block; }
+[data-crmv4-root] .c4-kps-mark {
+  display: grid;
+  place-items: center;
+  min-width: 64px;
+  margin: 0;
+  padding: 8px;
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  border-radius: 16px 16px 4px 4px;
+}
+[data-crmv4-root] .c4-kps-time {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-kps-time li {
+  padding: 6px 10px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8a6a3b;
+  background: #f6f1e7;
+  border-radius: 999px;
+}
+[data-crmv4-root] .c4-kps-time li[data-on="1"] {
+  color: #241f1a;
+  background: #fffdf8;
+  box-shadow: inset 0 -2px 0 #c6a15b;
+}
+[data-crmv4-root] .c4-bvs .c4-btn:focus-visible,
+[data-crmv4-root] .c4-kps .c4-btn:focus-visible,
+[data-crmv4-root] .c4-bvs .c4-field:focus-visible,
+[data-crmv4-root] .c4-kps .c4-field:focus-visible,
+[data-crmv4-root] .c4-cust-loggia .c4-btn:focus-visible,
+[data-crmv4-root] .c4-cust-loggia .c4-field:focus-visible {
+  outline: 2px solid #c6a15b;
+  outline-offset: 2px;
+}
+[data-crmv4-root] .c4-bvs[data-density="close"] .c4-bvs-book > li { padding: 8px; }
+[data-crmv4-root][data-theme="dark"] .c4-bvs,
+[data-crmv4-root][data-theme="dark"] .c4-kps {
+  color: #f7f3ea;
+  background: #141210;
+  border-color: #3a342c;
+}
+[data-crmv4-root][data-theme="dark"] .c4-bvs-book > li,
+[data-crmv4-root][data-theme="dark"] .c4-kps-index > li,
+[data-crmv4-root][data-theme="dark"] .c4-bvs-ledger li,
+[data-crmv4-root][data-theme="dark"] .c4-kps-ledger li {
+  color: #f7f3ea;
+  background: #1c1916;
+  border-color: #3a342c;
+}
+[data-crmv4-root][data-theme="dark"] .c4-bvs-empty,
+[data-crmv4-root][data-theme="dark"] .c4-kps-empty {
+  color: #f7f3ea;
+  background: #1c1916;
+  border-color: #8a6a3b;
+}
+
+/* Round 221 — belvedere terrace and keeper seals. */
+[data-crmv4-root] .c4-bvs {
+  border-radius: 4px 4px 22px 22px;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 22px 0 / 28px 3px no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) 22px 6px / 56px 3px no-repeat,
+    linear-gradient(#8a6a3b, #8a6a3b) 22px 12px / 84px 3px no-repeat,
+    radial-gradient(180px 48px at 12% 0, rgba(198, 161, 91, 0.22), transparent 70%),
+    #f7f3ea;
+}
+[data-crmv4-root] .c4-bvs-book > li,
+[data-crmv4-root] .c4-kps-index > li {
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+[data-crmv4-root] .c4-bvs-book > li:hover,
+[data-crmv4-root] .c4-kps-index > li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 18px rgba(36, 31, 26, 0.08);
+}
+[data-crmv4-root] .c4-kps-time li[data-on="1"] {
+  box-shadow: inset 0 -2px 0 #c6a15b;
+}
+[data-crmv4-root] .c4-cust-belvedere .c4-cust-loggia-index,
+[data-crmv4-root] .c4-cust-belvedere .c4-cust-seat-index,
+[data-crmv4-root] .c4-cust-belvedere .c4-cust-apse-index {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+[data-crmv4-root] .c4-cust-parlor.c4-cust-inlay.c4-cust-apse.c4-cust-seat.c4-cust-loggia.c4-cust-belvedere {
+  background: #f6f1e7;
+}
+[data-crmv4-root] .c4-cust-parlor.c4-cust-inlay.c4-cust-apse.c4-cust-seat.c4-cust-loggia.c4-cust-belvedere .c4-cust-belvedere-mast {
+  display: grid;
+  grid-template-columns: minmax(320px, 1.35fr) minmax(220px, 0.7fr) 96px;
+  gap: 18px;
+  align-items: end;
+  padding: 22px 22px 0;
+  background:
+    linear-gradient(#f6f1e7, #f6f1e7) 0 0 / 100% calc(100% - 18px) no-repeat,
+    linear-gradient(#e7dfd0, #e7dfd0);
+  color: #241f1a;
+  border: 1px solid #e4dccb;
+  border-bottom: 0;
+  border-radius: 18px 18px 0 0;
+  box-shadow: inset 0 1px 0 #fffdf8;
+}
+[data-crmv4-root] .c4-cust-belvedere .c4-cust-belvedere-kicker {
+  margin: 0;
+  padding: 0 0 8px;
+  color: #8a6a3b;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+[data-crmv4-root] .c4-cust-belvedere .c4-cust-belvedere-title {
+  margin: 0 0 14px;
+  padding: 0;
+  color: #241f1a;
+  font-family: Palatino, "Iowan Old Style", Georgia, serif;
+  font-size: 42px;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 0.94;
+}
+[data-crmv4-root] .c4-cust-belvedere .c4-cust-belvedere-title::after {
+  content: "";
+  display: block;
+  width: 72px;
+  height: 10px;
+  margin-top: 12px;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 22px 2px no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) 0 4px / 46px 2px no-repeat,
+    linear-gradient(#8a6a3b, #8a6a3b) 0 8px / 72px 2px no-repeat;
+}
+[data-crmv4-root] .c4-cust-belvedere-index {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  align-items: end;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-cust-belvedere-index li {
+  display: grid;
+  place-items: end center;
+  margin: 0;
+  padding: 8px 6px 10px;
+  border: 1px solid #e4dccb;
+  border-bottom: 0;
+  background: #fffdf8;
+  color: #241f1a;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-cust-belvedere-index li[data-riser="1"] { min-height: 52px; box-shadow: inset 0 3px 0 #c6a15b; }
+[data-crmv4-root] .c4-cust-belvedere-index li[data-riser="2"] { min-height: 68px; box-shadow: inset 0 3px 0 #8a6a3b; }
+[data-crmv4-root] .c4-cust-belvedere-index li[data-riser="3"] { min-height: 84px; box-shadow: inset 0 3px 0 #241f1a; }
+[data-crmv4-root] .c4-cust-belvedere .c4-cust-belvedere-plate[data-logo="mono"] {
+  display: grid;
+  place-items: center;
+  align-self: end;
+  width: 96px;
+  height: 84px;
+  margin: 0;
+  background: #241f1a;
+  color: #f6f1e8;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  border-radius: 2px 2px 0 0;
+  filter: none;
+}
+[data-crmv4-root] .c4-cust-belvedere .c4-card {
+  border: 1px solid #e4dccb;
+  border-radius: 0 0 16px 16px;
+  box-shadow: inset 0 0 0 1px rgba(198, 161, 91, 0.35);
+  background: #fffdf8;
+}
+[data-crmv4-root][data-theme="dark"] .c4-bvs,
+[data-crmv4-root][data-theme="dark"] .c4-kps {
+  background: #141210;
+  color: #f6f1e8;
+  border-color: #3a342c;
+}
+[data-crmv4-root][data-theme="dark"] .c4-cust-parlor.c4-cust-inlay.c4-cust-apse.c4-cust-seat.c4-cust-loggia.c4-cust-belvedere,
+[data-crmv4-root][data-theme="dark"] .c4-cust-parlor.c4-cust-inlay.c4-cust-apse.c4-cust-seat.c4-cust-loggia.c4-cust-belvedere .c4-cust-belvedere-mast {
+  background: #1c1916;
+  color: #f6f1e8;
+  border-color: #3a342c;
+}
+[data-crmv4-root][data-theme="dark"] .c4-cust-belvedere .c4-cust-belvedere-title,
+[data-crmv4-root][data-theme="dark"] .c4-cust-belvedere-index li {
+  color: #f6f1e8;
+  background: #241f1a;
+}
+[data-crmv4-root][data-theme="dark"] .c4-cust-belvedere .c4-cust-belvedere-plate[data-logo="mono"] {
+  background: #241f1a;
+  color: #c6a15b;
+  border: 1px solid #8a6a3b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-cust-belvedere .c4-card {
+  background: #241f1a;
+  color: #f6f1e8;
+  border-color: #3a342c;
+}
+[data-crmv4-root] .c4-pagehead-belvedere .c4-page-title::after {
+  width: 72px;
+  height: 10px;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 22px 2px no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) 0 4px / 46px 2px no-repeat,
+    linear-gradient(#8a6a3b, #8a6a3b) 0 8px / 72px 2px no-repeat;
+}
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-cust-parlor.c4-cust-inlay.c4-cust-apse.c4-cust-seat.c4-cust-loggia.c4-cust-belvedere .c4-cust-belvedere-mast {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    padding: 16px 16px 0;
+  }
+  [data-crmv4-root] .c4-cust-belvedere .c4-cust-belvedere-title { font-size: 32px; }
+  [data-crmv4-root] .c4-cust-belvedere-index li { min-height: 56px; }
+  [data-crmv4-root] .c4-cust-belvedere .c4-cust-belvedere-plate[data-logo="mono"] {
+    width: 100%;
+    height: 48px;
+  }
+  [data-crmv4-root] .c4-bvs .c4-btn,
+  [data-crmv4-root] .c4-kps .c4-btn,
+  [data-crmv4-root] .c4-cust-belvedere .c4-btn { min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-bvs-book > li,
+  [data-crmv4-root] .c4-kps-index > li,
+  [data-crmv4-root] .c4-cust-belvedere .c4-card { transition: none; }
+  [data-crmv4-root] .c4-bvs-book > li:hover,
+  [data-crmv4-root] .c4-kps-index > li:hover { transform: none; }
 }

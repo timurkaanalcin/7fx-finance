@@ -201,11 +201,11 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
   }
 
   return (
-    <div className="c4-stack c4-cust-cloak c4-cust-nook c4-cust-oriel c4-cust-atelier c4-cust-vestry c4-cust-choir c4-cust-arcade c4-cust-stool c4-cust-ladder c4-cust-parlor c4-cust-inlay c4-cust-apse c4-cust-seat c4-cust-loggia">
-      <header className="c4-cust-parlor-mast c4-cust-inlay-mast c4-cust-apse-mast c4-cust-seat-mast c4-cust-loggia-mast">
+    <div className="c4-stack c4-cust-cloak c4-cust-nook c4-cust-oriel c4-cust-atelier c4-cust-vestry c4-cust-choir c4-cust-arcade c4-cust-stool c4-cust-ladder c4-cust-parlor c4-cust-inlay c4-cust-apse c4-cust-seat c4-cust-loggia c4-cust-belvedere">
+      <header className="c4-cust-parlor-mast c4-cust-inlay-mast c4-cust-apse-mast c4-cust-seat-mast c4-cust-loggia-mast c4-cust-belvedere-mast">
         <div>
-          <p className="c4-cust-parlor-kicker c4-cust-inlay-kicker c4-cust-apse-kicker c4-cust-seat-kicker c4-cust-loggia-kicker">{tx("customersLead")}</p>
-          <h2 className="c4-cust-parlor-title c4-cust-inlay-title c4-cust-apse-title c4-cust-seat-title c4-cust-loggia-title">{tx("customers")}</h2>
+          <p className="c4-cust-parlor-kicker c4-cust-inlay-kicker c4-cust-apse-kicker c4-cust-seat-kicker c4-cust-loggia-kicker c4-cust-belvedere-kicker">{tx("customersLead")}</p>
+          <h2 className="c4-cust-parlor-title c4-cust-inlay-title c4-cust-apse-title c4-cust-seat-title c4-cust-loggia-title c4-cust-belvedere-title">{tx("customers")}</h2>
         </div>
         <ol className="c4-cust-apse-index" aria-label={tx("customers")}>
           <li data-tone="gold">{tx("customers")}</li>
@@ -222,7 +222,12 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
           <li data-arch="2">{tx("country")}</li>
           <li data-arch="3">{tx("status")}</li>
         </ol>
-        <p className="c4-cust-parlor-plate c4-cust-inlay-plate c4-cust-apse-plate c4-cust-seat-plate c4-cust-loggia-plate" data-logo="mono">7FX</p>
+        <ol className="c4-cust-belvedere-index" aria-label={tx("customers")}>
+          <li data-riser="1">{tx("customers")}</li>
+          <li data-riser="2">{tx("country")}</li>
+          <li data-riser="3">{tx("status")}</li>
+        </ol>
+        <p className="c4-cust-parlor-plate c4-cust-inlay-plate c4-cust-apse-plate c4-cust-seat-plate c4-cust-loggia-plate c4-cust-belvedere-plate" data-logo="mono">7FX</p>
       </header>
       <p className="c4-muted">{tx("customersLead")}</p>
       <Card title={tx("customers")} extra={<span className="c4-muted">{typeof data.data?.total === "number" ? `${tx("totalRows")} ${data.data.total}` : ""}</span>}>
