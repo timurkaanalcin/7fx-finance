@@ -201,18 +201,23 @@ export function Customers({ base, tx, locale, q }: { base: string; tx: Tx; local
   }
 
   return (
-    <div className="c4-stack c4-cust-cloak c4-cust-nook c4-cust-oriel c4-cust-atelier c4-cust-vestry c4-cust-choir c4-cust-arcade c4-cust-stool c4-cust-ladder c4-cust-parlor c4-cust-inlay c4-cust-apse">
-      <header className="c4-cust-parlor-mast c4-cust-inlay-mast c4-cust-apse-mast">
+    <div className="c4-stack c4-cust-cloak c4-cust-nook c4-cust-oriel c4-cust-atelier c4-cust-vestry c4-cust-choir c4-cust-arcade c4-cust-stool c4-cust-ladder c4-cust-parlor c4-cust-inlay c4-cust-apse c4-cust-seat">
+      <header className="c4-cust-parlor-mast c4-cust-inlay-mast c4-cust-apse-mast c4-cust-seat-mast">
         <div>
-          <p className="c4-cust-parlor-kicker c4-cust-inlay-kicker c4-cust-apse-kicker">{tx("customersLead")}</p>
-          <h2 className="c4-cust-parlor-title c4-cust-inlay-title c4-cust-apse-title">{tx("customers")}</h2>
+          <p className="c4-cust-parlor-kicker c4-cust-inlay-kicker c4-cust-apse-kicker c4-cust-seat-kicker">{tx("customersLead")}</p>
+          <h2 className="c4-cust-parlor-title c4-cust-inlay-title c4-cust-apse-title c4-cust-seat-title">{tx("customers")}</h2>
         </div>
         <ol className="c4-cust-apse-index" aria-label={tx("customers")}>
           <li data-tone="gold">{tx("customers")}</li>
           <li data-tone="ink">{tx("country")}</li>
           <li data-tone="mist">{tx("status")}</li>
         </ol>
-        <p className="c4-cust-parlor-plate c4-cust-inlay-plate c4-cust-apse-plate" data-logo="mono">7FX</p>
+        <ol className="c4-cust-seat-index" aria-label={tx("customers")}>
+          <li data-seat="1">{tx("customers")}</li>
+          <li data-seat="2">{tx("country")}</li>
+          <li data-seat="3">{tx("status")}</li>
+        </ol>
+        <p className="c4-cust-parlor-plate c4-cust-inlay-plate c4-cust-apse-plate c4-cust-seat-plate" data-logo="mono">7FX</p>
       </header>
       <p className="c4-muted">{tx("customersLead")}</p>
       <Card title={tx("customers")} extra={<span className="c4-muted">{typeof data.data?.total === "number" ? `${tx("totalRows")} ${data.data.total}` : ""}</span>}>
