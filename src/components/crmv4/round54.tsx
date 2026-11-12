@@ -111,14 +111,24 @@ export function CaseQueue({ base, v4, locale, tx }: { base: string; v4: V4; loca
   }
 
   return (
-    <section className="c4-case-queue" aria-label={v4("cqTitle")} data-case-queue="1" data-viewer={viewer ? "1" : "0"}>
-      <header className="c4-pay-head">
+    <section className="c4-case-queue c4-case-gallery" aria-label={v4("cqTitle")} data-case-queue="1" data-desk="gallery" data-viewer={viewer ? "1" : "0"}>
+      <header className="c4-case-mast">
+        <p className="c4-case-seal" data-logo="mono">7FX</p>
         <div>
           <p className="c4-pay-kicker">{v4("cqSub")}</p>
           <h2 className="c4-title">{v4("cqTitle")}</h2>
         </div>
-        <p className="c4-meta">{v4("cqCount")} {shown.length}</p>
+        <p className="c4-case-count">{v4("cqCount")} {shown.length}</p>
       </header>
+      <p className="c4-case-legend" aria-label={v4("cqAll")}>
+        <span data-status="PENDING">{v4("cqPending")}</span>
+        <span data-status="APPROVED">{v4("cqApproved")}</span>
+        <span data-status="REJECTED">{v4("cqRejected")}</span>
+      </p>
+      <p className="c4-case-links">
+        <Link href={crmv4Href(base, "trc")}>{v4("trcTitle")}</Link>
+        <Link href={crmv4Href(base, "clp")}>{v4("clpTitle")}</Link>
+      </p>
       <p className="c4-meta">{v4("cqHint")}</p>
       {viewer && <p className="c4-meta">{v4("cqViewer")}</p>}
       <label className="c4-lab">
@@ -133,14 +143,14 @@ export function CaseQueue({ base, v4, locale, tx }: { base: string; v4: V4; loca
       </div>
       {data.loading && !loaded.length && <p className="c4-meta">{v4("cqLoading")}</p>}
       {data.error && <p className="c4-meta">{v4("cqFailed")} {tx("failed")}</p>}
-      {!data.loading && !data.error && !loaded.length && <p className="c4-pay-empty">{v4("cqNone")}</p>}
-      {!data.loading && !data.error && loaded.length > 0 && !shown.length && <p className="c4-pay-empty">{v4("cqEmpty")}</p>}
+      {!data.loading && !data.error && !loaded.length && <p className="c4-pay-empty c4-case-empty">{v4("cqNone")}</p>}
+      {!data.loading && !data.error && loaded.length > 0 && !shown.length && <p className="c4-pay-empty c4-case-empty">{v4("cqEmpty")}</p>}
       <ul className="c4-case-cards">
         {shown.map((row) => {
           const current = caseStatus(row);
           const picked = choice[row.id] || "";
           return (
-            <li key={row.id} className="c4-case-card" data-pinned={pins.includes(row.id) ? "1" : "0"} data-status={current || "none"}>
+            <li key={row.id} className="c4-case-card c4-case-docket" data-pinned={pins.includes(row.id) ? "1" : "0"} data-status={current || "none"}>
               <div className="c4-row c4-between">
                 <strong>{row.name || "—"}</strong>
                 <span className="c4-case-status" data-status={current || "none"}>{STATUS_LABEL[current] ? v4(STATUS_LABEL[current]) : current || "—"}</span>
@@ -200,13 +210,14 @@ export function ShortcutRail({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-shortcut-rail" aria-label={v4("scTitle")} data-shortcut-rail="1">
-      <header className="c4-pay-head">
+    <section className="c4-shortcut-rail c4-shortcut-gallery" aria-label={v4("scTitle")} data-shortcut-rail="1" data-desk="gallery">
+      <header className="c4-shortcut-mast">
+        <p className="c4-shortcut-seal" data-logo="mono">7FX</p>
         <div>
           <p className="c4-pay-kicker">{v4("scSub")}</p>
           <h2 className="c4-title">{v4("scTitle")}</h2>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-shortcut-count">{shown.length}</p>
       </header>
       <p className="c4-meta">{v4("scHint")}</p>
       <form className="c4-row" onSubmit={(event) => {
@@ -226,7 +237,7 @@ export function ShortcutRail({ base, v4 }: { base: string; v4: V4 }) {
         <button type="submit" className="c4-btn">{v4("scAdd")}</button>
         <span className="c4-meta">{v4("scLocal")}</span>
       </form>
-      {!rows.length && <p className="c4-pay-empty">{v4("scEmpty")}</p>}
+      {!rows.length && <p className="c4-pay-empty c4-shortcut-empty">{v4("scEmpty")}</p>}
       <ol className="c4-shortcut-list">
         {shown.map((item, index) => (
           <li key={item.id}>
