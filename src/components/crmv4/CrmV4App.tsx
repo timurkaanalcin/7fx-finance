@@ -221,6 +221,7 @@ import { CabinetDrawers, WatermarkMarks } from "./round230";
 import { ReportMargins, ReportQuires } from "./round231";
 import { DutySlips, ProfileCrests } from "./round232";
 import { HourMarks, LintelWatches } from "./round233";
+import { NoticeBells, TicketSeals } from "./round234";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -928,6 +929,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "pcr") return v4("pcrTitle");
     if (tab === "lnw") return v4("lnwTitle");
     if (tab === "hmk") return v4("hmkTitle");
+    if (tab === "nbl") return v4("nblTitle");
+    if (tab === "tsl") return v4("tslTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1321,6 +1324,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "pcr") return v4("pcrSub");
     if (tab === "lnw") return v4("lnwSub");
     if (tab === "hmk") return v4("hmkSub");
+    if (tab === "nbl") return v4("nblSub");
+    if (tab === "tsl") return v4("tslSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1847,6 +1852,8 @@ function Shell({ base, section, name }: Props) {
             {view === "pcr" && <ProfileCrests base={base} v4={v4} />}
             {view === "lnw" && <LintelWatches base={base} v4={v4} />}
             {view === "hmk" && <HourMarks base={base} v4={v4} />}
+            {view === "nbl" && <NoticeBells base={base} v4={v4} />}
+            {view === "tsl" && <TicketSeals base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
