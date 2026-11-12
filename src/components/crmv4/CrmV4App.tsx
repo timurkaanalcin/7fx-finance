@@ -229,6 +229,7 @@ import { BadgeMarks, BerthSlips } from "./round238";
 import { AlcoveSlips, PassportStamps } from "./round239";
 import { ColophonMarks, TerraceCards } from "./round240";
 import { CallSheets, PressPlates } from "./round241";
+import { DawnBooks, VowelMarks } from "./round242";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -952,6 +953,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "clp") return v4("clpTitle");
     if (tab === "csh") return v4("cshTitle");
     if (tab === "ppl") return v4("pplTitle");
+    if (tab === "dnb") return v4("dnbTitle");
+    if (tab === "lcr") return v4("lcrTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1361,6 +1364,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "clp") return v4("clpSub");
     if (tab === "csh") return v4("cshSub");
     if (tab === "ppl") return v4("pplSub");
+    if (tab === "dnb") return v4("dnbSub");
+    if (tab === "lcr") return v4("lcrSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1561,7 +1566,7 @@ function Shell({ base, section, name }: Props) {
             {view === "winlog" && <WinLog v4={v4} tx={tx} />}
             {view === "vip" && <VipWatch base={base} v4={v4} locale={locale} tx={tx} />}
             {view === "packet" && <HandoffPacket v4={v4} />}
-            {view === "clocks" && <DeskClocks v4={v4} />}
+            {view === "clocks" && <DeskClocks base={base} v4={v4} />}
             {view === "snippets" && <SnippetPad v4={v4} />}
             {view === "pulse" && <QueuePulse base={base} v4={v4} tx={tx} />}
             {view === "swatches" && <RouteSwatches base={base} v4={v4} />}
@@ -1903,6 +1908,8 @@ function Shell({ base, section, name }: Props) {
             {view === "clp" && <ColophonMarks base={base} v4={v4} />}
             {view === "csh" && <CallSheets base={base} v4={v4} />}
             {view === "ppl" && <PressPlates base={base} v4={v4} />}
+            {view === "dnb" && <DawnBooks base={base} v4={v4} />}
+            {view === "lcr" && <VowelMarks base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

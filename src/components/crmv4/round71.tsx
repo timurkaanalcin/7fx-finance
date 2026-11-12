@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { CrmV4CopyKey } from "@/lib/crmv4/copy";
 import { readJson, writeJson } from "@/lib/crmv4/local";
+import { crmv4Href } from "@/lib/crmv4/sections";
 import { QUIET_KEY, readQuiet } from "@/lib/crmv4/round56";
 import {
   CLOCK_KEY,
@@ -33,7 +35,7 @@ const ZONE_KEY: Record<ZoneId, CrmV4CopyKey> = {
   utc: "ckUtc",
 };
 
-export function DeskClocks({ v4 }: { v4: V4 }) {
+export function DeskClocks({ base, v4 }: { base: string; v4: V4 }) {
   const [zones, setZones] = useState<ZoneId[]>([]);
   const [now, setNow] = useState(() => new Date());
   const [quiet, setQuiet] = useState({ start: "", end: "" });
@@ -52,17 +54,23 @@ export function DeskClocks({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-clock-strip" aria-label={v4("ckTitle")} data-clock-strip="1">
-      <header className="c4-pay-head">
+    <section className="c4-clock-strip c4-clock-salon" aria-label={v4("ckTitle")} data-clock-strip="1" data-clock-salon="1">
+      <header className="c4-clock-mast">
+        <p className="c4-clock-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("ckSub")}</p>
+          <p className="c4-clock-kicker">{v4("ckSub")}</p>
           <h2 className="c4-title">{v4("ckTitle")}</h2>
         </div>
-        <p className="c4-meta">{clocks.length}</p>
+        <ol className="c4-clock-legend" aria-label={v4("ckTitle")}>
+          <li data-tone="gold">{v4("ckSalonGold")}</li>
+          <li data-tone="ink">{v4("ckSalonInk")}</li>
+          <li data-tone="ivory">{v4("ckSalonIvory")}</li>
+        </ol>
+        <p className="c4-clock-count">{v4("ckSalonCount")} {clocks.length}</p>
       </header>
-      <p className="c4-meta">{v4("ckHint")}</p>
-      <p className="c4-meta">{quietOn ? `${v4("ckQuiet")} ${quiet.start}–${quiet.end}` : v4("ckNoQuiet")}</p>
-      <div className="c4-row" role="group" aria-label={v4("ckSub")}>
+      <p className="c4-clock-rule">{v4("ckHint")}</p>
+      <p className="c4-clock-quiet" data-on={quietOn ? "1" : "0"}>{quietOn ? `${v4("ckQuiet")} ${quiet.start}–${quiet.end}` : v4("ckNoQuiet")}</p>
+      <div className="c4-clock-zones" role="group" aria-label={v4("ckSub")}>
         {DESK_ZONES.map((item) => (
           <button
             key={item.id}
@@ -76,17 +84,21 @@ export function DeskClocks({ v4 }: { v4: V4 }) {
           </button>
         ))}
       </div>
-      {!clocks.length && <p className="c4-pay-empty">{v4("ckEmpty")}</p>}
+      {!clocks.length && <p className="c4-clock-empty">{v4("ckEmpty")}</p>}
       <ul className="c4-clock-list">
         {clocks.map((clock) => (
-          <li key={clock.id} className="c4-clock-card" data-zone={clock.zone} data-quiet={clock.quiet ? "1" : "0"}>
-            <p className="c4-meta">{v4(ZONE_KEY[clock.id])}</p>
-            <p className="c4-clock-time">{clock.time}</p>
-            <p className="c4-meta">{clock.zone}</p>
-            {clock.quiet && <p className="c4-meta">{v4("ckQuietOn")}</p>}
+          <li key={clock.id} className="c4-clock-card" data-zone={clock.zone} data-city={clock.id} data-quiet={clock.quiet ? "1" : "0"}>
+            <p className="c4-clock-city">{v4(ZONE_KEY[clock.id])}</p>
+            <p className="c4-clock-face"><span className="c4-clock-time">{clock.time}</span></p>
+            <p className="c4-clock-zone">{clock.zone}</p>
+            {clock.quiet && <p className="c4-clock-flag">{v4("ckQuietOn")}</p>}
           </li>
         ))}
       </ul>
+      <p className="c4-clock-links">
+        <Link href={crmv4Href(base, "dnb")}>{v4("dnbTitle")}</Link>
+        <Link href={crmv4Href(base, "lcr")}>{v4("lcrTitle")}</Link>
+      </p>
     </section>
   );
 }
