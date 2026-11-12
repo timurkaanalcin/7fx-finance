@@ -224,6 +224,7 @@ import { HourMarks, LintelWatches } from "./round233";
 import { NoticeBells, TicketSeals } from "./round234";
 import { StageMarks, VisitCards } from "./round235";
 import { DialectMarks, RefectorySlips } from "./round236";
+import { ObservatorySlips, PostureMarks } from "./round237";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -937,6 +938,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "smk") return v4("smkTitle");
     if (tab === "rsl") return v4("rfsTitle");
     if (tab === "dlg") return v4("dlgTitle");
+    if (tab === "obv") return v4("obvTitle");
+    if (tab === "psr") return v4("psrTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1336,6 +1339,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "smk") return v4("smkSub");
     if (tab === "rsl") return v4("rfsSub");
     if (tab === "dlg") return v4("dlgSub");
+    if (tab === "obv") return v4("obvSub");
+    if (tab === "psr") return v4("psrSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1868,8 +1873,10 @@ function Shell({ base, section, name }: Props) {
             {view === "smk" && <StageMarks base={base} v4={v4} />}
             {view === "rsl" && <RefectorySlips base={base} v4={v4} />}
             {view === "dlg" && <DialectMarks base={base} v4={v4} />}
+            {view === "obv" && <ObservatorySlips base={base} v4={v4} />}
+            {view === "psr" && <PostureMarks base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
-            {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
+            {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
             {view === "agenda" && <AgendaPage base={base} v4={v4} locale={locale} />}
             {view === "roster" && <DeskStaff v4={v4} />}

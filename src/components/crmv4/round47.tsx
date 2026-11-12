@@ -167,13 +167,22 @@ export function RiskDesk({ base, v4, tx, locale }: { base: string; v4: V4; tx: T
   }
 
   return (
-    <section className="c4-risk-desk c4-risk-salon" aria-label={v4("rkTitle")} data-risk="1">
-      <header className="c4-pay-head c4-risk-salon-mast">
+    <section className="c4-risk-desk c4-risk-salon c4-risk-observatory" aria-label={v4("rkTitle")} data-risk="1" data-desk="observatory">
+      <header className="c4-pay-head c4-risk-salon-mast c4-risk-observatory-mast">
+        <p className="c4-risk-salon-plate c4-risk-observatory-plate" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker c4-risk-salon-kicker">{v4("rkSub")}</p>
-          <h2 className="c4-title c4-risk-salon-title">{v4("rkTitle")}</h2>
+          <p className="c4-pay-kicker c4-risk-salon-kicker c4-risk-observatory-kicker">{v4("rkSub")}</p>
+          <h2 className="c4-title c4-risk-salon-title c4-risk-observatory-title">{v4("rkTitle")}</h2>
         </div>
-        <p className="c4-risk-salon-plate" data-logo="mono">7FX</p>
+        <ol className="c4-risk-observatory-index" aria-label={v4("rkTitle")}>
+          <li data-tone="gold">{v4("obvPeak")}</li>
+          <li data-tone="ink">{v4("obvLate")}</li>
+          <li data-tone="ivory">{v4("obvQuiet")}</li>
+        </ol>
+        <p className="c4-risk-observatory-links">
+          <Link href={crmv4Href(base, "obv")}>{v4("obvTitle")}</Link>
+          <Link href={crmv4Href(base, "psr")}>{v4("psrTitle")}</Link>
+        </p>
       </header>
       <p className="c4-meta">{v4("rkHint")}</p>
       {viewer && <p className="c4-meta">{v4("rkViewer")}</p>}
