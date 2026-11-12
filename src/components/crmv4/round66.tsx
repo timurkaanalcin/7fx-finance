@@ -127,13 +127,20 @@ export function EodList({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-eod-pad" aria-label={v4("eodTitle")} data-eod-pad="1">
-      <header className="c4-pay-head">
+    <section className="c4-eod-pad c4-eod-salon" aria-label={v4("eodTitle")} data-eod-pad="1" data-desk="scriptorium">
+      <header className="c4-eod-mast">
+        <p className="c4-eod-seal" data-logo="mono">7FX</p>
+        <div className="c4-eod-rule" aria-hidden="true"><i /><i /><i /></div>
         <div>
           <p className="c4-pay-kicker">{v4("eodSub")}</p>
           <h2 className="c4-title">{v4("eodTitle")}</h2>
         </div>
-        <p className="c4-meta">{v4("eodProgress")} {mark.done}/{mark.total}</p>
+        <ol className="c4-eod-index" aria-label={v4("eodTitle")}>
+          <li data-tone="gold">{v4("eodSalonChampagne")}</li>
+          <li data-tone="ink">{v4("eodSalonGraphite")}</li>
+          <li data-tone="ivory">{v4("eodSalonIvory")}</li>
+          <li>{v4("eodProgress")} {mark.done}/{mark.total}</li>
+        </ol>
       </header>
       <p className="c4-meta">{v4("eodHint")}</p>
       <p className="c4-meta">{v4("eodLocal")}</p>
@@ -155,7 +162,7 @@ export function EodList({ v4 }: { v4: V4 }) {
         <button type="submit" className="c4-btn">{v4("eodAdd")}</button>
       </form>
       <p className="c4-meta">{v4("eodBlank")}</p>
-      {!shown.length && <p className="c4-pay-empty">{v4("eodEmpty")}</p>}
+      {!shown.length && <p className="c4-eod-empty">{v4("eodEmpty")}</p>}
       <ul className="c4-eod-list">
         {shown.map((step) => (
           <li key={step.id} className="c4-eod-step" data-pinned={step.pinned ? "1" : "0"} data-done={step.done ? "1" : "0"}>
