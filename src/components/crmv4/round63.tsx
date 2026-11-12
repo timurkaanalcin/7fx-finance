@@ -103,7 +103,7 @@ export function RejectBoard({ base, v4, locale, tx }: { base: string; v4: V4; lo
   );
 }
 
-export function VaultPad({ v4 }: { v4: V4 }) {
+export function VaultPad({ v4, base = "/izcrm/crmv4" }: { v4: V4; base?: string }) {
   const [hints, setHints] = useState<VaultHint[]>([]);
   const [query, setQuery] = useState("");
   const [label, setLabel] = useState("");
@@ -120,19 +120,28 @@ export function VaultPad({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-vault-pad" aria-label={v4("vhTitle")} data-vault-pad="1">
-      <header className="c4-pay-head">
+    <section className="c4-vault-pad c4-vault-quay" aria-label={v4("vhTitle")} data-vault-pad="1" data-desk="quay">
+      <header className="c4-pay-head c4-vault-quay-mast">
+        <p className="c4-vault-quay-plate" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("vhSub")}</p>
-          <h2 className="c4-title">{v4("vhTitle")}</h2>
+          <p className="c4-pay-kicker c4-vault-quay-kicker">{v4("vhSub")}</p>
+          <h2 className="c4-title c4-vault-quay-title">{v4("vhTitle")}</h2>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <ol className="c4-vault-quay-index" aria-label={v4("vhTitle")}>
+          <li data-tone="gold">{v4("vhSub")}</li>
+          <li data-tone="ink">{v4("vhSearch")}</li>
+          <li data-tone="wool">{shown.length}</li>
+        </ol>
+        <p className="c4-vault-quay-links">
+          <Link href={crmv4Href(base, "brt")}>{v4("brtTitle")}</Link>
+          <Link href={crmv4Href(base, "bdg")}>{v4("bdgTitle")}</Link>
+        </p>
       </header>
       <p className="c4-meta">{v4("vhHint")}</p>
       <p className="c4-meta">{v4("vhLocal")}</p>
       <label className="c4-lab">
         <span>{v4("vhSearch")}</span>
-        <input className="c4-field" aria-label={v4("vhSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
+        <input className="c4-field c4-vault-quay-search" aria-label={v4("vhSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       <form className="c4-row" onSubmit={(event) => {
         event.preventDefault();
@@ -159,10 +168,10 @@ export function VaultPad({ v4 }: { v4: V4 }) {
       </form>
       <p className="c4-meta">{v4("vhBlank")}</p>
       {warn && <p className="c4-meta" data-vault-warn="">{warn}</p>}
-      {!shown.length && <p className="c4-pay-empty">{v4("vhEmpty")}</p>}
-      <ul className="c4-vault-list">
+      {!shown.length && <p className="c4-pay-empty c4-vault-quay-empty">{v4("vhEmpty")}</p>}
+      <ul className="c4-vault-list c4-vault-quay-list">
         {shown.map((hint) => (
-          <li key={hint.id} className="c4-vault-card" data-pinned={hint.pinned ? "1" : "0"}>
+          <li key={hint.id} className="c4-vault-card c4-vault-quay-card" data-pinned={hint.pinned ? "1" : "0"}>
             <strong>{hint.label}</strong>
             {hint.login && <p className="c4-meta">{v4("vhLogin")} {hint.login}</p>}
             <div className="c4-row">
