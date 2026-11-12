@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { CrmV4CopyKey } from "@/lib/crmv4/copy";
+import { crmv4Href } from "@/lib/crmv4/sections";
 import { methodName } from "@/lib/crmv4/round15";
 import {
   barShare,
@@ -35,8 +37,9 @@ function Bars({ label, rows }: { label: string; rows: { name: string; text: stri
   );
 }
 
-export function InsightsHome({ v4, locale }: { v4: V4; locale: string }) {
+export function InsightsHome({ base = "/izcrm/crmv4", v4, locale }: { base?: string; v4: V4; locale: string }) {
   const [days, setDays] = useState<PeriodDays>(30);
+  const [query, setQuery] = useState("");
   const now = Date.now();
   const people = useJson<{ users?: Person[] }>("/api/admin/users?take=80&meta=0&role=TRADER");
   const deposits = useJson<{ requests?: Deposit[] }>("/api/admin/deposits?take=80");
@@ -53,6 +56,8 @@ export function InsightsHome({ v4, locale }: { v4: V4; locale: string }) {
     { key: "trade" as const, name: v4("insTrade") },
   ];
   const top = funnel.registered || 1;
+  const needle = query.trim().toLowerCase();
+  const shownSteps = steps.filter((step) => !needle || step.name.toLowerCase().includes(needle));
   const cash = (deposits.data?.requests || []).map((row) => ({
     amount: row.amount,
     currency: row.currency,
@@ -63,10 +68,26 @@ export function InsightsHome({ v4, locale }: { v4: V4; locale: string }) {
   const byMethod = moneyGroups(cash.map((row) => ({ ...row, label: row.method })), days, now);
   const byCountry = moneyGroups(cash.map((row) => ({ ...row, label: row.country || v4("insNoCountry") })), days, now);
   return (
-    <section className="c4-insight-luxe" aria-label={v4("insTitle")} data-insights="1">
-      <h2 className="c4-title">{v4("insTitle")}</h2>
-      <p className="c4-muted">{v4("insHint")}</p>
-      <div className="c4-line-filters" role="group" aria-label={v4("insDays")}>
+    <section className="c4-insight-luxe c4-insight-observatory" aria-label={v4("insTitle")} data-insights="1" data-desk="observatory">
+      <header className="c4-insight-observatory-mast">
+        <p className="c4-insight-observatory-plate" data-logo="mono">7FX</p>
+        <div>
+          <p className="c4-insight-observatory-kicker">{v4("insHint")}</p>
+          <h2 className="c4-title c4-insight-observatory-title">{v4("insTitle")}</h2>
+        </div>
+        <ol className="c4-insight-observatory-index" aria-label={v4("insTitle")}>
+          <li data-tone="gold">{v4("insRegistered")}</li>
+          <li data-tone="ink">{v4("insKyc")}</li>
+          <li data-tone="ivory">{v4("insTrade")}</li>
+        </ol>
+        <p className="c4-insight-observatory-links">
+          <Link href={crmv4Href(base, "obv")}>{v4("obvTitle")}</Link>
+          <Link href={crmv4Href(base, "psr")}>{v4("psrTitle")}</Link>
+        </p>
+      </header>
+      <p className="c4-muted c4-insight-observatory-lead">{v4("insHint")}</p>
+      <label className="c4-lab"><span>{v4("insFunnel")}</span><input className="c4-field c4-insight-observatory-search" aria-label={v4("insFunnel")} value={query} onChange={(event) => setQuery(event.target.value)} /></label>
+      <div className="c4-line-filters c4-insight-observatory-tools" role="group" aria-label={v4("insDays")}>
         {DAYS.map((item) => (
           <button key={item} type="button" className="c4-chip" data-on={days === item ? "1" : "0"} onClick={() => setDays(item)}>{item} {v4("insDays")}</button>
         ))}
@@ -75,14 +96,14 @@ export function InsightsHome({ v4, locale }: { v4: V4; locale: string }) {
       <p className="c4-muted">{v4("insFunnelHint")}</p>
       {!loading && !funnel.registered && <p className="c4-empty-gold">{v4("insEmpty")}</p>}
       <Bars
-        label={steps.map((step) => `${step.name} ${funnel[step.key]}`).join(", ")}
-        rows={steps.map((step) => ({ name: step.name, text: String(funnel[step.key]), share: Math.round((funnel[step.key] / top) * 100) }))}
+        label={shownSteps.map((step) => `${step.name} ${funnel[step.key]}`).join(", ")}
+        rows={shownSteps.map((step) => ({ name: step.name, text: String(funnel[step.key]), share: Math.round((funnel[step.key] / top) * 100) }))}
       />
-      <table className="c4-table">
+      <table className="c4-table c4-insight-observatory-table">
         <caption className="c4-muted">{v4("insTable")}</caption>
         <thead><tr><th>{v4("insFunnel")}</th><th>{v4("insCount")}</th></tr></thead>
         <tbody>
-          {steps.map((step) => <tr key={step.key}><td>{step.name}</td><td>{funnel[step.key]}</td></tr>)}
+          {shownSteps.map((step) => <tr key={step.key}><td>{step.name}</td><td>{funnel[step.key]}</td></tr>)}
         </tbody>
       </table>
       <MoneyBlock title={v4("insByMethod")} groups={byMethod} v4={v4} locale={locale} empty={v4("insEmpty")} loading={loading} />
