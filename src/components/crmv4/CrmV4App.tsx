@@ -236,6 +236,7 @@ import { MeridianMarks, OrchardBenches } from "./round245";
 import { PostmarkLanes, QuireSlips } from "./round246";
 import { EmailCrests, NicheCards } from "./round247";
 import { CarrelSlips, LoginSeals } from "./round248";
+import { CampaignMarks, FerryPasses } from "./round249";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -971,6 +972,10 @@ function Shell({ base, section, name }: Props) {
     if (tab === "pmk") return v4("pmkTitle");
     if (tab === "nch") return v4("nchTitle");
     if (tab === "emc") return v4("emcTitle");
+    if (tab === "crl") return v4("crlTitle");
+    if (tab === "lgs") return v4("lgsTitle");
+    if (tab === "fry") return v4("fryTitle");
+    if (tab === "cmp") return v4("rfrTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1392,6 +1397,10 @@ function Shell({ base, section, name }: Props) {
     if (tab === "pmk") return v4("pmkSub");
     if (tab === "nch") return v4("nchSub");
     if (tab === "emc") return v4("emcSub");
+    if (tab === "crl") return v4("crlSub");
+    if (tab === "lgs") return v4("lgsSub");
+    if (tab === "fry") return v4("frySub");
+    if (tab === "cmp") return v4("rfrSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1948,6 +1957,8 @@ function Shell({ base, section, name }: Props) {
             {view === "emc" && <EmailCrests base={base} v4={v4} />}
             {view === "crl" && <CarrelSlips base={base} v4={v4} />}
             {view === "lgs" && <LoginSeals base={base} v4={v4} />}
+            {view === "fry" && <FerryPasses base={base} v4={v4} />}
+            {view === "cmp" && <CampaignMarks base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
