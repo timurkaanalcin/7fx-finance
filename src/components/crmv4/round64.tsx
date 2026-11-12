@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { CrmV4CopyKey } from "@/lib/crmv4/copy";
 import { readJson, writeJson } from "@/lib/crmv4/local";
@@ -22,12 +23,13 @@ import {
   type HeatMode,
   type HeatPerson,
 } from "@/lib/crmv4/round64";
+import { crmv4Href } from "@/lib/crmv4/sections";
 import { useEscape } from "./round40";
 import { useJson, type Tx } from "./kit";
 
 export type V4 = (key: CrmV4CopyKey) => string;
 
-export function HeatStrip({ v4, tx }: { v4: V4; tx: Tx }) {
+export function HeatStrip({ v4, tx, base = "/izcrm/crmv4" }: { v4: V4; tx: Tx; base?: string }) {
   const data = useJson<{ users?: HeatPerson[] }>("/api/admin/users?take=40&meta=0&role=TRADER");
   const [mode, setMode] = useState<HeatMode>("country");
   const [query, setQuery] = useState("");
@@ -51,18 +53,27 @@ export function HeatStrip({ v4, tx }: { v4: V4; tx: Tx }) {
   }
 
   return (
-    <section className="c4-heat-strip" aria-label={v4("htTitle")} data-heat-strip="1">
-      <header className="c4-pay-head">
+    <section className="c4-heat-strip c4-heat-quay" aria-label={v4("htTitle")} data-heat-strip="1" data-desk="quay">
+      <header className="c4-pay-head c4-heat-quay-mast">
+        <p className="c4-heat-quay-plate" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("htSub")}</p>
-          <h2 className="c4-title">{v4("htTitle")}</h2>
+          <p className="c4-pay-kicker c4-heat-quay-kicker">{v4("htSub")}</p>
+          <h2 className="c4-title c4-heat-quay-title">{v4("htTitle")}</h2>
         </div>
-        <p className="c4-meta">{v4("htCount")} {loaded.length}</p>
+        <ol className="c4-heat-quay-index" aria-label={v4("htTitle")}>
+          <li data-tone="gold">{v4("htCountry")}</li>
+          <li data-tone="ink">{v4("htDesk")}</li>
+          <li data-tone="wool">{loaded.length}</li>
+        </ol>
+        <p className="c4-heat-quay-links">
+          <Link href={crmv4Href(base, "brt")}>{v4("brtTitle")}</Link>
+          <Link href={crmv4Href(base, "bdg")}>{v4("bdgTitle")}</Link>
+        </p>
       </header>
-      <p className="c4-meta">{v4("htHint")}</p>
+      <p className="c4-meta c4-heat-quay-lead">{v4("htHint")}</p>
       <label className="c4-lab">
         <span>{v4("htSearch")}</span>
-        <input className="c4-field" aria-label={v4("htSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
+        <input className="c4-field c4-heat-quay-search" aria-label={v4("htSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       <div className="c4-row" role="group" aria-label={v4("htCountry")}>
         <button type="button" className="c4-chip" data-on={mode === "country" ? "1" : "0"} aria-pressed={mode === "country"} onClick={() => storeMode("country")}>{v4("htCountry")}</button>
@@ -70,15 +81,15 @@ export function HeatStrip({ v4, tx }: { v4: V4; tx: Tx }) {
       </div>
       {data.loading && !loaded.length && <p className="c4-meta">{v4("htLoading")}</p>}
       {data.error && <p className="c4-meta">{v4("htFailed")} {tx("failed")}</p>}
-      {!data.loading && !data.error && !loaded.length && <p className="c4-pay-empty">{v4("htNone")}</p>}
-      {!data.loading && !data.error && loaded.length > 0 && !cells.length && <p className="c4-pay-empty">{v4("htEmpty")}</p>}
-      <ul className="c4-heat-cells">
+      {!data.loading && !data.error && !loaded.length && <p className="c4-pay-empty c4-heat-quay-empty">{v4("htNone")}</p>}
+      {!data.loading && !data.error && loaded.length > 0 && !cells.length && <p className="c4-pay-empty c4-heat-quay-empty">{v4("htEmpty")}</p>}
+      <ul className="c4-heat-cells c4-heat-quay-cells">
         {cells.map((cell) => {
           const id = pinId(mode, cell.key);
           const pinned = pins.includes(id);
           const label = cell.key || (mode === "desk" ? v4("htNoDesk") : v4("htNoCountry"));
           return (
-            <li key={id} className="c4-heat-cell" data-pinned={pinned ? "1" : "0"} data-hot={cell.count === hottest && cell.count > 0 ? "1" : "0"} data-group={cell.key || "none"}>
+            <li key={id} className="c4-heat-cell c4-heat-quay-cell" data-pinned={pinned ? "1" : "0"} data-hot={cell.count === hottest && cell.count > 0 ? "1" : "0"} data-group={cell.key || "none"}>
               <div className="c4-row c4-between">
                 <strong>{label}</strong>
                 <span className="c4-heat-count">{cell.count}</span>
