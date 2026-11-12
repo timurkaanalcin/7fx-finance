@@ -97,13 +97,17 @@ export function AgendaPage({ base, v4, locale }: { base: string; v4: V4; locale:
     writeJson(FOLLOW_KEY, next);
   }
   return (
-    <section className="c4-agenda-luxe c4-agenda-gallery" aria-label={v4("agTitle")} data-agenda="1">
+    <section className="c4-agenda-luxe c4-agenda-gallery c4-agenda-refectory" aria-label={v4("agTitle")} data-agenda="1" data-desk="refectory">
       <header className="c4-agenda-gallery-mast">
         <div>
           <p className="c4-agenda-gallery-kicker">{v4("agHint")}</p>
           <h2 className="c4-title c4-agenda-gallery-title">{v4("agTitle")}</h2>
         </div>
         <p className="c4-agenda-gallery-plate" data-logo="mono">7FX</p>
+        <p className="c4-agenda-refectory-links">
+          <Link href={crmv4Href(base, "rsl")}>{v4("rfsTitle")}</Link>
+          <Link href={crmv4Href(base, "dlg")}>{v4("dlgTitle")}</Link>
+        </p>
       </header>
       <div className="c4-line-filters c4-agenda-gallery-tools">
         <button type="button" className="c4-chip" data-on={mode === "day" ? "1" : "0"} onClick={() => setMode("day")}>{v4("agDay")}</button>
@@ -112,7 +116,7 @@ export function AgendaPage({ base, v4, locale }: { base: string; v4: V4; locale:
         <button type="button" className="c4-btn" onClick={() => setCursor(today)}>{today}</button>
         <button type="button" className="c4-btn" onClick={() => setCursor(shiftDay(cursor, mode === "week" ? 7 : 1))}>{v4("agNext")}</button>
       </div>
-      <label className="c4-lab"><span>{v4("agSearch")}</span><input className="c4-field" aria-label={v4("agSearch")} value={query} onChange={(event) => setQuery(event.target.value)} /></label>
+      <label className="c4-lab"><span>{v4("agSearch")}</span><input className="c4-field c4-agenda-refectory-search" aria-label={v4("agSearch")} value={query} onChange={(event) => setQuery(event.target.value)} /></label>
       <h3 className="c4-title c4-agenda-gallery-lane-title">{v4("agOverdue")}</h3>
       {!late.length && <p className="c4-empty-gold">{v4("agNone")}</p>}
       <ul className="c4-agenda-lane c4-agenda-gallery-lane">{late.map((card) => <FollowItem key={`${card.source}-${card.id}-${card.day}`} base={base} card={card} v4={v4} onSave={save} />)}</ul>
