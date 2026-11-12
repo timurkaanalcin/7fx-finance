@@ -163,13 +163,35 @@ export function DayDesk({ base, name, v4, locale }: { base: string; name: string
   const names: Record<string, string> = {};
   for (const row of users) names[row.id] = row.name || row.email || row.id;
   return (
-    <section className="c4-day" aria-label={v4("dayTitle")} data-day="">
-      <h2 className="c4-title">{v4("dayTitle")}</h2>
-      <p className="c4-meta">{v4("dayHint")}</p>
+    <section className="c4-day c4-day-oratory" aria-label={v4("dayTitle")} data-day="" data-desk="oratory">
+      <header className="c4-day-oratory-mast">
+        <p className="c4-day-oratory-seal" data-logo="mono">7FX</p>
+        <div>
+          <p className="c4-day-oratory-kicker">{v4("daySub")}</p>
+          <h2 className="c4-title c4-day-oratory-title">{v4("dayTitle")}</h2>
+        </div>
+        <ol className="c4-day-oratory-index" aria-label={v4("dayTitle")}>
+          <li data-tone="gold">{v4("dayAssigned")}</li>
+          <li data-tone="ink">{v4("dayOverdue")}</li>
+          <li data-tone="ivory">{v4("dayTasks")}</li>
+        </ol>
+      </header>
+      <p className="c4-day-oratory-links">
+        <Link href={crmv4Href(base, "lnw")}>{v4("lnwTitle")}</Link>
+        <Link href={crmv4Href(base, "hmk")}>{v4("hmkTitle")}</Link>
+        <Link href={crmv4Href(base, "prefs")}>{v4("prefTitle")}</Link>
+      </p>
+      <p className="c4-meta c4-day-oratory-lead">{v4("dayHint")}</p>
       <p className="c4-meta">{v4("dayName")} {name || "—"} · {v4("dayLoaded")} {users.length}</p>
-      <article className="c4-day-card" data-day-block="assigned">
+      <ul className="c4-day-oratory-kpis" aria-label={v4("dayTitle")}>
+        <li data-tone="gold"><span>{v4("dayAssigned")}</span><strong>{mine.length}</strong></li>
+        <li data-tone="late"><span>{v4("dayOverdue")}</span><strong>{late.length}</strong></li>
+        <li data-tone="ink"><span>{v4("dayTasks")}</span><strong>{flat.length}</strong></li>
+        <li data-tone="ivory"><span>{v4("dayLists")}</span><strong>{pins.length}</strong></li>
+      </ul>
+      <article className="c4-day-card c4-day-oratory-card" data-day-block="assigned">
         <h3 className="c4-title">{v4("dayAssigned")} <span className="c4-count">{mine.length}</span></h3>
-        {!mine.length && <p className="c4-meta">{v4("dayNone")}</p>}
+        {!mine.length && <p className="c4-meta c4-day-oratory-empty">{v4("dayNone")}</p>}
         <ul>
           {mine.map((row) => (
             <li key={row.id}>
@@ -179,9 +201,9 @@ export function DayDesk({ base, name, v4, locale }: { base: string; name: string
           ))}
         </ul>
       </article>
-      <article className="c4-day-card" data-day-block="overdue">
+      <article className="c4-day-card c4-day-oratory-card" data-day-block="overdue">
         <h3 className="c4-title">{v4("dayOverdue")} <span className="c4-count">{late.length}</span></h3>
-        {!late.length && <p className="c4-meta">{v4("dayNoOver")}</p>}
+        {!late.length && <p className="c4-meta c4-day-oratory-empty">{v4("dayNoOver")}</p>}
         <ul>
           {late.map((row) => (
             <li key={row.id}>
@@ -191,9 +213,9 @@ export function DayDesk({ base, name, v4, locale }: { base: string; name: string
           ))}
         </ul>
       </article>
-      <article className="c4-day-card" data-day-block="tasks">
+      <article className="c4-day-card c4-day-oratory-card" data-day-block="tasks">
         <h3 className="c4-title">{v4("dayTasks")} <span className="c4-count">{flat.length}</span></h3>
-        {!flat.length && <p className="c4-meta">{v4("dayNoTasks")}</p>}
+        {!flat.length && <p className="c4-meta c4-day-oratory-empty">{v4("dayNoTasks")}</p>}
         <ul>
           {flat.map((task) => (
             <li key={`${task.customerId}-${task.id}`} data-done={task.done ? "1" : "0"}>
@@ -208,9 +230,9 @@ export function DayDesk({ base, name, v4, locale }: { base: string; name: string
           ))}
         </ul>
       </article>
-      <article className="c4-day-card" data-day-block="lists">
+      <article className="c4-day-card c4-day-oratory-card" data-day-block="lists">
         <h3 className="c4-title">{v4("dayLists")}</h3>
-        {!pins.length && <p className="c4-meta">{v4("dayNoLists")}</p>}
+        {!pins.length && <p className="c4-meta c4-day-oratory-empty">{v4("dayNoLists")}</p>}
         <ul>
           {lists.map((list) => {
             const on = pins.includes(list.id);

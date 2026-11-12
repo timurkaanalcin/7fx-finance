@@ -151,12 +151,23 @@ export function PrefsHub({ v4, locale }: { v4: V4; locale: string }) {
     return where === "tab" ? window.sessionStorage : window.localStorage;
   }
   return (
-    <section className="c4-pref-luxe" aria-label={v4("prefTitle")} data-prefs="1">
-      <h2 className="c4-title">{v4("prefTitle")}</h2>
-      <p className="c4-muted">{v4("prefHint")}</p>
+    <section className="c4-pref-luxe c4-pref-oratory" aria-label={v4("prefTitle")} data-prefs="1" data-desk="oratory">
+      <header className="c4-pref-oratory-mast">
+        <p className="c4-pref-oratory-seal" data-logo="mono">7FX</p>
+        <div>
+          <p className="c4-pref-oratory-kicker">{v4("prefSub")}</p>
+          <h2 className="c4-title c4-pref-oratory-title">{v4("prefTitle")}</h2>
+        </div>
+        <ol className="c4-pref-oratory-index" aria-label={v4("prefTitle")}>
+          <li data-tone="gold">{v4("prefBrowser")}</li>
+          <li data-tone="ink">{v4("prefTab")}</li>
+          <li data-tone="ivory">{v4("prefSearch")}</li>
+        </ol>
+      </header>
+      <p className="c4-muted c4-pref-oratory-lead">{v4("prefHint")}</p>
       <p className="c4-muted">{v4("prefKept")}</p>
-      <label className="c4-lab"><span>{v4("prefSearch")}</span><input className="c4-field" aria-label={v4("prefSearch")} value={query} onChange={(event) => setQuery(event.target.value)} /></label>
-      {!shown.length && <p className="c4-empty-gold">{v4("prefNone")}</p>}
+      <label className="c4-lab c4-pref-oratory-find"><span>{v4("prefSearch")}</span><input className="c4-field c4-pref-oratory-search" aria-label={v4("prefSearch")} value={query} onChange={(event) => setQuery(event.target.value)} /></label>
+      {!shown.length && <p className="c4-empty-gold c4-pref-oratory-empty">{v4("prefNone")}</p>}
       <ul className="c4-pref-rows">
         {shown.map((row) => {
           const title = keyTitle(row.key, lang);

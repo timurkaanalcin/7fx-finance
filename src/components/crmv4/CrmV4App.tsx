@@ -220,6 +220,7 @@ import { AisleNiches, EscutcheonMarks } from "./round229";
 import { CabinetDrawers, WatermarkMarks } from "./round230";
 import { ReportMargins, ReportQuires } from "./round231";
 import { DutySlips, ProfileCrests } from "./round232";
+import { HourMarks, LintelWatches } from "./round233";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -925,6 +926,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "rmgn") return v4("rmgTitle");
     if (tab === "dty") return v4("dtyTitle");
     if (tab === "pcr") return v4("pcrTitle");
+    if (tab === "lnw") return v4("lnwTitle");
+    if (tab === "hmk") return v4("hmkTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1316,6 +1319,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "rmgn") return v4("rmgSub");
     if (tab === "dty") return v4("dtySub");
     if (tab === "pcr") return v4("pcrSub");
+    if (tab === "lnw") return v4("lnwSub");
+    if (tab === "hmk") return v4("hmkSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1840,6 +1845,8 @@ function Shell({ base, section, name }: Props) {
             {view === "rmgn" && <ReportMargins base={base} v4={v4} />}
             {view === "dty" && <DutySlips base={base} v4={v4} />}
             {view === "pcr" && <ProfileCrests base={base} v4={v4} />}
+            {view === "lnw" && <LintelWatches base={base} v4={v4} />}
+            {view === "hmk" && <HourMarks base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
