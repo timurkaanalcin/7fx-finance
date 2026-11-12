@@ -425,20 +425,20 @@ export function AmbulatoryLanterns({ v4 }: { v4: V4 }) {
   }
   const rows = board === "ledger" ? ledger : shown;
   return (
-    <section className="c4-aln" aria-label={v4("alnTitle")} data-lanterns="1" data-role={role} data-density={density}>
+    <section className="c4-aln" aria-label={v4("amlnTitle")} data-lanterns="1" data-role={role} data-density={density}>
       <div className="c4-aln-sheet">
         <header className="c4-aln-mast">
           <p className="c4-aln-spine">{v4("alnSpine")}</p>
           <div>
-            <p className="c4-aln-kicker">{v4("alnSub")}</p>
-            <h2 className="c4-title">{v4("alnTitle")}</h2>
+            <p className="c4-aln-kicker">{v4("amlnSub")}</p>
+            <h2 className="c4-title">{v4("amlnTitle")}</h2>
           </div>
           <p className="c4-aln-plate" data-logo="mono">{v4("alnLogo")}</p>
         </header>
         <div className="c4-aln-body">
-          <p className="c4-aln-rules">{v4("alnHint")}</p>
+          <p className="c4-aln-rules">{v4("amlnHint")}</p>
           <p className="c4-meta">{v4("alnLocal")}</p>
-          <p className="c4-meta">{v4("alnNew")} {v4("alnSlash")} {v4("alnEscape")} {v4("alnKeys")} {v4("alnPinKey")} {v4("alnOilKey")} {v4("alnHoldKey")} {v4("alnBoardKey")}</p>
+          <p className="c4-meta">{v4("alnNew")} {v4("alnSlash")} {v4("amlnEscape")} {v4("alnKeys")} {v4("alnPinKey")} {v4("alnOilKey")} {v4("alnHoldKey")} {v4("alnBoardKey")}</p>
           {viewer && <p className="c4-aln-notice" data-viewer="1">{v4("alnViewer")}</p>}
           {counts.peak > 0 && (
             <p className="c4-aln-notice" role="status">
@@ -470,7 +470,7 @@ export function AmbulatoryLanterns({ v4 }: { v4: V4 }) {
                 <div className="c4-aln-track" aria-hidden="true"><i style={{ width: `${Math.round((bar.count / maxBar) * 100)}%` }} /></div>
               </div>
             ))}
-            {!bars.length && <p className="c4-aln-empty">{v4("alnEmpty")}</p>}
+            {!bars.length && <p className="c4-aln-empty">{v4("amlnEmpty")}</p>}
           </div>
           <div className="c4-aln-suggest">
             <p>{v4("alnSuggestFlame")} · {flameLabel(v4, suggestedFlame)}</p>
@@ -500,8 +500,8 @@ export function AmbulatoryLanterns({ v4 }: { v4: V4 }) {
           <div className="c4-aln-window" aria-label={v4("alnWindow")}>
             {windowRows.length ? windowRows.map((lantern) => <span key={lantern.id}>{lantern.title}</span>) : <span>{v4("alnWindowNone")}</span>}
           </div>
-          <label className="c4-lab">{v4("alnSearch")}<input ref={searchRef} className="c4-field" aria-label={v4("alnSearch")} value={query} onChange={(event) => setQuery(event.target.value)} /></label>
-          <div className="c4-aln-filters" role="group" aria-label={v4("alnSearch")}>
+          <label className="c4-lab">{v4("amlnSearch")}<input ref={searchRef} className="c4-field" aria-label={v4("amlnSearch")} value={query} onChange={(event) => setQuery(event.target.value)} /></label>
+          <div className="c4-aln-filters" role="group" aria-label={v4("amlnSearch")}>
             {(["open", "held", "closed"] as const).map((item) => (
               <button key={item} type="button" className="c4-chip" data-on={tray === item ? "1" : "0"} onClick={() => setTray(item)}>{item === "open" ? v4("alnOpenTray") : item === "held" ? v4("alnHeldTray") : v4("alnClosedTray")}</button>
             ))}
@@ -520,7 +520,7 @@ export function AmbulatoryLanterns({ v4 }: { v4: V4 }) {
               <button key={item} type="button" className="c4-chip" data-on={pulseOn === item ? "1" : "0"} onClick={() => setPulseFilter(item)}>{pulseLabel(v4, item)}</button>
             ))}
             {["all", "blank", "early", "mid", "late", "peak", "quiet", "1", "6"].map((item) => (
-              <button key={item} type="button" className="c4-chip" data-on={stationOn === item ? "1" : "0"} onClick={() => setStationFilter(item)}>{item === "all" ? v4("alnStation") : item === "blank" ? v4("alnBlankStation") : item === "early" ? v4("alnEarly") : item === "mid" ? v4("alnMid") : item === "late" ? v4("alnLateStation") : item === "peak" ? v4("alnPeak") : item === "quiet" ? v4("alnQuiet") : item}</button>
+              <button key={item} type="button" className="c4-chip" data-on={stationOn === item ? "1" : "0"} onClick={() => setStationFilter(item)}>{item === "all" ? v4("alnStation") : item === "blank" ? v4("alnBlankStation") : item === "early" ? v4("alnEarly") : item === "mid" ? v4("amlnMid") : item === "late" ? v4("alnLateStation") : item === "peak" ? v4("alnPeak") : item === "quiet" ? v4("alnQuiet") : item}</button>
             ))}
             {["all", "blank", "2", "6", "12"].map((item) => (
               <button key={`g${item}`} type="button" className="c4-chip" data-on={glassOn === item ? "1" : "0"} onClick={() => setGlassFilter(item)}>{item === "all" ? v4("alnGlass") : item === "blank" ? v4("alnBlankGlass") : glassLabel(v4, Number(item))}</button>
@@ -580,10 +580,10 @@ export function AmbulatoryLanterns({ v4 }: { v4: V4 }) {
             <button type="button" className="c4-btn" disabled={viewer} onClick={() => store(bulkLanternClose(lanterns, picked, true))}>{v4("alnBulkClose")}</button>
             <button type="button" className="c4-btn" disabled={viewer} onClick={() => store(bulkLanternMark(lanterns, picked, mark))}>{v4("alnBulkMark")}</button>
             <button type="button" className="c4-btn" disabled={viewer} onClick={() => store(bulkLanternPulse(lanterns, picked, pulse))}>{v4("alnBulkPulse")}</button>
-            <button type="button" className="c4-btn" onClick={() => download("ambulatory-lanterns.csv", lanternsCsv(lanterns, deskStation))}>{v4("alnCsv")}</button>
+            <button type="button" className="c4-btn" onClick={() => download("ambulatory-lanterns.csv", lanternsCsv(lanterns, deskStation))}>{v4("amlnCsv")}</button>
             <button type="button" className="c4-btn" disabled={viewer} onClick={() => store(resetLanterns())}>{v4("alnReset")}</button>
           </div>
-          {!rows.length && <p className="c4-aln-empty">{v4("alnEmpty")}</p>}
+          {!rows.length && <p className="c4-aln-empty">{v4("amlnEmpty")}</p>}
           <ol className={board === "ledger" ? "c4-aln-time" : "c4-aln-book"}>
             {rows.map((lantern, index) => (
               <li key={lantern.id} data-focus={focus === index ? "1" : "0"} data-late={lateLantern(lantern, deskStation) ? "1" : "0"} data-soon={soonLantern(lantern) ? "1" : "0"} data-peak={peakStation(lantern.station) ? "1" : "0"} data-quiet={quietStation(lantern.station) ? "1" : "0"} data-house={houseFlame(lantern.flame) ? "1" : "0"} data-pinned={lantern.pinned ? "1" : "0"} data-oil={lantern.oil ? "1" : "0"}>
@@ -613,13 +613,13 @@ export function AmbulatoryLanterns({ v4 }: { v4: V4 }) {
                     <button type="button" className="c4-btn" disabled={viewer} onClick={() => store(setLanternOil(lanterns, lantern.id, lantern.oil ? 0 : 1))}>{lantern.oil ? v4("alnOilOff") : v4("alnOilOn")}</button>
                     <button type="button" className="c4-btn" disabled={viewer} onClick={() => store(snoozeLantern(lanterns, lantern.id))}>{v4("alnSnooze")}</button>
                     <button type="button" className="c4-btn" disabled={viewer} onClick={() => { setEditing(lantern.id); setDraft(lantern.title); setNoteDraft(lantern.note); }}>{v4("alnEdit")}</button>
-                    <button type="button" className="c4-btn" onClick={() => { const line = lanternCopy(lantern, deskStation); void navigator.clipboard?.writeText(line); setCopied(lantern.id); }}>{copied === lantern.id ? v4("alnCopied") : v4("alnCopy")}</button>
+                    <button type="button" className="c4-btn" onClick={() => { const line = lanternCopy(lantern, deskStation); void navigator.clipboard?.writeText(line); setCopied(lantern.id); }}>{copied === lantern.id ? v4("alnCopied") : v4("amlnCopy")}</button>
                   </div>
                 </div>
               </li>
             ))}
           </ol>
-          <p className="c4-aln-rules">{v4("alnRules")}</p>
+          <p className="c4-aln-rules">{v4("amlnRules")}</p>
         </div>
       </div>
     </section>

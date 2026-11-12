@@ -194,7 +194,7 @@ function main() {
     }
   }
   assert.equal(crmv4Text("tr", "lgsTitle"), ROUND220_COPY.tr.lgsTitle);
-  assert.equal(crmv4Text("de", "ctyTitle"), ROUND220_COPY.de.ctyTitle);
+  assert.equal(crmv4Text("de", "ctcrTitle"), ROUND220_COPY.de.ctcrTitle);
   assert.equal(crmv4Text("ru", "lgsSub"), ROUND220_COPY.ru.lgsSub);
   assert.equal(crmv4Text("ar", "ctySub"), ROUND220_COPY.ar.ctySub);
   assert.equal(crmv4Text("en", "lgsLogo"), "7FX");

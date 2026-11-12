@@ -130,9 +130,17 @@ export function StaffPage({ signInName, base, v4, locale }: { signInName: string
   }
   const filters = filterQuery(prefs.filters);
   return (
-    <section className="c4-staff-luxe" aria-label={v4("staffProfile")} data-staff="1">
-      <h2 className="c4-title">{v4("staffProfile")}</h2>
+    <section className="c4-staff-luxe c4-staff-salon" aria-label={v4("staffProfile")} data-staff="1" data-desk="salon">
+      <header className="c4-staff-salon-mast">
+        <p className="c4-staff-salon-seal" data-logo="mono">7FX</p>
+        <div>
+          <p className="c4-staff-salon-kicker">{v4("pcrSub")}</p>
+          <h2 className="c4-title c4-staff-salon-title">{v4("staffProfile")}</h2>
+        </div>
+        <p className="c4-staff-salon-mark" aria-hidden="true">{(prefs.displayName || signInName || "7").slice(0, 1).toUpperCase()}</p>
+      </header>
       <p className="c4-staff-name">{prefs.displayName || signInName || "—"}</p>
+      {!prefs.displayName && !signInName && <p className="c4-staff-salon-empty">{v4("dtyEmpty")}</p>}
       <p className="c4-muted c4-staff-sign">{v4("signInName")} {signInName || "—"}</p>
       <p className="c4-muted">{v4("staffHint")}</p>
       <div className="c4-form">

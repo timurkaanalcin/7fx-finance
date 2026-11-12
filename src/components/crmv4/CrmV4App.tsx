@@ -219,6 +219,7 @@ import { SacristyDrawers, AntiphonMarks } from "./round228";
 import { AisleNiches, EscutcheonMarks } from "./round229";
 import { CabinetDrawers, WatermarkMarks } from "./round230";
 import { ReportMargins, ReportQuires } from "./round231";
+import { DutySlips, ProfileCrests } from "./round232";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -882,7 +883,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "brcr") return v4("brcTitle");
     if (tab === "trst") return v4("trsTitle");
     if (tab === "acwf") return v4("acwTitle");
-    if (tab === "amln") return v4("alnTitle");
+    if (tab === "amln") return v4("amlnTitle");
     if (tab === "clmp") return v4("clmTitle");
     if (tab === "nxcd") return v4("nxcTitle");
     if (tab === "adpl") return v4("adrTitle");
@@ -899,7 +900,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "stcd") return v4("stcTitle");
     if (tab === "gmkp") return v4("gmkTitle");
     if (tab === "lgsl") return v4("lgsTitle");
-    if (tab === "ctcr") return v4("ctyTitle");
+    if (tab === "ctcr") return v4("ctcrTitle");
     if (tab === "bvst") return v4("bvsTitle");
     if (tab === "kpsl") return v4("kpsTitle");
     if (tab === "mzrl") return v4("mzrTitle");
@@ -922,6 +923,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "wmk") return v4("wmkTitle");
     if (tab === "qire") return v4("qirTitle");
     if (tab === "rmgn") return v4("rmgTitle");
+    if (tab === "dty") return v4("dtyTitle");
+    if (tab === "pcr") return v4("pcrTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1275,7 +1278,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "brcr") return v4("brcSub");
     if (tab === "trst") return v4("trsSub");
     if (tab === "acwf") return v4("acwSub");
-    if (tab === "amln") return v4("alnSub");
+    if (tab === "amln") return v4("amlnSub");
     if (tab === "clmp") return v4("clmSub");
     if (tab === "nxcd") return v4("nxcSub");
     if (tab === "adpl") return v4("adrSub");
@@ -1311,6 +1314,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "wmk") return v4("wmkSub");
     if (tab === "qire") return v4("qirSub");
     if (tab === "rmgn") return v4("rmgSub");
+    if (tab === "dty") return v4("dtySub");
+    if (tab === "pcr") return v4("pcrSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1833,6 +1838,8 @@ function Shell({ base, section, name }: Props) {
             {view === "wmk" && <WatermarkMarks base={base} v4={v4} />}
             {view === "qire" && <ReportQuires base={base} v4={v4} />}
             {view === "rmgn" && <ReportMargins base={base} v4={v4} />}
+            {view === "dty" && <DutySlips base={base} v4={v4} />}
+            {view === "pcr" && <ProfileCrests base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

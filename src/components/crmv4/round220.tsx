@@ -163,8 +163,8 @@ function laneLabel(v4: V4, name: string): string {
   if (name === "court") return v4("ctyCourt");
   if (name === "square") return v4("ctySquare");
   if (name === "boulevard") return v4("ctyBoulevard");
-  if (name === "blank") return v4("ctyClear");
-  return v4("ctyUnmarked");
+  if (name === "blank") return v4("ctcrClear");
+  return v4("ctcrUnmarked");
 }
 
 function toneLabel(v4: V4, name: string): string {
@@ -172,7 +172,7 @@ function toneLabel(v4: V4, name: string): string {
   if (name === "ink") return v4("ctyInk");
   if (name === "ivory") return v4("ctyIvory");
   if (name === "mist") return v4("ctyMist");
-  return v4("ctyUnmarked");
+  return v4("ctcrUnmarked");
 }
 
 function auditLabel(v4: V4, audit: string): string {
@@ -744,28 +744,28 @@ export function CityCrests({ base, v4 }: { base: string; v4: V4 }) {
     writeJson(CTY_REVIEW_KEY, saved);
   }
   return (
-    <section className="c4-cty" aria-label={v4("ctyTitle")} data-crests="1" data-role={role} data-catalog={catalog ? "1" : "0"}>
+    <section className="c4-cty" aria-label={v4("ctcrTitle")} data-crests="1" data-role={role} data-catalog={catalog ? "1" : "0"}>
       <div className="c4-cty-sheet">
         <header className="c4-cty-mast">
           <div>
             <p className="c4-cty-kicker">{v4("ctySub")}</p>
-            <h2 className="c4-title">{v4("ctyTitle")}</h2>
+            <h2 className="c4-title">{v4("ctcrTitle")}</h2>
           </div>
           <p className="c4-cty-plate" data-logo="mono">{v4("ctyLogo")}</p>
         </header>
         <div className="c4-cty-body">
-          <p className="c4-cty-rules">{v4("ctyHint")}</p>
-          <p className="c4-meta">{v4("ctyKept")} {v4("ctyEscape")}</p>
+          <p className="c4-cty-rules">{v4("ctcrHint")}</p>
+          <p className="c4-meta">{v4("ctyKept")} {v4("ctcrEscape")}</p>
           {viewer && <p className="c4-cty-notice" data-viewer="1">{v4("ctyViewer")}</p>}
-          {data.error && <p className="c4-cty-empty" role="alert">{v4("ctyFailed")}</p>}
-          {data.loading && <p className="c4-meta">{v4("ctyLoading")}</p>}
+          {data.error && <p className="c4-cty-empty" role="alert">{v4("ctcrFailed")}</p>}
+          {data.loading && <p className="c4-meta">{v4("ctcrLoading")}</p>}
           {shared > 0 && <p className="c4-cty-notice" role="status">{v4("ctyNotice")} · {shared}</p>}
           <ol className="c4-cty-ledger" aria-label={v4("ctyKpi")}>
             <li><span>{v4("ctySet")}</span><strong>{rows.filter((row) => cityState(row.note) === "set").length}</strong></li>
             <li><span>{v4("ctyCatalog")}</span><strong>{catalog}</strong></li>
             <li><span>{v4("ctyWide")}</span><strong>{wideCityCount(rows)}</strong></li>
             <li><span>{v4("ctyGoldCount")}</span><strong>{goldCityCount(rows)}</strong></li>
-            <li><span>{v4("ctyShare")}</span><strong>{cityShare(catalog, rows.length)}%</strong></li>
+            <li><span>{v4("ctcrShare")}</span><strong>{cityShare(catalog, rows.length)}%</strong></li>
             <li><span>{v4("ctyShared")}</span><strong>{shared}</strong></li>
           </ol>
           <div className="c4-cty-rail" aria-label={v4("ctyLanes")}>
@@ -775,17 +775,17 @@ export function CityCrests({ base, v4 }: { base: string; v4: V4 }) {
                 <div className="c4-cty-track" aria-hidden="true"><i style={{ width: `${Math.round((bar.count / maxBar) * 100)}%` }} /></div>
               </div>
             ))}
-            {!bars.length && <p className="c4-cty-empty">{v4("ctyEmpty")}</p>}
+            {!bars.length && <p className="c4-cty-empty">{v4("ctcrEmpty")}</p>}
           </div>
           <div className="c4-cty-suggest">
             <p>{v4("ctyLeading")} · {lead ? laneLabel(v4, lead) : v4("ctyLeadingNone")}</p>
             <p>{v4("ctyToneLead")} · {toneLead ? toneLabel(v4, toneLead) : v4("ctyToneNone")}</p>
             <p>{shared ? `${v4("ctyShared")} · ${shared}` : v4("ctySharedNone")}</p>
           </div>
-          <label className="c4-lab">{v4("ctySearch")}<input ref={searchRef} className="c4-field" aria-label={v4("ctySearch")} value={query} onChange={(event) => setQuery(event.target.value)} /></label>
+          <label className="c4-lab">{v4("ctcrSearch")}<input ref={searchRef} className="c4-field" aria-label={v4("ctcrSearch")} value={query} onChange={(event) => setQuery(event.target.value)} /></label>
           <div className="c4-cty-filters">
             <button type="button" className="c4-chip" data-on={laneOn === "all" ? "1" : "0"} onClick={() => setLane("all")}>{v4("ctyAll")}</button>
-            <button type="button" className="c4-chip" data-on={laneOn === "blank" ? "1" : "0"} onClick={() => setLane("blank")}>{v4("ctyClear")}</button>
+            <button type="button" className="c4-chip" data-on={laneOn === "blank" ? "1" : "0"} onClick={() => setLane("blank")}>{v4("ctcrClear")}</button>
             {LANES.map((item) => (
               <button key={item} type="button" className="c4-chip" data-on={laneOn === item ? "1" : "0"} onClick={() => setLane(item)}>{laneLabel(v4, item)}</button>
             ))}
@@ -795,12 +795,12 @@ export function CityCrests({ base, v4 }: { base: string; v4: V4 }) {
             <button type="button" className="c4-chip" data-on={toneOn === "ivory" ? "1" : "0"} onClick={() => setTone("ivory")}>{v4("ctyIvory")}</button>
             <button type="button" className="c4-chip" data-on={toneOn === "mist" ? "1" : "0"} onClick={() => setTone("mist")}>{v4("ctyMist")}</button>
             {(["all", "catalog", "wide", "gold"] as const).map((item) => (
-              <button key={item} type="button" className="c4-chip" data-on={shape === item ? "1" : "0"} onClick={() => setShape(item)}>{item === "all" ? v4("ctyAllShapes") : item === "catalog" ? v4("ctyCatalog") : item === "wide" ? v4("ctyWide") : v4("ctyGold")}</button>
+              <button key={item} type="button" className="c4-chip" data-on={shape === item ? "1" : "0"} onClick={() => setShape(item)}>{item === "all" ? v4("ctcrAllShapes") : item === "catalog" ? v4("ctyCatalog") : item === "wide" ? v4("ctyWide") : v4("ctyGold")}</button>
             ))}
             <button type="button" className="c4-chip" data-on={review === "all" ? "1" : "0"} onClick={() => setReview("all")}>{v4("ctyAllReview")}</button>
             <button type="button" className="c4-chip" data-on={review === "reviewed" ? "1" : "0"} onClick={() => setReview("reviewed")}>{v4("ctyReviewed")}</button>
             <button type="button" className="c4-chip" data-on={review === "open" ? "1" : "0"} onClick={() => setReview("open")}>{v4("ctyOpenReview")}</button>
-            <button type="button" className="c4-chip" data-on={showHidden ? "1" : "0"} onClick={() => setShowHidden((on) => !on)}>{showHidden ? v4("ctyShown") : v4("ctyHidden")}</button>
+            <button type="button" className="c4-chip" data-on={showHidden ? "1" : "0"} onClick={() => setShowHidden((on) => !on)}>{showHidden ? v4("ctcrShown") : v4("ctcrHidden")}</button>
           </div>
           <div className="c4-cty-bands">
             {present.map((item) => (
@@ -808,13 +808,13 @@ export function CityCrests({ base, v4 }: { base: string; v4: V4 }) {
                 {laneLabel(v4, item)} · {hidden.includes(item) ? v4("ctyShow") : v4("ctyHide")}
               </button>
             ))}
-            <button type="button" className="c4-btn" disabled={viewer} onClick={() => storeReviewed(bulkCityReview(reviewed, shown.map((row) => row.id), true))}>{v4("ctyBulkReview")}</button>
+            <button type="button" className="c4-btn" disabled={viewer} onClick={() => storeReviewed(bulkCityReview(reviewed, shown.map((row) => row.id), true))}>{v4("ctcrBulkReview")}</button>
             <button type="button" className="c4-btn" disabled={viewer} onClick={() => storeReviewed(bulkCityReview(reviewed, ids, false))}>{v4("ctyBulkClear")}</button>
-            <button type="button" className="c4-btn" onClick={() => download("city-crests.csv", crestsCsv(rows))}>{v4("ctyCsv")}</button>
-            <button type="button" className="c4-btn" onClick={() => download("city-crest-rows.csv", cityRowsCsv(rows, reviewed))}>{v4("ctyRowCsv")}</button>
+            <button type="button" className="c4-btn" onClick={() => download("city-crests.csv", crestsCsv(rows))}>{v4("ctcrCsv")}</button>
+            <button type="button" className="c4-btn" onClick={() => download("city-crest-rows.csv", cityRowsCsv(rows, reviewed))}>{v4("ctcrRowCsv")}</button>
             <Link className="c4-btn" href={crmv4Href(base, "customers")}>{v4("ctyCustomers")}</Link>
           </div>
-          {!shown.length && <p className="c4-cty-empty">{v4("ctyEmpty")}</p>}
+          {!shown.length && <p className="c4-cty-empty">{v4("ctcrEmpty")}</p>}
           <ul className="c4-cty-index">
             {shown.map((row) => {
               const state = cityState(row.note);
@@ -826,14 +826,14 @@ export function CityCrests({ base, v4 }: { base: string; v4: V4 }) {
                   <p className="c4-cty-mark" data-logo="mono">{crest || "—"}</p>
                   <div>
                     <strong>{row.label || row.id}</strong>
-                    <span className="c4-meta">{cityCopy(row.note) || v4("ctyClear")} · {laneLabel(v4, state === "set" ? cityLane(row.note) : state === "clear" ? "blank" : "")} · {toneLabel(v4, cityTone(row.note))}</span>
+                    <span className="c4-meta">{cityCopy(row.note) || v4("ctcrClear")} · {laneLabel(v4, state === "set" ? cityLane(row.note) : state === "clear" ? "blank" : "")} · {toneLabel(v4, cityTone(row.note))}</span>
                     <ol className="c4-cty-time" aria-label={v4("ctyStep")}>
                       {steps.map((label, index) => (
                         <li key={label} data-on={step >= index + 1 ? "1" : "0"}>{label}</li>
                       ))}
                     </ol>
                     <button type="button" className="c4-btn" disabled={viewer} onClick={() => storeReviewed(toggleCityReview(reviewed, row.id))}>{reviewed.includes(row.id) ? v4("ctyReviewed") : v4("ctyReview")}</button>
-                    <button type="button" className="c4-btn" onClick={() => { const line = `${row.label || row.id} · ${crest} · ${cityCopy(row.note)}`; void navigator.clipboard?.writeText(line); setCopied(row.id); }}>{copied === row.id ? v4("ctyCopied") : v4("ctyCopy")}</button>
+                    <button type="button" className="c4-btn" onClick={() => { const line = `${row.label || row.id} · ${crest} · ${cityCopy(row.note)}`; void navigator.clipboard?.writeText(line); setCopied(row.id); }}>{copied === row.id ? v4("ctyCopied") : v4("ctcrCopy")}</button>
                     {catalogCity(row.note) && <span className="c4-meta">{v4("ctyCatalogMark")}</span>}
                     {wideCity(row.note) && <span className="c4-meta">{v4("ctyWide")}</span>}
                   </div>
@@ -841,7 +841,7 @@ export function CityCrests({ base, v4 }: { base: string; v4: V4 }) {
               );
             })}
           </ul>
-          <p className="c4-cty-rules">{v4("ctyRules")}</p>
+          <p className="c4-cty-rules">{v4("ctcrRules")}</p>
         </div>
       </div>
     </section>
