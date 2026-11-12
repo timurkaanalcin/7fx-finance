@@ -226,6 +226,7 @@ import { StageMarks, VisitCards } from "./round235";
 import { DialectMarks, RefectorySlips } from "./round236";
 import { ObservatorySlips, PostureMarks } from "./round237";
 import { BadgeMarks, BerthSlips } from "./round238";
+import { AlcoveSlips, PassportStamps } from "./round239";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -943,6 +944,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "psr") return v4("psrTitle");
     if (tab === "brt") return v4("brtTitle");
     if (tab === "bdg") return v4("bdgTitle");
+    if (tab === "alv") return v4("alvTitle");
+    if (tab === "psp") return v4("pspTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1346,6 +1349,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "psr") return v4("psrSub");
     if (tab === "brt") return v4("brtSub");
     if (tab === "bdg") return v4("bdgSub");
+    if (tab === "alv") return v4("alvSub");
+    if (tab === "psp") return v4("pspSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1534,8 +1539,8 @@ function Shell({ base, section, name }: Props) {
             {view === "vault" && <VaultPad v4={v4} base={base} />}
             {view === "heatmap" && <HeatStrip v4={v4} tx={tx} base={base} />}
             {view === "cheats" && <CheatSheet v4={v4} />}
-            {view === "digest" && <OvernightDigest v4={v4} />}
-            {view === "glass" && <GlassToggle v4={v4} />}
+            {view === "digest" && <OvernightDigest base={base} v4={v4} />}
+            {view === "glass" && <GlassToggle base={base} v4={v4} />}
             {view === "compare" && <DeskCompare v4={v4} locale={locale} tx={tx} />}
             {view === "eod" && <EodList v4={v4} />}
             {view === "stale" && <StaleWatch base={base} v4={v4} locale={locale} tx={tx} />}
@@ -1882,6 +1887,8 @@ function Shell({ base, section, name }: Props) {
             {view === "psr" && <PostureMarks base={base} v4={v4} />}
             {view === "brt" && <BerthSlips base={base} v4={v4} />}
             {view === "bdg" && <BadgeMarks base={base} v4={v4} />}
+            {view === "alv" && <AlcoveSlips base={base} v4={v4} />}
+            {view === "psp" && <PassportStamps base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
