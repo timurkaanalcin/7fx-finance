@@ -213,6 +213,7 @@ import { MezzanineRails, SymbolCrests } from "./round222";
 import { LogHours, OrielSills } from "./round223";
 import { FriezeCards, QuoinMarks } from "./round224";
 import { DentilTiles, VoussoirMarks } from "./round225";
+import { BrocadeSwatches, PennantMarks } from "./round226";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -904,6 +905,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "qmks") return v4("qmkTitle");
     if (tab === "dntl") return v4("dntTitle");
     if (tab === "vous") return v4("vousTitle");
+    if (tab === "brdc") return v4("brdTitle");
+    if (tab === "pnnt") return v4("wmpTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1281,6 +1284,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "qmks") return v4("qmkSub");
     if (tab === "dntl") return v4("dntSub");
     if (tab === "vous") return v4("vousSub");
+    if (tab === "brdc") return v4("brdSub");
+    if (tab === "pnnt") return v4("wmpSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1791,6 +1796,8 @@ function Shell({ base, section, name }: Props) {
             {view === "qmks" && <QuoinMarks base={base} v4={v4} />}
             {view === "dntl" && <DentilTiles v4={v4} />}
             {view === "vous" && <VoussoirMarks base={base} v4={v4} />}
+            {view === "brdc" && <BrocadeSwatches v4={v4} />}
+            {view === "pnnt" && <PennantMarks base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
