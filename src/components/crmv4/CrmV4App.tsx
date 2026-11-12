@@ -235,6 +235,7 @@ import { BinnacleCards, LuffMarks } from "./round244";
 import { MeridianMarks, OrchardBenches } from "./round245";
 import { PostmarkLanes, QuireSlips } from "./round246";
 import { EmailCrests, NicheCards } from "./round247";
+import { CarrelSlips, LoginSeals } from "./round248";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1945,6 +1946,8 @@ function Shell({ base, section, name }: Props) {
             {view === "pmk" && <PostmarkLanes base={base} v4={v4} />}
             {view === "nch" && <NicheCards base={base} v4={v4} />}
             {view === "emc" && <EmailCrests base={base} v4={v4} />}
+            {view === "crl" && <CarrelSlips base={base} v4={v4} />}
+            {view === "lgs" && <LoginSeals base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
