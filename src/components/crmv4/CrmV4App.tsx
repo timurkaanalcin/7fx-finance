@@ -237,6 +237,7 @@ import { PostmarkLanes, QuireSlips } from "./round246";
 import { EmailCrests, NicheCards } from "./round247";
 import { CarrelSlips, LoginSeals } from "./round248";
 import { CampaignMarks, FerryPasses } from "./round249";
+import { BeaconSlips, ValidationGlyphs } from "./round250";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1959,6 +1960,8 @@ function Shell({ base, section, name }: Props) {
             {view === "lgs" && <LoginSeals base={base} v4={v4} />}
             {view === "fry" && <FerryPasses base={base} v4={v4} />}
             {view === "cmp" && <CampaignMarks base={base} v4={v4} />}
+            {view === "bcn" && <BeaconSlips base={base} v4={v4} />}
+            {view === "vgl" && <ValidationGlyphs base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
