@@ -115,14 +115,27 @@ export default function Overview({ base, tx, locale, name }: Props) {
   };
   const shown = orderedCards(layout);
   return (
-    <div className="c4-stack c4-exec c4-exec-salon">
-      <header className="c4-exec-salon-mast">
-        <div>
+    <div className="c4-stack c4-exec c4-exec-salon c4-exec-oriel" data-desk="oriel">
+      <header className="c4-exec-salon-mast c4-exec-oriel-mast">
+        <p className="c4-exec-oriel-seal" data-logo="mono">7FX</p>
+        <div className="c4-exec-oriel-copy">
+          <p className="c4-exec-oriel-kicker">{tx("overviewLead")}</p>
           <p className="c4-exec-salon-kicker">{tx("overview")}</p>
+          <h2 className="c4-exec-oriel-title">{tx("overview")}</h2>
           <h2 className="c4-exec-salon-title">{tx("overviewLead")}</h2>
         </div>
+        <ol className="c4-exec-oriel-index" aria-label={tx("overview")}>
+          <li data-tone="gold">{tx("overview")}</li>
+          <li data-tone="ink">{tx("insights")}</li>
+          <li data-tone="ivory">{crmv4Text(locale, "deskBoard")}</li>
+        </ol>
         <p className="c4-exec-salon-plate" data-logo="mono">7FX</p>
       </header>
+      <nav className="c4-exec-oriel-links" aria-label={crmv4Text(locale, "orsSpine")}>
+        <Link href={crmv4Href(base, "orsl")}>{crmv4Text(locale, "orsTitle")}</Link>
+        <Link href={crmv4Href(base, "lghr")}>{crmv4Text(locale, "lghTitle")}</Link>
+      </nav>
+      <p className="c4-exec-oriel-time">{crmv4Text(locale, "orsLocal")}</p>
       <TodayStrip base={base} v4={v4} locale={locale} />
       <TodayHero base={base} name={name || ""} v4={v4} locale={locale} />
       <ExecHero name={name || ""} customers={kpis?.users} aum={typeof aum === "number" ? aum : undefined} volume={kpis?.totalVolume} pending={pending} locale={locale} labels={{ customers: tx("kpiCustomers"), aum: tx("kpiAum"), volume: tx("kpiVolume"), pending: tx("kpiPending") }} v4={(key) => crmv4Text(locale, key)} />
