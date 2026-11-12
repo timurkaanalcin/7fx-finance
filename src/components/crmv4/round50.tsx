@@ -97,20 +97,31 @@ export function GalleryDesk({ base, v4, tx, locale }: { base: string; v4: V4; tx
   }
 
   return (
-    <section className="c4-gallery-desk c4-gallery-folio" aria-label={v4("glTitle")} data-gallery="1">
-      <header className="c4-pay-head c4-folio-mast">
-        <div>
-          <p className="c4-pay-kicker c4-folio-kicker">{v4("glSub")}</p>
-          <h2 className="c4-title c4-folio-title">{v4("glTitle")}</h2>
+    <section className="c4-gallery-desk c4-gallery-folio c4-gallery-cabinet" aria-label={v4("glTitle")} data-gallery="1" data-desk="cabinet">
+      <header className="c4-pay-head c4-folio-mast c4-gallery-cabinet-mast">
+        <p className="c4-gallery-cabinet-seal" data-logo="mono">7FX</p>
+        <div className="c4-gallery-cabinet-copy">
+          <p className="c4-pay-kicker c4-folio-kicker c4-gallery-cabinet-kicker">{v4("glSub")}</p>
+          <h2 className="c4-title c4-folio-title c4-gallery-cabinet-title">{v4("glTitle")}</h2>
+          <p className="c4-gallery-cabinet-rule">{v4("cabSub")}</p>
         </div>
-        <p className="c4-folio-plate" data-logo="mono">7FX</p>
-        <Link className="c4-btn" href={crmv4Href(base, "kyc")}>{v4("glDeskLink")}</Link>
+        <ol className="c4-gallery-cabinet-index" aria-label={v4("glTitle")}>
+          <li data-tone="gold">{v4("glTitle")} {loaded.length}</li>
+          <li data-tone="ink">{v4("glAllTypes")} {types.length}</li>
+          <li data-tone="ivory">{shown.length}</li>
+          <li data-tone="mist">{open ? `${checkCount(box)}/${CHECK_KEYS.length}` : v4("glEmpty")}</li>
+        </ol>
       </header>
+      <nav className="c4-gallery-cabinet-links" aria-label={v4("cabTitle")}>
+        <Link href={crmv4Href(base, "cabn")}>{v4("cabTitle")}</Link>
+        <Link href={crmv4Href(base, "wmk")}>{v4("wmkTitle")}</Link>
+        <Link href={crmv4Href(base, "kyc")}>{v4("glDeskLink")}</Link>
+      </nav>
       <p className="c4-meta">{v4("glHint")}</p>
       {viewer && <p className="c4-meta">{v4("glViewer")}</p>}
       <label className="c4-lab">
         <span>{v4("glSearch")}</span>
-        <input className="c4-field" aria-label={v4("glSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
+        <input className="c4-field c4-gallery-cabinet-search" aria-label={v4("glSearch")} aria-required={false} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       <div className="c4-row" role="group" aria-label={v4("glAllTypes")}>
         <button type="button" className="c4-chip" data-on={type ? "0" : "1"} onClick={() => setType("")}>{v4("glAllTypes")}</button>
@@ -118,12 +129,12 @@ export function GalleryDesk({ base, v4, tx, locale }: { base: string; v4: V4; tx
           <button key={item} type="button" className="c4-chip" data-on={type === item ? "1" : "0"} onClick={() => setType(item)}>{item}</button>
         ))}
       </div>
-      {!shown.length && <p className="c4-pay-empty c4-folio-empty">{v4("glEmpty")}</p>}
+      {!shown.length && <p className="c4-pay-empty c4-folio-empty c4-gallery-cabinet-empty">{v4("glEmpty")}</p>}
       <div className="c4-gallery-split">
         <ul className="c4-gallery-grid">
           {shown.map((row) => (
             <li key={row.id}>
-              <button type="button" className="c4-gallery-card" data-on={open?.id === row.id ? "1" : "0"} onClick={() => setOpenId(row.id)}>
+              <button type="button" className="c4-gallery-card c4-gallery-cabinet-card" data-on={open?.id === row.id ? "1" : "0"} onClick={() => setOpenId(row.id)}>
                 <strong>{row.name || row.docType || row.id}</strong>
                 <span className="c4-meta">{row.trader || "—"}</span>
                 <span className="c4-status-pill" data-status="PENDING">{row.docType || "—"}</span>

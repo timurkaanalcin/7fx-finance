@@ -80,20 +80,30 @@ export function DepositDesk({ base, v4, tx, locale }: { base: string; v4: V4; tx
     }
   }
   return (
-    <section className="c4-dep-luxe c4-dep-atelier" aria-label={v4("depDesk")} data-dep="1">
-      <header className="c4-dep-atelier-mast">
-        <div>
-          <p className="c4-dep-atelier-kicker">{v4("depHint")}</p>
-          <h2 className="c4-title c4-dep-atelier-title">{v4("depDesk")}</h2>
+    <section className="c4-dep-luxe c4-dep-atelier c4-dep-watermark" aria-label={v4("depDesk")} data-dep="1" data-desk="watermark">
+      <header className="c4-dep-atelier-mast c4-dep-watermark-mast">
+        <p className="c4-dep-watermark-seal" data-logo="mono">7FX</p>
+        <div className="c4-dep-watermark-copy">
+          <p className="c4-dep-atelier-kicker c4-dep-watermark-kicker">{v4("depHint")}</p>
+          <h2 className="c4-title c4-dep-atelier-title c4-dep-watermark-title">{v4("depDesk")}</h2>
+          <p className="c4-dep-watermark-rule">{v4("wmkSub")}</p>
         </div>
-        <p className="c4-dep-atelier-plate" data-logo="mono">7FX</p>
+        <ol className="c4-dep-watermark-index" aria-label={v4("depQueue")}>
+          <li data-tone="gold">{v4("depQueue")} {rows.length}</li>
+          <li data-tone="ink">{row ? (row.user?.name || "—") : v4("depEmpty")}</li>
+          <li data-tone="ivory">{v4("depCheckHint")} {row ? `${depDone(box)}/${DEP_CHECKS.length}` : "0"}</li>
+        </ol>
       </header>
-      <p className="c4-dep-atelier-link"><Link className="c4-btn" href={crmv4Href(base, "funding")}>{v4("fuTitle")}</Link></p>
-      <div className="c4-kyc-split c4-dep-atelier-split">
-        <div className="c4-dep-atelier-queue">
+      <nav className="c4-dep-watermark-links" aria-label={v4("wmkTitle")}>
+        <Link href={crmv4Href(base, "cabn")}>{v4("cabTitle")}</Link>
+        <Link href={crmv4Href(base, "wmk")}>{v4("wmkTitle")}</Link>
+        <Link href={crmv4Href(base, "funding")}>{v4("fuTitle")}</Link>
+      </nav>
+      <div className="c4-kyc-split c4-dep-atelier-split c4-dep-watermark-split">
+        <div className="c4-dep-atelier-queue c4-dep-watermark-queue">
           <h3 className="c4-title">{v4("depQueue")}</h3>
-          <label className="c4-lab"><span>{v4("depSearch")}</span><input className="c4-field" aria-label={v4("depSearch")} value={query} onChange={(event) => setQuery(event.target.value)} /></label>
-          {!rows.length && <p className="c4-empty-gold">{v4("depEmpty")}</p>}
+          <label className="c4-lab"><span>{v4("depSearch")}</span><input className="c4-field c4-dep-watermark-search" aria-label={v4("depSearch")} aria-required={false} value={query} onChange={(event) => setQuery(event.target.value)} /></label>
+          {!rows.length && <p className="c4-empty-gold c4-dep-watermark-empty">{v4("depEmpty")}</p>}
           <ul className="c4-kyc-queue">
             {rows.map((item) => (
               <li key={item.id}>
@@ -104,7 +114,7 @@ export function DepositDesk({ base, v4, tx, locale }: { base: string; v4: V4; tx
             ))}
           </ul>
         </div>
-        <div className="c4-kyc-stage c4-dep-atelier-stage">
+        <div className="c4-kyc-stage c4-dep-atelier-stage c4-dep-watermark-card">
           {row && (
             <>
               <h3 className="c4-title">{row.user?.name || "—"}</h3>
