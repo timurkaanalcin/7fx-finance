@@ -30,13 +30,18 @@ export default function Logs({ tx, locale, q }: { tx: Tx; locale: string; q: str
     router.replace(`?${p.toString()}`);
   }
   return (
-    <div className="c4-logs-luxe c4-logs-script c4-logs-gilt c4-logs-herb c4-logs-salon">
-    <header className="c4-logs-mast">
+    <div className="c4-logs-luxe c4-logs-script c4-logs-gilt c4-logs-herb c4-logs-salon c4-logs-transept">
+    <header className="c4-logs-mast c4-logs-transept-mast">
+      <p className="c4-logs-plate c4-logs-transept-seal" data-logo="mono">7FX</p>
       <div>
         <p className="c4-logs-kicker">{tx("logsLead")}</p>
         <h2 className="c4-logs-title">{tx("logs")}</h2>
       </div>
-      <p className="c4-logs-plate" data-logo="mono">7FX</p>
+      <ol className="c4-logs-index" aria-label={tx("logs")}>
+        <li data-tone="gold">{tx("noteType")}</li>
+        <li data-tone="ink">{tx("call")}</li>
+        <li data-tone="mist">{tx("chatType")}</li>
+      </ol>
     </header>
     <AuditTimeline v4={(key) => crmv4Text(locale, key)} locale={locale} tx={tx} />
     <Card title={tx("logs")}>
@@ -81,7 +86,7 @@ export default function Logs({ tx, locale, q }: { tx: Tx; locale: string; q: str
         <input className="c4-field" value={worker} aria-label={crmv4Text(locale, "callFilter")} placeholder={crmv4Text(locale, "callFilter")} onChange={(event) => setWorker(event.target.value)} />
       </div>
       <State loading={data.loading} error={data.error} empty={!data.loading && rows.length === 0} tx={tx} onRetry={data.reload} />
-      <ul>
+      <ul className="c4-logs-ledger">
         {rows.filter((row) => !worker.trim() || String(row.workerName || "").toLowerCase().includes(worker.trim().toLowerCase())).map((row) => (
           <li key={row.id} className="c4-log-line" data-kind={String(row.type || "").toLowerCase()}>
             <span className="c4-log-kind">{row.type || "—"}</span>
