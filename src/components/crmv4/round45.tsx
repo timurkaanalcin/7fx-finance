@@ -1,7 +1,10 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { approvalBody, approvalEndpoint } from "@/lib/crmv2/payload";
+import { crmv4Href } from "@/lib/crmv4/sections";
 import type { CrmV4CopyKey } from "@/lib/crmv4/copy";
 import { readJson, writeJson } from "@/lib/crmv4/local";
 import { formatAge } from "@/lib/crmv4/round1";
@@ -219,8 +222,12 @@ type User = { id: string; affiliateA?: string | null };
 type Deposit = { amount?: number | null; currency?: string | null; userId?: string | null; user?: { id?: string | null } | null };
 
 export function AffiliateDesk({ v4, locale }: { v4: V4; locale: string }) {
+  const path = usePathname() || "";
+  const root = path.includes("/izcrm/crmv4") ? "/izcrm/crmv4" : "/crmv4";
   const people = useJson<{ users?: User[] }>("/api/admin/users?view=table&take=80&meta=0&role=TRADER");
   const deposits = useJson<{ requests?: Deposit[] }>("/api/admin/deposits?take=80");
+  const [query, setQuery] = useState("");
+  const [order, setOrder] = useState<"name" | "head">("name");
   const users = people.data?.users || [];
   const cash = (deposits.data?.requests || []).map((row) => ({
     userId: String(row.user?.id || row.userId || ""),
@@ -228,23 +235,47 @@ export function AffiliateDesk({ v4, locale }: { v4: V4; locale: string }) {
     currency: row.currency,
   }));
   const rows = introducers(users, cash);
+  const needle = query.trim().toLowerCase();
+  const shown = rows
+    .filter((row) => !needle || (row.name || v4("afNone")).toLowerCase().includes(needle))
+    .slice()
+    .sort((a, b) => (order === "head" ? b.customers - a.customers || a.name.localeCompare(b.name) : a.name.localeCompare(b.name)));
+  const named = rows.filter((row) => row.name).length;
   const currencies: string[] = [];
   for (const row of rows) for (const sum of row.sums) if (!currencies.includes(sum.currency)) currencies.push(sum.currency);
   currencies.sort();
   return (
-    <section className="c4-aff-desk c4-aff-salon" aria-label={v4("afTitle")} data-affiliates="">
-      <header className="c4-aff-salon-mast">
-        <div>
-          <p className="c4-aff-salon-kicker">{v4("afHint")}</p>
-          <h2 className="c4-title c4-aff-salon-title">{v4("afTitle")}</h2>
+    <section className="c4-aff-desk c4-aff-salon c4-aff-aisle" aria-label={v4("afTitle")} data-affiliates="" data-desk="aisle">
+      <header className="c4-aff-salon-mast c4-aff-aisle-mast">
+        <p className="c4-aff-aisle-seal" data-logo="mono">7FX</p>
+        <div className="c4-aff-aisle-copy">
+          <p className="c4-aff-salon-kicker c4-aff-aisle-kicker">{v4("afHint")}</p>
+          <h2 className="c4-title c4-aff-salon-title c4-aff-aisle-title">{v4("afTitle")}</h2>
+          <p className="c4-aff-aisle-rule">{v4("ainSub")}</p>
         </div>
+        <ol className="c4-aff-aisle-index" aria-label={v4("afTitle")}>
+          <li data-tone="gold">{v4("afCustomers")} {users.length}</li>
+          <li data-tone="ink">{v4("escSet")} {named}</li>
+          <li data-tone="ivory">{v4("ainBlank")} {rows.length - named}</li>
+          <li data-tone="mist">{v4("ainOpen")} {shown.length}</li>
+        </ol>
         <p className="c4-aff-salon-plate" data-logo="mono">7FX</p>
       </header>
-      <p className="c4-meta">{v4("afCustomers")} {users.length}</p>
-      {!rows.length && <p className="c4-meta">{v4("afEmpty")}</p>}
-      <div className="c4-aff-grid">
-        {rows.map((row) => (
-          <article key={row.name || "none"} className="c4-aff-card c4-aff-salon-card" data-introducer={row.name || "none"}>
+      <nav className="c4-aff-aisle-links" aria-label={v4("ainTitle")}>
+        <Link href={crmv4Href(root, "aisl")}>{v4("ainTitle")}</Link>
+        <Link href={crmv4Href(root, "esct")}>{v4("escTitle")}</Link>
+      </nav>
+      <div className="c4-aff-aisle-tools">
+        <input className="c4-field c4-aff-aisle-search" aria-label={v4("ainSearch")} aria-required={false} value={query} onChange={(event) => setQuery(event.target.value)} />
+        <button type="button" className="c4-chip" data-on={order === "name" ? "1" : "0"} onClick={() => setOrder("name")}>{v4("ainSortUsher")}</button>
+        <button type="button" className="c4-chip" data-on={order === "head" ? "1" : "0"} onClick={() => setOrder("head")}>{v4("afCustomers")}</button>
+      </div>
+      <p className="c4-meta c4-aff-aisle-count">{v4("afCustomers")} {users.length}</p>
+      {!shown.length && <p className="c4-meta c4-aff-aisle-empty">{v4("afEmpty")}</p>}
+      <div className="c4-aff-grid c4-aff-aisle-grid">
+        {shown.map((row) => (
+          <article key={row.name || "none"} className="c4-aff-card c4-aff-salon-card c4-aff-aisle-card" data-introducer={row.name || "none"}>
+            <p className="c4-aff-aisle-mark" data-logo="mono">{(row.name || v4("afNone")).slice(0, 2).toUpperCase()}</p>
             <h3 className="c4-title">{row.name || v4("afNone")}</h3>
             <p>{v4("afCustomers")} {row.customers}</p>
             <p>{v4("afFunded")} {row.withDeposit}</p>
@@ -259,7 +290,7 @@ export function AffiliateDesk({ v4, locale }: { v4: V4; locale: string }) {
         ))}
       </div>
       <p className="c4-meta">{v4("afCsvHint")}</p>
-      <button type="button" className="c4-btn" onClick={() => void exportIntroducers(rows, currencies)}>{v4("afCsv")}</button>
+      <button type="button" className="c4-btn c4-aff-aisle-export" onClick={() => void exportIntroducers(rows, currencies)}>{v4("afCsv")}</button>
     </section>
   );
 }
