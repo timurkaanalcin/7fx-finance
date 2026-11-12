@@ -60,18 +60,23 @@ export function HealthStrip({ base, v4, locale, tx }: { base: string; v4: V4; lo
   }
 
   return (
-    <section className="c4-health-strip" aria-label={v4("hlTitle")} data-health-strip="1">
-      <header className="c4-pay-head">
+    <section className="c4-health-strip c4-health-chapter" aria-label={v4("hlTitle")} data-health-strip="1" data-desk="chapter">
+      <header className="c4-health-chapter-mast">
+        <p className="c4-health-chapter-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("hlSub")}</p>
-          <h2 className="c4-title">{v4("hlTitle")}</h2>
+          <p className="c4-health-chapter-kicker">{v4("hlSub")}</p>
+          <h2 className="c4-title c4-health-chapter-title">{v4("hlTitle")}</h2>
         </div>
-        <p className="c4-meta">{v4("hlCount")} {shown.length}</p>
+        <p className="c4-health-chapter-count">{v4("hlCount")} {shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("hlHint")}</p>
+      <p className="c4-health-chapter-links">
+        <Link href={crmv4Href(base, "vcd")}>{v4("vcdTitle")}</Link>
+        <Link href={crmv4Href(base, "smk")}>{v4("smkTitle")}</Link>
+      </p>
+      <p className="c4-meta c4-health-chapter-rule">{v4("hlHint")}</p>
       <label className="c4-lab">
         <span>{v4("hlSearch")}</span>
-        <input className="c4-field" aria-label={v4("hlSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
+        <input className="c4-field c4-health-chapter-search" aria-label={v4("hlSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       <div className="c4-row" role="group" aria-label={v4("hlScore")}>
         <button type="button" className="c4-chip" data-on={score ? "0" : "1"} aria-pressed={!score} onClick={() => setScore("")}>{v4("hlAll")}</button>
@@ -93,8 +98,8 @@ export function HealthStrip({ base, v4, locale, tx }: { base: string; v4: V4; lo
       </div>
       {data.loading && !loaded.length && <p className="c4-meta">{v4("hlLoading")}</p>}
       {data.error && <p className="c4-meta">{v4("hlFailed")} {tx("failed")}</p>}
-      {!data.loading && !data.error && !loaded.length && <p className="c4-pay-empty">{v4("hlNone")}</p>}
-      {!data.loading && !data.error && loaded.length > 0 && !shown.length && <p className="c4-pay-empty">{v4("hlEmpty")}</p>}
+      {!data.loading && !data.error && !loaded.length && <p className="c4-pay-empty c4-health-chapter-empty">{v4("hlNone")}</p>}
+      {!data.loading && !data.error && loaded.length > 0 && !shown.length && <p className="c4-pay-empty c4-health-chapter-empty">{v4("hlEmpty")}</p>}
       <ul className="c4-health-cards">
         {shown.map((row) => {
           const mark = healthMark(row);

@@ -90,19 +90,24 @@ export function LeadBoard({ base, v4, tx }: { base: string; v4: V4; tx: Tx }) {
   }
 
   return (
-    <section className="c4-pipe-desk" aria-label={v4("ldTitle")} data-lead-board="1" data-viewer={viewer ? "1" : "0"}>
-      <header className="c4-pay-head">
+    <section className="c4-pipe-desk c4-lead-chapter" aria-label={v4("ldTitle")} data-lead-board="1" data-viewer={viewer ? "1" : "0"} data-desk="chapter">
+      <header className="c4-lead-chapter-mast">
+        <p className="c4-lead-chapter-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("ldSub")}</p>
-          <h2 className="c4-title">{v4("ldTitle")}</h2>
+          <p className="c4-lead-chapter-kicker">{v4("ldSub")}</p>
+          <h2 className="c4-title c4-lead-chapter-title">{v4("ldTitle")}</h2>
         </div>
-        <p className="c4-meta">{v4("ldCount")} {shown.length}</p>
+        <p className="c4-lead-chapter-count">{v4("ldCount")} {shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("ldHint")}</p>
+      <p className="c4-lead-chapter-links">
+        <Link href={crmv4Href(base, "vcd")}>{v4("vcdTitle")}</Link>
+        <Link href={crmv4Href(base, "smk")}>{v4("smkTitle")}</Link>
+      </p>
+      <p className="c4-meta c4-lead-chapter-rule">{v4("ldHint")}</p>
       {viewer && <p className="c4-meta">{v4("ldViewer")}</p>}
       <label className="c4-lab">
         <span>{v4("ldSearch")}</span>
-        <input className="c4-field" aria-label={v4("ldSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
+        <input className="c4-field c4-lead-chapter-search" aria-label={v4("ldSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       <div className="c4-row" role="group" aria-label={v4("ldAll")}>
         <button type="button" className="c4-chip" data-on={stage ? "0" : "1"} aria-pressed={!stage} onClick={() => setStage("")}>{v4("ldAll")}</button>
@@ -113,8 +118,8 @@ export function LeadBoard({ base, v4, tx }: { base: string; v4: V4; tx: Tx }) {
       </div>
       {data.loading && !loaded.length && <p className="c4-meta">{v4("ldLoading")}</p>}
       {data.error && <p className="c4-meta">{v4("ldFailed")} {tx("failed")}</p>}
-      {!data.loading && !data.error && !loaded.length && <p className="c4-pay-empty">{v4("ldNone")}</p>}
-      {!data.loading && !data.error && loaded.length > 0 && !shown.length && <p className="c4-pay-empty">{v4("ldEmpty")}</p>}
+      {!data.loading && !data.error && !loaded.length && <p className="c4-pay-empty c4-lead-chapter-empty">{v4("ldNone")}</p>}
+      {!data.loading && !data.error && loaded.length > 0 && !shown.length && <p className="c4-pay-empty c4-lead-chapter-empty">{v4("ldEmpty")}</p>}
       <ul className="c4-pipe-cards">
         {shown.map((row) => {
           const current = stageOf(row);
