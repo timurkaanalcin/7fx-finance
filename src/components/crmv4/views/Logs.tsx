@@ -1,8 +1,10 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { crmv4Text } from "@/lib/crmv4/copy";
+import { crmv4Href } from "@/lib/crmv4/sections";
 import { exportCurrent } from "../round1";
 import { AuditTimeline } from "../round37";
 import { RecentExports } from "../round5";
@@ -20,6 +22,12 @@ export default function Logs({ tx, locale, q }: { tx: Tx; locale: string; q: str
   const [msg, setMsg] = useState("");
   const [callsOnly, setCallsOnly] = useState(false);
   const [worker, setWorker] = useState("");
+  const path = usePathname() || "";
+  const root = path.includes("/izcrm/crmv4") ? "/izcrm/crmv4" : "/crmv4";
+  const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale, key);
+  const noteCount = rows.filter((row) => row.type === "NOTE").length;
+  const callCount = rows.filter((row) => row.type === "CALL").length;
+  const chatCount = rows.filter((row) => row.type === "CHAT").length;
   function setQuery(next: Record<string, string>) {
     const p = new URLSearchParams(params.toString());
     for (const [key, value] of Object.entries(next)) {
@@ -30,20 +38,32 @@ export default function Logs({ tx, locale, q }: { tx: Tx; locale: string; q: str
     router.replace(`?${p.toString()}`);
   }
   return (
-    <div className="c4-logs-luxe c4-logs-script c4-logs-gilt c4-logs-herb c4-logs-salon c4-logs-transept c4-logs-ambulatory c4-logs-narthex">
-    <header className="c4-logs-mast c4-logs-transept-mast">
-      <p className="c4-logs-plate c4-logs-transept-seal" data-logo="mono">7FX</p>
-      <div>
+    <div className="c4-logs-luxe c4-logs-script c4-logs-gilt c4-logs-herb c4-logs-salon c4-logs-transept c4-logs-ambulatory c4-logs-narthex c4-logs-coffer" data-desk="coffer">
+    <header className="c4-logs-mast c4-logs-transept-mast c4-logs-coffer-mast">
+      <p className="c4-logs-plate c4-logs-transept-seal c4-logs-coffer-seal" data-logo="mono">7FX</p>
+      <div className="c4-logs-coffer-copy">
+        <p className="c4-logs-coffer-kicker">{tx("logs")}</p>
         <p className="c4-logs-narthex-kicker">{tx("logsLead")}</p>
         <p className="c4-logs-kicker">{tx("logsLead")}</p>
+        <h2 className="c4-logs-coffer-title">{tx("logsLead")}</h2>
         <h2 className="c4-logs-title">{tx("logs")}</h2>
       </div>
-      <ol className="c4-logs-index" aria-label={tx("logs")}>
+      <ol className="c4-logs-index c4-logs-coffer-index" aria-label={tx("logs")}>
         <li data-tone="gold">{tx("noteType")}</li>
         <li data-tone="ink">{tx("call")}</li>
         <li data-tone="mist">{tx("chatType")}</li>
       </ol>
     </header>
+    <nav className="c4-logs-coffer-links" aria-label={v4("cffTitle")}>
+      <Link href={crmv4Href(root, "coff")}>{v4("cffTitle")}</Link>
+      <Link href={crmv4Href(root, "rsst")}>{v4("rstTitle")}</Link>
+    </nav>
+    <p className="c4-logs-coffer-time">{v4("cffLocal")}</p>
+    <ol className="c4-logs-coffer-stats" aria-label={v4("cffKpi")}>
+      <li><span>{tx("noteType")}</span><strong>{noteCount}</strong></li>
+      <li><span>{tx("call")}</span><strong>{callCount}</strong></li>
+      <li><span>{tx("chatType")}</span><strong>{chatCount}</strong></li>
+    </ol>
     <AuditTimeline v4={(key) => crmv4Text(locale, key)} locale={locale} tx={tx} />
     <Card title={tx("logs")}>
       <p className="c4-log-lead">{tx("logsLead")}</p>
@@ -87,9 +107,10 @@ export default function Logs({ tx, locale, q }: { tx: Tx; locale: string; q: str
         <input className="c4-field" value={worker} aria-label={crmv4Text(locale, "callFilter")} placeholder={crmv4Text(locale, "callFilter")} onChange={(event) => setWorker(event.target.value)} />
       </div>
       <State loading={data.loading} error={data.error} empty={!data.loading && rows.length === 0} tx={tx} onRetry={data.reload} />
-      <ul className="c4-logs-ledger">
+      {!data.loading && rows.length === 0 && <p className="c4-empty-gold c4-logs-coffer-empty">{v4("cffHallEmpty")}</p>}
+      <ul className="c4-logs-ledger c4-logs-coffer-ledger">
         {rows.filter((row) => !worker.trim() || String(row.workerName || "").toLowerCase().includes(worker.trim().toLowerCase())).map((row) => (
-          <li key={row.id} className="c4-log-line" data-kind={String(row.type || "").toLowerCase()}>
+          <li key={row.id} className="c4-log-line c4-logs-coffer-row" data-kind={String(row.type || "").toLowerCase()}>
             <span className="c4-log-kind">{row.type || "—"}</span>
             <div>
               <p className="c4-log-who">{row.trader || row.title || "—"}</p>
