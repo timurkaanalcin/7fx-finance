@@ -59400,3 +59400,624 @@
   border-radius: 0;
   box-shadow: 0 18px 40px rgba(28, 26, 23, 0.06);
 }
+
+/* Round 228 — sacristy drawers and antiphon marks. */
+/* Round 227 — coffer panels, rosette marks, and the history hall. */
+[data-crmv4-root] .c4-sdr,
+[data-crmv4-root] .c4-ant {
+  display: grid;
+  gap: 14px;
+  margin: 20px 24px 36px;
+  padding: 22px 24px 28px;
+  color: #1c1a17;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 3px no-repeat,
+    #f4efe6;
+  border: 1px solid #1c1a17;
+  border-radius: 0;
+  box-shadow: 0 18px 40px rgba(28, 26, 23, 0.06);
+}
+
+[data-crmv4-root] .c4-sdr-mast,
+[data-crmv4-root] .c4-ant-mast {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  margin: 0;
+  padding: 0 0 12px;
+  border-bottom: 1px solid #e4d7bc;
+}
+
+[data-crmv4-root] .c4-sdr-plate[data-logo="mono"],
+[data-crmv4-root] .c4-ant-plate[data-logo="mono"] {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  margin: 0;
+  background: #1c1a17;
+  color: #f7f3ea;
+  border-radius: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+[data-crmv4-root] .c4-sdr-kicker,
+[data-crmv4-root] .c4-ant-kicker {
+  margin: 0 0 4px;
+  color: #8a6a3b;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root] .c4-sdr-mast .c4-title,
+[data-crmv4-root] .c4-ant-mast .c4-title {
+  margin: 0;
+  font-family: Palatino, "Iowan Old Style", Georgia, serif;
+  font-size: 34px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+[data-crmv4-root] .c4-sdr-time,
+[data-crmv4-root] .c4-ant-time {
+  margin: 0;
+  color: #8a6a3b;
+  font-family: Palatino, Georgia, serif;
+  font-size: 15px;
+  font-style: italic;
+}
+
+[data-crmv4-root] .c4-sdr-rules,
+[data-crmv4-root] .c4-ant-rules {
+  margin: 0;
+  color: #5c564c;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+[data-crmv4-root] .c4-sdr-kpis,
+[data-crmv4-root] .c4-ant-ledger,
+[data-crmv4-root] .c4-logs-coffer-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv4-root] .c4-sdr-kpis li,
+[data-crmv4-root] .c4-ant-ledger li,
+[data-crmv4-root] .c4-logs-coffer-stats li {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 12px 12px 14px;
+  background: #fffdf8;
+  border: 1px solid #1c1a17;
+  box-shadow: inset 0 0 0 4px #f4efe6, inset 0 0 0 5px #c6a15b;
+}
+
+[data-crmv4-root] .c4-sdr-kpis span,
+[data-crmv4-root] .c4-ant-ledger span,
+[data-crmv4-root] .c4-logs-coffer-stats span {
+  color: #8a6a3b;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root] .c4-sdr-kpis strong,
+[data-crmv4-root] .c4-ant-ledger strong,
+[data-crmv4-root] .c4-logs-coffer-stats strong {
+  font-family: Palatino, Georgia, serif;
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+[data-crmv4-root] .c4-sdr-meter {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px 14px;
+  background: #fffdf8;
+  border: 1px solid #1c1a17;
+}
+
+[data-crmv4-root] .c4-sdr-meter i {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  background: #c6a15b;
+  transition: width 180ms ease;
+}
+
+[data-crmv4-root] .c4-sdr-bars,
+[data-crmv4-root] .c4-ant-index {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv4-root] .c4-sdr-bars li,
+[data-crmv4-root] .c4-ant-index li {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr) 32px;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+[data-crmv4-root] .c4-sdr-bars b,
+[data-crmv4-root] .c4-ant-index b {
+  display: block;
+  height: 8px;
+  background: #c6a15b;
+}
+
+[data-crmv4-root] .c4-ant-index li[data-tone="ink"] b { background: #1c1a17; }
+
+[data-crmv4-root] .c4-ant-index li[data-tone="ivory"] b { background: #8a6a3b; }
+
+[data-crmv4-root] .c4-sdr-empty,
+[data-crmv4-root] .c4-ant-empty,
+[data-crmv4-root] .c4-logs-coffer-empty {
+  margin: 8px 16px 16px;
+  padding: 36px 20px;
+  text-align: center;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 50% 18px / 36px 1px no-repeat,
+    #fffdf8;
+  color: #5c564c;
+  border: 1px solid #c6a15b;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+[data-crmv4-root] .c4-sdr-notice,
+[data-crmv4-root] .c4-ant-notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 10px 12px;
+  background: #fffdf8;
+  border-left: 4px solid #c6a15b;
+}
+
+[data-crmv4-root] .c4-sdr-form,
+[data-crmv4-root] .c4-sdr-tools,
+[data-crmv4-root] .c4-sdr-views,
+[data-crmv4-root] .c4-sdr-bulk,
+[data-crmv4-root] .c4-ant-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+[data-crmv4-root] .c4-sdr .c4-btn,
+[data-crmv4-root] .c4-sdr .c4-chip,
+[data-crmv4-root] .c4-ant .c4-btn,
+[data-crmv4-root] .c4-ant .c4-chip,
+[data-crmv4-root] .c4-logs-coffer .c4-btn,
+[data-crmv4-root] .c4-logs-coffer .c4-chip {
+  min-height: 36px;
+  border-radius: 0;
+  border: 1px solid #1c1a17;
+  background: #fffdf8;
+  color: #1c1a17;
+  letter-spacing: 0.04em;
+  box-shadow: none;
+  transform: none;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+[data-crmv4-root] .c4-sdr .c4-btn:hover,
+[data-crmv4-root] .c4-ant .c4-btn:hover,
+[data-crmv4-root] .c4-logs-coffer .c4-btn:hover,
+[data-crmv4-root] .c4-logs-coffer .c4-chip:hover { background: #f3ead8; transform: none; }
+
+[data-crmv4-root] .c4-sdr .c4-chip[data-on="1"],
+[data-crmv4-root] .c4-sdr .c4-btn-hot,
+[data-crmv4-root] .c4-ant .c4-chip[data-on="1"],
+[data-crmv4-root] .c4-logs-coffer .c4-chip[data-on="1"],
+[data-crmv4-root] .c4-logs-coffer .c4-btn-hot {
+  background: #1c1a17;
+  color: #f7f3ea;
+  border-color: #1c1a17;
+  box-shadow: inset 0 -3px 0 #c6a15b;
+}
+
+[data-crmv4-root] .c4-sdr-list,
+[data-crmv4-root] .c4-ant-book {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv4-root] .c4-sdr-list > li,
+[data-crmv4-root] .c4-ant-book > li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 0;
+  padding: 12px 14px;
+  background: #fffdf8;
+  border: 1px solid #e4d7bc;
+  border-left: 4px solid #1c1a17;
+}
+
+[data-crmv4-root] .c4-sdr-list > li[data-focus="1"] { border-left-color: #c6a15b; background: #fbf6ee; }
+
+[data-crmv4-root] .c4-sdr-list > li[data-peak="1"] { box-shadow: inset 0 -2px 0 #c6a15b; }
+
+[data-crmv4-root] .c4-sdr-list > li[data-cooling="1"] { border-left-color: #8a6a3b; }
+
+[data-crmv4-root] .c4-ant-book > li[data-reviewed="1"] { border-left-color: #c6a15b; }
+
+[data-crmv4-root] .c4-sdr-title {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #1c1a17;
+  font-family: Palatino, Georgia, serif;
+  font-size: 18px;
+  text-align: left;
+}
+
+[data-crmv4-root] .c4-sdr-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: #5c564c;
+}
+
+[data-crmv4-root] .c4-sdr-facts li { margin: 0; }
+
+[data-crmv4-root] .c4-sdr .c4-field:focus-visible,
+[data-crmv4-root] .c4-sdr .c4-btn:focus-visible,
+[data-crmv4-root] .c4-ant .c4-field:focus-visible,
+[data-crmv4-root] .c4-ant .c4-btn:focus-visible,
+[data-crmv4-root] .c4-logs-coffer .c4-btn:focus-visible,
+[data-crmv4-root] .c4-logs-coffer .c4-chip:focus-visible,
+[data-crmv4-root] .c4-logs-coffer .c4-field:focus-visible {
+  outline: 2px solid #8a6a3b;
+  outline-offset: 2px;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-sdr,
+[data-crmv4-root][data-theme="dark"] .c4-ant,
+[data-crmv4-root][data-theme="dark"] .c4-logs-luxe.c4-logs-script.c4-logs-gilt.c4-logs-herb.c4-logs-salon.c4-logs-transept.c4-logs-ambulatory.c4-logs-narthex.c4-logs-coffer {
+  background: #12100e;
+  color: #f6f1e8;
+  border-color: #3a332c;
+  box-shadow: none;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-sdr-kpis li,
+[data-crmv4-root][data-theme="dark"] .c4-ant-ledger li,
+[data-crmv4-root][data-theme="dark"] .c4-logs-coffer-stats li,
+[data-crmv4-root][data-theme="dark"] .c4-sdr-list > li,
+[data-crmv4-root][data-theme="dark"] .c4-ant-book > li,
+[data-crmv4-root][data-theme="dark"] .c4-sdr-empty,
+[data-crmv4-root][data-theme="dark"] .c4-ant-empty,
+[data-crmv4-root][data-theme="dark"] .c4-logs-coffer .c4-card,
+[data-crmv4-root][data-theme="dark"] .c4-logs-coffer-links,
+[data-crmv4-root][data-theme="dark"] .c4-logs-coffer-empty,
+[data-crmv4-root][data-theme="dark"] .c4-logs-coffer .c4-logs-coffer-row {
+  background: #1c1a17;
+  color: #f6f1e8;
+  border-color: #3a332c;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-sdr-title,
+[data-crmv4-root][data-theme="dark"] .c4-logs-coffer .c4-log-who { color: #f6f1e8; }
+
+[data-crmv4-root][data-theme="dark"] .c4-sdr .c4-btn,
+[data-crmv4-root][data-theme="dark"] .c4-ant .c4-btn,
+[data-crmv4-root][data-theme="dark"] .c4-logs-coffer .c4-btn,
+[data-crmv4-root][data-theme="dark"] .c4-logs-coffer .c4-chip {
+  color: #f6f1e8;
+  border-color: #c6a15b;
+  background: transparent;
+}
+
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-sdr,
+  [data-crmv4-root] .c4-ant { margin: 12px; padding: 14px; }
+  [data-crmv4-root] .c4-sdr-mast,
+  [data-crmv4-root] .c4-ant-mast,
+  [data-crmv4-root] .c4-logs-narthex.c4-logs-coffer .c4-logs-coffer-mast { grid-template-columns: minmax(0, 1fr); }
+  [data-crmv4-root] .c4-sdr-mast .c4-title,
+  [data-crmv4-root] .c4-ant-mast .c4-title,
+  [data-crmv4-root] .c4-logs-coffer-title { font-size: 30px; }
+  [data-crmv4-root] .c4-sdr-kpis,
+  [data-crmv4-root] .c4-ant-ledger,
+  [data-crmv4-root] .c4-logs-coffer-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  [data-crmv4-root] .c4-sdr .c4-btn,
+  [data-crmv4-root] .c4-ant .c4-btn,
+  [data-crmv4-root] .c4-logs-coffer .c4-btn,
+  [data-crmv4-root] .c4-logs-coffer .c4-chip { min-height: 44px; }
+  [data-crmv4-root] .c4-sdr-plate[data-logo="mono"],
+  [data-crmv4-root] .c4-ant-plate[data-logo="mono"],
+  [data-crmv4-root] .c4-logs-coffer .c4-logs-coffer-seal[data-logo="mono"] { width: 100%; min-height: 52px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-sdr .c4-btn,
+  [data-crmv4-root] .c4-ant .c4-btn,
+  [data-crmv4-root] .c4-logs-coffer .c4-btn,
+  [data-crmv4-root] .c4-logs-coffer .c4-chip,
+  [data-crmv4-root] .c4-sdr-meter i,
+  [data-crmv4-root] .c4-logs-coffer .c4-logs-coffer-row { transition: none; }
+}
+
+
+/* Round 228 — sacristy support hall: tickets, chat, and documents. */
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy {
+  width: 100%;
+  box-sizing: border-box;
+  gap: 0;
+  margin: 0;
+  padding: 0 0 32px;
+  background: #f6f1e7;
+  border: 1px solid #1c1a17;
+  border-left: 8px solid #c6a15b;
+  box-shadow: 0 24px 48px rgba(28, 26, 23, 0.06);
+}
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-mast {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr) 240px;
+  align-items: stretch;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  background: #1c1a17;
+  color: #f7f3ea;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-seal[data-logo="mono"] {
+  display: grid;
+  place-items: center;
+  width: 104px;
+  min-height: 128px;
+  margin: 0;
+  background: #f7f3ea;
+  color: #1c1a17;
+  border-right: 1px solid #c6a15b;
+  letter-spacing: 0.28em;
+  font-size: 13px;
+  font-weight: 650;
+  filter: grayscale(1);
+}
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-copy {
+  padding: 28px 28px 22px;
+}
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-crypt-kicker,
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-reading-kicker,
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-atlas-kicker,
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-conservatory-kicker,
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-kicker,
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-plate { display: none; }
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-kicker {
+  display: block;
+  margin: 0 0 10px;
+  color: #c6a15b;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-title {
+  margin: 0;
+  color: #f7f3ea;
+  font-family: Palatino, "Palatino Linotype", Georgia, serif;
+  font-size: 46px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 0.95;
+  text-transform: none;
+}
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-title::after {
+  content: "";
+  display: block;
+  width: 96px;
+  height: 1px;
+  margin-top: 16px;
+  background: #c6a15b;
+}
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-rule {
+  margin: 12px 0 0;
+  color: #d9c7a1;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-index {
+  display: grid;
+  align-content: stretch;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: #241f1a;
+  border-left: 1px solid #8a6a3b;
+}
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-index li {
+  display: grid;
+  align-items: center;
+  margin: 0;
+  padding: 0 16px;
+  background: transparent;
+  color: #f7f3ea;
+  border: 0;
+  border-bottom: 1px solid #3a332c;
+  border-radius: 0;
+  box-shadow: none;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-index li[data-tone="gold"] { box-shadow: inset 3px 0 0 #c6a15b; color: #c6a15b; }
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-index li[data-tone="ink"] { box-shadow: inset 3px 0 0 #f7f3ea; }
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-index li[data-tone="ivory"] { box-shadow: inset 3px 0 0 #8a6a3b; }
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-index li[data-tone="mist"] { box-shadow: inset 3px 0 0 #d9c7a1; }
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+  margin: 0;
+  padding: 14px 28px;
+  background: #fffdf8;
+  border-bottom: 1px solid #e4d7bc;
+}
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-links a {
+  color: #8a6a3b;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.16em;
+  text-decoration: none;
+  text-transform: uppercase;
+  border-bottom: 1px solid #c6a15b;
+}
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-links a:hover { color: #1c1a17; }
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-row { margin: 0 24px; }
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-chip {
+  border-radius: 0;
+  border: 1px solid #1c1a17;
+  background: #fffdf8;
+  color: #1c1a17;
+  letter-spacing: 0.08em;
+  transition: background 160ms ease, color 160ms ease;
+}
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-chip[data-on="1"] {
+  background: #1c1a17;
+  color: #f7f3ea;
+  box-shadow: inset 0 -2px 0 #c6a15b;
+}
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-chip:hover { background: #f3ead8; }
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-board { margin: 8px 24px 0; }
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-board .c4-stack {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-ticket {
+  background: #fffdf8;
+  border: 1px solid #1c1a17;
+  border-left: 8px solid #c6a15b;
+  border-radius: 0;
+  padding: 16px 16px 12px;
+  box-shadow: 0 12px 28px rgba(28, 26, 23, 0.05);
+  transition: background 160ms ease, border-color 160ms ease;
+}
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-ticket:hover {
+  background: #fbf6ec;
+  border-left-color: #8a6a3b;
+}
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-ticket:focus-within {
+  outline: 2px solid #c6a15b;
+  outline-offset: 2px;
+}
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-card,
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-note {
+  margin: 16px 24px 0;
+  background: #fffdf8;
+  border: 1px solid #1c1a17;
+  border-radius: 0;
+  box-shadow: none;
+}
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-docs,
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-threads {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-docs > li,
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-threads > li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  margin: 0;
+  padding: 14px 18px;
+  border-top: 1px solid #e4d7bc;
+  border-radius: 0;
+  background: #fffdf8;
+}
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-docs > li:nth-child(even) { background: #f4efe6; }
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-docs > li:hover,
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-threads > li:hover { background: #fbf6ec; }
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-empty-gold {
+  margin: 12px 24px;
+  padding: 28px 18px;
+  border: 1px dashed #c6a15b;
+  background: #fffdf8;
+  color: #8a6a3b;
+  text-align: center;
+  letter-spacing: 0.06em;
+}
+[data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-chat { margin: 8px 24px 0; gap: 14px; }
+[data-crmv4-root][data-theme="dark"] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy {
+  background: #141210;
+  border-color: #3a332c;
+  border-left-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-mast { background: #0e0c0a; }
+[data-crmv4-root][data-theme="dark"] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-seal[data-logo="mono"] {
+  background: #1c1a17;
+  color: #f7f3ea;
+}
+[data-crmv4-root][data-theme="dark"] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-card,
+[data-crmv4-root][data-theme="dark"] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-ticket,
+[data-crmv4-root][data-theme="dark"] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-docs > li,
+[data-crmv4-root][data-theme="dark"] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-links,
+[data-crmv4-root][data-theme="dark"] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-empty-gold {
+  background: #1c1a17;
+  color: #f7f3ea;
+  border-color: #3a332c;
+}
+[data-crmv4-root][data-theme="dark"] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-docs > li:nth-child(even) { background: #241f1a; }
+[data-crmv4-root][data-theme="dark"] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-chip { background: #241f1a; color: #f7f3ea; border-color: #8a6a3b; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-mast {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  [data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-seal[data-logo="mono"] {
+    width: auto;
+    min-height: 52px;
+    border-right: 0;
+    border-bottom: 1px solid #c6a15b;
+  }
+  [data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-title { font-size: 32px; }
+  [data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-index { grid-template-columns: 1fr 1fr; border-left: 0; }
+  [data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-board .c4-stack,
+  [data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-chat { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-chip,
+  [data-crmv4-root] .c4-support-lacquer.c4-support-gilt.c4-support-parlor.c4-support-atlas.c4-support-conservatory.c4-support-reading.c4-support-crypt.c4-support-sacristy .c4-support-sacristy-ticket { transition: none; }
+}

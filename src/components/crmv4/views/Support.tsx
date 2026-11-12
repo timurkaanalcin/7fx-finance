@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { approvalBody, approvalEndpoint } from "@/lib/crmv2/payload";
 import { crmv4Text } from "@/lib/crmv4/copy";
@@ -26,6 +27,9 @@ export default function Support({ tx, locale, q }: { tx: Tx; locale: string; q: 
   const params = useSearchParams();
   const router = useRouter();
   const tab = params.get("tab") || "tickets";
+  const path = usePathname() || "";
+  const root = path.includes("/izcrm/crmv4") ? "/izcrm/crmv4" : "/crmv4";
+  const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale, key);
   function setQuery(next: Record<string, string>) {
     const p = new URLSearchParams(params.toString());
     for (const [key, value] of Object.entries(next)) {
@@ -35,21 +39,28 @@ export default function Support({ tx, locale, q }: { tx: Tx; locale: string; q: 
     router.replace(`?${p.toString()}`);
   }
   return (
-    <div className="c4-stack c4-support-lacquer c4-support-gilt c4-support-parlor c4-support-atlas c4-support-conservatory c4-support-reading c4-support-crypt">
-      <header className="c4-support-mast c4-support-atlas-mast c4-support-conservatory-mast c4-support-reading-mast c4-support-crypt-mast">
-        <p className="c4-support-crypt-seal" data-logo="mono">7FX</p>
-        <div>
+    <div className="c4-stack c4-support-lacquer c4-support-gilt c4-support-parlor c4-support-atlas c4-support-conservatory c4-support-reading c4-support-crypt c4-support-sacristy" data-desk="sacristy">
+      <header className="c4-support-mast c4-support-atlas-mast c4-support-conservatory-mast c4-support-reading-mast c4-support-crypt-mast c4-support-sacristy-mast">
+        <p className="c4-support-sacristy-seal" data-logo="mono">7FX</p>
+        <div className="c4-support-sacristy-copy">
+          <p className="c4-support-sacristy-kicker">{tx("supportLead")}</p>
           <p className="c4-support-crypt-kicker">{tx("supportLead")}</p>
           <p className="c4-support-kicker c4-support-atlas-kicker c4-support-conservatory-kicker c4-support-reading-kicker">{tx("supportLead")}</p>
-          <h2 className="c4-support-title c4-support-atlas-title c4-support-conservatory-title c4-support-reading-title">{tx("support")}</h2>
+          <h2 className="c4-support-title c4-support-atlas-title c4-support-conservatory-title c4-support-reading-title c4-support-sacristy-title">{tx("support")}</h2>
+          <p className="c4-support-sacristy-rule">{tx("supportLead")}</p>
         </div>
-        <ol className="c4-support-crypt-index" aria-label={tx("support")}>
+        <ol className="c4-support-crypt-index c4-support-sacristy-index" aria-label={tx("support")}>
           <li data-tone="gold">{tx("tickets")}</li>
           <li data-tone="ink">{tx("chat")}</li>
           <li data-tone="ivory">{tx("evrak")}</li>
+          <li data-tone="mist">{tx("kycQueue")}</li>
         </ol>
         <p className="c4-support-plate c4-support-atlas-plate c4-support-conservatory-plate c4-support-reading-plate" data-logo="mono">7FX</p>
       </header>
+      <nav className="c4-support-sacristy-links" aria-label={v4("sdrTitle")}>
+        <Link href={crmv4Href(root, "scdr")}>{v4("sdrTitle")}</Link>
+        <Link href={crmv4Href(root, "antp")}>{v4("antTitle")}</Link>
+      </nav>
       <BacklogTrend v4={(key) => crmv4Text(locale, key)} />
       <ApprovalTimes v4={(key) => crmv4Text(locale, key)} />
       <p className="c4-muted">{tx("supportLead")}</p>
@@ -96,7 +107,7 @@ function Tickets({ tx, locale, q, status, openId, setQuery }: { tx: Tx; locale: 
   const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale, key);
   const list = (data.data?.tickets || []).filter((row) => !unassigned || !ticketAssignee(row.id));
   return (
-    <div className="c4-ticket-board">
+    <div className="c4-ticket-board c4-support-sacristy-board">
     <ViewerHint v4={v4} />
     <Card title={tx("tickets")}>
       <div className="c4-tools">
@@ -129,7 +140,7 @@ function Tickets({ tx, locale, q, status, openId, setQuery }: { tx: Tx; locale: 
       {!data.loading && !list.length && <p className="c4-empty-gold">{v4("emptyTickets")}</p>}
       <div className="c4-stack">
         {list.map((row) => (
-          <article key={`${row.kind}-${row.id}`} className="c4-ticket c4-ticket-luxe" data-status={row.status || ""} tabIndex={0}>
+          <article key={`${row.kind}-${row.id}`} className="c4-ticket c4-ticket-luxe c4-support-sacristy-ticket" data-status={row.status || ""} tabIndex={0}>
             <div className="c4-row c4-between">
               <strong>{row.customer || "—"}</strong>
               <Status tone={statusTone(row.status)}>{row.status}</Status>
@@ -217,10 +228,10 @@ function Chat({ tx, locale, q, userId, setQuery }: { tx: Tx; locale: string; q: 
   const visible = messages.filter((row) => !chatQ.trim() || String(row.body || "").toLowerCase().includes(chatQ.trim().toLowerCase()));
   const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale, key);
   return (
-    <div className="c4-split c4-chat-luxe">
+    <div className="c4-split c4-chat-luxe c4-support-sacristy-chat">
       <Card title={tx("chat")}>
         <State loading={list.loading} error={list.error} empty={!list.loading && !(list.data?.threads || []).length} tx={tx} onRetry={list.reload} />
-        <ul>
+        <ul className="c4-support-sacristy-threads">
           {(list.data?.threads || []).map((row) => (
             <li key={row.traderId}>
               <button type="button" className="c4-btn" style={{ width: "100%", textAlign: "start", borderRadius: 8 }} onClick={() => setQuery({ tab: "chat", user: row.traderId || "" })}>
@@ -259,7 +270,7 @@ function Kyc({ tx, locale, q }: { tx: Tx; locale: string; q: string }) {
   return (
     <Card title={tx("kycQueue")}>
       <State loading={data.loading} error={data.error} empty={!data.loading && !(data.data?.documents || []).length} tx={tx} onRetry={data.reload} />
-      <ul>
+      <ul className="c4-support-sacristy-docs">
         {(data.data?.documents || []).map((row) => (
           <li key={row.id} className="c4-row" style={{ justifyContent: "space-between", padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
             <div>
@@ -289,7 +300,7 @@ function Files({ tx, locale }: { tx: Tx; locale: string }) {
   return (
     <Card title={tx("allFiles")}>
       <State loading={data.loading} error={data.error} empty={!data.loading && !(data.data?.documents || []).length} tx={tx} onRetry={data.reload} />
-      <ul>
+      <ul className="c4-support-sacristy-docs">
         {(data.data?.documents || []).map((row) => (
           <li key={row.id} className="c4-row" style={{ justifyContent: "space-between", padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
             <div>
