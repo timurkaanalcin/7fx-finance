@@ -35,17 +35,22 @@ export default function Settings({ tx }: { tx: Tx }) {
     router.replace(`?${p.toString()}`);
   }
   return (
-    <div className="c4-stack c4-settings-luxe c4-settings-atelier">
-      <header className="c4-settings-mast">
+    <div className="c4-stack c4-settings-luxe c4-settings-atelier c4-settings-loft">
+      <header className="c4-settings-mast c4-settings-loft-mast">
+        <p className="c4-settings-loft-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-settings-kicker">{tx("settingsLead")}</p>
-          <h2 className="c4-settings-title">{tx("settings")}</h2>
+          <p className="c4-settings-kicker c4-settings-loft-kicker">{tx("settingsLead")}</p>
+          <h2 className="c4-settings-title c4-settings-loft-title">{tx("settings")}</h2>
         </div>
-        <p className="c4-settings-plate" data-logo="mono">7FX</p>
+        <ol className="c4-settings-loft-index" aria-label={tx("settings")}>
+          <li data-tone="gold" data-on={area === "general" ? "1" : "0"}><button type="button" onClick={() => setArea("general")}>{tx("general")}</button></li>
+          <li data-tone="ink" data-on={area === "leads" ? "1" : "0"}><button type="button" onClick={() => setArea("leads")}>{tx("leadsMap")}</button></li>
+          <li data-tone="ivory" data-on={area === "desks" ? "1" : "0"}><button type="button" onClick={() => setArea("desks")}>{tx("desks")}</button></li>
+        </ol>
       </header>
       <div className="c4-with-side">
         <PhoneSheet title={v4("sysTitle")} v4={v4}>
-        <nav className="c4-side" aria-label={tx("settings")}>
+        <nav className="c4-side c4-settings-loft-side" aria-label={tx("settings")}>
           {AREAS.map((item) => (
             <button key={item} type="button" data-on={area === item ? "1" : "0"} onClick={() => setArea(item)}>{tx(areaLabel(item))}</button>
           ))}
