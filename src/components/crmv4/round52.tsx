@@ -74,18 +74,23 @@ export function NoticeCenter({ base, v4, locale, tx, placed = "page" }: { base: 
   }
 
   return (
-    <section className="c4-notice-luxe" aria-label={v4("ibTitle")} data-notice-center="1" data-placed={placed}>
-      <header className="c4-pay-head">
+    <section className="c4-notice-luxe c4-notice-cloister" aria-label={v4("ibTitle")} data-notice-center="1" data-placed={placed} data-desk="cloister">
+      <header className="c4-notice-cloister-mast">
+        <p className="c4-notice-cloister-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("ibSub")}</p>
-          <h2 className="c4-title">{v4("ibTitle")}</h2>
+          <p className="c4-notice-cloister-kicker">{v4("ibSub")}</p>
+          <h2 className="c4-title c4-notice-cloister-title">{v4("ibTitle")}</h2>
         </div>
-        <p className="c4-meta">{v4("ibCount")} {loaded.length} · {unreadCount(loaded, read)}</p>
+        <p className="c4-notice-cloister-count">{v4("ibCount")} {loaded.length} · {unreadCount(loaded, read)}</p>
       </header>
+      <p className="c4-notice-cloister-links">
+        <Link href={crmv4Href(base, "nbl")}>{v4("nblTitle")}</Link>
+        <Link href={crmv4Href(base, "tsl")}>{v4("tslTitle")}</Link>
+      </p>
       <p className="c4-meta">{v4("ibHint")}</p>
       <label className="c4-lab">
         <span>{v4("ibSearch")}</span>
-        <input className="c4-field" aria-label={v4("ibSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
+        <input className="c4-field c4-notice-cloister-search" aria-label={v4("ibSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       <div className="c4-row" role="group" aria-label={v4("ibAll")}>
         <button type="button" className="c4-chip" data-on={kind ? "0" : "1"} aria-pressed={!kind} onClick={() => setKind("")}>{v4("ibAll")}</button>
@@ -101,14 +106,14 @@ export function NoticeCenter({ base, v4, locale, tx, placed = "page" }: { base: 
       </div>
       {data.loading && !loaded.length && <p className="c4-meta">{v4("ibLoading")}</p>}
       {data.error && <p className="c4-meta">{v4("ibFailed")} {tx("failed")}</p>}
-      {!data.loading && !data.error && !loaded.length && <p className="c4-pay-empty">{v4("ibNone")}</p>}
-      {!data.loading && !data.error && loaded.length > 0 && !shown.length && <p className="c4-pay-empty">{v4("ibEmpty")}</p>}
-      <ul className="c4-notice-cards">
+      {!data.loading && !data.error && !loaded.length && <p className="c4-pay-empty c4-notice-cloister-empty">{v4("ibNone")}</p>}
+      {!data.loading && !data.error && loaded.length > 0 && !shown.length && <p className="c4-pay-empty c4-notice-cloister-empty">{v4("ibEmpty")}</p>}
+      <ul className="c4-notice-cards c4-notice-cloister-cards">
         {shown.map((row) => {
           const local = read.includes(row.id);
           const customer = customerIdOf(row);
           return (
-            <li key={row.id} className="c4-notice-card" data-read={local ? "1" : "0"}>
+            <li key={row.id} className="c4-notice-card c4-notice-cloister-card" data-read={local ? "1" : "0"}>
               <div className="c4-row c4-between">
                 <strong>{kindLabel(String(row.kind || ""), v4)}</strong>
                 <span className="c4-meta">{local ? v4("ibMarked") : v4("ibUnread")}</span>

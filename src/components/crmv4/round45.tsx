@@ -48,6 +48,8 @@ const MARK: Record<string, CrmV4CopyKey> = {
 };
 
 export function TicketInbox({ v4, tx, locale }: { v4: V4; tx: Tx; locale: string }) {
+  const path = usePathname() || "";
+  const root = path.includes("/izcrm/crmv4") ? "/izcrm/crmv4" : "/crmv4";
   const data = useJson<{ tickets?: Ticket[] }>("/api/admin/tickets?status=");
   const [filter, setFilter] = useState<TicketFilter>({ status: "", kind: "", sla: "" });
   const [limit, setLimit] = useState(24);
@@ -119,8 +121,18 @@ export function TicketInbox({ v4, tx, locale }: { v4: V4; tx: Tx; locale: string
   }
 
   return (
-    <section className="c4-inbox-desk" aria-label={v4("inTitle")} data-ticket-inbox="">
-      <h2 className="c4-title">{v4("inTitle")}</h2>
+    <section className="c4-inbox-desk c4-ticket-cloister" aria-label={v4("inTitle")} data-ticket-inbox="" data-desk="cloister">
+      <header className="c4-ticket-cloister-mast">
+        <p className="c4-ticket-cloister-seal" data-logo="mono">7FX</p>
+        <div>
+          <p className="c4-ticket-cloister-kicker">{v4("inHint")}</p>
+          <h2 className="c4-title">{v4("inTitle")}</h2>
+        </div>
+      </header>
+      <p className="c4-ticket-cloister-links">
+        <Link href={crmv4Href(root, "tsl")}>{v4("tslTitle")}</Link>
+        <Link href={crmv4Href(root, "nbl")}>{v4("nblTitle")}</Link>
+      </p>
       <p className="c4-meta">{v4("inHint")}</p>
       <p className="c4-meta">{v4("inKeys")}</p>
       {viewer && <p className="c4-meta">{v4("inViewer")}</p>}
@@ -185,9 +197,13 @@ export function TicketInbox({ v4, tx, locale }: { v4: V4; tx: Tx; locale: string
           );
         })}
       </ol>
+      {!detail && <p className="c4-ticket-cloister-empty">{v4("inEmpty")}</p>}
       {detail && (
-        <article className="c4-ticket-detail" data-ticket-detail="">
-          <h3 className="c4-title">{v4("inDetail")}</h3>
+        <article className="c4-ticket-detail c4-ticket-cloister-detail" data-ticket-detail="">
+          <header className="c4-ticket-cloister-mast">
+            <p className="c4-ticket-cloister-seal" data-logo="mono">7FX</p>
+            <h3 className="c4-title">{v4("inDetail")}</h3>
+          </header>
           <p>{detail.customer || "—"} · {detail.kind} · {detail.status || "—"}</p>
           <p>{detail.currency ? money(detail.amount, detail.currency, locale) : "—"}</p>
           <p className="c4-meta">{v4("inOpened")} {formatAge(slaClock(detail.openedAt, detail.closedAt, now, limit, due).hours)} · {when(detail.openedAt, locale)}</p>

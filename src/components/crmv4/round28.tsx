@@ -211,10 +211,11 @@ export function DeskSearch({ base, open, onClose, v4, locale }: { base: string; 
   if (!open) return null;
   return (
     <div className="c4-palette-back" role="presentation" onClick={onClose}>
-      <div className="c4-find-luxe" role="dialog" aria-modal="true" aria-label={v4("findTitle")} onClick={(event) => event.stopPropagation()}>
+      <div className="c4-find-luxe c4-find-cloister" role="dialog" aria-modal="true" aria-label={v4("findTitle")} data-desk="cloister" onClick={(event) => event.stopPropagation()}>
+        <p className="c4-find-cloister-seal" data-logo="mono">7FX</p>
         <input
           ref={input}
-          className="c4-field"
+          className="c4-field c4-find-cloister-search"
           value={q}
           placeholder={v4("findHint")}
           aria-label={v4("findTitle")}
@@ -230,14 +231,14 @@ export function DeskSearch({ base, open, onClose, v4, locale }: { base: string; 
         {query.length < 2 && (
           <div>
             <p className="c4-muted">{v4("findRecent")}</p>
-            {!recent.length && <p className="c4-muted">{v4("findRecentEmpty")}</p>}
+            {!recent.length && <p className="c4-muted c4-find-cloister-empty">{v4("findRecentEmpty")}</p>}
             <div className="c4-line-filters">
               {recent.map((item) => <button key={item} type="button" className="c4-chip" onClick={() => { setQ(item); setIndex(0); }}>{item}</button>)}
               {recent.length > 0 && <button type="button" className="c4-btn" onClick={() => { writeJson(RECENT_KEY, []); setRecent([]); }}>{v4("findClear")}</button>}
             </div>
           </div>
         )}
-        {!flat.length && <p className="c4-muted">{v4("findEmpty")}</p>}
+        {!flat.length && <p className="c4-muted c4-find-cloister-empty">{v4("findEmpty")}</p>}
         {groups.map((group) => (
           <section key={group.group} aria-label={v4(GROUP_LABEL[group.group])}>
             <h3 className="c4-title">{v4(GROUP_LABEL[group.group])}</h3>
