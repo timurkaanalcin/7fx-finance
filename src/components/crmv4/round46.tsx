@@ -448,17 +448,23 @@ export function AccessDesk({ v4, tx, locale }: { v4: V4; tx: Tx; locale: string 
   }
 
   return (
-    <section className="c4-access-desk" aria-label={v4("axTitle")} data-access="1">
-      <header className="c4-pay-head">
+    <section className="c4-access-desk c4-access-chapter" aria-label={v4("axTitle")} data-access="1">
+      <header className="c4-pay-head c4-access-chapter-mast">
+        <p className="c4-access-chapter-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("axSub")}</p>
-          <h2 className="c4-title">{v4("axTitle")}</h2>
+          <p className="c4-access-chapter-kicker">{v4("axSub")}</p>
+          <h2 className="c4-title c4-access-chapter-title">{v4("axTitle")}</h2>
         </div>
+        <ol className="c4-access-chapter-index" aria-label={v4("axTitle")}>
+          <li data-tone="gold">{v4("axCounts")}</li>
+          <li data-tone="ink">{v4("axSearch")}</li>
+          <li data-tone="ivory">{v4("axViews")}</li>
+        </ol>
       </header>
       <p className="c4-meta">{v4("axHint")}</p>
       <p className="c4-meta">{v4("axReadOnly")}</p>
       <p className="c4-meta">{v4("axKeys")}</p>
-      <div className="c4-pay-kpis" aria-label={v4("axCounts")}>
+      <div className="c4-pay-kpis c4-access-chapter-kpis" aria-label={v4("axCounts")}>
         <article className="c4-pay-kpi">
           <span className="c4-meta">{v4("axTitle")}</span>
           <strong>{shown.length}</strong>
@@ -510,13 +516,13 @@ export function AccessDesk({ v4, tx, locale }: { v4: V4; tx: Tx; locale: string 
       {data.loading && !people.length && <p className="c4-meta">{v4("axLoading")}</p>}
       {data.error && <p className="c4-meta">{tx("failed")}</p>}
       {!data.loading && !shown.length && <p className="c4-pay-empty">{v4("axEmpty")}</p>}
-      <ol className="c4-access-list">
+      <ol className="c4-access-list c4-access-chapter-list">
         {shown.map((row, index) => {
           const count = flagCount(row);
           const level = accessLevel(count);
           return (
             <li key={row.id}>
-              <button type="button" className="c4-access-card" data-on={current?.id === row.id ? "1" : "0"} data-level={level} onClick={() => { setCursor(index); setOpenId(row.id); }}>
+              <button type="button" className="c4-access-card c4-access-chapter-card" data-on={current?.id === row.id ? "1" : "0"} data-level={level} onClick={() => { setCursor(index); setOpenId(row.id); }}>
                 <strong>{row.name || "—"}</strong>
                 <span className="c4-meta">{row.email || "—"}</span>
                 <span className="c4-meta">{jobTitleLabel(row.jobTitle, locale) || row.jobTitle || "—"} · {row.desk || v4("axNoDesk")}</span>
