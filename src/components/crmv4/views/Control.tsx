@@ -1,10 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { JOB_TITLE_KEYS, jobTitleLabel } from "@/lib/job-titles";
 import { API_KEY_MIGRATION_SQL } from "@/lib/crmv2/control";
 import { crmv4Text } from "@/lib/crmv4/copy";
+import { crmv4Href } from "@/lib/crmv4/sections";
 import { AuditDiff, SessionList } from "../round2";
 import { AuditExport } from "../round4";
 import { ActivityStream, LoginAnomalies } from "../round10";
@@ -13,7 +15,7 @@ import { Card, Chip, Field, Lab, Msg, Pager, State, Status, TAKE, sendJson, stat
 
 const TABS = ["status", "services", "logs", "backups", "keys", "admins"] as const;
 
-export default function Control({ tx, locale }: { tx: Tx; locale: string }) {
+export default function Control({ tx, locale, base }: { tx: Tx; locale: string; base: string }) {
   const params = useSearchParams();
   const router = useRouter();
   const tab = params.get("tab") || "status";
@@ -25,16 +27,28 @@ export default function Control({ tx, locale }: { tx: Tx; locale: string }) {
     router.replace(`?${p.toString()}`);
   }
   return (
-    <div className="c4-stack c4-control-atlas" data-atlas="1">
-      <header className="c4-control-mast">
-        <p className="c4-control-mark" data-logo="mono">7FX</p>
-        <div>
-          <p className="c4-control-kicker">{tx("control")}</p>
-          <h2 className="c4-control-title">{tx("controlLead")}</h2>
+    <div className="c4-stack c4-control-atlas c4-control-portico" data-atlas="1" data-desk="portico">
+      <header className="c4-control-mast c4-control-portico-mast">
+        <p className="c4-control-mark c4-control-portico-seal" data-logo="mono">7FX</p>
+        <div className="c4-control-portico-copy">
+          <p className="c4-control-portico-kicker">{tx("control")}</p>
+          <p className="c4-control-kicker">{tx("controlLead")}</p>
+          <h2 className="c4-control-portico-title">{tx("controlLead")}</h2>
+          <h2 className="c4-control-title">{tx("control")}</h2>
         </div>
+        <ol className="c4-control-portico-index" aria-label={tx("control")}>
+          <li data-tone="gold">{tx("systemTab")}</li>
+          <li data-tone="ink">{tx("servicesTab")}</li>
+          <li data-tone="ivory">{tx("logsTab")}</li>
+        </ol>
       </header>
-      <p className="c4-muted">{tx("controlHint")} {tx("classicNote")}</p>
-      <div className="c4-row">
+      <nav className="c4-control-portico-links" aria-label={crmv4Text(locale, "frzSpine")}>
+        <Link href={crmv4Href(base, "frze")}>{crmv4Text(locale, "frzTitle")}</Link>
+        <Link href={crmv4Href(base, "qmks")}>{crmv4Text(locale, "qmkTitle")}</Link>
+      </nav>
+      <p className="c4-control-portico-time">{crmv4Text(locale, "frzLocal")}</p>
+      <p className="c4-muted c4-control-portico-lead">{tx("controlHint")} {tx("classicNote")}</p>
+      <div className="c4-row c4-control-portico-rail">
         {TABS.map((item) => (
           <Chip key={item} on={tab === item} onClick={() => setTab(item)}>{tx(tabLabel(item))}</Chip>
         ))}
@@ -96,7 +110,7 @@ function StatusPanel({ tx, locale }: { tx: Tx; locale: string }) {
         <p className="c4-muted" style={{ padding: "8px 16px 0" }}>{tx("servicesHint")}</p>
         <ul>
           {services.map((row) => (
-            <li key={row.id} className="c4-row" style={{ justifyContent: "space-between", padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
+            <li key={row.id} className="c4-row c4-control-portico-row" data-status={row.status} style={{ justifyContent: "space-between", padding: "8px 16px", borderTop: "1px solid var(--c4-line)" }}>
               <div>
                 <div>{tx(serviceName(row.id))}</div>
                 <div className="c4-muted">{serviceDetail(tx, row)} · {when(row.checkedAt, locale)}</div>
