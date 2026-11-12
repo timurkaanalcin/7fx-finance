@@ -227,6 +227,7 @@ import { DialectMarks, RefectorySlips } from "./round236";
 import { ObservatorySlips, PostureMarks } from "./round237";
 import { BadgeMarks, BerthSlips } from "./round238";
 import { AlcoveSlips, PassportStamps } from "./round239";
+import { ColophonMarks, TerraceCards } from "./round240";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -946,6 +947,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "bdg") return v4("bdgTitle");
     if (tab === "alv") return v4("alvTitle");
     if (tab === "psp") return v4("pspTitle");
+    if (tab === "trc") return v4("trcTitle");
+    if (tab === "clp") return v4("clpTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1351,6 +1354,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "bdg") return v4("bdgSub");
     if (tab === "alv") return v4("alvSub");
     if (tab === "psp") return v4("pspSub");
+    if (tab === "trc") return v4("trcSub");
+    if (tab === "clp") return v4("clpSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1889,6 +1894,8 @@ function Shell({ base, section, name }: Props) {
             {view === "bdg" && <BadgeMarks base={base} v4={v4} />}
             {view === "alv" && <AlcoveSlips base={base} v4={v4} />}
             {view === "psp" && <PassportStamps base={base} v4={v4} />}
+            {view === "trc" && <TerraceCards base={base} v4={v4} />}
+            {view === "clp" && <ColophonMarks base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
