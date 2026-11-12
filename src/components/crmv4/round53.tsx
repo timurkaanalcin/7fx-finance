@@ -54,15 +54,21 @@ export function TradeBlotter({ base, v4, locale, tx }: { base: string; v4: V4; l
   const failed = orders.error || closed.error || people.error;
 
   return (
-    <section className="c4-blotter" aria-label={v4("blTitle")} data-blotter="1">
-      <header className="c4-pay-head">
+    <section className="c4-blotter c4-blotter-salon" aria-label={v4("blTitle")} data-blotter="1" data-blotter-salon="1">
+      <header className="c4-blotter-mast">
+        <p className="c4-blotter-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("blSub")}</p>
+          <p className="c4-blotter-kicker">{v4("blSub")}</p>
           <h2 className="c4-title">{v4("blTitle")}</h2>
         </div>
-        <p className="c4-meta">{v4("blCount")} {shown.length}</p>
+        <ol className="c4-blotter-legend" aria-label={v4("blBoth")}>
+          <li data-tone="ivory">{v4("blFills")}</li>
+          <li data-tone="gold">{v4("blOpen")}</li>
+          <li data-tone="ink">{v4("blAll")}</li>
+        </ol>
+        <p className="c4-blotter-count">{v4("blCount")} {shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("blHint")}</p>
+      <p className="c4-blotter-rule">{v4("blHint")}</p>
       <label className="c4-lab">
         <span>{v4("blSearch")}</span>
         <input className="c4-field" aria-label={v4("blSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
@@ -88,8 +94,8 @@ export function TradeBlotter({ base, v4, locale, tx }: { base: string; v4: V4; l
       </div>
       {loading && !loaded.length && <p className="c4-meta">{v4("blLoading")}</p>}
       {failed && <p className="c4-meta">{v4("blFailed")} {tx("failed")}</p>}
-      {!orders.loading && !orders.error && !loaded.length && <p className="c4-pay-empty">{v4("blNone")}</p>}
-      {!orders.loading && !orders.error && loaded.length > 0 && !shown.length && <p className="c4-pay-empty">{v4("blEmpty")}</p>}
+      {!orders.loading && !orders.error && !loaded.length && <p className="c4-blotter-empty">{v4("blNone")}</p>}
+      {!orders.loading && !orders.error && loaded.length > 0 && !shown.length && <p className="c4-blotter-empty">{v4("blEmpty")}</p>}
       <div className="c4-blotter-wrap">
         <table className="c4-blotter-table">
           <thead>
