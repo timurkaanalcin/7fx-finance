@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { CrmV4CopyKey } from "@/lib/crmv4/copy";
 import { readJson, writeJson } from "@/lib/crmv4/local";
@@ -161,29 +162,52 @@ export function ReportsPage({ v4, locale }: { v4: V4; locale: string }) {
   const withdrawals = useJson<{ requests?: { id: string; amount?: number | null; currency?: string | null; status?: string | null; createdAt?: string | null; user?: { name?: string | null } | null }[] }>("/api/admin/withdrawals?take=80");
   const tickets = useJson<{ tickets?: { id: string; kind?: string | null; amount?: number | null; currency?: string | null; status?: string | null; customer?: string | null; openedAt?: string | null }[] }>("/api/admin/tickets?take=40");
   const [currency, setCurrency] = useState("");
+  const [needle, setNeedle] = useState("");
   const users = people.data?.users || [];
   const depositRows: MoneyLine[] = (deposits.data?.requests || []).map((row) => ({ id: row.id, amount: row.amount, currency: row.currency, status: row.status, createdAt: row.createdAt, name: row.user?.name }));
   const withdrawalRows: MoneyLine[] = (withdrawals.data?.requests || []).map((row) => ({ id: row.id, amount: row.amount, currency: row.currency, status: row.status, createdAt: row.createdAt, name: row.user?.name }));
   const ticketRows: MoneyLine[] = (tickets.data?.tickets || []).map((row) => ({ id: row.id, amount: row.amount, currency: row.currency, status: row.status, openedAt: row.openedAt, name: row.customer, kind: row.kind }));
   const codes = Array.from(new Set([...sumsByCurrency(depositRows), ...sumsByCurrency(withdrawalRows), ...sumsByCurrency(ticketRows)].map((row) => row.currency)));
-  const shownDeposits = rowsForCurrency(depositRows, currency);
-  const shownWithdrawals = rowsForCurrency(withdrawalRows, currency);
-  const shownTickets = rowsForCurrency(ticketRows, currency);
+  const text = needle.trim().toLowerCase();
+  const named = (row: { name?: string | null }) => !text || String(row.name || "").toLowerCase().includes(text);
+  const shownUsers = users.filter((row) => !text || `${row.name || ""} ${row.email || ""} ${row.country || ""} ${row.desk || ""}`.toLowerCase().includes(text));
+  const shownDeposits = rowsForCurrency(depositRows, currency).filter(named);
+  const shownWithdrawals = rowsForCurrency(withdrawalRows, currency).filter(named);
+  const shownTickets = rowsForCurrency(ticketRows, currency).filter(named);
   return (
-    <section className="c4-report-center" aria-label={v4("reportsTitle")} data-reports="1">
-      <h2 className="c4-title">{v4("reportsTitle")}</h2>
-      <p className="c4-muted">{v4("reportsHint")}</p>
-      <div className="c4-line-filters" aria-label={v4("reportsAll")}>
+    <section className="c4-report-center c4-report-ledger" aria-label={v4("reportsTitle")} data-reports="1" data-desk="ledger">
+      <header className="c4-report-ledger-mast">
+        <p className="c4-report-ledger-seal" data-logo="mono">7FX</p>
+        <div className="c4-report-ledger-copy">
+          <p className="c4-report-ledger-kicker">{v4("reportsMark")}</p>
+          <h2 className="c4-title c4-report-ledger-title">{v4("reportsTitle")}</h2>
+          <p className="c4-report-ledger-rule">{v4("reportsHint")}</p>
+        </div>
+        <ol className="c4-report-ledger-index" aria-label={v4("reportsTitle")}>
+          <li data-tone="gold">{v4("reportsCustomers")}</li>
+          <li data-tone="ink">{v4("reportsDeposits")}</li>
+          <li data-tone="ivory">{v4("reportsWithdrawals")}</li>
+        </ol>
+      </header>
+      <p className="c4-report-ledger-links">
+        <Link href="qire">{v4("qirTitle")}</Link>
+        <Link href="rmgn">{v4("rmgTitle")}</Link>
+      </p>
+      <label className="c4-lab c4-report-ledger-find">
+        <span>{v4("reportsSearch")}</span>
+        <input className="c4-field c4-report-ledger-search" aria-label={v4("reportsSearch")} aria-required={false} value={needle} onChange={(event) => setNeedle(event.target.value)} />
+      </label>
+      <div className="c4-line-filters c4-report-ledger-filters" aria-label={v4("reportsAll")}>
         <button type="button" className="c4-chip" data-on={currency ? "0" : "1"} onClick={() => setCurrency("")}>{v4("reportsAll")}</button>
         {codes.map((code) => <button key={code} type="button" className="c4-chip" data-on={currency === code ? "1" : "0"} onClick={() => setCurrency(code)}>{code}</button>)}
       </div>
-      <article className="c4-report-card" data-report="customers">
+      <article className="c4-report-card c4-report-ledger-card" data-report="customers">
         <h3 className="c4-title">{v4("reportsCustomers")}</h3>
-        <p className="c4-muted">{v4("reportsRows")} {users.length}</p>
-        {!users.length && <p className="c4-empty-gold">{v4("reportsEmpty")}</p>}
-        <ul>{users.slice(0, 8).map((row) => <li key={row.id}>{row.name || "—"} · {row.email || "—"} · {row.documentsStatus || "NONE"}</li>)}</ul>
+        <p className="c4-muted">{v4("reportsRows")} {shownUsers.length}</p>
+        {!shownUsers.length && <p className="c4-empty-gold c4-report-ledger-empty">{v4("reportsEmpty")}</p>}
+        <ul>{shownUsers.slice(0, 8).map((row) => <li key={row.id}>{row.name || "—"} · {row.email || "—"} · {row.documentsStatus || "NONE"}</li>)}</ul>
         <div className="c4-row">
-          <button type="button" className="c4-btn" onClick={() => void saveCsv("customers", "customers.csv", ["name", "email", "country", "desk", "documents"], users.map((row) => [String(row.name || ""), String(row.email || ""), String(row.country || ""), String(row.desk || ""), String(row.documentsStatus || "NONE")]))}>{v4("reportsCsv")}</button>
+          <button type="button" className="c4-btn" onClick={() => void saveCsv("customers", "customers.csv", ["name", "email", "country", "desk", "documents"], shownUsers.map((row) => [String(row.name || ""), String(row.email || ""), String(row.country || ""), String(row.desk || ""), String(row.documentsStatus || "NONE")]))}>{v4("reportsCsv")}</button>
           <button type="button" className="c4-btn" onClick={printReport}>{v4("reportsPrint")}</button>
         </div>
       </article>
@@ -197,12 +221,20 @@ export function ReportsPage({ v4, locale }: { v4: V4; locale: string }) {
 function MoneyReport({ title, rows, locale, v4, filename, kind }: { title: string; rows: MoneyLine[]; locale: string; v4: V4; filename: string; kind: string }) {
   const sums = sumsByCurrency(rows);
   return (
-    <article className="c4-report-card" data-report={kind}>
+    <article className="c4-report-card c4-report-ledger-card" data-report={kind}>
       <h3 className="c4-title">{title}</h3>
       <p className="c4-muted">{v4("reportsRows")} {rows.length}</p>
-      {!rows.length && <p className="c4-empty-gold">{v4("reportsEmpty")}</p>}
-      <ul className="c4-report-sums">
-        {sums.map((row) => <li key={row.currency}>{row.currency} · {row.count} · {money(row.amount, row.currency, locale)}</li>)}
+      {!rows.length && <p className="c4-empty-gold c4-report-ledger-empty">{v4("reportsEmpty")}</p>}
+      <ul className="c4-report-sums c4-report-ledger-sums">
+        {sums.map((row) => {
+          const peak = Math.max(1, ...sums.map((item) => item.count));
+          return (
+            <li key={row.currency}>
+              <span className="c4-report-ledger-bar" style={{ width: `${Math.max(8, Math.round((row.count / peak) * 100))}%` }} />
+              <span>{row.currency} · {row.count} · {money(row.amount, row.currency, locale)}</span>
+            </li>
+          );
+        })}
       </ul>
       <ul>{rows.slice(0, 6).map((row) => <li key={row.id}>{row.name || row.kind || row.id} · {row.currency ? money(row.amount, row.currency, locale) : "—"} · {row.status || "—"}</li>)}</ul>
       <div className="c4-row">
