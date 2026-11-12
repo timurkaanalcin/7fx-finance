@@ -89,13 +89,18 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
   const marks = queueMarks(visible);
 
   return (
-    <div className="c4-stack c4-fin-luxe c4-fin-atelier">
-    <header className="c4-fin-atelier-mast">
-      <p className="c4-fin-atelier-mark" data-logo="mono">7FX</p>
+    <div className="c4-stack c4-fin-luxe c4-fin-atelier c4-fin-nave">
+    <header className="c4-fin-atelier-mast c4-fin-nave-mast">
+      <p className="c4-fin-atelier-mark c4-fin-nave-mark" data-logo="mono">7FX</p>
       <div>
-        <p className="c4-fin-atelier-kicker">{tx("financeLead")}</p>
-        <h2 className="c4-fin-atelier-title">{tx("finance")}</h2>
+        <p className="c4-fin-atelier-kicker c4-fin-nave-kicker">{tx("financeLead")}</p>
+        <h2 className="c4-fin-atelier-title c4-fin-nave-title">{tx("finance")}</h2>
       </div>
+      <ol className="c4-fin-nave-index" aria-label={tx("finance")}>
+        <li data-tone="gold">{tx("deposits")}</li>
+        <li data-tone="ink">{tx("withdrawals")}</li>
+        <li data-tone="mist">{tx("ledger")}</li>
+      </ol>
     </header>
     <DailyClose locale={locale} v4={(key) => crmv4Text(locale, key)} />
     <Card title={tx("finance")}>
