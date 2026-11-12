@@ -52,14 +52,21 @@ export function SourceMix({ base, v4, tx }: { base: string; v4: V4; tx: Tx }) {
   }
 
   return (
-    <section className="c4-source-mix" aria-label={v4("sxTitle")} data-source-mix="1">
-      <header className="c4-pay-head">
+    <section className="c4-source-mix c4-source-salon" aria-label={v4("sxTitle")} data-source-mix="1" data-desk="salon">
+      <header className="c4-pay-head c4-source-salon-mast">
+        <p className="c4-source-salon-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("sxSub")}</p>
-          <h2 className="c4-title">{v4("sxTitle")}</h2>
+          <p className="c4-pay-kicker c4-source-salon-kicker">{v4("sxSub")}</p>
+          <h2 className="c4-title c4-source-salon-title">{v4("sxTitle")}</h2>
         </div>
-        <p className="c4-meta">{v4("sxTotal")} {mixCount(groups)}</p>
+        <p className="c4-meta c4-source-salon-count">{v4("sxTotal")} {mixCount(groups)}</p>
+        <ol className="c4-source-salon-index" aria-label={v4("sxTitle")}>
+          <li data-tone="gold">{v4("sxSalonChampagne")}</li>
+          <li data-tone="ink">{v4("sxSalonGraphite")}</li>
+          <li data-tone="ivory">{v4("sxSalonIvory")}</li>
+        </ol>
       </header>
+      <p className="c4-meta c4-source-salon-lead">{v4("sxSalonLead")}</p>
       <p className="c4-meta">{v4("sxHint")}</p>
       <div className="c4-row" role="group" aria-label={v4("sxTitle")}>
         {SOURCE_FIELDS.map((item) => (
@@ -77,15 +84,15 @@ export function SourceMix({ base, v4, tx }: { base: string; v4: V4; tx: Tx }) {
       </div>
       <label className="c4-lab">
         <span>{v4("sxSearch")}</span>
-        <input className="c4-field" aria-label={v4("sxSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
+        <input className="c4-field c4-source-salon-search" aria-label={v4("sxSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {data.loading && !loaded.length && <p className="c4-meta">{v4("sxLoading")}</p>}
       {data.error && <p className="c4-meta">{v4("sxFailed")} {tx("failed")}</p>}
-      {!data.loading && !data.error && !loaded.length && <p className="c4-pay-empty">{v4("sxNone")}</p>}
-      {!data.loading && !data.error && loaded.length > 0 && !groups.length && <p className="c4-pay-empty">{v4("sxEmpty")}</p>}
-      <ul className="c4-source-list">
+      {!data.loading && !data.error && !loaded.length && <p className="c4-pay-empty c4-source-salon-empty">{v4("sxNone")}</p>}
+      {!data.loading && !data.error && loaded.length > 0 && !groups.length && <p className="c4-pay-empty c4-source-salon-empty">{v4("sxEmpty")}</p>}
+      <ul className="c4-source-list c4-source-salon-list">
         {groups.map((group) => (
-          <li key={group.id} className="c4-source-card" data-pinned={pinned.includes(group.id) ? "1" : "0"} data-blank={group.value ? "0" : "1"}>
+          <li key={group.id} className="c4-source-card c4-source-salon-card" data-pinned={pinned.includes(group.id) ? "1" : "0"} data-blank={group.value ? "0" : "1"}>
             <div className="c4-row c4-between">
               <strong>{group.value || v4("sxBlank")}</strong>
               <span className="c4-source-count">{group.count}</span>
