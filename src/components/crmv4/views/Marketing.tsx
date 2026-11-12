@@ -1,7 +1,10 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { crmv4Text } from "@/lib/crmv4/copy";
+import { crmv4Href } from "@/lib/crmv4/sections";
 import { exportCurrent } from "../round1";
 import { TemplatePreview } from "../round2";
 import { AffiliateDetail } from "../round3";
@@ -29,19 +32,36 @@ export default function Marketing({ tx }: { tx: Tx }) {
   const current = templates.find((row) => row.id === picked) || null;
   const leads = useLeads();
   const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale, key);
+  const path = usePathname() || "";
+  const root = path.includes("/izcrm/crmv4") ? "/izcrm/crmv4" : "/crmv4";
+  const leadCount = rows.reduce((sum, row) => sum + (Number(row.leads) || 0), 0);
+  const validCount = rows.reduce((sum, row) => sum + (Number(row.valid) || 0), 0);
+  const validShare = leadCount <= 0 ? 0 : Math.round((validCount / leadCount) * 100);
   return (
-    <div className="c4-stack c4-mkt c4-mkt-folio c4-mkt-salon c4-mkt-mount">
-      <header className="c4-mkt-folio-mast c4-mkt-salon-mast c4-mkt-mount-mast">
-        <div>
-          <p className="c4-mkt-folio-kicker c4-mkt-salon-kicker c4-mkt-mount-kicker">{tx("marketing")}</p>
-          <h2 className="c4-mkt-salon-title c4-mkt-mount-title">{tx("marketingLead")}</h2>
+    <div className="c4-stack c4-mkt c4-mkt-folio c4-mkt-salon c4-mkt-mount c4-mkt-brocade" data-desk="brocade">
+      <header className="c4-mkt-folio-mast c4-mkt-salon-mast c4-mkt-mount-mast c4-mkt-brocade-mast">
+        <p className="c4-mkt-folio-mark c4-mkt-salon-plate c4-mkt-mount-plate c4-mkt-brocade-seal" data-logo="mono">7FX</p>
+        <div className="c4-mkt-brocade-copy">
+          <p className="c4-mkt-brocade-kicker">{tx("marketing")}</p>
+          <p className="c4-mkt-folio-kicker c4-mkt-salon-kicker c4-mkt-mount-kicker">{tx("marketingLead")}</p>
+          <h2 className="c4-mkt-brocade-title">{tx("marketingLead")}</h2>
+          <h2 className="c4-mkt-salon-title c4-mkt-mount-title">{tx("marketing")}</h2>
         </div>
-        <p className="c4-mkt-folio-mark c4-mkt-salon-plate c4-mkt-mount-plate" data-logo="mono">7FX</p>
+        <ol className="c4-mkt-salon-index c4-mkt-mount-index c4-mkt-brocade-index" aria-label={tx("marketing")}>
+          <li data-tone="gold">{tx("affiliates")}</li>
+          <li data-tone="ink">{tx("templates")}</li>
+          <li data-tone="mist">{tx("leads")}</li>
+        </ol>
       </header>
-      <ol className="c4-mkt-salon-index c4-mkt-mount-index" aria-label={tx("marketing")}>
-        <li data-tone="gold">{tx("affiliates")}</li>
-        <li data-tone="ink">{tx("templates")}</li>
-        <li data-tone="mist">{tx("leads")}</li>
+      <nav className="c4-mkt-brocade-links" aria-label={v4("brdTitle")}>
+        <Link href={crmv4Href(root, "brdc")}>{v4("brdTitle")}</Link>
+        <Link href={crmv4Href(root, "pnnt")}>{v4("wmpTitle")}</Link>
+      </nav>
+      <p className="c4-mkt-brocade-time">{v4("brdLocal")}</p>
+      <ol className="c4-mkt-brocade-stats" aria-label={v4("brdKpi")}>
+        <li><span>{tx("affiliates")}</span><strong>{rows.length}</strong></li>
+        <li><span>{tx("leads")}</span><strong>{leadCount}</strong></li>
+        <li><span>{tx("valid")}</span><strong>{validShare}%</strong></li>
       </ol>
       <SegmentBoard v4={v4} />
       <SegmentDesk v4={v4} tx={tx} />
@@ -67,6 +87,7 @@ export default function Marketing({ tx }: { tx: Tx }) {
       <div className="c4-aff-luxe">
       <Card title={tx("affiliates")}>
         <State loading={aff.loading} error={aff.error} empty={!aff.loading && rows.length === 0} tx={tx} onRetry={aff.reload} />
+        {!aff.loading && rows.length === 0 && <p className="c4-empty-gold c4-mkt-brocade-empty">{v4("wmpEmpty")}</p>}
         <div className="c4-tools">
           <button type="button" className="c4-btn" onClick={() => void exportCurrent("affiliates-page", "affiliates.csv", ["name", "leads", "valid", "invalid", "deposits"], rows.map((row) => [String(row.name || ""), String(row.leads ?? 0), String(row.valid ?? 0), String(row.invalid ?? 0), String(row.deposits ?? 0)]))}>{crmv4Text(locale, "exportCsv")}</button>
         </div>
@@ -75,7 +96,7 @@ export default function Marketing({ tx }: { tx: Tx }) {
             const total = Math.max(1, (row.leads ?? 0));
             const open = openName === row.name;
             return (
-              <li key={row.name} className="c4-mkt-salon-row c4-mkt-mount-row">
+              <li key={row.name} className="c4-mkt-salon-row c4-mkt-mount-row c4-mkt-brocade-row" data-tone={((row.valid ?? 0) >= (row.invalid ?? 0) ? "bright" : "dim")}>
                 <button type="button" className="c4-row c4-between" onClick={() => { setOpenName(open ? "" : String(row.name || "")); setDetail(String(row.name || "")); }}>
                   <span>{row.name || "—"}</span>
                   <span className="c4-muted">{tx("leads")} {row.leads ?? 0} · {crmv4Text(locale, "drill")}</span>
@@ -99,7 +120,7 @@ export default function Marketing({ tx }: { tx: Tx }) {
         <State loading={mail.loading} error={mail.error} empty={!mail.loading && templates.length === 0} tx={tx} onRetry={mail.reload} />
         <ul>
           {templates.map((row) => (
-            <li key={row.id} className="c4-row c4-mkt-salon-row">
+            <li key={row.id} className="c4-row c4-mkt-salon-row c4-mkt-brocade-template" data-active={row.active ? "1" : "0"}>
               <button type="button" className="c4-btn" onClick={() => setPicked(row.id)}>{row.name} · {row.subject}</button>
               <button
                 type="button"
@@ -136,7 +157,7 @@ export default function Marketing({ tx }: { tx: Tx }) {
         </form>
         <Msg text={msg} />
       </Card>
-      <section className="c4-card c4-soon" data-coming-soon="">
+      <section className="c4-card c4-soon c4-mkt-brocade-soon" data-coming-soon="">
         <div className="c4-card-h">
           <h2 className="c4-title">{tx("campaignSend")}</h2>
           <span className="c4-status" data-tone="warn">{tx("cannotSend")}</span>
