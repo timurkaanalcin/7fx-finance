@@ -215,6 +215,7 @@ import { FriezeCards, QuoinMarks } from "./round224";
 import { DentilTiles, VoussoirMarks } from "./round225";
 import { BrocadeSwatches, PennantMarks } from "./round226";
 import { CofferPanels, RosetteMarks } from "./round227";
+import { SacristyDrawers, AntiphonMarks } from "./round228";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -910,6 +911,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "pnnt") return v4("wmpTitle");
     if (tab === "coff") return v4("cffTitle");
     if (tab === "rsst") return v4("rstTitle");
+    if (tab === "scdr") return v4("sdrTitle");
+    if (tab === "antp") return v4("antTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1291,6 +1294,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "pnnt") return v4("wmpSub");
     if (tab === "coff") return v4("cffSub");
     if (tab === "rsst") return v4("rstSub");
+    if (tab === "scdr") return v4("sdrSub");
+    if (tab === "antp") return v4("antSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1805,6 +1810,8 @@ function Shell({ base, section, name }: Props) {
             {view === "pnnt" && <PennantMarks base={base} v4={v4} />}
             {view === "coff" && <CofferPanels v4={v4} />}
             {view === "rsst" && <RosetteMarks base={base} v4={v4} />}
+            {view === "scdr" && <SacristyDrawers v4={v4} />}
+            {view === "antp" && <AntiphonMarks base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
