@@ -30,7 +30,7 @@ export default function Logs({ tx, locale, q }: { tx: Tx; locale: string; q: str
     router.replace(`?${p.toString()}`);
   }
   return (
-    <div className="c4-logs-luxe c4-logs-script c4-logs-gilt c4-logs-herb c4-logs-salon c4-logs-transept">
+    <div className="c4-logs-luxe c4-logs-script c4-logs-gilt c4-logs-herb c4-logs-salon c4-logs-transept c4-logs-ambulatory">
     <header className="c4-logs-mast c4-logs-transept-mast">
       <p className="c4-logs-plate c4-logs-transept-seal" data-logo="mono">7FX</p>
       <div>

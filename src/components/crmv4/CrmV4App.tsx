@@ -199,6 +199,7 @@ import { CloisterStalls, SystemCrests } from "./round208";
 import { LanguageRibbons, NaveBenches } from "./round209";
 import { ApseAlcoves, BrowserCrests } from "./round210";
 import { AccountWafers, TranseptStalls } from "./round211";
+import { AmbulatoryLanterns, CountryLamps } from "./round212";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -862,6 +863,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "brcr") return v4("brcTitle");
     if (tab === "trst") return v4("trsTitle");
     if (tab === "acwf") return v4("acwTitle");
+    if (tab === "amln") return v4("alnTitle");
+    if (tab === "clmp") return v4("clmTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1215,6 +1218,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "brcr") return v4("brcSub");
     if (tab === "trst") return v4("trsSub");
     if (tab === "acwf") return v4("acwSub");
+    if (tab === "amln") return v4("alnSub");
+    if (tab === "clmp") return v4("clmSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1697,6 +1702,8 @@ function Shell({ base, section, name }: Props) {
             {view === "brcr" && <BrowserCrests base={base} v4={v4} />}
             {view === "trst" && <TranseptStalls v4={v4} />}
             {view === "acwf" && <AccountWafers base={base} v4={v4} />}
+            {view === "amln" && <AmbulatoryLanterns v4={v4} />}
+            {view === "clmp" && <CountryLamps base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
