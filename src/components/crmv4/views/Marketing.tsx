@@ -38,7 +38,20 @@ export default function Marketing({ tx }: { tx: Tx }) {
   const validCount = rows.reduce((sum, row) => sum + (Number(row.valid) || 0), 0);
   const validShare = leadCount <= 0 ? 0 : Math.round((validCount / leadCount) * 100);
   return (
-    <div className="c4-stack c4-mkt c4-mkt-folio c4-mkt-salon c4-mkt-mount c4-mkt-brocade" data-desk="brocade">
+    <div className="c4-stack c4-mkt c4-mkt-folio c4-mkt-salon c4-mkt-mount c4-mkt-brocade c4-mkt-gallery" data-desk="gallery">
+      <header className="c4-mkt-gallery-mast">
+        <p className="c4-mkt-gallery-seal" data-logo="mono">7FX</p>
+        <div className="c4-mkt-gallery-copy">
+          <p className="c4-mkt-gallery-kicker">{v4("mktGalleryKicker")}</p>
+          <h2 className="c4-mkt-gallery-title">{tx("marketing")}</h2>
+          <p className="c4-mkt-gallery-lead">{v4("mktGalleryLead")}</p>
+        </div>
+        <ol className="c4-mkt-gallery-index" aria-label={tx("marketing")}>
+          <li data-tone="gold">{rows.length}</li>
+          <li data-tone="ink">{tx("templates")}</li>
+          <li data-tone="ivory">{validShare}%</li>
+        </ol>
+      </header>
       <header className="c4-mkt-folio-mast c4-mkt-salon-mast c4-mkt-mount-mast c4-mkt-brocade-mast">
         <p className="c4-mkt-folio-mark c4-mkt-salon-plate c4-mkt-mount-plate c4-mkt-brocade-seal" data-logo="mono">7FX</p>
         <div className="c4-mkt-brocade-copy">
@@ -58,7 +71,7 @@ export default function Marketing({ tx }: { tx: Tx }) {
         <Link href={crmv4Href(root, "pnnt")}>{v4("wmpTitle")}</Link>
       </nav>
       <p className="c4-mkt-brocade-time">{v4("brdLocal")}</p>
-      <ol className="c4-mkt-brocade-stats" aria-label={v4("brdKpi")}>
+      <ol className="c4-mkt-brocade-stats c4-mkt-gallery-stats" aria-label={v4("brdKpi")}>
         <li><span>{tx("affiliates")}</span><strong>{rows.length}</strong></li>
         <li><span>{tx("leads")}</span><strong>{leadCount}</strong></li>
         <li><span>{tx("valid")}</span><strong>{validShare}%</strong></li>
@@ -87,7 +100,7 @@ export default function Marketing({ tx }: { tx: Tx }) {
       <div className="c4-aff-luxe">
       <Card title={tx("affiliates")}>
         <State loading={aff.loading} error={aff.error} empty={!aff.loading && rows.length === 0} tx={tx} onRetry={aff.reload} />
-        {!aff.loading && rows.length === 0 && <p className="c4-empty-gold c4-mkt-brocade-empty">{v4("wmpEmpty")}</p>}
+        {!aff.loading && rows.length === 0 && <p className="c4-empty-gold c4-mkt-brocade-empty c4-mkt-gallery-empty">{v4("mktGalleryEmpty")}</p>}
         <div className="c4-tools">
           <button type="button" className="c4-btn" onClick={() => void exportCurrent("affiliates-page", "affiliates.csv", ["name", "leads", "valid", "invalid", "deposits"], rows.map((row) => [String(row.name || ""), String(row.leads ?? 0), String(row.valid ?? 0), String(row.invalid ?? 0), String(row.deposits ?? 0)]))}>{crmv4Text(locale, "exportCsv")}</button>
         </div>
@@ -96,7 +109,7 @@ export default function Marketing({ tx }: { tx: Tx }) {
             const total = Math.max(1, (row.leads ?? 0));
             const open = openName === row.name;
             return (
-              <li key={row.name} className="c4-mkt-salon-row c4-mkt-mount-row c4-mkt-brocade-row" data-tone={((row.valid ?? 0) >= (row.invalid ?? 0) ? "bright" : "dim")}>
+              <li key={row.name} className="c4-mkt-salon-row c4-mkt-mount-row c4-mkt-brocade-row c4-mkt-gallery-slip" data-tone={((row.valid ?? 0) >= (row.invalid ?? 0) ? "bright" : "dim")}>
                 <button type="button" className="c4-row c4-between" onClick={() => { setOpenName(open ? "" : String(row.name || "")); setDetail(String(row.name || "")); }}>
                   <span>{row.name || "—"}</span>
                   <span className="c4-muted">{tx("leads")} {row.leads ?? 0} · {crmv4Text(locale, "drill")}</span>
