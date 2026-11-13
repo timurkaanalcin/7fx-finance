@@ -228,14 +228,20 @@ export function HistoryDesk({ v4, tx, locale }: { v4: V4; tx: Tx; locale: string
     downloadCsv("history-loaded.csv", ["at", "action", "actor", "target", "level", "currency", "amount"], historyCsv(shown));
   }
   return (
-    <section className="c4-history-desk c4-history-folio" aria-label={v4("hsTitle")} data-history="1">
-      <header className="c4-pay-head c4-folio-mast">
+    <section className="c4-history-desk c4-history-folio c4-history-pastry" aria-label={v4("hsTitle")} data-history="1" data-desk="pastry">
+      <header className="c4-pay-head c4-folio-mast c4-history-pastry-mast">
         <div>
           <p className="c4-pay-kicker c4-folio-kicker">{v4("hsSub")}</p>
           <h2 className="c4-title c4-folio-title">{v4("hsTitle")}</h2>
         </div>
         <p className="c4-folio-plate" data-logo="mono">7FX</p>
       </header>
+      <p className="c4-history-pastry-lead">{v4("pstHistLead")}</p>
+      <ol className="c4-history-pastry-index" aria-label={v4("hsTitle")}>
+        <li data-tone="gold">{v4("hsAll")}</li>
+        <li data-tone="ink">{v4("hsMoney")}</li>
+        <li data-tone="ivory">{v4("hsJump")}</li>
+      </ol>
       <p className="c4-meta">{v4("hsHint")}</p>
       <p className="c4-meta">{v4("hsShowing")} {shown.length}</p>
       <div className="c4-pay-kpis" aria-label={v4("hsMoney")}>

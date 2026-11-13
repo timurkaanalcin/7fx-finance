@@ -71,14 +71,20 @@ export function ReportDesk({ v4, locale }: { v4: V4; locale: string }) {
   const regsNow = datedCount(users.map((row) => ({ at: row.createdAt })), windows.currentFrom, windows.currentTo);
   const regsThen = datedCount(users.map((row) => ({ at: row.createdAt })), windows.previousFrom, windows.previousTo);
   return (
-    <section className="c4-report-center c4-report-luxe c4-report-salon" aria-label={v4("reportsTitle")} data-reports="1" data-period={kind}>
-      <header className="c4-report-salon-mast">
+    <section className="c4-report-center c4-report-luxe c4-report-salon c4-report-pastry" aria-label={v4("reportsTitle")} data-reports="1" data-period={kind} data-desk="pastry">
+      <header className="c4-report-salon-mast c4-report-pastry-mast">
         <div>
           <p className="c4-report-salon-kicker">{v4("rpHint")}</p>
           <h2 className="c4-title c4-report-salon-title">{v4("reportsTitle")}</h2>
         </div>
         <p className="c4-report-salon-plate" data-logo="mono">7FX</p>
       </header>
+      <p className="c4-report-pastry-lead">{v4("pstRepLead")}</p>
+      <ol className="c4-report-pastry-index" aria-label={v4("reportsTitle")}>
+        <li data-tone="gold">{v4("rpWeek")}</li>
+        <li data-tone="ink">{v4("rpMonth")}</li>
+        <li data-tone="ivory">{v4("reportsPrint")}</li>
+      </ol>
       <div className="c4-report-salon-tools c4-row c4-no-print">
         <button type="button" className="c4-chip" data-on={kind === "week" ? "1" : "0"} onClick={() => setKind("week")}>{v4("rpWeek")}</button>
         <button type="button" className="c4-chip" data-on={kind === "month" ? "1" : "0"} onClick={() => setKind("month")}>{v4("rpMonth")}</button>
