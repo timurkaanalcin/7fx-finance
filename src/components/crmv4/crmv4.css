@@ -74177,3 +74177,375 @@
   [data-crmv4-root] .c4-thread-parlor .c4-btn,
   [data-crmv4-root] .c4-thread-parlor .c4-chip { min-height: 44px; }
 }
+
+/* Round 259 — vestibule slips, mailbox plates, the payout vestibule, and the handoff vestibule.
+   Graphite, ivory, and champagne. The logo plate stays monochrome. */
+[data-crmv4-root] .c4-vsl,
+[data-crmv4-root] .c4-mbp,
+[data-crmv4-root] .c4-payout-board.c4-payout-vestibule,
+[data-crmv4-root] .c4-handoff.c4-handoff-vestibule {
+  display: grid;
+  gap: 14px;
+  margin: 18px 20px 32px;
+  padding: 0 0 22px;
+  color: #241f1a;
+  background:
+    linear-gradient(180deg, rgba(198, 161, 91, 0.16), transparent 120px),
+    #fffdf8;
+  border: 1px solid #241f1a;
+  border-radius: 0;
+  box-shadow: 0 22px 48px rgba(36, 31, 26, 0.08);
+  overflow-x: clip;
+}
+[data-crmv4-root] .c4-vsl-mast,
+[data-crmv4-root] .c4-mbp-mast,
+[data-crmv4-root] .c4-payout-vestibule-mast,
+[data-crmv4-root] .c4-handoff-vestibule-mast {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: end;
+  margin: 0;
+  padding: 20px 22px 16px;
+  background: #241f1a;
+  color: #f7f3ea;
+  border-bottom: 3px solid #c6a15b;
+  border-radius: 0;
+}
+[data-crmv4-root] .c4-vsl-seal,
+[data-crmv4-root] .c4-mbp-seal,
+[data-crmv4-root] .c4-payout-vestibule-seal,
+[data-crmv4-root] .c4-handoff-vestibule-seal {
+  display: grid;
+  place-items: center;
+  min-width: 64px;
+  min-height: 64px;
+  margin: 0;
+  border: 1px solid #f7f3ea;
+  color: #f7f3ea;
+  background: transparent;
+  font-size: 13px;
+  letter-spacing: 0.22em;
+  filter: grayscale(1);
+}
+[data-crmv4-root] .c4-vsl-kicker,
+[data-crmv4-root] .c4-mbp-kicker,
+[data-crmv4-root] .c4-payout-vestibule-kicker,
+[data-crmv4-root] .c4-handoff-vestibule-kicker {
+  margin: 0 0 6px;
+  color: #c6a15b;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-vsl .c4-title,
+[data-crmv4-root] .c4-mbp .c4-title,
+[data-crmv4-root] .c4-payout-vestibule-title,
+[data-crmv4-root] .c4-handoff-vestibule-title {
+  margin: 0;
+  color: #f7f3ea;
+  background: transparent;
+  font-family: "Iowan Old Style", Palatino, "Palatino Linotype", Georgia, serif;
+  font-size: 34px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+[data-crmv4-root] .c4-vsl-index,
+[data-crmv4-root] .c4-mbp-index,
+[data-crmv4-root] .c4-payout-vestibule-index,
+[data-crmv4-root] .c4-handoff-vestibule-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-vsl-index li,
+[data-crmv4-root] .c4-mbp-index li,
+[data-crmv4-root] .c4-payout-vestibule-index li,
+[data-crmv4-root] .c4-handoff-vestibule-index li {
+  padding: 6px 10px;
+  border: 1px solid rgba(247, 243, 234, 0.35);
+  color: #f7f3ea;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-vsl-index li[data-tone="gold"],
+[data-crmv4-root] .c4-mbp-index li[data-tone="gold"],
+[data-crmv4-root] .c4-payout-vestibule-index li[data-tone="gold"],
+[data-crmv4-root] .c4-handoff-vestibule-index li[data-tone="gold"] { color: #c6a15b; border-color: #c6a15b; }
+[data-crmv4-root] .c4-vsl-index li[data-tone="ivory"],
+[data-crmv4-root] .c4-mbp-index li[data-tone="ivory"],
+[data-crmv4-root] .c4-payout-vestibule-index li[data-tone="ivory"],
+[data-crmv4-root] .c4-handoff-vestibule-index li[data-tone="ivory"] { background: #f7f3ea; color: #241f1a; }
+[data-crmv4-root] .c4-vsl-links,
+[data-crmv4-root] .c4-mbp-links,
+[data-crmv4-root] .c4-vsl-lead,
+[data-crmv4-root] .c4-mbp-hint,
+[data-crmv4-root] .c4-vsl-hint,
+[data-crmv4-root] .c4-vsl-note,
+[data-crmv4-root] .c4-mbp-note,
+[data-crmv4-root] .c4-payout-vestibule-lead,
+[data-crmv4-root] .c4-handoff-vestibule-lead,
+[data-crmv4-root] .c4-payout-vestibule > .c4-meta,
+[data-crmv4-root] .c4-handoff-vestibule > .c4-meta,
+[data-crmv4-root] .c4-payout-vestibule > .c4-lab,
+[data-crmv4-root] .c4-handoff-vestibule > .c4-lab,
+[data-crmv4-root] .c4-payout-vestibule > .c4-row,
+[data-crmv4-root] .c4-handoff-vestibule > .c4-row,
+[data-crmv4-root] .c4-handoff-vestibule > form,
+[data-crmv4-root] .c4-vsl-tools,
+[data-crmv4-root] .c4-mbp-tools,
+[data-crmv4-root] .c4-vsl-form,
+[data-crmv4-root] .c4-vsl-meta,
+[data-crmv4-root] .c4-mbp-meta {
+  margin: 0 22px;
+}
+[data-crmv4-root] .c4-vsl-lead,
+[data-crmv4-root] .c4-mbp-hint,
+[data-crmv4-root] .c4-payout-vestibule-lead,
+[data-crmv4-root] .c4-handoff-vestibule-lead {
+  color: #8a6a3b;
+  font-family: "Iowan Old Style", Palatino, Georgia, serif;
+  font-size: 16px;
+  line-height: 1.45;
+}
+[data-crmv4-root] .c4-vsl-links a,
+[data-crmv4-root] .c4-mbp-links a {
+  margin-right: 14px;
+  color: #8a6a3b;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+[data-crmv4-root] .c4-vsl-kpis,
+[data-crmv4-root] .c4-mbp-kpis {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 22px;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-vsl-kpis li,
+[data-crmv4-root] .c4-mbp-kpis li {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid rgba(36, 31, 26, 0.16);
+  background: #fffdf8;
+}
+[data-crmv4-root] .c4-vsl-kpis span,
+[data-crmv4-root] .c4-mbp-kpis span {
+  color: #8a6a3b;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-vsl-kpis strong,
+[data-crmv4-root] .c4-mbp-kpis strong {
+  font-family: "Iowan Old Style", Palatino, Georgia, serif;
+  font-size: 22px;
+  font-weight: 500;
+}
+[data-crmv4-root] .c4-vsl-chart,
+[data-crmv4-root] .c4-mbp-chart {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  align-items: end;
+  min-height: 140px;
+  margin: 0 22px;
+  padding: 12px;
+  border: 1px solid rgba(36, 31, 26, 0.12);
+  background: #f7f3ea;
+}
+[data-crmv4-root] .c4-vsl-bar,
+[data-crmv4-root] .c4-mbp-bar {
+  display: grid;
+  align-items: end;
+  justify-items: center;
+  gap: 6px;
+  min-height: 120px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #241f1a;
+  font: inherit;
+}
+[data-crmv4-root] .c4-vsl-bar i,
+[data-crmv4-root] .c4-mbp-bar i {
+  display: block;
+  width: 100%;
+  min-height: 4px;
+  background: #c6a15b;
+}
+[data-crmv4-root] .c4-vsl-bar[data-place="porch"] i,
+[data-crmv4-root] .c4-vsl-bar[data-place="loft"] i,
+[data-crmv4-root] .c4-mbp-bar[data-on="1"] i { background: #241f1a; }
+[data-crmv4-root] .c4-vsl-time,
+[data-crmv4-root] .c4-vsl-board,
+[data-crmv4-root] .c4-mbp-board,
+[data-crmv4-root] .c4-mbp-lanes {
+  display: grid;
+  gap: 8px;
+  margin: 0 22px;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-vsl-time li,
+[data-crmv4-root] .c4-vsl-card,
+[data-crmv4-root] .c4-mbp-card,
+[data-crmv4-root] .c4-payout-vestibule .c4-payout-card,
+[data-crmv4-root] .c4-payout-vestibule .c4-payout-totals li,
+[data-crmv4-root] .c4-handoff-vestibule .c4-shift-note {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid rgba(36, 31, 26, 0.16);
+  border-radius: 0;
+  background: #fffdf8;
+}
+[data-crmv4-root] .c4-vsl-card[data-on="1"],
+[data-crmv4-root] .c4-mbp-card[data-on="1"],
+[data-crmv4-root] .c4-vsl-card[data-pinned="1"],
+[data-crmv4-root] .c4-handoff-vestibule .c4-shift-note[data-pinned="1"] {
+  box-shadow: inset 3px 0 0 #c6a15b;
+}
+[data-crmv4-root] .c4-vsl-card[data-overdue="1"] { border-color: #8a6a3b; }
+[data-crmv4-root] .c4-vsl-card[data-peak="1"] { background: #fffaf1; }
+[data-crmv4-root] .c4-vsl-card[data-quiet="1"] { background: #f7f3ea; }
+[data-crmv4-root] .c4-vsl-sla {
+  height: 4px;
+  margin: 6px 0;
+  background: rgba(36, 31, 26, 0.08);
+}
+[data-crmv4-root] .c4-vsl-sla i {
+  display: block;
+  height: 100%;
+  background: #c6a15b;
+}
+[data-crmv4-root] .c4-vsl-tools,
+[data-crmv4-root] .c4-mbp-tools,
+[data-crmv4-root] .c4-vsl-form,
+[data-crmv4-root] .c4-payout-vestibule .c4-row,
+[data-crmv4-root] .c4-handoff-vestibule .c4-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: end;
+}
+[data-crmv4-root] .c4-vsl-empty,
+[data-crmv4-root] .c4-mbp-empty,
+[data-crmv4-root] .c4-payout-vestibule .c4-pay-empty,
+[data-crmv4-root] .c4-handoff-vestibule .c4-pay-empty {
+  margin: 0 22px;
+  padding: 28px 16px;
+  border: 1px dashed #c6a15b;
+  color: #8a6a3b;
+  text-align: center;
+  font-family: "Iowan Old Style", Palatino, Georgia, serif;
+}
+[data-crmv4-root] .c4-vsl .c4-btn,
+[data-crmv4-root] .c4-mbp .c4-btn,
+[data-crmv4-root] .c4-payout-vestibule .c4-btn,
+[data-crmv4-root] .c4-handoff-vestibule .c4-btn,
+[data-crmv4-root] .c4-vsl .c4-chip,
+[data-crmv4-root] .c4-mbp .c4-chip,
+[data-crmv4-root] .c4-payout-vestibule .c4-chip,
+[data-crmv4-root] .c4-handoff-vestibule .c4-chip {
+  border-radius: 0;
+  border-color: #241f1a;
+}
+[data-crmv4-root] .c4-vsl .c4-chip[data-on="1"],
+[data-crmv4-root] .c4-mbp .c4-chip[data-on="1"],
+[data-crmv4-root] .c4-payout-vestibule .c4-chip[data-on="1"] {
+  background: #241f1a;
+  color: #f7f3ea;
+}
+[data-crmv4-root] .c4-payout-vestibule .c4-payout-status {
+  border-radius: 0;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 10px;
+}
+[data-crmv4-root] .c4-payout-vestibule .c4-payout-status[data-status="PENDING"] {
+  color: #8a6a3b;
+  border-color: #c6a15b;
+  background: #fffaf1;
+}
+[data-crmv4-root] .c4-payout-vestibule .c4-payout-status[data-status="APPROVED"] {
+  color: #241f1a;
+  border-color: #241f1a;
+  background: #f7f3ea;
+}
+[data-crmv4-root] .c4-payout-vestibule .c4-payout-status[data-status="REJECTED"] {
+  color: #241f1a;
+  border-style: dashed;
+  background: transparent;
+}
+[data-crmv4-root] .c4-payout-vestibule .c4-payout-totals ul,
+[data-crmv4-root] .c4-payout-vestibule .c4-payout-cards,
+[data-crmv4-root] .c4-handoff-vestibule .c4-shift-notes {
+  margin: 0 22px;
+}
+[data-crmv4-root] .c4-vsl-board[data-density="tight"] .c4-vsl-card { padding: 8px 10px; }
+[data-crmv4-root] .c4-vsl > .c4-btn,
+[data-crmv4-root] .c4-mbp > .c4-mbp-tools { margin-left: 22px; margin-right: 22px; }
+[data-crmv4-root][data-theme="dark"] .c4-vsl,
+[data-crmv4-root][data-theme="dark"] .c4-mbp,
+[data-crmv4-root][data-theme="dark"] .c4-payout-board.c4-payout-vestibule,
+[data-crmv4-root][data-theme="dark"] .c4-handoff.c4-handoff-vestibule {
+  background:
+    linear-gradient(180deg, rgba(212, 188, 134, 0.12), transparent 120px),
+    #161412;
+  color: #f6f1e8;
+  border-color: rgba(212, 188, 134, 0.38);
+}
+[data-crmv4-root][data-theme="dark"] .c4-vsl-kpis li,
+[data-crmv4-root][data-theme="dark"] .c4-mbp-kpis li,
+[data-crmv4-root][data-theme="dark"] .c4-vsl-card,
+[data-crmv4-root][data-theme="dark"] .c4-mbp-card,
+[data-crmv4-root][data-theme="dark"] .c4-payout-vestibule .c4-payout-card,
+[data-crmv4-root][data-theme="dark"] .c4-payout-vestibule .c4-payout-totals li,
+[data-crmv4-root][data-theme="dark"] .c4-handoff-vestibule .c4-shift-note {
+  background: #221f1b;
+  color: #f6f1e8;
+  border-color: rgba(212, 188, 134, 0.28);
+}
+[data-crmv4-root][data-theme="dark"] .c4-vsl-lead,
+[data-crmv4-root][data-theme="dark"] .c4-mbp-hint,
+[data-crmv4-root][data-theme="dark"] .c4-payout-vestibule-lead,
+[data-crmv4-root][data-theme="dark"] .c4-handoff-vestibule-lead,
+[data-crmv4-root][data-theme="dark"] .c4-payout-vestibule .c4-meta,
+[data-crmv4-root][data-theme="dark"] .c4-handoff-vestibule .c4-meta { color: #d4bc86; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-vsl,
+  [data-crmv4-root] .c4-mbp,
+  [data-crmv4-root] .c4-payout-board.c4-payout-vestibule,
+  [data-crmv4-root] .c4-handoff.c4-handoff-vestibule { margin: 8px; }
+  [data-crmv4-root] .c4-vsl-mast,
+  [data-crmv4-root] .c4-mbp-mast,
+  [data-crmv4-root] .c4-payout-vestibule-mast,
+  [data-crmv4-root] .c4-handoff-vestibule-mast { grid-template-columns: 1fr; }
+  [data-crmv4-root] .c4-vsl .c4-title,
+  [data-crmv4-root] .c4-mbp .c4-title,
+  [data-crmv4-root] .c4-payout-vestibule-title,
+  [data-crmv4-root] .c4-handoff-vestibule-title { font-size: 26px; }
+  [data-crmv4-root] .c4-vsl-kpis,
+  [data-crmv4-root] .c4-mbp-kpis,
+  [data-crmv4-root] .c4-vsl-chart,
+  [data-crmv4-root] .c4-mbp-chart { grid-template-columns: 1fr 1fr; }
+  [data-crmv4-root] .c4-vsl .c4-btn,
+  [data-crmv4-root] .c4-vsl .c4-chip,
+  [data-crmv4-root] .c4-mbp .c4-btn,
+  [data-crmv4-root] .c4-mbp .c4-chip,
+  [data-crmv4-root] .c4-payout-vestibule .c4-btn,
+  [data-crmv4-root] .c4-payout-vestibule .c4-chip,
+  [data-crmv4-root] .c4-handoff-vestibule .c4-btn,
+  [data-crmv4-root] .c4-handoff-vestibule .c4-chip { min-height: 44px; }
+}

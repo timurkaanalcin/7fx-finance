@@ -78,14 +78,21 @@ export function PayoutBoard({ base, v4, locale, tx }: { base: string; v4: V4; lo
   }
 
   return (
-    <section className="c4-payout-board" aria-label={v4("pbTitle")} data-pay-board="1" data-viewer={viewer ? "1" : "0"}>
-      <header className="c4-pay-head">
+    <section className="c4-payout-board c4-payout-vestibule" aria-label={v4("pbTitle")} data-pay-board="1" data-desk="vestibule" data-viewer={viewer ? "1" : "0"}>
+      <header className="c4-pay-head c4-payout-vestibule-mast">
+        <p className="c4-payout-vestibule-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("pbSub")}</p>
-          <h2 className="c4-title">{v4("pbTitle")}</h2>
+          <p className="c4-pay-kicker c4-payout-vestibule-kicker">{v4("pbSub")}</p>
+          <h2 className="c4-title c4-payout-vestibule-title">{v4("pbTitle")}</h2>
         </div>
-        <p className="c4-meta">{v4("pbCount")} {shown.length}</p>
+        <ol className="c4-payout-vestibule-index" aria-label={v4("pbTitle")}>
+          <li data-tone="gold">{v4("vslChampagne")}</li>
+          <li data-tone="ink">{v4("vslGraphite")}</li>
+          <li data-tone="ivory">{v4("vslIvory")}</li>
+        </ol>
       </header>
+      <p className="c4-payout-vestibule-lead">{v4("pbVestLead")}</p>
+      <p className="c4-meta">{v4("pbCount")} {shown.length}</p>
       <p className="c4-meta">{v4("pbHint")}</p>
       {viewer && <p className="c4-meta">{v4("pbViewer")}</p>}
       <label className="c4-lab">
@@ -180,14 +187,21 @@ export function ShiftSheet({ v4, tx }: { v4: V4; tx: Tx }) {
   }
 
   return (
-    <section className="c4-handoff" aria-label={v4("shTitle")} data-handoff="1">
-      <header className="c4-pay-head">
+    <section className="c4-handoff c4-handoff-vestibule" aria-label={v4("shTitle")} data-handoff="1" data-desk="vestibule">
+      <header className="c4-pay-head c4-handoff-vestibule-mast">
+        <p className="c4-handoff-vestibule-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("shSub")}</p>
-          <h2 className="c4-title">{v4("shTitle")}</h2>
+          <p className="c4-pay-kicker c4-handoff-vestibule-kicker">{v4("shSub")}</p>
+          <h2 className="c4-title c4-handoff-vestibule-title">{v4("shTitle")}</h2>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <ol className="c4-handoff-vestibule-index" aria-label={v4("shTitle")}>
+          <li data-tone="gold">{v4("vslChampagne")}</li>
+          <li data-tone="ink">{v4("vslGraphite")}</li>
+          <li data-tone="ivory">{v4("vslIvory")}</li>
+        </ol>
       </header>
+      <p className="c4-handoff-vestibule-lead">{v4("shVestLead")}</p>
+      <p className="c4-meta">{shown.length}</p>
       <p className="c4-meta">{v4("shHint")}</p>
       <label className="c4-lab">
         <span>{v4("shSearch")}</span>
