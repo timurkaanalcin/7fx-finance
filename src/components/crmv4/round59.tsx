@@ -74,19 +74,26 @@ export function AlertDesk({ v4, locale, tx }: { v4: V4; locale: string; tx: Tx }
   }
 
   return (
-    <section className="c4-alert-desk" aria-label={v4("raTitle")} data-alert-desk="1">
-      <header className="c4-pay-head">
+    <section className="c4-alert-desk c4-alert-salon" aria-label={v4("raTitle")} data-alert-desk="1" data-desk="salon">
+      <header className="c4-pay-head c4-alert-salon-mast">
+        <p className="c4-alert-salon-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("raSub")}</p>
-          <h2 className="c4-title">{v4("raTitle")}</h2>
+          <p className="c4-pay-kicker c4-alert-salon-kicker">{v4("raSub")}</p>
+          <h2 className="c4-title c4-alert-salon-title">{v4("raTitle")}</h2>
         </div>
-        <p className="c4-meta">{v4("raCount")} {shown.length}</p>
+        <p className="c4-meta c4-alert-salon-count">{v4("raCount")} {shown.length}</p>
+        <ol className="c4-alert-salon-index" aria-label={v4("raTitle")}>
+          <li data-tone="gold">{v4("raSalonChampagne")}</li>
+          <li data-tone="ink">{v4("raSalonGraphite")}</li>
+          <li data-tone="ivory">{v4("raSalonIvory")}</li>
+        </ol>
       </header>
+      <p className="c4-meta c4-alert-salon-lead">{v4("raSalonLead")}</p>
       <p className="c4-meta">{v4("raHint")}</p>
       <p className="c4-meta">{v4("raLocal")}</p>
       <label className="c4-lab">
         <span>{v4("raSearch")}</span>
-        <input className="c4-field" aria-label={v4("raSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
+        <input className="c4-field c4-alert-salon-search" aria-label={v4("raSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       <div className="c4-row" role="group" aria-label={v4("raAll")}>
         <button type="button" className="c4-chip" data-on={onlyMuted ? "0" : "1"} aria-pressed={!onlyMuted} onClick={() => setOnlyMuted(false)}>{v4("raAll")}</button>
@@ -101,13 +108,13 @@ export function AlertDesk({ v4, locale, tx }: { v4: V4; locale: string; tx: Tx }
       {data.error && <p className="c4-meta">{v4("raFailed")} {tx("failed")}</p>}
       {!data.loading && !data.error && !loaded.length && <p className="c4-pay-empty">{v4("raNone")}</p>}
       {!data.loading && !data.error && loaded.length > 0 && !shown.length && <p className="c4-pay-empty">{v4("raEmpty")}</p>}
-      <ul className="c4-alert-cards">
+      <ul className="c4-alert-cards c4-alert-salon-list">
         {shown.map((row) => {
           const level = severity(row);
           const detail = detailText(row.detail);
           const acked = acks.some((ack) => ack.id === row.id);
           return (
-            <li key={row.id} className="c4-alert-card" data-severity={level || "none"} data-acked={acked ? "1" : "0"}>
+            <li key={row.id} className="c4-alert-card c4-alert-salon-card" data-severity={level || "none"} data-acked={acked ? "1" : "0"}>
               <div className="c4-row c4-between">
                 <strong>{row.action || "—"}</strong>
                 <span className="c4-alert-severity" data-severity={level || "none"}>{level ? v4(LEVEL_LABEL[level]) : v4("raNoLevel")}</span>

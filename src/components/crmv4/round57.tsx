@@ -110,19 +110,26 @@ export function TriageBoard({ base, v4, locale, tx }: { base: string; v4: V4; lo
   }
 
   return (
-    <section className="c4-triage-desk" aria-label={v4("trTitle")} data-triage="1" data-viewer={viewer ? "1" : "0"}>
-      <header className="c4-pay-head">
+    <section className="c4-triage-desk c4-triage-salon" aria-label={v4("trTitle")} data-triage="1" data-desk="salon" data-viewer={viewer ? "1" : "0"}>
+      <header className="c4-pay-head c4-triage-salon-mast">
+        <p className="c4-triage-salon-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("trSub")}</p>
-          <h2 className="c4-title">{v4("trTitle")}</h2>
+          <p className="c4-pay-kicker c4-triage-salon-kicker">{v4("trSub")}</p>
+          <h2 className="c4-title c4-triage-salon-title">{v4("trTitle")}</h2>
         </div>
-        <p className="c4-meta">{v4("trCount")} {shown.length}</p>
+        <p className="c4-meta c4-triage-salon-count">{v4("trCount")} {shown.length}</p>
+        <ol className="c4-triage-salon-index" aria-label={v4("trTitle")}>
+          <li data-tone="gold">{v4("trSalonChampagne")}</li>
+          <li data-tone="ink">{v4("trSalonGraphite")}</li>
+          <li data-tone="ivory">{v4("trSalonIvory")}</li>
+        </ol>
       </header>
+      <p className="c4-meta c4-triage-salon-lead">{v4("trSalonLead")}</p>
       <p className="c4-meta">{v4("trHint")}</p>
       {viewer && <p className="c4-meta">{v4("trViewer")}</p>}
       <label className="c4-lab">
         <span>{v4("trSearch")}</span>
-        <input className="c4-field" aria-label={v4("trSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
+        <input className="c4-field c4-triage-salon-search" aria-label={v4("trSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       <div className="c4-row" role="group" aria-label={v4("trAll")}>
         <button type="button" className="c4-chip" data-on={!unreadOnly && !showSnoozed ? "1" : "0"} aria-pressed={!unreadOnly && !showSnoozed} onClick={() => { setUnreadOnly(false); setShowSnoozed(false); }}>{v4("trAll")}</button>
@@ -133,7 +140,7 @@ export function TriageBoard({ base, v4, locale, tx }: { base: string; v4: V4; lo
       {data.error && <p className="c4-meta">{v4("trFailed")} {tx("failed")}</p>}
       {!data.loading && !data.error && !loaded.length && <p className="c4-pay-empty">{v4("trNone")}</p>}
       {!data.loading && !data.error && loaded.length > 0 && !shown.length && <p className="c4-pay-empty">{v4("trEmpty")}</p>}
-      <ul className="c4-triage-cards">
+      <ul className="c4-triage-cards c4-triage-salon-list">
         {shown.map((row) => {
           const id = threadId(row);
           const unread = isUnread(row);
@@ -141,7 +148,7 @@ export function TriageBoard({ base, v4, locale, tx }: { base: string; v4: V4; lo
           const pinned = pins.includes(id);
           const sleeping = isSnoozed(snooze[id], now);
           return (
-            <li key={id} className="c4-triage-card" data-pinned={pinned ? "1" : "0"} data-unread={unread ? "1" : "0"}>
+            <li key={id} className="c4-triage-card c4-triage-salon-card" data-pinned={pinned ? "1" : "0"} data-unread={unread ? "1" : "0"}>
               <div className="c4-row c4-between">
                 <strong>{row.trader || "—"}</strong>
                 {unread && <span className="c4-triage-unread">{v4("trUnread")}</span>}
