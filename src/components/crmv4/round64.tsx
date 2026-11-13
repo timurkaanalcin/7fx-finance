@@ -121,14 +121,21 @@ export function CheatSheet({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-cheat-pad" aria-label={v4("csTitle")} data-cheat-pad="1">
-      <header className="c4-pay-head">
+    <section className="c4-cheat-pad c4-cheat-atelier" aria-label={v4("csTitle")} data-cheat-pad="1" data-desk="atelier">
+      <header className="c4-pay-head c4-cheat-atelier-mast">
+        <p className="c4-cheat-atelier-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("csSub")}</p>
-          <h2 className="c4-title">{v4("csTitle")}</h2>
+          <p className="c4-pay-kicker c4-cheat-atelier-kicker">{v4("csSub")}</p>
+          <h2 className="c4-title c4-cheat-atelier-title">{v4("csTitle")}</h2>
+          <p className="c4-meta c4-cheat-atelier-count">{shown.length}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <ol className="c4-cheat-atelier-index" aria-label={v4("csTitle")}>
+          <li data-tone="gold">{v4("csAtelierChampagne")}</li>
+          <li data-tone="ink">{v4("csAtelierGraphite")}</li>
+          <li data-tone="ivory">{v4("csAtelierIvory")}</li>
+        </ol>
       </header>
+      <p className="c4-meta c4-cheat-atelier-lead">{v4("csAtelierLead")}</p>
       <p className="c4-meta">{v4("csHint")}</p>
       <p className="c4-meta">{v4("csLocal")}</p>
       <label className="c4-lab">

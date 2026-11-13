@@ -52,14 +52,21 @@ export function RejectBoard({ base, v4, locale, tx }: { base: string; v4: V4; lo
   }
 
   return (
-    <section className="c4-reject-desk" aria-label={v4("rjTitle")} data-reject-desk="1">
-      <header className="c4-pay-head">
+    <section className="c4-reject-desk c4-reject-atelier" aria-label={v4("rjTitle")} data-reject-desk="1" data-desk="atelier">
+      <header className="c4-pay-head c4-reject-atelier-mast">
+        <p className="c4-reject-atelier-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("rjSub")}</p>
-          <h2 className="c4-title">{v4("rjTitle")}</h2>
+          <p className="c4-pay-kicker c4-reject-atelier-kicker">{v4("rjSub")}</p>
+          <h2 className="c4-title c4-reject-atelier-title">{v4("rjTitle")}</h2>
+          <p className="c4-meta c4-reject-atelier-count">{v4("rjCount")} {shown.length}</p>
         </div>
-        <p className="c4-meta">{v4("rjCount")} {shown.length}</p>
+        <ol className="c4-reject-atelier-index" aria-label={v4("rjTitle")}>
+          <li data-tone="gold">{v4("rjAtelierChampagne")}</li>
+          <li data-tone="ink">{v4("rjAtelierGraphite")}</li>
+          <li data-tone="ivory">{v4("rjAtelierIvory")}</li>
+        </ol>
       </header>
+      <p className="c4-meta c4-reject-atelier-lead">{v4("rjAtelierLead")}</p>
       <p className="c4-meta">{v4("rjHint")}</p>
       <p className="c4-meta">{v4("rjView")}</p>
       <label className="c4-lab">
