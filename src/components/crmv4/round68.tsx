@@ -44,18 +44,25 @@ export function DupeStrip({ base, v4, locale, tx }: { base: string; v4: V4; loca
   }
 
   return (
-    <section className="c4-dupe-strip" aria-label={v4("dpTitle")} data-dupe-strip="1">
-      <header className="c4-pay-head">
+    <section className="c4-dupe-strip c4-dupe-salon" aria-label={v4("dpTitle")} data-dupe-strip="1" data-desk="salon">
+      <header className="c4-pay-head c4-dupe-salon-mast">
+        <p className="c4-dupe-salon-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("dpSub")}</p>
-          <h2 className="c4-title">{v4("dpTitle")}</h2>
+          <p className="c4-pay-kicker c4-dupe-salon-kicker">{v4("dpSub")}</p>
+          <h2 className="c4-title c4-dupe-salon-title">{v4("dpTitle")}</h2>
         </div>
-        <p className="c4-meta">{v4("dpCount")} {groups.length}</p>
+        <p className="c4-meta c4-dupe-salon-count">{v4("dpCount")} {groups.length}</p>
+        <ol className="c4-dupe-salon-index" aria-label={v4("dpTitle")}>
+          <li data-tone="gold">{v4("dpSalonChampagne")}</li>
+          <li data-tone="ink">{v4("dpSalonGraphite")}</li>
+          <li data-tone="ivory">{v4("dpSalonIvory")}</li>
+        </ol>
       </header>
+      <p className="c4-meta c4-dupe-salon-lead">{v4("dpSalonLead")}</p>
       <p className="c4-meta">{v4("dpHint")}</p>
       <label className="c4-lab">
         <span>{v4("dpSearch")}</span>
-        <input className="c4-field" aria-label={v4("dpSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
+        <input className="c4-field c4-dupe-salon-search" aria-label={v4("dpSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       <div className="c4-row" role="group" aria-label={v4("dpAll")}>
         <button type="button" className="c4-chip" data-on={showDismissed ? "0" : "1"} aria-pressed={!showDismissed} onClick={() => setShowDismissed(false)}>{v4("dpAll")}</button>
@@ -63,11 +70,11 @@ export function DupeStrip({ base, v4, locale, tx }: { base: string; v4: V4; loca
       </div>
       {data.loading && !loaded.length && <p className="c4-meta">{v4("dpLoading")}</p>}
       {data.error && <p className="c4-meta">{v4("dpFailed")} {tx("failed")}</p>}
-      {!data.loading && !data.error && !loaded.length && <p className="c4-pay-empty">{v4("dpNone")}</p>}
-      {!data.loading && !data.error && loaded.length > 0 && !groups.length && <p className="c4-pay-empty">{v4("dpEmpty")}</p>}
-      <ul className="c4-dupe-list">
+      {!data.loading && !data.error && !loaded.length && <p className="c4-pay-empty c4-dupe-salon-empty">{v4("dpNone")}</p>}
+      {!data.loading && !data.error && loaded.length > 0 && !groups.length && <p className="c4-pay-empty c4-dupe-salon-empty">{v4("dpEmpty")}</p>}
+      <ul className="c4-dupe-list c4-dupe-salon-list">
         {groups.map((group) => (
-          <li key={group.id} className="c4-dupe-card" data-kind={group.kind}>
+          <li key={group.id} className="c4-dupe-card c4-dupe-salon-card" data-kind={group.kind}>
             <div className="c4-row c4-between">
               <strong>{group.kind === "email" ? v4("dpEmail") : v4("dpPhone")} {group.value}</strong>
               <span className="c4-dupe-count">{group.people.length}</span>
