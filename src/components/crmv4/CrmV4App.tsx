@@ -254,6 +254,7 @@ import { ButterySlips, ProvenancePlates } from "./round263";
 import { CipherPlates, PastrySlips } from "./round264";
 import { InvitePlates, LoomSlips } from "./round265";
 import { OfficePlates, SextantSights } from "./round266";
+import { AstrolabeRetes, GivenPlates } from "./round267";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -2078,6 +2079,8 @@ function Shell({ base, section, name }: Props) {
             {view === "ivt" && <InvitePlates base={base} v4={v4} />}
             {view === "sxt" && <SextantSights base={base} v4={v4} />}
             {view === "ofc" && <OfficePlates base={base} v4={v4} />}
+            {view === "ast" && <AstrolabeRetes base={base} v4={v4} />}
+            {view === "gnm" && <GivenPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
