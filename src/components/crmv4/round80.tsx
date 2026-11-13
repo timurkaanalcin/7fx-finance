@@ -67,14 +67,21 @@ export function BookmarkBar({ base, v4, names }: { base: string; v4: V4; names: 
   }
 
   return (
-    <section className="c4-mark-bar" aria-label={v4("mbTitle")} data-mark-bar="1">
-      <header className="c4-pay-head">
+    <section className="c4-mark-bar c4-bookmark-rail" aria-label={v4("mbTitle")} data-mark-bar="1" data-desk="rail">
+      <header className="c4-bookmark-rail-mast">
+        <p className="c4-bookmark-rail-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("mbSub")}</p>
-          <h2 className="c4-title">{v4("mbTitle")}</h2>
+          <p className="c4-bookmark-rail-kicker">{v4("mbRailKicker")}</p>
+          <h2 className="c4-title c4-bookmark-rail-title">{v4("mbTitle")}</h2>
+          <p className="c4-bookmark-rail-lead">{v4("mbRailLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-bookmark-rail-count">{shown.length}</p>
       </header>
+      <ol className="c4-bookmark-rail-index" aria-label={v4("mbTitle")}>
+        <li data-tone="gold">{v4("mbPin")}</li>
+        <li data-tone="ink">{v4("mbHidden")}</li>
+        <li data-tone="ivory">{v4("mbShown")}</li>
+      </ol>
       <p className="c4-meta">{v4("mbHint")}</p>
       <p className="c4-meta">{v4("mbLocal")}</p>
       <form className="c4-row" onSubmit={(event) => {
@@ -110,7 +117,8 @@ export function BookmarkBar({ base, v4, names }: { base: string; v4: V4; names: 
       {!shown.length && <p className="c4-pay-empty">{v4("mbEmpty")}</p>}
       <ul className="c4-mark-list">
         {shown.map((item) => (
-          <li key={item.id} className="c4-mark-card" data-pinned={item.pinned ? "1" : "0"} data-section={item.sectionId}>
+          <li key={item.id} className="c4-mark-card c4-bookmark-rail-card" data-pinned={item.pinned ? "1" : "0"} data-section={item.sectionId}>
+            <span className="c4-bookmark-rail-pin" aria-hidden="true" />
             <p>{item.name}</p>
             <p className="c4-meta">{names[item.sectionId] || item.sectionId}</p>
             <div className="c4-row">
