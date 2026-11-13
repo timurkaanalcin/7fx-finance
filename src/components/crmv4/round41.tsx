@@ -161,7 +161,20 @@ export function PipelineDesk({ rows, v4, onMove }: {
   }
 
   return (
-    <section className="c4-board" data-board="" data-density={density} aria-label={v4("bdTitle")}>
+    <section className="c4-board c4-pipeline-gallery" data-board="" data-gallery="1" data-density={density} aria-label={v4("bdTitle")}>
+      <header className="c4-pipeline-mast">
+        <p className="c4-pipeline-seal" data-logo="mono">{v4("pipGalSeal")}</p>
+        <div>
+          <p className="c4-pipeline-kicker">{v4("pipGalKicker")}</p>
+          <h3 className="c4-title c4-pipeline-title">{v4("bdTitle")}</h3>
+          <p className="c4-pipeline-lead">{v4("pipGalLead")}</p>
+        </div>
+        <ol className="c4-pipeline-index" aria-label={v4("pipGalKicker")}>
+          <li data-tone="ivory">{v4("pipGalIvory")}</li>
+          <li data-tone="ink">{v4("pipGalGraphite")}</li>
+          <li data-tone="gold">{v4("pipGalGold")}</li>
+        </ol>
+      </header>
       <header className="c4-board-head">
         <h3 className="c4-title">{v4("bdTitle")}</h3>
         <p className="c4-meta">{v4("bdHint")}</p>
@@ -196,7 +209,7 @@ export function PipelineDesk({ rows, v4, onMove }: {
         ))}
       </div>
       {pending && (
-        <section className="c4-board-confirm" role="dialog" aria-label={v4("bdConfirmTitle")} data-confirm="1">
+        <section className="c4-board-confirm c4-pipeline-confirm" role="dialog" aria-label={v4("bdConfirmTitle")} data-confirm="1">
           <h4 className="c4-title">{v4("bdConfirmTitle")}</h4>
           <p>{pending.name}</p>
           <p className="c4-meta">{v4("bdFrom")} {pending.from} · {v4("bdTo")} {pending.to}</p>
@@ -207,12 +220,12 @@ export function PipelineDesk({ rows, v4, onMove }: {
           </div>
         </section>
       )}
-      {!searched.length && <p className="c4-meta">{v4("bdNoMatch")}</p>}
+      {!searched.length && <p className="c4-meta c4-pipeline-empty">{v4("bdNoMatch")}</p>}
       <div className="c4-board-cols">
         {counts.filter((item) => shownStages.includes(item.stage)).map((item) => (
           <section
             key={item.stage}
-            className="c4-board-col"
+            className="c4-board-col c4-pipeline-column"
             data-stage={item.stage}
             data-count={item.count}
             onDragOver={(event) => event.preventDefault()}
@@ -223,7 +236,7 @@ export function PipelineDesk({ rows, v4, onMove }: {
               <span className="c4-count">{item.count}</span>
             </header>
             {item.stage === OTHER_STAGE && <p className="c4-meta">{v4("bdOtherHint")}</p>}
-            {!item.count && <p className="c4-meta">{v4("bdEmpty")}</p>}
+            {!item.count && <p className="c4-meta c4-pipeline-empty">{v4("pipGalEmpty")}</p>}
             {searched.filter((row) => boardStage(row.saleStatus) === item.stage).map((row) => (
               <BoardCard key={row.id} row={row} density={density} v4={v4} onPropose={(next) => {
                 const move = saveStage(row.saleStatus || "NEW", next);
@@ -249,7 +262,7 @@ function BoardCard({ row, density, v4, onPropose }: {
   const [next, setNext] = useState(current);
   return (
     <article
-      className="c4-board-card"
+      className="c4-board-card c4-pipeline-card"
       data-card={row.id}
       draggable
       onDragStart={(event) => event.dataTransfer.setData("text/plain", row.id)}
