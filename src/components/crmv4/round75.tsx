@@ -40,7 +40,7 @@ function rowsOf(kind: GlanceKind, state: ListState): QueueRow[] {
   return state.data?.requests || [];
 }
 
-export function ShiftCheck({ v4 }: { v4: V4 }) {
+export function ShiftCheck({ base, v4 }: { base: string; v4: V4 }) {
   const today = utcDay();
   const [list, setList] = useState<ShiftList>({ day: today, steps: [] });
   const [label, setLabel] = useState("");
@@ -58,15 +58,28 @@ export function ShiftCheck({ v4 }: { v4: V4 }) {
     writeJson(LIST_KEY, next);
   }
 
+  const meter = list.steps.length ? Math.round((done / list.steps.length) * 100) : 0;
   return (
-    <section className="c4-shift-check" aria-label={v4("sfTitle")} data-shift-check="1" data-day={list.day}>
-      <header className="c4-pay-head">
-        <div>
-          <p className="c4-pay-kicker">{v4("sfSub")}</p>
-          <h2 className="c4-title">{v4("sfTitle")}</h2>
+    <section className="c4-shift-check c4-shift-oriel" aria-label={v4("sfTitle")} data-shift-check="1" data-desk="oriel" data-day={list.day}>
+      <header className="c4-shift-oriel-mast">
+        <p className="c4-shift-oriel-seal" data-logo="mono">7FX</p>
+        <div className="c4-shift-oriel-copy">
+          <p className="c4-shift-oriel-kicker">{v4("bmtShiftKicker")}</p>
+          <h2 className="c4-title c4-shift-oriel-title">{v4("sfTitle")}</h2>
+          <p className="c4-shift-oriel-lead">{v4("bmtShiftLead")}</p>
         </div>
-        <p className="c4-meta">{v4("sfProgress")} {done}/{list.steps.length}</p>
+        <ol className="c4-shift-oriel-index" aria-label={v4("sfTitle")}>
+          <li data-tone="gold">{v4("bmtShiftGold")}</li>
+          <li data-tone="ink">{v4("bmtShiftInk")}</li>
+          <li data-tone="ivory">{v4("bmtShiftIvory")}</li>
+        </ol>
       </header>
+      <p className="c4-shift-oriel-links">
+        <Link href={crmv4Href(base, "bmt")}>{v4("bmtShiftTubes")}</Link>
+        <Link href={crmv4Href(base, "snm")}>{v4("bmtShiftNames")}</Link>
+      </p>
+      <p className="c4-shift-oriel-progress">{v4("sfProgress")} {done}/{list.steps.length}</p>
+      <p className="c4-shift-oriel-meter" aria-hidden="true"><i style={{ width: `${meter}%` }} /></p>
       <p className="c4-meta">{v4("sfHint")}</p>
       <p className="c4-meta">{v4("sfLocal")} · {list.day}</p>
       <form className="c4-row" onSubmit={(event) => {
@@ -87,10 +100,10 @@ export function ShiftCheck({ v4 }: { v4: V4 }) {
         <span>{v4("sfSearch")}</span>
         <input className="c4-field" aria-label={v4("sfSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
-      {!shown.length && <p className="c4-pay-empty">{v4("sfEmpty")}</p>}
+      {!shown.length && <p className="c4-pay-empty c4-shift-oriel-empty">{v4("bmtShiftEmpty")}</p>}
       <ul className="c4-shift-list">
         {shown.map((step) => (
-          <li key={step.id} className="c4-shift-card" data-done={step.done ? "1" : "0"}>
+          <li key={step.id} className="c4-shift-card c4-shift-oriel-card" data-done={step.done ? "1" : "0"}>
             <p>{step.label}</p>
             <button type="button" className="c4-btn" data-shift-done="" aria-pressed={step.done} onClick={() => store(toggleStep(list, step.id))}>{step.done ? v4("sfUndo") : v4("sfDone")}</button>
           </li>

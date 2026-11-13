@@ -255,6 +255,7 @@ import { CipherPlates, PastrySlips } from "./round264";
 import { InvitePlates, LoomSlips } from "./round265";
 import { OfficePlates, SextantSights } from "./round266";
 import { AstrolabeRetes, GivenPlates } from "./round267";
+import { BarometerTubes, SurnamePlates } from "./round268";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1028,6 +1029,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ivt") return v4("ivtTitle");
     if (tab === "sxt") return v4("sxtTitle");
     if (tab === "ofc") return v4("ofcTitle");
+    if (tab === "bmt") return v4("bmtTitle");
+    if (tab === "snm") return v4("snmTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1487,6 +1490,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ivt") return v4("ivtSub");
     if (tab === "sxt") return v4("sxtSub");
     if (tab === "ofc") return v4("ofcSub");
+    if (tab === "bmt") return v4("bmtSub");
+    if (tab === "snm") return v4("snmSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1695,7 +1700,7 @@ function Shell({ base, section, name }: Props) {
             {view === "scale" && <FontScale v4={v4} />}
             {view === "shield" && <QuietShield v4={v4} />}
             {view === "stickies" && <StickyPad base={base} v4={v4} />}
-            {view === "shiftlist" && <ShiftCheck v4={v4} />}
+            {view === "shiftlist" && <ShiftCheck base={base} v4={v4} />}
             {view === "glance" && <LedgerGlance base={base} v4={v4} tx={tx} />}
             {view === "lane" && <PriorityLane base={base} v4={v4} />}
             {view === "docpulse" && <DocPulse base={base} v4={v4} tx={tx} />}
@@ -2081,6 +2086,8 @@ function Shell({ base, section, name }: Props) {
             {view === "ofc" && <OfficePlates base={base} v4={v4} />}
             {view === "ast" && <AstrolabeRetes base={base} v4={v4} />}
             {view === "gnm" && <GivenPlates base={base} v4={v4} />}
+            {view === "bmt" && <BarometerTubes base={base} v4={v4} />}
+            {view === "snm" && <SurnamePlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
