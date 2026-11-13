@@ -30,7 +30,7 @@ function publish() {
   window.dispatchEvent(new Event("crmv4:quiet"));
 }
 
-export function QuietShield({ v4 }: { v4: V4 }) {
+export function QuietShield({ v4, base = "/izcrm/crmv4" }: { v4: V4; base?: string }) {
   const [quiet, setQuiet] = useState({ start: "", end: "" });
   const [pause, setPause] = useState("");
   const [now, setNow] = useState(() => new Date());
@@ -56,14 +56,20 @@ export function QuietShield({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-shield-pad" aria-label={v4("qhTitle")} data-shield-pad="1" data-shield={on ? "1" : "0"}>
-      <header className="c4-pay-head">
-        <div>
-          <p className="c4-pay-kicker">{v4("qhSub")}</p>
-          <h2 className="c4-title">{v4("qhTitle")}</h2>
+    <section className="c4-shield-pad c4-shield-folio" aria-label={v4("qhTitle")} data-shield-pad="1" data-desk="folio" data-shield={on ? "1" : "0"}>
+      <header className="c4-shield-folio-mast">
+        <p className="c4-shield-folio-seal" data-logo="mono">7FX</p>
+        <div className="c4-shield-folio-copy">
+          <p className="c4-shield-folio-kicker">{v4("hygFolioKicker")}</p>
+          <h2 className="c4-title c4-shield-folio-title">{v4("qhTitle")}</h2>
+          <p className="c4-shield-folio-lead">{v4("hygFolioLead")}</p>
         </div>
-        <p className="c4-meta">{on ? v4("qhOn") : v4("qhOff")}</p>
+        <p className="c4-shield-folio-state" data-on={on ? "1" : "0"}>{on ? v4("qhOn") : v4("qhOff")}</p>
       </header>
+      <p className="c4-shield-folio-links">
+        <Link href={crmv4Href(base, "hyg")}>{v4("hygFolioCards")}</Link>
+        <Link href={crmv4Href(base, "stickies")}>{v4("cnTitle")}</Link>
+      </p>
       <p className="c4-meta">{v4("qhHint")}</p>
       <p className="c4-meta">{v4("qhLocal")}</p>
       <p className="c4-meta">{v4("qhBoards")}</p>
@@ -104,14 +110,20 @@ export function StickyPad({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-sticky-pad" aria-label={v4("cnTitle")} data-sticky-pad="1">
-      <header className="c4-pay-head">
-        <div>
-          <p className="c4-pay-kicker">{v4("cnSub")}</p>
-          <h2 className="c4-title">{v4("cnTitle")}</h2>
+    <section className="c4-sticky-pad c4-sticky-folio" aria-label={v4("cnTitle")} data-sticky-pad="1" data-desk="folio">
+      <header className="c4-sticky-folio-mast">
+        <p className="c4-sticky-folio-seal" data-logo="mono">7FX</p>
+        <div className="c4-sticky-folio-copy">
+          <p className="c4-sticky-folio-kicker">{v4("hygFolioKicker")}</p>
+          <h2 className="c4-title c4-sticky-folio-title">{v4("cnTitle")}</h2>
+          <p className="c4-sticky-folio-lead">{v4("hygFolioLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-sticky-folio-count">{shown.length}</p>
       </header>
+      <p className="c4-sticky-folio-links">
+        <Link href={crmv4Href(base, "shield")}>{v4("qhTitle")}</Link>
+        <Link href={crmv4Href(base, "rgs")}>{v4("hygFolioPlates")}</Link>
+      </p>
       <p className="c4-meta">{v4("cnHint")}</p>
       <p className="c4-meta">{v4("cnLocal")}</p>
       {!data.loading && !data.error && !loaded.length && <p className="c4-pay-empty">{v4("cnNone")}</p>}
@@ -144,7 +156,7 @@ export function StickyPad({ base, v4 }: { base: string; v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "0" : "1"} aria-pressed={!hidden} onClick={() => setHidden(false)}>{v4("cnOpen")}</button>
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("cnHidden")}</button>
       </div>
-      {!shown.length && <p className="c4-pay-empty">{v4("cnEmpty")}</p>}
+      {!shown.length && <p className="c4-pay-empty c4-sticky-folio-empty">{v4("cnEmpty")}</p>}
       <ul className="c4-sticky-list">
         {shown.map((note) => (
           <li key={note.id} className="c4-sticky-card" data-pinned={note.pinned ? "1" : "0"}>
