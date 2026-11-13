@@ -184,26 +184,33 @@ export function HandoffPacket({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-packet-pad" aria-label={v4("pkTitle")} data-packet-pad="1">
-      <header className="c4-pay-head">
+    <section className="c4-packet-pad c4-packet-salon" aria-label={v4("pkTitle")} data-packet-pad="1" data-desk="salon">
+      <header className="c4-pay-head c4-packet-salon-mast">
+        <p className="c4-packet-salon-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("pkSub")}</p>
-          <h2 className="c4-title">{v4("pkTitle")}</h2>
+          <p className="c4-pay-kicker c4-packet-salon-kicker">{v4("pkSub")}</p>
+          <h2 className="c4-title c4-packet-salon-title">{v4("pkTitle")}</h2>
         </div>
-        <p className="c4-meta">{v4("pkChosen")} {chosen.length}</p>
+        <p className="c4-meta c4-packet-salon-count">{v4("pkChosen")} {chosen.length}</p>
+        <ol className="c4-packet-salon-index" aria-label={v4("pkTitle")}>
+          <li data-tone="gold">{v4("pkSalonChampagne")}</li>
+          <li data-tone="ink">{v4("pkSalonGraphite")}</li>
+          <li data-tone="ivory">{v4("pkSalonIvory")}</li>
+        </ol>
       </header>
+      <p className="c4-meta c4-packet-salon-lead">{v4("pkSalonLead")}</p>
       <p className="c4-meta">{v4("pkHint")}</p>
       <p className="c4-meta">{v4("pkLocal")}</p>
       <label className="c4-lab">
         <span>{v4("pkSearch")}</span>
-        <input className="c4-field" aria-label={v4("pkSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
+        <input className="c4-field c4-packet-salon-search" aria-label={v4("pkSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
-      {!items.length && <p className="c4-pay-empty">{v4("pkEmpty")}</p>}
-      <ul className="c4-packet-list">
+      {!items.length && <p className="c4-pay-empty c4-packet-salon-empty">{v4("pkEmpty")}</p>}
+      <ul className="c4-packet-list c4-packet-salon-list">
         {shown.map((item) => {
           const on = packet.ids.includes(item.id);
           return (
-            <li key={item.id} className="c4-packet-card" data-on={on ? "1" : "0"}>
+            <li key={item.id} className="c4-packet-card c4-packet-salon-card" data-on={on ? "1" : "0"}>
               <p className="c4-meta">{item.source} · {item.kind}</p>
               <p>{item.label}</p>
               <button type="button" className="c4-btn" data-packet-pick="" aria-pressed={on} onClick={() => store(togglePacketId(packet, item.id))}>{on ? v4("pkDrop") : v4("pkTake")}</button>
@@ -216,7 +223,7 @@ export function HandoffPacket({ v4 }: { v4: V4 }) {
         <input className="c4-field" aria-label={v4("pkNote")} value={packet.note} onChange={(event) => store(withNote(packet, event.target.value))} />
       </label>
       <p className="c4-meta">{v4("pkBlank")}</p>
-      {!chosen.length && !packet.note && <p className="c4-pay-empty">{v4("pkNone")}</p>}
+      {!chosen.length && !packet.note && <p className="c4-pay-empty c4-packet-salon-empty">{v4("pkNone")}</p>}
       <div className="c4-row">
         <button
           type="button"

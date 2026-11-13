@@ -67,26 +67,33 @@ export function QueuePulse({ base, v4, tx }: { base: string; v4: V4; tx: Tx }) {
   }
 
   return (
-    <section className="c4-pulse-strip" aria-label={v4("puTitle")} data-pulse-strip="1">
-      <header className="c4-pay-head">
+    <section className="c4-pulse-strip c4-pulse-salon" aria-label={v4("puTitle")} data-pulse-strip="1" data-desk="salon">
+      <header className="c4-pay-head c4-pulse-salon-mast">
+        <p className="c4-pulse-salon-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("puSub")}</p>
-          <h2 className="c4-title">{v4("puTitle")}</h2>
+          <p className="c4-pay-kicker c4-pulse-salon-kicker">{v4("puSub")}</p>
+          <h2 className="c4-title c4-pulse-salon-title">{v4("puTitle")}</h2>
         </div>
+        <ol className="c4-pulse-salon-index" aria-label={v4("puTitle")}>
+          <li data-tone="gold">{v4("puSalonChampagne")}</li>
+          <li data-tone="ink">{v4("puSalonGraphite")}</li>
+          <li data-tone="ivory">{v4("puSalonIvory")}</li>
+        </ol>
       </header>
+      <p className="c4-meta c4-pulse-salon-lead">{v4("puSalonLead")}</p>
       <p className="c4-meta">{v4("puHint")}</p>
       <div className="c4-row" role="group" aria-label={v4("puShown")}>
         <button type="button" className="c4-chip" data-on={showHidden ? "0" : "1"} aria-pressed={!showHidden} onClick={() => setShowHidden(false)}>{v4("puShown")}</button>
         <button type="button" className="c4-chip" data-on={showHidden ? "1" : "0"} aria-pressed={showHidden} onClick={() => setShowHidden(true)}>{v4("puHidden")}</button>
       </div>
-      {!kinds.length && <p className="c4-pay-empty">{v4("puEmpty")}</p>}
-      <ul className="c4-pulse-list">
+      {!kinds.length && <p className="c4-pay-empty c4-pulse-salon-empty">{v4("puEmpty")}</p>}
+      <ul className="c4-pulse-list c4-pulse-salon-list">
         {kinds.map((kind) => {
           const state = lists[kind];
           const ready = !state.loading && !state.error;
           const count = ready ? pendingCount(rowsOf(kind, state)) : null;
           return (
-            <li key={kind} className="c4-pulse-card" data-kind={kind}>
+            <li key={kind} className="c4-pulse-card c4-pulse-salon-card" data-kind={kind}>
               <p className="c4-meta">{v4(KIND_KEY[kind])}</p>
               {state.loading && !state.data && <p className="c4-meta">{v4("puLoading")}</p>}
               {state.error && <p className="c4-meta">{v4("puFailed")} {tx("failed")}</p>}
