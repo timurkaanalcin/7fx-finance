@@ -67,15 +67,22 @@ export function UtcMarks({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-utc-marks" aria-label={v4("cdTitle")} data-utc-marks="1">
-      <header className="c4-pay-head">
+    <section className="c4-utc-marks c4-date-rail" aria-label={v4("cdTitle")} data-utc-marks="1" data-desk="rail">
+      <header className="c4-date-rail-mast">
+        <p className="c4-date-rail-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("cdSub")}</p>
-          <h2 className="c4-title">{v4("cdTitle")}</h2>
+          <p className="c4-date-rail-kicker">{v4("cdRailKicker")}</p>
+          <h2 className="c4-title c4-date-rail-title">{v4("cdTitle")}</h2>
+          <p className="c4-date-rail-lead">{v4("cdRailLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-date-rail-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("cdHint")}</p>
+      <ol className="c4-date-rail-index" aria-label={v4("cdTitle")}>
+        <li data-tone="gold">{v4("cdRailGold")}</li>
+        <li data-tone="ink">{v4("cdRailInk")}</li>
+        <li data-tone="ivory">{v4("cdRailIvory")}</li>
+      </ol>
+      <p className="c4-date-rail-hint">{v4("cdHint")}</p>
       <p className="c4-meta">{v4("cdLocal")}</p>
       {today && <p className="c4-meta" data-today-utc="">{v4("cdToday")} {today}</p>}
       <form className="c4-row" onSubmit={(event) => {
@@ -102,9 +109,9 @@ export function UtcMarks({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-btn" onClick={jumpToday}>{v4("cdToday")}</button>
       </div>
       {!shown.length && <p className="c4-pay-empty">{v4("cdEmpty")}</p>}
-      <ul className="c4-utc-list">
+      <ul className="c4-utc-list c4-date-rail-list">
         {shown.map((mark) => (
-          <li key={mark.id} className="c4-utc-card" data-pinned={mark.pinned ? "1" : "0"} data-today={mark.day === today ? "1" : "0"}>
+          <li key={mark.id} className="c4-utc-card c4-date-rail-card" data-pinned={mark.pinned ? "1" : "0"} data-today={mark.day === today ? "1" : "0"}>
             <p>{mark.day}</p>
             <div className="c4-row">
               <button type="button" className="c4-btn" onClick={() => store(toggleMarkPin(marks, mark.id))}>{mark.pinned ? v4("cdUnpin") : v4("cdPin")}</button>
