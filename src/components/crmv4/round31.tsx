@@ -102,7 +102,19 @@ export function RecordHead({
   });
   const name = user.name || "—";
   return (
-    <header className="c4-record-head" aria-label={v4("recHead")} data-record="1">
+    <header className="c4-record-head c4-record-folio" aria-label={v4("recHead")} data-record="1" data-folio="1">
+      <div className="c4-record-folio-mast">
+        <p className="c4-record-folio-seal" data-logo="mono">7FX</p>
+        <div>
+          <p className="c4-record-folio-kicker">{v4("recFolKicker")}</p>
+          <p className="c4-record-folio-lead">{v4("recFolLead")}</p>
+        </div>
+        <ol className="c4-record-folio-index" aria-label={v4("recFolKicker")}>
+          <li data-tone="ivory">{v4("recFolIvory")}</li>
+          <li data-tone="ink">{v4("recFolGraphite")}</li>
+          <li data-tone="gold">{v4("recFolChampagne")}</li>
+        </ol>
+      </div>
       <div className="c4-record-id">
         <span className="c4-record-mark" aria-hidden="true">{initialsOf(user.name || "")}</span>
         <div>
@@ -112,15 +124,15 @@ export function RecordHead({
           <p className="c4-muted">{v4("customerId")} {user.id}</p>
         </div>
       </div>
-      <div className="c4-record-chips">
-        <span className="c4-status" data-tone={String(user.documentsStatus || "").toUpperCase() === "APPROVED" ? "ok" : "muted"}>{v4("recKyc")} {user.documentsStatus || v4("recNoKyc")}</span>
-        <span className="c4-status" data-tone="info">{v4("recStage")} {user.saleStatus || v4("recNoStage")}</span>
-        <span className="c4-status" data-tone="muted">{v4("recRetention")} {user.retentionStatus || v4("recNoRetention")}</span>
-        <span className="c4-status" data-tone="warn">{v4("recReading")} {reading}</span>
-        <span className="c4-status" data-tone={user.active === false ? "bad" : "ok"}>{user.active === false ? tx("chipFrozen") : tx("chipActive")}</span>
+      <div className="c4-record-chips c4-record-folio-chips">
+        <span className="c4-status c4-record-folio-chip" data-tone={String(user.documentsStatus || "").toUpperCase() === "APPROVED" ? "ok" : "muted"}>{v4("recKyc")} {user.documentsStatus || v4("recNoKyc")}</span>
+        <span className="c4-status c4-record-folio-chip" data-tone="info">{v4("recStage")} {user.saleStatus || v4("recNoStage")}</span>
+        <span className="c4-status c4-record-folio-chip" data-tone="muted">{v4("recRetention")} {user.retentionStatus || v4("recNoRetention")}</span>
+        <span className="c4-status c4-record-folio-chip" data-tone="warn">{v4("recReading")} {reading}</span>
+        <span className="c4-status c4-record-folio-chip" data-tone={user.active === false ? "bad" : "ok"}>{user.active === false ? tx("chipFrozen") : tx("chipActive")}</span>
         <p className="c4-muted">{v4("recReadingHint")}</p>
       </div>
-      <div className="c4-record-figs">
+      <div className="c4-record-figs c4-record-folio-figs">
         <p><span className="c4-muted">{v4("recBalance")}</span> {money(balance, currency, locale)}</p>
         <p><span className="c4-muted">{v4("recEquity")}</span> {money(equity, currency, locale)}</p>
         <p className="c4-muted">{v4("recSplit")}</p>
@@ -156,9 +168,21 @@ export function SmartRail({ base, v4, onPick }: { base: string; v4: V4; onPick?:
   const data = useJson<{ users?: ListRow[] }>("/api/admin/users?view=table&take=80&skip=0&meta=0&role=TRADER");
   const rows = data.data?.users || [];
   return (
-    <div className="c4-smart-rail">
+    <div className="c4-smart-rail c4-list-folio">
+      <header className="c4-list-folio-mast">
+        <p className="c4-list-folio-seal" data-logo="mono">7FX</p>
+        <div>
+          <p className="c4-list-folio-kicker">{v4("lstFolKicker")}</p>
+          <p className="c4-list-folio-lead">{v4("lstFolLead")}</p>
+        </div>
+      </header>
+      <ol className="c4-list-folio-index" aria-label={v4("lstFolKicker")}>
+        <li data-tone="ivory">{v4("lstFolIvory")}</li>
+        <li data-tone="ink">{v4("lstFolGraphite")}</li>
+        <li data-tone="gold">{v4("lstFolChampagne")}</li>
+      </ol>
       <p className="c4-rail-name c4-muted">{v4("listTitle")}</p>
-      {!lists.length && <p className="c4-rail-name c4-muted">{v4("listEmpty")}</p>}
+      {!lists.length && <p className="c4-list-folio-empty">{v4("listEmpty")}</p>}
       <ul>
         {lists.map((item) => {
           const count = data.data ? countList(rows, item.rules) : null;
@@ -187,8 +211,14 @@ export function ListDesk({ v4, activeId }: { v4: V4; activeId: string }) {
     setRules((current) => ({ ...current, [key]: value }));
   }
   return (
-    <section className="c4-list-desk" aria-label={v4("listTitle")} data-lists="1">
-      <h3 className="c4-title">{v4("listTitle")}</h3>
+    <section className="c4-list-desk c4-list-folio-desk" aria-label={v4("listTitle")} data-lists="1">
+      <header className="c4-list-folio-desk-mast">
+        <p className="c4-list-folio-seal" data-logo="mono">7FX</p>
+        <div>
+          <p className="c4-list-folio-kicker">{v4("lstFolKicker")}</p>
+          <h3 className="c4-title">{v4("listTitle")}</h3>
+        </div>
+      </header>
       <p className="c4-muted">{v4("listHint")}</p>
       {activeId && !active && <p>{v4("listMissing")}</p>}
       {active && <p>{v4("listShowing")} {active.name}{listIsOpen(active.rules) ? ` · ${v4("listOpen")}` : ""}</p>}
