@@ -66,13 +66,18 @@ export function useNotices() {
 
 export function DeskBar({ base, name, theme, onTheme, onNotes, unread, v4, tx }: { base: string; name: string; theme: "light" | "dark"; onTheme: () => void; onNotes: () => void; unread: number; v4: V4; tx: Tx }) {
   return (
-    <div className="c4-desk-bar" data-bar="1">
-      <form action={crmv4Href(base, "customers")} role="search" className="c4-desk-search">
+    <div className="c4-desk-bar c4-desk-ribbon" data-bar="1" data-ribbon="1">
+      <p className="c4-desk-ribbon-seal" data-logo="mono">7FX</p>
+      <div className="c4-desk-ribbon-copy">
+        <p className="c4-desk-ribbon-kicker">{v4("barRibKicker")}</p>
+        <p className="c4-desk-ribbon-lead">{v4("barRibLead")}</p>
+      </div>
+      <form action={crmv4Href(base, "customers")} role="search" className="c4-desk-search c4-desk-ribbon-search">
         <input name="q" className="c4-field" aria-label={v4("barSearch")} placeholder={v4("barSearch")} />
       </form>
-      <button type="button" className="c4-btn" onClick={onTheme}>{theme === "dark" ? tx("themeLight") : tx("themeDark")}</button>
-      <Link href={crmv4Href(base, "me")} className="c4-desk-profile">{name || v4("barProfile")}</Link>
-      <button type="button" className="c4-btn" aria-label={tx("notifications")} onClick={onNotes}>
+      <button type="button" className="c4-btn c4-desk-ribbon-theme" onClick={onTheme}>{theme === "dark" ? tx("themeLight") : tx("themeDark")}</button>
+      <Link href={crmv4Href(base, "me")} className="c4-desk-profile c4-desk-ribbon-profile">{name || v4("barProfile")}</Link>
+      <button type="button" className="c4-btn c4-desk-ribbon-bell" aria-label={tx("notifications")} onClick={onNotes}>
         {tx("notifications")}
         {unread > 0 && <span className="c4-count">{unread}</span>}
       </button>
@@ -103,14 +108,21 @@ export function NoticeDesk({ base, v4, locale, tx, notices }: { base: string; v4
     chat: "noteChat",
   };
   return (
-    <section className="c4-note-desk" aria-label={v4("noteTitle")} data-notes-desk="1">
-      <h2 className="c4-title">{v4("noteTitle")}</h2>
+    <section className="c4-note-desk c4-note-cabinet" aria-label={v4("noteTitle")} data-notes-desk="1" data-cabinet="1">
+      <header className="c4-note-cabinet-mast">
+        <p className="c4-note-cabinet-seal" data-logo="mono">7FX</p>
+        <div>
+          <p className="c4-note-cabinet-kicker">{v4("noteCabKicker")}</p>
+          <h2 className="c4-title">{v4("noteTitle")}</h2>
+        </div>
+        <p className="c4-note-cabinet-count">{v4("noteCount")} · {notices.unread}</p>
+      </header>
+      <p className="c4-note-cabinet-lead">{v4("noteCabLead")}</p>
       <p className="c4-muted">{v4("noteHint")}</p>
-      <p className="c4-muted">{v4("noteCount")} · {notices.unread}</p>
       <State loading={notices.loading} error={notices.error} empty={!notices.loading && !notices.error && notices.events.length === 0} tx={tx} onRetry={notices.reload} hint={v4("noteEmpty")} />
       {!notices.loading && !notices.error && notices.events.length > 0 && (
         <>
-          <div className="c4-line-filters">
+          <div className="c4-line-filters c4-note-cabinet-filters">
             {KINDS.map((item) => (
               <button key={item} type="button" className="c4-chip" data-on={kind === item ? "1" : "0"} onClick={() => setKind(item)}>
                 {v4(item === "all" ? "noteAll" : label[item])}
@@ -119,8 +131,8 @@ export function NoticeDesk({ base, v4, locale, tx, notices }: { base: string; v4
             <button type="button" className="c4-chip" data-on={onlyUnread ? "1" : "0"} onClick={() => setOnlyUnread((value) => !value)}>{v4("noteUnread")}</button>
             <button type="button" className="c4-btn" onClick={() => notices.markAll(rows.map((row) => row.id))}>{v4("noteMarkAll")}</button>
           </div>
-          {!rows.length && <p className="c4-empty c4-empty-card">{v4("noteEmpty")}</p>}
-          <ul>
+          {!rows.length && <p className="c4-empty c4-empty-card c4-note-cabinet-empty">{v4("noteEmpty")}</p>}
+          <ul className="c4-note-cabinet-board">
             {rows.map((row) => (
               <NoticeRow key={row.id} row={row} read={notices.read.includes(row.id)} href={href[row.kind]} kind={v4(label[row.kind])} v4={v4} locale={locale} onRead={() => notices.mark(row.id)} />
             ))}
@@ -133,16 +145,16 @@ export function NoticeDesk({ base, v4, locale, tx, notices }: { base: string; v4
 
 function NoticeRow({ row, read, href, kind, v4, locale, onRead }: { row: Notice; read: boolean; href: string; kind: string; v4: V4; locale: string; onRead: () => void }) {
   return (
-    <li data-read={read ? "1" : "0"}>
-      <div className="c4-row c4-between">
-        <strong>{kind}</strong>
-        <span>{row.name || "—"}</span>
-      </div>
-      {row.currency ? <p>{money(row.amount, row.currency, locale)}</p> : null}
-      {row.at && <p className="c4-muted">{when(row.at, locale)}</p>}
-      <div className="c4-row">
-        <Link href={href} className="c4-btn">{kind}</Link>
-        {!read && <button type="button" className="c4-btn" onClick={onRead}>{v4("noteMark")}</button>}
+    <li className="c4-note-cabinet-card" data-read={read ? "1" : "0"} data-kind={row.kind}>
+      <p className="c4-note-cabinet-kind">{kind}</p>
+      <div>
+        <strong>{row.name || "—"}</strong>
+        {row.currency ? <p>{money(row.amount, row.currency, locale)}</p> : null}
+        {row.at && <p className="c4-muted">{when(row.at, locale)}</p>}
+        <div className="c4-row">
+          <Link href={href} className="c4-btn">{kind}</Link>
+          {!read && <button type="button" className="c4-btn" onClick={onRead}>{v4("noteMark")}</button>}
+        </div>
       </div>
     </li>
   );
