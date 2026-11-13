@@ -103,7 +103,7 @@ export function DeskClocks({ base, v4 }: { base: string; v4: V4 }) {
   );
 }
 
-export function SnippetPad({ v4 }: { v4: V4 }) {
+export function SnippetPad({ base, v4 }: { base: string; v4: V4 }) {
   const [snippets, setSnippets] = useState<Snippet[]>([]);
   const [kind, setKind] = useState<SnipKind>("thanks");
   const [filter, setFilter] = useState<"" | SnipKind>("");
@@ -132,16 +132,22 @@ export function SnippetPad({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-snip-pad" aria-label={v4("snTitle")} data-snip-pad="1">
-      <header className="c4-pay-head">
+    <section className="c4-snip-pad c4-snip-salon" aria-label={v4("snTitle")} data-snip-pad="1" data-snip-salon="1">
+      <header className="c4-snip-mast">
+        <p className="c4-snip-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("snSub")}</p>
+          <p className="c4-snip-kicker">{v4("snSub")}</p>
           <h2 className="c4-title">{v4("snTitle")}</h2>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <ol className="c4-snip-legend" aria-label={v4("snTitle")}>
+          <li data-tone="gold">{v4("snSalonGold")}</li>
+          <li data-tone="ink">{v4("snSalonInk")}</li>
+          <li data-tone="ivory">{v4("snSalonIvory")}</li>
+        </ol>
+        <p className="c4-snip-count">{v4("snSalonCount")} {shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("snHint")}</p>
-      <p className="c4-meta">{v4("snLocal")}</p>
+      <p className="c4-snip-rule">{v4("snHint")}</p>
+      <p className="c4-snip-rule">{v4("snLocal")}</p>
       <div className="c4-row" role="group" aria-label={v4("snThanks")}>
         <button type="button" className="c4-chip" data-on={kind === "thanks" ? "1" : "0"} aria-pressed={kind === "thanks"} onClick={() => setKind("thanks")}>{v4("snThanks")}</button>
         <button type="button" className="c4-chip" data-on={kind === "follow" ? "1" : "0"} aria-pressed={kind === "follow"} onClick={() => setKind("follow")}>{v4("snFollow")}</button>
@@ -162,7 +168,7 @@ export function SnippetPad({ v4 }: { v4: V4 }) {
       <p className="c4-meta">{v4("snBlank")}</p>
       <label className="c4-lab">
         <span>{v4("snSearch")}</span>
-        <input className="c4-field" aria-label={v4("snSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
+        <input className="c4-field c4-snip-search" aria-label={v4("snSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       <div className="c4-row" role="group" aria-label={v4("snAll")}>
         <button type="button" className="c4-chip" data-on={filter === "" ? "1" : "0"} aria-pressed={filter === ""} onClick={() => setFilter("")}>{v4("snAll")}</button>
@@ -186,6 +192,10 @@ export function SnippetPad({ v4 }: { v4: V4 }) {
           </li>
         ))}
       </ul>
+      <p className="c4-snip-links">
+        <Link href={crmv4Href(base, "hgl")}>{v4("hglTitle")}</Link>
+        <Link href={crmv4Href(base, "syl")}>{v4("sylTitle")}</Link>
+      </p>
     </section>
   );
 }

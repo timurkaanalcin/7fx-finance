@@ -40,15 +40,25 @@ export function WeekAgenda({ base, v4, locale, tx }: { base: string; v4: V4; loc
   }
 
   return (
-    <section className="c4-week-strip" aria-label={v4("wkTitle")} data-week-strip="1">
-      <header className="c4-pay-head">
+    <section className="c4-week-strip c4-week-salon" aria-label={v4("wkTitle")} data-week-strip="1" data-week-salon="1">
+      <header className="c4-week-mast">
+        <p className="c4-week-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("wkSub")}</p>
+          <p className="c4-week-kicker">{v4("wkSub")}</p>
           <h2 className="c4-title">{v4("wkTitle")}</h2>
         </div>
-        <p className="c4-meta">{start}</p>
+        <ol className="c4-week-legend" aria-label={v4("wkTitle")}>
+          <li data-tone="gold">{v4("wkSalonGold")}</li>
+          <li data-tone="ink">{v4("wkSalonInk")}</li>
+          <li data-tone="ivory">{v4("wkSalonIvory")}</li>
+        </ol>
+        <p className="c4-week-count">{v4("wkSalonCount")} {start}</p>
       </header>
-      <p className="c4-meta">{v4("wkHint")}</p>
+      <p className="c4-week-rule">{v4("wkHint")}</p>
+      <p className="c4-week-links">
+        <Link href={crmv4Href(base, "hgl")}>{v4("hglTitle")}</Link>
+        <Link href={crmv4Href(base, "snippets")}>{v4("hglGallery")}</Link>
+      </p>
       <div className="c4-row">
         <button type="button" className="c4-btn" onClick={() => setCursor(shiftDay(start, -7))}>{v4("wkPrev")}</button>
         <button type="button" className="c4-btn" data-week-today="" onClick={() => setCursor(today)}>{v4("wkToday")}</button>
@@ -56,7 +66,7 @@ export function WeekAgenda({ base, v4, locale, tx }: { base: string; v4: V4; loc
       </div>
       <label className="c4-lab">
         <span>{v4("wkSearch")}</span>
-        <input className="c4-field" aria-label={v4("wkSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
+        <input className="c4-field c4-week-search" aria-label={v4("wkSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {(people.loading || calendar.loading) && !people.data && !calendar.data && <p className="c4-meta">{v4("wkLoading")}</p>}
       {(people.error || calendar.error) && <p className="c4-meta">{v4("wkFailed")} {tx("failed")}</p>}

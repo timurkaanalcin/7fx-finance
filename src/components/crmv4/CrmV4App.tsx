@@ -230,6 +230,7 @@ import { AlcoveSlips, PassportStamps } from "./round239";
 import { ColophonMarks, TerraceCards } from "./round240";
 import { CallSheets, PressPlates } from "./round241";
 import { DawnBooks, VowelMarks } from "./round242";
+import { HourglassSlips, SyllablePlates } from "./round243";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -955,6 +956,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ppl") return v4("pplTitle");
     if (tab === "dnb") return v4("dnbTitle");
     if (tab === "lcr") return v4("lcrTitle");
+    if (tab === "hgl") return v4("hglTitle");
+    if (tab === "syl") return v4("sylTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1366,6 +1369,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ppl") return v4("pplSub");
     if (tab === "dnb") return v4("dnbSub");
     if (tab === "lcr") return v4("lcrSub");
+    if (tab === "hgl") return v4("hglSub");
+    if (tab === "syl") return v4("sylSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1567,7 +1572,7 @@ function Shell({ base, section, name }: Props) {
             {view === "vip" && <VipWatch base={base} v4={v4} locale={locale} tx={tx} />}
             {view === "packet" && <HandoffPacket v4={v4} />}
             {view === "clocks" && <DeskClocks base={base} v4={v4} />}
-            {view === "snippets" && <SnippetPad v4={v4} />}
+            {view === "snippets" && <SnippetPad base={base} v4={v4} />}
             {view === "pulse" && <QueuePulse base={base} v4={v4} tx={tx} />}
             {view === "swatches" && <RouteSwatches base={base} v4={v4} />}
             {view === "week" && <WeekAgenda base={base} v4={v4} locale={locale} tx={tx} />}
@@ -1910,6 +1915,8 @@ function Shell({ base, section, name }: Props) {
             {view === "ppl" && <PressPlates base={base} v4={v4} />}
             {view === "dnb" && <DawnBooks base={base} v4={v4} />}
             {view === "lcr" && <VowelMarks base={base} v4={v4} />}
+            {view === "hgl" && <HourglassSlips base={base} v4={v4} />}
+            {view === "syl" && <SyllablePlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
