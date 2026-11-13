@@ -93,13 +93,20 @@ export function DenseList({ base, v4, tx }: { base: string; v4: V4; tx: Tx }) {
   }
 
   return (
-    <section className="c4-dense-desk" aria-label={v4("dnTitle")} data-dense="1">
-      <header className="c4-pay-head">
+    <section className="c4-dense-desk c4-dense-press" aria-label={v4("dnTitle")} data-dense="1" data-desk="press">
+      <header className="c4-pay-head c4-dense-press-mast">
+        <p className="c4-dense-press-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("dnSub")}</p>
-          <h2 className="c4-title">{v4("dnTitle")}</h2>
+          <p className="c4-pay-kicker c4-dense-press-kicker">{v4("dnSub")}</p>
+          <h2 className="c4-title c4-dense-press-title">{v4("dnTitle")}</h2>
         </div>
+        <ol className="c4-dense-press-index" aria-label={v4("dnTitle")}>
+          <li data-tone="gold">{v4("dnPressChampagne")}</li>
+          <li data-tone="ink">{v4("dnPressGraphite")}</li>
+          <li data-tone="ivory">{v4("dnPressIvory")}</li>
+        </ol>
       </header>
+      <p className="c4-meta c4-dense-press-lead">{v4("dnPressLead")}</p>
       <p className="c4-meta">{v4("dnHint")}</p>
       {viewer && <p className="c4-meta">{v4("dnViewer")}</p>}
       <label className="c4-lab">
