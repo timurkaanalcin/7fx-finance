@@ -358,32 +358,36 @@ export function SegmentBoard({ v4 }: { v4: V4 }) {
   const cards = orderCards(segmentCards(loaded, axis), pins);
   const names = new Map(loaded.map((row) => [row.id, String(row.name || row.id)]));
   const opened = cards.find((card) => card.id === open) || null;
+  const total = Math.max(1, cards.reduce((sum, card) => sum + card.count, 0));
   function pin(id: string) {
     const next = togglePin(pins, id);
     setPins(next);
     writeJson(PIN_KEY, next);
   }
   return (
-    <section className="c4-seg-board" aria-label={v4("sgTitle")} data-segments="1">
-      <header className="c4-pay-head">
+    <section className="c4-seg-board c4-seg-salon" aria-label={v4("sgTitle")} data-segments="1" data-salon="1">
+      <header className="c4-seg-salon-mast">
+        <p className="c4-seg-salon-seal" data-logo="mono">{v4("segSalonSeal")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("sgPeople")}</p>
+          <p className="c4-seg-salon-kicker">{v4("segSalonKicker")}</p>
           <h2 className="c4-title">{v4("sgTitle")}</h2>
+          <p className="c4-seg-salon-lead">{v4("segSalonLead")}</p>
         </div>
-        <strong className="c4-seg-count">{loaded.length}</strong>
+        <strong className="c4-seg-count c4-seg-salon-count">{loaded.length}</strong>
       </header>
-      <p className="c4-meta">{v4("sgHint")}</p>
-      <div className="c4-row" role="group" aria-label={v4("sgTitle")}>
+      <p className="c4-meta c4-seg-salon-hint">{v4("sgHint")}</p>
+      <div className="c4-row c4-seg-salon-tools" role="group" aria-label={v4("sgTitle")}>
         {(Object.keys(AXIS_LABEL) as SegAxis[]).map((item) => (
           <button key={item} type="button" className="c4-chip" data-on={axis === item ? "1" : "0"} onClick={() => { setAxis(item); setOpen(""); }}>{v4(AXIS_LABEL[item])}</button>
         ))}
       </div>
-      {!people.loading && !cards.length && <p className="c4-pay-empty">{v4("sgEmpty")}</p>}
-      <ul className="c4-seg-grid">
+      {!people.loading && !cards.length && <p className="c4-pay-empty c4-seg-salon-empty">{v4("sgEmpty")}</p>}
+      <ul className="c4-seg-grid c4-seg-salon-grid">
         {cards.map((card) => (
-          <li key={card.id} className="c4-seg-card" data-pin={pins.includes(card.id) ? "1" : "0"}>
+          <li key={card.id} className="c4-seg-card c4-seg-salon-card" data-pin={pins.includes(card.id) ? "1" : "0"}>
             <p className="c4-meta">{card.label || v4("sgNone")}</p>
             <strong>{card.count}</strong>
+            <div className="c4-seg-salon-bar" aria-hidden="true"><i style={{ width: `${Math.round((card.count / total) * 100)}%` }} /></div>
             <div className="c4-row">
               <button type="button" className="c4-btn" aria-pressed={pins.includes(card.id)} onClick={() => pin(card.id)}>{pins.includes(card.id) ? v4("sgUnpin") : v4("sgPin")}</button>
               <button type="button" className="c4-btn" onClick={() => setOpen(open === card.id ? "" : card.id)}>{open === card.id ? v4("sgClose") : v4("sgOpen")}</button>
@@ -392,7 +396,7 @@ export function SegmentBoard({ v4 }: { v4: V4 }) {
         ))}
       </ul>
       {opened && (
-        <ul className="c4-seg-names" aria-label={opened.label || v4("sgNone")}>
+        <ul className="c4-seg-names c4-seg-salon-names" aria-label={opened.label || v4("sgNone")}>
           {opened.ids.map((id) => <li key={id}>{names.get(id) || id}</li>)}
         </ul>
       )}
