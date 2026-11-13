@@ -172,7 +172,7 @@ export function GoalsPage({ v4, locale }: { v4: V4; locale: string }) {
   const ftdRate = runRate(ftd, span.day, span.days);
   const traderRate = runRate(traders, span.day, span.days);
   return (
-    <section className="c4-goals-luxe c4-goals-night c4-goals-gallery c4-goals-refectory" aria-label={v4("goalsTitle")} data-goals="1" data-desk="refectory">
+    <section className="c4-goals-luxe c4-goals-night c4-goals-gallery c4-goals-refectory c4-goals-greenhouse" aria-label={v4("goalsTitle")} data-goals="1" data-desk="refectory" data-house="greenhouse">
       <header className="c4-goals-mast">
         <p className="c4-goals-plate" data-logo="mono">7FX</p>
         <div>
@@ -186,6 +186,7 @@ export function GoalsPage({ v4, locale }: { v4: V4; locale: string }) {
         </ol>
         <p className="c4-goal-month"><time dateTime={month}>{month}</time> · {span.day}/{span.days}</p>
       </header>
+      <p className="c4-goals-greenhouse-lead">{v4("glGreenLead")}</p>
       <p className="c4-muted c4-goals-hint">{v4("goalsHint")}</p>
       <div className="c4-goal-grid">
         <Metric

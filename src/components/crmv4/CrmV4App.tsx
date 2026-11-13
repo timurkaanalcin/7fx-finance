@@ -247,6 +247,7 @@ import { NatalPlates, ReliquarySlips } from "./round256";
 import { CisternSlips, JoinPlates } from "./round257";
 import { AtriumSlips, ContactPlates } from "./round258";
 import { MailboxPlates, VestibuleSlips } from "./round259";
+import { DialPlates, GreenhouseSlips } from "./round260";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1006,6 +1007,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "lcp") return v4("lcpTitle");
     if (tab === "vsl") return v4("vslTitle");
     if (tab === "mbp") return v4("mbpTitle");
+    if (tab === "ghs") return v4("ghsTitle");
+    if (tab === "dlp") return v4("dlpTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1451,6 +1454,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "lcp") return v4("lcpSub");
     if (tab === "vsl") return v4("vslSub");
     if (tab === "mbp") return v4("mbpSub");
+    if (tab === "ghs") return v4("ghsSub");
+    if (tab === "dlp") return v4("dlpSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -2029,6 +2034,8 @@ function Shell({ base, section, name }: Props) {
             {view === "lcp" && <ContactPlates base={base} v4={v4} />}
             {view === "vsl" && <VestibuleSlips base={base} v4={v4} />}
             {view === "mbp" && <MailboxPlates base={base} v4={v4} />}
+            {view === "ghs" && <GreenhouseSlips base={base} v4={v4} />}
+            {view === "dlp" && <DialPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
@@ -2051,7 +2058,7 @@ function Shell({ base, section, name }: Props) {
         </div>
       </div>
 
-      <aside className="c4-rail c4-rail-luxe c4-rail-folio c4-rail-crest c4-rail-salon c4-rail-gallery c4-rail-library c4-rail-press c4-rail-ribbon c4-rail-playbill c4-rail-interlude c4-rail-slip c4-rail-vellum c4-rail-quire c4-rail-promise c4-rail-briefing c4-rail-dispatch c4-rail-loom c4-rail-kiln c4-rail-proof c4-rail-docket c4-rail-quay c4-rail-bench c4-rail-perch c4-rail-hearth c4-rail-inkwell c4-rail-stool c4-rail-ladder c4-rail-compositor c4-rail-inlay c4-rail-atlas c4-rail-oratory c4-rail-vestibule c4-rail-conservatory c4-rail-reading c4-rail-mount c4-rail-cloister c4-rail-apse c4-rail-narthex c4-rail-crypt c4-rail-seat c4-rail-loggia c4-rail-belvedere c4-rail-mezzanine" aria-label={v4("admin")}>
+      <aside className="c4-rail c4-rail-luxe c4-rail-folio c4-rail-crest c4-rail-salon c4-rail-gallery c4-rail-library c4-rail-press c4-rail-ribbon c4-rail-playbill c4-rail-interlude c4-rail-slip c4-rail-vellum c4-rail-quire c4-rail-promise c4-rail-briefing c4-rail-dispatch c4-rail-loom c4-rail-kiln c4-rail-proof c4-rail-docket c4-rail-quay c4-rail-bench c4-rail-perch c4-rail-hearth c4-rail-inkwell c4-rail-stool c4-rail-ladder c4-rail-compositor c4-rail-inlay c4-rail-atlas c4-rail-oratory c4-rail-vestibule c4-rail-conservatory c4-rail-reading c4-rail-mount c4-rail-cloister c4-rail-apse c4-rail-narthex c4-rail-crypt c4-rail-seat c4-rail-loggia c4-rail-belvedere c4-rail-mezzanine c4-rail-greenhouse" aria-label={v4("admin")}>
         <p className="c4-rail-plate" data-logo="mono" aria-hidden="true">7FX</p>
         <button type="button" className="c4-rail-btn c4-plus" aria-label={v4("quickPlus")} onClick={() => setQuickOpen(true)}>+</button>
         <CallTarget v4={v4} />
