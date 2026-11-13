@@ -73790,3 +73790,390 @@
   [data-crmv4-root] .c4-scale-letter .c4-btn,
   [data-crmv4-root] .c4-scale-letter .c4-chip { min-height: 44px; }
 }
+
+/* Round 258 — atrium slips, contact plates, the tag ribbon, and the conversation parlor.
+   Graphite, ivory, and champagne. The logo plate stays monochrome. */
+[data-crmv4-root] .c4-grt,
+[data-crmv4-root] .c4-lcp,
+[data-crmv4-root] .c4-tags-luxe.c4-tags-ribbon,
+[data-crmv4-root] .c4-thread-split.c4-thread-parlor {
+  display: grid;
+  gap: 14px;
+  margin: 18px 20px 32px;
+  padding: 0 0 22px;
+  color: #241f1a;
+  background:
+    linear-gradient(180deg, rgba(198, 161, 91, 0.16), transparent 120px),
+    #fffdf8;
+  border: 1px solid #241f1a;
+  border-radius: 0;
+  box-shadow: 0 22px 48px rgba(36, 31, 26, 0.08);
+  overflow-x: clip;
+}
+[data-crmv4-root] .c4-grt-mast,
+[data-crmv4-root] .c4-lcp-mast,
+[data-crmv4-root] .c4-tags-ribbon-mast,
+[data-crmv4-root] .c4-thread-parlor-mast {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: end;
+  margin: 0;
+  padding: 20px 22px 16px;
+  background: #241f1a;
+  color: #f7f3ea;
+  border-bottom: 3px solid #c6a15b;
+  border-radius: 0;
+}
+[data-crmv4-root] .c4-grt-seal,
+[data-crmv4-root] .c4-lcp-seal,
+[data-crmv4-root] .c4-tags-ribbon-seal,
+[data-crmv4-root] .c4-thread-parlor-seal {
+  display: grid;
+  place-items: center;
+  min-width: 64px;
+  min-height: 64px;
+  margin: 0;
+  border: 1px solid #f7f3ea;
+  color: #f7f3ea;
+  background: transparent;
+  font-size: 13px;
+  letter-spacing: 0.22em;
+  filter: grayscale(1);
+}
+[data-crmv4-root] .c4-grt-kicker,
+[data-crmv4-root] .c4-lcp-kicker,
+[data-crmv4-root] .c4-tags-ribbon-kicker,
+[data-crmv4-root] .c4-thread-parlor-kicker {
+  margin: 0 0 6px;
+  color: #c6a15b;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-grt .c4-title,
+[data-crmv4-root] .c4-lcp .c4-title,
+[data-crmv4-root] .c4-tags-ribbon-title,
+[data-crmv4-root] .c4-thread-parlor-title {
+  margin: 0;
+  color: #f7f3ea;
+  background: transparent;
+  font-family: "Iowan Old Style", Palatino, "Palatino Linotype", Georgia, serif;
+  font-size: 34px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+[data-crmv4-root] .c4-grt-index,
+[data-crmv4-root] .c4-lcp-index,
+[data-crmv4-root] .c4-tags-ribbon-index,
+[data-crmv4-root] .c4-thread-parlor-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-grt-index li,
+[data-crmv4-root] .c4-lcp-index li,
+[data-crmv4-root] .c4-tags-ribbon-index li,
+[data-crmv4-root] .c4-thread-parlor-index li {
+  padding: 6px 10px;
+  border: 1px solid rgba(247, 243, 234, 0.35);
+  color: #f7f3ea;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-grt-index li[data-tone="gold"],
+[data-crmv4-root] .c4-lcp-index li[data-tone="gold"],
+[data-crmv4-root] .c4-tags-ribbon-index li[data-tone="gold"],
+[data-crmv4-root] .c4-thread-parlor-index li[data-tone="gold"] { color: #c6a15b; border-color: #c6a15b; }
+[data-crmv4-root] .c4-grt-index li[data-tone="ivory"],
+[data-crmv4-root] .c4-lcp-index li[data-tone="ivory"],
+[data-crmv4-root] .c4-tags-ribbon-index li[data-tone="ivory"],
+[data-crmv4-root] .c4-thread-parlor-index li[data-tone="ivory"] { background: #f7f3ea; color: #241f1a; }
+[data-crmv4-root] .c4-grt-links,
+[data-crmv4-root] .c4-lcp-links,
+[data-crmv4-root] .c4-grt-lead,
+[data-crmv4-root] .c4-lcp-hint,
+[data-crmv4-root] .c4-grt-hint,
+[data-crmv4-root] .c4-grt-note,
+[data-crmv4-root] .c4-lcp-note,
+[data-crmv4-root] .c4-tags-ribbon-lead,
+[data-crmv4-root] .c4-thread-parlor-lead,
+[data-crmv4-root] .c4-tags-ribbon > .c4-meta,
+[data-crmv4-root] .c4-tags-ribbon > .c4-lab,
+[data-crmv4-root] .c4-tags-ribbon > .c4-row,
+[data-crmv4-root] .c4-tags-ribbon > form,
+[data-crmv4-root] .c4-tags-ribbon > .c4-pay-empty,
+[data-crmv4-root] .c4-tags-ribbon > .c4-tag-people {
+  margin-left: 22px;
+  margin-right: 22px;
+}
+[data-crmv4-root] .c4-grt-lead,
+[data-crmv4-root] .c4-lcp-hint,
+[data-crmv4-root] .c4-tags-ribbon-lead,
+[data-crmv4-root] .c4-thread-parlor-lead {
+  color: #5c5348;
+  font-family: "Iowan Old Style", Palatino, Georgia, serif;
+  font-size: 16px;
+  line-height: 1.45;
+}
+[data-crmv4-root] .c4-grt-links a,
+[data-crmv4-root] .c4-lcp-links a {
+  margin-right: 14px;
+  color: #8a6a3b;
+  text-decoration: none;
+  border-bottom: 1px solid #c6a15b;
+}
+[data-crmv4-root] .c4-grt-kpis,
+[data-crmv4-root] .c4-lcp-kpis {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 22px;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-grt-kpis li,
+[data-crmv4-root] .c4-lcp-kpis li {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid #e6dccf;
+  border-top: 2px solid #c6a15b;
+  background: #fff;
+}
+[data-crmv4-root] .c4-grt-kpis span,
+[data-crmv4-root] .c4-lcp-kpis span {
+  color: #8a6a3b;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-grt-kpis strong,
+[data-crmv4-root] .c4-lcp-kpis strong {
+  font-family: "Iowan Old Style", Palatino, Georgia, serif;
+  font-size: 22px;
+  font-weight: 500;
+}
+[data-crmv4-root] .c4-grt-chart,
+[data-crmv4-root] .c4-lcp-chart {
+  display: flex;
+  align-items: end;
+  gap: 10px;
+  min-height: 120px;
+  margin: 0 22px;
+  padding: 12px;
+  border: 1px solid #e6dccf;
+  background: #fff;
+}
+[data-crmv4-root] .c4-grt-bar,
+[data-crmv4-root] .c4-lcp-bar {
+  display: grid;
+  align-items: end;
+  justify-items: center;
+  gap: 6px;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 110px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #241f1a;
+  cursor: pointer;
+}
+[data-crmv4-root] .c4-grt-bar i,
+[data-crmv4-root] .c4-lcp-bar i {
+  display: block;
+  width: 100%;
+  min-height: 4px;
+  background: linear-gradient(180deg, #c6a15b, #8a6a3b);
+  transition: height 180ms ease;
+}
+[data-crmv4-root] .c4-lcp-bar[data-on="1"] i { background: #241f1a; }
+[data-crmv4-root] .c4-grt-time,
+[data-crmv4-root] .c4-lcp-lanes {
+  display: grid;
+  gap: 6px;
+  margin: 0 22px;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-grt-time li {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  padding: 8px 0;
+  border-bottom: 1px solid #e6dccf;
+}
+[data-crmv4-root] .c4-grt-tools,
+[data-crmv4-root] .c4-lcp-tools,
+[data-crmv4-root] .c4-grt-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: end;
+  margin: 0 22px;
+}
+[data-crmv4-root] .c4-grt-board,
+[data-crmv4-root] .c4-lcp-board,
+[data-crmv4-root] .c4-tags-ribbon .c4-tag-people {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 22px;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-grt-card,
+[data-crmv4-root] .c4-lcp-card,
+[data-crmv4-root] .c4-tags-ribbon .c4-tag-person {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid #e6dccf;
+  border-top: 2px solid #c6a15b;
+  border-radius: 0;
+  background: #fff;
+  transition: transform 160ms ease, border-color 160ms ease;
+}
+[data-crmv4-root] .c4-tags-ribbon .c4-tag-person { grid-template-columns: minmax(0, 1fr); }
+[data-crmv4-root] .c4-grt-card:hover,
+[data-crmv4-root] .c4-lcp-card:hover,
+[data-crmv4-root] .c4-tags-ribbon .c4-tag-person:hover { transform: translateY(-1px); border-color: #c6a15b; }
+[data-crmv4-root] .c4-grt-card[data-on="1"],
+[data-crmv4-root] .c4-lcp-card[data-on="1"] { box-shadow: inset 3px 0 0 #c6a15b; }
+[data-crmv4-root] .c4-grt-card[data-pinned="1"] { border-color: #8a6a3b; }
+[data-crmv4-root] .c4-grt-card[data-overdue="1"] { box-shadow: inset 3px 0 0 #8a3d32; }
+[data-crmv4-root] .c4-grt-card[data-peak="1"] { background: #fffdf8; }
+[data-crmv4-root] .c4-grt-sla {
+  height: 4px;
+  margin: 8px 0;
+  background: #efe6d6;
+}
+[data-crmv4-root] .c4-grt-sla i {
+  display: block;
+  height: 100%;
+  background: #c6a15b;
+}
+[data-crmv4-root] .c4-grt-empty,
+[data-crmv4-root] .c4-lcp-empty,
+[data-crmv4-root] .c4-tags-ribbon .c4-pay-empty,
+[data-crmv4-root] .c4-thread-parlor .c4-pay-empty {
+  margin: 0 22px;
+  padding: 28px 16px;
+  text-align: center;
+  color: #8a6a3b;
+  border: 1px dashed #c6a15b;
+  background: rgba(198, 161, 91, 0.08);
+}
+[data-crmv4-root] .c4-grt .c4-chip[data-on="1"],
+[data-crmv4-root] .c4-lcp .c4-chip[data-on="1"],
+[data-crmv4-root] .c4-tags-ribbon .c4-chip[data-on="1"],
+[data-crmv4-root] .c4-thread-parlor .c4-btn[data-on="1"] {
+  background: #241f1a;
+  color: #f7f3ea;
+  border-color: #c6a15b;
+}
+[data-crmv4-root] .c4-tags-ribbon .c4-tag-chip,
+[data-crmv4-root] .c4-tags-ribbon .c4-tag-pill {
+  border-radius: 0;
+  border-color: #c6a15b;
+  background: #fffdf8;
+}
+[data-crmv4-root] .c4-tags-ribbon .c4-chip,
+[data-crmv4-root] .c4-tags-ribbon .c4-btn {
+  white-space: nowrap;
+}
+[data-crmv4-root] .c4-tags-ribbon .c4-tags-ribbon-count { color: #c6a15b; }
+[data-crmv4-root] .c4-thread-split.c4-thread-parlor {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  padding-bottom: 18px;
+}
+[data-crmv4-root] .c4-thread-parlor-mast,
+[data-crmv4-root] .c4-thread-parlor-lead { grid-column: 1 / -1; }
+[data-crmv4-root] .c4-thread-parlor .c4-thread-side,
+[data-crmv4-root] .c4-thread-parlor .c4-thread-desk {
+  margin: 0 22px;
+  border-radius: 0;
+  border: 1px solid #e6dccf;
+  border-top: 2px solid #c6a15b;
+  background: #fff;
+  box-shadow: none;
+}
+[data-crmv4-root] .c4-thread-parlor .c4-thread-line {
+  border-radius: 0;
+  border-color: #e6dccf;
+  background: #fffdf8;
+}
+[data-crmv4-root] .c4-thread-parlor .c4-thread-line[data-who="staff"] { border-left: 3px solid #c6a15b; }
+[data-crmv4-root] .c4-thread-parlor .c4-thread-line[data-who="customer"] { border-left: 3px solid #241f1a; }
+[data-crmv4-root] .c4-thread-parlor .c4-thread-desk .c4-title,
+[data-crmv4-root] .c4-thread-parlor .c4-thread-side .c4-title { color: #241f1a; }
+[data-crmv4-root][data-theme="dark"] .c4-grt,
+[data-crmv4-root][data-theme="dark"] .c4-lcp,
+[data-crmv4-root][data-theme="dark"] .c4-tags-luxe.c4-tags-ribbon,
+[data-crmv4-root][data-theme="dark"] .c4-thread-split.c4-thread-parlor {
+  background: #1c1916;
+  color: #f6f1e7;
+  border-color: #8a6a3b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-grt-card,
+[data-crmv4-root][data-theme="dark"] .c4-lcp-card,
+[data-crmv4-root][data-theme="dark"] .c4-grt-kpis li,
+[data-crmv4-root][data-theme="dark"] .c4-lcp-kpis li,
+[data-crmv4-root][data-theme="dark"] .c4-grt-chart,
+[data-crmv4-root][data-theme="dark"] .c4-lcp-chart,
+[data-crmv4-root][data-theme="dark"] .c4-tags-ribbon .c4-tag-person,
+[data-crmv4-root][data-theme="dark"] .c4-tags-ribbon .c4-tag-chip,
+[data-crmv4-root][data-theme="dark"] .c4-tags-ribbon .c4-tag-pill,
+[data-crmv4-root][data-theme="dark"] .c4-thread-parlor .c4-thread-side,
+[data-crmv4-root][data-theme="dark"] .c4-thread-parlor .c4-thread-desk,
+[data-crmv4-root][data-theme="dark"] .c4-thread-parlor .c4-thread-line {
+  background: #221f1b;
+  color: #f6f1e7;
+  border-color: #8a6a3b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-grt-lead,
+[data-crmv4-root][data-theme="dark"] .c4-lcp-hint,
+[data-crmv4-root][data-theme="dark"] .c4-tags-ribbon-lead,
+[data-crmv4-root][data-theme="dark"] .c4-thread-parlor-lead,
+[data-crmv4-root][data-theme="dark"] .c4-thread-parlor .c4-title { color: #d4bc86; }
+@media (min-width: 900px) {
+  [data-crmv4-root] .c4-thread-split.c4-thread-parlor {
+    grid-template-columns: minmax(240px, 0.72fr) minmax(0, 1.4fr);
+  }
+  [data-crmv4-root] .c4-thread-parlor .c4-thread-side { margin-right: 0; }
+  [data-crmv4-root] .c4-thread-parlor .c4-thread-desk { margin-left: 0; }
+}
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-grt,
+  [data-crmv4-root] .c4-lcp,
+  [data-crmv4-root] .c4-tags-luxe.c4-tags-ribbon,
+  [data-crmv4-root] .c4-thread-split.c4-thread-parlor { margin: 8px; }
+  [data-crmv4-root] .c4-grt-mast,
+  [data-crmv4-root] .c4-lcp-mast,
+  [data-crmv4-root] .c4-tags-ribbon-mast,
+  [data-crmv4-root] .c4-thread-parlor-mast { grid-template-columns: 1fr; }
+  [data-crmv4-root] .c4-grt .c4-title,
+  [data-crmv4-root] .c4-lcp .c4-title,
+  [data-crmv4-root] .c4-tags-ribbon-title,
+  [data-crmv4-root] .c4-thread-parlor-title { font-size: 26px; }
+  [data-crmv4-root] .c4-grt-kpis,
+  [data-crmv4-root] .c4-lcp-kpis,
+  [data-crmv4-root] .c4-grt-board,
+  [data-crmv4-root] .c4-lcp-board,
+  [data-crmv4-root] .c4-tags-ribbon .c4-tag-people { grid-template-columns: 1fr; }
+  [data-crmv4-root] .c4-grt .c4-btn,
+  [data-crmv4-root] .c4-grt .c4-chip,
+  [data-crmv4-root] .c4-lcp .c4-btn,
+  [data-crmv4-root] .c4-lcp .c4-chip,
+  [data-crmv4-root] .c4-tags-ribbon .c4-btn,
+  [data-crmv4-root] .c4-tags-ribbon .c4-chip,
+  [data-crmv4-root] .c4-thread-parlor .c4-btn,
+  [data-crmv4-root] .c4-thread-parlor .c4-chip { min-height: 44px; }
+}

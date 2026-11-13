@@ -189,11 +189,24 @@ export function ThreadDesk({ v4, tx, locale }: { v4: V4; tx: Tx; locale: string 
   const thread = useJson<{ threads?: ChatThread[] }>(userId ? `/api/admin/chat?userId=${encodeURIComponent(userId)}&take=40` : null);
   const messages = thread.data?.threads?.[0]?.messages || selected?.messages || [];
   return (
-    <div className="c4-thread-split">
+    <div className="c4-thread-split c4-thread-parlor" data-desk="parlor">
+      <header className="c4-thread-parlor-mast">
+        <p className="c4-thread-parlor-seal" data-logo="mono">7FX</p>
+        <div>
+          <p className="c4-thread-parlor-kicker">{v4("cvSub")}</p>
+          <h2 className="c4-title c4-thread-parlor-title">{v4("cvTitle")}</h2>
+        </div>
+        <ol className="c4-thread-parlor-index" aria-label={v4("cvTitle")}>
+          <li data-tone="gold">{v4("cvParlorChampagne")}</li>
+          <li data-tone="ink">{v4("cvParlorGraphite")}</li>
+          <li data-tone="ivory">{v4("cvParlorIvory")}</li>
+        </ol>
+      </header>
+      <p className="c4-thread-parlor-lead">{v4("cvParlorLead")}</p>
       <section className="c4-thread-side" aria-label={v4("cvTitle")}>
         <label className="c4-lab">
           <span>{v4("cvSearch")}</span>
-          <input className="c4-field" aria-label={v4("cvSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
+          <input className="c4-field c4-thread-parlor-search" aria-label={v4("cvSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
         </label>
         {!threads.length && <p className="c4-pay-empty">{v4("cvNoThread")}</p>}
         <ul className="c4-thread-people">
