@@ -40,10 +40,11 @@ export function WeekAgenda({ base, v4, locale, tx }: { base: string; v4: V4; loc
   }
 
   return (
-    <section className="c4-week-strip c4-week-salon" aria-label={v4("wkTitle")} data-week-strip="1" data-week-salon="1">
-      <header className="c4-week-mast">
-        <p className="c4-week-seal" data-logo="mono">7FX</p>
+    <section className="c4-week-strip c4-week-salon c4-week-bill" aria-label={v4("wkTitle")} data-week-strip="1" data-week-salon="1" data-week-bill="1" data-desk="bill">
+      <header className="c4-week-mast c4-week-bill-mast">
+        <p className="c4-week-seal c4-week-bill-seal" data-logo="mono">{v4("wkBillSeal")}</p>
         <div>
+          <p className="c4-week-bill-kicker">{v4("wkBillKicker")}</p>
           <p className="c4-week-kicker">{v4("wkSub")}</p>
           <h2 className="c4-title">{v4("wkTitle")}</h2>
         </div>
@@ -54,6 +55,7 @@ export function WeekAgenda({ base, v4, locale, tx }: { base: string; v4: V4; loc
         </ol>
         <p className="c4-week-count">{v4("wkSalonCount")} {start}</p>
       </header>
+      <p className="c4-week-bill-lead">{v4("wkBillLead")}</p>
       <p className="c4-week-rule">{v4("wkHint")}</p>
       <p className="c4-week-links">
         <Link href={crmv4Href(base, "hgl")}>{v4("hglTitle")}</Link>
