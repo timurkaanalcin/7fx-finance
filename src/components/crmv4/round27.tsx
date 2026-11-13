@@ -66,7 +66,7 @@ export function KycDesk({ v4, tx, locale }: { v4: V4; tx: Tx; locale: string }) 
     }
   }
   return (
-    <section className="c4-kyc-luxe c4-kyc-folio c4-kyc-scriptorium" aria-label={v4("kycDesk")} data-kyc="1">
+    <section className="c4-kyc-luxe c4-kyc-folio c4-kyc-scriptorium c4-kyc-cellar" aria-label={v4("kycDesk")} data-kyc="1" data-desk="cellar">
       <header className="c4-kyc-mast">
         <div>
           <p className="c4-kyc-scriptorium-kicker">{v4("kycSub")}</p>

@@ -209,7 +209,7 @@ export function InboxDesk({ v4, tx, locale }: { v4: V4; tx: Tx; locale: string }
     }
   }
   return (
-    <section className="c4-inbox-luxe c4-inbox-gallery" aria-label={v4("inboxTitle")} data-inbox="1">
+    <section className="c4-inbox-luxe c4-inbox-gallery c4-inbox-cellar" aria-label={v4("inboxTitle")} data-inbox="1" data-desk="cellar">
       <header className="c4-inbox-gallery-mast">
         <div>
           <p className="c4-inbox-gallery-kicker">{v4("inboxHint")}</p>
