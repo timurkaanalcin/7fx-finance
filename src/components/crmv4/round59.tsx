@@ -229,14 +229,21 @@ export function FolderPad({ base, v4 }: { base: string; v4: V4 }) {
   const loose = shown.links.filter((link) => !link.folderId);
 
   return (
-    <section className="c4-folder-pad" aria-label={v4("bmTitle")} data-folder-pad="1">
-      <header className="c4-pay-head">
+    <section className="c4-folder-pad c4-folder-press" aria-label={v4("bmTitle")} data-folder-pad="1" data-desk="press">
+      <header className="c4-pay-head c4-folder-press-mast">
+        <p className="c4-folder-press-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("bmSub")}</p>
-          <h2 className="c4-title">{v4("bmTitle")}</h2>
+          <p className="c4-pay-kicker c4-folder-press-kicker">{v4("bmSub")}</p>
+          <h2 className="c4-title c4-folder-press-title">{v4("bmTitle")}</h2>
+          <p className="c4-meta c4-folder-press-count">{shown.folders.length}</p>
         </div>
-        <p className="c4-meta">{shown.folders.length}</p>
+        <ol className="c4-folder-press-index" aria-label={v4("bmTitle")}>
+          <li data-tone="gold">{v4("bmPressChampagne")}</li>
+          <li data-tone="ink">{v4("bmPressGraphite")}</li>
+          <li data-tone="ivory">{v4("bmPressIvory")}</li>
+        </ol>
       </header>
+      <p className="c4-meta c4-folder-press-lead">{v4("bmPressLead")}</p>
       <p className="c4-meta">{v4("bmHint")}</p>
       <p className="c4-meta">{v4("bmLocal")} {v4("bmDepth")}</p>
       <label className="c4-lab">
