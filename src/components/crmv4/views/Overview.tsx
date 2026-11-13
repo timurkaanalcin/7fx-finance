@@ -115,7 +115,7 @@ export default function Overview({ base, tx, locale, name }: Props) {
   };
   const shown = orderedCards(layout);
   return (
-    <div className="c4-stack c4-exec c4-exec-salon c4-exec-oriel" data-desk="oriel">
+    <div className="c4-stack c4-exec c4-exec-salon c4-exec-oriel c4-exec-loom" data-desk="loom">
       <header className="c4-exec-salon-mast c4-exec-oriel-mast">
         <p className="c4-exec-oriel-seal" data-logo="mono">7FX</p>
         <div className="c4-exec-oriel-copy">
@@ -135,6 +135,7 @@ export default function Overview({ base, tx, locale, name }: Props) {
         <Link href={crmv4Href(base, "orsl")}>{crmv4Text(locale, "orsTitle")}</Link>
         <Link href={crmv4Href(base, "lghr")}>{crmv4Text(locale, "lghTitle")}</Link>
       </nav>
+      <p className="c4-exec-loom-lead">{crmv4Text(locale, "lomOvrLead")}</p>
       <p className="c4-exec-oriel-time">{crmv4Text(locale, "orsLocal")}</p>
       <TodayStrip base={base} v4={v4} locale={locale} />
       <TodayHero base={base} name={name || ""} v4={v4} locale={locale} />
