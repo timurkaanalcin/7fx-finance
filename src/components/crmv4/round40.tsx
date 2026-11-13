@@ -61,12 +61,31 @@ export function Dossier({ base, user, notes, events, v4, tx, locale }: {
   const today = new Date().toISOString().slice(0, 10);
   const follow = followMark(user.retentionFollowUpAt, today);
   const followWord = follow === "overdue" ? v4("dosOverdue") : follow === "today" ? v4("dosToday") : follow === "later" ? v4("dosLater") : "";
+  const followTone = follow === "overdue" ? "late" : follow === "today" ? "gold" : follow === "later" ? "ink" : "mist";
   return (
-    <section className="c4-dossier" aria-label={v4("dosTitle")} data-dossier="1">
-      <h2 className="c4-title">{v4("dosTitle")}</h2>
+    <section className="c4-dossier c4-dossier-cabinet" aria-label={v4("dosTitle")} data-dossier="1" data-cabinet="1">
+      <header className="c4-dossier-mast">
+        <p className="c4-dossier-seal" data-logo="mono">{v4("dosCabSeal")}</p>
+        <div>
+          <p className="c4-dossier-kicker">{v4("dosCabKicker")}</p>
+          <h2 className="c4-title c4-dossier-title">{v4("dosTitle")}</h2>
+        </div>
+        <ol className="c4-dossier-index" aria-label={v4("dosTitle")}>
+          <li data-tone="gold">{v4("dosCabSummary")}</li>
+          <li data-tone="ink">{v4("dosCabFiles")}</li>
+          <li data-tone="ivory">{v4("dosCabBook")}</li>
+          <li data-tone="mist">{v4("dosCabPulse")}</li>
+          <li data-tone={followTone}>{v4("dosCabFollow")}</li>
+        </ol>
+      </header>
+      <p className="c4-dossier-lead">{v4("dosCabLead")}</p>
+      <p className="c4-dossier-links">
+        <Link href={crmv4Href(base, "plr")}>{v4("plrTitle")}</Link>
+        <Link href={crmv4Href(base, "snd")}>{v4("sndTitle")}</Link>
+      </p>
       <p className="c4-muted">{v4("dosHint")}</p>
-      <div className="c4-dos-grid">
-        <article>
+      <div className="c4-dos-grid c4-dossier-plates">
+        <article data-plate="summary">
           <h3 className="c4-title">{v4("dosSummary")}</h3>
           <p>{user.name || "—"}</p>
           <p className="c4-muted">{user.country || "—"} · {user.desk || "—"}</p>
@@ -77,12 +96,12 @@ export function Dossier({ base, user, notes, events, v4, tx, locale }: {
           <p className="c4-muted">{v4("dosRegistered")} · {when(user.createdAt, locale)}</p>
           <p className="c4-muted">{v4("dosFlag")} · {user.ftd ? tx("yes") : tx("no")}</p>
         </article>
-        <article>
+        <article data-plate="files">
           <h3 className="c4-title">{v4("dosKyc")}</h3>
           <p>{user.documentsStatus || "NONE"}</p>
           <Link className="c4-btn" href={crmv4Href(base, `customers/${user.id}`, { part: "files" })}>{v4("dosOpenFiles")}</Link>
         </article>
-        <article>
+        <article data-plate="book">
           <h3 className="c4-title">{v4("dosMoney")}</h3>
           <p>{v4("dosBalance")} · {money(user.balance ?? user.account?.balance, currency, locale)}</p>
           <p>{v4("dosEquity")} · {money(user.equity ?? user.account?.equity, currency, locale)}</p>
@@ -94,7 +113,7 @@ export function Dossier({ base, user, notes, events, v4, tx, locale }: {
           <ul>{wd.map((row) => <li key={row.currency}>{money(row.amount, row.currency, locale)} · {row.count}</li>)}</ul>
           <Link className="c4-btn" href={crmv4Href(base, `customers/${user.id}`, { part: "money" })}>{v4("dosOpenMoney")}</Link>
         </article>
-        <article>
+        <article data-plate="pulse">
           <h3 className="c4-title">{v4("dosActivity")}</h3>
           {!latest && <p>{v4("dosNoActivity")}</p>}
           {latest && (
@@ -106,7 +125,7 @@ export function Dossier({ base, user, notes, events, v4, tx, locale }: {
           )}
           <Link className="c4-btn" href={crmv4Href(base, `customers/${user.id}`, { part: "notes" })}>{v4("dosOpenNotes")}</Link>
         </article>
-        <article>
+        <article data-plate="follow" data-tone={followTone}>
           <h3 className="c4-title">{v4("dosFollow")}</h3>
           {follow === "none" && <p>{v4("dosNoFollow")}</p>}
           {follow !== "none" && (
