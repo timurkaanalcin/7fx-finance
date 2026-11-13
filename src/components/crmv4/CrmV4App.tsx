@@ -248,6 +248,7 @@ import { CisternSlips, JoinPlates } from "./round257";
 import { AtriumSlips, ContactPlates } from "./round258";
 import { MailboxPlates, VestibuleSlips } from "./round259";
 import { DialPlates, GreenhouseSlips } from "./round260";
+import { RegionPlates, StillroomSlips } from "./round261";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1009,6 +1010,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "mbp") return v4("mbpTitle");
     if (tab === "ghs") return v4("ghsTitle");
     if (tab === "dlp") return v4("dlpTitle");
+    if (tab === "srm") return v4("srmTitle");
+    if (tab === "rgp") return v4("rgpTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1456,6 +1459,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "mbp") return v4("mbpSub");
     if (tab === "ghs") return v4("ghsSub");
     if (tab === "dlp") return v4("dlpSub");
+    if (tab === "srm") return v4("srmSub");
+    if (tab === "rgp") return v4("rgpSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -2036,6 +2041,8 @@ function Shell({ base, section, name }: Props) {
             {view === "mbp" && <MailboxPlates base={base} v4={v4} />}
             {view === "ghs" && <GreenhouseSlips base={base} v4={v4} />}
             {view === "dlp" && <DialPlates base={base} v4={v4} />}
+            {view === "srm" && <StillroomSlips base={base} v4={v4} />}
+            {view === "rgp" && <RegionPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
