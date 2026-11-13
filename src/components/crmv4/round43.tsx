@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { CrmV4CopyKey } from "@/lib/crmv4/copy";
 import { readJson, writeJson } from "@/lib/crmv4/local";
@@ -57,6 +58,8 @@ async function saveCsv(kind: string, filename: string, header: string[], lines: 
 }
 
 export function ReportDesk({ v4, locale }: { v4: V4; locale: string }) {
+  const path = usePathname() || "";
+  const root = path.includes("/izcrm/crmv4") ? "/izcrm/crmv4" : "/crmv4";
   const people = useJson<{ users?: Person[] }>("/api/admin/users?view=table&take=80&meta=0&role=TRADER");
   const deposits = useJson<{ requests?: Cash[] }>("/api/admin/deposits?take=80");
   const withdrawals = useJson<{ requests?: Cash[] }>("/api/admin/withdrawals?take=80");
@@ -70,21 +73,46 @@ export function ReportDesk({ v4, locale }: { v4: V4; locale: string }) {
   const ticketRows = (tickets.data?.tickets || []).map((row) => ({ amount: row.amount, currency: row.currency, at: row.openedAt, name: row.customer, status: row.status, id: row.id, kind: row.kind }));
   const regsNow = datedCount(users.map((row) => ({ at: row.createdAt })), windows.currentFrom, windows.currentTo);
   const regsThen = datedCount(users.map((row) => ({ at: row.createdAt })), windows.previousFrom, windows.previousTo);
+  const peak = Math.max(regsNow, regsThen, 1);
+  const nowBar = Math.max(12, Math.round((regsNow / peak) * 96));
+  const thenBar = Math.max(12, Math.round((regsThen / peak) * 96));
   return (
-    <section className="c4-report-center c4-report-luxe c4-report-salon c4-report-pastry" aria-label={v4("reportsTitle")} data-reports="1" data-period={kind} data-desk="pastry">
-      <header className="c4-report-salon-mast c4-report-pastry-mast">
+    <section className="c4-report-center c4-report-luxe c4-report-salon c4-report-pastry c4-report-chartroom" aria-label={v4("reportsTitle")} data-reports="1" data-period={kind} data-desk="chartroom">
+      <header className="c4-report-chart-mast">
+        <p className="c4-report-chart-seal" data-logo="mono">{v4("rptRoomMark")}</p>
         <div>
-          <p className="c4-report-salon-kicker">{v4("rpHint")}</p>
-          <h2 className="c4-title c4-report-salon-title">{v4("reportsTitle")}</h2>
+          <p className="c4-report-chart-kicker">{v4("rptRoomKicker")}</p>
+          <h2 className="c4-title c4-report-chart-title">{v4("reportsTitle")}</h2>
+          <p className="c4-report-chart-lead">{v4("rptRoomLead")}</p>
         </div>
-        <p className="c4-report-salon-plate" data-logo="mono">7FX</p>
+        <ol className="c4-report-chart-index" aria-label={v4("reportsTitle")}>
+          <li data-tone="gold">{v4("rpWeek")}</li>
+          <li data-tone="ink">{v4("rpMonth")}</li>
+          <li data-tone="ivory">{v4("reportsPrint")}</li>
+        </ol>
       </header>
-      <p className="c4-report-pastry-lead">{v4("pstRepLead")}</p>
-      <ol className="c4-report-pastry-index" aria-label={v4("reportsTitle")}>
-        <li data-tone="gold">{v4("rpWeek")}</li>
-        <li data-tone="ink">{v4("rpMonth")}</li>
-        <li data-tone="ivory">{v4("reportsPrint")}</li>
-      </ol>
+      <nav className="c4-report-chart-links" aria-label={v4("crsTitle")}>
+        <Link href={crmv4Href(root, "crs")}>{v4("crsTitle")}</Link>
+        <Link href={crmv4Href(root, "svr")}>{v4("svrTitle")}</Link>
+      </nav>
+      <ul className="c4-report-chart-kpis" aria-label={v4("rptRoomKicker")}>
+        <li data-tone="gold"><span>{v4("rptRoomNow")}</span><strong>{regsNow}</strong></li>
+        <li data-tone="ink"><span>{v4("rptRoomThen")}</span><strong>{regsThen}</strong></li>
+        <li data-tone="ivory"><span>{v4("reportsCustomers")}</span><strong>{users.length}</strong></li>
+        <li data-tone="mist"><span>{v4("reportsTickets")}</span><strong>{ticketRows.length}</strong></li>
+      </ul>
+      <div className="c4-report-chart-bars" aria-label={v4("rptRoomKicker")}>
+        <div className="c4-report-chart-col" data-tone="now">
+          <i style={{ height: nowBar }} />
+          <span>{v4("rptRoomNow")}</span>
+          <strong>{regsNow}</strong>
+        </div>
+        <div className="c4-report-chart-col" data-tone="then">
+          <i style={{ height: thenBar }} />
+          <span>{v4("rptRoomThen")}</span>
+          <strong>{regsThen}</strong>
+        </div>
+      </div>
       <div className="c4-report-salon-tools c4-row c4-no-print">
         <button type="button" className="c4-chip" data-on={kind === "week" ? "1" : "0"} onClick={() => setKind("week")}>{v4("rpWeek")}</button>
         <button type="button" className="c4-chip" data-on={kind === "month" ? "1" : "0"} onClick={() => setKind("month")}>{v4("rpMonth")}</button>
@@ -93,7 +121,7 @@ export function ReportDesk({ v4, locale }: { v4: V4; locale: string }) {
       <p className="c4-meta">{v4("rpWindow")} {windows.currentFrom} – {windows.currentTo}</p>
       <p className="c4-meta">{v4("rpPrevious")} {windows.previousFrom} – {windows.previousTo}</p>
       <p className="c4-meta">{v4("rpDiffHint")}</p>
-      <article className="c4-report-card c4-report-salon-card" data-report="registrations">
+      <article className="c4-report-card c4-report-salon-card c4-report-chart-card" data-report="registrations">
         <h3 className="c4-title">{v4("rpRegs")}</h3>
         <p className="c4-meta">{v4("rpRegsHint")}</p>
         <p>{v4("rpWindow")} {regsNow} · {v4("rpPrevious")} {regsThen} · {v4("reportsRows")} {users.length}</p>
@@ -117,11 +145,11 @@ function CompareCard({ title, rows, windows, locale, v4, kind, filename }: {
   const table = currencyCompare(rows, windows);
   const aside = leftOut(rows, windows);
   return (
-    <article className="c4-report-card c4-report-salon-card" data-report={kind}>
+    <article className="c4-report-card c4-report-salon-card c4-report-chart-card" data-report={kind}>
       <h3 className="c4-title">{title}</h3>
       <p className="c4-meta">{v4("reportsRows")} {rows.length}</p>
-      {!table.length && <p className="c4-meta">{v4("rpEmpty")}</p>}
-      <table className="c4-report-table">
+      {!table.length && <p className="c4-meta c4-report-chart-empty">{v4("rptRoomEmpty")}</p>}
+      <table className="c4-report-table c4-report-chart-table">
         <thead>
           <tr>
             <th>{v4("rpCurrency")}</th>
