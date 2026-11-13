@@ -274,6 +274,7 @@ import { PhonePlates, ReflectingCircles } from "./round283";
 import { ArmillaryRings, CityPlates } from "./round284";
 import { NotePlates, TraversePegs } from "./round285";
 import { HourPlates, WaywiserWheels } from "./round286";
+import { GnomonStaffs, TenurePlates } from "./round287";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1085,6 +1086,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "nte") return v4("nteTitle");
     if (tab === "wyr") return v4("wyrTitle");
     if (tab === "hrs") return v4("hrsTitle");
+    if (tab === "gns") return v4("gnsTitle");
+    if (tab === "tnr") return v4("tnrTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1582,6 +1585,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "nte") return v4("nteSub");
     if (tab === "wyr") return v4("wyrSub");
     if (tab === "hrs") return v4("hrsSub");
+    if (tab === "gns") return v4("gnsSub");
+    if (tab === "tnr") return v4("tnrSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -2214,6 +2219,8 @@ function Shell({ base, section, name }: Props) {
             {view === "nte" && <NotePlates base={base} v4={v4} />}
             {view === "wyr" && <WaywiserWheels base={base} v4={v4} />}
             {view === "hrs" && <HourPlates base={base} v4={v4} />}
+            {view === "gns" && <GnomonStaffs base={base} v4={v4} />}
+            {view === "tnr" && <TenurePlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
