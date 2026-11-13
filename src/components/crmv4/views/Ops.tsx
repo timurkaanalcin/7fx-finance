@@ -70,8 +70,8 @@ export default function Ops({ tx, area, locale }: { tx: Tx; area: string; locale
         <span>{v4("sxtOpsFind")}</span>
         <input ref={findRef} className="c4-field" aria-label={v4("sxtOpsFind")} value={needle} onChange={(event) => setNeedle(event.target.value)} placeholder={v4("sxtOpsFind")} />
       </label>
-      {area === "desks" && <Desks tx={tx} />}
-      {area === "groups" && <Groups tx={tx} needle={needle} empty={v4("sxtOpsEmpty")} />}
+      {area === "desks" && <Desks tx={tx} needle={needle} empty={roomCopy(v4, "dskAtelierEmpty")} v4={v4} />}
+      {area === "groups" && <Groups tx={tx} needle={needle} empty={roomCopy(v4, "grpFolioEmpty")} v4={v4} />}
       {area === "methods" && <Methods tx={tx} />}
       {area === "assets" && <Assets tx={tx} needle={needle} empty={v4("sxtOpsEmpty")} />}
       {area === "rates" && <Rates tx={tx} />}
@@ -83,21 +83,40 @@ export default function Ops({ tx, area, locale }: { tx: Tx; area: string; locale
   );
 }
 
-function Desks({ tx }: { tx: Tx }) {
+function Desks({ tx, needle, empty, v4 }: { tx: Tx; needle: string; empty: string; v4: (key: Parameters<typeof crmv4Text>[1]) => string }) {
   const data = useJson<{ desks?: { id: string; name?: string; code?: string | null; active?: boolean; office?: string | null; customers?: number }[] }>("/api/admin/desks?take=50");
   const [msg, setMsg] = useState("");
+  const rows = (data.data?.desks || []).filter((row) => roomHit(needle, `${row.name || ""} ${row.code || ""} ${row.office || ""}`));
   return (
-    <Card title={tx("desks")}>
+    <section className="c4-dsk-atelier" aria-label={tx("desks")}>
+      <header className="c4-dsk-atelier-mast">
+        <p className="c4-dsk-atelier-seal" data-logo="mono">7FX</p>
+        <div>
+          <p className="c4-dsk-atelier-kicker">{roomCopy(v4, "dskAtelierKicker")}</p>
+          <h3 className="c4-dsk-atelier-title">{tx("desks")}</h3>
+          <p className="c4-dsk-atelier-lead">{roomCopy(v4, "dskAtelierLead")}</p>
+        </div>
+        <ol className="c4-dsk-atelier-index" aria-label={tx("desks")}>
+          <li data-tone="gold">{rows.length}</li>
+          <li data-tone="ink">{tx("office")}</li>
+          <li data-tone="ivory">{tx("code")}</li>
+        </ol>
+      </header>
       <State loading={data.loading} error={data.error} empty={!data.loading && !(data.data?.desks || []).length} tx={tx} onRetry={data.reload} />
-      <ul className="c4-card-grid">
-        {(data.data?.desks || []).map((row) => (
-          <li key={row.id} className="c4-ops-row" data-live={row.active === false ? "off" : "on"}>
-            <span>{row.name} {row.code ? `· ${row.code}` : ""}</span>
-            <span className="c4-muted">{row.office || ""} {row.active === false ? tx("inactiveWord") : tx("activeWord")}</span>
+      {!data.loading && (data.data?.desks || []).length > 0 && rows.length === 0 && <p className="c4-dsk-atelier-empty">{empty}</p>}
+      <ol className="c4-dsk-atelier-board">
+        {rows.map((row) => (
+          <li key={row.id} className="c4-dsk-atelier-card" data-live={row.active === false ? "off" : "on"}>
+            <p className="c4-dsk-atelier-mark">{(row.code || row.name || "·").slice(0, 2).toUpperCase()}</p>
+            <div>
+              <p className="c4-dsk-atelier-name">{row.name || "—"}</p>
+              <p className="c4-dsk-atelier-meta">{row.code || "—"} · {row.office || "—"} · {row.active === false ? tx("inactiveWord") : tx("activeWord")}</p>
+            </div>
+            <p className="c4-dsk-atelier-count">{row.customers || 0}</p>
           </li>
         ))}
-      </ul>
-      <form className="c4-form c4-form-2 c4-ops-form" onSubmit={async (event) => {
+      </ol>
+      <form className="c4-form c4-form-2 c4-dsk-atelier-form" onSubmit={async (event) => {
         event.preventDefault();
         const fd = new FormData(event.currentTarget);
         const res = await sendJson("/api/admin/desks", "POST", { name: fd.get("name"), code: fd.get("code"), office: fd.get("office") });
@@ -110,27 +129,43 @@ function Desks({ tx }: { tx: Tx }) {
         <button type="submit" className="c4-btn c4-btn-hot">{tx("createDesk")}</button>
         <Msg text={msg} />
       </form>
-    </Card>
+    </section>
   );
 }
 
-function Groups({ tx, needle, empty }: { tx: Tx; needle: string; empty: string }) {
+function Groups({ tx, needle, empty, v4 }: { tx: Tx; needle: string; empty: string; v4: (key: Parameters<typeof crmv4Text>[1]) => string }) {
   const data = useJson<{ groups?: { id: string; name?: string; description?: string | null; customersCount?: number }[] }>("/api/admin/trading-groups");
   const [msg, setMsg] = useState("");
   const rows = (data.data?.groups || []).filter((row) => roomHit(needle, `${row.name || ""} ${row.description || ""}`));
   return (
-    <Card title={tx("groups")}>
+    <section className="c4-grp-folio" aria-label={tx("groups")}>
+      <header className="c4-grp-folio-mast">
+        <p className="c4-grp-folio-seal" data-logo="mono">7FX</p>
+        <div>
+          <p className="c4-grp-folio-kicker">{roomCopy(v4, "grpFolioKicker")}</p>
+          <h3 className="c4-grp-folio-title">{tx("groups")}</h3>
+          <p className="c4-grp-folio-lead">{roomCopy(v4, "grpFolioLead")}</p>
+        </div>
+        <ol className="c4-grp-folio-index" aria-label={tx("groups")}>
+          <li data-tone="gold">{rows.length}</li>
+          <li data-tone="ink">{tx("name")}</li>
+          <li data-tone="ivory">{tx("customersCount")}</li>
+        </ol>
+      </header>
       <State loading={data.loading} error={data.error} empty={!data.loading && !(data.data?.groups || []).length} tx={tx} onRetry={data.reload} />
-      {!data.loading && (data.data?.groups || []).length > 0 && rows.length === 0 && <p className="c4-ops-sextant-empty">{empty}</p>}
-      <ul>
+      {!data.loading && (data.data?.groups || []).length > 0 && rows.length === 0 && <p className="c4-grp-folio-empty">{empty}</p>}
+      <ol className="c4-grp-folio-board">
         {rows.map((row) => (
-          <li key={row.id} className="c4-ops-row" data-live="on">
-            <span>{row.name}</span>
-            <span className="c4-muted">{tx("customersCount")} {row.customersCount || 0}</span>
+          <li key={row.id} className="c4-grp-folio-card" data-live="on">
+            <p className="c4-grp-folio-count">{row.customersCount || 0}</p>
+            <div>
+              <p className="c4-grp-folio-name">{row.name || "—"}</p>
+              <p className="c4-grp-folio-meta">{row.description || tx("description")}</p>
+            </div>
           </li>
         ))}
-      </ul>
-      <form className="c4-form c4-ops-form" onSubmit={async (event) => {
+      </ol>
+      <form className="c4-form c4-grp-folio-form" onSubmit={async (event) => {
         event.preventDefault();
         const fd = new FormData(event.currentTarget);
         const res = await sendJson("/api/admin/trading-groups", "POST", { name: fd.get("name"), description: fd.get("description") });
@@ -138,11 +173,11 @@ function Groups({ tx, needle, empty }: { tx: Tx; needle: string; empty: string }
         if (res.ok) { event.currentTarget.reset(); data.reload(); }
       }}>
         <Lab label={tx("name")}><input name="name" required className="c4-field" /></Lab>
-        <Lab label={tx("description")}><input name="description" className="c4-field" /></Lab>
+        <Lab label={tx("description")}><input name="description" className="c4-field" aria-required={false} /></Lab>
         <button type="submit" className="c4-btn c4-btn-hot">{tx("createGroup")}</button>
         <Msg text={msg} />
       </form>
-    </Card>
+    </section>
   );
 }
 

@@ -82417,3 +82417,487 @@
   [data-crmv4-root] .c4-lic-charter-card,
   [data-crmv4-root] .c4-pendulum-staff i { transition: none; }
 }
+
+/* Round 273 — theodolite circles, tier plates, and the desk atelier with the group folio.
+   Graphite #1c1a17, ivory #f6f1e8, champagne #c6a15b and #8a6a3b.
+   Desks and groups leave the plain sextant rows. Chrome pad stays 10px. The logo stays monochrome. */
+
+[data-crmv4-root] .c4-theodolite,
+[data-crmv4-root] .c4-tier,
+[data-crmv4-root] .c4-dsk-atelier,
+[data-crmv4-root] .c4-grp-folio {
+  margin: 12px 16px 28px;
+  padding: 0 0 20px;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 2px no-repeat,
+    linear-gradient(180deg, #fbf7f0 0%, #f6f1e8 120px);
+  border: 1px solid #1c1a17;
+  color: #1c1a17;
+  box-shadow: 0 22px 48px rgba(28, 26, 23, 0.07);
+}
+[data-crmv4-root] .c4-theodolite-mast,
+[data-crmv4-root] .c4-tier-mast,
+[data-crmv4-root] .c4-dsk-atelier-mast,
+[data-crmv4-root] .c4-grp-folio-mast {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr) auto;
+  gap: 20px;
+  align-items: end;
+  padding: 0;
+  background: #1c1a17;
+  color: #f6f1e8;
+}
+[data-crmv4-root] .c4-theodolite-seal[data-logo="mono"],
+[data-crmv4-root] .c4-tier-seal[data-logo="mono"],
+[data-crmv4-root] .c4-dsk-atelier-seal[data-logo="mono"],
+[data-crmv4-root] .c4-grp-folio-seal[data-logo="mono"] {
+  display: grid;
+  place-items: center;
+  min-height: 132px;
+  margin: 0;
+  padding: 16px 0;
+  background: #f6f1e8;
+  color: #1c1a17;
+  border-right: 2px solid #c6a15b;
+  letter-spacing: 0.32em;
+  font-size: 12px;
+  font-weight: 650;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  filter: grayscale(1);
+  overflow: hidden;
+}
+[data-crmv4-root] .c4-theodolite-seal i {
+  display: block;
+  width: 18px;
+  height: 18px;
+  margin-top: 14px;
+  position: relative;
+  background:
+    linear-gradient(#8a6a3b, #8a6a3b) center / 2px 100% no-repeat,
+    linear-gradient(#8a6a3b, #8a6a3b) center / 100% 2px no-repeat;
+}
+[data-crmv4-root] .c4-theodolite-kicker,
+[data-crmv4-root] .c4-tier-kicker,
+[data-crmv4-root] .c4-dsk-atelier-kicker,
+[data-crmv4-root] .c4-grp-folio-kicker {
+  margin: 22px 0 6px;
+  color: #c6a15b;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-theodolite .c4-title,
+[data-crmv4-root] .c4-tier .c4-title,
+[data-crmv4-root] .c4-dsk-atelier-title,
+[data-crmv4-root] .c4-grp-folio-title {
+  margin: 0;
+  font-family: Palatino, "Palatino Linotype", Georgia, serif;
+  font-size: 40px;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 0.92;
+  color: #f6f1e8;
+}
+[data-crmv4-root] .c4-theodolite-limbs,
+[data-crmv4-root] .c4-tier-index,
+[data-crmv4-root] .c4-dsk-atelier-index,
+[data-crmv4-root] .c4-grp-folio-index {
+  display: flex;
+  gap: 0;
+  margin: 0 16px 0 0;
+  padding: 0;
+  list-style: none;
+  align-self: stretch;
+}
+[data-crmv4-root] .c4-theodolite-limbs li,
+[data-crmv4-root] .c4-tier-index li,
+[data-crmv4-root] .c4-dsk-atelier-index li,
+[data-crmv4-root] .c4-grp-folio-index li {
+  display: grid;
+  place-items: end center;
+  min-width: 68px;
+  padding: 14px 10px;
+  border-left: 1px solid #3a342c;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-theodolite-limbs li:first-child,
+[data-crmv4-root] .c4-tier-index li[data-tone="gold"],
+[data-crmv4-root] .c4-dsk-atelier-index li[data-tone="gold"],
+[data-crmv4-root] .c4-grp-folio-index li[data-tone="gold"] { color: #c6a15b; }
+[data-crmv4-root] .c4-theodolite-links,
+[data-crmv4-root] .c4-tier-links,
+[data-crmv4-root] .c4-theodolite-lead,
+[data-crmv4-root] .c4-theodolite-hint,
+[data-crmv4-root] .c4-tier-hint,
+[data-crmv4-root] .c4-dsk-atelier-lead,
+[data-crmv4-root] .c4-grp-folio-lead,
+[data-crmv4-root] .c4-theodolite-note,
+[data-crmv4-root] .c4-tier-note {
+  margin: 12px 18px 0;
+  color: #5c5348;
+  line-height: 1.5;
+}
+[data-crmv4-root] .c4-dsk-atelier-lead,
+[data-crmv4-root] .c4-grp-folio-lead {
+  color: #efe6d6;
+  max-width: 40rem;
+  margin: 8px 0 16px;
+}
+[data-crmv4-root] .c4-theodolite-links a,
+[data-crmv4-root] .c4-tier-links a {
+  color: #8a6a3b;
+  margin-right: 14px;
+  text-underline-offset: 3px;
+}
+[data-crmv4-root] .c4-theodolite-notice {
+  margin: 14px 18px 0;
+  padding: 10px 14px;
+  background: #1c1a17;
+  color: #f6f1e8;
+  letter-spacing: 0.04em;
+  border-left: 3px solid #c6a15b;
+}
+[data-crmv4-root] .c4-theodolite-ledger,
+[data-crmv4-root] .c4-tier-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 16px 18px 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-theodolite-ledger li,
+[data-crmv4-root] .c4-tier-kpis li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 74px;
+  padding: 12px 12px 10px;
+  background: #fffdf8;
+  border: 1px solid #e4d8c4;
+  border-bottom: 2px solid #c6a15b;
+}
+[data-crmv4-root] .c4-theodolite-ledger span,
+[data-crmv4-root] .c4-tier-kpis span {
+  color: #8a6a3b;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-theodolite-ledger strong,
+[data-crmv4-root] .c4-tier-kpis strong {
+  font-family: Palatino, Georgia, serif;
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+[data-crmv4-root] .c4-theodolite-arc {
+  display: grid;
+  gap: 10px;
+  margin: 16px 18px 0;
+  padding: 14px 16px;
+  list-style: none;
+  background: #fffdf8;
+  border: 1px solid #e4d8c4;
+}
+[data-crmv4-root] .c4-theodolite-arc li {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+}
+[data-crmv4-root] .c4-theodolite-arc i {
+  display: block;
+  height: 8px;
+  background: linear-gradient(90deg, #8a6a3b, #c6a15b);
+  border-radius: 99px;
+  justify-self: stretch;
+  transition: width 180ms ease;
+}
+[data-crmv4-root] .c4-theodolite-arc span,
+[data-crmv4-root] .c4-tier-stake span {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #5c5348;
+}
+[data-crmv4-root] .c4-theodolite-time,
+[data-crmv4-root] .c4-tier-lanes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 18px 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-theodolite-time li,
+[data-crmv4-root] .c4-tier-lanes li {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  padding: 8px 12px;
+  background: #fffdf8;
+  border: 1px solid #e4d8c4;
+}
+[data-crmv4-root] .c4-theodolite-tools,
+[data-crmv4-root] .c4-tier-tools,
+[data-crmv4-root] .c4-theodolite-form,
+[data-crmv4-root] .c4-dsk-atelier-form,
+[data-crmv4-root] .c4-grp-folio-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: end;
+  margin: 14px 18px 0;
+}
+[data-crmv4-root] .c4-theodolite-form,
+[data-crmv4-root] .c4-dsk-atelier-form,
+[data-crmv4-root] .c4-grp-folio-form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 14px;
+  background: #fffdf8;
+  border: 1px solid #e4d8c4;
+}
+[data-crmv4-root] .c4-theodolite-meta,
+[data-crmv4-root] .c4-tier-meta,
+[data-crmv4-root] .c4-dsk-atelier-meta,
+[data-crmv4-root] .c4-grp-folio-meta {
+  margin: 6px 0 0;
+  color: #5c5348;
+  font-size: 13px;
+}
+[data-crmv4-root] .c4-theodolite-empty,
+[data-crmv4-root] .c4-tier-empty,
+[data-crmv4-root] .c4-dsk-atelier-empty,
+[data-crmv4-root] .c4-grp-folio-empty {
+  margin: 16px 18px;
+  padding: 28px 18px;
+  text-align: center;
+  border: 1px dashed #c6a15b;
+  background: #fffdf8;
+  color: #5c5348;
+}
+[data-crmv4-root] .c4-theodolite-board,
+[data-crmv4-root] .c4-theodolite-index,
+[data-crmv4-root] .c4-tier-board,
+[data-crmv4-root] .c4-dsk-atelier-board,
+[data-crmv4-root] .c4-grp-folio-board {
+  display: grid;
+  gap: 12px;
+  margin: 16px 18px 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-theodolite-board,
+[data-crmv4-root] .c4-dsk-atelier-board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+[data-crmv4-root] .c4-theodolite-index,
+[data-crmv4-root] .c4-grp-folio-board { grid-template-columns: minmax(0, 1fr); }
+[data-crmv4-root] .c4-theodolite-card,
+[data-crmv4-root] .c4-tier-card,
+[data-crmv4-root] .c4-dsk-atelier-card,
+[data-crmv4-root] .c4-grp-folio-card {
+  display: grid;
+  grid-template-columns: 64px 28px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 14px;
+  background: #fffdf8;
+  border: 1px solid #e4d8c4;
+  border-left: 3px solid #c6a15b;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+[data-crmv4-root] .c4-dsk-atelier-card,
+[data-crmv4-root] .c4-grp-folio-card {
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  align-items: center;
+}
+[data-crmv4-root] .c4-theodolite-card:hover,
+[data-crmv4-root] .c4-tier-card:hover,
+[data-crmv4-root] .c4-dsk-atelier-card:hover,
+[data-crmv4-root] .c4-grp-folio-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(28, 26, 23, 0.08);
+}
+[data-crmv4-root] .c4-theodolite-card[data-on="1"],
+[data-crmv4-root] .c4-tier-card[data-on="1"] {
+  outline: 1px solid #c6a15b;
+  outline-offset: 2px;
+}
+[data-crmv4-root] .c4-theodolite-card[data-overdue="1"] { border-left-color: #8a6a3b; background: #f3ead8; }
+[data-crmv4-root] .c4-theodolite-card[data-idle="1"] { opacity: 0.86; }
+[data-crmv4-root] .c4-dsk-atelier-card[data-live="off"] { opacity: 0.62; }
+[data-crmv4-root] .c4-theodolite-ring {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+}
+[data-crmv4-root] .c4-theodolite-ring span,
+[data-crmv4-root] .c4-tier-stamp,
+[data-crmv4-root] .c4-dsk-atelier-mark {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin: 8px;
+  background: #f6f1e8;
+  color: #1c1a17;
+  border-radius: 50%;
+  font-family: Palatino, Georgia, serif;
+  font-size: 16px;
+}
+[data-crmv4-root] .c4-tier-stamp,
+[data-crmv4-root] .c4-dsk-atelier-mark {
+  width: 48px;
+  height: 48px;
+  margin: 0;
+  border: 1px solid #c6a15b;
+  letter-spacing: 0.04em;
+}
+[data-crmv4-root] .c4-dsk-atelier-count,
+[data-crmv4-root] .c4-grp-folio-count {
+  margin: 0;
+  font-family: Palatino, Georgia, serif;
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  color: #8a6a3b;
+}
+[data-crmv4-root] .c4-dsk-atelier-name,
+[data-crmv4-root] .c4-grp-folio-name,
+[data-crmv4-root] .c4-tier-card strong {
+  margin: 0;
+  font-family: Palatino, Georgia, serif;
+  font-size: 18px;
+  font-weight: 500;
+}
+[data-crmv4-root] .c4-tier-chart {
+  display: grid;
+  gap: 8px;
+  margin: 16px 18px 0;
+}
+[data-crmv4-root] .c4-tier-stake {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 36px 88px;
+  gap: 8px;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+[data-crmv4-root] .c4-tier-stake i {
+  display: block;
+  height: 8px;
+  background: #e4d8c4;
+  border-radius: 99px;
+  position: relative;
+}
+[data-crmv4-root] .c4-tier-stake[data-on="1"] i { background: linear-gradient(90deg, #8a6a3b, #c6a15b); }
+[data-crmv4-root] .c4-theodolite .c4-chip[data-on="1"],
+[data-crmv4-root] .c4-tier .c4-chip[data-on="1"] {
+  background: #1c1a17;
+  color: #f6f1e8;
+  border-color: #c6a15b;
+}
+[data-crmv4-root] .c4-theodolite .c4-field:focus,
+[data-crmv4-root] .c4-tier .c4-field:focus,
+[data-crmv4-root] .c4-dsk-atelier .c4-field:focus,
+[data-crmv4-root] .c4-grp-folio .c4-field:focus {
+  outline: 2px solid #c6a15b;
+  outline-offset: 1px;
+}
+[data-crmv4-root][data-theme="dark"] .c4-theodolite,
+[data-crmv4-root][data-theme="dark"] .c4-tier,
+[data-crmv4-root][data-theme="dark"] .c4-dsk-atelier,
+[data-crmv4-root][data-theme="dark"] .c4-grp-folio {
+  background: #161412;
+  color: #f6f1e8;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-theodolite-ledger li,
+[data-crmv4-root][data-theme="dark"] .c4-tier-kpis li,
+[data-crmv4-root][data-theme="dark"] .c4-theodolite-arc,
+[data-crmv4-root][data-theme="dark"] .c4-theodolite-time li,
+[data-crmv4-root][data-theme="dark"] .c4-tier-lanes li,
+[data-crmv4-root][data-theme="dark"] .c4-theodolite-card,
+[data-crmv4-root][data-theme="dark"] .c4-tier-card,
+[data-crmv4-root][data-theme="dark"] .c4-dsk-atelier-card,
+[data-crmv4-root][data-theme="dark"] .c4-grp-folio-card,
+[data-crmv4-root][data-theme="dark"] .c4-theodolite-form,
+[data-crmv4-root][data-theme="dark"] .c4-dsk-atelier-form,
+[data-crmv4-root][data-theme="dark"] .c4-grp-folio-form,
+[data-crmv4-root][data-theme="dark"] .c4-theodolite-empty,
+[data-crmv4-root][data-theme="dark"] .c4-tier-empty,
+[data-crmv4-root][data-theme="dark"] .c4-dsk-atelier-empty,
+[data-crmv4-root][data-theme="dark"] .c4-grp-folio-empty {
+  background: #221f1b;
+  color: #f6f1e8;
+  border-color: #8a6a3b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-theodolite-meta,
+[data-crmv4-root][data-theme="dark"] .c4-tier-meta,
+[data-crmv4-root][data-theme="dark"] .c4-dsk-atelier-meta,
+[data-crmv4-root][data-theme="dark"] .c4-grp-folio-meta,
+[data-crmv4-root][data-theme="dark"] .c4-theodolite-lead,
+[data-crmv4-root][data-theme="dark"] .c4-theodolite-hint,
+[data-crmv4-root][data-theme="dark"] .c4-tier-hint,
+[data-crmv4-root][data-theme="dark"] .c4-theodolite-arc span,
+[data-crmv4-root][data-theme="dark"] .c4-tier-stake span { color: #d9cbb6; }
+[data-crmv4-root][data-theme="dark"] .c4-theodolite-ring span,
+[data-crmv4-root][data-theme="dark"] .c4-tier-stamp,
+[data-crmv4-root][data-theme="dark"] .c4-dsk-atelier-mark {
+  background: #161412;
+  color: #f6f1e8;
+}
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-theodolite-mast,
+  [data-crmv4-root] .c4-tier-mast,
+  [data-crmv4-root] .c4-dsk-atelier-mast,
+  [data-crmv4-root] .c4-grp-folio-mast,
+  [data-crmv4-root] .c4-theodolite-board,
+  [data-crmv4-root] .c4-dsk-atelier-board,
+  [data-crmv4-root] .c4-theodolite-form,
+  [data-crmv4-root] .c4-dsk-atelier-form,
+  [data-crmv4-root] .c4-grp-folio-form,
+  [data-crmv4-root] .c4-theodolite-ledger,
+  [data-crmv4-root] .c4-tier-kpis,
+  [data-crmv4-root] .c4-theodolite-card,
+  [data-crmv4-root] .c4-tier-card,
+  [data-crmv4-root] .c4-dsk-atelier-card,
+  [data-crmv4-root] .c4-grp-folio-card { grid-template-columns: minmax(0, 1fr); }
+  [data-crmv4-root] .c4-theodolite .c4-chip,
+  [data-crmv4-root] .c4-tier .c4-chip,
+  [data-crmv4-root] .c4-dsk-atelier .c4-btn,
+  [data-crmv4-root] .c4-grp-folio .c4-btn { min-height: 44px; }
+  [data-crmv4-root] .c4-theodolite .c4-title,
+  [data-crmv4-root] .c4-tier .c4-title,
+  [data-crmv4-root] .c4-dsk-atelier-title,
+  [data-crmv4-root] .c4-grp-folio-title { font-size: 32px; }
+  [data-crmv4-root] .c4-theodolite-seal[data-logo="mono"],
+  [data-crmv4-root] .c4-tier-seal[data-logo="mono"],
+  [data-crmv4-root] .c4-dsk-atelier-seal[data-logo="mono"],
+  [data-crmv4-root] .c4-grp-folio-seal[data-logo="mono"] {
+    writing-mode: horizontal-tb;
+    transform: none;
+    min-height: 48px;
+    border-right: 0;
+    border-bottom: 2px solid #c6a15b;
+    letter-spacing: 0.22em;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-theodolite-card,
+  [data-crmv4-root] .c4-tier-card,
+  [data-crmv4-root] .c4-dsk-atelier-card,
+  [data-crmv4-root] .c4-grp-folio-card,
+  [data-crmv4-root] .c4-theodolite-arc i { transition: none; }
+}
