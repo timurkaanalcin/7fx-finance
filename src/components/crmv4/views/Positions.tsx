@@ -35,7 +35,7 @@ export default function Positions({ tx, locale, q }: { tx: Tx; locale: string; q
     router.replace(`?${p.toString()}`);
   }
   return (
-    <div className="c4-book-vine c4-book-salon c4-book-oratory c4-book-vestibule c4-book-cloister c4-book-mezzanine" data-book="mezzanine">
+    <div className="c4-book-vine c4-book-salon c4-book-oratory c4-book-vestibule c4-book-cloister c4-book-mezzanine c4-book-loom" data-book="loom">
     <header className="c4-book-salon-mast c4-book-oratory-mast c4-book-vestibule-mast c4-book-cloister-mast c4-book-mezzanine-mast">
       <p className="c4-book-salon-mark c4-book-oratory-mark c4-book-vestibule-mark c4-book-cloister-mark c4-book-mezzanine-mark" data-logo="mono">7FX</p>
       <div>
@@ -49,6 +49,7 @@ export default function Positions({ tx, locale, q }: { tx: Tx; locale: string; q
         <li data-tone="ivory">{tx("all")}</li>
       </ol>
     </header>
+    <p className="c4-book-loom-lead">{crmv4Text(locale, "lomPosLead")}</p>
     <nav className="c4-book-mezzanine-links" aria-label={crmv4Text(locale, "mzrSpine")}>
       <Link href={crmv4Href(root, "mzrl")}>{crmv4Text(locale, "mzrTitle")}</Link>
       <Link href={crmv4Href(root, "syct")}>{crmv4Text(locale, "sycTitle")}</Link>
