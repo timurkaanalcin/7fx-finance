@@ -153,15 +153,22 @@ export function DeskPad({ base, v4, tx }: { base: string; v4: V4; tx: Tx }) {
   }
 
   return (
-    <section className="c4-desk-pad" aria-label={v4("pdTitle")} data-desk-pad="1">
-      <header className="c4-pay-head">
+    <section className="c4-desk-pad c4-pad-gallery" aria-label={v4("pdTitle")} data-desk-pad="1" data-desk="writing">
+      <header className="c4-pad-gallery-mast">
+        <p className="c4-pad-gallery-seal" data-logo="mono">{v4("padGalSeal")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("pdSub")}</p>
-          <h2 className="c4-title">{v4("pdTitle")}</h2>
+          <p className="c4-pad-gallery-kicker">{v4("padGalKicker")}</p>
+          <h2 className="c4-title c4-pad-gallery-title">{v4("pdTitle")}</h2>
+          <p className="c4-pad-gallery-lead">{v4("padGalLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <ol className="c4-pad-gallery-index" aria-label={v4("pdTitle")}>
+          <li data-tone="gold">{v4("padGalPinned")}</li>
+          <li data-tone="ink">{v4("pdActive")}</li>
+          <li data-tone="ivory">{v4("pdArchived")}</li>
+        </ol>
+        <strong className="c4-pad-gallery-count">{shown.length}</strong>
       </header>
-      <p className="c4-meta">{v4("pdHint")}</p>
+      <p className="c4-meta c4-pad-gallery-hint">{v4("pdHint")}</p>
       <label className="c4-lab">
         <span>{v4("pdSearch")}</span>
         <input className="c4-field" aria-label={v4("pdSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
@@ -193,12 +200,12 @@ export function DeskPad({ base, v4, tx }: { base: string; v4: V4; tx: Tx }) {
       </form>
       {data.loading && !loaded.length && <p className="c4-meta">{v4("pdLoading")}</p>}
       {data.error && <p className="c4-meta">{v4("pdFailed")} {tx("failed")}</p>}
-      {!data.loading && !data.error && !loaded.length && <p className="c4-pay-empty">{v4("pdNoCustomers")}</p>}
-      {!data.loading && !data.error && loaded.length > 0 && !shown.length && !query && !archived && <p className="c4-pay-empty">{v4("pdNone")}</p>}
-      {!data.loading && !data.error && loaded.length > 0 && !shown.length && (query || archived) && <p className="c4-pay-empty">{v4("pdEmpty")}</p>}
-      <ul className="c4-pad-notes">
+      {!data.loading && !data.error && !loaded.length && <p className="c4-pay-empty c4-pad-gallery-empty">{v4("pdNoCustomers")}</p>}
+      {!data.loading && !data.error && loaded.length > 0 && !shown.length && !query && !archived && <p className="c4-pay-empty c4-pad-gallery-empty">{v4("padGalEmpty")}</p>}
+      {!data.loading && !data.error && loaded.length > 0 && !shown.length && (query || archived) && <p className="c4-pay-empty c4-pad-gallery-empty">{v4("pdEmpty")}</p>}
+      <ul className="c4-pad-notes c4-pad-gallery-notes">
         {shown.map((note) => (
-          <li key={note.id} className="c4-pad-note" data-pinned={note.pinned ? "1" : "0"} data-archived={note.archived ? "1" : "0"}>
+          <li key={note.id} className="c4-pad-note c4-pad-gallery-card" data-pinned={note.pinned ? "1" : "0"} data-archived={note.archived ? "1" : "0"}>
             <p>{note.body}</p>
             <p className="c4-meta">{names.get(note.customerId) || "—"}</p>
             <div className="c4-row">

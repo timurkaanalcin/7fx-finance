@@ -198,22 +198,29 @@ export function PanelDensityStrip({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-panel-strip" aria-label={v4("lyTitle")} data-panel-strip="1">
-      <header className="c4-pay-head">
+    <section className="c4-panel-strip c4-den-salon" aria-label={v4("lyTitle")} data-panel-strip="1" data-desk="salon">
+      <header className="c4-den-salon-mast">
+        <p className="c4-den-salon-seal" data-logo="mono">{v4("denSalonSeal")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("lySub")}</p>
-          <h2 className="c4-title">{v4("lyTitle")}</h2>
+          <p className="c4-den-salon-kicker">{v4("denSalonKicker")}</p>
+          <h2 className="c4-title c4-den-salon-title">{v4("lyTitle")}</h2>
+          <p className="c4-den-salon-lead">{v4("denSalonLead")}</p>
         </div>
+        <ol className="c4-den-salon-index" aria-label={v4("lyTitle")}>
+          <li data-tone="ivory">{v4("lyRoomy")}</li>
+          <li data-tone="ink">{v4("lyDesk")}</li>
+          <li data-tone="gold">{v4("lyCompact")}</li>
+        </ol>
       </header>
-      <p className="c4-meta">{v4("lyHint")}</p>
+      <p className="c4-meta c4-den-salon-hint">{v4("lyHint")}</p>
       <p className="c4-meta">{v4("lyLocal")} · {v4("lyPad")}</p>
-      <div className="c4-row" role="group" aria-label={v4("lySub")}>
+      <div className="c4-row c4-den-salon-tools" role="group" aria-label={v4("lySub")}>
         {PANELS.map((item) => (
           <button key={item} type="button" className="c4-chip" data-panel={item} data-on={panel === item ? "1" : "0"} aria-pressed={panel === item} onClick={() => choose(item)}>{v4(label[item])}</button>
         ))}
       </div>
-      <p className="c4-meta">{v4("lyPreview")}</p>
-      <div className="c4-panel-preview" data-panel={panel}>
+      <p className="c4-meta c4-den-salon-preview-label">{v4("lyPreview")}</p>
+      <div className="c4-panel-preview c4-den-salon-preview" data-panel={panel}>
         {PANELS.map((item) => (
           <span key={item} data-panel={item} data-on={panel === item ? "1" : "0"}>{v4(label[item])}</span>
         ))}

@@ -86619,3 +86619,487 @@
 @media (prefers-reduced-motion: reduce) {
   [data-crmv4-root] .c4-seg-salon-card { transition: none; }
 }
+
+/* Round 281 — nocturnal sights, address plates, writing room, density salon. */
+[data-crmv4-root] .c4-nocturnal,
+[data-crmv4-root] .c4-addressplate,
+[data-crmv4-root] .c4-desk-pad.c4-pad-gallery,
+[data-crmv4-root] .c4-panel-strip.c4-den-salon {
+  display: grid;
+  gap: 14px;
+  margin: 12px;
+  padding: 0 0 18px;
+  color: #1c1a17;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 6px no-repeat,
+    #f6f1e8;
+  border: 1px solid #1c1a17;
+  border-radius: 0;
+  box-shadow: 0 0 0 6px #efe6d6, 0 18px 40px rgba(28, 26, 23, 0.06);
+}
+
+[data-crmv4-root] .c4-nocturnal-mast,
+[data-crmv4-root] .c4-addressplate-mast,
+[data-crmv4-root] .c4-pad-gallery-mast,
+[data-crmv4-root] .c4-den-salon-mast {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: end;
+  padding: 22px 22px 16px;
+  border-bottom: 1px solid #1c1a17;
+}
+
+[data-crmv4-root] .c4-pad-gallery-mast {
+  grid-template-columns: 72px minmax(0, 1fr) auto auto;
+}
+
+[data-crmv4-root] .c4-nocturnal-seal[data-logo="mono"],
+[data-crmv4-root] .c4-addressplate-seal[data-logo="mono"],
+[data-crmv4-root] .c4-pad-gallery-seal[data-logo="mono"],
+[data-crmv4-root] .c4-den-salon-seal[data-logo="mono"] {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  margin: 0;
+  color: #f6f1e8;
+  background: #1c1a17;
+  border-radius: 0;
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  font-weight: 500;
+}
+
+[data-crmv4-root] .c4-nocturnal-kicker,
+[data-crmv4-root] .c4-addressplate-kicker,
+[data-crmv4-root] .c4-pad-gallery-kicker,
+[data-crmv4-root] .c4-den-salon-kicker {
+  margin: 0 0 4px;
+  color: #8a6a3b;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root] .c4-nocturnal .c4-title,
+[data-crmv4-root] .c4-addressplate .c4-title,
+[data-crmv4-root] .c4-pad-gallery-title,
+[data-crmv4-root] .c4-den-salon-title {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-weight: 500;
+}
+
+[data-crmv4-root] .c4-nocturnal-lead,
+[data-crmv4-root] .c4-addressplate-hint,
+[data-crmv4-root] .c4-pad-gallery-lead,
+[data-crmv4-root] .c4-den-salon-lead {
+  margin: 6px 0 0;
+  max-width: 62ch;
+  color: #3c342c;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+[data-crmv4-root] .c4-nocturnal-index,
+[data-crmv4-root] .c4-addressplate-index,
+[data-crmv4-root] .c4-pad-gallery-index,
+[data-crmv4-root] .c4-den-salon-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv4-root] .c4-nocturnal-index li,
+[data-crmv4-root] .c4-addressplate-index li,
+[data-crmv4-root] .c4-pad-gallery-index li,
+[data-crmv4-root] .c4-den-salon-index li {
+  padding: 6px 10px;
+  border: 1px solid #1c1a17;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root] .c4-nocturnal-index li[data-tone="gold"],
+[data-crmv4-root] .c4-addressplate-index li[data-tone="gold"],
+[data-crmv4-root] .c4-pad-gallery-index li[data-tone="gold"],
+[data-crmv4-root] .c4-den-salon-index li[data-tone="gold"] {
+  color: #1c1a17;
+  background: #c6a15b;
+}
+
+[data-crmv4-root] .c4-nocturnal-index li[data-tone="ink"],
+[data-crmv4-root] .c4-addressplate-index li[data-tone="ink"],
+[data-crmv4-root] .c4-pad-gallery-index li[data-tone="ink"],
+[data-crmv4-root] .c4-den-salon-index li[data-tone="ink"] {
+  color: #f6f1e8;
+  background: #1c1a17;
+}
+
+[data-crmv4-root] .c4-nocturnal-index li[data-tone="ivory"],
+[data-crmv4-root] .c4-addressplate-index li[data-tone="ivory"],
+[data-crmv4-root] .c4-pad-gallery-index li[data-tone="ivory"],
+[data-crmv4-root] .c4-den-salon-index li[data-tone="ivory"] {
+  background: #f6f1e8;
+}
+
+[data-crmv4-root] .c4-addressplate-index li[data-tone="mist"] { background: #efe6d6; }
+[data-crmv4-root] .c4-addressplate-index li[data-tone="line"] { background: transparent; }
+
+[data-crmv4-root] .c4-pad-gallery-count {
+  display: grid;
+  place-items: center;
+  min-width: 56px;
+  height: 56px;
+  margin: 0;
+  color: #1c1a17;
+  background: #fffdf8;
+  border: 1px solid #1c1a17;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+[data-crmv4-root] .c4-nocturnal-links,
+[data-crmv4-root] .c4-addressplate-links,
+[data-crmv4-root] .c4-nocturnal-hint,
+[data-crmv4-root] .c4-nocturnal-lead,
+[data-crmv4-root] .c4-nocturnal-note,
+[data-crmv4-root] .c4-addressplate-note,
+[data-crmv4-root] .c4-pad-gallery-hint,
+[data-crmv4-root] .c4-den-salon-hint {
+  margin: 0 22px;
+}
+
+[data-crmv4-root] .c4-nocturnal-links a,
+[data-crmv4-root] .c4-addressplate-links a {
+  margin-right: 12px;
+  color: #8a6a3b;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+[data-crmv4-root] .c4-nocturnal-dials,
+[data-crmv4-root] .c4-addressplate-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+  margin: 0 22px;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv4-root] .c4-nocturnal-dials li,
+[data-crmv4-root] .c4-addressplate-kpis li {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  background: #fffdf8;
+  border: 1px solid #1c1a17;
+}
+
+[data-crmv4-root] .c4-nocturnal-dials span,
+[data-crmv4-root] .c4-addressplate-kpis span {
+  color: #8a6a3b;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root] .c4-nocturnal-dials strong,
+[data-crmv4-root] .c4-addressplate-kpis strong {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+[data-crmv4-root] .c4-nocturnal-chart,
+[data-crmv4-root] .c4-addressplate-chart {
+  display: flex;
+  align-items: end;
+  gap: 8px;
+  min-height: 140px;
+  margin: 0 22px;
+  padding: 12px;
+  background: #fffdf8;
+  border: 1px solid #1c1a17;
+}
+
+[data-crmv4-root] .c4-nocturnal-column,
+[data-crmv4-root] .c4-addressplate-column {
+  display: grid;
+  align-items: end;
+  justify-items: center;
+  gap: 6px;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 120px;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+[data-crmv4-root] .c4-nocturnal-column i,
+[data-crmv4-root] .c4-addressplate-column i {
+  display: block;
+  width: 100%;
+  max-width: 36px;
+  background: #c6a15b;
+  transition: height 180ms ease;
+}
+
+[data-crmv4-root] .c4-nocturnal-column[data-on="1"] i,
+[data-crmv4-root] .c4-addressplate-column[data-on="1"] i { background: #1c1a17; }
+
+[data-crmv4-root] .c4-nocturnal-column span,
+[data-crmv4-root] .c4-addressplate-column span {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root] .c4-nocturnal-time {
+  display: grid;
+  gap: 6px;
+  margin: 0 22px;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv4-root] .c4-nocturnal-time li {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  background: #fffdf8;
+  border: 1px solid #d9cbb4;
+}
+
+[data-crmv4-root] .c4-nocturnal-form,
+[data-crmv4-root] .c4-nocturnal-tools,
+[data-crmv4-root] .c4-nocturnal-views,
+[data-crmv4-root] .c4-addressplate-tools,
+[data-crmv4-root] .c4-den-salon-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 0 22px;
+}
+
+[data-crmv4-root] .c4-nocturnal-search,
+[data-crmv4-root] .c4-addressplate-search { min-width: min(100%, 220px); }
+
+[data-crmv4-root] .c4-nocturnal-board,
+[data-crmv4-root] .c4-nocturnal-index-list,
+[data-crmv4-root] .c4-addressplate-board,
+[data-crmv4-root] .c4-pad-gallery-notes {
+  display: grid;
+  gap: 10px;
+  margin: 0 22px;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv4-root] .c4-nocturnal-board { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+[data-crmv4-root] .c4-nocturnal[data-density="close"] .c4-nocturnal-board { grid-template-columns: 1fr; }
+
+[data-crmv4-root] .c4-nocturnal-card,
+[data-crmv4-root] .c4-addressplate-card,
+[data-crmv4-root] .c4-pad-gallery-card {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  gap: 10px;
+  padding: 12px;
+  background: #fffdf8;
+  border: 1px solid #1c1a17;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+[data-crmv4-root] .c4-nocturnal-card[data-on="1"],
+[data-crmv4-root] .c4-addressplate-card[data-on="1"] { box-shadow: inset 3px 0 0 #c6a15b; }
+
+[data-crmv4-root] .c4-nocturnal-card[data-overdue="1"] { background: #f3e4c8; }
+[data-crmv4-root] .c4-nocturnal-card[data-logged="1"] { border-color: #8a6a3b; }
+[data-crmv4-root] .c4-pad-gallery-card[data-pinned="1"] { box-shadow: inset 3px 0 0 #c6a15b; }
+[data-crmv4-root] .c4-pad-gallery-card[data-archived="1"] { opacity: 0.72; }
+
+[data-crmv4-root] .c4-nocturnal-ticks {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv4-root] .c4-nocturnal-ticks li {
+  width: 8px;
+  height: 8px;
+  border: 1px solid #1c1a17;
+  background: transparent;
+}
+
+[data-crmv4-root] .c4-nocturnal-ticks li[data-on="1"] { background: #c6a15b; }
+
+[data-crmv4-root] .c4-addressplate-stamp {
+  display: grid;
+  place-items: center;
+  min-width: 52px;
+  margin: 0;
+  color: #f6f1e8;
+  background: #1c1a17;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+}
+
+[data-crmv4-root] .c4-addressplate-card[data-hue="ivory"] .c4-addressplate-stamp { color: #1c1a17; background: #f6f1e8; border: 1px solid #1c1a17; }
+[data-crmv4-root] .c4-addressplate-card[data-hue="champagne"] .c4-addressplate-stamp { color: #1c1a17; background: #c6a15b; }
+[data-crmv4-root] .c4-addressplate-card[data-hue="graphite"] .c4-addressplate-stamp { color: #f6f1e8; background: #1c1a17; }
+
+[data-crmv4-root] .c4-nocturnal-meta,
+[data-crmv4-root] .c4-addressplate-meta {
+  margin: 6px 0;
+  color: #5c5146;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+[data-crmv4-root] .c4-nocturnal-empty,
+[data-crmv4-root] .c4-addressplate-empty,
+[data-crmv4-root] .c4-pad-gallery-empty {
+  margin: 0 22px;
+  padding: 22px;
+  color: #5c5146;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 3px no-repeat,
+    #fffdf8;
+  border: 1px dashed #8a6a3b;
+}
+
+[data-crmv4-root] .c4-nocturnal-notice {
+  margin: 0 22px;
+  color: #8a6a3b;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+[data-crmv4-root] .c4-addressplate-lanes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 22px;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv4-root] .c4-den-salon-preview {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 22px 8px;
+}
+
+[data-crmv4-root] .c4-den-salon-preview span {
+  display: grid;
+  place-items: center;
+  min-height: 72px;
+  border: 1px solid #1c1a17;
+  background: #fffdf8;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+[data-crmv4-root] .c4-den-salon-preview span[data-on="1"] {
+  color: #1c1a17;
+  background: #c6a15b;
+}
+
+[data-crmv4-root] .c4-den-salon-preview[data-panel="roomy"] span { min-height: 96px; }
+[data-crmv4-root] .c4-den-salon-preview[data-panel="compact"] span { min-height: 48px; }
+
+[data-crmv4-root] .c4-nocturnal > .c4-btn,
+[data-crmv4-root] .c4-addressplate > .c4-addressplate-tools { margin-left: 22px; margin-right: 22px; }
+
+[data-crmv4-root][data-theme="dark"] .c4-nocturnal,
+[data-crmv4-root][data-theme="dark"] .c4-addressplate,
+[data-crmv4-root][data-theme="dark"] .c4-desk-pad.c4-pad-gallery,
+[data-crmv4-root][data-theme="dark"] .c4-panel-strip.c4-den-salon {
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 6px no-repeat,
+    #161411;
+  border-color: #c6a15b;
+  box-shadow: 0 0 0 6px #221f1b;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-nocturnal-mast,
+[data-crmv4-root][data-theme="dark"] .c4-addressplate-mast,
+[data-crmv4-root][data-theme="dark"] .c4-pad-gallery-mast,
+[data-crmv4-root][data-theme="dark"] .c4-den-salon-mast { border-color: #3a332c; }
+
+[data-crmv4-root][data-theme="dark"] .c4-nocturnal-seal[data-logo="mono"],
+[data-crmv4-root][data-theme="dark"] .c4-addressplate-seal[data-logo="mono"],
+[data-crmv4-root][data-theme="dark"] .c4-pad-gallery-seal[data-logo="mono"],
+[data-crmv4-root][data-theme="dark"] .c4-den-salon-seal[data-logo="mono"] { color: #161411; background: #f6f1e8; }
+
+[data-crmv4-root][data-theme="dark"] .c4-nocturnal-kicker,
+[data-crmv4-root][data-theme="dark"] .c4-addressplate-kicker,
+[data-crmv4-root][data-theme="dark"] .c4-pad-gallery-kicker,
+[data-crmv4-root][data-theme="dark"] .c4-den-salon-kicker,
+[data-crmv4-root][data-theme="dark"] .c4-nocturnal-lead,
+[data-crmv4-root][data-theme="dark"] .c4-pad-gallery-lead,
+[data-crmv4-root][data-theme="dark"] .c4-den-salon-lead { color: #d4bc86; }
+
+[data-crmv4-root][data-theme="dark"] .c4-nocturnal-card,
+[data-crmv4-root][data-theme="dark"] .c4-addressplate-card,
+[data-crmv4-root][data-theme="dark"] .c4-pad-gallery-card,
+[data-crmv4-root][data-theme="dark"] .c4-nocturnal-dials li,
+[data-crmv4-root][data-theme="dark"] .c4-addressplate-kpis li,
+[data-crmv4-root][data-theme="dark"] .c4-nocturnal-chart,
+[data-crmv4-root][data-theme="dark"] .c4-addressplate-chart,
+[data-crmv4-root][data-theme="dark"] .c4-den-salon-preview span,
+[data-crmv4-root][data-theme="dark"] .c4-pad-gallery-count,
+[data-crmv4-root][data-theme="dark"] .c4-nocturnal-empty,
+[data-crmv4-root][data-theme="dark"] .c4-addressplate-empty,
+[data-crmv4-root][data-theme="dark"] .c4-pad-gallery-empty {
+  color: #f6f1e8;
+  background: #221f1b;
+  border-color: #3a332c;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-nocturnal-column i { background: #c6a15b; }
+[data-crmv4-root][data-theme="dark"] .c4-den-salon-preview span[data-on="1"] { color: #161411; background: #c6a15b; }
+
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-nocturnal-mast,
+  [data-crmv4-root] .c4-addressplate-mast,
+  [data-crmv4-root] .c4-pad-gallery-mast,
+  [data-crmv4-root] .c4-den-salon-mast { grid-template-columns: minmax(0, 1fr); }
+  [data-crmv4-root] .c4-nocturnal .c4-btn,
+  [data-crmv4-root] .c4-addressplate .c4-btn,
+  [data-crmv4-root] .c4-pad-gallery .c4-btn,
+  [data-crmv4-root] .c4-den-salon .c4-btn,
+  [data-crmv4-root] .c4-nocturnal .c4-chip,
+  [data-crmv4-root] .c4-addressplate .c4-chip,
+  [data-crmv4-root] .c4-pad-gallery .c4-chip,
+  [data-crmv4-root] .c4-den-salon .c4-chip { min-height: 44px; }
+  [data-crmv4-root] .c4-nocturnal-board { grid-template-columns: 1fr; }
+  [data-crmv4-root] .c4-den-salon-preview { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-nocturnal-card,
+  [data-crmv4-root] .c4-addressplate-card,
+  [data-crmv4-root] .c4-pad-gallery-card,
+  [data-crmv4-root] .c4-nocturnal-column i { transition: none; }
+}
