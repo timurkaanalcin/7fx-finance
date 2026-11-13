@@ -59,17 +59,28 @@ export function PriorityLane({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-lane-pad" aria-label={v4("lnTitle")} data-lane-pad="1">
-      <header className="c4-pay-head">
-        <div>
-          <p className="c4-pay-kicker">{v4("lnSub")}</p>
-          <h2 className="c4-title">{v4("lnTitle")}</h2>
+    <section className="c4-lane-pad c4-lane-folio" aria-label={v4("lnTitle")} data-lane-pad="1" data-desk="folio">
+      <header className="c4-lane-folio-mast">
+        <p className="c4-lane-folio-seal" data-logo="mono">7FX</p>
+        <div className="c4-lane-folio-copy">
+          <p className="c4-lane-folio-kicker">{v4("clnFolioKicker")}</p>
+          <h2 className="c4-title c4-lane-folio-title">{v4("lnTitle")}</h2>
+          <p className="c4-lane-folio-lead">{v4("clnFolioLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-lane-folio-count">{shown.length}</p>
       </header>
+      <ol className="c4-lane-folio-index" aria-label={v4("lnTitle")}>
+        <li data-tone="gold">{v4("ptnChampagne")}</li>
+        <li data-tone="ink">{v4("ptnGraphite")}</li>
+        <li data-tone="ivory">{v4("ptnIvory")}</li>
+      </ol>
+      <p className="c4-lane-folio-links">
+        <Link href={crmv4Href(base, "ptn")}>{v4("ptnTitle")}</Link>
+        <Link href={crmv4Href(base, "swatches")}>{v4("swTitle")}</Link>
+      </p>
       <p className="c4-meta">{v4("lnHint")}</p>
       <p className="c4-meta">{v4("lnLocal")}</p>
-      {!data.loading && !data.error && !loaded.length && <p className="c4-pay-empty">{v4("lnNone")}</p>}
+      {!data.loading && !data.error && !loaded.length && <p className="c4-pay-empty c4-lane-folio-empty">{v4("lnNone")}</p>}
       <form className="c4-row" onSubmit={(event) => {
         event.preventDefault();
         const next = addLane(items, customerId, loaded.map((person) => person.id));
@@ -91,8 +102,8 @@ export function PriorityLane({ base, v4 }: { base: string; v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "0" : "1"} aria-pressed={!hidden} onClick={() => setHidden(false)}>{v4("lnShown")}</button>
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("lnHidden")}</button>
       </div>
-      {!shown.length && <p className="c4-pay-empty">{v4("lnEmpty")}</p>}
-      <ol className="c4-lane-list">
+      {!shown.length && <p className="c4-pay-empty c4-lane-folio-empty">{v4("lnEmpty")}</p>}
+      <ol className="c4-lane-list c4-lane-folio-list">
         {shown.map((item, index) => (
           <li key={item.id} className="c4-lane-card" data-pinned={item.pinned ? "1" : "0"}>
             <p>{index + 1}. {names[item.id] || item.id}</p>

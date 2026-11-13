@@ -126,14 +126,25 @@ export function RouteSwatches({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-swatch-pad" aria-label={v4("swTitle")} data-swatch-pad="1">
-      <header className="c4-pay-head">
-        <div>
-          <p className="c4-pay-kicker">{v4("swSub")}</p>
-          <h2 className="c4-title">{v4("swTitle")}</h2>
+    <section className="c4-swatch-pad c4-swatch-folio" aria-label={v4("swTitle")} data-swatch-pad="1" data-desk="folio">
+      <header className="c4-swatch-folio-mast">
+        <p className="c4-swatch-folio-seal" data-logo="mono">7FX</p>
+        <div className="c4-swatch-folio-copy">
+          <p className="c4-swatch-folio-kicker">{v4("clnFolioKicker")}</p>
+          <h2 className="c4-title c4-swatch-folio-title">{v4("swTitle")}</h2>
+          <p className="c4-swatch-folio-lead">{v4("clnFolioLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-swatch-folio-count">{shown.length}</p>
       </header>
+      <ol className="c4-swatch-folio-index" aria-label={v4("swTitle")}>
+        <li data-tone="gold">{v4("ptnChampagne")}</li>
+        <li data-tone="ink">{v4("ptnGraphite")}</li>
+        <li data-tone="ivory">{v4("ptnIvory")}</li>
+      </ol>
+      <p className="c4-swatch-folio-links">
+        <Link href={crmv4Href(base, "cln")}>{v4("clnTitle")}</Link>
+        <Link href={crmv4Href(base, "lane")}>{v4("lnTitle")}</Link>
+      </p>
       <p className="c4-meta">{v4("swHint")}</p>
       <p className="c4-meta">{v4("swLocal")}</p>
       <form className="c4-swatch-form" onSubmit={(event) => {
@@ -172,8 +183,8 @@ export function RouteSwatches({ base, v4 }: { base: string; v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "0" : "1"} aria-pressed={!hidden} onClick={() => setHidden(false)}>{v4("swAll")}</button>
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("swHidden")}</button>
       </div>
-      {!shown.length && <p className="c4-pay-empty">{v4("swEmpty")}</p>}
-      <ul className="c4-swatch-list">
+      {!shown.length && <p className="c4-pay-empty c4-swatch-folio-empty">{v4("swEmpty")}</p>}
+      <ul className="c4-swatch-list c4-swatch-folio-list">
         {shown.map((tag) => (
           <li key={tag.id} className="c4-swatch-card" data-color={tag.color} data-pinned={tag.pinned ? "1" : "0"}>
             <p><span className="c4-swatch-dot" data-color={tag.color} /> {tag.label}</p>
