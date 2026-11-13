@@ -152,13 +152,20 @@ export function CallScripts({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-script-pad" aria-label={v4("tkTitle")} data-script-pad="1">
-      <header className="c4-pay-head">
+    <section className="c4-script-pad c4-script-salon" aria-label={v4("tkTitle")} data-script-pad="1" data-desk="scriptorium">
+      <header className="c4-script-mast">
+        <p className="c4-script-seal" data-logo="mono">7FX</p>
+        <div className="c4-script-rule" aria-hidden="true"><i /><i /><i /></div>
         <div>
           <p className="c4-pay-kicker">{v4("tkSub")}</p>
           <h2 className="c4-title">{v4("tkTitle")}</h2>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <ol className="c4-script-index" aria-label={v4("tkTitle")}>
+          <li data-tone="gold">{v4("tkSalonChampagne")}</li>
+          <li data-tone="ink">{v4("tkSalonGraphite")}</li>
+          <li data-tone="ivory">{v4("tkSalonIvory")}</li>
+          <li>{shown.length}</li>
+        </ol>
       </header>
       <p className="c4-meta">{v4("tkHint")}</p>
       <p className="c4-meta">{v4("tkLocal")}</p>
@@ -190,7 +197,7 @@ export function CallScripts({ v4 }: { v4: V4 }) {
         <button type="submit" className="c4-btn">{v4("tkAdd")}</button>
       </form>
       <p className="c4-meta">{v4("tkBlank")}</p>
-      {!shown.length && <p className="c4-pay-empty">{v4("tkEmpty")}</p>}
+      {!shown.length && <p className="c4-script-empty">{v4("tkEmpty")}</p>}
       <ul className="c4-script-list">
         {shown.map((script) => (
           <li key={script.id} className="c4-script-card" data-pinned={script.pinned ? "1" : "0"} data-hidden={script.hidden ? "1" : "0"}>
