@@ -171,14 +171,21 @@ export function KycGlance({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-kyc-glance" aria-label={v4("kgTitle")} data-kyc-glance="1">
-      <header className="c4-pay-head">
+    <section className="c4-kyc-glance c4-kyc-salon" aria-label={v4("kgTitle")} data-kyc-glance="1" data-desk="salon">
+      <header className="c4-pay-head c4-kyc-salon-mast">
+        <p className="c4-kyc-salon-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("kgSub")}</p>
-          <h2 className="c4-title">{v4("kgTitle")}</h2>
+          <p className="c4-pay-kicker c4-kyc-salon-kicker">{v4("kgSub")}</p>
+          <h2 className="c4-title c4-kyc-salon-title">{v4("kgTitle")}</h2>
+          <p className="c4-meta c4-kyc-salon-count">{chips.length}</p>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <ol className="c4-kyc-salon-index" aria-label={v4("kgTitle")}>
+          <li data-tone="gold">{v4("kgSalonChampagne")}</li>
+          <li data-tone="ink">{v4("kgSalonGraphite")}</li>
+          <li data-tone="ivory">{v4("kgSalonIvory")}</li>
+        </ol>
       </header>
+      <p className="c4-meta c4-kyc-salon-lead">{v4("kgSalonLead")}</p>
       <p className="c4-meta">{v4("kgHint")}</p>
       <p className="c4-meta">{v4("kgLocal")}</p>
       <p className="c4-row">
