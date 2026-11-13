@@ -73,14 +73,21 @@ export function StaleWatch({ base, v4, locale, tx }: { base: string; v4: V4; loc
   }
 
   return (
-    <section className="c4-stale-desk" aria-label={v4("slTitle")} data-stale-desk="1">
-      <header className="c4-pay-head">
+    <section className="c4-stale-desk c4-stale-cloister" aria-label={v4("slTitle")} data-stale-desk="1" data-desk="cloister">
+      <header className="c4-stale-cloister-mast">
+        <p className="c4-stale-cloister-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("slSub")}</p>
-          <h2 className="c4-title">{v4("slTitle")}</h2>
+          <p className="c4-stale-cloister-kicker">{v4("slSub")}</p>
+          <h2 className="c4-title c4-stale-cloister-title">{v4("slTitle")}</h2>
         </div>
-        <p className="c4-meta">{v4("slCount")} {shown.length}</p>
+        <ol className="c4-stale-cloister-index" aria-label={v4("slTitle")}>
+          <li data-tone="gold">{v4("slCloisterChampagne")}</li>
+          <li data-tone="ink">{v4("slCloisterGraphite")}</li>
+          <li data-tone="ivory">{v4("slCloisterIvory")}</li>
+          <li>{shown.length}</li>
+        </ol>
       </header>
+      <p className="c4-stale-cloister-lead">{v4("slCloisterLead")}</p>
       <p className="c4-meta">{v4("slHint")}</p>
       <label className="c4-lab">
         <span>{v4("slSearch")}</span>
