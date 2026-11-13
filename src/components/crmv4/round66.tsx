@@ -59,14 +59,21 @@ export function DeskCompare({ v4, locale, tx }: { v4: V4; locale: string; tx: Tx
   }
 
   return (
-    <section className="c4-compare-strip" aria-label={v4("mcTitle")} data-compare-strip="1">
-      <header className="c4-pay-head">
+    <section className="c4-compare-strip c4-compare-vitrine" aria-label={v4("mcTitle")} data-compare-strip="1" data-desk="vitrine">
+      <header className="c4-pay-head c4-compare-vitrine-mast">
+        <p className="c4-compare-vitrine-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("mcSub")}</p>
-          <h2 className="c4-title">{v4("mcTitle")}</h2>
+          <p className="c4-pay-kicker c4-compare-vitrine-kicker">{v4("mcSub")}</p>
+          <h2 className="c4-title c4-compare-vitrine-title">{v4("mcTitle")}</h2>
         </div>
-        <p className="c4-meta">{v4("mcCount")} {columns.length}</p>
+        <p className="c4-meta c4-compare-vitrine-count">{v4("mcCount")} {columns.length}</p>
+        <ol className="c4-compare-vitrine-index" aria-label={v4("mcTitle")}>
+          <li data-tone="gold">{v4("mcSalonChampagne")}</li>
+          <li data-tone="ink">{v4("mcSalonGraphite")}</li>
+          <li data-tone="ivory">{v4("mcSalonIvory")}</li>
+        </ol>
       </header>
+      <p className="c4-meta c4-compare-vitrine-lead">{v4("mcSalonLead")}</p>
       <p className="c4-meta">{v4("mcHint")}</p>
       <label className="c4-lab">
         <span>{v4("mcSearch")}</span>
@@ -80,9 +87,9 @@ export function DeskCompare({ v4, locale, tx }: { v4: V4; locale: string; tx: Tx
       {failed && <p className="c4-meta">{v4("mcFailed")} {tx("failed")}</p>}
       {!loading && !failed && !loaded.length && <p className="c4-pay-empty">{v4("mcNone")}</p>}
       {!loading && !failed && loaded.length > 0 && !columns.length && <p className="c4-pay-empty">{v4("mcEmpty")}</p>}
-      <ul className="c4-compare-cols">
+      <ul className="c4-compare-cols c4-compare-vitrine-cols">
         {columns.map((column) => (
-          <li key={column.desk || "none"} className="c4-compare-col" data-desk={column.desk || "none"}>
+          <li key={column.desk || "none"} className="c4-compare-col c4-compare-vitrine-card" data-desk={column.desk || "none"}>
             <div className="c4-row c4-between">
               <strong>{column.desk || v4("mcNoDesk")}</strong>
               <span className="c4-compare-count">{column.count}</span>

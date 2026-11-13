@@ -85,14 +85,21 @@ export function VipWatch({ base, v4, locale, tx }: { base: string; v4: V4; local
   }
 
   return (
-    <section className="c4-vip-strip" aria-label={v4("vwTitle")} data-vip-strip="1">
-      <header className="c4-pay-head">
+    <section className="c4-vip-strip c4-vip-vitrine" aria-label={v4("vwTitle")} data-vip-strip="1" data-desk="vitrine">
+      <header className="c4-pay-head c4-vip-vitrine-mast">
+        <p className="c4-vip-vitrine-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("vwSub")}</p>
-          <h2 className="c4-title">{v4("vwTitle")}</h2>
+          <p className="c4-pay-kicker c4-vip-vitrine-kicker">{v4("vwSub")}</p>
+          <h2 className="c4-title c4-vip-vitrine-title">{v4("vwTitle")}</h2>
         </div>
-        <p className="c4-meta">{v4("vwCount")} {shown.length}</p>
+        <p className="c4-meta c4-vip-vitrine-count">{v4("vwCount")} {shown.length}</p>
+        <ol className="c4-vip-vitrine-index" aria-label={v4("vwTitle")}>
+          <li data-tone="gold">{v4("vwSalonChampagne")}</li>
+          <li data-tone="ink">{v4("vwSalonGraphite")}</li>
+          <li data-tone="ivory">{v4("vwSalonIvory")}</li>
+        </ol>
       </header>
+      <p className="c4-meta c4-vip-vitrine-lead">{v4("vwSalonLead")}</p>
       <p className="c4-meta">{v4("vwHint")}</p>
       <div className="c4-row" role="group" aria-label={v4("vwField")}>
         {VIP_FIELDS.map((field) => (
@@ -143,12 +150,12 @@ export function VipWatch({ base, v4, locale, tx }: { base: string; v4: V4; local
       {data.error && <p className="c4-meta">{v4("vwFailed")} {tx("failed")}</p>}
       {!data.loading && !data.error && !loaded.length && <p className="c4-pay-empty">{v4("vwNone")}</p>}
       {!data.loading && !data.error && loaded.length > 0 && !shown.length && <p className="c4-pay-empty">{v4("vwEmpty")}</p>}
-      <ul className="c4-vip-list">
+      <ul className="c4-vip-list c4-vip-vitrine-list">
         {shown.map((person) => {
           const currency = String(person.currency || "").trim().toUpperCase();
           const amount = Number(person.balance);
           return (
-            <li key={person.id} className="c4-vip-card" data-pinned={pinned.includes(person.id) ? "1" : "0"}>
+            <li key={person.id} className="c4-vip-card c4-vip-vitrine-card" data-pinned={pinned.includes(person.id) ? "1" : "0"}>
               <strong>{person.name || person.email || person.id}</strong>
               <p data-currency={currency || "none"}>{moneyText(currency, Number.isFinite(amount) ? amount : 0, locale, v4("vwNoCurrency"))}</p>
               <div className="c4-row">
