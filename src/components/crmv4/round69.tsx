@@ -138,14 +138,21 @@ export function WinLog({ v4, tx }: { v4: V4; tx: Tx }) {
   }
 
   return (
-    <section className="c4-win-log" aria-label={v4("wnTitle")} data-win-log="1">
-      <header className="c4-pay-head">
+    <section className="c4-win-log c4-win-laurel" aria-label={v4("wnTitle")} data-win-log="1" data-desk="laurel">
+      <header className="c4-win-laurel-mast">
+        <p className="c4-win-laurel-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("wnSub")}</p>
-          <h2 className="c4-title">{v4("wnTitle")}</h2>
+          <p className="c4-win-laurel-kicker">{v4("wnSub")}</p>
+          <h2 className="c4-title c4-win-laurel-title">{v4("wnTitle")}</h2>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <ol className="c4-win-laurel-index" aria-label={v4("wnTitle")}>
+          <li data-tone="gold">{v4("wnLaurelChampagne")}</li>
+          <li data-tone="ink">{v4("wnLaurelGraphite")}</li>
+          <li data-tone="ivory">{v4("wnLaurelIvory")}</li>
+          <li>{shown.length}</li>
+        </ol>
       </header>
+      <p className="c4-win-laurel-lead">{v4("wnLaurelLead")}</p>
       <p className="c4-meta">{v4("wnHint")}</p>
       <p className="c4-meta">{v4("wnLocal")}</p>
       {data.loading && !loaded.length && <p className="c4-meta">{tx("loading")}</p>}

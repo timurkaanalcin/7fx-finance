@@ -110,13 +110,20 @@ export function FontScale({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-scale-strip" aria-label={v4("tyTitle")} data-scale-strip="1">
-      <header className="c4-pay-head">
+    <section className="c4-scale-strip c4-scale-letter" aria-label={v4("tyTitle")} data-scale-strip="1" data-desk="letter">
+      <header className="c4-scale-letter-mast">
+        <p className="c4-scale-letter-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("tySub")}</p>
-          <h2 className="c4-title">{v4("tyTitle")}</h2>
+          <p className="c4-scale-letter-kicker">{v4("tySub")}</p>
+          <h2 className="c4-title c4-scale-letter-title">{v4("tyTitle")}</h2>
         </div>
+        <ol className="c4-scale-letter-index" aria-label={v4("tyTitle")}>
+          <li data-tone="gold">{v4("tyLetterChampagne")}</li>
+          <li data-tone="ink">{v4("tyLetterGraphite")}</li>
+          <li data-tone="ivory">{v4("tyLetterIvory")}</li>
+        </ol>
       </header>
+      <p className="c4-scale-letter-lead">{v4("tyLetterLead")}</p>
       <p className="c4-meta">{v4("tyHint")}</p>
       <p className="c4-meta">{v4("tyLocal")}</p>
       <p className="c4-meta">{v4("tyPad")}</p>
