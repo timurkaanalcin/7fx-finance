@@ -85681,3 +85681,433 @@
   [data-crmv4-root] .c4-crossstaff-card,
   [data-crmv4-root] .c4-serverplate-card { transition: none; }
 }
+
+[data-crmv4-root] .c4-kamal,
+[data-crmv4-root] .c4-deskwatch {
+  display: grid;
+  gap: 14px;
+  margin: 12px;
+  padding: 0 0 18px;
+  color: #1c1a17;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 6px no-repeat,
+    #f6f1e8;
+  border: 1px solid #1c1a17;
+  box-shadow: 0 0 0 6px #efe6d6, 0 18px 40px rgba(28, 26, 23, 0.06);
+}
+
+[data-crmv4-root] .c4-kamal-mast,
+[data-crmv4-root] .c4-deskwatch-mast {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: end;
+  padding: 22px 22px 16px;
+  border-bottom: 1px solid #1c1a17;
+}
+
+[data-crmv4-root] .c4-kamal-seal[data-logo="mono"],
+[data-crmv4-root] .c4-deskwatch-seal[data-logo="mono"],
+[data-crmv4-root] .c4-week-bill-seal[data-logo="mono"] {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  margin: 0;
+  color: #f6f1e8;
+  background: #1c1a17;
+  border-radius: 0;
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  font-weight: 500;
+}
+
+[data-crmv4-root] .c4-kamal-kicker,
+[data-crmv4-root] .c4-deskwatch-kicker,
+[data-crmv4-root] .c4-week-bill-kicker {
+  margin: 0 0 4px;
+  color: #8a6a3b;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root] .c4-kamal .c4-title,
+[data-crmv4-root] .c4-deskwatch .c4-title,
+[data-crmv4-root] .c4-week-bill .c4-title {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-weight: 500;
+}
+
+[data-crmv4-root] .c4-kamal-mast .c4-title::before,
+[data-crmv4-root] .c4-deskwatch-mast .c4-title::before,
+[data-crmv4-root] .c4-week-bill-mast .c4-title::before { display: none; }
+
+[data-crmv4-root] .c4-kamal-index,
+[data-crmv4-root] .c4-deskwatch-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-crmv4-root] .c4-kamal-index li,
+[data-crmv4-root] .c4-deskwatch-index li {
+  padding: 6px 10px;
+  border: 1px solid #1c1a17;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root] .c4-kamal-index li[data-tone="gold"],
+[data-crmv4-root] .c4-deskwatch-index li[data-tone="gold"] { background: #c6a15b; color: #1c1a17; }
+[data-crmv4-root] .c4-kamal-index li[data-tone="ink"],
+[data-crmv4-root] .c4-deskwatch-index li[data-tone="ink"] { background: #1c1a17; color: #f6f1e8; }
+[data-crmv4-root] .c4-kamal-index li[data-tone="ivory"],
+[data-crmv4-root] .c4-deskwatch-index li[data-tone="ivory"] { background: #f6f1e8; }
+
+[data-crmv4-root] .c4-kamal-links,
+[data-crmv4-root] .c4-deskwatch-links,
+[data-crmv4-root] .c4-kamal-lead,
+[data-crmv4-root] .c4-kamal-hint,
+[data-crmv4-root] .c4-deskwatch-hint,
+[data-crmv4-root] .c4-kamal-note,
+[data-crmv4-root] .c4-deskwatch-note,
+[data-crmv4-root] .c4-kamal-notice,
+[data-crmv4-root] .c4-kamal-meta,
+[data-crmv4-root] .c4-deskwatch-meta {
+  margin: 0;
+  padding: 0 22px;
+  color: #5c5348;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+[data-crmv4-root] .c4-kamal-links,
+[data-crmv4-root] .c4-deskwatch-links { display: flex; flex-wrap: wrap; gap: 14px; }
+[data-crmv4-root] .c4-kamal-links a,
+[data-crmv4-root] .c4-deskwatch-links a { color: #8a6a3b; }
+
+[data-crmv4-root] .c4-kamal-dials,
+[data-crmv4-root] .c4-deskwatch-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  margin: 0 22px;
+  padding: 0;
+  list-style: none;
+  border: 1px solid #1c1a17;
+}
+
+[data-crmv4-root] .c4-kamal-dials li,
+[data-crmv4-root] .c4-deskwatch-kpis li {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-right: 1px solid #d9cbb4;
+  background: #fffdf8;
+}
+
+[data-crmv4-root] .c4-kamal-dials li:nth-child(4n),
+[data-crmv4-root] .c4-deskwatch-kpis li:nth-child(4n) { border-right: 0; }
+[data-crmv4-root] .c4-kamal-dials span,
+[data-crmv4-root] .c4-deskwatch-kpis span {
+  color: #8a6a3b;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-kamal-dials strong,
+[data-crmv4-root] .c4-deskwatch-kpis strong { font-size: 22px; font-weight: 500; }
+
+[data-crmv4-root] .c4-kamal-chart,
+[data-crmv4-root] .c4-deskwatch-chart {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+  align-items: end;
+  min-height: 140px;
+  margin: 0 22px;
+  padding: 12px;
+  border: 1px solid #1c1a17;
+  background: #fffdf8;
+}
+
+[data-crmv4-root] .c4-kamal-column,
+[data-crmv4-root] .c4-deskwatch-column {
+  display: grid;
+  grid-template-rows: 96px auto auto;
+  align-items: end;
+  justify-items: center;
+  gap: 6px;
+  height: 148px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+[data-crmv4-root] .c4-kamal-column i,
+[data-crmv4-root] .c4-deskwatch-column i {
+  display: block;
+  width: 100%;
+  max-width: 36px;
+  background: #1c1a17;
+  transition: height 160ms ease;
+}
+
+[data-crmv4-root] .c4-kamal-column[data-on="1"] i,
+[data-crmv4-root] .c4-deskwatch-column[data-on="1"] i { background: #c6a15b; }
+[data-crmv4-root] .c4-kamal-column span,
+[data-crmv4-root] .c4-deskwatch-column span { font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; }
+
+[data-crmv4-root] .c4-kamal-time {
+  display: grid;
+  gap: 6px;
+  margin: 0 22px;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-kamal-time li {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 10px;
+  padding: 8px 12px;
+  background: #fffdf8;
+  border-left: 3px solid #c6a15b;
+}
+
+[data-crmv4-root] .c4-kamal-form,
+[data-crmv4-root] .c4-kamal-tools,
+[data-crmv4-root] .c4-kamal-views,
+[data-crmv4-root] .c4-deskwatch-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0 22px;
+  align-items: center;
+}
+
+[data-crmv4-root] .c4-kamal-board,
+[data-crmv4-root] .c4-kamal-index-list,
+[data-crmv4-root] .c4-deskwatch-board,
+[data-crmv4-root] .c4-deskwatch-lanes {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0 22px;
+  list-style: none;
+}
+
+[data-crmv4-root] .c4-kamal-board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+[data-crmv4-root] .c4-kamal-board[data-density="close"] { grid-template-columns: 1fr; }
+
+[data-crmv4-root] .c4-kamal-card,
+[data-crmv4-root] .c4-deskwatch-card {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  gap: 12px;
+  padding: 14px;
+  background: #fffdf8;
+  border: 1px solid #d9cbb4;
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+
+[data-crmv4-root] .c4-kamal-card[data-on="1"],
+[data-crmv4-root] .c4-deskwatch-card[data-on="1"] { border-color: #c6a15b; }
+[data-crmv4-root] .c4-kamal-card[data-overdue="1"] { box-shadow: inset 3px 0 0 #c6a15b; }
+[data-crmv4-root] .c4-kamal-card[data-logged="1"] { background: #f3ecdf; }
+[data-crmv4-root] .c4-deskwatch-card[data-reviewed="1"] { background: #f3ecdf; }
+[data-crmv4-root] .c4-kamal-card:hover,
+[data-crmv4-root] .c4-deskwatch-card:hover { transform: translateY(-1px); }
+
+[data-crmv4-root] .c4-kamal-ticks {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-kamal-ticks li {
+  width: 10px;
+  height: 10px;
+  border: 1px solid #1c1a17;
+  border-radius: 50%;
+}
+[data-crmv4-root] .c4-kamal-ticks li[data-on="1"] { background: #c6a15b; }
+
+[data-crmv4-root] .c4-deskwatch-stamp {
+  display: grid;
+  place-items: center;
+  min-width: 64px;
+  margin: 0;
+  padding: 8px;
+  color: #f6f1e8;
+  background: #1c1a17;
+  letter-spacing: 0.14em;
+  font-size: 13px;
+}
+
+[data-crmv4-root] .c4-kamal-empty,
+[data-crmv4-root] .c4-deskwatch-empty {
+  margin: 0 22px;
+  padding: 28px 16px;
+  text-align: center;
+  color: #8a6a3b;
+  border: 1px dashed #c6a15b;
+  background: #fffdf8;
+}
+
+[data-crmv4-root] .c4-kamal :focus-visible,
+[data-crmv4-root] .c4-deskwatch :focus-visible,
+[data-crmv4-root] .c4-week-bill :focus-visible { outline: 2px solid #c6a15b; outline-offset: 2px; }
+
+[data-crmv4-root] .c4-week-strip.c4-week-salon.c4-week-bill {
+  gap: 16px;
+  margin: 12px;
+  padding: 0 0 18px;
+  border-radius: 0;
+  border: 1px solid #1c1a17;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 6px no-repeat,
+    #f6f1e8;
+  box-shadow: 0 0 0 6px #efe6d6, 0 18px 40px rgba(28, 26, 23, 0.06);
+}
+
+[data-crmv4-root] .c4-week-bill-mast {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) auto auto;
+  gap: 16px;
+  align-items: end;
+  padding: 22px 22px 14px;
+  border-bottom: 1px solid #1c1a17;
+}
+
+[data-crmv4-root] .c4-week-bill-lead {
+  margin: 0;
+  padding: 0 22px;
+  max-width: 68ch;
+  color: #3d3832;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+[data-crmv4-root] .c4-week-bill .c4-week-rule,
+[data-crmv4-root] .c4-week-bill .c4-week-links,
+[data-crmv4-root] .c4-week-bill .c4-row,
+[data-crmv4-root] .c4-week-bill .c4-lab { padding-left: 22px; padding-right: 22px; }
+
+[data-crmv4-root] .c4-week-bill .c4-week-list {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  margin: 0 22px;
+  border: 1px solid #1c1a17;
+  background: #fffdf8;
+}
+
+@media (min-width: 1200px) {
+  [data-crmv4-root] .c4-week-bill .c4-week-list { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+}
+
+[data-crmv4-root] .c4-week-bill .c4-week-card {
+  min-height: 168px;
+  padding: 14px 12px 16px;
+  border: 0;
+  border-right: 1px solid #d9cbb4;
+  border-radius: 0;
+  background: transparent;
+}
+
+[data-crmv4-root] .c4-week-bill .c4-week-card:last-child { border-right: 0; }
+[data-crmv4-root] .c4-week-bill .c4-week-card[data-empty="1"] { background: #f6f1e8; }
+[data-crmv4-root] .c4-week-bill .c4-week-card[data-today="1"] {
+  background: #fffdf8;
+  box-shadow: inset 0 4px 0 #c6a15b;
+  border-top: 4px solid #c6a15b;
+}
+[data-crmv4-root] .c4-week-bill .c4-week-card .c4-title {
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-kamal,
+[data-crmv4-root][data-theme="dark"] .c4-deskwatch,
+[data-crmv4-root][data-theme="dark"] .c4-week-strip.c4-week-salon.c4-week-bill {
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 6px no-repeat,
+    #161411;
+  border-color: #c6a15b;
+  box-shadow: 0 0 0 6px #221f1b;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-kamal-mast,
+[data-crmv4-root][data-theme="dark"] .c4-deskwatch-mast,
+[data-crmv4-root][data-theme="dark"] .c4-week-bill-mast { border-color: #3a332c; }
+
+[data-crmv4-root][data-theme="dark"] .c4-kamal-seal[data-logo="mono"],
+[data-crmv4-root][data-theme="dark"] .c4-deskwatch-seal[data-logo="mono"],
+[data-crmv4-root][data-theme="dark"] .c4-week-bill-seal[data-logo="mono"] {
+  color: #161411;
+  background: #f6f1e8;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-kamal-dials li,
+[data-crmv4-root][data-theme="dark"] .c4-deskwatch-kpis li,
+[data-crmv4-root][data-theme="dark"] .c4-kamal-chart,
+[data-crmv4-root][data-theme="dark"] .c4-deskwatch-chart,
+[data-crmv4-root][data-theme="dark"] .c4-kamal-card,
+[data-crmv4-root][data-theme="dark"] .c4-deskwatch-card,
+[data-crmv4-root][data-theme="dark"] .c4-kamal-time li,
+[data-crmv4-root][data-theme="dark"] .c4-week-bill .c4-week-list {
+  background: #221f1b;
+  color: #f6f1e8;
+  border-color: #3a332c;
+}
+
+[data-crmv4-root][data-theme="dark"] .c4-kamal-column i,
+[data-crmv4-root][data-theme="dark"] .c4-deskwatch-column i { background: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-kamal-column[data-on="1"] i,
+[data-crmv4-root][data-theme="dark"] .c4-deskwatch-column[data-on="1"] i { background: #c6a15b; }
+[data-crmv4-root][data-theme="dark"] .c4-week-bill-lead,
+[data-crmv4-root][data-theme="dark"] .c4-kamal-hint,
+[data-crmv4-root][data-theme="dark"] .c4-deskwatch-hint { color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-week-bill .c4-week-card[data-empty="1"] { background: #161411; }
+[data-crmv4-root][data-theme="dark"] .c4-week-bill .c4-week-card[data-today="1"] { background: #221f1b; }
+
+@media (max-width: 860px) {
+  [data-crmv4-root] .c4-kamal-mast,
+  [data-crmv4-root] .c4-deskwatch-mast,
+  [data-crmv4-root] .c4-week-bill-mast,
+  [data-crmv4-root] .c4-kamal-dials,
+  [data-crmv4-root] .c4-deskwatch-kpis,
+  [data-crmv4-root] .c4-kamal-chart,
+  [data-crmv4-root] .c4-deskwatch-chart,
+  [data-crmv4-root] .c4-kamal-board,
+  [data-crmv4-root] .c4-week-bill .c4-week-list { grid-template-columns: minmax(0, 1fr); }
+  [data-crmv4-root] .c4-week-bill .c4-week-legend,
+  [data-crmv4-root] .c4-week-bill .c4-week-count { grid-column: 1 / -1; }
+  [data-crmv4-root] .c4-kamal .c4-btn,
+  [data-crmv4-root] .c4-deskwatch .c4-btn,
+  [data-crmv4-root] .c4-week-bill .c4-btn,
+  [data-crmv4-root] .c4-kamal .c4-chip,
+  [data-crmv4-root] .c4-deskwatch .c4-chip,
+  [data-crmv4-root] .c4-week-bill .c4-chip { min-height: 44px; }
+  [data-crmv4-root] .c4-week-bill .c4-week-card { border-right: 0; border-bottom: 1px solid #d9cbb4; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-kamal-card,
+  [data-crmv4-root] .c4-deskwatch-card,
+  [data-crmv4-root] .c4-kamal-column i,
+  [data-crmv4-root] .c4-deskwatch-column i { transition: none; }
+}
