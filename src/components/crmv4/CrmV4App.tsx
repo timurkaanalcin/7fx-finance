@@ -272,6 +272,7 @@ import { AddressPlates as StreetPlates, NocturnalSights } from "./round281";
 import { LanguagePlates, QuadrantSights } from "./round282";
 import { PhonePlates, ReflectingCircles } from "./round283";
 import { ArmillaryRings, CityPlates } from "./round284";
+import { NotePlates, TraversePegs } from "./round285";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1079,6 +1080,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "phn") return v4("phnTitle");
     if (tab === "aml") return v4("amlTitle");
     if (tab === "cty") return v4("ctyTitle");
+    if (tab === "trv") return v4("trvTitle");
+    if (tab === "nte") return v4("nteTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1572,6 +1575,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "phn") return v4("phnSub");
     if (tab === "aml") return v4("amlSub");
     if (tab === "cty") return v4("ctySub");
+    if (tab === "trv") return v4("trvSub");
+    if (tab === "nte") return v4("nteSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -2200,6 +2205,8 @@ function Shell({ base, section, name }: Props) {
             {view === "phn" && <PhonePlates base={base} v4={v4} />}
             {view === "aml" && <ArmillaryRings base={base} v4={v4} />}
             {view === "cty" && <CityPlates base={base} v4={v4} />}
+            {view === "trv" && <TraversePegs base={base} v4={v4} />}
+            {view === "nte" && <NotePlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
