@@ -177,14 +177,21 @@ export function TagBoard({ base, v4, tx }: { base: string; v4: V4; tx: Tx }) {
   }
 
   return (
-    <section className="c4-tags-luxe" aria-label={v4("tgTitle")} data-tag-board="1" data-viewer={viewer ? "1" : "0"}>
-      <header className="c4-pay-head">
+    <section className="c4-tags-luxe c4-tags-ribbon" aria-label={v4("tgTitle")} data-tag-board="1" data-desk="ribbon" data-viewer={viewer ? "1" : "0"}>
+      <header className="c4-tags-ribbon-mast">
+        <p className="c4-tags-ribbon-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("tgSub")}</p>
-          <h2 className="c4-title">{v4("tgTitle")}</h2>
+          <p className="c4-pay-kicker c4-tags-ribbon-kicker">{v4("tgSub")}</p>
+          <h2 className="c4-title c4-tags-ribbon-title">{v4("tgTitle")}</h2>
+          <p className="c4-meta c4-tags-ribbon-count">{v4("tgCount")} {shown.length}</p>
         </div>
-        <p className="c4-meta">{v4("tgCount")} {shown.length}</p>
+        <ol className="c4-tags-ribbon-index" aria-label={v4("tgTitle")}>
+          <li data-tone="gold">{v4("tgRibbonChampagne")}</li>
+          <li data-tone="ink">{v4("tgRibbonGraphite")}</li>
+          <li data-tone="ivory">{v4("tgRibbonIvory")}</li>
+        </ol>
       </header>
+      <p className="c4-tags-ribbon-lead">{v4("tgRibbonLead")}</p>
       <p className="c4-meta">{v4("tgHint")}</p>
       {viewer && <p className="c4-meta">{v4("tgViewer")}</p>}
       <label className="c4-lab">

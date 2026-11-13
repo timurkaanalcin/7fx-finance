@@ -245,6 +245,7 @@ import { ParcelSlips, TongueRibbons } from "./round254";
 import { BrokerCrests, WarrantSlips } from "./round255";
 import { NatalPlates, ReliquarySlips } from "./round256";
 import { CisternSlips, JoinPlates } from "./round257";
+import { AtriumSlips, ContactPlates } from "./round258";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1000,6 +1001,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ntp") return v4("ntpTitle");
     if (tab === "cst") return v4("cstTitle");
     if (tab === "jnp") return v4("jnpTitle");
+    if (tab === "grt") return v4("grtTitle");
+    if (tab === "lcp") return v4("lcpTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1441,6 +1444,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ntp") return v4("ntpSub");
     if (tab === "cst") return v4("cstSub");
     if (tab === "jnp") return v4("jnpSub");
+    if (tab === "grt") return v4("grtSub");
+    if (tab === "lcp") return v4("lcpSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -2015,6 +2020,8 @@ function Shell({ base, section, name }: Props) {
             {view === "ntp" && <NatalPlates base={base} v4={v4} />}
             {view === "cst" && <CisternSlips base={base} v4={v4} />}
             {view === "jnp" && <JoinPlates base={base} v4={v4} />}
+            {view === "grt" && <AtriumSlips base={base} v4={v4} />}
+            {view === "lcp" && <ContactPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
