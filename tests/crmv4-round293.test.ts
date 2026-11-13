@@ -226,17 +226,17 @@ function main() {
   const keys = Object.keys(ROUND293_COPY.en).sort();
   for (const locale of locales) assert.deepEqual(Object.keys(ROUND293_COPY[locale]).sort(), keys);
   assert.equal(crmv4Text("tr", "plnTitle"), ROUND293_COPY.tr.plnTitle);
-  assert.equal(crmv4Text("de", "slpTitle"), ROUND293_COPY.de.slpTitle);
+  assert.equal(crmv4Text("de", "slxTitle"), ROUND293_COPY.de.slxTitle);
   assert.equal(crmv4Text("ru", "plnSub"), ROUND293_COPY.ru.plnSub);
-  assert.equal(crmv4Text("ar", "slpSub"), ROUND293_COPY.ar.slpSub);
+  assert.equal(crmv4Text("ar", "slxSub"), ROUND293_COPY.ar.slxSub);
   assert.equal(crmv4Text("en", "plnLogo"), "7FX");
-  assert.equal(crmv4Text("en", "slpLogo"), "7FX");
+  assert.equal(crmv4Text("en", "slxLogo"), "7FX");
   assert.equal(crmv4Text("en", "plnTitle"), "Planisphere discs");
-  assert.equal(crmv4Text("en", "slpTitle"), "Seal plates");
+  assert.equal(crmv4Text("en", "slxTitle"), "Seal plates");
   assert.equal(crmv4Text("en", "vsFolioKicker"), "Ivory voice folio");
   assert.equal(crmv4Text("en", "cdRailKicker"), "Champagne date rail");
   assert.notEqual(ROUND293_COPY.tr.plnTitle, ROUND293_COPY.en.plnTitle);
-  assert.notEqual(ROUND293_COPY.ar.slpTitle, ROUND293_COPY.en.slpTitle);
+  assert.notEqual(ROUND293_COPY.ar.slxTitle, ROUND293_COPY.en.slxTitle);
 
   const css = fs.readFileSync(path.join(__dirname, "../src/components/crmv4/crmv4.css"), "utf8");
   assert.match(css, /\.c4-planisphere/);
@@ -296,7 +296,7 @@ function main() {
   assert.match(rail, /cdRailLead/);
   assert.match(rail, /data-utc-marks/);
   assert.equal(rail.includes("amount"), false);
-  const named = viewFile.match(/"(pln|slp|vsFolio|cdRail)[a-zA-Z0-9]+"/g)?.map((item) => item.slice(1, -1)) || [];
+  const named = viewFile.match(/"(pln|slp|slx|vsFolio|cdRail)[a-zA-Z0-9]+"/g)?.map((item) => item.slice(1, -1)) || [];
   for (const key of named) assert.equal(typeof ROUND293_COPY.en[key as keyof typeof ROUND293_COPY.en], "string", key);
   console.log("crmv4 round293 tests passed");
 }

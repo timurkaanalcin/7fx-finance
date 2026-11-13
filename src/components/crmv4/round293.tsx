@@ -398,7 +398,7 @@ export function PlanisphereDiscs({ base, v4 }: { base: string; v4: V4 }) {
         </ol>
       </header>
       <p className="c4-planisphere-links">
-        <Link href={crmv4Href(base, "slp")}>{v4("slpTitle")}</Link>
+        <Link href={crmv4Href(base, "slp")}>{v4("slxTitle")}</Link>
         <Link href={crmv4Href(base, "customers")}>{v4("plnCustomers")}</Link>
         <Link href={crmv4Href(base, "voicetray")}>{v4("vsFolioKicker")}</Link>
       </p>
@@ -537,7 +537,7 @@ export function PlanisphereDiscs({ base, v4 }: { base: string; v4: V4 }) {
                   <button type="button" className="c4-btn" disabled={viewer} onClick={() => store(lowerPegFocused(cards, card.id))}>{v4("plnMoon")}−</button>
                   <button type="button" className="c4-btn" disabled={viewer} onClick={() => store(addPlanisphereTag(cards, card.id, "x"))}>{v4("plnTag")} x</button>
                   <button type="button" className="c4-btn" disabled={viewer} onClick={() => store(tagPlanisphereFocused(cards, card.id))}>{v4("plnTag")}</button>
-                  <button type="button" className="c4-btn" onClick={() => { void navigator.clipboard?.writeText(planisphereCopy(card)); }}>{v4("slpCopy")}</button>
+                  <button type="button" className="c4-btn" onClick={() => { void navigator.clipboard?.writeText(planisphereCopy(card)); }}>{v4("slxCopy")}</button>
                 </div>
               </div>
             </li>
@@ -643,15 +643,15 @@ export function SealPlates({ base, v4 }: { base: string; v4: V4 }) {
   }, [focusAt, reviewed, rows, shown, viewer, now]);
 
   return (
-    <section className="c4-seal" aria-label={v4("slpTitle")} data-plates="1" data-names={rows.length} data-role={role}>
+    <section className="c4-seal" aria-label={v4("slxTitle")} data-plates="1" data-names={rows.length} data-role={role}>
       <header className="c4-seal-mast">
-        <p className="c4-seal-seal" data-logo="mono">{v4("slpLogo")}</p>
+        <p className="c4-seal-seal" data-logo="mono">{v4("slxLogo")}</p>
         <div>
-          <p className="c4-seal-kicker">{v4("slpSub")}</p>
-          <h2 className="c4-title">{v4("slpTitle")}</h2>
+          <p className="c4-seal-kicker">{v4("slxSub")}</p>
+          <h2 className="c4-title">{v4("slxTitle")}</h2>
         </div>
       </header>
-      <ol className="c4-seal-index" aria-label={v4("slpTitle")}>
+      <ol className="c4-seal-index" aria-label={v4("slxTitle")}>
         <li data-tone="gold">{v4("slpMint")}</li>
         <li data-tone="ink">{v4("slpRust")}</li>
         <li data-tone="ivory">{v4("slpLinen")}</li>
@@ -663,17 +663,17 @@ export function SealPlates({ base, v4 }: { base: string; v4: V4 }) {
         <Link href={crmv4Href(base, "customers")}>{v4("plnCustomers")}</Link>
         <Link href={crmv4Href(base, "utcmark")}>{v4("cdRailKicker")}</Link>
       </p>
-      <p className="c4-seal-hint">{v4("slpHint")}</p>
+      <p className="c4-seal-hint">{v4("slxHint")}</p>
       {viewer && <p className="c4-seal-note">{v4("slpViewer")}</p>}
       {soon > 0 && <p className="c4-seal-notice" role="status">{v4("slpSoon")} {soon}</p>}
-      {queue.loading && <p className="c4-seal-meta">{v4("slpEmpty")}</p>}
+      {queue.loading && <p className="c4-seal-meta">{v4("slxEmpty")}</p>}
       {queue.error && <p className="c4-seal-meta">{queue.error}</p>}
       <ul className="c4-seal-kpis" aria-label={v4("slpRules")}>
         <li><span>{v4("slpLead")}</span><strong>{lead ? laneLabel(v4, lead) : v4("slpUnmarked")}</strong></li>
         <li><span>{v4("slpToneLead")}</span><strong>{leadHue ? hueLabel(v4, leadHue) : v4("slpUnmarked")}</strong></li>
         <li><span>{v4("slpMint")}</span><strong>{laneSealCount(rows, "mint", now)}</strong></li>
         <li><span>{v4("slpRust")}</span><strong>{laneSealCount(rows, "rust", now)}</strong></li>
-        <li><span>{v4("slpShare")}</span><strong>{sealShare(laneSealCount(rows, "iron", now), Math.max(1, rows.length))}%</strong></li>
+        <li><span>{v4("slxShare")}</span><strong>{sealShare(laneSealCount(rows, "iron", now), Math.max(1, rows.length))}%</strong></li>
         <li><span>{v4("slpOpen")}</span><strong>{rows.filter((row) => sealOpen(row.changed, now)).length}</strong></li>
         <li><span>{v4("slpToday")}</span><strong>{rows.filter((row) => sealToday(row.changed, now)).length}</strong></li>
         <li><span>{v4("slpHeld")}</span><strong>{rows.filter((row) => sealHeld(row.changed, now)).length}</strong></li>
@@ -689,7 +689,7 @@ export function SealPlates({ base, v4 }: { base: string; v4: V4 }) {
         ))}
       </div>
       <div className="c4-seal-tools">
-        <input ref={searchRef} className="c4-field c4-seal-search" aria-label={v4("slpSearch")} aria-required={false} value={query} onChange={(event) => setQuery(event.target.value)} placeholder={v4("slpSearch")} />
+        <input ref={searchRef} className="c4-field c4-seal-search" aria-label={v4("slxSearch")} aria-required={false} value={query} onChange={(event) => setQuery(event.target.value)} placeholder={v4("slxSearch")} />
         {(["all", "ivory", "graphite", "champagne"] as const).map((item) => (
           <button key={item} type="button" className="c4-chip" data-on={hue === item ? "1" : "0"} onClick={() => setHue(item)}>{item === "all" ? v4("slpAll") : hueLabel(v4, item)}</button>
         ))}
@@ -700,7 +700,7 @@ export function SealPlates({ base, v4 }: { base: string; v4: V4 }) {
           <button key={item} type="button" className="c4-chip" data-on={review === item ? "1" : "0"} onClick={() => setReview(item)}>{item === "all" ? v4("slpAll") : item === "reviewed" ? v4("slpReviewed") : v4("slpFresh")}</button>
         ))}
         <button type="button" className="c4-chip" data-on={showHidden ? "1" : "0"} onClick={() => setShowHidden((value) => !value)}>{v4("slpShow")}</button>
-        <button type="button" className="c4-btn" onClick={() => download("seal-lanes.csv", sealLanesCsv(rows, now))}>{v4("slpCsv")}</button>
+        <button type="button" className="c4-btn" onClick={() => download("seal-lanes.csv", sealLanesCsv(rows, now))}>{v4("slxCsv")}</button>
         <button type="button" className="c4-btn" onClick={() => download("seal-rows.csv", sealRowsCsv(rows, reviewed, now))}>{v4("slpRowCsv")}</button>
       </div>
       <ul className="c4-seal-lanes">
@@ -716,7 +716,7 @@ export function SealPlates({ base, v4 }: { base: string; v4: V4 }) {
           <button type="button" className="c4-btn" disabled={viewer} onClick={() => storeReviewed(bulkSealReview(reviewed, picked, false))}>{v4("slpBulkClear")}</button>
         </div>
       )}
-      {!shown.length && <p className="c4-seal-empty">{v4("slpEmpty")}</p>}
+      {!shown.length && <p className="c4-seal-empty">{v4("slxEmpty")}</p>}
       <ol className="c4-seal-board">
         {shown.map((row, index) => {
           const seen = reviewed.includes(row.id);
@@ -730,7 +730,7 @@ export function SealPlates({ base, v4 }: { base: string; v4: V4 }) {
                 <p className="c4-seal-meta">{laneLabel(v4, sealLane(row.changed, now))} · {hueLabel(v4, sealHue(row.changed, now))} · {v4("slpStep")} {sealStep(row.changed, now)}{minutes !== null ? ` · ${minutes}m` : ""}{sealWeekday(row.changed, now) ? ` · ${v4("slpWeekday")}` : ""}{sealWeekend(row.changed, now) ? ` · ${v4("slpWeekend")}` : ""}{sealMorning(row.changed, now) ? ` · ${v4("slpMorning")}` : ""}{sealEven(row.changed, now) ? ` · ${v4("slpEven")}` : ""}{sealLeap(row.changed, now) ? ` · ${v4("slpLeap")}` : ""}{sealFirst(row.changed, now) ? ` · ${v4("slpFirst")}` : ""}{sealHeld(row.changed, now) ? ` · ${v4("slpHeld")}` : ""}{sealSoon(row.changed, now) ? ` · ${v4("slpSoon")}` : ""}{sealTwin(row.changed, now) ? ` · ${v4("slpTwin")}` : ""}{sealTail(row.changed) ? ` · ${v4("slpTail")}` : ""}{sealMark(row.changed) ? ` · ${v4("slpMark")}` : ""}{sealSpace(row.changed) ? ` · ${v4("slpSpace")}` : ""}{sealOpen(row.changed, now) ? ` · ${v4("slpOpen")}` : ""}</p>
                 <div className="c4-seal-tools">
                   <button type="button" className="c4-btn" disabled={viewer} onClick={() => storeReviewed(toggleSealReview(reviewed, row.id))}>{seen ? v4("slpReviewed") : v4("slpReview")}</button>
-                  <button type="button" className="c4-btn" onClick={() => { void navigator.clipboard?.writeText(sealCopy(row.changed)); setCopied(row.id); }}>{copied === row.id ? v4("slpCopied") : v4("slpCopy")}</button>
+                  <button type="button" className="c4-btn" onClick={() => { void navigator.clipboard?.writeText(sealCopy(row.changed)); setCopied(row.id); }}>{copied === row.id ? v4("slxCopied") : v4("slxCopy")}</button>
                 </div>
               </div>
             </li>
