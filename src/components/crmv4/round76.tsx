@@ -140,27 +140,36 @@ export function DocPulse({ base, v4, tx }: { base: string; v4: V4; tx: Tx }) {
   }
 
   return (
-    <section className="c4-docpulse" aria-label={v4("xpTitle")} data-docpulse="1">
-      <header className="c4-pay-head">
+    <section className="c4-docpulse c4-proof-loft" aria-label={v4("xpTitle")} data-docpulse="1" data-desk="loft">
+      <header className="c4-proof-loft-mast">
+        <p className="c4-proof-loft-seal" data-logo="mono">7FX</p>
         <div>
+          <p className="c4-proof-loft-kicker">{v4("xpLoftKicker")}</p>
           <p className="c4-pay-kicker">{v4("xpSub")}</p>
-          <h2 className="c4-title">{v4("xpTitle")}</h2>
+          <h2 className="c4-title c4-proof-loft-title">{v4("xpTitle")}</h2>
+          <p className="c4-proof-loft-lead">{v4("xpLoftLead")}</p>
         </div>
-        <p className="c4-meta">{v4("xpWindow")} {span} {v4("xpDays")}</p>
+        <p className="c4-proof-loft-count">{v4("xpWindow")} {span} {v4("xpDays")}</p>
       </header>
-      <p className="c4-meta">{v4("xpHint")}</p>
-      <div className="c4-row" role="group" aria-label={v4("xpShown")}>
+      <ol className="c4-proof-loft-index" aria-label={v4("xpTitle")}>
+        <li data-tone="gold">{v4("xpLoftGold")}</li>
+        <li data-tone="ink">{v4("xpLoftInk")}</li>
+        <li data-tone="ivory">{v4("xpLoftIvory")}</li>
+      </ol>
+      <p className="c4-meta c4-proof-loft-hint">{v4("xpHint")}</p>
+      <div className="c4-row c4-proof-loft-tools" role="group" aria-label={v4("xpShown")}>
         <button type="button" className="c4-chip" data-on={showHidden ? "0" : "1"} aria-pressed={!showHidden} onClick={() => setShowHidden(false)}>{v4("xpShown")}</button>
         <button type="button" className="c4-chip" data-on={showHidden ? "1" : "0"} aria-pressed={showHidden} onClick={() => setShowHidden(true)}>{v4("xpHidden")}</button>
       </div>
       {data.loading && !data.data && <p className="c4-meta">{v4("xpLoading")}</p>}
       {data.error && <p className="c4-meta">{v4("xpFailed")} {tx("failed")}</p>}
-      {!kinds.length && <p className="c4-pay-empty">{v4("xpEmpty")}</p>}
-      <ul className="c4-docpulse-list">
+      {!kinds.length && <p className="c4-pay-empty c4-proof-loft-empty">{v4("xpEmpty")}</p>}
+      <ul className="c4-docpulse-list c4-proof-loft-list">
         {kinds.map((kind) => (
-          <li key={kind} className="c4-docpulse-card" data-kind={kind}>
-            <p className="c4-meta">{v4(KIND_KEY[kind])}</p>
-            {counts && <p className="c4-docpulse-count">{counts[kind]}</p>}
+          <li key={kind} className="c4-docpulse-card c4-proof-loft-card" data-kind={kind}>
+            <span className="c4-proof-loft-pip" data-kind={kind} aria-hidden="true" />
+            <p className="c4-proof-loft-kind">{v4(KIND_KEY[kind])}</p>
+            {counts && <p className="c4-docpulse-count c4-proof-loft-figure">{counts[kind]}</p>}
             <div className="c4-row">
               <Link className="c4-btn" href={crmv4Href(base, DOC_BOARD)}>{v4("xpOpen")}</Link>
               <button type="button" className="c4-btn" data-docpulse-hide="" onClick={() => store(toggleKind(hidden, kind))}>{showHidden ? v4("xpShow") : v4("xpHide")}</button>

@@ -129,33 +129,42 @@ export function LedgerGlance({ base, v4, tx }: { base: string; v4: V4; tx: Tx })
   }
 
   return (
-    <section className="c4-glance-strip" aria-label={v4("gcTitle")} data-glance-strip="1">
-      <header className="c4-pay-head">
+    <section className="c4-glance-strip c4-tally-court" aria-label={v4("gcTitle")} data-glance-strip="1" data-desk="tally">
+      <header className="c4-tally-court-mast">
+        <p className="c4-tally-court-seal" data-logo="mono">7FX</p>
         <div>
+          <p className="c4-tally-court-kicker">{v4("gcCourtKicker")}</p>
           <p className="c4-pay-kicker">{v4("gcSub")}</p>
-          <h2 className="c4-title">{v4("gcTitle")}</h2>
+          <h2 className="c4-title c4-tally-court-title">{v4("gcTitle")}</h2>
+          <p className="c4-tally-court-lead">{v4("gcCourtLead")}</p>
         </div>
+        <p className="c4-tally-court-count">{kinds.length}</p>
       </header>
-      <p className="c4-meta">{v4("gcHint")}</p>
-      <div className="c4-row" role="group" aria-label={v4("gcShown")}>
+      <ol className="c4-tally-court-index" aria-label={v4("gcTitle")}>
+        <li data-tone="gold">{v4("gcCourtGold")}</li>
+        <li data-tone="ink">{v4("gcCourtInk")}</li>
+        <li data-tone="ivory">{v4("gcCourtIvory")}</li>
+      </ol>
+      <p className="c4-meta c4-tally-court-hint">{v4("gcHint")}</p>
+      <div className="c4-row c4-tally-court-tools" role="group" aria-label={v4("gcShown")}>
         <button type="button" className="c4-chip" data-on={showHidden ? "0" : "1"} aria-pressed={!showHidden} onClick={() => setShowHidden(false)}>{v4("gcShown")}</button>
         <button type="button" className="c4-chip" data-on={showHidden ? "1" : "0"} aria-pressed={showHidden} onClick={() => setShowHidden(true)}>{v4("gcHidden")}</button>
       </div>
-      {!kinds.length && <p className="c4-pay-empty">{v4("gcEmpty")}</p>}
-      <ul className="c4-glance-list">
+      {!kinds.length && <p className="c4-pay-empty c4-tally-court-empty">{v4("gcEmpty")}</p>}
+      <ul className="c4-glance-list c4-tally-court-list">
         {kinds.map((kind) => {
           const state = lists[kind];
           const ready = !state.loading && !state.error;
           const split = ready ? splitCounts(rowsOf(kind, state), kind) : null;
           return (
-            <li key={kind} className="c4-glance-card" data-kind={kind}>
-              <p className="c4-meta">{v4(KIND_KEY[kind])}</p>
+            <li key={kind} className="c4-glance-card c4-tally-court-card" data-kind={kind}>
+              <p className="c4-tally-court-kind">{v4(KIND_KEY[kind])}</p>
               {state.loading && !state.data && <p className="c4-meta">{v4("gcLoading")}</p>}
               {state.error && <p className="c4-meta">{v4("gcFailed")} {tx("failed")}</p>}
               {split && (
-                <p className="c4-glance-count">
-                  <span>{v4("gcPending")} {split.pending}</span>
-                  <span>{v4("gcSettled")} {split.settled}</span>
+                <p className="c4-glance-count c4-tally-court-figures">
+                  <span><i>{v4("gcPending")}</i><strong>{split.pending}</strong></span>
+                  <span><i>{v4("gcSettled")}</i><strong>{split.settled}</strong></span>
                 </p>
               )}
               <div className="c4-row">
