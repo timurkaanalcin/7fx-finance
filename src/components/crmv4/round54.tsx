@@ -111,15 +111,22 @@ export function CaseQueue({ base, v4, locale, tx }: { base: string; v4: V4; loca
   }
 
   return (
-    <section className="c4-case-queue c4-case-gallery" aria-label={v4("cqTitle")} data-case-queue="1" data-desk="gallery" data-viewer={viewer ? "1" : "0"}>
-      <header className="c4-case-mast">
-        <p className="c4-case-seal" data-logo="mono">7FX</p>
+    <section className="c4-case-queue c4-case-gallery c4-case-lamp" aria-label={v4("cqTitle")} data-case-queue="1" data-desk="lamp" data-viewer={viewer ? "1" : "0"} data-lamp="1">
+      <header className="c4-case-mast c4-case-lamp-mast">
+        <p className="c4-case-seal c4-case-lamp-seal" data-logo="mono">7FX</p>
         <div>
+          <p className="c4-case-lamp-kicker">{v4("cqLampKicker")}</p>
           <p className="c4-pay-kicker">{v4("cqSub")}</p>
-          <h2 className="c4-title">{v4("cqTitle")}</h2>
+          <h2 className="c4-title c4-case-lamp-title">{v4("cqTitle")}</h2>
+          <p className="c4-case-lamp-lead">{v4("cqLampLead")}</p>
         </div>
-        <p className="c4-case-count">{v4("cqCount")} {shown.length}</p>
+        <p className="c4-case-count c4-case-lamp-count">{v4("cqCount")} {shown.length}</p>
       </header>
+      <ol className="c4-case-lamp-index" aria-label={v4("cqTitle")}>
+        <li data-tone="gold">{v4("cqLampQueue")}</li>
+        <li data-tone="ink">{v4("cqLampOpen")}</li>
+        <li data-tone="ivory">{v4("cqLampPin")}</li>
+      </ol>
       <p className="c4-case-legend" aria-label={v4("cqAll")}>
         <span data-status="PENDING">{v4("cqPending")}</span>
         <span data-status="APPROVED">{v4("cqApproved")}</span>
@@ -150,7 +157,7 @@ export function CaseQueue({ base, v4, locale, tx }: { base: string; v4: V4; loca
           const current = caseStatus(row);
           const picked = choice[row.id] || "";
           return (
-            <li key={row.id} className="c4-case-card c4-case-docket" data-pinned={pins.includes(row.id) ? "1" : "0"} data-status={current || "none"}>
+            <li key={row.id} className="c4-case-card c4-case-docket c4-case-lamp-card" data-pinned={pins.includes(row.id) ? "1" : "0"} data-status={current || "none"}>
               <div className="c4-row c4-between">
                 <strong>{row.name || "—"}</strong>
                 <span className="c4-case-status" data-status={current || "none"}>{STATUS_LABEL[current] ? v4(STATUS_LABEL[current]) : current || "—"}</span>
@@ -210,15 +217,22 @@ export function ShortcutRail({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-shortcut-rail c4-shortcut-gallery" aria-label={v4("scTitle")} data-shortcut-rail="1" data-desk="gallery">
-      <header className="c4-shortcut-mast">
-        <p className="c4-shortcut-seal" data-logo="mono">7FX</p>
+    <section className="c4-shortcut-rail c4-shortcut-gallery c4-shortcut-lamp" aria-label={v4("scTitle")} data-shortcut-rail="1" data-desk="lamp" data-lamp="1">
+      <header className="c4-shortcut-mast c4-shortcut-lamp-mast">
+        <p className="c4-shortcut-seal c4-shortcut-lamp-seal" data-logo="mono">7FX</p>
         <div>
+          <p className="c4-shortcut-lamp-kicker">{v4("scLampKicker")}</p>
           <p className="c4-pay-kicker">{v4("scSub")}</p>
-          <h2 className="c4-title">{v4("scTitle")}</h2>
+          <h2 className="c4-title c4-shortcut-lamp-title">{v4("scTitle")}</h2>
+          <p className="c4-shortcut-lamp-lead">{v4("scLampLead")}</p>
         </div>
-        <p className="c4-shortcut-count">{shown.length}</p>
+        <p className="c4-shortcut-count c4-shortcut-lamp-count">{shown.length}</p>
       </header>
+      <ol className="c4-shortcut-lamp-index" aria-label={v4("scTitle")}>
+        <li data-tone="gold">{v4("scLampRoutes")}</li>
+        <li data-tone="ink">{v4("scLampOrder")}</li>
+        <li data-tone="ivory">{v4("scLampHide")}</li>
+      </ol>
       <p className="c4-meta">{v4("scHint")}</p>
       <form className="c4-row" onSubmit={(event) => {
         event.preventDefault();
@@ -238,9 +252,10 @@ export function ShortcutRail({ base, v4 }: { base: string; v4: V4 }) {
         <span className="c4-meta">{v4("scLocal")}</span>
       </form>
       {!rows.length && <p className="c4-pay-empty c4-shortcut-empty">{v4("scEmpty")}</p>}
-      <ol className="c4-shortcut-list">
+      <ol className="c4-shortcut-list c4-shortcut-lamp-list">
         {shown.map((item, index) => (
-          <li key={item.id}>
+          <li key={item.id} className="c4-shortcut-lamp-row">
+            <span className="c4-shortcut-lamp-orb" aria-hidden="true" />
             <Link href={crmv4Href(base, item.id === "overview" ? "" : item.id)}>{routeName(item.id, v4)}</Link>
             <div className="c4-row">
               <button type="button" className="c4-btn" disabled={index === 0} onClick={() => store(moveVisible(rows, item.id, -1))}>{v4("scUp")}</button>
