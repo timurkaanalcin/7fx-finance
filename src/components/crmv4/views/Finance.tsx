@@ -92,25 +92,29 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
   const marks = queueMarks(visible);
 
   return (
-    <div className="c4-stack c4-fin-luxe c4-fin-atelier c4-fin-nave c4-fin-strongroom" data-desk="strongroom">
-    <header className="c4-fin-atelier-mast c4-fin-nave-mast c4-fin-strongroom-mast">
-      <p className="c4-fin-atelier-mark c4-fin-nave-mark c4-fin-strongroom-seal" data-logo="mono">7FX</p>
-      <div className="c4-fin-strongroom-copy">
-        <p className="c4-fin-strongroom-kicker">{tx("finance")}</p>
+    <div className="c4-stack c4-fin-luxe c4-fin-atelier c4-fin-nave c4-fin-strongroom c4-fin-vitrine" data-desk="vitrine">
+    <header className="c4-fin-atelier-mast c4-fin-nave-mast c4-fin-strongroom-mast c4-fin-vitrine-mast">
+      <p className="c4-fin-atelier-mark c4-fin-nave-mark c4-fin-strongroom-seal c4-fin-vitrine-seal" data-logo="mono">7FX</p>
+      <div className="c4-fin-strongroom-copy c4-fin-vitrine-copy">
+        <p className="c4-fin-strongroom-kicker c4-fin-vitrine-kicker">{v4("astFinKicker")}</p>
         <p className="c4-fin-atelier-kicker c4-fin-nave-kicker">{tx("financeLead")}</p>
-        <h2 className="c4-fin-strongroom-title">{tx("financeLead")}</h2>
+        <h2 className="c4-fin-strongroom-title c4-fin-vitrine-title">{tx("financeLead")}</h2>
+        <p className="c4-fin-vitrine-lead">{v4("astFinLead")}</p>
         <h2 className="c4-fin-atelier-title c4-fin-nave-title">{tx("finance")}</h2>
       </div>
-      <ol className="c4-fin-nave-index c4-fin-strongroom-index" aria-label={tx("finance")}>
+      <ol className="c4-fin-nave-index c4-fin-strongroom-index c4-fin-vitrine-index" aria-label={tx("finance")}>
         <li data-tone="gold">{tx("deposits")}</li>
         <li data-tone="ink">{tx("withdrawals")}</li>
         <li data-tone="ivory">{tx("ledger")}</li>
       </ol>
     </header>
-    <nav className="c4-fin-strongroom-links" aria-label={v4("dntTitle")}>
+    <nav className="c4-fin-strongroom-links c4-fin-vitrine-links" aria-label={v4("astTitle")}>
       <Link href={crmv4Href(root, "dntl")}>{v4("dntTitle")}</Link>
       <Link href={crmv4Href(root, "vous")}>{v4("vousTitle")}</Link>
+      <Link href={crmv4Href(root, "ast")}>{v4("astTitle")}</Link>
+      <Link href={crmv4Href(root, "gnm")}>{v4("gnmTitle")}</Link>
     </nav>
+    <p className="c4-fin-vitrine-time">{v4("astFinLive")} · {v4("astFinQuiet")} · {v4("astFinClear")}</p>
     <p className="c4-fin-strongroom-time">{v4("dntLocal")}</p>
     <DailyClose locale={locale} v4={(key) => crmv4Text(locale, key)} />
     <Card title={tx("finance")}>
@@ -145,7 +149,7 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
       {tab === "ledger" && <BonusHistory v4={(key) => crmv4Text(locale, key)} locale={locale} />}
       {tab !== "ledger" && <CommissionCard amount={(rows as MoneyRow[]).reduce((sum, row) => sum + Math.abs(Number(row.amount) || 0), 0)} v4={(key) => crmv4Text(locale, key)} locale={locale} />}
       <State loading={data.loading} error={data.error} empty={!data.loading && rows.length === 0} tx={tx} onRetry={data.reload} />
-      {!data.loading && tab !== "ledger" && visible.length === 0 && <p className="c4-empty-gold c4-fin-strongroom-empty">{v4("emptyQueue")}</p>}
+      {!data.loading && tab !== "ledger" && visible.length === 0 && <p className="c4-empty-gold c4-fin-strongroom-empty c4-fin-vitrine-empty">{v4("emptyQueue")}</p>}
       {tab === "ledger" ? <Ledger rows={rows as LedgerRow[]} tx={tx} locale={locale} /> : (
         <>
           {list.bar}
@@ -167,7 +171,7 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
                   const who = String(row.user?.email || row.user?.name || "");
                   const age = queueAgeHours(row.createdAt);
                   return (
-                    <tr key={row.id} className="c4-fin-row c4-fin-strongroom-row" data-status={row.status || ""} data-top={marks.largest === row.id ? "1" : "0"} data-look={look.ids.includes(row.id) ? "1" : "0"}>
+                    <tr key={row.id} className="c4-fin-row c4-fin-strongroom-row c4-fin-vitrine-row" data-status={row.status || ""} data-top={marks.largest === row.id ? "1" : "0"} data-look={look.ids.includes(row.id) ? "1" : "0"}>
                       <td>
                         <button type="button" className="c4-btn" onClick={() => openMoney(row)}>{row.user?.name || "—"}</button>
                         {marks.dupes.has(who) && <span className="c4-status" data-tone="warn">{v4("sameCustomer")}</span>}
@@ -199,7 +203,7 @@ export default function Finance({ tx, locale, q }: { tx: Tx; locale: string; q: 
             {visible.map((row) => {
               const kind = tab === "withdrawals" ? "WITHDRAW" : tab === "balance" ? "MARGIN" : "DEPOSIT";
               return (
-                <li key={row.id} className="c4-fin-strongroom-card" data-status={row.status || ""}>
+                <li key={row.id} className="c4-fin-strongroom-card c4-fin-vitrine-card" data-status={row.status || ""}>
                   <SwipeRow
                     actions={row.status === "PENDING" ? [
                       { key: "ok", label: tx("approve"), tone: "ok", onClick: () => setSheet({ id: row.id, kind, action: "approve" }) },
