@@ -145,14 +145,21 @@ export function SupportPulse({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-queue-pulse" aria-label={v4("qpTitle")} data-queue-pulse="1">
-      <header className="c4-pay-head">
+    <section className="c4-queue-pulse c4-queue-hall" aria-label={v4("qpTitle")} data-queue-pulse="1" data-desk="hall">
+      <header className="c4-queue-hall-mast">
+        <p className="c4-queue-hall-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("qpSub")}</p>
-          <h2 className="c4-title">{v4("qpTitle")}</h2>
+          <p className="c4-queue-hall-kicker">{v4("qpHallKicker")}</p>
+          <h2 className="c4-title c4-queue-hall-title">{v4("qpTitle")}</h2>
+          <p className="c4-queue-hall-lead">{v4("qpHallLead")}</p>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-queue-hall-count">{chips.length}</p>
       </header>
+      <ol className="c4-queue-hall-index" aria-label={v4("qpTitle")}>
+        <li data-tone="gold">{v4("qpOpen")}</li>
+        <li data-tone="ink">{v4("qpWaiting")}</li>
+        <li data-tone="ivory">{v4("qpAll")}</li>
+      </ol>
       <p className="c4-meta">{v4("qpHint")}</p>
       <p className="c4-meta">{v4("qpLocal")}</p>
       <p className="c4-row">
@@ -191,10 +198,10 @@ export function SupportPulse({ base, v4 }: { base: string; v4: V4 }) {
         <span>{v4("qpSearch")}</span>
         <input className="c4-field" aria-label={v4("qpSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
-      {!shown.length && tickets.length > 0 && (kind || present.length > 0) && <p className="c4-pay-empty">{v4("qpEmpty")}</p>}
-      <ul className="c4-queue-rows">
+      {!shown.length && tickets.length > 0 && (kind || present.length > 0) && <p className="c4-pay-empty c4-queue-hall-empty">{v4("qpEmpty")}</p>}
+      <ul className="c4-queue-rows c4-queue-hall-rows">
         {shown.map((row) => (
-          <li key={row.id} data-status={String(row.status || "").trim().toUpperCase()}>
+          <li key={row.id} className="c4-queue-hall-card" data-status={String(row.status || "").trim().toUpperCase()}>
             <p>{row.label}</p>
             <p className="c4-meta">{String(row.status || "").trim().toUpperCase()}</p>
             {row.userId && <Link className="c4-btn" href={crmv4Href(base, `customers/${row.userId}`)}>{v4("qpCustomer")}</Link>}
