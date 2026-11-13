@@ -53,7 +53,7 @@ export function HeatStrip({ v4, tx, base = "/izcrm/crmv4" }: { v4: V4; tx: Tx; b
   }
 
   return (
-    <section className="c4-heat-strip c4-heat-quay" aria-label={v4("htTitle")} data-heat-strip="1" data-desk="quay">
+    <section className="c4-heat-strip c4-heat-quay c4-heat-isotherm" aria-label={v4("htTitle")} data-heat-strip="1" data-desk="quay" data-lattice="isotherm">
       <header className="c4-pay-head c4-heat-quay-mast">
         <p className="c4-heat-quay-plate" data-logo="mono">7FX</p>
         <div>
@@ -70,7 +70,11 @@ export function HeatStrip({ v4, tx, base = "/izcrm/crmv4" }: { v4: V4; tx: Tx; b
           <Link href={crmv4Href(base, "bdg")}>{v4("bdgTitle")}</Link>
         </p>
       </header>
-      <p className="c4-meta c4-heat-quay-lead">{v4("htHint")}</p>
+      <p className="c4-meta c4-heat-quay-lead c4-heat-isotherm-lead">{v4("htIsoLead")}</p>
+      <ol className="c4-heat-isotherm-scale" aria-hidden="true">
+        <li>{v4("htIsoCool")}</li>
+        <li>{v4("htIsoWarm")}</li>
+      </ol>
       <label className="c4-lab">
         <span>{v4("htSearch")}</span>
         <input className="c4-field c4-heat-quay-search" aria-label={v4("htSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
@@ -83,19 +87,21 @@ export function HeatStrip({ v4, tx, base = "/izcrm/crmv4" }: { v4: V4; tx: Tx; b
       {data.error && <p className="c4-meta">{v4("htFailed")} {tx("failed")}</p>}
       {!data.loading && !data.error && !loaded.length && <p className="c4-pay-empty c4-heat-quay-empty">{v4("htNone")}</p>}
       {!data.loading && !data.error && loaded.length > 0 && !cells.length && <p className="c4-pay-empty c4-heat-quay-empty">{v4("htEmpty")}</p>}
-      <ul className="c4-heat-cells c4-heat-quay-cells">
+      <ul className="c4-heat-cells c4-heat-quay-cells c4-heat-isotherm-lattice">
         {cells.map((cell) => {
           const id = pinId(mode, cell.key);
           const pinned = pins.includes(id);
           const label = cell.key || (mode === "desk" ? v4("htNoDesk") : v4("htNoCountry"));
+          const fill = Math.max(12, Math.round((cell.count / Math.max(1, hottest)) * 100));
           return (
-            <li key={id} className="c4-heat-cell c4-heat-quay-cell" data-pinned={pinned ? "1" : "0"} data-hot={cell.count === hottest && cell.count > 0 ? "1" : "0"} data-group={cell.key || "none"}>
-              <div className="c4-row c4-between">
+            <li key={id} className="c4-heat-cell c4-heat-quay-cell c4-heat-isotherm-tile" data-pinned={pinned ? "1" : "0"} data-hot={cell.count === hottest && cell.count > 0 ? "1" : "0"} data-group={cell.key || "none"}>
+              <i className="c4-heat-isotherm-fill" style={{ height: `${fill}%` }} aria-hidden="true" />
+              <div className="c4-heat-isotherm-body">
                 <strong>{label}</strong>
                 <span className="c4-heat-count">{cell.count}</span>
+                <p className="c4-meta">{v4("htNames")} {cell.names.join(", ") || "—"}</p>
+                <button type="button" className="c4-btn" data-heat-pin="" onClick={() => storePins(toggleId(pins, id))}>{pinned ? v4("htUnpin") : v4("htPin")}</button>
               </div>
-              <p className="c4-meta">{v4("htNames")} {cell.names.join(", ") || "—"}</p>
-              <button type="button" className="c4-btn" data-heat-pin="" onClick={() => storePins(toggleId(pins, id))}>{pinned ? v4("htUnpin") : v4("htPin")}</button>
             </li>
           );
         })}
