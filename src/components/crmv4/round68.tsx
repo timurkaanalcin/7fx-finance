@@ -120,14 +120,21 @@ export function MeetingPrep({ v4, tx }: { v4: V4; tx: Tx }) {
   }
 
   return (
-    <section className="c4-prep-pad" aria-label={v4("mpTitle")} data-prep-pad="1">
-      <header className="c4-pay-head">
+    <section className="c4-prep-pad c4-prep-oratory" aria-label={v4("mpTitle")} data-prep-pad="1" data-desk="oratory">
+      <header className="c4-prep-oratory-mast">
+        <p className="c4-prep-oratory-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("mpSub")}</p>
-          <h2 className="c4-title">{v4("mpTitle")}</h2>
+          <p className="c4-prep-oratory-kicker">{v4("mpSub")}</p>
+          <h2 className="c4-title c4-prep-oratory-title">{v4("mpTitle")}</h2>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <ol className="c4-prep-oratory-index" aria-label={v4("mpTitle")}>
+          <li data-tone="gold">{v4("mpOratoryChampagne")}</li>
+          <li data-tone="ink">{v4("mpOratoryGraphite")}</li>
+          <li data-tone="ivory">{v4("mpOratoryIvory")}</li>
+          <li>{shown.length}</li>
+        </ol>
       </header>
+      <p className="c4-prep-oratory-lead">{v4("mpOratoryLead")}</p>
       <p className="c4-meta">{v4("mpHint")}</p>
       <p className="c4-meta">{v4("mpLocal")}</p>
       {data.loading && !loaded.length && <p className="c4-meta">{tx("loading")}</p>}
