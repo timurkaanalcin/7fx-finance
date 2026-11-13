@@ -232,6 +232,7 @@ import { CallSheets, PressPlates } from "./round241";
 import { DawnBooks, VowelMarks } from "./round242";
 import { HourglassSlips, SyllablePlates } from "./round243";
 import { BinnacleCards, LuffMarks } from "./round244";
+import { MeridianMarks, OrchardBenches } from "./round245";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -961,6 +962,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "syl") return v4("sylTitle");
     if (tab === "bnc") return v4("bncTitle");
     if (tab === "luf") return v4("lufTitle");
+    if (tab === "orb") return v4("orbTitle");
+    if (tab === "mrd") return v4("mrdTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1376,6 +1379,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "syl") return v4("sylSub");
     if (tab === "bnc") return v4("bncSub");
     if (tab === "luf") return v4("lufSub");
+    if (tab === "orb") return v4("orbSub");
+    if (tab === "mrd") return v4("mrdSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1924,6 +1929,8 @@ function Shell({ base, section, name }: Props) {
             {view === "syl" && <SyllablePlates base={base} v4={v4} />}
             {view === "bnc" && <BinnacleCards base={base} v4={v4} />}
             {view === "luf" && <LuffMarks base={base} v4={v4} />}
+            {view === "orb" && <OrchardBenches base={base} v4={v4} />}
+            {view === "mrd" && <MeridianMarks base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

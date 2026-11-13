@@ -210,13 +210,20 @@ export function SopPad({ v4 }: { v4: V4 }) {
   const shown = searchLists(lists, query, labels);
 
   return (
-    <section className="c4-sop-pad" aria-label={v4("sopTitle")} data-sop-pad="1">
-      <header className="c4-pay-head">
+    <section className="c4-sop-pad c4-sop-glass" aria-label={v4("sopTitle")} data-sop-pad="1" data-desk="conservatory">
+      <header className="c4-sop-mast">
+        <p className="c4-sop-seal" data-logo="mono">7FX</p>
+        <div className="c4-sop-trellis" aria-hidden="true"><i /><i /><i /></div>
         <div>
           <p className="c4-pay-kicker">{v4("sopSub")}</p>
           <h2 className="c4-title">{v4("sopTitle")}</h2>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <ol className="c4-sop-index" aria-label={v4("sopTitle")}>
+          <li data-tone="gold">{v4("sopGlassChampagne")}</li>
+          <li data-tone="ink">{v4("sopGlassGraphite")}</li>
+          <li data-tone="ivory">{v4("sopGlassIvory")}</li>
+          <li>{shown.length}</li>
+        </ol>
       </header>
       <p className="c4-meta">{v4("sopHint")}</p>
       <p className="c4-meta">{v4("sopLocal")}</p>
