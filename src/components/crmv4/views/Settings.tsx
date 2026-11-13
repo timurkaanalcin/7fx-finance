@@ -73,7 +73,7 @@ export default function Settings({ tx }: { tx: Tx }) {
           {area === "general" && <><General tx={tx} /><LocalPrefs /></>}
           {area === "leads" && <LeadMap tx={tx} />}
           {system && <SystemDesk area={system} tx={tx} v4={v4} />}
-          {area !== "general" && area !== "leads" && !system && <Ops tx={tx} area={area} />}
+          {area !== "general" && area !== "leads" && !system && <Ops tx={tx} area={area} locale={locale} />}
         </div>
       </div>
     </div>

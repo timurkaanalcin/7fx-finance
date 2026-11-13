@@ -253,6 +253,7 @@ import { LarderSlips, TitlePlates } from "./round262";
 import { ButterySlips, ProvenancePlates } from "./round263";
 import { CipherPlates, PastrySlips } from "./round264";
 import { InvitePlates, LoomSlips } from "./round265";
+import { OfficePlates, SextantSights } from "./round266";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1024,6 +1025,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "cph") return v4("cphTitle");
     if (tab === "lom") return v4("lomTitle");
     if (tab === "ivt") return v4("ivtTitle");
+    if (tab === "sxt") return v4("sxtTitle");
+    if (tab === "ofc") return v4("ofcTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1481,6 +1484,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "cph") return v4("cphSub");
     if (tab === "lom") return v4("lomSub");
     if (tab === "ivt") return v4("ivtSub");
+    if (tab === "sxt") return v4("sxtSub");
+    if (tab === "ofc") return v4("ofcSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -2071,6 +2076,8 @@ function Shell({ base, section, name }: Props) {
             {view === "cph" && <CipherPlates base={base} v4={v4} />}
             {view === "lom" && <LoomSlips base={base} v4={v4} />}
             {view === "ivt" && <InvitePlates base={base} v4={v4} />}
+            {view === "sxt" && <SextantSights base={base} v4={v4} />}
+            {view === "ofc" && <OfficePlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
