@@ -1,6 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { crmv4Text } from "@/lib/crmv4/copy";
+import { crmv4Href } from "@/lib/crmv4/sections";
 import { Card, Lab, Msg, State, sendJson, useJson, when, type Tx } from "../kit";
 
 const OPS_TITLE = {
@@ -15,26 +19,61 @@ const OPS_TITLE = {
   import: "importLeads",
 } as const;
 
-export default function Ops({ tx, area }: { tx: Tx; area: string }) {
+function roomHit(needle: string, text: string) {
+  const query = needle.trim().toLowerCase();
+  return !query || text.toLowerCase().includes(query);
+}
+
+export default function Ops({ tx, area, locale }: { tx: Tx; area: string; locale?: string }) {
   const titleKey = OPS_TITLE[area as keyof typeof OPS_TITLE] || "workspaceIntro";
+  const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale || "en", key);
+  const path = usePathname() || "";
+  const root = path.includes("/izcrm/crmv4") ? "/izcrm/crmv4" : "/crmv4";
+  const [needle, setNeedle] = useState("");
+  const findRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    function onKey(event: KeyboardEvent) {
+      const node = event.target as HTMLElement | null;
+      const tag = node?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || node?.isContentEditable) return;
+      if (event.key !== "/") return;
+      event.preventDefault();
+      findRef.current?.focus();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
   return (
-    <div className="c4-stack c4-ops-workshop" data-ops="1">
-      <header className="c4-ops-mast">
-        <div>
-          <p className="c4-ops-kicker">{tx("workspaceIntro")}</p>
+    <div className="c4-stack c4-ops-workshop c4-ops-sextant" data-ops="sextant">
+      <header className="c4-ops-mast c4-ops-sextant-mast">
+        <p className="c4-ops-sextant-seal" data-logo="mono">7FX</p>
+        <div className="c4-ops-sextant-copy">
+          <p className="c4-ops-sextant-kicker">{v4("sxtOpsKicker")}</p>
           <h2 className="c4-ops-title">{tx(titleKey)}</h2>
+          <p className="c4-ops-sextant-lead">{v4("sxtOpsLead")}</p>
         </div>
-        <p className="c4-ops-plate" data-logo="mono">7FX</p>
+        <ol className="c4-ops-sextant-index" aria-label={v4("sxtOpsKicker")}>
+          <li data-tone="gold">{v4("sxtOpsLive")}</li>
+          <li data-tone="ink">{v4("sxtOpsQuiet")}</li>
+          <li data-tone="ivory">{v4("sxtOpsBlank")}</li>
+        </ol>
       </header>
-      <p className="c4-ops-lead">{tx("workspaceIntro")}</p>
+      <p className="c4-ops-sextant-links">
+        <Link href={crmv4Href(root, "sxt")}>{v4("sxtTitle")}</Link>
+        <Link href={crmv4Href(root, "ofc")}>{v4("ofcTitle")}</Link>
+      </p>
+      <label className="c4-lab c4-ops-sextant-find">
+        <span>{v4("sxtOpsFind")}</span>
+        <input ref={findRef} className="c4-field" aria-label={v4("sxtOpsFind")} value={needle} onChange={(event) => setNeedle(event.target.value)} placeholder={v4("sxtOpsFind")} />
+      </label>
       {area === "desks" && <Desks tx={tx} />}
-      {area === "groups" && <Groups tx={tx} />}
+      {area === "groups" && <Groups tx={tx} needle={needle} empty={v4("sxtOpsEmpty")} />}
       {area === "methods" && <Methods tx={tx} />}
-      {area === "assets" && <Assets tx={tx} />}
+      {area === "assets" && <Assets tx={tx} needle={needle} empty={v4("sxtOpsEmpty")} />}
       {area === "rates" && <Rates tx={tx} />}
-      {area === "sponsors" && <Sponsors tx={tx} />}
-      {area === "licenses" && <Licenses tx={tx} />}
-      {area === "calendar" && <Calendar tx={tx} />}
+      {area === "sponsors" && <Sponsors tx={tx} needle={needle} empty={v4("sxtOpsEmpty")} />}
+      {area === "licenses" && <Licenses tx={tx} needle={needle} empty={v4("sxtOpsEmpty")} />}
+      {area === "calendar" && <Calendar tx={tx} needle={needle} empty={v4("sxtOpsEmpty")} />}
       {area === "import" && <ImportPanel tx={tx} />}
     </div>
   );
@@ -71,14 +110,16 @@ function Desks({ tx }: { tx: Tx }) {
   );
 }
 
-function Groups({ tx }: { tx: Tx }) {
+function Groups({ tx, needle, empty }: { tx: Tx; needle: string; empty: string }) {
   const data = useJson<{ groups?: { id: string; name?: string; description?: string | null; customersCount?: number }[] }>("/api/admin/trading-groups");
   const [msg, setMsg] = useState("");
+  const rows = (data.data?.groups || []).filter((row) => roomHit(needle, `${row.name || ""} ${row.description || ""}`));
   return (
     <Card title={tx("groups")}>
       <State loading={data.loading} error={data.error} empty={!data.loading && !(data.data?.groups || []).length} tx={tx} onRetry={data.reload} />
+      {!data.loading && (data.data?.groups || []).length > 0 && rows.length === 0 && <p className="c4-ops-sextant-empty">{empty}</p>}
       <ul>
-        {(data.data?.groups || []).map((row) => (
+        {rows.map((row) => (
           <li key={row.id} className="c4-ops-row" data-live="on">
             <span>{row.name}</span>
             <span className="c4-muted">{tx("customersCount")} {row.customersCount || 0}</span>
@@ -148,15 +189,16 @@ function Methods({ tx }: { tx: Tx }) {
   );
 }
 
-function Assets({ tx }: { tx: Tx }) {
+function Assets({ tx, needle, empty }: { tx: Tx; needle: string; empty: string }) {
   const data = useJson<{ assets?: { symbol: string; name?: string; class?: string; enabled?: boolean; effectiveSpread?: number }[] }>("/api/admin/assets");
   const [q, setQ] = useState("");
   const [msg, setMsg] = useState("");
-  const rows = (data.data?.assets || []).filter((row) => !q || `${row.symbol} ${row.name}`.toLowerCase().includes(q.toLowerCase())).slice(0, 40);
+  const rows = (data.data?.assets || []).filter((row) => roomHit(q, `${row.symbol} ${row.name || ""}`) && roomHit(needle, `${row.symbol} ${row.name || ""} ${row.class || ""}`)).slice(0, 40);
   return (
     <Card title={tx("assets")}>
       <div className="c4-tools"><input value={q} onChange={(event) => setQ(event.target.value)} className="c4-field" placeholder={tx("searchWord")} aria-label={tx("searchWord")} /></div>
-      <State loading={data.loading} error={data.error} empty={!data.loading && rows.length === 0} tx={tx} onRetry={data.reload} />
+      <State loading={data.loading} error={data.error} empty={!data.loading && !(data.data?.assets || []).length} tx={tx} onRetry={data.reload} />
+      {!data.loading && (data.data?.assets || []).length > 0 && rows.length === 0 && <p className="c4-ops-sextant-empty">{empty}</p>}
       <ul>
         {rows.map((row) => (
           <li key={row.symbol} className="c4-ops-row" data-live={row.enabled === false ? "off" : "on"}>
@@ -210,14 +252,16 @@ function Rates({ tx }: { tx: Tx }) {
   );
 }
 
-function Sponsors({ tx }: { tx: Tx }) {
+function Sponsors({ tx, needle, empty }: { tx: Tx; needle: string; empty: string }) {
   const data = useJson<{ sponsors?: { id: string; name?: string; url?: string | null }[] }>("/api/admin/sponsors");
   const [msg, setMsg] = useState("");
+  const rows = (data.data?.sponsors || []).filter((row) => roomHit(needle, `${row.name || ""} ${row.url || ""}`));
   return (
     <Card title={tx("sponsors")}>
       <State loading={data.loading} error={data.error} empty={!data.loading && !(data.data?.sponsors || []).length} tx={tx} onRetry={data.reload} />
+      {!data.loading && (data.data?.sponsors || []).length > 0 && rows.length === 0 && <p className="c4-ops-sextant-empty">{empty}</p>}
       <ul>
-        {(data.data?.sponsors || []).map((row) => (
+        {rows.map((row) => (
           <li key={row.id} className="c4-ops-row" data-live="on">
             <span>{row.name}</span>
             <button type="button" className="c4-btn" onClick={async () => {
@@ -258,14 +302,16 @@ function readFile(file: File): Promise<string> {
   });
 }
 
-function Licenses({ tx }: { tx: Tx }) {
+function Licenses({ tx, needle, empty }: { tx: Tx; needle: string; empty: string }) {
   const data = useJson<{ licenses?: { id: string; regulator?: string; number?: string; entity?: string }[] }>("/api/admin/licenses");
   const [msg, setMsg] = useState("");
+  const rows = (data.data?.licenses || []).filter((row) => roomHit(needle, `${row.regulator || ""} ${row.number || ""} ${row.entity || ""}`));
   return (
     <Card title={tx("licenses")}>
       <State loading={data.loading} error={data.error} empty={!data.loading && !(data.data?.licenses || []).length} tx={tx} onRetry={data.reload} />
+      {!data.loading && (data.data?.licenses || []).length > 0 && rows.length === 0 && <p className="c4-ops-sextant-empty">{empty}</p>}
       <ul>
-        {(data.data?.licenses || []).map((row) => (
+        {rows.map((row) => (
           <li key={row.id} className="c4-ops-row" data-live="on">
             <span>{row.regulator} · {row.number} · {row.entity}</span>
             <button type="button" className="c4-btn" onClick={async () => {
@@ -294,14 +340,16 @@ function Licenses({ tx }: { tx: Tx }) {
   );
 }
 
-function Calendar({ tx }: { tx: Tx }) {
+function Calendar({ tx, needle, empty }: { tx: Tx; needle: string; empty: string }) {
   const data = useJson<{ reminders?: { id: string; body?: string; remindAt?: string; trader?: string | null }[] }>("/api/admin/calendar?take=40");
   const [msg, setMsg] = useState("");
+  const rows = (data.data?.reminders || []).filter((row) => roomHit(needle, `${row.body || ""} ${row.trader || ""}`));
   return (
     <Card title={tx("calendar")}>
       <State loading={data.loading} error={data.error} empty={!data.loading && !(data.data?.reminders || []).length} tx={tx} onRetry={data.reload} />
+      {!data.loading && (data.data?.reminders || []).length > 0 && rows.length === 0 && <p className="c4-ops-sextant-empty">{empty}</p>}
       <ul>
-        {(data.data?.reminders || []).map((row) => (
+        {rows.map((row) => (
           <li key={row.id} className="c4-ops-row" data-live="on">
             <span>{row.body} · {row.trader || ""} · {when(row.remindAt, "en")}</span>
             <button type="button" className="c4-btn" onClick={async () => {
