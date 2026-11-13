@@ -100,14 +100,21 @@ export function ExpiryWatch({ base, v4, locale, tx }: { base: string; v4: V4; lo
   }
 
   return (
-    <section className="c4-expiry-desk" aria-label={v4("exTitle")} data-expiry-desk="1" data-viewer={viewer ? "1" : "0"}>
-      <header className="c4-pay-head">
+    <section className="c4-expiry-desk c4-expiry-forge" aria-label={v4("exTitle")} data-expiry-desk="1" data-viewer={viewer ? "1" : "0"} data-desk="forge">
+      <header className="c4-pay-head c4-expiry-forge-mast">
+        <p className="c4-expiry-forge-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("exSub")}</p>
-          <h2 className="c4-title">{v4("exTitle")}</h2>
+          <p className="c4-pay-kicker c4-expiry-forge-kicker">{v4("exSub")}</p>
+          <h2 className="c4-title c4-expiry-forge-title">{v4("exTitle")}</h2>
+          <p className="c4-meta c4-expiry-forge-count">{v4("exCount")} {shown.length}</p>
         </div>
-        <p className="c4-meta">{v4("exCount")} {shown.length}</p>
+        <ol className="c4-expiry-forge-index" aria-label={v4("exTitle")}>
+          <li data-tone="gold">{v4("exForgeChampagne")}</li>
+          <li data-tone="ink">{v4("exForgeGraphite")}</li>
+          <li data-tone="ivory">{v4("exForgeIvory")}</li>
+        </ol>
       </header>
+      <p className="c4-meta c4-expiry-forge-lead">{v4("exForgeLead")}</p>
       <p className="c4-meta">{v4("exHint")}</p>
       <p className="c4-meta">{v4("exLocal")}</p>
       {viewer && <p className="c4-meta">{v4("exViewer")}</p>}
