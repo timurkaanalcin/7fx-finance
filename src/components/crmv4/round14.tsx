@@ -74,18 +74,27 @@ export function TaskDesk({ locale, v4, tx }: { locale: string; v4: V4; tx: Tx })
     data.reload();
   }
   return (
-    <section className="c4-task-desk" id="c4-tasks" aria-label={v4("dueToday")}>
-      <div className="c4-task-hero">
+    <section className="c4-task-desk c4-task-atelier" id="c4-tasks" aria-label={v4("dueToday")} data-atelier="1">
+      <header className="c4-task-atelier-mast">
+        <p className="c4-task-atelier-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-exec-kicker">7FX</p>
+          <p className="c4-task-atelier-kicker">{v4("tskAtelierKicker")}</p>
           <h3 className="c4-title">{v4("dueToday")}</h3>
         </div>
-        <strong aria-live="polite">{today}</strong>
+        <strong className="c4-task-atelier-count" aria-live="polite">{today}</strong>
+      </header>
+      <p className="c4-task-atelier-lead">{v4("tskAtelierLead")}</p>
+      <ol className="c4-task-atelier-index" aria-label={v4("dueToday")}>
+        <li data-tone="gold">{v4("dueToday")}</li>
+        <li data-tone="ink">{v4("snooze15")}</li>
+        <li data-tone="ivory">{v4("recur")}</li>
+      </ol>
+      <div className="c4-task-hero">
         <button type="button" className="c4-chip" data-on={dueOnly ? "1" : "0"} onClick={() => setDueOnly((on) => !on)}>{v4("dueToday")}</button>
       </div>
       <ViewerHint v4={v4} />
       <p className="c4-muted c4-pad">{v4("taskKeys")} · d · {v4("dueToday")}</p>
-      <form className="c4-row c4-pad" onSubmit={(event) => {
+      <form className="c4-row c4-pad c4-task-atelier-form" onSubmit={(event) => {
         event.preventDefault();
         const name = body.trim();
         if (!name) return;
@@ -102,7 +111,7 @@ export function TaskDesk({ locale, v4, tx }: { locale: string; v4: V4; tx: Tx })
           <button key={item} type="button" className="c4-chip" onClick={() => void create(item, new Date(Date.now() + 60 * 60 * 1000).toISOString())}>{item}</button>
         ))}
       </div>
-      <form className="c4-row c4-pad" onSubmit={(event) => {
+      <form className="c4-row c4-pad c4-task-atelier-form" onSubmit={(event) => {
         event.preventDefault();
         const text = body.trim() || v4("recur");
         const next = [...recur, { id: String(Date.now()), body: text, every, hour: 9 }];
@@ -123,7 +132,7 @@ export function TaskDesk({ locale, v4, tx }: { locale: string; v4: V4; tx: Tx })
       ))}
       <ul className="c4-task-list">
         {shown.map((row) => (
-          <li key={row.id} className="c4-task-row" tabIndex={0}>
+          <li key={row.id} className="c4-task-row c4-task-atelier-row" tabIndex={0}>
             <div className="c4-row c4-between">
               <span>{row.body}</span>
               <span className="c4-muted">{row.remindAt ? new Date(row.remindAt).toLocaleString(locale) : ""}</span>
@@ -135,7 +144,7 @@ export function TaskDesk({ locale, v4, tx }: { locale: string; v4: V4; tx: Tx })
           </li>
         ))}
       </ul>
-      {!shown.length && <p className="c4-empty-gold">{v4("emptyTasks")}</p>}
+      {!shown.length && <p className="c4-empty-gold c4-task-atelier-empty">{v4("emptyTasks")}</p>}
       {msg && <p className="c4-muted c4-pad">{msg}</p>}
     </section>
   );
