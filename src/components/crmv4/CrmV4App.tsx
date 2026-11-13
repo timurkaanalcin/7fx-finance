@@ -241,6 +241,7 @@ import { BeaconSlips, ValidationGlyphs } from "./round250";
 import { CameoPlates, LecternLeaves } from "./round251";
 import { AssignCrests, ChoirCards } from "./round252";
 import { GroupSeals, TrestleCards } from "./round253";
+import { ParcelSlips, TongueRibbons } from "./round254";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1421,6 +1422,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "acr") return v4("acrSub");
     if (tab === "trs") return v4("trsSub");
     if (tab === "tgs") return v4("tgsSub");
+    if (tab === "psl") return v4("pslSub");
+    if (tab === "lrb") return v4("lrbSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1987,6 +1990,8 @@ function Shell({ base, section, name }: Props) {
             {view === "acr" && <AssignCrests base={base} v4={v4} />}
             {view === "trs" && <TrestleCards base={base} v4={v4} />}
             {view === "tgs" && <GroupSeals base={base} v4={v4} />}
+            {view === "psl" && <ParcelSlips base={base} v4={v4} />}
+            {view === "lrb" && <TongueRibbons base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
