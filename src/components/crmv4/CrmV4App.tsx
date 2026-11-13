@@ -238,6 +238,7 @@ import { EmailCrests, NicheCards } from "./round247";
 import { CarrelSlips, LoginSeals } from "./round248";
 import { CampaignMarks, FerryPasses } from "./round249";
 import { BeaconSlips, ValidationGlyphs } from "./round250";
+import { CameoPlates, LecternLeaves } from "./round251";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -977,6 +978,10 @@ function Shell({ base, section, name }: Props) {
     if (tab === "lgs") return v4("lgsTitle");
     if (tab === "fry") return v4("fryTitle");
     if (tab === "cmp") return v4("rfrTitle");
+    if (tab === "bcn") return v4("bcnTitle");
+    if (tab === "vgl") return v4("vglTitle");
+    if (tab === "lct") return v4("lctTitle");
+    if (tab === "cmo") return v4("cmoTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1402,6 +1407,10 @@ function Shell({ base, section, name }: Props) {
     if (tab === "lgs") return v4("lgsSub");
     if (tab === "fry") return v4("frySub");
     if (tab === "cmp") return v4("rfrSub");
+    if (tab === "bcn") return v4("bcnSub");
+    if (tab === "vgl") return v4("vglSub");
+    if (tab === "lct") return v4("lctSub");
+    if (tab === "cmo") return v4("cmoSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -1962,6 +1971,8 @@ function Shell({ base, section, name }: Props) {
             {view === "cmp" && <CampaignMarks base={base} v4={v4} />}
             {view === "bcn" && <BeaconSlips base={base} v4={v4} />}
             {view === "vgl" && <ValidationGlyphs base={base} v4={v4} />}
+            {view === "lct" && <LecternLeaves base={base} v4={v4} />}
+            {view === "cmo" && <CameoPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
