@@ -160,14 +160,21 @@ export function JumpHistory({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-jump-pad" aria-label={v4("jpTitle")} data-jump-pad="1">
-      <header className="c4-pay-head">
+    <section className="c4-jump-pad c4-jump-forge" aria-label={v4("jpTitle")} data-jump-pad="1" data-desk="forge">
+      <header className="c4-pay-head c4-jump-forge-mast">
+        <p className="c4-jump-forge-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("jpSub")}</p>
-          <h2 className="c4-title">{v4("jpTitle")}</h2>
+          <p className="c4-pay-kicker c4-jump-forge-kicker">{v4("jpSub")}</p>
+          <h2 className="c4-title c4-jump-forge-title">{v4("jpTitle")}</h2>
+          <p className="c4-meta c4-jump-forge-count">{shown.length}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <ol className="c4-jump-forge-index" aria-label={v4("jpTitle")}>
+          <li data-tone="gold">{v4("jpForgeChampagne")}</li>
+          <li data-tone="ink">{v4("jpForgeGraphite")}</li>
+          <li data-tone="ivory">{v4("jpForgeIvory")}</li>
+        </ol>
       </header>
+      <p className="c4-meta c4-jump-forge-lead">{v4("jpForgeLead")}</p>
       <p className="c4-meta">{v4("jpHint")}</p>
       <p className="c4-meta">{v4("jpLocal")}</p>
       <label className="c4-lab">
