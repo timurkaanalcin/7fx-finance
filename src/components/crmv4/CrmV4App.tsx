@@ -262,6 +262,7 @@ import { AnemometerCups, RetentionPlates } from "./round271";
 import { CharterPlates, PendulumBobs } from "./round272";
 import { TheodoliteCircles, TierPlates } from "./round273";
 import { OctantArcs, BannerPlates } from "./round274";
+import { ChronometerBeats, AnchorPlates } from "./round275";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1049,6 +1050,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "tir") return v4("tirTitle");
     if (tab === "oct") return v4("octTitle");
     if (tab === "bnn") return v4("bnnTitle");
+    if (tab === "cbt") return v4("cbtTitle");
+    if (tab === "ank") return v4("ankTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1522,6 +1525,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "tir") return v4("tirSub");
     if (tab === "oct") return v4("octSub");
     if (tab === "bnn") return v4("bnnSub");
+    if (tab === "cbt") return v4("cbtSub");
+    if (tab === "ank") return v4("ankSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -2130,6 +2135,8 @@ function Shell({ base, section, name }: Props) {
             {view === "tir" && <TierPlates base={base} v4={v4} />}
             {view === "oct" && <OctantArcs base={base} v4={v4} />}
             {view === "bnn" && <BannerPlates base={base} v4={v4} />}
+            {view === "cbt" && <ChronometerBeats base={base} v4={v4} />}
+            {view === "ank" && <AnchorPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
