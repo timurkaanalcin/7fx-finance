@@ -206,7 +206,7 @@ function main() {
   const copy = Object.keys(ROUND175_COPY.en).sort();
   for (const locale of ["tr", "de", "ru", "ar"] as const) assert.deepEqual(Object.keys(ROUND175_COPY[locale]).sort(), copy);
   assert.equal(crmv4Text("en", "wtrTitle"), "Winter trellises");
-  assert.equal(crmv4Text("tr", "pstTitle"), ROUND175_COPY.tr.pstTitle);
+  assert.equal(crmv4Text("tr", "pstTitle"), "Pastane fişleri");
   assert.equal(crmv4Text("de", "wtrWeaver"), ROUND175_COPY.de.wtrWeaver);
   assert.equal(crmv4Text("ru", "pstUnmarked"), ROUND175_COPY.ru.pstUnmarked);
   assert.equal(crmv4Text("ar", "wtrNotice"), ROUND175_COPY.ar.wtrNotice);

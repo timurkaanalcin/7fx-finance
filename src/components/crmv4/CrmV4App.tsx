@@ -279,6 +279,7 @@ import { LodestoneNeedles, RecallPlates } from "./round288";
 import { LoginPlates, VolvelleLeaves } from "./round289";
 import { EquatoriumRings, RegisterPlates } from "./round290";
 import { OrreryOrbs, WardPlates } from "./round291";
+import { ClepsydraBowls, TidePlates } from "./round292";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1100,6 +1101,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "rgd") return v4("rgdTitle");
     if (tab === "ory") return v4("oryTitle");
     if (tab === "wrd") return v4("wrdTitle");
+    if (tab === "cly") return v4("clyTitle");
+    if (tab === "tde") return v4("tdeTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1607,6 +1610,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "rgd") return v4("rgdSub");
     if (tab === "ory") return v4("orySub");
     if (tab === "wrd") return v4("wrdSub");
+    if (tab === "cly") return v4("clySub");
+    if (tab === "tde") return v4("tdeSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -2249,6 +2254,8 @@ function Shell({ base, section, name }: Props) {
             {view === "rgd" && <RegisterPlates base={base} v4={v4} />}
             {view === "ory" && <OrreryOrbs base={base} v4={v4} />}
             {view === "wrd" && <WardPlates base={base} v4={v4} />}
+            {view === "cly" && <ClepsydraBowls base={base} v4={v4} />}
+            {view === "tde" && <TidePlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

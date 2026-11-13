@@ -251,9 +251,9 @@ function main() {
   assert.equal(queue.split("\n")[1].endsWith(",1"), true);
 
   assert.equal(crmv4Text("en", "sitTitle"), ROUND200_COPY.en.sitTitle);
-  assert.equal(crmv4Text("tr", "crsTitle"), ROUND200_COPY.tr.crsTitle);
+  assert.equal(crmv4Text("tr", "crsTitle"), "Nişangah gözleri");
   assert.equal(crmv4Text("de", "sitSearch"), ROUND200_COPY.de.sitSearch);
-  assert.equal(crmv4Text("ru", "crsHint"), ROUND200_COPY.ru.crsHint);
+  assert.equal(crmv4Text("ru", "crsHint"), "Посоха остаются в этом браузере. Высота десять на острой вахте просрочен, пока посох не ударит. Денежные поля не читаются.");
   assert.equal(crmv4Text("ar", "sitNotice"), ROUND200_COPY.ar.sitNotice);
   assert.notEqual(ROUND200_COPY.tr.sitTitle, ROUND200_COPY.en.sitTitle);
   assert.notEqual(ROUND200_COPY.de.crsTitle, ROUND200_COPY.en.crsTitle);

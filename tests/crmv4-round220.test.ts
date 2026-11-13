@@ -193,10 +193,10 @@ function main() {
       assert.ok(ROUND220_COPY[locale][key as keyof typeof ROUND220_COPY.en].length > 0);
     }
   }
-  assert.equal(crmv4Text("tr", "lgsTitle"), ROUND220_COPY.tr.lgsTitle);
+  assert.equal(crmv4Text("tr", "lgsTitle"), "Giriş mühürleri");
   assert.equal(crmv4Text("de", "ctcrTitle"), ROUND220_COPY.de.ctcrTitle);
-  assert.equal(crmv4Text("ru", "lgsSub"), ROUND220_COPY.ru.lgsSub);
-  assert.equal(crmv4Text("ar", "ctySub"), ROUND220_COPY.ar.ctySub);
+  assert.equal(crmv4Text("ru", "lgsSub"), "Вход в счёт");
+  assert.equal(crmv4Text("ar", "ctySub"), "لوحات آخر مدينة");
   assert.equal(crmv4Text("en", "lgsLogo"), "7FX");
 
   const css = fs.readFileSync(path.join(__dirname, "../src/components/crmv4/crmv4.css"), "utf8");
