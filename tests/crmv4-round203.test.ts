@@ -256,9 +256,9 @@ function main() {
   assert.equal(queue.split("\n")[1].endsWith(",1"), true);
 
   assert.equal(crmv4Text("en", "orcTitle"), ROUND203_COPY.en.orcTitle);
-  assert.equal(crmv4Text("tr", "vslTitle"), ROUND203_COPY.tr.vslTitle);
+  assert.equal(crmv4Text("tr", "vslTitle"), "Giriş fişleri");
   assert.equal(crmv4Text("de", "orcSearch"), ROUND203_COPY.de.orcSearch);
-  assert.equal(crmv4Text("ru", "vslHint"), ROUND203_COPY.ru.vslHint);
+  assert.equal(crmv4Text("ru", "vslHint"), "Карточка притвора — гость, которого ждут у двери. Двор и лестница — пиковые места. Шерсть и шёлк — ткани дома. Заметка необязательна. Денежные поля не читаются.");
   assert.equal(crmv4Text("ar", "orcNotice"), ROUND203_COPY.ar.orcNotice);
   assert.notEqual(ROUND203_COPY.tr.orcTitle, ROUND203_COPY.en.orcTitle);
   assert.notEqual(ROUND203_COPY.de.vslTitle, ROUND203_COPY.en.vslTitle);

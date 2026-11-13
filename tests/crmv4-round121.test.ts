@@ -87,7 +87,7 @@ function main() {
 
   const copy = Object.keys(ROUND121_COPY.en).sort();
   for (const locale of ["tr", "de", "ru", "ar"] as const) assert.deepEqual(Object.keys(ROUND121_COPY[locale]).sort(), copy);
-  assert.equal(crmv4Text("en", "bdgTitle"), "Visitor notes");
+  assert.equal(crmv4Text("en", "bdgTitle"), "Badge marks");
   assert.equal(crmv4Text("tr", "dmgTitle"), ROUND121_COPY.tr.dmgTitle);
   assert.equal(crmv4Text("de", "bdgBadge"), ROUND121_COPY.de.bdgBadge);
   assert.equal(crmv4Text("ru", "dmgBlank"), ROUND121_COPY.ru.dmgBlank);

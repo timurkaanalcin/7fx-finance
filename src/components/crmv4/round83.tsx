@@ -60,15 +60,22 @@ export function PinBoard({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-pin-board" aria-label={v4("pnTitle")} data-pin-board="1">
-      <header className="c4-pay-head">
+    <section className="c4-pin-board c4-pin-atelier" aria-label={v4("pnTitle")} data-pin-board="1" data-desk="atelier">
+      <header className="c4-pin-atelier-mast">
+        <p className="c4-pin-atelier-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("pnSub")}</p>
-          <h2 className="c4-title">{v4("pnTitle")}</h2>
+          <p className="c4-pin-atelier-kicker">{v4("pnAtelierKicker")}</p>
+          <h2 className="c4-title c4-pin-atelier-title">{v4("pnTitle")}</h2>
+          <p className="c4-pin-atelier-lead">{v4("pnAtelierLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-pin-atelier-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("pnHint")}</p>
+      <ol className="c4-pin-atelier-index" aria-label={v4("pnTitle")}>
+        <li data-tone="gold">{v4("pnAtelierGold")}</li>
+        <li data-tone="ink">{v4("pnAtelierInk")}</li>
+        <li data-tone="ivory">{v4("pnAtelierIvory")}</li>
+      </ol>
+      <p className="c4-pin-atelier-hint">{v4("pnHint")}</p>
       <p className="c4-meta">{v4("pnLocal")}</p>
       <form className="c4-row" onSubmit={(event) => {
         event.preventDefault();
@@ -93,9 +100,9 @@ export function PinBoard({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("pnHidden")}</button>
       </div>
       {!shown.length && <p className="c4-pay-empty">{v4("pnEmpty")}</p>}
-      <ul className="c4-pin-list">
+      <ul className="c4-pin-list c4-pin-atelier-list">
         {shown.map((card) => (
-          <li key={card.id} className="c4-pin-card" data-pinned={card.pinned ? "1" : "0"}>
+          <li key={card.id} className="c4-pin-card c4-pin-atelier-card" data-pinned={card.pinned ? "1" : "0"}>
             <p>{card.text}</p>
             <div className="c4-row">
               <button type="button" className="c4-btn" onClick={() => store(toggleCardPin(cards, card.id))}>{card.pinned ? v4("pnUnpin") : v4("pnPin")}</button>

@@ -281,9 +281,9 @@ function main() {
       assert.ok(ROUND211_COPY[locale][key as keyof typeof ROUND211_COPY.en].length > 0);
     }
   }
-  assert.equal(crmv4Text("tr", "trsTitle"), ROUND211_COPY.tr.trsTitle);
+  assert.equal(crmv4Text("tr", "trsTitle"), "Tezgah kartları");
   assert.equal(crmv4Text("de", "acwTitle"), ROUND211_COPY.de.acwTitle);
-  assert.equal(crmv4Text("ru", "trsSub"), ROUND211_COPY.ru.trsSub);
+  assert.equal(crmv4Text("ru", "trsSub"), "Мастерская последующих контактов");
   assert.equal(crmv4Text("ar", "acwSub"), ROUND211_COPY.ar.acwSub);
   assert.equal(crmv4Text("en", "trsLogo"), "7FX");
 

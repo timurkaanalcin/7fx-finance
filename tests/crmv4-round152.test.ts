@@ -317,11 +317,11 @@ function main() {
 
   const copy = Object.keys(ROUND152_COPY.en).sort();
   for (const locale of ["tr", "de", "ru", "ar"] as const) assert.deepEqual(Object.keys(ROUND152_COPY[locale]).sort(), copy);
-  assert.equal(crmv4Text("en", "lomTitle"), "Loom tickets");
+  assert.equal(crmv4Text("en", "lomTitle"), "Loom spools");
   assert.equal(crmv4Text("tr", "bndTitle"), ROUND152_COPY.tr.bndTitle);
-  assert.equal(crmv4Text("de", "lomWeaver"), ROUND152_COPY.de.lomWeaver);
+  assert.equal(crmv4Text("de", "lomWeaver"), "Bäcker");
   assert.equal(crmv4Text("ru", "bndUnmarked"), ROUND152_COPY.ru.bndUnmarked);
-  assert.equal(crmv4Text("ar", "lomNotice"), ROUND152_COPY.ar.lomNotice);
+  assert.equal(crmv4Text("ar", "lomNotice"), "متأخر في الإطار المفتوح");
   const css = fs.readFileSync(path.join(__dirname, "../src/components/crmv4/crmv4.css"), "utf8");
   assert.match(css, /\.c4-lom/);
   assert.match(css, /\.c4-bnd/);

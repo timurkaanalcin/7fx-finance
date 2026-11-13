@@ -81,15 +81,22 @@ export function DeskTimer({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-desk-timer" aria-label={v4("dtTitle")} data-desk-timer="1" data-running={timer.running ? "1" : "0"} data-mode={timer.mode}>
-      <header className="c4-pay-head">
+    <section className="c4-desk-timer c4-hour-dial" aria-label={v4("dtTitle")} data-desk-timer="1" data-desk="dial" data-running={timer.running ? "1" : "0"} data-mode={timer.mode}>
+      <header className="c4-hour-dial-mast">
+        <p className="c4-hour-dial-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("dtSub")}</p>
-          <h2 className="c4-title">{v4("dtTitle")}</h2>
+          <p className="c4-hour-dial-kicker">{v4("dtDialKicker")}</p>
+          <h2 className="c4-title c4-hour-dial-title">{v4("dtTitle")}</h2>
+          <p className="c4-hour-dial-lead">{v4("dtDialLead")}</p>
         </div>
-        <p className="c4-timer-face">{formatClock(showMs(timer, now))}</p>
+        <p className="c4-timer-face c4-hour-dial-face">{formatClock(showMs(timer, now))}</p>
       </header>
-      <p className="c4-meta">{v4("dtHint")}</p>
+      <ol className="c4-hour-dial-index" aria-label={v4("dtTitle")}>
+        <li data-tone="gold">{v4("dtDialGold")}</li>
+        <li data-tone="ink">{v4("dtDialInk")}</li>
+        <li data-tone="ivory">{v4("dtDialIvory")}</li>
+      </ol>
+      <p className="c4-hour-dial-hint">{v4("dtHint")}</p>
       <p className="c4-meta">{v4("dtLocal")}</p>
       <p className="c4-meta">{v4("dtNoServer")}</p>
       <div className="c4-row" role="group" aria-label={v4("dtTitle")}>
