@@ -261,7 +261,7 @@ export function AffiliateDesk({ v4, locale }: { v4: V4; locale: string }) {
   for (const row of rows) for (const sum of row.sums) if (!currencies.includes(sum.currency)) currencies.push(sum.currency);
   currencies.sort();
   return (
-    <section className="c4-aff-desk c4-aff-salon c4-aff-aisle" aria-label={v4("afTitle")} data-affiliates="" data-desk="aisle">
+    <section className="c4-aff-desk c4-aff-salon c4-aff-aisle c4-aff-greenhouse" aria-label={v4("afTitle")} data-affiliates="" data-desk="aisle" data-house="greenhouse">
       <header className="c4-aff-salon-mast c4-aff-aisle-mast">
         <p className="c4-aff-aisle-seal" data-logo="mono">7FX</p>
         <div className="c4-aff-aisle-copy">
@@ -277,6 +277,7 @@ export function AffiliateDesk({ v4, locale }: { v4: V4; locale: string }) {
         </ol>
         <p className="c4-aff-salon-plate" data-logo="mono">7FX</p>
       </header>
+      <p className="c4-aff-greenhouse-lead">{v4("afGreenLead")}</p>
       <nav className="c4-aff-aisle-links" aria-label={v4("ainTitle")}>
         <Link href={crmv4Href(root, "aisl")}>{v4("ainTitle")}</Link>
         <Link href={crmv4Href(root, "esct")}>{v4("escTitle")}</Link>
