@@ -268,6 +268,7 @@ import { FogBells, QuayPlates } from "./round277";
 import { CrossStaff, ServerPlates } from "./round278";
 import { DeskWatch, KamalSights } from "./round279";
 import { BackstaffSights, ReasonPlates } from "./round280";
+import { AddressPlates as StreetPlates, NocturnalSights } from "./round281";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1067,6 +1068,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "dwb") return v4("dwbTitle");
     if (tab === "bst") return v4("bstTitle");
     if (tab === "lir") return v4("lirTitle");
+    if (tab === "noc") return v4("nocTitle");
+    if (tab === "adp") return v4("adpTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1552,6 +1555,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "dwb") return v4("dwbSub");
     if (tab === "bst") return v4("bstSub");
     if (tab === "lir") return v4("lirSub");
+    if (tab === "noc") return v4("nocSub");
+    if (tab === "adp") return v4("adpSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -2172,6 +2177,8 @@ function Shell({ base, section, name }: Props) {
             {view === "dwb" && <DeskWatch base={base} v4={v4} />}
             {view === "bst" && <BackstaffSights base={base} v4={v4} />}
             {view === "lir" && <ReasonPlates base={base} v4={v4} />}
+            {view === "noc" && <NocturnalSights base={base} v4={v4} />}
+            {view === "adp" && <StreetPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
