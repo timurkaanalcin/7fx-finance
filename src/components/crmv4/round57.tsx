@@ -222,28 +222,36 @@ export function AccentStrip({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-accent-strip" aria-label={v4("acTitle")} data-accent-strip="1" data-gold={gold} data-chrome={chrome}>
-      <header className="c4-pay-head">
+    <section className="c4-accent-strip c4-accent-salon" aria-label={v4("acTitle")} data-accent-strip="1" data-desk="salon" data-gold={gold} data-chrome={chrome}>
+      <header className="c4-pay-head c4-accent-salon-mast">
+        <p className="c4-accent-salon-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("acSub")}</p>
+          <p className="c4-accent-salon-kicker">{v4("accSalonKicker")}</p>
           <h2 className="c4-title">{v4("acTitle")}</h2>
         </div>
+        <ol className="c4-accent-salon-index" aria-label={v4("acTitle")}>
+          <li data-tone="ivory">{v4("accSalonIvory")}</li>
+          <li data-tone="ink">{v4("accSalonGraphite")}</li>
+          <li data-tone="gold">{v4("accSalonChampagne")}</li>
+        </ol>
       </header>
+      <p className="c4-accent-salon-lead">{v4("accSalonLead")}</p>
+      <p className="c4-meta">{v4("acSub")}</p>
       <p className="c4-meta">{v4("acHint")}</p>
       <p className="c4-meta">{v4("acLocal")}</p>
-      <div className="c4-row" role="group" aria-label={v4("acGold")}>
+      <div className="c4-row c4-accent-salon-row" role="group" aria-label={v4("acGold")}>
         <span className="c4-meta">{v4("acGold")}</span>
         {GOLD_LEVELS.map((level) => (
-          <button key={level} type="button" className="c4-swatch" data-gold={level} data-on={gold === level ? "1" : "0"} aria-pressed={gold === level} onClick={() => pickGold(level)}>{v4(GOLD_LABEL[level])}</button>
+          <button key={level} type="button" className="c4-swatch c4-accent-salon-swatch" data-gold={level} data-on={gold === level ? "1" : "0"} aria-pressed={gold === level} onClick={() => pickGold(level)}>{v4(GOLD_LABEL[level])}</button>
         ))}
       </div>
-      <div className="c4-row" role="group" aria-label={v4("acChrome")}>
+      <div className="c4-row c4-accent-salon-row" role="group" aria-label={v4("acChrome")}>
         <span className="c4-meta">{v4("acChrome")}</span>
         <button type="button" className="c4-chip" data-on={chrome === "roomy" ? "1" : "0"} aria-pressed={chrome === "roomy"} onClick={() => pickChrome("roomy")}>{v4("acRoomy")}</button>
         <button type="button" className="c4-chip" data-on={chrome === "dense" ? "1" : "0"} aria-pressed={chrome === "dense"} onClick={() => pickChrome("dense")}>{v4("acDense")}</button>
       </div>
       <p className="c4-meta">{v4("acPreview")}</p>
-      <div className="c4-accent-preview" data-gold={gold}>
+      <div className="c4-accent-preview c4-accent-salon-preview" data-gold={gold}>
         <span data-gold="soft" />
         <span data-gold="desk" />
         <span data-gold="deep" />

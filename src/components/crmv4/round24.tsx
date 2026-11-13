@@ -85,14 +85,37 @@ export function CohortBoard({ v4 }: { v4: V4 }) {
     second: (depositCount.get(user.id) || 0) >= 2,
   })).filter((row) => row.week);
   const weeks = cohortOf(rows);
+  const peak = Math.max(1, ...weeks.map((week) => week.registered));
   return (
-    <section className="c4-cohort-luxe" aria-label={v4("cohortTitle")}>
-      <h3 className="c4-title">{v4("cohortTitle")}</h3>
+    <section className="c4-cohort-luxe c4-cohort-gallery" aria-label={v4("cohortTitle")} data-cohort="1" data-desk="gallery">
+      <header className="c4-cohort-gallery-mast">
+        <p className="c4-cohort-gallery-seal" data-logo="mono">7FX</p>
+        <div>
+          <p className="c4-cohort-gallery-kicker">{v4("cohGalKicker")}</p>
+          <h3 className="c4-title">{v4("cohortTitle")}</h3>
+        </div>
+        <ol className="c4-cohort-gallery-index" aria-label={v4("cohortTitle")}>
+          <li data-tone="ivory">{v4("cohGalIvory")}</li>
+          <li data-tone="ink">{v4("cohGalGraphite")}</li>
+          <li data-tone="gold">{v4("cohGalChampagne")}</li>
+        </ol>
+      </header>
+      <p className="c4-cohort-gallery-lead">{v4("cohGalLead")}</p>
       <p className="c4-muted">{v4("cohortHint")}</p>
-      {!weeks.length && <p className="c4-empty-gold">{v4("cohortEmpty")}</p>}
-      <ul className="c4-cohort-list">
+      {!weeks.length && <p className="c4-empty-gold c4-cohort-gallery-empty">{v4("cohortEmpty")}</p>}
+      {weeks.length > 0 && (
+        <div className="c4-cohort-gallery-chart" aria-label={v4("cohortTitle")}>
+          {weeks.slice(0, 8).map((week) => (
+            <div key={week.week} className="c4-cohort-gallery-column">
+              <i style={{ height: `${Math.max(18, Math.round((week.registered / peak) * 88))}px` }} />
+              <span>{week.week.slice(5)}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      <ul className="c4-cohort-list c4-cohort-gallery-list">
         {weeks.map((week) => (
-          <li key={week.week}>
+          <li key={week.week} className="c4-cohort-gallery-card">
             <strong>{week.week}</strong>
             <span>{v4("stepRegistered")} {week.registered}</span>
             <span>{v4("stepKycDone")} {week.kyc}</span>
