@@ -67,15 +67,22 @@ export function VoiceTray({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-voice-tray" aria-label={v4("vsTitle")} data-voice-tray="1">
-      <header className="c4-pay-head">
+    <section className="c4-voice-tray c4-voice-folio" aria-label={v4("vsTitle")} data-voice-tray="1" data-desk="folio">
+      <header className="c4-voice-folio-mast">
+        <p className="c4-voice-folio-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("vsSub")}</p>
-          <h2 className="c4-title">{v4("vsTitle")}</h2>
+          <p className="c4-voice-folio-kicker">{v4("vsFolioKicker")}</p>
+          <h2 className="c4-title c4-voice-folio-title">{v4("vsTitle")}</h2>
+          <p className="c4-voice-folio-lead">{v4("vsFolioLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-voice-folio-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("vsHint")}</p>
+      <ol className="c4-voice-folio-index" aria-label={v4("vsTitle")}>
+        <li data-tone="gold">{v4("vsFolioGold")}</li>
+        <li data-tone="ink">{v4("vsFolioInk")}</li>
+        <li data-tone="ivory">{v4("vsFolioIvory")}</li>
+      </ol>
+      <p className="c4-voice-folio-hint">{v4("vsHint")}</p>
       <p className="c4-meta">{v4("vsLocal")}</p>
       <form className="c4-row" onSubmit={(event) => {
         event.preventDefault();
@@ -101,9 +108,9 @@ export function VoiceTray({ v4 }: { v4: V4 }) {
       </div>
       {copied === "fail" && <p className="c4-meta">{v4("vsNotCopied")}</p>}
       {!shown.length && <p className="c4-pay-empty">{v4("vsEmpty")}</p>}
-      <ul className="c4-voice-list">
+      <ul className="c4-voice-list c4-voice-folio-list">
         {shown.map((item) => (
-          <li key={item.id} className="c4-voice-card" data-pinned={item.pinned ? "1" : "0"}>
+          <li key={item.id} className="c4-voice-card c4-voice-folio-card" data-pinned={item.pinned ? "1" : "0"}>
             <p>{item.text}</p>
             {copied === item.id && <p className="c4-meta">{v4("vsCopied")}</p>}
             <div className="c4-row">
