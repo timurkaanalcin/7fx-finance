@@ -197,14 +197,21 @@ export function QuietDesk({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-quiet-desk" aria-label={v4("qfTitle")} data-quiet-desk="1">
-      <header className="c4-pay-head">
+    <section className="c4-quiet-desk c4-quiet-salon" aria-label={v4("qfTitle")} data-quiet-desk="1" data-desk="salon">
+      <header className="c4-pay-head c4-quiet-salon-mast">
+        <p className="c4-quiet-salon-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("qfSub")}</p>
-          <h2 className="c4-title">{v4("qfTitle")}</h2>
+          <p className="c4-pay-kicker c4-quiet-salon-kicker">{v4("qfSub")}</p>
+          <h2 className="c4-title c4-quiet-salon-title">{v4("qfTitle")}</h2>
         </div>
-        <p className="c4-meta">{sample && !inQuiet(now, quiet.start, quiet.end) ? v4("qfListening") : v4("qfQuiet")}</p>
+        <p className="c4-meta c4-quiet-salon-count">{sample && !inQuiet(now, quiet.start, quiet.end) ? v4("qfListening") : v4("qfQuiet")}</p>
+        <ol className="c4-quiet-salon-index" aria-label={v4("qfTitle")}>
+          <li data-tone="gold">{v4("qfSalonChampagne")}</li>
+          <li data-tone="ink">{v4("qfSalonGraphite")}</li>
+          <li data-tone="ivory">{v4("qfSalonIvory")}</li>
+        </ol>
       </header>
+      <p className="c4-meta c4-quiet-salon-lead">{v4("qfSalonLead")}</p>
       <p className="c4-meta">{v4("qfHint")}</p>
       <p className="c4-meta">{v4("qfLocal")}</p>
       <div className="c4-row" role="group" aria-label={v4("qfMute")}>
@@ -219,18 +226,18 @@ export function QuietDesk({ v4 }: { v4: V4 }) {
       <div className="c4-row">
         <label className="c4-lab">
           <span>{v4("qfStart")}</span>
-          <input className="c4-field" type="time" aria-label={v4("qfStart")} value={quiet.start} onChange={(event) => storeQuiet({ ...quiet, start: event.target.value })} />
+          <input className="c4-field c4-quiet-salon-search" type="time" aria-label={v4("qfStart")} value={quiet.start} onChange={(event) => storeQuiet({ ...quiet, start: event.target.value })} />
         </label>
         <label className="c4-lab">
           <span>{v4("qfEnd")}</span>
-          <input className="c4-field" type="time" aria-label={v4("qfEnd")} value={quiet.end} onChange={(event) => storeQuiet({ ...quiet, end: event.target.value })} />
+          <input className="c4-field c4-quiet-salon-search" type="time" aria-label={v4("qfEnd")} value={quiet.end} onChange={(event) => storeQuiet({ ...quiet, end: event.target.value })} />
         </label>
       </div>
       <p className="c4-meta">{v4("qfSame")}</p>
-      <ul className="c4-quiet-kinds">
+      <ul className="c4-quiet-kinds c4-quiet-salon-list">
         {ALERT_KINDS.map((kind) => {
           const on = shouldAlert({ kind, muted, focus, start: quiet.start, end: quiet.end, nowMin: now });
-          return <li key={kind} data-on={on ? "1" : "0"}>{v4(KIND_LABEL[kind])} · {on ? v4("qfListening") : v4("qfQuiet")}</li>;
+          return <li key={kind} className="c4-quiet-salon-card" data-on={on ? "1" : "0"}>{v4(KIND_LABEL[kind])} · {on ? v4("qfListening") : v4("qfQuiet")}</li>;
         })}
       </ul>
     </section>

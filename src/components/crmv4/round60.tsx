@@ -146,19 +146,26 @@ export function ScratchBoard({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-scratch-board" aria-label={v4("sbTitle")} data-scratch-board="1">
-      <header className="c4-pay-head">
+    <section className="c4-scratch-board c4-scratch-salon" aria-label={v4("sbTitle")} data-scratch-board="1" data-desk="salon">
+      <header className="c4-pay-head c4-scratch-salon-mast">
+        <p className="c4-scratch-salon-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("sbSub")}</p>
-          <h2 className="c4-title">{v4("sbTitle")}</h2>
+          <p className="c4-pay-kicker c4-scratch-salon-kicker">{v4("sbSub")}</p>
+          <h2 className="c4-title c4-scratch-salon-title">{v4("sbTitle")}</h2>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-meta c4-scratch-salon-count">{shown.length}</p>
+        <ol className="c4-scratch-salon-index" aria-label={v4("sbTitle")}>
+          <li data-tone="gold">{v4("sbSalonChampagne")}</li>
+          <li data-tone="ink">{v4("sbSalonGraphite")}</li>
+          <li data-tone="ivory">{v4("sbSalonIvory")}</li>
+        </ol>
       </header>
+      <p className="c4-meta c4-scratch-salon-lead">{v4("sbSalonLead")}</p>
       <p className="c4-meta">{v4("sbHint")}</p>
       <p className="c4-meta">{v4("sbLocal")}</p>
       <label className="c4-lab">
         <span>{v4("sbSearch")}</span>
-        <input className="c4-field" aria-label={v4("sbSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
+        <input className="c4-field c4-scratch-salon-search" aria-label={v4("sbSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       <div className="c4-row" role="group" aria-label={v4("sbOpen")}>
         <button type="button" className="c4-chip" data-on={archived ? "0" : "1"} aria-pressed={!archived} onClick={() => setArchived(false)}>{v4("sbOpen")}</button>
@@ -180,9 +187,9 @@ export function ScratchBoard({ v4 }: { v4: V4 }) {
       </form>
       <p className="c4-meta">{v4("sbBlank")}</p>
       {!shown.length && <p className="c4-pay-empty">{v4("sbEmpty")}</p>}
-      <ul className="c4-scratch-notes">
+      <ul className="c4-scratch-notes c4-scratch-salon-list">
         {shown.map((note) => (
-          <li key={note.id} className="c4-scratch-note" data-pinned={note.pinned ? "1" : "0"} data-archived={note.archived ? "1" : "0"}>
+          <li key={note.id} className="c4-scratch-note c4-scratch-salon-card" data-pinned={note.pinned ? "1" : "0"} data-archived={note.archived ? "1" : "0"}>
             <p>{note.body}</p>
             <div className="c4-row">
               <button type="button" className="c4-btn" onClick={() => store(togglePin(notes, note.id))}>{note.pinned ? v4("sbUnpin") : v4("sbPin")}</button>
