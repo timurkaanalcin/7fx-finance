@@ -38,7 +38,21 @@ export default function Logs({ tx, locale, q }: { tx: Tx; locale: string; q: str
     router.replace(`?${p.toString()}`);
   }
   return (
-    <div className="c4-logs-luxe c4-logs-script c4-logs-gilt c4-logs-herb c4-logs-salon c4-logs-transept c4-logs-ambulatory c4-logs-narthex c4-logs-coffer" data-desk="coffer">
+    <div className="c4-logs-luxe c4-logs-script c4-logs-gilt c4-logs-herb c4-logs-salon c4-logs-transept c4-logs-ambulatory c4-logs-narthex c4-logs-coffer c4-logs-chronicle" data-desk="coffer" data-chronicle="1">
+    <header className="c4-logs-chronicle-mast">
+      <p className="c4-logs-chronicle-seal" data-logo="mono">7FX</p>
+      <div>
+        <p className="c4-logs-chronicle-kicker">{v4("logChronicleKicker")}</p>
+        <h2 className="c4-logs-chronicle-title">{tx("logs")}</h2>
+        <p className="c4-logs-chronicle-lead">{v4("logChronicleLead")}</p>
+      </div>
+      <ol className="c4-logs-chronicle-quire" aria-label={tx("logs")}>
+        <li data-on={type === "" ? "1" : "0"}><button type="button" onClick={() => setQuery({ type: "" })}>{tx("all")}</button></li>
+        <li data-on={type === "NOTE" ? "1" : "0"} data-kind="note"><button type="button" onClick={() => setQuery({ type: "NOTE" })}>{tx("noteType")}</button></li>
+        <li data-on={type === "CALL" ? "1" : "0"} data-kind="call"><button type="button" onClick={() => setQuery({ type: "CALL" })}>{tx("call")}</button></li>
+        <li data-on={type === "CHAT" ? "1" : "0"} data-kind="chat"><button type="button" onClick={() => setQuery({ type: "CHAT" })}>{tx("chatType")}</button></li>
+      </ol>
+    </header>
     <header className="c4-logs-mast c4-logs-transept-mast c4-logs-coffer-mast">
       <p className="c4-logs-plate c4-logs-transept-seal c4-logs-coffer-seal" data-logo="mono">7FX</p>
       <div className="c4-logs-coffer-copy">
@@ -108,9 +122,9 @@ export default function Logs({ tx, locale, q }: { tx: Tx; locale: string; q: str
       </div>
       <State loading={data.loading} error={data.error} empty={!data.loading && rows.length === 0} tx={tx} onRetry={data.reload} />
       {!data.loading && rows.length === 0 && <p className="c4-empty-gold c4-logs-coffer-empty">{v4("cffHallEmpty")}</p>}
-      <ul className="c4-logs-ledger c4-logs-coffer-ledger">
+      <ul className="c4-logs-ledger c4-logs-coffer-ledger c4-logs-chronicle-ledger">
         {rows.filter((row) => !worker.trim() || String(row.workerName || "").toLowerCase().includes(worker.trim().toLowerCase())).map((row) => (
-          <li key={row.id} className="c4-log-line c4-logs-coffer-row" data-kind={String(row.type || "").toLowerCase()}>
+          <li key={row.id} className="c4-log-line c4-logs-coffer-row c4-logs-chronicle-row" data-kind={String(row.type || "").toLowerCase()}>
             <span className="c4-log-kind">{row.type || "—"}</span>
             <div>
               <p className="c4-log-who">{row.trader || row.title || "—"}</p>
