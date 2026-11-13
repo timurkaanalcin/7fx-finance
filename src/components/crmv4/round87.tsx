@@ -56,15 +56,22 @@ export function StatusBanner({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-status-banner" aria-label={v4("bnTitle")} data-status-banner="1">
-      <header className="c4-pay-head">
+    <section className="c4-status-banner c4-banner-court" aria-label={v4("bnTitle")} data-status-banner="1" data-desk="court">
+      <header className="c4-banner-court-mast">
+        <p className="c4-banner-court-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("bnSub")}</p>
-          <h2 className="c4-title">{v4("bnTitle")}</h2>
+          <p className="c4-banner-court-kicker">{v4("bnCourtKicker")}</p>
+          <h2 className="c4-title c4-banner-court-title">{v4("bnTitle")}</h2>
+          <p className="c4-banner-court-lead">{v4("bnCourtLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-banner-court-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("bnHint")}</p>
+      <ol className="c4-banner-court-index" aria-label={v4("bnTitle")}>
+        <li data-tone="gold">{v4("bnCourtGold")}</li>
+        <li data-tone="ink">{v4("bnCourtInk")}</li>
+        <li data-tone="ivory">{v4("bnCourtIvory")}</li>
+      </ol>
+      <p className="c4-banner-court-hint">{v4("bnHint")}</p>
       <p className="c4-meta">{v4("bnLocal")}</p>
       <form className="c4-row" onSubmit={(event) => {
         event.preventDefault();
@@ -88,10 +95,10 @@ export function StatusBanner({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "0" : "1"} aria-pressed={!hidden} onClick={() => setHidden(false)}>{v4("bnShown")}</button>
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("bnHidden")}</button>
       </div>
-      {!shown.length && <p className="c4-pay-empty">{v4("bnEmpty")}</p>}
-      <ul className="c4-banner-list">
+      {!shown.length && <p className="c4-pay-empty c4-banner-court-empty">{v4("bnEmpty")}</p>}
+      <ul className="c4-banner-list c4-banner-court-list">
         {shown.map((banner) => (
-          <li key={banner.id} className="c4-banner-card" data-pinned={banner.pinned ? "1" : "0"}>
+          <li key={banner.id} className="c4-banner-card c4-banner-court-card" data-pinned={banner.pinned ? "1" : "0"} data-hidden={banner.hidden ? "1" : "0"}>
             <p>{banner.text}</p>
             <div className="c4-row">
               <button type="button" className="c4-btn" onClick={() => store(toggleBannerPin(banners, banner.id))}>{banner.pinned ? v4("bnUnpin") : v4("bnPin")}</button>
@@ -142,15 +149,22 @@ export function TypeGlance({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-type-glance" aria-label={v4("dgTitle")} data-type-glance="1">
-      <header className="c4-pay-head">
+    <section className="c4-type-glance c4-type-cabinet" aria-label={v4("dgTitle")} data-type-glance="1" data-desk="cabinet">
+      <header className="c4-type-cabinet-mast">
+        <p className="c4-type-cabinet-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("dgSub")}</p>
-          <h2 className="c4-title">{v4("dgTitle")}</h2>
+          <p className="c4-type-cabinet-kicker">{v4("dgCabinetKicker")}</p>
+          <h2 className="c4-title c4-type-cabinet-title">{v4("dgTitle")}</h2>
+          <p className="c4-type-cabinet-lead">{v4("dgCabinetLead")}</p>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-type-cabinet-count">{chips.length}</p>
       </header>
-      <p className="c4-meta">{v4("dgHint")}</p>
+      <ol className="c4-type-cabinet-index" aria-label={v4("dgTitle")}>
+        <li data-tone="gold">{v4("dgCabinetGold")}</li>
+        <li data-tone="ink">{v4("dgCabinetInk")}</li>
+        <li data-tone="ivory">{v4("dgCabinetIvory")}</li>
+      </ol>
+      <p className="c4-type-cabinet-hint">{v4("dgHint")}</p>
       <p className="c4-meta">{v4("dgLocal")}</p>
       <p className="c4-row">
         <Link className="c4-btn" href={crmv4Href(base, "kyc")}>{v4("dgBoard")}</Link>
@@ -181,12 +195,12 @@ export function TypeGlance({ base, v4 }: { base: string; v4: V4 }) {
         <span>{v4("dgSearch")}</span>
         <input className="c4-field" aria-label={v4("dgSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
-      {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("dgEmpty")}</p>}
-      <ul className="c4-type-rows">
+      {!shown.length && rows.length > 0 && <p className="c4-pay-empty c4-type-cabinet-empty">{v4("dgEmpty")}</p>}
+      <ul className="c4-type-rows c4-type-cabinet-list">
         {shown.map((row) => {
           const name = typeText(row.type);
           return (
-            <li key={row.id} data-type={name || "blank"}>
+            <li key={row.id} className="c4-type-cabinet-card" data-type={name || "blank"} data-on={type === name ? "1" : "0"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("dgBlank")}</p>
               {row.userId && <Link className="c4-btn" href={crmv4Href(base, `customers/${row.userId}`)}>{v4("dgCustomer")}</Link>}
