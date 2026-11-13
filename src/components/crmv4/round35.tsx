@@ -87,8 +87,20 @@ export function DeskStaff({ v4 }: { v4: V4 }) {
     window.localStorage.setItem(LOAD_KEY, next);
   }
   return (
-    <section className="c4-staff-luxe" aria-label={v4("staffTitle")} data-staff="1">
-      <h2 className="c4-title">{v4("staffTitle")}</h2>
+    <section className="c4-staff-luxe c4-staff-salon" aria-label={v4("staffTitle")} data-staff="1" data-desk="salon">
+      <header className="c4-staff-salon-mast">
+        <p className="c4-staff-salon-seal" data-logo="mono">7FX</p>
+        <div>
+          <p className="c4-staff-salon-kicker">{v4("staffHint")}</p>
+          <h2 className="c4-title c4-staff-salon-title">{v4("staffTitle")}</h2>
+        </div>
+        <ol className="c4-staff-salon-index" aria-label={v4("staffTitle")}>
+          <li data-tone="gold">{v4("stSalonChampagne")}</li>
+          <li data-tone="ink">{v4("stSalonGraphite")}</li>
+          <li data-tone="ivory">{v4("stSalonIvory")}</li>
+        </ol>
+      </header>
+      <p className="c4-staff-salon-lead">{v4("stSalonLead")}</p>
       <p className="c4-muted">{v4("staffHint")}</p>
       <p>{v4("staffUnassigned")} · {unassignedCount(customers, staff)}</p>
       <div className="c4-line-filters">
