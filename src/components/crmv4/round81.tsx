@@ -90,14 +90,21 @@ export function SnoozeStrip({ base, v4, locale }: { base: string; v4: V4; locale
   }
 
   return (
-    <section className="c4-snooze-strip" aria-label={v4("szTitle")} data-snooze-strip="1">
-      <header className="c4-pay-head">
+    <section className="c4-snooze-strip c4-snooze-court" aria-label={v4("szTitle")} data-snooze-strip="1" data-desk="court">
+      <header className="c4-snooze-court-mast">
+        <p className="c4-snooze-court-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("szSub")}</p>
-          <h2 className="c4-title">{v4("szTitle")}</h2>
+          <p className="c4-snooze-court-kicker">{v4("szCourtKicker")}</p>
+          <h2 className="c4-title c4-snooze-court-title">{v4("szTitle")}</h2>
+          <p className="c4-snooze-court-lead">{v4("szCourtLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-snooze-court-count">{shown.length}</p>
       </header>
+      <ol className="c4-snooze-court-index" aria-label={v4("szTitle")}>
+        <li data-tone="gold">{v4("szSnoozed")}</li>
+        <li data-tone="ink">{v4("szOpen")}</li>
+        <li data-tone="ivory">{v4("szFollow")}</li>
+      </ol>
       <p className="c4-meta">{v4("szHint")}</p>
       <p className="c4-meta">{v4("szLocal")}</p>
       {data.error && <p className="c4-meta">{v4("szFailed")}</p>}
@@ -132,12 +139,12 @@ export function SnoozeStrip({ base, v4, locale }: { base: string; v4: V4; locale
         <button type="button" className="c4-chip" data-on={snoozed ? "0" : "1"} aria-pressed={!snoozed} onClick={() => setSnoozed(false)}>{v4("szOpen")}</button>
         <button type="button" className="c4-chip" data-on={snoozed ? "1" : "0"} aria-pressed={snoozed} onClick={() => setSnoozed(true)}>{v4("szSnoozed")}</button>
       </div>
-      {!shown.length && <p className="c4-pay-empty">{v4("szEmpty")}</p>}
-      <ul className="c4-snooze-list">
+      {!shown.length && <p className="c4-pay-empty c4-snooze-court-empty">{v4("szEmpty")}</p>}
+      <ul className="c4-snooze-list c4-snooze-court-list">
         {shown.map((row) => {
           const mark = byId.get(row.id);
           return (
-            <li key={row.id} className="c4-snooze-card" data-snoozed={snoozeActive(mark, nowMs) ? "1" : "0"}>
+            <li key={row.id} className="c4-snooze-card c4-snooze-court-card" data-snoozed={snoozeActive(mark, nowMs) ? "1" : "0"}>
               <p>{row.name || row.id}</p>
               <p className="c4-meta">{v4("szFollow")} {utcText(row.at, locale)}</p>
               {mark && snoozeActive(mark, nowMs) && <p className="c4-meta">{v4("szUntil")} {utcText(mark.until, locale)}</p>}
