@@ -84,14 +84,21 @@ export function CallPack({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-call-pack" aria-label={v4("cpTitle")} data-call-pack="1">
-      <header className="c4-pay-head">
+    <section className="c4-call-pack c4-call-folio" aria-label={v4("cpTitle")} data-call-pack="1" data-desk="parchment">
+      <header className="c4-call-folio-mast">
+        <p className="c4-call-folio-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("cpSub")}</p>
-          <h2 className="c4-title">{v4("cpTitle")}</h2>
+          <p className="c4-call-folio-kicker">{v4("cpFolioKicker")}</p>
+          <h2 className="c4-title c4-call-folio-title">{v4("cpTitle")}</h2>
+          <p className="c4-call-folio-lead">{v4("cpFolioLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-call-folio-count">{shown.length}</p>
       </header>
+      <ol className="c4-call-folio-index" aria-label={v4("cpTitle")}>
+        <li data-tone="gold">{v4("cpPin")}</li>
+        <li data-tone="ink">{v4("cpHidden")}</li>
+        <li data-tone="ivory">{v4("cpShown")}</li>
+      </ol>
       <p className="c4-meta">{v4("cpHint")}</p>
       <p className="c4-meta">{v4("cpLocal")}</p>
       {data.error && <p className="c4-meta">{v4("cpFailed")}</p>}
@@ -134,7 +141,8 @@ export function CallPack({ base, v4 }: { base: string; v4: V4 }) {
       {!shown.length && <p className="c4-pay-empty">{v4("cpEmpty")}</p>}
       <ul className="c4-call-list">
         {shown.map((item) => (
-          <li key={item.id} className="c4-call-card" data-pinned={item.pinned ? "1" : "0"}>
+          <li key={item.id} className="c4-call-card c4-call-folio-card" data-pinned={item.pinned ? "1" : "0"}>
+            <span className="c4-call-folio-pin" aria-hidden="true" />
             <p>{names[item.customerId] || item.customerId}</p>
             <p>{item.body}</p>
             {item.when && <p className="c4-meta">{item.when}</p>}

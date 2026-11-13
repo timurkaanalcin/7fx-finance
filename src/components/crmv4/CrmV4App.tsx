@@ -276,6 +276,7 @@ import { NotePlates, TraversePegs } from "./round285";
 import { HourPlates, WaywiserWheels } from "./round286";
 import { GnomonStaffs, TenurePlates } from "./round287";
 import { LodestoneNeedles, RecallPlates } from "./round288";
+import { LoginPlates, VolvelleLeaves } from "./round289";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1091,6 +1092,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "tnr") return v4("tnrTitle");
     if (tab === "ldn") return v4("ldnTitle");
     if (tab === "ctc") return v4("ctcTitle");
+    if (tab === "vlv") return v4("vlvTitle");
+    if (tab === "lgn") return v4("lgnTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1592,6 +1595,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "tnr") return v4("tnrSub");
     if (tab === "ldn") return v4("ldnSub");
     if (tab === "ctc") return v4("ctcSub");
+    if (tab === "vlv") return v4("vlvSub");
+    if (tab === "lgn") return v4("lgnSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -2228,6 +2233,8 @@ function Shell({ base, section, name }: Props) {
             {view === "tnr" && <TenurePlates base={base} v4={v4} />}
             {view === "ldn" && <LodestoneNeedles base={base} v4={v4} />}
             {view === "ctc" && <RecallPlates base={base} v4={v4} />}
+            {view === "vlv" && <VolvelleLeaves base={base} v4={v4} />}
+            {view === "lgn" && <LoginPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
