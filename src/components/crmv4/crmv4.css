@@ -82003,3 +82003,417 @@
 }
 [data-crmv4-root][data-theme="dark"] .c4-logs-coffer.c4-logs-chronicle .c4-logs-coffer-stats strong,
 [data-crmv4-root][data-theme="dark"] .c4-logs-coffer.c4-logs-chronicle .c4-log-who { color: #f6f1e8; }
+
+/* Round 272 — pendulum bobs, charter plates, and the calendar almanac with the license charter.
+   Graphite #1c1a17, ivory #f6f1e8, champagne #c6a15b and #8a6a3b.
+   Calendar and licenses leave the plain sextant rows. Chrome pad stays 10px. The logo stays monochrome. */
+
+[data-crmv4-root] .c4-pendulum,
+[data-crmv4-root] .c4-charter,
+[data-crmv4-root] .c4-cal-almanac,
+[data-crmv4-root] .c4-lic-charter {
+  margin: 12px 16px 28px;
+  padding: 0 0 20px;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 3px no-repeat,
+    #f6f1e8;
+  border: 1px solid #1c1a17;
+  color: #1c1a17;
+  box-shadow: 0 18px 40px rgba(28, 26, 23, 0.06);
+}
+[data-crmv4-root] .c4-pendulum-mast,
+[data-crmv4-root] .c4-charter-mast,
+[data-crmv4-root] .c4-cal-almanac-mast,
+[data-crmv4-root] .c4-lic-charter-mast {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: end;
+  padding: 0 0 18px;
+  background: #1c1a17;
+  color: #f6f1e8;
+}
+[data-crmv4-root] .c4-pendulum-seal[data-logo="mono"],
+[data-crmv4-root] .c4-charter-seal[data-logo="mono"],
+[data-crmv4-root] .c4-cal-almanac-seal[data-logo="mono"],
+[data-crmv4-root] .c4-lic-charter-seal[data-logo="mono"] {
+  display: grid;
+  place-items: end center;
+  min-height: 128px;
+  margin: 0;
+  padding: 16px 0;
+  background: #f6f1e8;
+  color: #1c1a17;
+  border-right: 3px solid #c6a15b;
+  letter-spacing: 0.28em;
+  font-size: 13px;
+  font-weight: 650;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  filter: grayscale(1);
+}
+[data-crmv4-root] .c4-pendulum-seal i {
+  display: block;
+  width: 18px;
+  height: 18px;
+  margin-top: 12px;
+  border: 2px solid #8a6a3b;
+  border-radius: 50%;
+  background: #c6a15b;
+}
+[data-crmv4-root] .c4-pendulum-kicker,
+[data-crmv4-root] .c4-charter-kicker,
+[data-crmv4-root] .c4-cal-almanac-kicker,
+[data-crmv4-root] .c4-lic-charter-kicker {
+  margin: 22px 0 8px;
+  color: #c6a15b;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-pendulum .c4-title,
+[data-crmv4-root] .c4-charter .c4-title,
+[data-crmv4-root] .c4-cal-almanac-title,
+[data-crmv4-root] .c4-lic-charter-title {
+  margin: 0;
+  font-family: Palatino, "Palatino Linotype", Georgia, serif;
+  font-size: 42px;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 0.92;
+  color: #f6f1e8;
+}
+[data-crmv4-root] .c4-pendulum-hands,
+[data-crmv4-root] .c4-charter-index,
+[data-crmv4-root] .c4-cal-almanac-index,
+[data-crmv4-root] .c4-lic-charter-index {
+  display: flex;
+  gap: 0;
+  margin: 0 18px 0 0;
+  padding: 0;
+  list-style: none;
+  align-self: stretch;
+}
+[data-crmv4-root] .c4-pendulum-hands li,
+[data-crmv4-root] .c4-charter-index li,
+[data-crmv4-root] .c4-cal-almanac-index li,
+[data-crmv4-root] .c4-lic-charter-index li {
+  display: grid;
+  place-items: end center;
+  min-width: 72px;
+  padding: 12px 10px;
+  border-left: 1px solid #3a342c;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-pendulum-hands li:first-child,
+[data-crmv4-root] .c4-charter-index li[data-tone="gold"],
+[data-crmv4-root] .c4-cal-almanac-index li[data-tone="gold"],
+[data-crmv4-root] .c4-lic-charter-index li[data-tone="gold"] { color: #c6a15b; }
+[data-crmv4-root] .c4-pendulum-links,
+[data-crmv4-root] .c4-charter-links,
+[data-crmv4-root] .c4-pendulum-lead,
+[data-crmv4-root] .c4-pendulum-hint,
+[data-crmv4-root] .c4-charter-hint,
+[data-crmv4-root] .c4-cal-almanac-lead,
+[data-crmv4-root] .c4-lic-charter-lead,
+[data-crmv4-root] .c4-pendulum-note,
+[data-crmv4-root] .c4-charter-note {
+  margin: 12px 18px 0;
+  color: #5c5348;
+  line-height: 1.45;
+}
+[data-crmv4-root] .c4-cal-almanac-lead,
+[data-crmv4-root] .c4-lic-charter-lead { color: #efe6d6; max-width: 42rem; margin: 10px 0 18px; }
+[data-crmv4-root] .c4-pendulum-links a,
+[data-crmv4-root] .c4-charter-links a { color: #8a6a3b; margin-right: 14px; }
+[data-crmv4-root] .c4-pendulum-notice {
+  margin: 14px 18px 0;
+  padding: 10px 14px;
+  background: #1c1a17;
+  color: #f6f1e8;
+  letter-spacing: 0.04em;
+}
+[data-crmv4-root] .c4-pendulum-ledger,
+[data-crmv4-root] .c4-charter-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 16px 18px 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-pendulum-ledger li,
+[data-crmv4-root] .c4-charter-kpis li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 72px;
+  padding: 12px;
+  background: #fffdf8;
+  border: 1px solid #e4d8c4;
+  border-top: 2px solid #c6a15b;
+}
+[data-crmv4-root] .c4-pendulum-ledger span,
+[data-crmv4-root] .c4-charter-kpis span {
+  color: #8a6a3b;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-pendulum-ledger strong,
+[data-crmv4-root] .c4-charter-kpis strong {
+  font-family: Palatino, Georgia, serif;
+  font-size: 28px;
+  font-weight: 500;
+}
+[data-crmv4-root] .c4-pendulum-staff {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  align-items: end;
+  margin: 18px;
+  padding: 16px;
+  list-style: none;
+  background: #fffdf8;
+  border: 1px solid #e4d8c4;
+  min-height: 160px;
+}
+[data-crmv4-root] .c4-pendulum-staff li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+[data-crmv4-root] .c4-pendulum-staff i {
+  display: block;
+  width: 14px;
+  background: linear-gradient(#c6a15b, #8a6a3b);
+  border-radius: 99px 99px 2px 2px;
+  transition: height 180ms ease;
+}
+[data-crmv4-root] .c4-pendulum-staff span,
+[data-crmv4-root] .c4-charter-stake span {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #5c5348;
+}
+[data-crmv4-root] .c4-pendulum-time,
+[data-crmv4-root] .c4-charter-lanes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 18px;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-pendulum-time li,
+[data-crmv4-root] .c4-charter-lanes li {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  padding: 8px 12px;
+  background: #fffdf8;
+  border: 1px solid #e4d8c4;
+}
+[data-crmv4-root] .c4-pendulum-tools,
+[data-crmv4-root] .c4-charter-tools,
+[data-crmv4-root] .c4-pendulum-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: end;
+  margin: 14px 18px 0;
+}
+[data-crmv4-root] .c4-pendulum-form { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+[data-crmv4-root] .c4-pendulum-meta,
+[data-crmv4-root] .c4-charter-meta { margin: 6px 0 0; color: #5c5348; font-size: 13px; }
+[data-crmv4-root] .c4-pendulum-empty,
+[data-crmv4-root] .c4-charter-empty,
+[data-crmv4-root] .c4-cal-almanac-empty,
+[data-crmv4-root] .c4-lic-charter-empty {
+  margin: 16px 18px;
+  padding: 28px 18px;
+  text-align: center;
+  border: 1px dashed #c6a15b;
+  background: #fffdf8;
+  color: #5c5348;
+}
+[data-crmv4-root] .c4-pendulum-board,
+[data-crmv4-root] .c4-pendulum-index,
+[data-crmv4-root] .c4-charter-board,
+[data-crmv4-root] .c4-cal-almanac-list,
+[data-crmv4-root] .c4-lic-charter-board {
+  display: grid;
+  gap: 12px;
+  margin: 16px 18px 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-pendulum-board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+[data-crmv4-root] .c4-pendulum-index { grid-template-columns: minmax(0, 1fr); }
+[data-crmv4-root] .c4-pendulum-bob,
+[data-crmv4-root] .c4-charter-card,
+[data-crmv4-root] .c4-cal-almanac-card,
+[data-crmv4-root] .c4-lic-charter-card {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 14px;
+  background: #fffdf8;
+  border: 1px solid #e4d8c4;
+  transition: transform 160ms ease, border-color 160ms ease;
+}
+[data-crmv4-root] .c4-pendulum-bob[data-on="1"],
+[data-crmv4-root] .c4-charter-card[data-on="1"],
+[data-crmv4-root] .c4-cal-almanac-card:focus-within,
+[data-crmv4-root] .c4-lic-charter-card:focus-within {
+  border-color: #8a6a3b;
+  box-shadow: inset 3px 0 0 #c6a15b;
+}
+[data-crmv4-root] .c4-pendulum-bob[data-overdue="1"] { border-top: 2px solid #8a6a3b; }
+[data-crmv4-root] .c4-pendulum-bob:hover,
+[data-crmv4-root] .c4-charter-card:hover,
+[data-crmv4-root] .c4-cal-almanac-card:hover,
+[data-crmv4-root] .c4-lic-charter-card:hover { transform: translateY(-1px); }
+[data-crmv4-root] .c4-pendulum-ring {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+}
+[data-crmv4-root] .c4-pendulum-ring span,
+[data-crmv4-root] .c4-charter-stamp,
+[data-crmv4-root] .c4-lic-charter-mark {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  background: #1c1a17;
+  color: #f6f1e8;
+  font-family: Palatino, Georgia, serif;
+  letter-spacing: 0.08em;
+}
+[data-crmv4-root] .c4-charter-chart {
+  display: grid;
+  gap: 8px;
+  margin: 16px 18px 0;
+}
+[data-crmv4-root] .c4-charter-stake {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 10px;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 10px;
+  background: #fffdf8;
+  border: 1px solid #e4d8c4;
+  color: #1c1a17;
+  text-align: start;
+}
+[data-crmv4-root] .c4-charter-stake i {
+  display: block;
+  height: 8px;
+  background: linear-gradient(90deg, #c6a15b, #8a6a3b);
+  border-radius: 99px;
+}
+[data-crmv4-root] .c4-charter-stake[data-on="1"] { box-shadow: inset 3px 0 0 #c6a15b; }
+[data-crmv4-root] .c4-cal-almanac-list { position: relative; }
+[data-crmv4-root] .c4-cal-almanac-card,
+[data-crmv4-root] .c4-lic-charter-card {
+  grid-template-columns: 140px minmax(0, 1fr) auto;
+  align-items: center;
+}
+[data-crmv4-root] .c4-cal-almanac-when {
+  margin: 0;
+  color: #8a6a3b;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-cal-almanac-body,
+[data-crmv4-root] .c4-lic-charter-name {
+  margin: 0;
+  font-family: Palatino, Georgia, serif;
+  font-size: 22px;
+}
+[data-crmv4-root] .c4-cal-almanac-who,
+[data-crmv4-root] .c4-lic-charter-meta { margin: 4px 0 0; color: #5c5348; }
+[data-crmv4-root] .c4-cal-almanac-form,
+[data-crmv4-root] .c4-lic-charter-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 16px 18px 0;
+  padding: 16px;
+  background: #fffdf8;
+  border: 1px solid #e4d8c4;
+}
+[data-crmv4-root] .c4-pendulum .c4-btn,
+[data-crmv4-root] .c4-charter .c4-btn,
+[data-crmv4-root] .c4-cal-almanac .c4-btn,
+[data-crmv4-root] .c4-lic-charter .c4-btn { min-height: 44px; }
+[data-crmv4-root][data-theme="dark"] .c4-pendulum,
+[data-crmv4-root][data-theme="dark"] .c4-charter,
+[data-crmv4-root][data-theme="dark"] .c4-cal-almanac,
+[data-crmv4-root][data-theme="dark"] .c4-lic-charter {
+  background: #161412;
+  color: #f6f1e8;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-pendulum-ledger li,
+[data-crmv4-root][data-theme="dark"] .c4-charter-kpis li,
+[data-crmv4-root][data-theme="dark"] .c4-pendulum-bob,
+[data-crmv4-root][data-theme="dark"] .c4-charter-card,
+[data-crmv4-root][data-theme="dark"] .c4-charter-stake,
+[data-crmv4-root][data-theme="dark"] .c4-cal-almanac-card,
+[data-crmv4-root][data-theme="dark"] .c4-lic-charter-card,
+[data-crmv4-root][data-theme="dark"] .c4-pendulum-staff,
+[data-crmv4-root][data-theme="dark"] .c4-cal-almanac-form,
+[data-crmv4-root][data-theme="dark"] .c4-lic-charter-form,
+[data-crmv4-root][data-theme="dark"] .c4-pendulum-empty,
+[data-crmv4-root][data-theme="dark"] .c4-charter-empty,
+[data-crmv4-root][data-theme="dark"] .c4-cal-almanac-empty,
+[data-crmv4-root][data-theme="dark"] .c4-lic-charter-empty {
+  background: #221f1b;
+  color: #f6f1e8;
+  border-color: #8a6a3b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-pendulum-meta,
+[data-crmv4-root][data-theme="dark"] .c4-charter-meta,
+[data-crmv4-root][data-theme="dark"] .c4-cal-almanac-who,
+[data-crmv4-root][data-theme="dark"] .c4-lic-charter-meta,
+[data-crmv4-root][data-theme="dark"] .c4-pendulum-lead,
+[data-crmv4-root][data-theme="dark"] .c4-pendulum-hint,
+[data-crmv4-root][data-theme="dark"] .c4-charter-hint { color: #d9cbb6; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-pendulum-mast,
+  [data-crmv4-root] .c4-charter-mast,
+  [data-crmv4-root] .c4-cal-almanac-mast,
+  [data-crmv4-root] .c4-lic-charter-mast,
+  [data-crmv4-root] .c4-pendulum-board,
+  [data-crmv4-root] .c4-pendulum-form,
+  [data-crmv4-root] .c4-pendulum-ledger,
+  [data-crmv4-root] .c4-charter-kpis,
+  [data-crmv4-root] .c4-cal-almanac-form,
+  [data-crmv4-root] .c4-lic-charter-form,
+  [data-crmv4-root] .c4-cal-almanac-card,
+  [data-crmv4-root] .c4-lic-charter-card { grid-template-columns: minmax(0, 1fr); }
+  [data-crmv4-root] .c4-pendulum .c4-chip,
+  [data-crmv4-root] .c4-charter .c4-chip,
+  [data-crmv4-root] .c4-cal-almanac .c4-btn,
+  [data-crmv4-root] .c4-lic-charter .c4-btn { min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-pendulum-bob,
+  [data-crmv4-root] .c4-charter-card,
+  [data-crmv4-root] .c4-cal-almanac-card,
+  [data-crmv4-root] .c4-lic-charter-card,
+  [data-crmv4-root] .c4-pendulum-staff i { transition: none; }
+}

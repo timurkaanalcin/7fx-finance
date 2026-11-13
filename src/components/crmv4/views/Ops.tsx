@@ -24,6 +24,10 @@ function roomHit(needle: string, text: string) {
   return !query || text.toLowerCase().includes(query);
 }
 
+function roomCopy(v4: (key: Parameters<typeof crmv4Text>[1]) => string, key: Parameters<typeof crmv4Text>[1]) {
+  return v4(key);
+}
+
 export default function Ops({ tx, area, locale }: { tx: Tx; area: string; locale?: string }) {
   const titleKey = OPS_TITLE[area as keyof typeof OPS_TITLE] || "workspaceIntro";
   const v4 = (key: Parameters<typeof crmv4Text>[1]) => crmv4Text(locale || "en", key);
@@ -72,8 +76,8 @@ export default function Ops({ tx, area, locale }: { tx: Tx; area: string; locale
       {area === "assets" && <Assets tx={tx} needle={needle} empty={v4("sxtOpsEmpty")} />}
       {area === "rates" && <Rates tx={tx} />}
       {area === "sponsors" && <Sponsors tx={tx} needle={needle} empty={v4("sxtOpsEmpty")} />}
-      {area === "licenses" && <Licenses tx={tx} needle={needle} empty={v4("sxtOpsEmpty")} />}
-      {area === "calendar" && <Calendar tx={tx} needle={needle} empty={v4("sxtOpsEmpty")} />}
+      {area === "licenses" && <Licenses tx={tx} needle={needle} empty={roomCopy(v4, "licCharterEmpty")} v4={v4} />}
+      {area === "calendar" && <Calendar tx={tx} needle={needle} empty={roomCopy(v4, "calAlmanacEmpty")} v4={v4} />}
       {area === "import" && <ImportPanel tx={tx} />}
     </div>
   );
@@ -302,18 +306,35 @@ function readFile(file: File): Promise<string> {
   });
 }
 
-function Licenses({ tx, needle, empty }: { tx: Tx; needle: string; empty: string }) {
+function Licenses({ tx, needle, empty, v4 }: { tx: Tx; needle: string; empty: string; v4: (key: Parameters<typeof crmv4Text>[1]) => string }) {
   const data = useJson<{ licenses?: { id: string; regulator?: string; number?: string; entity?: string }[] }>("/api/admin/licenses");
   const [msg, setMsg] = useState("");
   const rows = (data.data?.licenses || []).filter((row) => roomHit(needle, `${row.regulator || ""} ${row.number || ""} ${row.entity || ""}`));
   return (
-    <Card title={tx("licenses")}>
+    <section className="c4-lic-charter" aria-label={tx("licenses")}>
+      <header className="c4-lic-charter-mast">
+        <p className="c4-lic-charter-seal" data-logo="mono">7FX</p>
+        <div>
+          <p className="c4-lic-charter-kicker">{roomCopy(v4, "licCharterKicker")}</p>
+          <h3 className="c4-lic-charter-title">{tx("licenses")}</h3>
+          <p className="c4-lic-charter-lead">{roomCopy(v4, "licCharterLead")}</p>
+        </div>
+        <ol className="c4-lic-charter-index" aria-label={tx("licenses")}>
+          <li data-tone="gold">{rows.length}</li>
+          <li data-tone="ink">{tx("regulator")}</li>
+          <li data-tone="ivory">{tx("entity")}</li>
+        </ol>
+      </header>
       <State loading={data.loading} error={data.error} empty={!data.loading && !(data.data?.licenses || []).length} tx={tx} onRetry={data.reload} />
-      {!data.loading && (data.data?.licenses || []).length > 0 && rows.length === 0 && <p className="c4-ops-sextant-empty">{empty}</p>}
-      <ul>
+      {!data.loading && (data.data?.licenses || []).length > 0 && rows.length === 0 && <p className="c4-lic-charter-empty">{empty}</p>}
+      <ol className="c4-lic-charter-board">
         {rows.map((row) => (
-          <li key={row.id} className="c4-ops-row" data-live="on">
-            <span>{row.regulator} · {row.number} · {row.entity}</span>
+          <li key={row.id} className="c4-lic-charter-card" data-live="on">
+            <p className="c4-lic-charter-mark">{(row.regulator || "·").slice(0, 2).toUpperCase()}</p>
+            <div>
+              <p className="c4-lic-charter-name">{row.regulator || "—"}</p>
+              <p className="c4-lic-charter-meta">{row.number || "—"} · {row.entity || "—"}</p>
+            </div>
             <button type="button" className="c4-btn" onClick={async () => {
               const res = await fetch(`/api/admin/licenses?id=${encodeURIComponent(row.id)}`, { method: "DELETE" });
               setMsg(res.ok ? tx("saved") : tx("failed"));
@@ -321,8 +342,8 @@ function Licenses({ tx, needle, empty }: { tx: Tx; needle: string; empty: string
             }}>{tx("delete")}</button>
           </li>
         ))}
-      </ul>
-      <form className="c4-form c4-form-2 c4-ops-form" onSubmit={async (event) => {
+      </ol>
+      <form className="c4-form c4-form-2 c4-lic-charter-form" onSubmit={async (event) => {
         event.preventDefault();
         const fd = new FormData(event.currentTarget);
         const res = await sendJson("/api/admin/licenses", "POST", { regulator: fd.get("regulator"), number: fd.get("number"), entity: fd.get("entity"), registerUrl: fd.get("registerUrl") });
@@ -336,22 +357,39 @@ function Licenses({ tx, needle, empty }: { tx: Tx; needle: string; empty: string
         <button type="submit" className="c4-btn c4-btn-hot">{tx("createLicense")}</button>
         <Msg text={msg} />
       </form>
-    </Card>
+    </section>
   );
 }
 
-function Calendar({ tx, needle, empty }: { tx: Tx; needle: string; empty: string }) {
+function Calendar({ tx, needle, empty, v4 }: { tx: Tx; needle: string; empty: string; v4: (key: Parameters<typeof crmv4Text>[1]) => string }) {
   const data = useJson<{ reminders?: { id: string; body?: string; remindAt?: string; trader?: string | null }[] }>("/api/admin/calendar?take=40");
   const [msg, setMsg] = useState("");
   const rows = (data.data?.reminders || []).filter((row) => roomHit(needle, `${row.body || ""} ${row.trader || ""}`));
   return (
-    <Card title={tx("calendar")}>
+    <section className="c4-cal-almanac" aria-label={tx("calendar")}>
+      <header className="c4-cal-almanac-mast">
+        <p className="c4-cal-almanac-seal" data-logo="mono">7FX</p>
+        <div>
+          <p className="c4-cal-almanac-kicker">{roomCopy(v4, "calAlmanacKicker")}</p>
+          <h3 className="c4-cal-almanac-title">{tx("calendar")}</h3>
+          <p className="c4-cal-almanac-lead">{roomCopy(v4, "calAlmanacLead")}</p>
+        </div>
+        <ol className="c4-cal-almanac-index" aria-label={tx("calendar")}>
+          <li data-tone="gold">{rows.length}</li>
+          <li data-tone="ink">{tx("reminder")}</li>
+          <li data-tone="ivory">{tx("remindAt")}</li>
+        </ol>
+      </header>
       <State loading={data.loading} error={data.error} empty={!data.loading && !(data.data?.reminders || []).length} tx={tx} onRetry={data.reload} />
-      {!data.loading && (data.data?.reminders || []).length > 0 && rows.length === 0 && <p className="c4-ops-sextant-empty">{empty}</p>}
-      <ul>
+      {!data.loading && (data.data?.reminders || []).length > 0 && rows.length === 0 && <p className="c4-cal-almanac-empty">{empty}</p>}
+      <ol className="c4-cal-almanac-list">
         {rows.map((row) => (
-          <li key={row.id} className="c4-ops-row" data-live="on">
-            <span>{row.body} · {row.trader || ""} · {when(row.remindAt, "en")}</span>
+          <li key={row.id} className="c4-cal-almanac-card" data-live="on">
+            <p className="c4-cal-almanac-when">{when(row.remindAt, "en")}</p>
+            <div>
+              <p className="c4-cal-almanac-body">{row.body || "—"}</p>
+              <p className="c4-cal-almanac-who">{row.trader || "—"}</p>
+            </div>
             <button type="button" className="c4-btn" onClick={async () => {
               const res = await sendJson("/api/admin/calendar", "POST", { action: "delete", id: row.id });
               setMsg(res.ok ? tx("saved") : tx("failed"));
@@ -359,21 +397,21 @@ function Calendar({ tx, needle, empty }: { tx: Tx; needle: string; empty: string
             }}>{tx("delete")}</button>
           </li>
         ))}
-      </ul>
-      <form className="c4-form c4-ops-form" onSubmit={async (event) => {
+      </ol>
+      <form className="c4-form c4-cal-almanac-form" onSubmit={async (event) => {
         event.preventDefault();
         const fd = new FormData(event.currentTarget);
-        const res = await sendJson("/api/admin/calendar", "POST", { body: fd.get("body"), remindAt: fd.get("remindAt"), userId: fd.get("userId"), color: "#7c3aed" });
+        const res = await sendJson("/api/admin/calendar", "POST", { body: fd.get("body"), remindAt: fd.get("remindAt"), userId: fd.get("userId"), color: "#c6a15b" });
         setMsg(res.ok ? tx("reminderSaved") : res.error || tx("failed"));
         if (res.ok) { event.currentTarget.reset(); data.reload(); }
       }}>
         <Lab label={tx("reminder")}><input name="body" required className="c4-field" /></Lab>
         <Lab label={tx("remindAt")}><input name="remindAt" type="datetime-local" required className="c4-field" /></Lab>
-        <Lab label={tx("userId")}><input name="userId" className="c4-field" /></Lab>
+        <Lab label={`${tx("userId")} (${tx("optional")})`}><input name="userId" aria-required={false} className="c4-field" /></Lab>
         <button type="submit" className="c4-btn c4-btn-hot">{tx("save")}</button>
         <Msg text={msg} />
       </form>
-    </Card>
+    </section>
   );
 }
 
