@@ -55,14 +55,21 @@ export function RiskWatch({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-risk-watch" aria-label={v4("rwTitle")} data-risk-watch="1">
-      <header className="c4-pay-head">
+    <section className="c4-risk-watch c4-slate-watch" aria-label={v4("rwTitle")} data-risk-watch="1" data-desk="slate">
+      <header className="c4-slate-watch-mast">
+        <p className="c4-slate-watch-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("rwSub")}</p>
-          <h2 className="c4-title">{v4("rwTitle")}</h2>
+          <p className="c4-slate-watch-kicker">{v4("rwSlateKicker")}</p>
+          <h2 className="c4-title c4-slate-watch-title">{v4("rwTitle")}</h2>
+          <p className="c4-slate-watch-lead">{v4("rwSlateLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-slate-watch-count">{shown.length}</p>
       </header>
+      <ol className="c4-slate-watch-index" aria-label={v4("rwTitle")}>
+        <li data-tone="gold">{v4("rwPin")}</li>
+        <li data-tone="ink">{v4("rwHidden")}</li>
+        <li data-tone="ivory">{v4("rwShown")}</li>
+      </ol>
       <p className="c4-meta">{v4("rwHint")}</p>
       <p className="c4-meta">{v4("rwLocal")}</p>
       {!data.loading && !data.error && !loaded.length && <p className="c4-pay-empty">{v4("rwNone")}</p>}
@@ -83,7 +90,7 @@ export function RiskWatch({ base, v4 }: { base: string; v4: V4 }) {
         </label>
         <label className="c4-lab">
           <span>{v4("rwReason")}</span>
-          <input className="c4-field" aria-label={v4("rwReason")} value={reason} onChange={(event) => setReason(event.target.value)} />
+          <input className="c4-field" aria-label={v4("rwReason")} aria-required={false} value={reason} onChange={(event) => setReason(event.target.value)} />
         </label>
         <button type="submit" className="c4-btn">{v4("rwAdd")}</button>
       </form>
@@ -97,9 +104,10 @@ export function RiskWatch({ base, v4 }: { base: string; v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("rwHidden")}</button>
       </div>
       {!shown.length && <p className="c4-pay-empty">{v4("rwEmpty")}</p>}
-      <ul className="c4-risk-list">
+      <ul className="c4-risk-list c4-slate-watch-list">
         {shown.map((item) => (
-          <li key={item.id} className="c4-risk-card" data-pinned={item.pinned ? "1" : "0"}>
+          <li key={item.id} className="c4-risk-card c4-slate-watch-card" data-pinned={item.pinned ? "1" : "0"}>
+            <span className="c4-slate-watch-diamond" aria-hidden="true" />
             <p>{names[item.id] || item.id}</p>
             {item.reason && <p className="c4-meta">{item.reason}</p>}
             <div className="c4-row">
@@ -125,25 +133,34 @@ export function MailDensityStrip({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-mail-density" aria-label={v4("mdTitle")} data-mail-density="1" data-mail={density}>
-      <header className="c4-pay-head">
+    <section className="c4-mail-density c4-vellum-gauge" aria-label={v4("mdTitle")} data-mail-density="1" data-desk="vellum" data-mail={density}>
+      <header className="c4-vellum-gauge-mast">
+        <p className="c4-vellum-gauge-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("mdSub")}</p>
-          <h2 className="c4-title">{v4("mdTitle")}</h2>
+          <p className="c4-vellum-gauge-kicker">{v4("mdVellumKicker")}</p>
+          <h2 className="c4-title c4-vellum-gauge-title">{v4("mdTitle")}</h2>
+          <p className="c4-vellum-gauge-lead">{v4("mdVellumLead")}</p>
         </div>
+        <p className="c4-vellum-gauge-count" data-mail={density}>{v4(DENSITY_LABEL[density])}</p>
       </header>
+      <ol className="c4-vellum-gauge-index" aria-label={v4("mdTitle")}>
+        <li data-tone="gold">{v4("mdRoomy")}</li>
+        <li data-tone="ink">{v4("mdDesk")}</li>
+        <li data-tone="ivory">{v4("mdCompact")}</li>
+      </ol>
       <p className="c4-meta">{v4("mdHint")}</p>
       <p className="c4-meta">{v4("mdLocal")}</p>
       <p className="c4-meta">{v4("mdPad")}</p>
-      <div className="c4-row" role="group" aria-label={v4("mdTitle")}>
+      <div className="c4-row c4-vellum-gauge-rail" role="group" aria-label={v4("mdTitle")}>
         {MAIL_DENSITIES.map((item) => (
-          <button key={item} type="button" className="c4-chip" data-mail={item} data-on={density === item ? "1" : "0"} aria-pressed={density === item} onClick={() => choose(item)}>
+          <button key={item} type="button" className="c4-chip c4-vellum-gauge-chip" data-mail={item} data-on={density === item ? "1" : "0"} aria-pressed={density === item} onClick={() => choose(item)}>
+            <span className="c4-vellum-gauge-tick" data-mail={item} aria-hidden="true" />
             {v4(DENSITY_LABEL[item])}
           </button>
         ))}
       </div>
       <p className="c4-meta">{v4("mdPreview")}</p>
-      <ul className="c4-mail-preview" data-mail-preview="">
+      <ul className="c4-mail-preview c4-vellum-gauge-preview" data-mail-preview="" data-mail={density}>
         <li>{v4("mdSample")}</li>
         <li>{v4("mdSample")}</li>
       </ul>
