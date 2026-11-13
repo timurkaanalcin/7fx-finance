@@ -259,6 +259,7 @@ import { BarometerTubes, SurnamePlates } from "./round268";
 import { HygrometerCards, RegistryPlates } from "./round269";
 import { ClinometerCards, PotentialPlates } from "./round270";
 import { AnemometerCups, RetentionPlates } from "./round271";
+import { CharterPlates, PendulumBobs } from "./round272";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1040,6 +1041,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ptn") return v4("ptnTitle");
     if (tab === "anm") return v4("anmTitle");
     if (tab === "rtn") return v4("rtnTitle");
+    if (tab === "pnd") return v4("pndTitle");
+    if (tab === "cht") return v4("chtTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1507,6 +1510,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ptn") return v4("ptnSub");
     if (tab === "anm") return v4("anmSub");
     if (tab === "rtn") return v4("rtnSub");
+    if (tab === "pnd") return v4("pndSub");
+    if (tab === "cht") return v4("chtSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -2109,6 +2114,8 @@ function Shell({ base, section, name }: Props) {
             {view === "ptn" && <PotentialPlates base={base} v4={v4} />}
             {view === "anm" && <AnemometerCups base={base} v4={v4} />}
             {view === "rtn" && <RetentionPlates base={base} v4={v4} />}
+            {view === "pnd" && <PendulumBobs base={base} v4={v4} />}
+            {view === "cht" && <CharterPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
