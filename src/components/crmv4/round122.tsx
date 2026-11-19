@@ -49,6 +49,10 @@ export function MailNotes({ v4 }: { v4: V4 }) {
     writeJson(MAIL_KEY, next);
   }, []);
   const shown = visibleNotes(notes, hidden, query);
+  const openCount = notes.filter((note) => !note.hidden).length;
+  const pinCount = notes.filter((note) => note.pinned).length;
+  const hideCount = notes.filter((note) => note.hidden).length;
+  const notePeak = Math.max(1, openCount, pinCount, hideCount);
 
   function store(next: Note[]) {
     setNotes(next);
@@ -56,16 +60,39 @@ export function MailNotes({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-mail-room" aria-label={v4("mlrTitle")} data-mail-room="1">
-      <header className="c4-pay-head">
+    <section className="c4-mail-room c4-mail-tholos" aria-label={v4("mlrTitle")} data-mail-room="1" data-desk="tholos">
+      <header className="c4-mail-tholos-mast">
+        <p className="c4-mail-tholos-seal" data-logo="mono">{v4("mlrTholosLogo")}</p>
         <div>
-          <p className="c4-mlr-logo" data-logo="mono">{v4("mlrLogo")}</p>
-          <p className="c4-pay-kicker">{v4("mlrSub")}</p>
-          <h2 className="c4-title">{v4("mlrTitle")}</h2>
+          <p className="c4-mail-tholos-kicker">{v4("mlrTholosKicker")}</p>
+          <h2 className="c4-title c4-mail-tholos-title">{v4("mlrTitle")}</h2>
+          <p className="c4-mail-tholos-lead">{v4("mlrTholosLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-mail-tholos-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("mlrHint")}</p>
+      <ol className="c4-mail-tholos-index" aria-label={v4("mlrTitle")}>
+        <li data-tone="gold">{v4("mlrTholosOpen")} {openCount}</li>
+        <li data-tone="ink">{v4("mlrTholosPinned")} {pinCount}</li>
+        <li data-tone="ivory">{v4("mlrTholosHidden")} {hideCount}</li>
+      </ol>
+      <div className="c4-mail-tholos-chart" aria-label={v4("mlrTitle")}>
+        <button type="button" className="c4-mail-tholos-column" data-on={openCount ? "1" : "0"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((openCount / notePeak) * 88))}px` }} />
+          <strong>{openCount}</strong>
+          <span>{v4("mlrTholosOpen")}</span>
+        </button>
+        <button type="button" className="c4-mail-tholos-column" data-on={pinCount ? "1" : "0"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((pinCount / notePeak) * 88))}px` }} />
+          <strong>{pinCount}</strong>
+          <span>{v4("mlrTholosPinned")}</span>
+        </button>
+        <button type="button" className="c4-mail-tholos-column" data-on={hideCount ? "1" : "0"} onClick={() => setHidden(true)}>
+          <i style={{ height: `${Math.max(18, Math.round((hideCount / notePeak) * 88))}px` }} />
+          <strong>{hideCount}</strong>
+          <span>{v4("mlrTholosHidden")}</span>
+        </button>
+      </div>
+      <p className="c4-meta c4-mail-tholos-hint">{v4("mlrHint")}</p>
       <p className="c4-meta">{v4("mlrLocal")}</p>
       <p className="c4-meta">{v4("mlrBlank")}</p>
       <p className="c4-meta">{v4("mlrSlotBlank")}</p>
@@ -96,10 +123,10 @@ export function MailNotes({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "0" : "1"} aria-pressed={!hidden} onClick={() => setHidden(false)}>{v4("mlrOpen")}</button>
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("mlrHidden")}</button>
       </div>
-      {!shown.length && <p className="c4-pay-empty">{v4("mlrEmpty")}</p>}
-      <ul className="c4-mlr-rows">
+      {!shown.length && <p className="c4-pay-empty c4-mail-tholos-empty">{v4("mlrEmpty")}</p>}
+      <ul className="c4-mlr-rows c4-mail-tholos-list">
         {shown.map((note) => (
-          <li key={note.id} data-pinned={note.pinned ? "1" : "0"}>
+          <li key={note.id} className="c4-mail-tholos-card" data-pinned={note.pinned ? "1" : "0"} data-on={note.pinned ? "1" : "0"}>
             <p>{note.text}</p>
             {note.slot ? <p className="c4-meta">{note.slot}</p> : null}
             <div className="c4-row">
