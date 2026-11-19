@@ -57,15 +57,22 @@ export function ScratchPads({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-scratch-pads" aria-label={v4("npTitle")} data-scratch-pads="1">
-      <header className="c4-pay-head">
+    <section className="c4-scratch-pads c4-pad-gallery" aria-label={v4("npTitle")} data-scratch-pads="1" data-desk="gallery">
+      <header className="c4-pad-gallery-mast">
+        <p className="c4-pad-gallery-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("npSub")}</p>
-          <h2 className="c4-title">{v4("npTitle")}</h2>
+          <p className="c4-pad-gallery-kicker">{v4("npGalleryKicker")}</p>
+          <h2 className="c4-title c4-pad-gallery-title">{v4("npTitle")}</h2>
+          <p className="c4-pad-gallery-lead">{v4("npGalleryLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-pad-gallery-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("npHint")}</p>
+      <ol className="c4-pad-gallery-index" aria-label={v4("npTitle")}>
+        <li data-tone="gold">{v4("npGalleryPinned")}</li>
+        <li data-tone="ink">{v4("npGalleryOpen")}</li>
+        <li data-tone="ivory">{v4("npGalleryHidden")}</li>
+      </ol>
+      <p className="c4-meta c4-pad-gallery-hint">{v4("npHint")}</p>
       <p className="c4-meta">{v4("npLocal")}</p>
       <form className="c4-row" onSubmit={(event) => {
         event.preventDefault();
@@ -89,10 +96,10 @@ export function ScratchPads({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "0" : "1"} aria-pressed={!hidden} onClick={() => setHidden(false)}>{v4("npShown")}</button>
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("npHidden")}</button>
       </div>
-      {!shown.length && <p className="c4-pay-empty">{v4("npEmpty")}</p>}
-      <ul className="c4-pad-list">
+      {!shown.length && <p className="c4-pay-empty c4-pad-gallery-empty">{v4("npEmpty")}</p>}
+      <ul className="c4-pad-list c4-pad-gallery-list">
         {shown.map((pad) => (
-          <li key={pad.id} className="c4-pad-card" data-pinned={pad.pinned ? "1" : "0"}>
+          <li key={pad.id} className="c4-pad-card c4-pad-gallery-card" data-pinned={pad.pinned ? "1" : "0"} data-hidden={pad.hidden ? "1" : "0"}>
             <p className="c4-pad-text">{pad.text}</p>
             <div className="c4-row">
               <button type="button" className="c4-btn" onClick={() => store(togglePadPin(pads, pad.id))}>{pad.pinned ? v4("npUnpin") : v4("npPin")}</button>
@@ -143,15 +150,33 @@ export function OrderGlance({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-order-glance" aria-label={v4("ogTitle")} data-order-glance="1">
-      <header className="c4-pay-head">
+    <section className="c4-order-glance c4-order-colonnade" aria-label={v4("ogTitle")} data-order-glance="1" data-desk="colonnade">
+      <header className="c4-order-colonnade-mast">
+        <p className="c4-order-colonnade-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("ogSub")}</p>
-          <h2 className="c4-title">{v4("ogTitle")}</h2>
+          <p className="c4-order-colonnade-kicker">{v4("ogColonnadeKicker")}</p>
+          <h2 className="c4-title c4-order-colonnade-title">{v4("ogTitle")}</h2>
+          <p className="c4-order-colonnade-lead">{v4("ogColonnadeLead")}</p>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-order-colonnade-count">{chips.length}</p>
       </header>
-      <p className="c4-meta">{v4("ogHint")}</p>
+      <ol className="c4-order-colonnade-index" aria-label={v4("ogTitle")}>
+        <li data-tone="gold">{v4("ogColonnadeChosen")}</li>
+        <li data-tone="ink">{v4("ogColonnadeNamed")}</li>
+        <li data-tone="ivory">{v4("ogColonnadeBlank")}</li>
+      </ol>
+      <p className="c4-meta c4-order-colonnade-hint">{v4("ogHint")}</p>
+      {lines.length > 0 && (
+        <div className="c4-order-colonnade-chart" aria-label={v4("ogTitle")}>
+          {lines.map((line) => (
+            <button key={line.status || "blank"} type="button" className="c4-order-colonnade-column" data-on={status === line.status ? "1" : "0"} data-status={line.status || "blank"} onClick={() => { setBlank(!line.status); setSelected(line.status && status === line.status ? "" : line.status); }}>
+              <i style={{ height: `${Math.max(18, Math.round((line.count / Math.max(1, ...lines.map((item) => item.count))) * 88))}px` }} />
+              <strong>{line.count}</strong>
+              <span>{line.status || v4("ogColonnadeBlank")}</span>
+            </button>
+          ))}
+        </div>
+      )}
       <p className="c4-meta">{v4("ogLocal")}</p>
       <p className="c4-row">
         <Link className="c4-btn" href={crmv4Href(base, "blotter")}>{v4("ogBoard")}</Link>
@@ -182,12 +207,12 @@ export function OrderGlance({ base, v4 }: { base: string; v4: V4 }) {
         <span>{v4("ogSearch")}</span>
         <input className="c4-field" aria-label={v4("ogSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
-      {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("ogEmpty")}</p>}
-      <ul className="c4-order-rows">
+      {!shown.length && rows.length > 0 && <p className="c4-pay-empty c4-order-colonnade-empty">{v4("ogEmpty")}</p>}
+      <ul className="c4-order-rows c4-order-colonnade-list">
         {shown.map((row) => {
           const name = statusText(row.status);
           return (
-            <li key={row.id} data-status={name || "blank"}>
+            <li key={row.id} className="c4-order-colonnade-card" data-status={name || "blank"} data-on={status === name ? "1" : "0"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("ogBlank")}</p>
               {row.userId && <Link className="c4-btn" href={crmv4Href(base, `customers/${row.userId}`)}>{v4("ogCustomer")}</Link>}
