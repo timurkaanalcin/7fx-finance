@@ -10,6 +10,7 @@ import {
   IB_KEY,
   activeIb,
   addCard,
+  ibKind,
   ibSplit,
   otherStatuses,
   presentIbs,
@@ -144,6 +145,7 @@ export function IbGlance({ base, v4 }: { base: string; v4: V4 }) {
   const split = ibSplit(rows);
   const others = otherStatuses(rows);
   const shown = visibleReferrals(rows, kind, query);
+  const peak = Math.max(1, split.active, split.pending, ...others.map((line) => line.count));
 
   function store(next: IbKind[], clear: string) {
     setHiddenKinds(next);
@@ -152,15 +154,22 @@ export function IbGlance({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-ib-glance" aria-label={v4("igTitle")} data-ib-glance="1">
-      <header className="c4-pay-head">
+    <section className="c4-ib-glance c4-ib-exedra" aria-label={v4("igTitle")} data-ib-glance="1" data-desk="exedra">
+      <header className="c4-ib-exedra-mast">
+        <p className="c4-ib-exedra-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("igSub")}</p>
-          <h2 className="c4-title">{v4("igTitle")}</h2>
+          <p className="c4-ib-exedra-kicker">{v4("igExedraKicker")}</p>
+          <h2 className="c4-title c4-ib-exedra-title">{v4("igTitle")}</h2>
+          <p className="c4-ib-exedra-lead">{v4("igExedraLead")}</p>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-ib-exedra-count">{chips.length}</p>
       </header>
-      <p className="c4-meta">{v4("igHint")}</p>
+      <ol className="c4-ib-exedra-index" aria-label={v4("igTitle")}>
+        <li data-tone="gold">{v4("igExedraNamed")}</li>
+        <li data-tone="ink">{v4("igExedraBlank")}</li>
+        <li data-tone="ivory">{v4("igExedraOpen")}</li>
+      </ol>
+      <p className="c4-meta c4-ib-exedra-hint">{v4("igHint")}</p>
       <p className="c4-meta">{v4("igLocal")}</p>
       <p className="c4-row">
         <Link className="c4-btn" href={crmv4Href(base, "ibpay")}>{v4("igBoard")}</Link>
@@ -169,6 +178,25 @@ export function IbGlance({ base, v4 }: { base: string; v4: V4 }) {
       {failed && <p className="c4-meta">{v4("igFailed")}</p>}
       {!loading && !failed && !rows.length && <p className="c4-pay-empty">{v4("igNone")}</p>}
       {!loading && !present.length && rows.length > 0 && <p className="c4-pay-empty">{v4("igEmpty")}</p>}
+      <div className="c4-ib-exedra-chart" aria-label={v4("igTitle")}>
+        <button type="button" className="c4-ib-exedra-column" data-on={kind === "active" ? "1" : "0"} data-kind="active" onClick={() => setSelected(kind === "active" ? "" : "active")}>
+          <i style={{ height: `${Math.max(18, Math.round((split.active / peak) * 88))}px` }} />
+          <strong>{split.active}</strong>
+          <span>{v4("igActive")}</span>
+        </button>
+        <button type="button" className="c4-ib-exedra-column" data-on={kind === "pending" ? "1" : "0"} data-kind="pending" onClick={() => setSelected(kind === "pending" ? "" : "pending")}>
+          <i style={{ height: `${Math.max(18, Math.round((split.pending / peak) * 88))}px` }} />
+          <strong>{split.pending}</strong>
+          <span>{v4("igPending")}</span>
+        </button>
+        {others.map((line) => (
+          <button key={line.status} type="button" className="c4-ib-exedra-column" data-on="0" data-kind={line.status}>
+            <i style={{ height: `${Math.max(18, Math.round((line.count / peak) * 88))}px` }} />
+            <strong>{line.count}</strong>
+            <span>{line.status}</span>
+          </button>
+        ))}
+      </div>
       <p className="c4-meta" data-ib-split="">{v4("igActive")} {split.active} · {v4("igPending")} {split.pending}</p>
       {others.length > 0 && (
         <ul className="c4-ib-other">
@@ -199,9 +227,9 @@ export function IbGlance({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("igSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && (kind || present.length > 0) && <p className="c4-pay-empty">{v4("igEmpty")}</p>}
-      <ul className="c4-ib-rows">
+      <ul className="c4-ib-rows c4-ib-exedra-list">
         {shown.map((row) => (
-          <li key={row.id} data-status={String(row.status || "").trim().toUpperCase()}>
+          <li key={row.id} className="c4-ib-exedra-card" data-status={String(row.status || "").trim().toUpperCase()} data-on={kind && kind === ibKind(row.status) ? "1" : "0"}>
             <p>{row.label}</p>
             <p className="c4-meta">{String(row.status || "").trim().toUpperCase()}</p>
             {row.userId && <Link className="c4-btn" href={crmv4Href(base, `customers/${row.userId}`)}>{v4("igCustomer")}</Link>}
