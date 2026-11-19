@@ -301,6 +301,7 @@ import { ChorobatesRules, DatumPlates } from "./round310";
 import { GromaRules, PacePlates } from "./round311";
 import { LibellaRules, SigilPlates } from "./round312";
 import { ScapheRules, ShadePlates } from "./round313";
+import { HorologiumRules, RipplePlates } from "./round314";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1166,6 +1167,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "sig") return v4("sigTitle");
     if (tab === "scp") return v4("scpTitle");
     if (tab === "shd") return v4("shdTitle");
+    if (tab === "ckd") return v4("ckdTitle");
+    if (tab === "rpl") return v4("rplTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -2385,6 +2388,8 @@ function Shell({ base, section, name }: Props) {
             {view === "sig" && <SigilPlates base={base} v4={v4} />}
             {view === "scp" && <ScapheRules base={base} v4={v4} />}
             {view === "shd" && <ShadePlates base={base} v4={v4} />}
+            {view === "ckd" && <HorologiumRules base={base} v4={v4} />}
+            {view === "rpl" && <RipplePlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
