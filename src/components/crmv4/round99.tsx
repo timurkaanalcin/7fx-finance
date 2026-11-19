@@ -161,6 +161,8 @@ export function LanguageGlance({ base, v4 }: { base: string; v4: V4 }) {
   const chips = visibleLanguages(present, hiddenLanguages, showHidden);
   const language = activeLanguage(selected, chips);
   const shown = visibleCustomers(rows, language, blank, query);
+  const namedLines = lines.filter((line) => line.language).slice(0, 4);
+  const peak = Math.max(1, blankCount, ...namedLines.map((line) => line.count));
 
   function store(next: string[], clear: string) {
     setHiddenLanguages(next);
@@ -169,15 +171,22 @@ export function LanguageGlance({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-lang-glance" aria-label={v4("lgTitle")} data-lang-glance="1">
-      <header className="c4-pay-head">
+    <section className="c4-lang-glance c4-tongue-nave" aria-label={v4("lgTitle")} data-lang-glance="1" data-desk="nave">
+      <header className="c4-tongue-nave-mast">
+        <p className="c4-tongue-nave-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("lgSub")}</p>
-          <h2 className="c4-title">{v4("lgTitle")}</h2>
+          <p className="c4-tongue-nave-kicker">{v4("lgNaveKicker")}</p>
+          <h2 className="c4-title c4-tongue-nave-title">{v4("lgTitle")}</h2>
+          <p className="c4-tongue-nave-lead">{v4("lgNaveLead")}</p>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-tongue-nave-count">{chips.length}</p>
       </header>
-      <p className="c4-meta">{v4("lgHint")}</p>
+      <ol className="c4-tongue-nave-index" aria-label={v4("lgTitle")}>
+        <li data-tone="gold">{v4("lgNaveNamed")}</li>
+        <li data-tone="ink">{v4("lgNaveBlank")}</li>
+        <li data-tone="ivory">{v4("lgNaveQuiet")}</li>
+      </ol>
+      <p className="c4-meta c4-tongue-nave-hint">{v4("lgHint")}</p>
       <p className="c4-meta">{v4("lgLocal")}</p>
       <p className="c4-row">
         <Link className="c4-btn" href={crmv4Href(base, "customers")}>{v4("lgBoard")}</Link>
@@ -185,6 +194,20 @@ export function LanguageGlance({ base, v4 }: { base: string; v4: V4 }) {
       {data.loading && !rows.length && <p className="c4-meta">{v4("lgLoading")}</p>}
       {data.error && <p className="c4-meta">{v4("lgFailed")}</p>}
       {!data.loading && !data.error && !rows.length && <p className="c4-pay-empty">{v4("lgNone")}</p>}
+      <div className="c4-tongue-nave-chart" aria-label={v4("lgTitle")}>
+        {namedLines.map((line) => (
+          <button key={line.language} type="button" className="c4-tongue-nave-column" data-on={language === line.language ? "1" : "0"} data-language={line.language} onClick={() => { setBlank(false); setSelected(language === line.language ? "" : line.language); }}>
+            <i style={{ height: `${Math.max(18, Math.round((line.count / peak) * 88))}px` }} />
+            <strong>{line.count}</strong>
+            <span>{line.language}</span>
+          </button>
+        ))}
+        <button type="button" className="c4-tongue-nave-column" data-on={blank ? "1" : "0"} data-language="blank" onClick={() => { setBlank((value) => !value); setSelected(""); }}>
+          <i style={{ height: `${Math.max(18, Math.round((blankCount / peak) * 88))}px` }} />
+          <strong>{blankCount}</strong>
+          <span>{v4("lgNaveBlank")}</span>
+        </button>
+      </div>
       {blankCount > 0 && (
         <button type="button" className="c4-lang-blank" data-on={blank ? "1" : "0"} aria-pressed={blank} onClick={() => { setBlank((value) => !value); setSelected(""); }}>
           <span>{v4("lgBlank")}</span>
@@ -209,11 +232,11 @@ export function LanguageGlance({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("lgSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("lgEmpty")}</p>}
-      <ul className="c4-lang-rows">
+      <ul className="c4-lang-rows c4-tongue-nave-list">
         {shown.map((row) => {
           const name = languageText(row);
           return (
-            <li key={row.id} data-language={name || "blank"}>
+            <li key={row.id} className="c4-tongue-nave-card" data-language={name || "blank"} data-on={language && language === name ? "1" : "0"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("lgBlank")}</p>
               <Link className="c4-btn" href={crmv4Href(base, `customers/${row.id}`)}>{v4("lgCustomer")}</Link>
