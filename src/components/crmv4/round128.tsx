@@ -50,6 +50,10 @@ export function PantryNotes({ v4 }: { v4: V4 }) {
     writeJson(PANTRY_KEY, next);
   }, []);
   const shown = visibleNotes(notes, hidden, query);
+  const openCount = notes.filter((note) => !note.hidden).length;
+  const pinCount = notes.filter((note) => note.pinned).length;
+  const shelfCount = notes.filter((note) => !note.shelf).length;
+  const notePeak = Math.max(1, openCount, pinCount, shelfCount);
 
   function store(next: Note[]) {
     setNotes(next);
@@ -57,16 +61,39 @@ export function PantryNotes({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-pantry" aria-label={v4("pntTitle")} data-pantry="1">
-      <header className="c4-pay-head">
+    <section className="c4-pantry c4-pantry-apotheca" aria-label={v4("pntTitle")} data-pantry="1" data-desk="apotheca">
+      <header className="c4-pantry-apotheca-mast">
+        <p className="c4-pantry-apotheca-seal" data-logo="mono">{v4("pntApothecaLogo")}</p>
         <div>
-          <p className="c4-pnt-logo" data-logo="mono">{v4("pntLogo")}</p>
-          <p className="c4-pay-kicker">{v4("pntSub")}</p>
-          <h2 className="c4-title">{v4("pntTitle")}</h2>
+          <p className="c4-pantry-apotheca-kicker">{v4("pntApothecaKicker")}</p>
+          <h2 className="c4-title c4-pantry-apotheca-title">{v4("pntTitle")}</h2>
+          <p className="c4-pantry-apotheca-lead">{v4("pntApothecaLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-pantry-apotheca-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("pntHint")}</p>
+      <ol className="c4-pantry-apotheca-index" aria-label={v4("pntTitle")}>
+        <li data-tone="gold">{v4("pntApothecaOpen")} {openCount}</li>
+        <li data-tone="ink">{v4("pntApothecaPinned")} {pinCount}</li>
+        <li data-tone="ivory">{v4("pntApothecaShelf")} {shelfCount}</li>
+      </ol>
+      <div className="c4-pantry-apotheca-chart" aria-label={v4("pntTitle")}>
+        <button type="button" className="c4-pantry-apotheca-column" data-on={openCount ? "1" : "0"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((openCount / notePeak) * 88))}px` }} />
+          <strong>{openCount}</strong>
+          <span>{v4("pntApothecaOpen")}</span>
+        </button>
+        <button type="button" className="c4-pantry-apotheca-column" data-on={pinCount ? "1" : "0"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((pinCount / notePeak) * 88))}px` }} />
+          <strong>{pinCount}</strong>
+          <span>{v4("pntApothecaPinned")}</span>
+        </button>
+        <button type="button" className="c4-pantry-apotheca-column" data-on={shelfCount ? "1" : "0"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((shelfCount / notePeak) * 88))}px` }} />
+          <strong>{shelfCount}</strong>
+          <span>{v4("pntApothecaShelf")}</span>
+        </button>
+      </div>
+      <p className="c4-meta c4-pantry-apotheca-hint">{v4("pntHint")}</p>
       <p className="c4-meta">{v4("pntLocal")}</p>
       <p className="c4-meta">{v4("pntBlank")}</p>
       <p className="c4-meta">{v4("pntShelfBlank")}</p>
@@ -97,10 +124,10 @@ export function PantryNotes({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "0" : "1"} aria-pressed={!hidden} onClick={() => setHidden(false)}>{v4("pntOpen")}</button>
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("pntHidden")}</button>
       </div>
-      {!shown.length && <p className="c4-pay-empty">{v4("pntEmpty")}</p>}
-      <ul className="c4-pnt-rows">
+      {!shown.length && <p className="c4-pay-empty c4-pantry-apotheca-empty">{v4("pntEmpty")}</p>}
+      <ul className="c4-pnt-rows c4-pantry-apotheca-list">
         {shown.map((note) => (
-          <li key={note.id} data-pinned={note.pinned ? "1" : "0"}>
+          <li key={note.id} className="c4-pantry-apotheca-card" data-pinned={note.pinned ? "1" : "0"} data-on={note.pinned ? "1" : "0"}>
             <p>{note.text}</p>
             {note.shelf ? <p className="c4-meta">{note.shelf}</p> : null}
             <div className="c4-row">

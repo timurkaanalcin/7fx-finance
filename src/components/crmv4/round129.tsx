@@ -50,6 +50,10 @@ export function CoatNotes({ v4 }: { v4: V4 }) {
     writeJson(COAT_KEY, next);
   }, []);
   const shown = visibleNotes(notes, hidden, query);
+  const openCount = notes.filter((note) => !note.hidden).length;
+  const hideCount = notes.filter((note) => note.hidden).length;
+  const hookCount = notes.filter((note) => !note.hook).length;
+  const notePeak = Math.max(1, openCount, hideCount, hookCount);
 
   function store(next: Note[]) {
     setNotes(next);
@@ -57,18 +61,39 @@ export function CoatNotes({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-coat" aria-label={v4("cctTitle")} data-coat="1">
-      <header className="c4-coat-head">
-        <div className="c4-coat-stub" aria-hidden="true">
-          <p className="c4-cct-logo" data-logo="mono">{v4("cctLogo")}</p>
+    <section className="c4-coat c4-coat-apodyterium" aria-label={v4("cctTitle")} data-coat="1" data-desk="apodyterium">
+      <header className="c4-coat-apodyterium-mast">
+        <p className="c4-coat-apodyterium-seal" data-logo="mono">{v4("cctApodyteriumLogo")}</p>
+        <div>
+          <p className="c4-coat-apodyterium-kicker">{v4("cctApodyteriumKicker")}</p>
+          <h2 className="c4-title c4-coat-apodyterium-title">{v4("cctTitle")}</h2>
+          <p className="c4-coat-apodyterium-lead">{v4("cctApodyteriumLead")}</p>
         </div>
-        <div className="c4-coat-copy">
-          <p className="c4-pay-kicker">{v4("cctSub")}</p>
-          <h2 className="c4-title">{v4("cctTitle")}</h2>
-          <p className="c4-meta">{shown.length}</p>
-        </div>
+        <p className="c4-coat-apodyterium-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("cctHint")}</p>
+      <ol className="c4-coat-apodyterium-index" aria-label={v4("cctTitle")}>
+        <li data-tone="gold">{v4("cctApodyteriumShown")} {openCount}</li>
+        <li data-tone="ink">{v4("cctApodyteriumHidden")} {hideCount}</li>
+        <li data-tone="ivory">{v4("cctApodyteriumHook")} {hookCount}</li>
+      </ol>
+      <div className="c4-coat-apodyterium-chart" aria-label={v4("cctTitle")}>
+        <button type="button" className="c4-coat-apodyterium-column" data-on={openCount ? "1" : "0"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((openCount / notePeak) * 88))}px` }} />
+          <strong>{openCount}</strong>
+          <span>{v4("cctApodyteriumShown")}</span>
+        </button>
+        <button type="button" className="c4-coat-apodyterium-column" data-on={hideCount ? "1" : "0"} onClick={() => setHidden(true)}>
+          <i style={{ height: `${Math.max(18, Math.round((hideCount / notePeak) * 88))}px` }} />
+          <strong>{hideCount}</strong>
+          <span>{v4("cctApodyteriumHidden")}</span>
+        </button>
+        <button type="button" className="c4-coat-apodyterium-column" data-on={hookCount ? "1" : "0"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((hookCount / notePeak) * 88))}px` }} />
+          <strong>{hookCount}</strong>
+          <span>{v4("cctApodyteriumHook")}</span>
+        </button>
+      </div>
+      <p className="c4-meta c4-coat-apodyterium-hint">{v4("cctHint")}</p>
       <p className="c4-meta">{v4("cctLocal")}</p>
       <p className="c4-meta">{v4("cctBlank")}</p>
       <p className="c4-meta">{v4("cctHookBlank")}</p>
@@ -99,10 +124,10 @@ export function CoatNotes({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "0" : "1"} aria-pressed={!hidden} onClick={() => setHidden(false)}>{v4("cctOpen")}</button>
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("cctHidden")}</button>
       </div>
-      {!shown.length && <p className="c4-pay-empty">{v4("cctEmpty")}</p>}
-      <ul className="c4-cct-rows">
+      {!shown.length && <p className="c4-pay-empty c4-coat-apodyterium-empty">{v4("cctEmpty")}</p>}
+      <ul className="c4-cct-rows c4-coat-apodyterium-list">
         {shown.map((note) => (
-          <li key={note.id} data-pinned={note.pinned ? "1" : "0"}>
+          <li key={note.id} className="c4-coat-apodyterium-card" data-pinned={note.pinned ? "1" : "0"} data-on={note.pinned ? "1" : "0"}>
             <div className="c4-cct-ticket">
               <p>{note.text}</p>
               {note.hook ? <p className="c4-cct-hook">{note.hook}</p> : null}
