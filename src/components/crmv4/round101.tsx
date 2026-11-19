@@ -141,16 +141,36 @@ export function DocTypeMix({ base, v4 }: { base: string; v4: V4 }) {
     if (clear && activeMix(selected, [clear])) setSelected("");
   }
 
+  const named = lines.filter((line) => line.type);
+  const peak = Math.max(1, ...named.map((line) => line.count));
   return (
-    <section className="c4-doc-mix" aria-label={v4("kmTitle")} data-doc-mix="1">
-      <header className="c4-pay-head">
+    <section className="c4-doc-mix c4-doc-scriptorium" aria-label={v4("kmTitle")} data-doc-mix="1" data-desk="scriptorium">
+      <header className="c4-doc-scriptorium-mast">
+        <p className="c4-doc-scriptorium-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("kmSub")}</p>
-          <h2 className="c4-title">{v4("kmTitle")}</h2>
+          <p className="c4-doc-scriptorium-kicker">{v4("kmScriptoriumKicker")}</p>
+          <h2 className="c4-title c4-doc-scriptorium-title">{v4("kmTitle")}</h2>
+          <p className="c4-doc-scriptorium-lead">{v4("kmScriptoriumLead")}</p>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-doc-scriptorium-count">{chips.length}</p>
       </header>
-      <p className="c4-meta">{v4("kmHint")}</p>
+      <ol className="c4-doc-scriptorium-index" aria-label={v4("kmTitle")}>
+        <li data-tone="gold">{v4("kmShown")}</li>
+        <li data-tone="ink">{v4("kmHidden")}</li>
+        <li data-tone="ivory">{v4("kmBlank")}</li>
+      </ol>
+      {named.length > 0 && (
+        <div className="c4-doc-scriptorium-chart" aria-label={v4("kmTitle")}>
+          {named.map((line) => (
+            <button key={line.type} type="button" className="c4-doc-scriptorium-column" data-on={type === line.type ? "1" : "0"} data-type={line.type} onClick={() => { setBlank(false); setSelected(type === line.type ? "" : line.type); }}>
+              <i style={{ height: `${Math.max(18, Math.round((line.count / peak) * 88))}px` }} />
+              <strong>{line.count}</strong>
+              <span>{line.type}</span>
+            </button>
+          ))}
+        </div>
+      )}
+      <p className="c4-meta c4-doc-scriptorium-hint">{v4("kmHint")}</p>
       <p className="c4-meta">{v4("kmLocal")}</p>
       <p className="c4-row">
         <Link className="c4-btn" href={crmv4Href(base, "kyc")}>{v4("kmBoard")}</Link>
@@ -185,11 +205,11 @@ export function DocTypeMix({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("kmSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("kmEmpty")}</p>}
-      <ul className="c4-mix-rows">
+      <ul className="c4-mix-rows c4-doc-scriptorium-list">
         {shown.map((row) => {
           const name = mixType(row.docType);
           return (
-            <li key={row.id} data-type={name || "blank"}>
+            <li key={row.id} className="c4-doc-scriptorium-card" data-type={name || "blank"} data-on={type && type === name ? "1" : "0"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("kmBlank")}</p>
               {row.userId && <Link className="c4-btn" href={crmv4Href(base, `customers/${row.userId}`)}>{v4("kmCustomer")}</Link>}
