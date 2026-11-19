@@ -301,15 +301,21 @@ export function PlaybillCards({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-ply" aria-label={v4("plyTitle")} data-playbill="1" data-role={role} data-playbill-atelier="1">
-      <header className="c4-ply-head">
-        <p className="c4-ply-plate" data-logo="mono">{v4("plyLogo")}</p>
+    <section className="c4-ply c4-ply-unctorium" aria-label={v4("plyTitle")} data-playbill="1" data-role={role} data-playbill-atelier="1" data-desk="unctorium">
+      <header className="c4-ply-unctorium-mast">
+        <p className="c4-ply-unctorium-seal" data-logo="mono">{v4("plyUnctoriumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("plySub")}</p>
-          <h2 className="c4-title">{v4("plyTitle")}</h2>
+          <p className="c4-ply-unctorium-kicker">{v4("plyUnctoriumKicker")}</p>
+          <h2 className="c4-title c4-ply-unctorium-title">{v4("plyTitle")}</h2>
+          <p className="c4-ply-unctorium-lead">{v4("plyUnctoriumLead")}</p>
         </div>
-        <p className="c4-ply-count">{shown.length}</p>
+        <p className="c4-ply-unctorium-count">{shown.length}</p>
       </header>
+      <ol className="c4-ply-unctorium-index" aria-label={v4("plyUnctoriumKicker")}>
+        <li data-tone="gold">{v4("plyOpen")} {counts.open}</li>
+        <li data-tone="ink">{v4("plyHeld")} {counts.held}</li>
+        <li data-tone="ivory">{v4("plyDoneTray")} {counts.done}</li>
+      </ol>
       <p className="c4-meta">{v4("plyHint")}</p>
       <p className="c4-meta">{v4("plyLocal")}</p>
       <p className="c4-meta">{v4("plyBlank")}</p>
@@ -522,7 +528,7 @@ export function PlaybillCards({ v4 }: { v4: V4 }) {
             const wingLabel = wingOf(card.wing);
             const toneLabel = toneOf(card.tone);
             return (
-              <li key={card.id} data-band={band} data-wing={wingLabel} data-tone={toneLabel} data-late={gap !== null && gap > 0 && !card.held && !card.done ? "1" : "0"}>
+              <li key={card.id} className="c4-ply-unctorium-card" data-on={card.id === nextId ? "1" : "0"} data-band={band} data-wing={wingLabel} data-tone={toneLabel} data-late={gap !== null && gap > 0 && !card.held && !card.done ? "1" : "0"}>
                 <span className="c4-ply-act">{actLabel(card.act)}</span>
                 <div>
                   <p className="c4-ply-pips" aria-label={v4("plyTone")}>
@@ -641,14 +647,37 @@ export function InvalidSources({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-ivs" aria-label={v4("ivsTitle")} data-ivsource="1" data-playbill-atelier="1">
-      <header className="c4-ivs-head">
+    <section className="c4-ivs c4-ivs-natatio" aria-label={v4("ivsTitle")} data-ivsource="1" data-playbill-atelier="1" data-desk="natatio">
+      <header className="c4-ivs-natatio-mast">
+        <p className="c4-ivs-natatio-seal" data-logo="mono">{v4("ivsNatatioLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("ivsSub")}</p>
-          <h2 className="c4-title">{v4("ivsTitle")}</h2>
+          <p className="c4-ivs-natatio-kicker">{v4("ivsNatatioKicker")}</p>
+          <h2 className="c4-title c4-ivs-natatio-title">{v4("ivsTitle")}</h2>
+          <p className="c4-ivs-natatio-lead">{v4("ivsNatatioLead")}</p>
         </div>
-        <p className="c4-ply-count">{v4("ivsRows")} {rows.length}</p>
+        <p className="c4-ivs-natatio-count">{rows.length}</p>
       </header>
+      <ol className="c4-ivs-natatio-index" aria-label={v4("ivsNatatioKicker")}>
+        <li data-tone="gold">{v4("ivsLead")} {lead || "—"}</li>
+        <li data-tone="ink">{v4("ivsRows")} {rows.length}</li>
+        <li data-tone="ivory">{v4("ivsBlank")} {blankCount}</li>
+      </ol>
+      {kinds.length > 0 && (
+        <div className="c4-ivs-natatio-chart" aria-label={v4("ivsKind")}>
+          {kinds.map((line) => {
+            const name = line.kind || "blank";
+            const height = Math.max(18, Math.round((line.count / widest) * 88));
+            const on = kindOn === (line.kind || "blank");
+            return (
+              <button key={name} type="button" className="c4-ivs-natatio-column" data-on={on ? "1" : "0"} onClick={() => { setBlank(false); setSelected(""); setKind(on ? "all" : (line.kind || "blank")); }}>
+                <i style={{ height: `${height}px` }} />
+                <strong>{line.count}</strong>
+                <span>{kindName(v4, line.kind)}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
       <p className="c4-meta">{v4("ivsHint")}</p>
       <p className="c4-meta">{v4("ivsLocal")}</p>
       <p className="c4-meta">{v4("ivsEscape")}</p>
@@ -757,7 +786,7 @@ export function InvalidSources({ base, v4 }: { base: string; v4: V4 }) {
           const kindMark = kindOf(name);
           const spanMark = spanOf(name);
           return (
-            <li key={row.id} data-source={name || "blank"}>
+            <li key={row.id} className="c4-ivs-natatio-card" data-source={name || "blank"} data-on={source && source === name ? "1" : "0"}>
               <span className="c4-ivs-spine" aria-hidden="true" />
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("ivsBlank")}</p>
