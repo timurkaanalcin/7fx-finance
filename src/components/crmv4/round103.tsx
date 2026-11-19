@@ -50,6 +50,10 @@ export function BookmarkBoard({ base, v4 }: { base: string; v4: V4 }) {
     writeJson(BOOK_KEY, next);
   }, []);
   const shown = visibleBookmarks(bookmarks, query, hidden);
+  const pinnedCount = shown.filter((item) => item.pinned).length;
+  const hiddenCount = bookmarks.filter((item) => item.hidden).length;
+  const openCount = bookmarks.filter((item) => !item.hidden).length;
+  const peak = Math.max(1, openCount, hiddenCount, pinnedCount);
 
   function store(next: Bookmark[]) {
     setBookmarks(next);
@@ -57,15 +61,39 @@ export function BookmarkBoard({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-bookmark-board" aria-label={v4("bqTitle")} data-bookmark-board="1">
-      <header className="c4-pay-head">
+    <section className="c4-bookmark-board c4-bookmark-ambulatory" aria-label={v4("bqTitle")} data-bookmark-board="1" data-desk="ambulatory">
+      <header className="c4-bookmark-ambulatory-mast">
+        <p className="c4-bookmark-ambulatory-seal" data-logo="mono">{v4("bqAmbulatoryLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("bqSub")}</p>
-          <h2 className="c4-title">{v4("bqTitle")}</h2>
+          <p className="c4-bookmark-ambulatory-kicker">{v4("bqAmbulatoryKicker")}</p>
+          <h2 className="c4-title c4-bookmark-ambulatory-title">{v4("bqTitle")}</h2>
+          <p className="c4-bookmark-ambulatory-lead">{v4("bqAmbulatoryLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-bookmark-ambulatory-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("bqHint")}</p>
+      <ol className="c4-bookmark-ambulatory-index" aria-label={v4("bqTitle")}>
+        <li data-tone="gold">{v4("bqShown")}</li>
+        <li data-tone="ink">{v4("bqHidden")}</li>
+        <li data-tone="ivory">{v4("bqPin")}</li>
+      </ol>
+      <div className="c4-bookmark-ambulatory-chart" aria-label={v4("bqTitle")}>
+        <button type="button" className="c4-bookmark-ambulatory-column" data-on={hidden ? "0" : "1"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((openCount / peak) * 88))}px` }} />
+          <strong>{openCount}</strong>
+          <span>{v4("bqShown")}</span>
+        </button>
+        <button type="button" className="c4-bookmark-ambulatory-column" data-on={hidden ? "1" : "0"} onClick={() => setHidden(true)}>
+          <i style={{ height: `${Math.max(18, Math.round((hiddenCount / peak) * 88))}px` }} />
+          <strong>{hiddenCount}</strong>
+          <span>{v4("bqHidden")}</span>
+        </button>
+        <button type="button" className="c4-bookmark-ambulatory-column" data-on={pinnedCount ? "1" : "0"}>
+          <i style={{ height: `${Math.max(18, Math.round((pinnedCount / peak) * 88))}px` }} />
+          <strong>{pinnedCount}</strong>
+          <span>{v4("bqPin")}</span>
+        </button>
+      </div>
+      <p className="c4-meta c4-bookmark-ambulatory-hint">{v4("bqHint")}</p>
       <p className="c4-meta">{v4("bqLocal")}</p>
       <form className="c4-row" onSubmit={(event) => {
         event.preventDefault();
@@ -95,10 +123,10 @@ export function BookmarkBoard({ base, v4 }: { base: string; v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "0" : "1"} aria-pressed={!hidden} onClick={() => setHidden(false)}>{v4("bqShown")}</button>
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("bqHidden")}</button>
       </div>
-      {!shown.length && <p className="c4-pay-empty">{v4("bqEmpty")}</p>}
-      <ul className="c4-bookmark-list">
+      {!shown.length && <p className="c4-pay-empty c4-bookmark-ambulatory-empty">{v4("bqEmpty")}</p>}
+      <ul className="c4-bookmark-list c4-bookmark-ambulatory-list">
         {shown.map((item) => (
-          <li key={item.id} className="c4-bookmark-card" data-pinned={item.pinned ? "1" : "0"} data-section={item.section}>
+          <li key={item.id} className="c4-bookmark-card c4-bookmark-ambulatory-card" data-pinned={item.pinned ? "1" : "0"} data-on={item.pinned ? "1" : "0"} data-section={item.section}>
             <p>{item.label}</p>
             <p className="c4-meta">{item.section}</p>
             <div className="c4-row">
