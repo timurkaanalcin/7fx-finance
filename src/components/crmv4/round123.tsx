@@ -50,6 +50,10 @@ export function ReceptionNotes({ v4 }: { v4: V4 }) {
     writeJson(RECEPTION_KEY, next);
   }, []);
   const shown = visibleNotes(notes, hidden, query);
+  const openCount = notes.filter((note) => !note.hidden).length;
+  const pinCount = notes.filter((note) => note.pinned).length;
+  const hideCount = notes.filter((note) => note.hidden).length;
+  const notePeak = Math.max(1, openCount, pinCount, hideCount);
 
   function store(next: Note[]) {
     setNotes(next);
@@ -57,16 +61,39 @@ export function ReceptionNotes({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-reception" aria-label={v4("rxnTitle")} data-reception="1">
-      <header className="c4-pay-head">
+    <section className="c4-reception c4-reception-clerestory" aria-label={v4("rxnTitle")} data-reception="1" data-desk="clerestory">
+      <header className="c4-reception-clerestory-mast">
+        <p className="c4-reception-clerestory-seal" data-logo="mono">{v4("rxnClerestoryLogo")}</p>
         <div>
-          <p className="c4-rxn-logo" data-logo="mono">{v4("rxnLogo")}</p>
-          <p className="c4-pay-kicker">{v4("rxnSub")}</p>
-          <h2 className="c4-title">{v4("rxnTitle")}</h2>
+          <p className="c4-reception-clerestory-kicker">{v4("rxnClerestoryKicker")}</p>
+          <h2 className="c4-title c4-reception-clerestory-title">{v4("rxnTitle")}</h2>
+          <p className="c4-reception-clerestory-lead">{v4("rxnClerestoryLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-reception-clerestory-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("rxnHint")}</p>
+      <ol className="c4-reception-clerestory-index" aria-label={v4("rxnTitle")}>
+        <li data-tone="gold">{v4("rxnClerestoryShown")} {openCount}</li>
+        <li data-tone="ink">{v4("rxnClerestoryHidden")} {hideCount}</li>
+        <li data-tone="ivory">{v4("mlrTholosPinned")} {pinCount}</li>
+      </ol>
+      <div className="c4-reception-clerestory-chart" aria-label={v4("rxnTitle")}>
+        <button type="button" className="c4-reception-clerestory-column" data-on={openCount ? "1" : "0"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((openCount / notePeak) * 88))}px` }} />
+          <strong>{openCount}</strong>
+          <span>{v4("rxnClerestoryShown")}</span>
+        </button>
+        <button type="button" className="c4-reception-clerestory-column" data-on={pinCount ? "1" : "0"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((pinCount / notePeak) * 88))}px` }} />
+          <strong>{pinCount}</strong>
+          <span>{v4("mlrTholosPinned")}</span>
+        </button>
+        <button type="button" className="c4-reception-clerestory-column" data-on={hideCount ? "1" : "0"} onClick={() => setHidden(true)}>
+          <i style={{ height: `${Math.max(18, Math.round((hideCount / notePeak) * 88))}px` }} />
+          <strong>{hideCount}</strong>
+          <span>{v4("rxnClerestoryHidden")}</span>
+        </button>
+      </div>
+      <p className="c4-meta c4-reception-clerestory-hint">{v4("rxnHint")}</p>
       <p className="c4-meta">{v4("rxnLocal")}</p>
       <p className="c4-meta">{v4("rxnBlank")}</p>
       <p className="c4-meta">{v4("rxnPaneBlank")}</p>
@@ -97,10 +124,10 @@ export function ReceptionNotes({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "0" : "1"} aria-pressed={!hidden} onClick={() => setHidden(false)}>{v4("rxnOpen")}</button>
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("rxnHidden")}</button>
       </div>
-      {!shown.length && <p className="c4-pay-empty">{v4("rxnEmpty")}</p>}
-      <ul className="c4-rxn-rows">
+      {!shown.length && <p className="c4-pay-empty c4-reception-clerestory-empty">{v4("rxnEmpty")}</p>}
+      <ul className="c4-rxn-rows c4-reception-clerestory-list">
         {shown.map((note) => (
-          <li key={note.id} data-pinned={note.pinned ? "1" : "0"}>
+          <li key={note.id} className="c4-reception-clerestory-card" data-pinned={note.pinned ? "1" : "0"} data-on={note.pinned ? "1" : "0"}>
             <p>{note.text}</p>
             {note.pane ? <p className="c4-meta">{note.pane}</p> : null}
             <div className="c4-row">
