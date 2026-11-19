@@ -146,6 +146,8 @@ export function SourceGlance({ base, v4 }: { base: string; v4: V4 }) {
   const chips = visibleSources(present, hiddenSources, showHidden);
   const source = activeSource(selected, chips);
   const shown = visibleLeads(rows, source, blank, query);
+  const namedLines = lines.filter((line) => line.source).slice(0, 4);
+  const peak = Math.max(1, blankCount, ...namedLines.map((line) => line.count));
 
   function store(next: string[], clear: string) {
     setHiddenSources(next);
@@ -154,15 +156,22 @@ export function SourceGlance({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-source-glance" aria-label={v4("lsTitle")} data-source-glance="1">
-      <header className="c4-pay-head">
+    <section className="c4-source-glance c4-source-ambulatory" aria-label={v4("lsTitle")} data-source-glance="1" data-desk="ambulatory">
+      <header className="c4-source-ambulatory-mast">
+        <p className="c4-source-ambulatory-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("lsSub")}</p>
-          <h2 className="c4-title">{v4("lsTitle")}</h2>
+          <p className="c4-source-ambulatory-kicker">{v4("lsAmbulatoryKicker")}</p>
+          <h2 className="c4-title c4-source-ambulatory-title">{v4("lsTitle")}</h2>
+          <p className="c4-source-ambulatory-lead">{v4("lsAmbulatoryLead")}</p>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-source-ambulatory-count">{chips.length}</p>
       </header>
-      <p className="c4-meta">{v4("lsHint")}</p>
+      <ol className="c4-source-ambulatory-index" aria-label={v4("lsTitle")}>
+        <li data-tone="gold">{v4("lsAmbulatoryNamed")}</li>
+        <li data-tone="ink">{v4("lsAmbulatoryBlank")}</li>
+        <li data-tone="ivory">{v4("lsAmbulatoryOpen")}</li>
+      </ol>
+      <p className="c4-meta c4-source-ambulatory-hint">{v4("lsHint")}</p>
       <p className="c4-meta">{v4("lsLocal")}</p>
       <p className="c4-row">
         <Link className="c4-btn" href={crmv4Href(base, "leads")}>{v4("lsBoard")}</Link>
@@ -170,6 +179,20 @@ export function SourceGlance({ base, v4 }: { base: string; v4: V4 }) {
       {data.loading && !rows.length && <p className="c4-meta">{v4("lsLoading")}</p>}
       {data.error && <p className="c4-meta">{v4("lsFailed")}</p>}
       {!data.loading && !data.error && !rows.length && <p className="c4-pay-empty">{v4("lsNone")}</p>}
+      <div className="c4-source-ambulatory-chart" aria-label={v4("lsTitle")}>
+        {namedLines.map((line) => (
+          <button key={line.source} type="button" className="c4-source-ambulatory-column" data-on={source === line.source ? "1" : "0"} data-source={line.source} onClick={() => { setBlank(false); setSelected(source === line.source ? "" : line.source); }}>
+            <i style={{ height: `${Math.max(18, Math.round((line.count / peak) * 88))}px` }} />
+            <strong>{line.count}</strong>
+            <span>{line.source}</span>
+          </button>
+        ))}
+        <button type="button" className="c4-source-ambulatory-column" data-on={blank ? "1" : "0"} data-source="blank" onClick={() => { setBlank((value) => !value); setSelected(""); }}>
+          <i style={{ height: `${Math.max(18, Math.round((blankCount / peak) * 88))}px` }} />
+          <strong>{blankCount}</strong>
+          <span>{v4("lsAmbulatoryBlank")}</span>
+        </button>
+      </div>
       {blankCount > 0 && (
         <button type="button" className="c4-source-blank" data-on={blank ? "1" : "0"} aria-pressed={blank} onClick={() => { setBlank((value) => !value); setSelected(""); }}>
           <span>{v4("lsBlank")}</span>
@@ -194,11 +217,11 @@ export function SourceGlance({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("lsSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("lsEmpty")}</p>}
-      <ul className="c4-source-rows">
+      <ul className="c4-source-rows c4-source-ambulatory-list">
         {shown.map((row) => {
           const name = sourceText(row.source);
           return (
-            <li key={row.id} data-source={name || "blank"}>
+            <li key={row.id} className="c4-source-ambulatory-card" data-source={name || "blank"} data-on={source && source === name ? "1" : "0"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("lsBlank")}</p>
               <Link className="c4-btn" href={crmv4Href(base, `customers/${row.id}`)}>{v4("lsCustomer")}</Link>

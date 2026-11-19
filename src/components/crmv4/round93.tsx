@@ -162,6 +162,8 @@ export function AssigneeGlance({ base, v4 }: { base: string; v4: V4 }) {
   const chips = visibleAssignees(present, hiddenAssignees, showHidden);
   const assignee = activeAssignee(selected, chips);
   const shown = visibleTickets(rows, assignee, blank, query);
+  const namedLines = lines.filter((line) => line.assignee).slice(0, 4);
+  const peak = Math.max(1, blankCount, ...namedLines.map((line) => line.count));
 
   function store(next: string[], clear: string) {
     setHiddenAssignees(next);
@@ -170,15 +172,22 @@ export function AssigneeGlance({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-assignee-glance" aria-label={v4("gnTitle")} data-assignee-glance="1">
-      <header className="c4-pay-head">
+    <section className="c4-assignee-glance c4-assignee-triforium" aria-label={v4("gnTitle")} data-assignee-glance="1" data-desk="triforium">
+      <header className="c4-assignee-triforium-mast">
+        <p className="c4-assignee-triforium-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("gnSub")}</p>
-          <h2 className="c4-title">{v4("gnTitle")}</h2>
+          <p className="c4-assignee-triforium-kicker">{v4("gnTriforiumKicker")}</p>
+          <h2 className="c4-title c4-assignee-triforium-title">{v4("gnTitle")}</h2>
+          <p className="c4-assignee-triforium-lead">{v4("gnTriforiumLead")}</p>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-assignee-triforium-count">{chips.length}</p>
       </header>
-      <p className="c4-meta">{v4("gnHint")}</p>
+      <ol className="c4-assignee-triforium-index" aria-label={v4("gnTitle")}>
+        <li data-tone="gold">{v4("gnTriforiumNamed")}</li>
+        <li data-tone="ink">{v4("gnTriforiumBlank")}</li>
+        <li data-tone="ivory">{v4("gnTriforiumQuiet")}</li>
+      </ol>
+      <p className="c4-meta c4-assignee-triforium-hint">{v4("gnHint")}</p>
       <p className="c4-meta">{v4("gnLocal")}</p>
       <p className="c4-row">
         <Link className="c4-btn" href={crmv4Href(base, "support")}>{v4("gnBoard")}</Link>
@@ -186,6 +195,20 @@ export function AssigneeGlance({ base, v4 }: { base: string; v4: V4 }) {
       {data.loading && !rows.length && <p className="c4-meta">{v4("gnLoading")}</p>}
       {data.error && <p className="c4-meta">{v4("gnFailed")}</p>}
       {!data.loading && !data.error && !rows.length && <p className="c4-pay-empty">{v4("gnNone")}</p>}
+      <div className="c4-assignee-triforium-chart" aria-label={v4("gnTitle")}>
+        {namedLines.map((line) => (
+          <button key={line.assignee} type="button" className="c4-assignee-triforium-column" data-on={assignee === line.assignee ? "1" : "0"} data-assignee={line.assignee} onClick={() => { setBlank(false); setSelected(assignee === line.assignee ? "" : line.assignee); }}>
+            <i style={{ height: `${Math.max(18, Math.round((line.count / peak) * 88))}px` }} />
+            <strong>{line.count}</strong>
+            <span>{line.assignee}</span>
+          </button>
+        ))}
+        <button type="button" className="c4-assignee-triforium-column" data-on={blank ? "1" : "0"} data-assignee="blank" onClick={() => { setBlank((value) => !value); setSelected(""); }}>
+          <i style={{ height: `${Math.max(18, Math.round((blankCount / peak) * 88))}px` }} />
+          <strong>{blankCount}</strong>
+          <span>{v4("gnTriforiumBlank")}</span>
+        </button>
+      </div>
       {blankCount > 0 && (
         <button type="button" className="c4-assignee-blank" data-on={blank ? "1" : "0"} aria-pressed={blank} onClick={() => { setBlank((value) => !value); setSelected(""); }}>
           <span>{v4("gnBlank")}</span>
@@ -210,11 +233,11 @@ export function AssigneeGlance({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("gnSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("gnEmpty")}</p>}
-      <ul className="c4-assignee-rows">
+      <ul className="c4-assignee-rows c4-assignee-triforium-list">
         {shown.map((row) => {
           const name = assigneeText(row.assignee);
           return (
-            <li key={row.id} data-assignee={name || "blank"}>
+            <li key={row.id} className="c4-assignee-triforium-card" data-assignee={name || "blank"} data-on={assignee && assignee === name ? "1" : "0"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("gnBlank")}</p>
               {row.userId && <Link className="c4-btn" href={crmv4Href(base, `customers/${row.userId}`)}>{v4("gnCustomer")}</Link>}

@@ -286,6 +286,7 @@ import { HeliometerHalves, PlumbPlates } from "./round295";
 import { TriquetrumRules, UsernamePlates } from "./round296";
 import { DioptraSights, EmailPlates } from "./round297";
 import { GromaCrosses, ZonePlates } from "./round298";
+import { GraphometerArcs, SystemPlates } from "./round299";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1121,6 +1122,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "eml") return v4("emlTitle");
     if (tab === "grm") return v4("grmTitle");
     if (tab === "znp") return v4("znpTitle");
+    if (tab === "gph") return v4("gphTitle");
+    if (tab === "osp") return v4("ospTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1640,6 +1643,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "unp") return v4("unpSub");
     if (tab === "grm") return v4("grmSub");
     if (tab === "znp") return v4("znpSub");
+    if (tab === "gph") return v4("gphSub");
+    if (tab === "osp") return v4("ospSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -2296,6 +2301,8 @@ function Shell({ base, section, name }: Props) {
             {view === "eml" && <EmailPlates base={base} v4={v4} />}
             {view === "grm" && <GromaCrosses base={base} v4={v4} />}
             {view === "znp" && <ZonePlates base={base} v4={v4} />}
+            {view === "gph" && <GraphometerArcs base={base} v4={v4} />}
+            {view === "osp" && <SystemPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
