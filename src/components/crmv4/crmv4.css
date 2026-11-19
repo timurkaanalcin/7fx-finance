@@ -93082,3 +93082,371 @@
   [data-crmv4-root] .c4-banner-court-card,
   [data-crmv4-root] .c4-type-cabinet-card { transition: none; }
 }
+
+/* Round 295 — heliometer halves, plumb plates, ivory link cloister, graphite priority nave. */
+[data-crmv4-root] .c4-heliometer,
+[data-crmv4-root] .c4-plumb,
+[data-crmv4-root] .c4-link-cloister,
+[data-crmv4-root] .c4-priority-nave {
+  display: grid;
+  gap: 14px;
+  margin: 12px;
+  padding: 0 0 22px;
+  color: #1c1a17;
+  background:
+    linear-gradient(180deg, rgba(198, 161, 91, 0.42), rgba(198, 161, 91, 0) 18px),
+    linear-gradient(180deg, #fbf7f0 0%, #f3ecdf 42%, #e8dcc8 100%);
+  border: 1px solid #8a6a3b;
+  border-radius: 2px;
+  box-shadow: inset 0 1px 0 #fffaf2, 0 18px 40px rgba(28, 26, 23, 0.07);
+  overflow-x: clip;
+}
+[data-crmv4-root] .c4-heliometer-mast,
+[data-crmv4-root] .c4-plumb-mast,
+[data-crmv4-root] .c4-link-cloister-mast,
+[data-crmv4-root] .c4-priority-nave-mast {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: end;
+  margin: 14px 14px 0;
+  padding: 18px 18px 16px;
+  background: #f7f1e6;
+  border-bottom: 2px solid #c6a15b;
+}
+[data-crmv4-root] .c4-heliometer-seal[data-logo="mono"],
+[data-crmv4-root] .c4-plumb-seal[data-logo="mono"],
+[data-crmv4-root] .c4-link-cloister-seal[data-logo="mono"],
+[data-crmv4-root] .c4-priority-nave-seal[data-logo="mono"] {
+  margin: 0;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #1c1a17;
+  border-radius: 50%;
+  color: #1c1a17;
+  background: transparent;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  font-weight: 650;
+}
+[data-crmv4-root] .c4-heliometer-kicker,
+[data-crmv4-root] .c4-plumb-kicker,
+[data-crmv4-root] .c4-link-cloister-kicker,
+[data-crmv4-root] .c4-priority-nave-kicker {
+  margin: 0 0 6px;
+  color: #8a6a3b;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-link-cloister-title,
+[data-crmv4-root] .c4-priority-nave-title,
+[data-crmv4-root] .c4-heliometer .c4-title,
+[data-crmv4-root] .c4-plumb .c4-title {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+[data-crmv4-root] .c4-link-cloister-lead,
+[data-crmv4-root] .c4-priority-nave-lead {
+  margin: 8px 0 0;
+  max-width: 62ch;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+[data-crmv4-root] .c4-heliometer-hint,
+[data-crmv4-root] .c4-plumb-hint,
+[data-crmv4-root] .c4-link-cloister-hint,
+[data-crmv4-root] .c4-priority-nave-hint {
+  margin: 0 16px;
+  max-width: 62ch;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+[data-crmv4-root] .c4-link-cloister-count,
+[data-crmv4-root] .c4-priority-nave-count {
+  margin: 0;
+  min-width: 2.6rem;
+  padding: 8px 10px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: #1c1a17;
+  background: #c6a15b;
+}
+[data-crmv4-root] .c4-heliometer-index,
+[data-crmv4-root] .c4-plumb-index,
+[data-crmv4-root] .c4-link-cloister-index,
+[data-crmv4-root] .c4-priority-nave-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 16px;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-heliometer-index li,
+[data-crmv4-root] .c4-plumb-index li,
+[data-crmv4-root] .c4-link-cloister-index li,
+[data-crmv4-root] .c4-priority-nave-index li {
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(28, 26, 23, 0.16);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+[data-crmv4-root] .c4-heliometer-index li[data-tone="gold"],
+[data-crmv4-root] .c4-plumb-index li[data-tone="gold"],
+[data-crmv4-root] .c4-link-cloister-index li[data-tone="gold"],
+[data-crmv4-root] .c4-priority-nave-index li[data-tone="gold"] { background: #c6a15b; color: #1c1a17; }
+[data-crmv4-root] .c4-heliometer-index li[data-tone="ink"],
+[data-crmv4-root] .c4-plumb-index li[data-tone="ink"],
+[data-crmv4-root] .c4-link-cloister-index li[data-tone="ink"],
+[data-crmv4-root] .c4-priority-nave-index li[data-tone="ink"] { background: #1c1a17; color: #f6f1e8; }
+[data-crmv4-root] .c4-heliometer-index li[data-tone="ivory"],
+[data-crmv4-root] .c4-plumb-index li[data-tone="ivory"],
+[data-crmv4-root] .c4-link-cloister-index li[data-tone="ivory"],
+[data-crmv4-root] .c4-priority-nave-index li[data-tone="ivory"] { background: #f6f1e8; color: #1c1a17; }
+[data-crmv4-root] .c4-plumb-index li[data-tone="mist"] { background: #e7dcc8; color: #1c1a17; }
+[data-crmv4-root] .c4-plumb-index li[data-tone="line"] { background: transparent; color: #8a6a3b; }
+[data-crmv4-root] .c4-heliometer-dials,
+[data-crmv4-root] .c4-plumb-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  gap: 8px;
+  margin: 0 16px;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-heliometer-dials li,
+[data-crmv4-root] .c4-plumb-kpis li {
+  padding: 12px 12px 10px;
+  background: rgba(255, 250, 242, 0.82);
+  border: 1px solid rgba(138, 106, 59, 0.35);
+  border-top: 3px solid #c6a15b;
+}
+[data-crmv4-root] .c4-heliometer-dials span,
+[data-crmv4-root] .c4-plumb-kpis span {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8a6a3b;
+}
+[data-crmv4-root] .c4-heliometer-dials strong,
+[data-crmv4-root] .c4-plumb-kpis strong {
+  font-variant-numeric: tabular-nums;
+  font-size: 22px;
+  letter-spacing: -0.03em;
+}
+[data-crmv4-root] .c4-heliometer-chart,
+[data-crmv4-root] .c4-plumb-chart,
+[data-crmv4-root] .c4-priority-nave-chart {
+  display: flex;
+  align-items: end;
+  gap: 8px;
+  min-height: 132px;
+  margin: 0 16px;
+  padding: 12px 8px 0;
+  background: rgba(255, 250, 242, 0.55);
+  border: 1px solid rgba(138, 106, 59, 0.28);
+}
+[data-crmv4-root] .c4-heliometer-column,
+[data-crmv4-root] .c4-plumb-column,
+[data-crmv4-root] .c4-priority-nave-column {
+  flex: 1 1 0;
+  display: grid;
+  align-items: end;
+  justify-items: center;
+  gap: 4px;
+  min-height: 116px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+[data-crmv4-root] .c4-heliometer-column i,
+[data-crmv4-root] .c4-plumb-column i,
+[data-crmv4-root] .c4-priority-nave-column i {
+  display: block;
+  width: 100%;
+  max-width: 22px;
+  background: #1c1a17;
+  border-radius: 2px 2px 0 0;
+  transition: height 180ms ease, background 180ms ease;
+}
+[data-crmv4-root] .c4-heliometer-column[data-on="1"] i,
+[data-crmv4-root] .c4-plumb-column[data-on="1"] i,
+[data-crmv4-root] .c4-priority-nave-column[data-on="1"] i { background: #c6a15b; }
+[data-crmv4-root] .c4-heliometer-board,
+[data-crmv4-root] .c4-plumb-board,
+[data-crmv4-root] .c4-link-cloister-list,
+[data-crmv4-root] .c4-priority-nave-list {
+  display: grid;
+  gap: 10px;
+  margin: 0 16px;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-heliometer[data-density="narrow"] .c4-heliometer-board { gap: 6px; }
+[data-crmv4-root] .c4-heliometer-card,
+[data-crmv4-root] .c4-plumb-card,
+[data-crmv4-root] .c4-link-cloister-card,
+[data-crmv4-root] .c4-priority-nave-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  padding: 14px 14px 12px;
+  background: #fbf7f0;
+  border: 1px solid rgba(28, 26, 23, 0.1);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+[data-crmv4-root] .c4-link-cloister-card,
+[data-crmv4-root] .c4-priority-nave-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+}
+[data-crmv4-root] .c4-link-cloister-card p,
+[data-crmv4-root] .c4-priority-nave-card p { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+[data-crmv4-root] .c4-heliometer-card:hover,
+[data-crmv4-root] .c4-plumb-card:hover,
+[data-crmv4-root] .c4-link-cloister-card:hover,
+[data-crmv4-root] .c4-priority-nave-card:hover { transform: translateY(-1px); }
+[data-crmv4-root] .c4-heliometer-card[data-on="1"],
+[data-crmv4-root] .c4-plumb-card[data-on="1"],
+[data-crmv4-root] .c4-priority-nave-card[data-on="1"] { outline: 2px solid #c6a15b; }
+[data-crmv4-root] .c4-heliometer-card[data-overdue="1"],
+[data-crmv4-root] .c4-plumb-card[data-bob="1"],
+[data-crmv4-root] .c4-link-cloister-card[data-pinned="1"] {
+  box-shadow: inset 4px 0 0 #c6a15b;
+  background: linear-gradient(90deg, rgba(198, 161, 91, 0.22), #fbf7f0 28%);
+}
+[data-crmv4-root] .c4-heliometer-card[data-idle="1"],
+[data-crmv4-root] .c4-link-cloister-card[data-hidden="1"],
+[data-crmv4-root] .c4-priority-nave-card[data-priority="blank"] { box-shadow: inset 3px 0 0 #f6f1e8; }
+[data-crmv4-root] .c4-heliometer-card[data-brisk="1"],
+[data-crmv4-root] .c4-plumb-card[data-drop="1"] { box-shadow: inset 3px 0 0 #1c1a17; }
+[data-crmv4-root] .c4-heliometer-card[data-resting="1"],
+[data-crmv4-root] .c4-plumb-card[data-slack="1"] { box-shadow: inset 3px 0 0 #8a6a3b; }
+[data-crmv4-root] .c4-heliometer-empty,
+[data-crmv4-root] .c4-plumb-empty,
+[data-crmv4-root] .c4-link-cloister-empty,
+[data-crmv4-root] .c4-priority-nave-empty {
+  margin: 0 16px;
+  padding: 22px 18px;
+  text-align: center;
+  background: rgba(255, 250, 242, 0.72);
+  border: 1px dashed rgba(138, 106, 59, 0.55);
+}
+[data-crmv4-root] .c4-heliometer-tools,
+[data-crmv4-root] .c4-plumb-tools,
+[data-crmv4-root] .c4-link-cloister .c4-row,
+[data-crmv4-root] .c4-priority-nave .c4-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 16px;
+}
+[data-crmv4-root] .c4-heliometer-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+  margin: 0 16px;
+}
+[data-crmv4-root] .c4-heliometer-notice,
+[data-crmv4-root] .c4-plumb-notice {
+  margin: 0 16px;
+  padding: 8px 12px;
+  background: #c6a15b;
+  color: #1c1a17;
+}
+[data-crmv4-root] .c4-heliometer-meta,
+[data-crmv4-root] .c4-plumb-meta { margin: 0; color: #5c5348; }
+[data-crmv4-root] .c4-plumb-stamp {
+  margin: 0;
+  min-width: 3.2rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: #8a6a3b;
+}
+@media (min-width: 840px) {
+  [data-crmv4-root] .c4-link-cloister-list { grid-template-columns: 1fr 1fr; }
+}
+[data-crmv4-root][data-theme="dark"] .c4-heliometer,
+[data-crmv4-root][data-theme="dark"] .c4-plumb,
+[data-crmv4-root][data-theme="dark"] .c4-link-cloister,
+[data-crmv4-root][data-theme="dark"] .c4-priority-nave {
+  color: #f6f1e8;
+  background:
+    linear-gradient(180deg, rgba(198, 161, 91, 0.3), rgba(198, 161, 91, 0) 16px),
+    linear-gradient(180deg, #2a241c 0%, #1c1a17 74%);
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-heliometer-mast,
+[data-crmv4-root][data-theme="dark"] .c4-plumb-mast,
+[data-crmv4-root][data-theme="dark"] .c4-link-cloister-mast,
+[data-crmv4-root][data-theme="dark"] .c4-priority-nave-mast { background: #241f1a; }
+[data-crmv4-root][data-theme="dark"] .c4-heliometer-seal[data-logo="mono"],
+[data-crmv4-root][data-theme="dark"] .c4-plumb-seal[data-logo="mono"],
+[data-crmv4-root][data-theme="dark"] .c4-link-cloister-seal[data-logo="mono"],
+[data-crmv4-root][data-theme="dark"] .c4-priority-nave-seal[data-logo="mono"] { color: #f6f1e8; border-color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-heliometer-card,
+[data-crmv4-root][data-theme="dark"] .c4-plumb-card,
+[data-crmv4-root][data-theme="dark"] .c4-link-cloister-card,
+[data-crmv4-root][data-theme="dark"] .c4-priority-nave-card { background: #2a241e; color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-link-cloister-card[data-pinned="1"] {
+  background: linear-gradient(90deg, rgba(198, 161, 91, 0.38), #2a241e 34%);
+}
+[data-crmv4-root][data-theme="dark"] .c4-heliometer-dials li,
+[data-crmv4-root][data-theme="dark"] .c4-plumb-kpis li { background: #241f1a; }
+[data-crmv4-root][data-theme="dark"] .c4-heliometer-chart,
+[data-crmv4-root][data-theme="dark"] .c4-plumb-chart,
+[data-crmv4-root][data-theme="dark"] .c4-priority-nave-chart {
+  background: rgba(28, 26, 23, 0.55);
+  border-color: rgba(198, 161, 91, 0.35);
+}
+[data-crmv4-root][data-theme="dark"] .c4-heliometer-column i,
+[data-crmv4-root][data-theme="dark"] .c4-plumb-column i,
+[data-crmv4-root][data-theme="dark"] .c4-priority-nave-column i { background: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-heliometer-column[data-on="1"] i,
+[data-crmv4-root][data-theme="dark"] .c4-plumb-column[data-on="1"] i,
+[data-crmv4-root][data-theme="dark"] .c4-priority-nave-column[data-on="1"] i { background: #c6a15b; }
+[data-crmv4-root][data-theme="dark"] .c4-heliometer-meta,
+[data-crmv4-root][data-theme="dark"] .c4-plumb-meta { color: #d9cbb6; }
+[data-crmv4-root][data-theme="dark"] .c4-link-cloister-count,
+[data-crmv4-root][data-theme="dark"] .c4-priority-nave-count { color: #1c1a17; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-heliometer-mast,
+  [data-crmv4-root] .c4-plumb-mast,
+  [data-crmv4-root] .c4-link-cloister-mast,
+  [data-crmv4-root] .c4-priority-nave-mast { grid-template-columns: auto minmax(0, 1fr); }
+  [data-crmv4-root] .c4-link-cloister-count,
+  [data-crmv4-root] .c4-priority-nave-count { grid-column: 1 / -1; justify-self: start; }
+  [data-crmv4-root] .c4-link-cloister-title,
+  [data-crmv4-root] .c4-priority-nave-title,
+  [data-crmv4-root] .c4-heliometer .c4-title,
+  [data-crmv4-root] .c4-plumb .c4-title { font-size: 24px; }
+  [data-crmv4-root] .c4-heliometer .c4-btn,
+  [data-crmv4-root] .c4-plumb .c4-btn,
+  [data-crmv4-root] .c4-link-cloister .c4-btn,
+  [data-crmv4-root] .c4-priority-nave .c4-btn,
+  [data-crmv4-root] .c4-heliometer .c4-chip,
+  [data-crmv4-root] .c4-plumb .c4-chip,
+  [data-crmv4-root] .c4-link-cloister .c4-chip,
+  [data-crmv4-root] .c4-priority-nave .c4-chip { min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-heliometer-card,
+  [data-crmv4-root] .c4-plumb-card,
+  [data-crmv4-root] .c4-heliometer-column i,
+  [data-crmv4-root] .c4-plumb-column i,
+  [data-crmv4-root] .c4-priority-nave-column i,
+  [data-crmv4-root] .c4-link-cloister-card,
+  [data-crmv4-root] .c4-priority-nave-card { transition: none; }
+}

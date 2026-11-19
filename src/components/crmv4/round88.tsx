@@ -56,15 +56,22 @@ export function QuickLinks({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-quick-links" aria-label={v4("qkTitle")} data-quick-links="1">
-      <header className="c4-pay-head">
+    <section className="c4-quick-links c4-link-cloister" aria-label={v4("qkTitle")} data-quick-links="1" data-desk="cloister">
+      <header className="c4-link-cloister-mast">
+        <p className="c4-link-cloister-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("qkSub")}</p>
-          <h2 className="c4-title">{v4("qkTitle")}</h2>
+          <p className="c4-link-cloister-kicker">{v4("qkCloisterKicker")}</p>
+          <h2 className="c4-title c4-link-cloister-title">{v4("qkTitle")}</h2>
+          <p className="c4-link-cloister-lead">{v4("qkCloisterLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-link-cloister-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("qkHint")}</p>
+      <ol className="c4-link-cloister-index" aria-label={v4("qkTitle")}>
+        <li data-tone="gold">{v4("qkCloisterPinned")}</li>
+        <li data-tone="ink">{v4("qkCloisterOpen")}</li>
+        <li data-tone="ivory">{v4("qkCloisterHidden")}</li>
+      </ol>
+      <p className="c4-meta c4-link-cloister-hint">{v4("qkHint")}</p>
       <p className="c4-meta">{v4("qkLocal")}</p>
       <form className="c4-row" onSubmit={(event) => {
         event.preventDefault();
@@ -94,10 +101,10 @@ export function QuickLinks({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "0" : "1"} aria-pressed={!hidden} onClick={() => setHidden(false)}>{v4("qkShown")}</button>
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("qkHidden")}</button>
       </div>
-      {!shown.length && <p className="c4-pay-empty">{v4("qkEmpty")}</p>}
-      <ul className="c4-link-list">
+      {!shown.length && <p className="c4-pay-empty c4-link-cloister-empty">{v4("qkEmpty")}</p>}
+      <ul className="c4-link-list c4-link-cloister-list">
         {shown.map((link) => (
-          <li key={link.id} className="c4-link-card" data-pinned={link.pinned ? "1" : "0"}>
+          <li key={link.id} className="c4-link-card c4-link-cloister-card" data-pinned={link.pinned ? "1" : "0"} data-hidden={link.hidden ? "1" : "0"}>
             <p>{link.name}</p>
             <p className="c4-meta">{link.url}</p>
             <div className="c4-row">
@@ -150,15 +157,33 @@ export function PriorityGlance({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-priority-glance" aria-label={v4("pgTitle")} data-priority-glance="1">
-      <header className="c4-pay-head">
+    <section className="c4-priority-glance c4-priority-nave" aria-label={v4("pgTitle")} data-priority-glance="1" data-desk="nave">
+      <header className="c4-priority-nave-mast">
+        <p className="c4-priority-nave-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("pgSub")}</p>
-          <h2 className="c4-title">{v4("pgTitle")}</h2>
+          <p className="c4-priority-nave-kicker">{v4("pgNaveKicker")}</p>
+          <h2 className="c4-title c4-priority-nave-title">{v4("pgTitle")}</h2>
+          <p className="c4-priority-nave-lead">{v4("pgNaveLead")}</p>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-priority-nave-count">{chips.length}</p>
       </header>
-      <p className="c4-meta">{v4("pgHint")}</p>
+      <ol className="c4-priority-nave-index" aria-label={v4("pgTitle")}>
+        <li data-tone="gold">{v4("pgNaveChosen")}</li>
+        <li data-tone="ink">{v4("pgNaveNamed")}</li>
+        <li data-tone="ivory">{v4("pgNaveBlank")}</li>
+      </ol>
+      <p className="c4-meta c4-priority-nave-hint">{v4("pgHint")}</p>
+      {lines.length > 0 && (
+        <div className="c4-priority-nave-chart" aria-label={v4("pgTitle")}>
+          {lines.map((line) => (
+            <button key={line.priority || "blank"} type="button" className="c4-priority-nave-column" data-on={priority === line.priority ? "1" : "0"} data-priority={line.priority || "blank"} onClick={() => { setBlank(!line.priority); setSelected(line.priority && priority === line.priority ? "" : line.priority); }}>
+              <i style={{ height: `${Math.max(18, Math.round((line.count / Math.max(1, ...lines.map((item) => item.count))) * 88))}px` }} />
+              <strong>{line.count}</strong>
+              <span>{line.priority || v4("pgNaveBlank")}</span>
+            </button>
+          ))}
+        </div>
+      )}
       <p className="c4-meta">{v4("pgLocal")}</p>
       <p className="c4-row">
         <Link className="c4-btn" href={crmv4Href(base, "support")}>{v4("pgBoard")}</Link>
@@ -189,12 +214,12 @@ export function PriorityGlance({ base, v4 }: { base: string; v4: V4 }) {
         <span>{v4("pgSearch")}</span>
         <input className="c4-field" aria-label={v4("pgSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
-      {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("pgEmpty")}</p>}
-      <ul className="c4-priority-rows">
+      {!shown.length && rows.length > 0 && <p className="c4-pay-empty c4-priority-nave-empty">{v4("pgEmpty")}</p>}
+      <ul className="c4-priority-rows c4-priority-nave-list">
         {shown.map((row) => {
           const name = priorityText(row.priority);
           return (
-            <li key={row.id} data-priority={name || "blank"}>
+            <li key={row.id} className="c4-priority-nave-card" data-priority={name || "blank"} data-on={priority === name ? "1" : "0"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("pgBlank")}</p>
               {row.userId && <Link className="c4-btn" href={crmv4Href(base, `customers/${row.userId}`)}>{v4("pgCustomer")}</Link>}
