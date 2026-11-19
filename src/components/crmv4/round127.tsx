@@ -50,6 +50,10 @@ export function LoungeNotes({ v4 }: { v4: V4 }) {
     writeJson(LOUNGE_KEY, next);
   }, []);
   const shown = visibleNotes(notes, hidden, query);
+  const openCount = notes.filter((note) => !note.hidden).length;
+  const hideCount = notes.filter((note) => note.hidden).length;
+  const blankCount = notes.filter((note) => !note.zone).length;
+  const notePeak = Math.max(1, openCount, hideCount, blankCount);
 
   function store(next: Note[]) {
     setNotes(next);
@@ -57,16 +61,39 @@ export function LoungeNotes({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-lounge" aria-label={v4("lngTitle")} data-lounge="1">
-      <header className="c4-pay-head">
+    <section className="c4-lounge c4-lounge-triclinium" aria-label={v4("lngTitle")} data-lounge="1" data-desk="triclinium">
+      <header className="c4-lounge-triclinium-mast">
+        <p className="c4-lounge-triclinium-seal" data-logo="mono">{v4("lngTricliniumLogo")}</p>
         <div>
-          <p className="c4-lng-logo" data-logo="mono">{v4("lngLogo")}</p>
-          <p className="c4-pay-kicker">{v4("lngSub")}</p>
-          <h2 className="c4-title">{v4("lngTitle")}</h2>
+          <p className="c4-lounge-triclinium-kicker">{v4("lngTricliniumKicker")}</p>
+          <h2 className="c4-title c4-lounge-triclinium-title">{v4("lngTitle")}</h2>
+          <p className="c4-lounge-triclinium-lead">{v4("lngTricliniumLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-lounge-triclinium-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("lngHint")}</p>
+      <ol className="c4-lounge-triclinium-index" aria-label={v4("lngTitle")}>
+        <li data-tone="gold">{v4("lngTricliniumShown")} {openCount}</li>
+        <li data-tone="ink">{v4("lngTricliniumHidden")} {hideCount}</li>
+        <li data-tone="ivory">{v4("lngTricliniumBlank")} {blankCount}</li>
+      </ol>
+      <div className="c4-lounge-triclinium-chart" aria-label={v4("lngTitle")}>
+        <button type="button" className="c4-lounge-triclinium-column" data-on={openCount ? "1" : "0"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((openCount / notePeak) * 88))}px` }} />
+          <strong>{openCount}</strong>
+          <span>{v4("lngTricliniumShown")}</span>
+        </button>
+        <button type="button" className="c4-lounge-triclinium-column" data-on={hideCount ? "1" : "0"} onClick={() => setHidden(true)}>
+          <i style={{ height: `${Math.max(18, Math.round((hideCount / notePeak) * 88))}px` }} />
+          <strong>{hideCount}</strong>
+          <span>{v4("lngTricliniumHidden")}</span>
+        </button>
+        <button type="button" className="c4-lounge-triclinium-column" data-on={blankCount ? "1" : "0"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((blankCount / notePeak) * 88))}px` }} />
+          <strong>{blankCount}</strong>
+          <span>{v4("lngTricliniumBlank")}</span>
+        </button>
+      </div>
+      <p className="c4-meta c4-lounge-triclinium-hint">{v4("lngHint")}</p>
       <p className="c4-meta">{v4("lngLocal")}</p>
       <p className="c4-meta">{v4("lngBlank")}</p>
       <p className="c4-meta">{v4("lngZoneBlank")}</p>
@@ -97,10 +124,10 @@ export function LoungeNotes({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "0" : "1"} aria-pressed={!hidden} onClick={() => setHidden(false)}>{v4("lngOpen")}</button>
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("lngHidden")}</button>
       </div>
-      {!shown.length && <p className="c4-pay-empty">{v4("lngEmpty")}</p>}
-      <ul className="c4-lng-rows">
+      {!shown.length && <p className="c4-pay-empty c4-lounge-triclinium-empty">{v4("lngEmpty")}</p>}
+      <ul className="c4-lng-rows c4-lounge-triclinium-list">
         {shown.map((note) => (
-          <li key={note.id} data-pinned={note.pinned ? "1" : "0"}>
+          <li key={note.id} className="c4-lounge-triclinium-card" data-pinned={note.pinned ? "1" : "0"} data-on={note.pinned ? "1" : "0"}>
             <p>{note.text}</p>
             {note.zone ? <p className="c4-meta">{note.zone}</p> : null}
             <div className="c4-row">
