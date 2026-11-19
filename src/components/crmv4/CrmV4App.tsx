@@ -313,6 +313,7 @@ import { IsogonicPlates, TourbillonRules } from "./round322";
 import { KarruselRules, LoxodromePlates } from "./round323";
 import { DuplexRules, WindrosePlates } from "./round324";
 import { GrasshopperRules, VolvellePlates } from "./round325";
+import { DeadbeatRules, DiptychPlates } from "./round326";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1202,6 +1203,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "wrs") return v4("wrsTitle");
     if (tab === "ghp") return v4("ghpTitle");
     if (tab === "vvl") return v4("vvlTitle");
+    if (tab === "dbk") return v4("dbkTitle");
+    if (tab === "dyc") return v4("dycTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1750,6 +1753,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "wrs") return v4("wrsSub");
     if (tab === "ghp") return v4("ghpSub");
     if (tab === "vvl") return v4("vvlSub");
+    if (tab === "dbk") return v4("dbkSub");
+    if (tab === "dyc") return v4("dycSub");
     return "";
   }
 
@@ -2459,6 +2464,8 @@ function Shell({ base, section, name }: Props) {
             {view === "wrs" && <WindrosePlates base={base} v4={v4} />}
             {view === "ghp" && <GrasshopperRules base={base} v4={v4} />}
             {view === "vvl" && <VolvellePlates base={base} v4={v4} />}
+            {view === "dbk" && <DeadbeatRules base={base} v4={v4} />}
+            {view === "dyc" && <DiptychPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

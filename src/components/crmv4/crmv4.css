@@ -105069,3 +105069,278 @@
   [data-crmv4-root] .c4-itl-schola-title,
   [data-crmv4-root] .c4-vnt-piscina-title { font-size: 1.35rem; }
 }
+
+[data-crmv4-root] .c4-deadbeat,
+[data-crmv4-root] .c4-diptych {
+  color: #1c1a17;
+  background: #f7f3ea;
+  border: 1px solid #8a6a3b;
+  border-top: 8px solid #c6a15b;
+  border-radius: 2px;
+  padding: 18px 16px 20px;
+  display: grid;
+  gap: 12px;
+}
+[data-crmv4-root] .c4-diptych {
+  color: #f6f1e8;
+  background:
+    linear-gradient(90deg, rgba(198, 161, 91, 0.16) 0 1px, transparent 1px) 0 0 / 28px 100%,
+    #161310;
+  border: 1px solid #c6a15b;
+  border-top: 0;
+  border-radius: 0 0 22px 22px;
+}
+[data-crmv4-root] .c4-deadbeat-mast,
+[data-crmv4-root] .c4-diptych-mast,
+[data-crmv4-root] .c4-fol-pinacotheca-mast,
+[data-crmv4-root] .c4-ntl-horreum-mast {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: end;
+  margin: 0;
+}
+[data-crmv4-root] .c4-deadbeat-seal[data-logo="mono"],
+[data-crmv4-root] .c4-diptych-seal[data-logo="mono"],
+[data-crmv4-root] .c4-fol-pinacotheca-seal[data-logo="mono"],
+[data-crmv4-root] .c4-ntl-horreum-seal[data-logo="mono"] {
+  margin: 0;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  font-weight: 650;
+}
+[data-crmv4-root] .c4-deadbeat-seal[data-logo="mono"],
+[data-crmv4-root] .c4-fol-pinacotheca-seal[data-logo="mono"] {
+  color: #1c1a17;
+  border-radius: 0;
+  border: 1px solid #1c1a17;
+  box-shadow: inset 0 0 0 4px #fffdf8, inset 0 0 0 5px #c6a15b;
+}
+[data-crmv4-root] .c4-diptych-seal[data-logo="mono"],
+[data-crmv4-root] .c4-ntl-horreum-seal[data-logo="mono"] {
+  color: #f6f1e8;
+  width: 64px;
+  height: 28px;
+  border-radius: 0;
+  border: 0;
+  border-bottom: 2px solid #c6a15b;
+  box-shadow: none;
+}
+[data-crmv4-root] .c4-deadbeat-kicker,
+[data-crmv4-root] .c4-diptych-kicker,
+[data-crmv4-root] .c4-fol-pinacotheca-kicker,
+[data-crmv4-root] .c4-ntl-horreum-kicker {
+  margin: 0;
+  color: #8a6a3b;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-deadbeat-count,
+[data-crmv4-root] .c4-diptych-count,
+[data-crmv4-root] .c4-fol-pinacotheca-count,
+[data-crmv4-root] .c4-ntl-horreum-count {
+  margin: 0;
+  min-width: 48px;
+  text-align: center;
+  font-size: 28px;
+  font-variant-numeric: tabular-nums;
+  color: #c6a15b;
+}
+[data-crmv4-root] .c4-deadbeat-hint,
+[data-crmv4-root] .c4-diptych-hint,
+[data-crmv4-root] .c4-fol-pinacotheca-lead,
+[data-crmv4-root] .c4-ntl-horreum-lead { margin: 6px 0 0; max-width: 68ch; line-height: 1.45; }
+[data-crmv4-root] .c4-diptych-hint,
+[data-crmv4-root] .c4-diptych-meta,
+[data-crmv4-root] .c4-diptych .c4-title,
+[data-crmv4-root] .c4-ntl-horreum-title,
+[data-crmv4-root] .c4-ntl-horreum-lead,
+[data-crmv4-root] .c4-ntl.c4-ntl-horreum .c4-meta,
+[data-crmv4-root] .c4-ntl.c4-ntl-horreum .c4-title { color: #f6f1e8; }
+[data-crmv4-root] .c4-deadbeat-index,
+[data-crmv4-root] .c4-fol-pinacotheca-index,
+[data-crmv4-root] .c4-ntl-horreum-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 8px 0 0;
+  list-style: none;
+  border-top: 1px solid #c6a15b;
+}
+[data-crmv4-root] .c4-deadbeat-index li,
+[data-crmv4-root] .c4-fol-pinacotheca-index li,
+[data-crmv4-root] .c4-ntl-horreum-index li {
+  padding: 6px 10px;
+  border-radius: 0;
+  border: 1px solid rgba(198, 161, 91, 0.7);
+  font-size: 12px;
+}
+[data-crmv4-root] .c4-deadbeat-index li[data-tone="gold"],
+[data-crmv4-root] .c4-fol-pinacotheca-index li[data-tone="gold"] { color: #1c1a17; background: #c6a15b; }
+[data-crmv4-root] .c4-deadbeat-index li[data-tone="ink"],
+[data-crmv4-root] .c4-fol-pinacotheca-index li[data-tone="ink"] { background: #1c1a17; color: #f6f1e8; }
+[data-crmv4-root] .c4-ntl-horreum-index li[data-tone="gold"],
+[data-crmv4-root] .c4-ntl-horreum-index li[data-tone="ink"],
+[data-crmv4-root] .c4-ntl-horreum-index li[data-tone="ivory"] { color: #f6f1e8; background: transparent; }
+[data-crmv4-root] .c4-deadbeat-chart,
+[data-crmv4-root] .c4-diptych-chart,
+[data-crmv4-root] .c4-ntl-horreum-chart {
+  display: flex;
+  align-items: end;
+  gap: 8px;
+  min-height: 120px;
+  padding: 12px;
+  border-radius: 0;
+  background: #fffdf8;
+  border-bottom: 2px solid #c6a15b;
+}
+[data-crmv4-root] .c4-diptych-chart,
+[data-crmv4-root] .c4-ntl-horreum-chart { background: #1c1916; }
+[data-crmv4-root] .c4-deadbeat-column,
+[data-crmv4-root] .c4-diptych-column,
+[data-crmv4-root] .c4-ntl-horreum-column {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-width: 52px;
+  min-height: 44px;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+}
+[data-crmv4-root] .c4-deadbeat-column i,
+[data-crmv4-root] .c4-diptych-column i,
+[data-crmv4-root] .c4-ntl-horreum-column i {
+  display: block;
+  width: 18px;
+  background: #c6a15b;
+  border-radius: 0;
+}
+[data-crmv4-root] .c4-deadbeat-column[data-on="1"] i,
+[data-crmv4-root] .c4-diptych-column[data-on="1"] i,
+[data-crmv4-root] .c4-ntl-horreum-column[data-on="1"] i { background: #e7d3a1; width: 28px; }
+[data-crmv4-root] .c4-deadbeat-form,
+[data-crmv4-root] .c4-deadbeat-tools,
+[data-crmv4-root] .c4-diptych-tools,
+[data-crmv4-root] .c4-deadbeat-bulk,
+[data-crmv4-root] .c4-diptych-bulk { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; }
+[data-crmv4-root] .c4-deadbeat-list,
+[data-crmv4-root] .c4-diptych-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+[data-crmv4-root] .c4-deadbeat-card,
+[data-crmv4-root] .c4-diptych-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  padding: 12px;
+  border-radius: 0;
+  background: #fffdf8;
+  border: 1px solid #8a6a3b;
+}
+[data-crmv4-root] .c4-diptych-card { background: #241f1a; color: #f6f1e8; border-color: #c6a15b; }
+[data-crmv4-root] .c4-deadbeat-card[data-on="1"],
+[data-crmv4-root] .c4-diptych-card[data-on="1"] { outline: 2px solid #c6a15b; }
+[data-crmv4-root] .c4-deadbeat .c4-btn,
+[data-crmv4-root] .c4-diptych .c4-btn,
+[data-crmv4-root] .c4-deadbeat .c4-chip,
+[data-crmv4-root] .c4-diptych .c4-chip,
+[data-crmv4-root] .c4-fol-pinacotheca .c4-btn,
+[data-crmv4-root] .c4-fol-pinacotheca .c4-chip,
+[data-crmv4-root] .c4-ntl-horreum .c4-btn,
+[data-crmv4-root] .c4-ntl-horreum .c4-chip { min-height: 44px; }
+[data-crmv4-root] .c4-deadbeat .c4-btn:focus-visible,
+[data-crmv4-root] .c4-diptych .c4-btn:focus-visible,
+[data-crmv4-root] .c4-deadbeat .c4-chip:focus-visible,
+[data-crmv4-root] .c4-diptych .c4-chip:focus-visible,
+[data-crmv4-root] .c4-fol-pinacotheca .c4-btn:focus-visible,
+[data-crmv4-root] .c4-ntl-horreum .c4-btn:focus-visible,
+[data-crmv4-root] .c4-deadbeat-column:focus-visible,
+[data-crmv4-root] .c4-diptych-column:focus-visible,
+[data-crmv4-root] .c4-ntl-horreum-column:focus-visible { outline: 2px solid #c6a15b; outline-offset: 2px; }
+[data-crmv4-root] .c4-fol.c4-fol-pinacotheca {
+  color: #1c1a17;
+  background:
+    linear-gradient(#fffdf8, #fffdf8) padding-box,
+    linear-gradient(135deg, #c6a15b, #8a6a3b 40%, #c6a15b) border-box;
+  border: 2px solid transparent;
+  border-radius: 0;
+  padding: 18px 16px 16px;
+  box-shadow: 0 0 0 8px #f4efe6, 0 0 0 9px #c6a15b;
+}
+[data-crmv4-root] .c4-fol.c4-fol-pinacotheca .c4-fol-rows li.c4-fol-pinacotheca-card {
+  background: #fffdf8;
+  border: 1px solid #1c1a17;
+  outline: 6px solid #f7f1e6;
+  outline-offset: -8px;
+  border-radius: 0;
+  padding: 16px 14px 14px;
+}
+[data-crmv4-root] .c4-ntl.c4-ntl-horreum {
+  color: #f6f1e8;
+  background:
+    repeating-linear-gradient(#1a1714, #1a1714 28px, #241f1a 28px, #241f1a 56px);
+  border: 1px solid #8a6a3b;
+  border-radius: 0;
+  padding: 16px 14px 20px;
+  box-shadow: inset 0 6px 0 #c6a15b;
+}
+[data-crmv4-root] .c4-ntl.c4-ntl-horreum .c4-ntl-rows li.c4-ntl-horreum-card {
+  background: rgba(16, 14, 12, 0.72);
+  color: #f6f1e8;
+  border: 0;
+  border-left: 6px solid #c6a15b;
+  border-radius: 0;
+  padding: 12px 12px 12px 14px;
+}
+[data-crmv4-root] .c4-ntl.c4-ntl-horreum .c4-ntl-rows li.c4-ntl-horreum-card p,
+[data-crmv4-root] .c4-ntl.c4-ntl-horreum .c4-ntl-rows li.c4-ntl-horreum-card .c4-meta { color: #f6f1e8; }
+[data-crmv4-root] .c4-fol-pinacotheca-card[data-on="1"],
+[data-crmv4-root] .c4-ntl-horreum-card[data-on="1"] { outline: 2px solid #c6a15b; }
+[data-crmv4-root][data-theme="dark"] .c4-deadbeat,
+[data-crmv4-root][data-theme="dark"] .c4-fol.c4-fol-pinacotheca {
+  color: #f6f1e8;
+  background: #241f1a;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-deadbeat-card,
+[data-crmv4-root][data-theme="dark"] .c4-fol.c4-fol-pinacotheca .c4-fol-rows li.c4-fol-pinacotheca-card {
+  background: #1c1a17;
+  color: #f6f1e8;
+  border-color: #c6a15b;
+  outline-color: #8a6a3b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-fol.c4-fol-pinacotheca .c4-title,
+[data-crmv4-root][data-theme="dark"] .c4-fol.c4-fol-pinacotheca .c4-fol-pinacotheca-lead,
+[data-crmv4-root][data-theme="dark"] .c4-fol.c4-fol-pinacotheca .c4-meta { color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-deadbeat-seal[data-logo="mono"],
+[data-crmv4-root][data-theme="dark"] .c4-fol-pinacotheca-seal[data-logo="mono"] { color: #f6f1e8; border-color: #f6f1e8; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-deadbeat-mast,
+  [data-crmv4-root] .c4-diptych-mast,
+  [data-crmv4-root] .c4-fol-pinacotheca-mast,
+  [data-crmv4-root] .c4-ntl-horreum-mast { grid-template-columns: auto minmax(0, 1fr); }
+  [data-crmv4-root] .c4-deadbeat .c4-title,
+  [data-crmv4-root] .c4-diptych .c4-title,
+  [data-crmv4-root] .c4-fol-pinacotheca-title,
+  [data-crmv4-root] .c4-ntl-horreum-title { font-size: 1.35rem; }
+  [data-crmv4-root] .c4-fol.c4-fol-pinacotheca { box-shadow: none; padding: 14px 12px; }
+  [data-crmv4-root] .c4-ntl.c4-ntl-horreum { padding: 14px 12px 18px; }
+  [data-crmv4-root] .c4-deadbeat-card,
+  [data-crmv4-root] .c4-diptych-card { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-deadbeat-card,
+  [data-crmv4-root] .c4-diptych-card,
+  [data-crmv4-root] .c4-fol-pinacotheca-card,
+  [data-crmv4-root] .c4-ntl-horreum-card,
+  [data-crmv4-root] .c4-deadbeat-column i,
+  [data-crmv4-root] .c4-diptych-column i,
+  [data-crmv4-root] .c4-ntl-horreum-column i { transition: none; }
+}

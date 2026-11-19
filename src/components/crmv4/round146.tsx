@@ -319,15 +319,21 @@ export function FolioSlips({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-fol" aria-label={v4("folTitle")} data-folio="1" data-role={role} data-folio-ledger="1">
-      <header className="c4-fol-head">
-        <p className="c4-fol-plate" data-logo="mono">{v4("folLogo")}</p>
+    <section className="c4-fol c4-fol-pinacotheca" aria-label={v4("folTitle")} data-folio="1" data-role={role} data-folio-ledger="1" data-desk="pinacotheca">
+      <header className="c4-fol-head c4-fol-pinacotheca-mast">
+        <p className="c4-fol-plate c4-fol-pinacotheca-seal" data-logo="mono">{v4("folPinacothecaLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("folSub")}</p>
-          <h2 className="c4-title">{v4("folTitle")}</h2>
+          <p className="c4-fol-pinacotheca-kicker">{v4("folPinacothecaKicker")}</p>
+          <h2 className="c4-title c4-fol-pinacotheca-title">{v4("folTitle")}</h2>
+          <p className="c4-fol-pinacotheca-lead">{v4("folPinacothecaLead")}</p>
         </div>
-        <p className="c4-fol-count">{shown.length}</p>
+        <p className="c4-fol-count c4-fol-pinacotheca-count">{shown.length}</p>
       </header>
+      <ol className="c4-fol-pinacotheca-index" aria-label={v4("folPinacothecaKicker")}>
+        <li data-tone="gold">{v4("folOpen")} {counts.open}</li>
+        <li data-tone="ink">{v4("folHeld")} {counts.held}</li>
+        <li data-tone="ivory">{v4("folDoneTray")} {counts.done}</li>
+      </ol>
       <p className="c4-meta">{v4("folHint")}</p>
       <p className="c4-meta">{v4("folLocal")}</p>
       <p className="c4-meta">{v4("folBlank")}</p>
@@ -540,7 +546,7 @@ export function FolioSlips({ v4 }: { v4: V4 }) {
             const wingLabel = wingOf(card.wing);
             const finishLabel = finishOf(card.finish);
             return (
-              <li key={card.id} data-band={band} data-wing={wingLabel} data-finish={finishLabel} data-late={gap !== null && gap > 0 && !card.held && !card.done ? "1" : "0"}>
+              <li key={card.id} className="c4-fol-pinacotheca-card" data-on={editing === card.id ? "1" : "0"} data-band={band} data-wing={wingLabel} data-finish={finishLabel} data-late={gap !== null && gap > 0 && !card.held && !card.done ? "1" : "0"}>
                 <span className="c4-fol-day">{dayLabel(card.day)}</span>
                 <div>
                   <p className="c4-fol-pips" aria-label={v4("folFinish")}>
@@ -665,14 +671,21 @@ export function NatalMonths({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-ntl" aria-label={v4("ntlTitle")} data-natal="1" data-folio-ledger="1">
-      <header className="c4-ntl-head">
+    <section className="c4-ntl c4-ntl-horreum" aria-label={v4("ntlTitle")} data-natal="1" data-folio-ledger="1" data-desk="horreum">
+      <header className="c4-ntl-head c4-ntl-horreum-mast">
+        <p className="c4-ntl-horreum-seal" data-logo="mono">{v4("ntlHorreumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("ntlSub")}</p>
-          <h2 className="c4-title">{v4("ntlTitle")}</h2>
+          <p className="c4-ntl-horreum-kicker">{v4("ntlHorreumKicker")}</p>
+          <h2 className="c4-title c4-ntl-horreum-title">{v4("ntlTitle")}</h2>
+          <p className="c4-ntl-horreum-lead">{v4("ntlHorreumLead")}</p>
         </div>
-        <p className="c4-fol-count">{v4("ntlRows")} {rows.length}</p>
+        <p className="c4-fol-count c4-ntl-horreum-count">{v4("ntlRows")} {rows.length}</p>
       </header>
+      <ol className="c4-ntl-horreum-index" aria-label={v4("ntlHorreumKicker")}>
+        <li data-tone="gold">{v4("ntlLead")} {lead || "—"}</li>
+        <li data-tone="ink">{v4("ntlRows")} {rows.length}</li>
+        <li data-tone="ivory">{v4("ntlGenerations")} {generations.length}</li>
+      </ol>
       <p className="c4-meta">{v4("ntlHint")}</p>
       <p className="c4-meta">{v4("ntlLocal")}</p>
       <p className="c4-meta">{v4("ntlEscape")}</p>
@@ -794,7 +807,7 @@ export function NatalMonths({ base, v4 }: { base: string; v4: V4 }) {
           const seasonMark = seasonOf(row.born) as NatalSeason;
           const generationMark = generationOf(row.born) as NatalGeneration;
           return (
-            <li key={row.id} data-mark={name || "blank"}>
+            <li key={row.id} className="c4-ntl-horreum-card" data-on={name && mark === name ? "1" : "0"} data-mark={name || "blank"}>
               <span className="c4-ntl-spine" aria-hidden="true" />
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("ntlBlank")}</p>
