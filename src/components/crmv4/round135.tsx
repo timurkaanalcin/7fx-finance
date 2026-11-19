@@ -132,6 +132,7 @@ export function HostCards({ v4 }: { v4: V4 }) {
   const timeline = hostTimeline(cards, query);
   const counts = hostCounts(cards);
   const total = cards.length;
+  const hostPeak = Math.max(1, counts.open, counts.folded, counts.passed);
 
   function store(next: HostCard[]) {
     setCards(next);
@@ -166,16 +167,39 @@ export function HostCards({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-host" aria-label={v4("hstTitle")} data-host="1" data-folio="1">
-      <header className="c4-hst-head">
-        <p className="c4-hst-plate" data-logo="mono">{v4("hstLogo")}</p>
+    <section className="c4-host c4-host-impluvium" aria-label={v4("hstTitle")} data-host="1" data-folio="1" data-desk="impluvium">
+      <header className="c4-host-impluvium-mast">
+        <p className="c4-host-impluvium-seal" data-logo="mono">{v4("hstImpluviumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("hstSub")}</p>
-          <h2 className="c4-title">{v4("hstTitle")}</h2>
+          <p className="c4-host-impluvium-kicker">{v4("hstImpluviumKicker")}</p>
+          <h2 className="c4-title c4-host-impluvium-title">{v4("hstTitle")}</h2>
+          <p className="c4-host-impluvium-lead">{v4("hstImpluviumLead")}</p>
         </div>
-        <p className="c4-hst-count">{shown.length}</p>
+        <p className="c4-host-impluvium-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("hstHint")}</p>
+      <ol className="c4-host-impluvium-index" aria-label={v4("hstTitle")}>
+        <li data-tone="gold">{v4("hstImpluviumOpen")} {counts.open}</li>
+        <li data-tone="ink">{v4("hstImpluviumFolded")} {counts.folded}</li>
+        <li data-tone="ivory">{v4("hstImpluviumPassed")} {counts.passed}</li>
+      </ol>
+      <div className="c4-host-impluvium-chart" aria-label={v4("hstKpi")}>
+        <button type="button" className="c4-host-impluvium-column" data-on={tray === "open" ? "1" : "0"} onClick={() => { setTray("open"); setBoard("cards"); }}>
+          <i style={{ height: `${Math.max(18, Math.round((counts.open / hostPeak) * 88))}px` }} />
+          <strong>{counts.open}</strong>
+          <span>{v4("hstImpluviumOpen")}</span>
+        </button>
+        <button type="button" className="c4-host-impluvium-column" data-on={tray === "folded" ? "1" : "0"} onClick={() => { setTray("folded"); setBoard("cards"); }}>
+          <i style={{ height: `${Math.max(18, Math.round((counts.folded / hostPeak) * 88))}px` }} />
+          <strong>{counts.folded}</strong>
+          <span>{v4("hstImpluviumFolded")}</span>
+        </button>
+        <button type="button" className="c4-host-impluvium-column" data-on={tray === "passed" ? "1" : "0"} onClick={() => { setTray("passed"); setBoard("cards"); }}>
+          <i style={{ height: `${Math.max(18, Math.round((counts.passed / hostPeak) * 88))}px` }} />
+          <strong>{counts.passed}</strong>
+          <span>{v4("hstImpluviumPassed")}</span>
+        </button>
+      </div>
+      <p className="c4-meta c4-host-impluvium-hint">{v4("hstHint")}</p>
       <p className="c4-meta">{v4("hstLocal")}</p>
       <p className="c4-meta">{v4("hstBlank")}</p>
       <p className="c4-meta">{v4("hstWingBlank")}</p>
@@ -286,12 +310,12 @@ export function HostCards({ v4 }: { v4: V4 }) {
           <button key={item} type="button" className="c4-chip" data-on={hourOn === item ? "1" : "0"} aria-pressed={hourOn === item} onClick={() => setHourFilter(hourOn === item ? "all" : item)}>{item}</button>
         ))}
       </div>
-      {board === "cards" && !shown.length && <p className="c4-pay-empty">{v4("hstEmpty")}</p>}
-      {board === "timeline" && !timeline.length && <p className="c4-pay-empty">{v4("hstEmpty")}</p>}
+      {board === "cards" && !shown.length && <p className="c4-pay-empty c4-host-impluvium-empty">{v4("hstEmpty")}</p>}
+      {board === "timeline" && !timeline.length && <p className="c4-pay-empty c4-host-impluvium-empty">{v4("hstEmpty")}</p>}
       {board === "cards" && (
-        <ul className="c4-hst-rows">
+        <ul className="c4-hst-rows c4-host-impluvium-list">
           {shown.map((card) => (
-            <li key={card.id} data-rank={card.rank} data-folded={card.folded ? "1" : "0"} data-passed={card.passed ? "1" : "0"} data-quiet={card.quiet ? "1" : "0"}>
+            <li key={card.id} className="c4-host-impluvium-card" data-rank={card.rank} data-folded={card.folded ? "1" : "0"} data-passed={card.passed ? "1" : "0"} data-quiet={card.quiet ? "1" : "0"}>
               <span className="c4-hst-pips" aria-label={`${v4("hstRank")} ${card.rank}`}>
                 {[1, 2].map((pip) => <i key={pip} data-on={card.rank >= pip ? "1" : "0"} />)}
               </span>
@@ -381,6 +405,7 @@ export function TradingServers({ base, v4 }: { base: string; v4: V4 }) {
   const chips = visibleServers(present, hiddenServers, showHidden);
   const tradingServer = activeServer(selected, chips);
   const shown = visibleServerCustomers(rows, tradingServer, blank, query);
+  const serverPeak = Math.max(1, present.length, blankCount, hiddenServers.length);
 
   function store(next: string[], clear: string) {
     setHiddenServers(next);
@@ -389,15 +414,39 @@ export function TradingServers({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-server" aria-label={v4("tsvTitle")} data-server="1" data-folio="1">
-      <header className="c4-tsv-head">
+    <section className="c4-server c4-server-compluvium" aria-label={v4("tsvTitle")} data-server="1" data-folio="1" data-desk="compluvium">
+      <header className="c4-server-compluvium-mast">
+        <p className="c4-server-compluvium-seal" data-logo="mono">{v4("tsvCompluviumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("tsvSub")}</p>
-          <h2 className="c4-title">{v4("tsvTitle")}</h2>
+          <p className="c4-server-compluvium-kicker">{v4("tsvCompluviumKicker")}</p>
+          <h2 className="c4-title c4-server-compluvium-title">{v4("tsvTitle")}</h2>
+          <p className="c4-server-compluvium-lead">{v4("tsvCompluviumLead")}</p>
         </div>
-        <p className="c4-hst-count">{v4("tsvRows")} {rows.length}</p>
+        <p className="c4-server-compluvium-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("tsvHint")}</p>
+      <ol className="c4-server-compluvium-index" aria-label={v4("tsvTitle")}>
+        <li data-tone="gold">{v4("tsvCompluviumNamed")} {present.length}</li>
+        <li data-tone="ink">{v4("tsvCompluviumBlank")} {blankCount}</li>
+        <li data-tone="ivory">{v4("tsvCompluviumHidden")} {hiddenServers.length}</li>
+      </ol>
+      <div className="c4-server-compluvium-chart" aria-label={v4("tsvTitle")}>
+        <button type="button" className="c4-server-compluvium-column" data-on={!tradingServer && !blank ? "1" : "0"} onClick={() => { setSelected(""); setBlank(false); }}>
+          <i style={{ height: `${Math.max(18, Math.round((present.length / serverPeak) * 88))}px` }} />
+          <strong>{present.length}</strong>
+          <span>{v4("tsvCompluviumNamed")}</span>
+        </button>
+        <button type="button" className="c4-server-compluvium-column" data-on={blank ? "1" : "0"} onClick={() => { setBlank(true); setSelected(""); }}>
+          <i style={{ height: `${Math.max(18, Math.round((blankCount / serverPeak) * 88))}px` }} />
+          <strong>{blankCount}</strong>
+          <span>{v4("tsvCompluviumBlank")}</span>
+        </button>
+        <button type="button" className="c4-server-compluvium-column" data-on={showHidden ? "1" : "0"} onClick={() => setShowHidden(true)}>
+          <i style={{ height: `${Math.max(18, Math.round((hiddenServers.length / serverPeak) * 88))}px` }} />
+          <strong>{hiddenServers.length}</strong>
+          <span>{v4("tsvCompluviumHidden")}</span>
+        </button>
+      </div>
+      <p className="c4-meta c4-server-compluvium-hint">{v4("tsvHint")}</p>
       <p className="c4-meta">{v4("tsvLocal")}</p>
       <p className="c4-meta">{v4("tsvEscape")}</p>
       {lead ? <p className="c4-tsv-lead"><span>{v4("tsvLead")}</span> {lead}</p> : null}
@@ -407,7 +456,7 @@ export function TradingServers({ base, v4 }: { base: string; v4: V4 }) {
       </p>
       {loading && !rows.length && <p className="c4-meta">{v4("tsvLoading")}</p>}
       {failed && !rows.length && <p className="c4-meta">{v4("tsvFailed")}</p>}
-      {!loading && !failed && !rows.length && <p className="c4-pay-empty">{v4("tsvNone")}</p>}
+      {!loading && !failed && !rows.length && <p className="c4-pay-empty c4-server-compluvium-empty">{v4("tsvNone")}</p>}
       {blankCount > 0 && (
         <button type="button" className="c4-tsv-blank" data-on={blank ? "1" : "0"} aria-pressed={blank} onClick={() => { setBlank((value) => !value); setSelected(""); }}>
           <span>{v4("tsvBlank")}</span>
@@ -443,12 +492,12 @@ export function TradingServers({ base, v4 }: { base: string; v4: V4 }) {
           setQuery("");
         }} />
       </label>
-      {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("tsvEmpty")}</p>}
-      <ul className="c4-tsv-rows">
+      {!shown.length && rows.length > 0 && <p className="c4-pay-empty c4-server-compluvium-empty">{v4("tsvEmpty")}</p>}
+      <ul className="c4-tsv-rows c4-server-compluvium-list">
         {shown.map((row) => {
           const name = serverText(row.tradingServer);
           return (
-            <li key={row.id} data-server={name || "blank"}>
+            <li key={row.id} className="c4-server-compluvium-card" data-server={name || "blank"}>
               <span className="c4-tsv-spine" aria-hidden="true" />
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("tsvBlank")}</p>
