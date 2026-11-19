@@ -307,6 +307,7 @@ import { DioptraRules, FretPlates } from "./round316";
 import { PeriplusPlates, SandglassRules } from "./round317";
 import { ClepsydraRules, PortolanPlates } from "./round318";
 import { FoliotRules, RutterPlates } from "./round319";
+import { FuseeRules, SnailPlates } from "./round320";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1184,6 +1185,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ptl") return v4("ptlTitle");
     if (tab === "flt") return v4("fltTitle");
     if (tab === "rtr") return v4("rtrTitle");
+    if (tab === "fse") return v4("fseTitle");
+    if (tab === "snl") return v4("snlTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1720,6 +1723,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "plates") return v4("pltSub");
     if (tab === "flt") return v4("fltSub");
     if (tab === "rtr") return v4("rtrSub");
+    if (tab === "fse") return v4("fseSub");
+    if (tab === "snl") return v4("snlSub");
     return "";
   }
 
@@ -2417,6 +2422,8 @@ function Shell({ base, section, name }: Props) {
             {view === "ptl" && <PortolanPlates base={base} v4={v4} />}
             {view === "flt" && <FoliotRules base={base} v4={v4} />}
             {view === "rtr" && <RutterPlates base={base} v4={v4} />}
+            {view === "fse" && <FuseeRules base={base} v4={v4} />}
+            {view === "snl" && <SnailPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

@@ -103235,3 +103235,328 @@
   [data-crmv4-root] .c4-foliot-column i,
   [data-crmv4-root] .c4-rutter-column i { transition: none; }
 }
+
+/* Round 320 — fusee rules, snail plates, ivory key lararium, graphite device tepidarium. */
+[data-crmv4-root] .c4-fusee {
+  color: #1c1a17;
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(198, 161, 91, 0.45), transparent 46%),
+    linear-gradient(#f7f1e6, #efe4d2);
+  border: 1px solid #8a6a3b;
+  border-radius: 72px 72px 16px 16px;
+  padding: 8px 0 18px;
+  box-sizing: border-box;
+}
+[data-crmv4-root] .c4-snail {
+  color: #1c1a17;
+  background:
+    radial-gradient(circle at 18% 30%, rgba(198, 161, 91, 0.55) 0 18px, transparent 20px),
+    radial-gradient(circle at 18% 30%, transparent 0 36px, rgba(138, 106, 59, 0.35) 38px 40px, transparent 42px),
+    radial-gradient(circle at 18% 30%, transparent 0 64px, rgba(198, 161, 91, 0.4) 66px 68px, transparent 70px),
+    #f6f1e8;
+  border: 1px solid #8a6a3b;
+  border-radius: 28px 8px 28px 8px;
+  padding-bottom: 18px;
+  box-sizing: border-box;
+}
+[data-crmv4-root] .c4-fusee-mast,
+[data-crmv4-root] .c4-snail-mast {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: end;
+  margin: 12px 16px 0;
+  padding: 14px 16px;
+  background: rgba(255, 253, 248, 0.9);
+  border-bottom: 1px solid rgba(138, 106, 59, 0.4);
+}
+[data-crmv4-root] .c4-fusee-seal[data-logo="mono"],
+[data-crmv4-root] .c4-snail-seal[data-logo="mono"] {
+  margin: 0;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #8a6a3b;
+  color: #1c1a17;
+  background: transparent;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  font-weight: 650;
+}
+[data-crmv4-root] .c4-fusee-seal[data-logo="mono"] { border-radius: 50% 50% 40% 40%; }
+[data-crmv4-root] .c4-snail-seal[data-logo="mono"] { border-radius: 50%; }
+[data-crmv4-root] .c4-fusee-kicker,
+[data-crmv4-root] .c4-snail-kicker {
+  margin: 0 0 4px;
+  color: #8a6a3b;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-fusee .c4-title,
+[data-crmv4-root] .c4-snail .c4-title { margin: 0; letter-spacing: -0.03em; }
+[data-crmv4-root] .c4-fusee-count,
+[data-crmv4-root] .c4-snail-count {
+  margin: 0;
+  color: #8a6a3b;
+  font-size: 28px;
+  font-variant-numeric: tabular-nums;
+}
+[data-crmv4-root] .c4-fusee-index,
+[data-crmv4-root] .c4-snail-index,
+[data-crmv4-root] .c4-fusee-dials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin: 10px 16px 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-fusee-index li[data-tone="gold"],
+[data-crmv4-root] .c4-snail-index li[data-tone="gold"] { color: #8a6a3b; }
+[data-crmv4-root] .c4-fusee-chart,
+[data-crmv4-root] .c4-snail-chart {
+  display: flex;
+  align-items: end;
+  gap: 10px;
+  min-height: 120px;
+  margin: 12px 16px;
+}
+[data-crmv4-root] .c4-fusee-column,
+[data-crmv4-root] .c4-snail-column {
+  flex: 1 1 0;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+[data-crmv4-root] .c4-fusee-column i,
+[data-crmv4-root] .c4-snail-column i {
+  display: block;
+  width: 100%;
+  max-width: 42px;
+  background: #c6a15b;
+  border-radius: 999px 999px 4px 4px;
+}
+[data-crmv4-root] .c4-fusee-column[data-on="1"] i,
+[data-crmv4-root] .c4-snail-column[data-on="1"] i { background: #8a6a3b; }
+[data-crmv4-root] .c4-fusee-tools,
+[data-crmv4-root] .c4-snail-tools,
+[data-crmv4-root] .c4-fusee-bulk,
+[data-crmv4-root] .c4-snail-bulk,
+[data-crmv4-root] .c4-fusee-links,
+[data-crmv4-root] .c4-snail-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 16px 0;
+}
+[data-crmv4-root] .c4-fusee-search,
+[data-crmv4-root] .c4-snail-search { min-width: min(100%, 220px); }
+[data-crmv4-root] .c4-fusee-hint,
+[data-crmv4-root] .c4-snail-hint,
+[data-crmv4-root] .c4-fusee-meta,
+[data-crmv4-root] .c4-snail-meta,
+[data-crmv4-root] .c4-fusee-note,
+[data-crmv4-root] .c4-snail-note { margin: 8px 16px 0; }
+[data-crmv4-root] .c4-fusee-list,
+[data-crmv4-root] .c4-snail-list {
+  display: grid;
+  gap: 10px;
+  margin: 12px 16px 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-fusee-card,
+[data-crmv4-root] .c4-snail-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  padding: 12px;
+  background: rgba(255, 253, 248, 0.92);
+  border: 1px solid rgba(198, 161, 91, 0.7);
+  border-radius: 16px;
+}
+[data-crmv4-root] .c4-fusee-card[data-on="1"],
+[data-crmv4-root] .c4-snail-card[data-on="1"] { outline: 2px solid #c6a15b; }
+[data-crmv4-root] .c4-fusee-actions,
+[data-crmv4-root] .c4-snail-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+[data-crmv4-root] .c4-fusee .c4-btn,
+[data-crmv4-root] .c4-snail .c4-btn,
+[data-crmv4-root] .c4-fusee .c4-chip,
+[data-crmv4-root] .c4-snail .c4-chip { min-height: 44px; }
+[data-crmv4-root] .c4-fusee .c4-btn:focus-visible,
+[data-crmv4-root] .c4-snail .c4-btn:focus-visible { outline: 2px solid #c6a15b; outline-offset: 2px; }
+[data-crmv4-root] .c4-key.c4-key-lararium {
+  color: #1c1a17;
+  background:
+    radial-gradient(80% 42% at 50% 0, rgba(198, 161, 91, 0.35), transparent 70%),
+    #f6f1e8;
+  border: 1px solid rgba(138, 106, 59, 0.55);
+  border-radius: 160px 160px 18px 18px;
+  padding: 22px 8px 16px;
+  box-sizing: border-box;
+}
+[data-crmv4-root] .c4-device.c4-device-tepidarium {
+  color: #f6f1e8;
+  background:
+    repeating-linear-gradient(#241f1a 0 22px, rgba(198, 161, 91, 0.55) 22px 23px);
+  border: 1px solid #c6a15b;
+  border-radius: 8px 8px 28px 28px;
+  padding: 8px 8px 16px;
+  box-sizing: border-box;
+}
+[data-crmv4-root] .c4-key-lararium-mast,
+[data-crmv4-root] .c4-device-tepidarium-mast {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: end;
+  margin: 8px 12px 0;
+  padding: 8px 8px 12px;
+}
+[data-crmv4-root] .c4-device-tepidarium-mast,
+[data-crmv4-root] .c4-device-tepidarium-index { background: #1c1a17; }
+[data-crmv4-root] .c4-key-lararium-seal[data-logo="mono"],
+[data-crmv4-root] .c4-device-tepidarium-seal[data-logo="mono"] {
+  margin: 0;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border: 1px solid currentColor;
+  color: #1c1a17;
+  background: transparent;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  font-weight: 650;
+  border-radius: 50%;
+}
+[data-crmv4-root] .c4-device-tepidarium-seal[data-logo="mono"] { color: #f6f1e8; border-radius: 4px; }
+[data-crmv4-root] .c4-key-lararium-kicker,
+[data-crmv4-root] .c4-device-tepidarium-kicker {
+  margin: 0;
+  color: #8a6a3b;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-key-lararium-title,
+[data-crmv4-root] .c4-device-tepidarium-title { margin: 2px 0 0; letter-spacing: -0.03em; }
+[data-crmv4-root] .c4-device-tepidarium-title,
+[data-crmv4-root] .c4-device-tepidarium-lead,
+[data-crmv4-root] .c4-device.c4-device-tepidarium .c4-meta { color: #f6f1e8; }
+[data-crmv4-root] .c4-key-lararium-lead,
+[data-crmv4-root] .c4-device-tepidarium-lead { margin: 6px 0 0; max-width: 62ch; line-height: 1.45; }
+[data-crmv4-root] .c4-key-lararium-count,
+[data-crmv4-root] .c4-device-tepidarium-count {
+  margin: 0;
+  font-size: 28px;
+  font-variant-numeric: tabular-nums;
+  color: #8a6a3b;
+}
+[data-crmv4-root] .c4-key-lararium-index,
+[data-crmv4-root] .c4-device-tepidarium-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 8px 16px 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-key-lararium-index li[data-tone="gold"],
+[data-crmv4-root] .c4-device-tepidarium-index li[data-tone="gold"] { color: #8a6a3b; }
+[data-crmv4-root] .c4-device-tepidarium-index li[data-tone="ink"],
+[data-crmv4-root] .c4-device-tepidarium-index li[data-tone="ivory"] { color: #f6f1e8; }
+[data-crmv4-root] .c4-key-lararium-card,
+[data-crmv4-root] .c4-device-tepidarium-card {
+  border: 1px solid rgba(198, 161, 91, 0.55);
+  border-radius: 18px 18px 4px 4px;
+  padding: 10px 12px;
+  background: rgba(255, 253, 248, 0.9);
+}
+[data-crmv4-root] .c4-key.c4-key-lararium .c4-kcd-rows li.c4-key-lararium-card { border-top: 4px solid #c6a15b; }
+[data-crmv4-root] .c4-device.c4-device-tepidarium .c4-dvc-rows li.c4-device-tepidarium-card {
+  background: #241f1a;
+  color: #f6f1e8;
+  border-radius: 0;
+  border-left: 4px solid #c6a15b;
+}
+[data-crmv4-root] .c4-device.c4-device-tepidarium .c4-dvc-rows li.c4-device-tepidarium-card p,
+[data-crmv4-root] .c4-device.c4-device-tepidarium .c4-dvc-rows li.c4-device-tepidarium-card .c4-meta { color: #f6f1e8; }
+[data-crmv4-root] .c4-key-lararium .c4-btn,
+[data-crmv4-root] .c4-device-tepidarium .c4-btn,
+[data-crmv4-root] .c4-key-lararium .c4-chip,
+[data-crmv4-root] .c4-device-tepidarium .c4-chip { min-height: 44px; }
+[data-crmv4-root] .c4-key-lararium .c4-btn:focus-visible,
+[data-crmv4-root] .c4-device-tepidarium .c4-btn:focus-visible { outline: 2px solid #c6a15b; outline-offset: 2px; }
+[data-crmv4-root] .c4-device-tepidarium .c4-dvc-track i,
+[data-crmv4-root] .c4-key-lararium .c4-kcd-track i { background: #c6a15b; }
+[data-crmv4-root][data-theme="dark"] .c4-fusee,
+[data-crmv4-root][data-theme="dark"] .c4-snail,
+[data-crmv4-root][data-theme="dark"] .c4-key.c4-key-lararium {
+  color: #f6f1e8;
+  background: #241f1a;
+}
+[data-crmv4-root][data-theme="dark"] .c4-fusee-card,
+[data-crmv4-root][data-theme="dark"] .c4-snail-card,
+[data-crmv4-root][data-theme="dark"] .c4-key-lararium-card,
+[data-crmv4-root][data-theme="dark"] .c4-fusee-mast,
+[data-crmv4-root][data-theme="dark"] .c4-snail-mast { background: #1c1a17; color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-fusee-seal[data-logo="mono"],
+[data-crmv4-root][data-theme="dark"] .c4-snail-seal[data-logo="mono"],
+[data-crmv4-root][data-theme="dark"] .c4-key-lararium-seal[data-logo="mono"] { color: #f6f1e8; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-fusee-mast,
+  [data-crmv4-root] .c4-snail-mast,
+  [data-crmv4-root] .c4-key-lararium-mast,
+  [data-crmv4-root] .c4-device-tepidarium-mast { grid-template-columns: auto minmax(0, 1fr); }
+  [data-crmv4-root] .c4-fusee .c4-title,
+  [data-crmv4-root] .c4-snail .c4-title,
+  [data-crmv4-root] .c4-key-lararium-title,
+  [data-crmv4-root] .c4-device-tepidarium-title { font-size: 1.35rem; }
+  [data-crmv4-root] .c4-key.c4-key-lararium { border-radius: 72px 72px 14px 14px; }
+  [data-crmv4-root] .c4-fusee-card,
+  [data-crmv4-root] .c4-snail-card { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-fusee-card,
+  [data-crmv4-root] .c4-snail-card,
+  [data-crmv4-root] .c4-key-lararium-card,
+  [data-crmv4-root] .c4-device-tepidarium-card,
+  [data-crmv4-root] .c4-fusee-column i,
+  [data-crmv4-root] .c4-snail-column i { transition: none; }
+}
+
+[data-crmv4-root] .c4-device-tepidarium-chart {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+  margin: 12px 16px 4px;
+  padding: 12px;
+  background: #1c1a17;
+}
+[data-crmv4-root] .c4-device-tepidarium-column {
+  flex: 1 1 0;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: #f6f1e8;
+  cursor: pointer;
+}
+[data-crmv4-root] .c4-device-tepidarium-column i {
+  display: block;
+  width: 100%;
+  max-width: 36px;
+  background: #c6a15b;
+  border-radius: 2px 2px 0 0;
+}
+[data-crmv4-root] .c4-device-tepidarium-column[data-on="1"] i { background: #f6f1e8; }
