@@ -284,15 +284,21 @@ export function CueCards({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-cue" aria-label={v4("cueTitle")} data-cue="1" data-press="1">
-      <header className="c4-cue-head">
-        <p className="c4-cue-plate" data-logo="mono">{v4("cueLogo")}</p>
+    <section className="c4-cue c4-cue-sacrarium" aria-label={v4("cueTitle")} data-cue="1" data-press="1" data-desk="sacrarium">
+      <header className="c4-cue-sacrarium-mast">
+        <p className="c4-cue-sacrarium-seal" data-logo="mono">{v4("cueSacrariumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("cueSub")}</p>
-          <h2 className="c4-title">{v4("cueTitle")}</h2>
+          <p className="c4-cue-sacrarium-kicker">{v4("cueSacrariumKicker")}</p>
+          <h2 className="c4-title c4-cue-sacrarium-title">{v4("cueTitle")}</h2>
+          <p className="c4-cue-sacrarium-lead">{v4("cueSacrariumLead")}</p>
         </div>
-        <p className="c4-cue-count">{shown.length}</p>
+        <p className="c4-cue-sacrarium-count">{shown.length}</p>
       </header>
+      <ol className="c4-cue-sacrarium-index" aria-label={v4("cueSacrariumKicker")}>
+        <li data-tone="gold">{v4("cueOpen")} {counts.open}</li>
+        <li data-tone="ink">{v4("cueHeld")} {counts.held}</li>
+        <li data-tone="ivory">{v4("cueDone")} {counts.done}</li>
+      </ol>
       <p className="c4-meta">{v4("cueHint")}</p>
       <p className="c4-meta">{v4("cueLocal")}</p>
       <p className="c4-meta">{v4("cueBlank")}</p>
@@ -502,7 +508,7 @@ export function CueCards({ v4 }: { v4: V4 }) {
             const wingLabel = wingOf(cue.wing);
             const toneLabel = toneOf(cue.tone);
             return (
-              <li key={cue.id} data-band={band} data-wing={wingLabel} data-tone={toneLabel} data-late={gap !== null && gap > 0 && !cue.held && !cue.done ? "1" : "0"}>
+              <li key={cue.id} className="c4-cue-sacrarium-card" data-band={band} data-wing={wingLabel} data-tone={toneLabel} data-late={gap !== null && gap > 0 && !cue.held && !cue.done ? "1" : "0"}>
                 <span className="c4-cue-minute">{minuteLabel(cue.minute)}</span>
                 <div>
                   <p className="c4-cue-pips" aria-label={v4("cueTone")}>
@@ -620,14 +626,36 @@ export function CustomerRegions({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-region" aria-label={v4("rgnTitle")} data-region="1" data-press="1">
-      <header className="c4-rgn-head">
+    <section className="c4-region c4-region-frigidarium" aria-label={v4("rgnTitle")} data-region="1" data-press="1" data-desk="frigidarium">
+      <header className="c4-region-frigidarium-mast">
+        <p className="c4-region-frigidarium-seal" data-logo="mono">{v4("rgnFrigidariumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("rgnSub")}</p>
-          <h2 className="c4-title">{v4("rgnTitle")}</h2>
+          <p className="c4-region-frigidarium-kicker">{v4("rgnFrigidariumKicker")}</p>
+          <h2 className="c4-title c4-region-frigidarium-title">{v4("rgnTitle")}</h2>
+          <p className="c4-region-frigidarium-lead">{v4("rgnFrigidariumLead")}</p>
         </div>
-        <p className="c4-cue-count">{v4("rgnRows")} {rows.length}</p>
+        <p className="c4-region-frigidarium-count">{rows.length}</p>
       </header>
+      <ol className="c4-region-frigidarium-index" aria-label={v4("rgnFrigidariumKicker")}>
+        <li data-tone="gold">{v4("rgnLead")} {lead || "—"}</li>
+        <li data-tone="ink">{v4("rgnRows")} {rows.length}</li>
+        <li data-tone="ivory">{v4("rgnBlank")} {blankCount}</li>
+      </ol>
+      {compasses.length > 0 && (
+        <div className="c4-region-frigidarium-chart" aria-label={v4("rgnCompass")}>
+          {compasses.slice(0, 4).map((line) => {
+            const name = line.compass || "blank";
+            const on = compassOn === name;
+            return (
+              <button key={name} type="button" className="c4-region-frigidarium-column" data-on={on ? "1" : "0"} onClick={() => { setBlank(false); setSelected(""); setCompass(on ? "all" : name); }}>
+                <i style={{ height: `${Math.max(18, Math.round((line.count / widest) * 72))}px` }} />
+                <strong>{line.count}</strong>
+                <span>{compassName(v4, line.compass)}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
       <p className="c4-meta">{v4("rgnHint")}</p>
       <p className="c4-meta">{v4("rgnLocal")}</p>
       <p className="c4-meta">{v4("rgnEscape")}</p>
@@ -736,7 +764,7 @@ export function CustomerRegions({ base, v4 }: { base: string; v4: V4 }) {
           const compassMark = compassOf(name);
           const spanMark = spanOf(name);
           return (
-            <li key={row.id} data-region={name || "blank"}>
+            <li key={row.id} className="c4-region-frigidarium-card" data-region={name || "blank"}>
               <span className="c4-rgn-spine" aria-hidden="true" />
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("rgnBlank")}</p>
