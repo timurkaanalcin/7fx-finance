@@ -284,6 +284,7 @@ import { PlanisphereDiscs, SealPlates } from "./round293";
 import { LatchPlates, TorquetumArcs } from "./round294";
 import { HeliometerHalves, PlumbPlates } from "./round295";
 import { TriquetrumRules, UsernamePlates } from "./round296";
+import { DioptraSights, EmailPlates } from "./round297";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1115,6 +1116,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "pmb") return v4("pmbTitle");
     if (tab === "tqt") return v4("tqtTitle");
     if (tab === "unp") return v4("unpTitle");
+    if (tab === "dpt") return v4("dptTitle");
+    if (tab === "eml") return v4("emlTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -2284,6 +2287,8 @@ function Shell({ base, section, name }: Props) {
             {view === "pmb" && <PlumbPlates base={base} v4={v4} />}
             {view === "tqt" && <TriquetrumRules base={base} v4={v4} />}
             {view === "unp" && <UsernamePlates base={base} v4={v4} />}
+            {view === "dpt" && <DioptraSights base={base} v4={v4} />}
+            {view === "eml" && <EmailPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

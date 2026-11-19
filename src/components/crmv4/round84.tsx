@@ -167,16 +167,24 @@ export function LicenseGlance({ base, v4 }: { base: string; v4: V4 }) {
     if (clear && activeLicense(selected, [clear])) setSelected("");
   }
 
+  const licensePeak = Math.max(1, split.active, split.expired);
   return (
-    <section className="c4-license-glance" aria-label={v4("lcTitle")} data-license-glance="1">
-      <header className="c4-pay-head">
+    <section className="c4-license-glance c4-license-court" aria-label={v4("lcTitle")} data-license-glance="1" data-desk="court">
+      <header className="c4-license-court-mast">
+        <p className="c4-license-court-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("lcSub")}</p>
-          <h2 className="c4-title">{v4("lcTitle")}</h2>
+          <p className="c4-license-court-kicker">{v4("lcCourtKicker")}</p>
+          <h2 className="c4-title c4-license-court-title">{v4("lcTitle")}</h2>
+          <p className="c4-license-court-lead">{v4("lcCourtLead")}</p>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-license-court-count">{chips.length}</p>
       </header>
-      <p className="c4-meta">{v4("lcHint")}</p>
+      <ol className="c4-license-court-index" aria-label={v4("lcTitle")}>
+        <li data-tone="gold">{v4("lcCourtLive")}</li>
+        <li data-tone="ink">{v4("lcCourtNamed")}</li>
+        <li data-tone="ivory">{v4("lcCourtLapsed")}</li>
+      </ol>
+      <p className="c4-meta c4-license-court-hint">{v4("lcHint")}</p>
       <p className="c4-meta">{v4("lcLocal")}</p>
       <p className="c4-row">
         <Link className="c4-btn" href={crmv4Href(base, "settings", { area: "licenses" })}>{v4("lcBoard")}</Link>
@@ -185,6 +193,18 @@ export function LicenseGlance({ base, v4 }: { base: string; v4: V4 }) {
       {data.error && <p className="c4-meta">{v4("lcFailed")}</p>}
       {!data.loading && !data.error && !rows.length && <p className="c4-pay-empty">{v4("lcNone")}</p>}
       {!data.loading && !present.length && rows.length > 0 && <p className="c4-pay-empty">{v4("lcEmpty")}</p>}
+      <div className="c4-license-court-chart" aria-label={v4("lcTitle")}>
+        <button type="button" className="c4-license-court-column" data-on={kind === "active" ? "1" : "0"} data-kind="active" onClick={() => setSelected(kind === "active" ? "" : "active")}>
+          <i style={{ height: `${Math.max(18, Math.round((split.active / licensePeak) * 88))}px` }} />
+          <strong>{split.active}</strong>
+          <span>{v4("lcCourtLive")}</span>
+        </button>
+        <button type="button" className="c4-license-court-column" data-on={kind === "expired" ? "1" : "0"} data-kind="expired" onClick={() => setSelected(kind === "expired" ? "" : "expired")}>
+          <i style={{ height: `${Math.max(18, Math.round((split.expired / licensePeak) * 88))}px` }} />
+          <strong>{split.expired}</strong>
+          <span>{v4("lcCourtLapsed")}</span>
+        </button>
+      </div>
       <p className="c4-meta" data-license-split="">{v4("lcActive")} {split.active} · {v4("lcExpired")} {split.expired}</p>
       {others.length > 0 && (
         <ul className="c4-license-other">
@@ -215,9 +235,9 @@ export function LicenseGlance({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("lcSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && (kind || present.length > 0) && <p className="c4-pay-empty">{v4("lcEmpty")}</p>}
-      <ul className="c4-license-rows">
+      <ul className="c4-license-rows c4-license-court-list">
         {shown.map((row) => (
-          <li key={row.id} data-kind={licenseKind(row, nowMs)}>
+          <li key={row.id} className="c4-license-court-card" data-kind={licenseKind(row, nowMs)} data-on={kind && kind === licenseKind(row, nowMs) ? "1" : "0"}>
             <p>{row.label}</p>
             <p className="c4-meta">{licenseKind(row, nowMs) === "expired" ? v4("lcExpired") : v4("lcActive")}</p>
           </li>
