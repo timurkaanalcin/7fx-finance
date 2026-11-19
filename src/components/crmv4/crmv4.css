@@ -104444,3 +104444,274 @@
   [data-crmv4-root] .c4-loxodrome-column i,
   [data-crmv4-root] .c4-reason-sudatorium-column i { transition: none; }
 }
+
+/* Round 324 — duplex rules, windrose plates, ivory playbill unctorium, graphite source natatio. */
+[data-crmv4-root] .c4-duplex,
+[data-crmv4-root] .c4-windrose {
+  color: #1c1a17;
+  background: #f4efe6;
+  border: 1px solid #8a6a3b;
+  border-left: 6px solid #c6a15b;
+  border-radius: 6px;
+  padding: 16px 16px 18px 18px;
+  display: grid;
+  gap: 12px;
+}
+[data-crmv4-root] .c4-windrose {
+  color: #f6f1e8;
+  background:
+    radial-gradient(circle at 88% 12%, rgba(198, 161, 91, 0.28), transparent 42%),
+    #141210;
+  border: 1px solid #c6a15b;
+  border-left: 0;
+  border-radius: 18px 18px 4px 4px;
+}
+[data-crmv4-root] .c4-duplex-mast,
+[data-crmv4-root] .c4-windrose-mast,
+[data-crmv4-root] .c4-ply-unctorium-mast,
+[data-crmv4-root] .c4-ivs-natatio-mast {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: end;
+  margin: 0;
+}
+[data-crmv4-root] .c4-duplex-seal[data-logo="mono"],
+[data-crmv4-root] .c4-windrose-seal[data-logo="mono"],
+[data-crmv4-root] .c4-ply-unctorium-seal[data-logo="mono"],
+[data-crmv4-root] .c4-ivs-natatio-seal[data-logo="mono"] {
+  margin: 0;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  font-weight: 650;
+}
+[data-crmv4-root] .c4-duplex-seal[data-logo="mono"],
+[data-crmv4-root] .c4-ply-unctorium-seal[data-logo="mono"] {
+  color: #1c1a17;
+  border-radius: 4px;
+  border: 1px solid #1c1a17;
+  box-shadow: 6px 6px 0 #c6a15b;
+}
+[data-crmv4-root] .c4-windrose-seal[data-logo="mono"],
+[data-crmv4-root] .c4-ivs-natatio-seal[data-logo="mono"] {
+  color: #f6f1e8;
+  border-radius: 50%;
+  border: 2px solid #c6a15b;
+  box-shadow: inset 0 0 0 5px #141210, inset 0 0 0 6px #8a6a3b;
+}
+[data-crmv4-root] .c4-duplex-kicker,
+[data-crmv4-root] .c4-windrose-kicker,
+[data-crmv4-root] .c4-ply-unctorium-kicker,
+[data-crmv4-root] .c4-ivs-natatio-kicker {
+  margin: 0;
+  color: #8a6a3b;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-duplex-count,
+[data-crmv4-root] .c4-windrose-count,
+[data-crmv4-root] .c4-ply-unctorium-count,
+[data-crmv4-root] .c4-ivs-natatio-count {
+  margin: 0;
+  min-width: 48px;
+  text-align: center;
+  font-size: 28px;
+  font-variant-numeric: tabular-nums;
+  color: #c6a15b;
+}
+[data-crmv4-root] .c4-duplex-hint,
+[data-crmv4-root] .c4-windrose-hint,
+[data-crmv4-root] .c4-ply-unctorium-lead,
+[data-crmv4-root] .c4-ivs-natatio-lead { margin: 6px 0 0; max-width: 68ch; line-height: 1.45; }
+[data-crmv4-root] .c4-windrose-hint,
+[data-crmv4-root] .c4-windrose-meta,
+[data-crmv4-root] .c4-windrose .c4-title,
+[data-crmv4-root] .c4-ivs-natatio-title,
+[data-crmv4-root] .c4-ivs-natatio-lead,
+[data-crmv4-root] .c4-ivs.c4-ivs-natatio .c4-meta,
+[data-crmv4-root] .c4-ivs.c4-ivs-natatio .c4-title { color: #f6f1e8; }
+[data-crmv4-root] .c4-duplex-index,
+[data-crmv4-root] .c4-ply-unctorium-index,
+[data-crmv4-root] .c4-ivs-natatio-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 8px 0 0;
+  list-style: none;
+  border-top: 1px solid rgba(198, 161, 91, 0.7);
+}
+[data-crmv4-root] .c4-duplex-index li,
+[data-crmv4-root] .c4-ply-unctorium-index li,
+[data-crmv4-root] .c4-ivs-natatio-index li {
+  padding: 6px 10px;
+  border-radius: 2px;
+  border: 1px solid rgba(198, 161, 91, 0.7);
+  font-size: 12px;
+}
+[data-crmv4-root] .c4-duplex-index li[data-tone="gold"],
+[data-crmv4-root] .c4-ply-unctorium-index li[data-tone="gold"] { color: #8a6a3b; background: #fffdf8; }
+[data-crmv4-root] .c4-duplex-index li[data-tone="ink"],
+[data-crmv4-root] .c4-ply-unctorium-index li[data-tone="ink"] { background: #1c1a17; color: #f6f1e8; }
+[data-crmv4-root] .c4-ivs-natatio-index li[data-tone="gold"],
+[data-crmv4-root] .c4-ivs-natatio-index li[data-tone="ink"],
+[data-crmv4-root] .c4-ivs-natatio-index li[data-tone="ivory"] { color: #f6f1e8; background: transparent; }
+[data-crmv4-root] .c4-duplex-chart,
+[data-crmv4-root] .c4-windrose-chart,
+[data-crmv4-root] .c4-ivs-natatio-chart {
+  display: flex;
+  align-items: end;
+  gap: 8px;
+  min-height: 120px;
+  padding: 12px;
+  border-radius: 2px;
+  background: #fffdf8;
+  border-bottom: 2px solid #c6a15b;
+}
+[data-crmv4-root] .c4-windrose-chart,
+[data-crmv4-root] .c4-ivs-natatio-chart { background: #1c1916; }
+[data-crmv4-root] .c4-duplex-column,
+[data-crmv4-root] .c4-windrose-column,
+[data-crmv4-root] .c4-ivs-natatio-column {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-width: 52px;
+  min-height: 44px;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+}
+[data-crmv4-root] .c4-duplex-column i,
+[data-crmv4-root] .c4-windrose-column i,
+[data-crmv4-root] .c4-ivs-natatio-column i {
+  display: block;
+  width: 10px;
+  background: #c6a15b;
+  border-radius: 10px 10px 0 0;
+}
+[data-crmv4-root] .c4-duplex-column[data-on="1"] i,
+[data-crmv4-root] .c4-windrose-column[data-on="1"] i,
+[data-crmv4-root] .c4-ivs-natatio-column[data-on="1"] i { background: #e7d3a1; width: 16px; }
+[data-crmv4-root] .c4-duplex-form,
+[data-crmv4-root] .c4-duplex-tools,
+[data-crmv4-root] .c4-windrose-tools,
+[data-crmv4-root] .c4-duplex-bulk,
+[data-crmv4-root] .c4-windrose-bulk { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; }
+[data-crmv4-root] .c4-duplex-list,
+[data-crmv4-root] .c4-windrose-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+[data-crmv4-root] .c4-duplex-card,
+[data-crmv4-root] .c4-windrose-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  padding: 12px 12px 12px 14px;
+  border-radius: 2px;
+  background: #fffdf8;
+  border: 1px solid rgba(138, 106, 59, 0.35);
+  border-left: 4px solid #c6a15b;
+}
+[data-crmv4-root] .c4-windrose-card { background: #241f1a; color: #f6f1e8; border-left-color: #e7d3a1; }
+[data-crmv4-root] .c4-duplex-card[data-on="1"],
+[data-crmv4-root] .c4-windrose-card[data-on="1"] { outline: 2px solid #c6a15b; }
+[data-crmv4-root] .c4-duplex .c4-btn,
+[data-crmv4-root] .c4-windrose .c4-btn,
+[data-crmv4-root] .c4-duplex .c4-chip,
+[data-crmv4-root] .c4-windrose .c4-chip,
+[data-crmv4-root] .c4-ply-unctorium .c4-btn,
+[data-crmv4-root] .c4-ply-unctorium .c4-chip,
+[data-crmv4-root] .c4-ivs-natatio .c4-btn,
+[data-crmv4-root] .c4-ivs-natatio .c4-chip { min-height: 44px; }
+[data-crmv4-root] .c4-duplex .c4-btn:focus-visible,
+[data-crmv4-root] .c4-windrose .c4-btn:focus-visible,
+[data-crmv4-root] .c4-duplex .c4-chip:focus-visible,
+[data-crmv4-root] .c4-windrose .c4-chip:focus-visible,
+[data-crmv4-root] .c4-ply-unctorium .c4-btn:focus-visible,
+[data-crmv4-root] .c4-ivs-natatio .c4-btn:focus-visible,
+[data-crmv4-root] .c4-duplex-column:focus-visible,
+[data-crmv4-root] .c4-windrose-column:focus-visible,
+[data-crmv4-root] .c4-ivs-natatio-column:focus-visible { outline: 2px solid #c6a15b; outline-offset: 2px; }
+[data-crmv4-root] .c4-ply.c4-ply-unctorium {
+  color: #1c1a17;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 8px no-repeat,
+    #f7f1e6;
+  border: 1px solid rgba(138, 106, 59, 0.45);
+  border-radius: 4px 48px 4px 48px;
+  padding: 22px 18px 18px;
+  box-shadow: inset 0 0 0 1px rgba(255, 253, 248, 0.8);
+}
+[data-crmv4-root] .c4-ivs.c4-ivs-natatio {
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 72px / 100% 2px no-repeat,
+    #12100e;
+  border: 1px solid #8a6a3b;
+  border-radius: 0 0 28px 28px;
+  padding: 16px 14px 22px;
+}
+[data-crmv4-root] .c4-ply.c4-ply-unctorium .c4-ply-rows li.c4-ply-unctorium-card {
+  background: #fffdf8;
+  border: 1px dashed rgba(198, 161, 91, 0.85);
+  border-left: 8px solid #c6a15b;
+  border-radius: 0 16px 16px 0;
+  padding: 12px;
+}
+[data-crmv4-root] .c4-ivs.c4-ivs-natatio .c4-ivs-rows li.c4-ivs-natatio-card {
+  background: #1c1916;
+  color: #f6f1e8;
+  border: 0;
+  border-top: 3px solid #c6a15b;
+  border-radius: 0;
+  padding: 12px;
+}
+[data-crmv4-root] .c4-ivs.c4-ivs-natatio .c4-ivs-rows li.c4-ivs-natatio-card p,
+[data-crmv4-root] .c4-ivs.c4-ivs-natatio .c4-ivs-rows li.c4-ivs-natatio-card .c4-meta { color: #f6f1e8; }
+[data-crmv4-root] .c4-ply-unctorium-card[data-on="1"],
+[data-crmv4-root] .c4-ivs-natatio-card[data-on="1"] { outline: 2px solid #c6a15b; }
+[data-crmv4-root][data-theme="dark"] .c4-duplex,
+[data-crmv4-root][data-theme="dark"] .c4-ply.c4-ply-unctorium {
+  color: #f6f1e8;
+  background: #241f1a;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-duplex-card,
+[data-crmv4-root][data-theme="dark"] .c4-ply.c4-ply-unctorium .c4-ply-rows li.c4-ply-unctorium-card { background: #1c1a17; color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-ply.c4-ply-unctorium .c4-ply-act {
+  background: #c6a15b;
+  color: #1c1a17;
+}
+[data-crmv4-root][data-theme="dark"] .c4-ply.c4-ply-unctorium .c4-title,
+[data-crmv4-root][data-theme="dark"] .c4-ply.c4-ply-unctorium .c4-ply-unctorium-lead,
+[data-crmv4-root][data-theme="dark"] .c4-ply.c4-ply-unctorium .c4-meta { color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-duplex-seal[data-logo="mono"],
+[data-crmv4-root][data-theme="dark"] .c4-ply-unctorium-seal[data-logo="mono"] { color: #f6f1e8; border-color: #f6f1e8; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-duplex-mast,
+  [data-crmv4-root] .c4-windrose-mast,
+  [data-crmv4-root] .c4-ply-unctorium-mast,
+  [data-crmv4-root] .c4-ivs-natatio-mast { grid-template-columns: auto minmax(0, 1fr); }
+  [data-crmv4-root] .c4-duplex .c4-title,
+  [data-crmv4-root] .c4-windrose .c4-title,
+  [data-crmv4-root] .c4-ply-unctorium-title,
+  [data-crmv4-root] .c4-ivs-natatio-title { font-size: 1.35rem; }
+  [data-crmv4-root] .c4-ply.c4-ply-unctorium { border-radius: 4px 24px 4px 24px; }
+  [data-crmv4-root] .c4-duplex-card,
+  [data-crmv4-root] .c4-windrose-card { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-duplex-card,
+  [data-crmv4-root] .c4-windrose-card,
+  [data-crmv4-root] .c4-ply-unctorium-card,
+  [data-crmv4-root] .c4-ivs-natatio-card,
+  [data-crmv4-root] .c4-duplex-column i,
+  [data-crmv4-root] .c4-windrose-column i,
+  [data-crmv4-root] .c4-ivs-natatio-column i { transition: none; }
+}
