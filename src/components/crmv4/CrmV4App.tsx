@@ -292,6 +292,7 @@ import { HavenPlates, NaviculaDials } from "./round301";
 import { ChilindrumColumns, GatePlates } from "./round302";
 import { CivicPlates, SapheaLeaves } from "./round303";
 import { AssayPlates, RectangulusRules } from "./round304";
+import { AlidadeRules, SpecimenPlates } from "./round305";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1139,6 +1140,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "civ") return v4("civTitle");
     if (tab === "rxg") return v4("rxgTitle");
     if (tab === "asy") return v4("asyTitle");
+    if (tab === "ald") return v4("aldTitle");
+    if (tab === "spc") return v4("spcTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1668,6 +1671,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "civ") return v4("civSub");
     if (tab === "rxg") return v4("rxgSub");
     if (tab === "asy") return v4("asySub");
+    if (tab === "ald") return v4("aldSub");
+    if (tab === "spc") return v4("spcSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -2336,6 +2341,8 @@ function Shell({ base, section, name }: Props) {
             {view === "civ" && <CivicPlates base={base} v4={v4} />}
             {view === "rxg" && <RectangulusRules base={base} v4={v4} />}
             {view === "asy" && <AssayPlates base={base} v4={v4} />}
+            {view === "ald" && <AlidadeRules base={base} v4={v4} />}
+            {view === "spc" && <SpecimenPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
