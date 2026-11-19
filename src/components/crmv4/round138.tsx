@@ -235,15 +235,21 @@ export function PlaceCards({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-place" aria-label={v4("plcTitle")} data-place="1" data-folio="1">
-      <header className="c4-plc-head">
-        <p className="c4-plc-plate" data-logo="mono">{v4("plcLogo")}</p>
+    <section className="c4-place c4-place-palaestra" aria-label={v4("plcTitle")} data-place="1" data-folio="1" data-desk="palaestra">
+      <header className="c4-place-palaestra-mast">
+        <p className="c4-place-palaestra-seal" data-logo="mono">{v4("plcPalaestraLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("plcSub")}</p>
-          <h2 className="c4-title">{v4("plcTitle")}</h2>
+          <p className="c4-place-palaestra-kicker">{v4("plcPalaestraKicker")}</p>
+          <h2 className="c4-title c4-place-palaestra-title">{v4("plcTitle")}</h2>
+          <p className="c4-place-palaestra-lead">{v4("plcPalaestraLead")}</p>
         </div>
-        <p className="c4-plc-count">{shown.length}</p>
+        <p className="c4-place-palaestra-count">{shown.length}</p>
       </header>
+      <ol className="c4-place-palaestra-index" aria-label={v4("plcPalaestraKicker")}>
+        <li data-tone="gold">{v4("plcPalaestraWaiting")} {counts.waiting}</li>
+        <li data-tone="ink">{v4("plcPalaestraSeated")} {counts.seated}</li>
+        <li data-tone="ivory">{v4("plcPalaestraCleared")} {counts.cleared}</li>
+      </ol>
       <p className="c4-meta">{v4("plcHint")}</p>
       <p className="c4-meta">{v4("plcLocal")}</p>
       <p className="c4-meta">{v4("plcBlank")}</p>
@@ -429,7 +435,7 @@ export function PlaceCards({ v4 }: { v4: V4 }) {
             const gap = seatGap(card.seat, desk);
             const courseLabel = courseOf(card.course);
             return (
-              <li key={card.id} data-band={band} data-passed={gap !== null && gap > 0 && !card.seated && !card.cleared ? "1" : "0"}>
+              <li key={card.id} className="c4-place-palaestra-card" data-band={band} data-passed={gap !== null && gap > 0 && !card.seated && !card.cleared ? "1" : "0"}>
                 <span className="c4-plc-spine" aria-hidden="true" />
                 <div>
                   <p className="c4-plc-pips" aria-label={v4("plcRank")}>
@@ -542,14 +548,21 @@ export function CustomerBrowsers({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-browser" aria-label={v4("brwTitle")} data-browser="1" data-folio="1">
-      <header className="c4-brw-head">
+    <section className="c4-browser c4-browser-basilica" aria-label={v4("brwTitle")} data-browser="1" data-folio="1" data-desk="basilica">
+      <header className="c4-browser-basilica-mast">
+        <p className="c4-browser-basilica-seal" data-logo="mono">{v4("brwBasilicaLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("brwSub")}</p>
-          <h2 className="c4-title">{v4("brwTitle")}</h2>
+          <p className="c4-browser-basilica-kicker">{v4("brwBasilicaKicker")}</p>
+          <h2 className="c4-title c4-browser-basilica-title">{v4("brwTitle")}</h2>
+          <p className="c4-browser-basilica-lead">{v4("brwBasilicaLead")}</p>
         </div>
-        <p className="c4-plc-count">{v4("brwRows")} {rows.length}</p>
+        <p className="c4-browser-basilica-count">{rows.length}</p>
       </header>
+      <ol className="c4-browser-basilica-index" aria-label={v4("brwBasilicaKicker")}>
+        <li data-tone="gold">{v4("brwBasilicaNamed")} {Math.max(0, rows.length - blankCount)}</li>
+        <li data-tone="ink">{v4("brwBasilicaBlank")} {blankCount}</li>
+        <li data-tone="ivory">{v4("brwBasilicaShown")} {shown.length}</li>
+      </ol>
       <p className="c4-meta">{v4("brwHint")}</p>
       <p className="c4-meta">{v4("brwLocal")}</p>
       <p className="c4-meta">{v4("brwEscape")}</p>
@@ -645,7 +658,7 @@ export function CustomerBrowsers({ base, v4 }: { base: string; v4: V4 }) {
           const mark = initialOf(name);
           const familyMark = familyOf(name);
           return (
-            <li key={row.id} data-browser={name || "blank"}>
+            <li key={row.id} className="c4-browser-basilica-card" data-browser={name || "blank"}>
               <span className="c4-brw-spine" aria-hidden="true" />
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("brwBlank")}</p>
