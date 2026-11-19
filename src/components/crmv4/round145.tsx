@@ -317,15 +317,21 @@ export function InterludeCards({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-itl" aria-label={v4("itlTitle")} data-interlude="1" data-role={role} data-interlude-salon="1">
-      <header className="c4-itl-head">
-        <p className="c4-itl-plate" data-logo="mono">{v4("itlLogo")}</p>
+    <section className="c4-itl c4-itl-schola" aria-label={v4("itlTitle")} data-interlude="1" data-role={role} data-interlude-salon="1" data-desk="schola">
+      <header className="c4-itl-head c4-itl-schola-mast">
+        <p className="c4-itl-plate c4-itl-schola-seal" data-logo="mono">{v4("itlScholaLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("itlSub")}</p>
-          <h2 className="c4-title">{v4("itlTitle")}</h2>
+          <p className="c4-itl-schola-kicker">{v4("itlScholaKicker")}</p>
+          <h2 className="c4-title c4-itl-schola-title">{v4("itlTitle")}</h2>
+          <p className="c4-itl-schola-lead">{v4("itlScholaLead")}</p>
         </div>
-        <p className="c4-itl-count">{shown.length}</p>
+        <p className="c4-itl-count c4-itl-schola-count">{shown.length}</p>
       </header>
+      <ol className="c4-itl-schola-index" aria-label={v4("itlScholaKicker")}>
+        <li data-tone="gold">{v4("itlOpen")} {counts.open}</li>
+        <li data-tone="ink">{v4("itlHeld")} {counts.held}</li>
+        <li data-tone="ivory">{v4("itlDone")} {counts.done}</li>
+      </ol>
       <p className="c4-meta">{v4("itlHint")}</p>
       <p className="c4-meta">{v4("itlLocal")}</p>
       <p className="c4-meta">{v4("itlBlank")}</p>
@@ -538,7 +544,7 @@ export function InterludeCards({ v4 }: { v4: V4 }) {
             const roomLabel = roomOf(card.room);
             const shadeLabel = shadeOf(card.shade);
             return (
-              <li key={card.id} data-band={band} data-room={roomLabel} data-shade={shadeLabel} data-late={gap !== null && gap > 0 && !card.held && !card.done ? "1" : "0"}>
+              <li key={card.id} className="c4-itl-schola-card" data-on={editing === card.id ? "1" : "0"} data-band={band} data-room={roomLabel} data-shade={shadeLabel} data-late={gap !== null && gap > 0 && !card.held && !card.done ? "1" : "0"}>
                 <span className="c4-itl-hour">{hourLabel(card.hour)}</span>
                 <div>
                   <p className="c4-itl-pips" aria-label={v4("itlShade")}>
@@ -662,14 +668,21 @@ export function RegistrationVintages({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-vnt" aria-label={v4("vntTitle")} data-vintage="1" data-interlude-salon="1">
-      <header className="c4-vnt-head">
+    <section className="c4-vnt c4-vnt-piscina" aria-label={v4("vntTitle")} data-vintage="1" data-interlude-salon="1" data-desk="piscina">
+      <header className="c4-vnt-head c4-vnt-piscina-mast">
+        <p className="c4-vnt-piscina-seal" data-logo="mono">{v4("vntPiscinaLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("vntSub")}</p>
-          <h2 className="c4-title">{v4("vntTitle")}</h2>
+          <p className="c4-vnt-piscina-kicker">{v4("vntPiscinaKicker")}</p>
+          <h2 className="c4-title c4-vnt-piscina-title">{v4("vntTitle")}</h2>
+          <p className="c4-vnt-piscina-lead">{v4("vntPiscinaLead")}</p>
         </div>
-        <p className="c4-itl-count">{v4("vntRows")} {rows.length}</p>
+        <p className="c4-itl-count c4-vnt-piscina-count">{rows.length}</p>
       </header>
+      <ol className="c4-vnt-piscina-index" aria-label={v4("vntPiscinaKicker")}>
+        <li data-tone="gold">{v4("vntLead")} {lead || "—"}</li>
+        <li data-tone="ink">{v4("vntRows")} {rows.length}</li>
+        <li data-tone="ivory">{v4("vntKind")} {kinds.length}</li>
+      </ol>
       <p className="c4-meta">{v4("vntHint")}</p>
       <p className="c4-meta">{v4("vntLocal")}</p>
       <p className="c4-meta">{v4("vntEscape")}</p>
@@ -686,6 +699,20 @@ export function RegistrationVintages({ base, v4 }: { base: string; v4: V4 }) {
       {failed && !rows.length && <p className="c4-meta">{v4("vntFailed")}</p>}
       {!loading && !failed && !rows.length && <p className="c4-itl-empty">{v4("vntNone")}</p>}
       {kinds.length > 0 && (
+        <>
+        <div className="c4-vnt-piscina-chart" aria-label={v4("vntKind")}>
+          {kinds.map((line) => {
+            const name = line.kind || "blank";
+            const on = kindOn === (line.kind || "blank");
+            return (
+              <button key={name} type="button" className="c4-vnt-piscina-column" data-on={on ? "1" : "0"} onClick={() => { setBlank(false); setSelected(""); setKind(on ? "all" : (line.kind || "blank")); }}>
+                <i style={{ height: `${Math.max(18, Math.round((line.count / widest) * 88))}px` }} />
+                <strong>{line.count}</strong>
+                <span>{kindName(v4, line.kind)}</span>
+              </button>
+            );
+          })}
+        </div>
         <section className="c4-vnt-chart" aria-label={v4("vntKind")}>
           {kinds.map((line) => {
             const share = vintageShare(line.count, rows.length);
@@ -701,6 +728,7 @@ export function RegistrationVintages({ base, v4 }: { base: string; v4: V4 }) {
             );
           })}
         </section>
+        </>
       )}
       {blankCount > 0 && (
         <button type="button" className="c4-vnt-blank" data-on={blank ? "1" : "0"} aria-pressed={blank} onClick={() => { setBlank((value) => !value); setSelected(""); setKind("all"); setSpan("all"); setSeason("all"); setDecade("all"); }}>
@@ -789,7 +817,7 @@ export function RegistrationVintages({ base, v4 }: { base: string; v4: V4 }) {
           const spanMark = spanOf(row.year);
           const seasonMark = seasonOf(row.year) as VintageSeason;
           return (
-            <li key={row.id} data-year={name || "blank"}>
+            <li key={row.id} className="c4-vnt-piscina-card" data-on={year && name === year ? "1" : "0"} data-year={name || "blank"}>
               <span className="c4-vnt-spine" aria-hidden="true" />
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("vntBlank")}</p>
