@@ -62,15 +62,39 @@ export function FocusCustomer({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-focus-customer" aria-label={v4("fcTitle")} data-focus-customer="1" data-focused={focus ? "1" : "0"}>
-      <header className="c4-pay-head">
+    <section className="c4-focus-customer c4-focus-oriel" aria-label={v4("fcTitle")} data-focus-customer="1" data-desk="oriel" data-focused={focus ? "1" : "0"}>
+      <header className="c4-focus-oriel-mast">
+        <p className="c4-focus-oriel-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("fcSub")}</p>
-          <h2 className="c4-title">{v4("fcTitle")}</h2>
+          <p className="c4-focus-oriel-kicker">{v4("fcOrielKicker")}</p>
+          <h2 className="c4-title c4-focus-oriel-title">{v4("fcTitle")}</h2>
+          <p className="c4-focus-oriel-lead">{v4("fcOrielLead")}</p>
         </div>
-        <p className="c4-meta">{focus ? 1 : 0}</p>
+        <p className="c4-focus-oriel-count">{focus ? 1 : 0}</p>
       </header>
-      <p className="c4-meta">{v4("fcHint")}</p>
+      <ol className="c4-focus-oriel-index" aria-label={v4("fcTitle")}>
+        <li data-tone="gold">{v4("fcOrielFocused")}</li>
+        <li data-tone="ink">{v4("fcOrielListed")}</li>
+        <li data-tone="ivory">{v4("fcOrielOpen")}</li>
+      </ol>
+      <div className="c4-focus-oriel-chart" aria-label={v4("fcTitle")}>
+        <button type="button" className="c4-focus-oriel-column" data-on={focus ? "1" : "0"} onClick={() => store(clearFocus())}>
+          <i style={{ height: focus ? "72px" : "18px" }} />
+          <strong>{focus ? 1 : 0}</strong>
+          <span>{v4("fcOrielFocused")}</span>
+        </button>
+        <button type="button" className="c4-focus-oriel-column" data-on={shown.length ? "1" : "0"} onClick={() => setQuery("")}>
+          <i style={{ height: `${Math.max(18, Math.min(88, shown.length * 14))}px` }} />
+          <strong>{shown.length}</strong>
+          <span>{v4("fcOrielListed")}</span>
+        </button>
+        <button type="button" className="c4-focus-oriel-column" data-on={person ? "1" : "0"} onClick={() => { if (person) store(clearFocus()); }}>
+          <i style={{ height: person ? "48px" : "18px" }} />
+          <strong>{rows.length}</strong>
+          <span>{v4("fcOrielOpen")}</span>
+        </button>
+      </div>
+      <p className="c4-meta c4-focus-oriel-hint">{v4("fcHint")}</p>
       <p className="c4-meta">{v4("fcLocal")}</p>
       {person ? (
         <div className="c4-focus-card" data-focus={person.id}>
@@ -90,9 +114,9 @@ export function FocusCustomer({ base, v4 }: { base: string; v4: V4 }) {
       {data.error && <p className="c4-meta">{v4("fcFailed")}</p>}
       {!data.loading && !data.error && !rows.length && <p className="c4-pay-empty">{v4("fcNone")}</p>}
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("fcEmpty")}</p>}
-      <ul className="c4-focus-list">
+      <ul className="c4-focus-list c4-focus-oriel-list">
         {shown.map((row) => (
-          <li key={row.id} data-customer={row.id} data-on={row.id === focus ? "1" : "0"}>
+          <li key={row.id} className="c4-focus-oriel-card" data-customer={row.id} data-on={row.id === focus ? "1" : "0"}>
             <p>{row.name || row.email || row.id}</p>
             <p className="c4-meta">{row.email || ""}</p>
             <button type="button" className="c4-btn" disabled={row.id === focus} onClick={() => store(setFocus(focus, row.id, present))}>{row.id === focus ? v4("fcFocused") : v4("fcFocus")}</button>
@@ -139,16 +163,40 @@ export function OrderTypeGlance({ base, v4 }: { base: string; v4: V4 }) {
     if (clear && activeType(selected, [clear])) setSelected("");
   }
 
+  const peak = Math.max(1, ...lines.map((line) => line.count));
   return (
-    <section className="c4-order-type" aria-label={v4("oyTitle")} data-order-type="1">
-      <header className="c4-pay-head">
+    <section className="c4-order-type c4-type-aisle" aria-label={v4("oyTitle")} data-order-type="1" data-desk="aisle">
+      <header className="c4-type-aisle-mast">
+        <p className="c4-type-aisle-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("oySub")}</p>
-          <h2 className="c4-title">{v4("oyTitle")}</h2>
+          <p className="c4-type-aisle-kicker">{v4("oyAisleKicker")}</p>
+          <h2 className="c4-title c4-type-aisle-title">{v4("oyTitle")}</h2>
+          <p className="c4-type-aisle-lead">{v4("oyAisleLead")}</p>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-type-aisle-count">{chips.length}</p>
       </header>
-      <p className="c4-meta">{v4("oyHint")}</p>
+      <ol className="c4-type-aisle-index" aria-label={v4("oyTitle")}>
+        <li data-tone="gold">{v4("oyAisleShown")}</li>
+        <li data-tone="ink">{v4("oyAisleHidden")}</li>
+        <li data-tone="ivory">{v4("oyAisleBlank")}</li>
+      </ol>
+      <div className="c4-type-aisle-chart" aria-label={v4("oyTitle")}>
+        {lines.filter((line) => line.type).map((line) => (
+          <button key={line.type} type="button" className="c4-type-aisle-column" data-on={type === line.type ? "1" : "0"} data-type={line.type} onClick={() => { setBlank(false); setSelected(type === line.type ? "" : line.type); }}>
+            <i style={{ height: `${Math.max(18, Math.round((line.count / peak) * 88))}px` }} />
+            <strong>{line.count}</strong>
+            <span>{line.type}</span>
+          </button>
+        ))}
+        {blankCount > 0 && (
+          <button type="button" className="c4-type-aisle-column" data-on={blank ? "1" : "0"} data-type="blank" onClick={() => { setBlank((value) => !value); setSelected(""); }}>
+            <i style={{ height: `${Math.max(18, Math.round((blankCount / peak) * 88))}px` }} />
+            <strong>{blankCount}</strong>
+            <span>{v4("oyAisleBlank")}</span>
+          </button>
+        )}
+      </div>
+      <p className="c4-meta c4-type-aisle-hint">{v4("oyHint")}</p>
       <p className="c4-meta">{v4("oyLocal")}</p>
       <p className="c4-row">
         <Link className="c4-btn" href={crmv4Href(base, "blotter")}>{v4("oyBoard")}</Link>
@@ -183,11 +231,11 @@ export function OrderTypeGlance({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("oySearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("oyEmpty")}</p>}
-      <ul className="c4-oy-rows">
+      <ul className="c4-oy-rows c4-type-aisle-list">
         {shown.map((row) => {
           const name = orderType(row.type);
           return (
-            <li key={row.id} data-type={name || "blank"}>
+            <li key={row.id} className="c4-type-aisle-card" data-type={name || "blank"} data-on={type && type === name ? "1" : "0"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("oyBlank")}</p>
             </li>
