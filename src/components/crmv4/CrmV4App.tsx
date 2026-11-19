@@ -315,6 +315,7 @@ import { DuplexRules, WindrosePlates } from "./round324";
 import { GrasshopperRules, VolvellePlates } from "./round325";
 import { DeadbeatRules, DiptychPlates } from "./round326";
 import { CylinderRules, RetePlates } from "./round327";
+import { GunterPlates, VirguleRules } from "./round328";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1208,6 +1209,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "dyc") return v4("dycTitle");
     if (tab === "cyl") return v4("cylTitle");
     if (tab === "rte") return v4("rteTitle");
+    if (tab === "vrg") return v4("vrgTitle");
+    if (tab === "gnt") return v4("gntTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1760,6 +1763,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "dyc") return v4("dycSub");
     if (tab === "cyl") return v4("cylSub");
     if (tab === "rte") return v4("rteSub");
+    if (tab === "vrg") return v4("vrgSub");
+    if (tab === "gnt") return v4("gntSub");
     return "";
   }
 
@@ -2473,6 +2478,8 @@ function Shell({ base, section, name }: Props) {
             {view === "dyc" && <DiptychPlates base={base} v4={v4} />}
             {view === "cyl" && <CylinderRules base={base} v4={v4} />}
             {view === "rte" && <RetePlates base={base} v4={v4} />}
+            {view === "vrg" && <VirguleRules base={base} v4={v4} />}
+            {view === "gnt" && <GunterPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
