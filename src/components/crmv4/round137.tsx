@@ -216,15 +216,38 @@ export function ArrivalCards({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-arrival" aria-label={v4("arrTitle")} data-arrival="1" data-folio="1">
-      <header className="c4-arr-head">
-        <p className="c4-arr-plate" data-logo="mono">{v4("arrLogo")}</p>
+    <section className="c4-arrival c4-arrival-nymphaeum" aria-label={v4("arrTitle")} data-arrival="1" data-folio="1" data-desk="nymphaeum">
+      <header className="c4-arrival-nymphaeum-mast">
+        <p className="c4-arrival-nymphaeum-seal" data-logo="mono">{v4("arrNymphaeumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("arrSub")}</p>
-          <h2 className="c4-title">{v4("arrTitle")}</h2>
+          <p className="c4-arrival-nymphaeum-kicker">{v4("arrNymphaeumKicker")}</p>
+          <h2 className="c4-title c4-arrival-nymphaeum-title">{v4("arrTitle")}</h2>
+          <p className="c4-arrival-nymphaeum-lead">{v4("arrNymphaeumLead")}</p>
         </div>
-        <p className="c4-arr-count">{shown.length}</p>
+        <p className="c4-arrival-nymphaeum-count">{shown.length}</p>
       </header>
+      <ol className="c4-arrival-nymphaeum-index" aria-label={v4("arrNymphaeumKicker")}>
+        <li data-tone="gold">{v4("arrNymphaeumWaiting")} {counts.waiting}</li>
+        <li data-tone="ink">{v4("arrNymphaeumHeld")} {counts.held}</li>
+        <li data-tone="ivory">{v4("arrNymphaeumGreeted")} {counts.greeted}</li>
+      </ol>
+      <div className="c4-arrival-nymphaeum-chart" aria-label={v4("arrKpi")}>
+        <button type="button" className="c4-arrival-nymphaeum-column" data-on={tray === "waiting" ? "1" : "0"} onClick={() => { setTray("waiting"); setBoard("cards"); }}>
+          <i style={{ height: `${Math.max(18, Math.round((counts.waiting / Math.max(1, counts.waiting, counts.held, counts.greeted)) * 88))}px` }} />
+          <strong>{counts.waiting}</strong>
+          <span>{v4("arrNymphaeumWaiting")}</span>
+        </button>
+        <button type="button" className="c4-arrival-nymphaeum-column" data-on={tray === "held" ? "1" : "0"} onClick={() => { setTray("held"); setBoard("cards"); setLateOnly(false); }}>
+          <i style={{ height: `${Math.max(18, Math.round((counts.held / Math.max(1, counts.waiting, counts.held, counts.greeted)) * 88))}px` }} />
+          <strong>{counts.held}</strong>
+          <span>{v4("arrNymphaeumHeld")}</span>
+        </button>
+        <button type="button" className="c4-arrival-nymphaeum-column" data-on={tray === "greeted" ? "1" : "0"} onClick={() => { setTray("greeted"); setBoard("cards"); setLateOnly(false); }}>
+          <i style={{ height: `${Math.max(18, Math.round((counts.greeted / Math.max(1, counts.waiting, counts.held, counts.greeted)) * 88))}px` }} />
+          <strong>{counts.greeted}</strong>
+          <span>{v4("arrNymphaeumGreeted")}</span>
+        </button>
+      </div>
       <p className="c4-meta">{v4("arrHint")}</p>
       <p className="c4-meta">{v4("arrLocal")}</p>
       <p className="c4-meta">{v4("arrBlank")}</p>
@@ -388,7 +411,7 @@ export function ArrivalCards({ v4 }: { v4: V4 }) {
             const clashes = arrivalClashIds(cards, card.id);
             const wait = waitMinutes(card.clock, now);
             return (
-              <li key={card.id} data-band={band} data-late={wait !== null && wait > 0 && !card.held && !card.greeted ? "1" : "0"}>
+              <li key={card.id} className="c4-arrival-nymphaeum-card" data-band={band} data-late={wait !== null && wait > 0 && !card.held && !card.greeted ? "1" : "0"}>
                 <span className="c4-arr-spine" aria-hidden="true" />
                 <div>
                   <p className="c4-arr-pips" aria-label={v4("arrRank")}>
@@ -497,14 +520,21 @@ export function CustomerCities({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-city" aria-label={v4("citTitle")} data-city="1" data-folio="1">
-      <header className="c4-cit-head">
+    <section className="c4-city c4-city-macellum" aria-label={v4("citTitle")} data-city="1" data-folio="1" data-desk="macellum">
+      <header className="c4-city-macellum-mast">
+        <p className="c4-city-macellum-seal" data-logo="mono">{v4("citMacellumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("citSub")}</p>
-          <h2 className="c4-title">{v4("citTitle")}</h2>
+          <p className="c4-city-macellum-kicker">{v4("citMacellumKicker")}</p>
+          <h2 className="c4-title c4-city-macellum-title">{v4("citTitle")}</h2>
+          <p className="c4-city-macellum-lead">{v4("citMacellumLead")}</p>
         </div>
-        <p className="c4-arr-count">{v4("citRows")} {rows.length}</p>
+        <p className="c4-city-macellum-count">{rows.length}</p>
       </header>
+      <ol className="c4-city-macellum-index" aria-label={v4("citMacellumKicker")}>
+        <li data-tone="gold">{v4("citMacellumNamed")} {present.length}</li>
+        <li data-tone="ink">{v4("citMacellumHidden")} {hiddenCities.length}</li>
+        <li data-tone="ivory">{v4("citMacellumBlank")} {blankCount}</li>
+      </ol>
       <p className="c4-meta">{v4("citHint")}</p>
       <p className="c4-meta">{v4("citLocal")}</p>
       <p className="c4-meta">{v4("citEscape")}</p>
@@ -586,7 +616,7 @@ export function CustomerCities({ base, v4 }: { base: string; v4: V4 }) {
           const name = cityText(row.lastCity);
           const mark = initialOf(name);
           return (
-            <li key={row.id} data-city={name || "blank"}>
+            <li key={row.id} className="c4-city-macellum-card" data-city={name || "blank"}>
               <span className="c4-cit-spine" aria-hidden="true" />
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("citBlank")}</p>
