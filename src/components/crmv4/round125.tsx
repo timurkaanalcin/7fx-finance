@@ -55,6 +55,10 @@ export function RoomNotes({ v4 }: { v4: V4 }) {
     writeJson(ROOM_KEY, next);
   }, []);
   const shown = visibleNotes(notes, hidden, query);
+  const openCount = notes.filter((note) => !note.hidden).length;
+  const hideCount = notes.filter((note) => note.hidden).length;
+  const blankCount = notes.filter((note) => !note.floor).length;
+  const notePeak = Math.max(1, openCount, hideCount, blankCount);
 
   function store(next: Note[]) {
     setNotes(next);
@@ -62,16 +66,39 @@ export function RoomNotes({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-room" aria-label={v4("rmnTitle")} data-room="1">
-      <header className="c4-pay-head">
+    <section className="c4-room c4-room-diaeta" aria-label={v4("rmnTitle")} data-room="1" data-desk="diaeta">
+      <header className="c4-room-diaeta-mast">
+        <p className="c4-room-diaeta-seal" data-logo="mono">{v4("rmnDiaetaLogo")}</p>
         <div>
-          <p className="c4-rmn-logo" data-logo="mono">{v4("rmnLogo")}</p>
-          <p className="c4-pay-kicker">{v4("rmnSub")}</p>
-          <h2 className="c4-title">{v4("rmnTitle")}</h2>
+          <p className="c4-room-diaeta-kicker">{v4("rmnDiaetaKicker")}</p>
+          <h2 className="c4-title c4-room-diaeta-title">{v4("rmnTitle")}</h2>
+          <p className="c4-room-diaeta-lead">{v4("rmnDiaetaLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-room-diaeta-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("rmnHint")}</p>
+      <ol className="c4-room-diaeta-index" aria-label={v4("rmnTitle")}>
+        <li data-tone="gold">{v4("rmnDiaetaShown")} {openCount}</li>
+        <li data-tone="ink">{v4("rmnDiaetaHidden")} {hideCount}</li>
+        <li data-tone="ivory">{v4("rmnDiaetaBlank")} {blankCount}</li>
+      </ol>
+      <div className="c4-room-diaeta-chart" aria-label={v4("rmnTitle")}>
+        <button type="button" className="c4-room-diaeta-column" data-on={openCount ? "1" : "0"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((openCount / notePeak) * 88))}px` }} />
+          <strong>{openCount}</strong>
+          <span>{v4("rmnDiaetaShown")}</span>
+        </button>
+        <button type="button" className="c4-room-diaeta-column" data-on={hideCount ? "1" : "0"} onClick={() => setHidden(true)}>
+          <i style={{ height: `${Math.max(18, Math.round((hideCount / notePeak) * 88))}px` }} />
+          <strong>{hideCount}</strong>
+          <span>{v4("rmnDiaetaHidden")}</span>
+        </button>
+        <button type="button" className="c4-room-diaeta-column" data-on={blankCount ? "1" : "0"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((blankCount / notePeak) * 88))}px` }} />
+          <strong>{blankCount}</strong>
+          <span>{v4("rmnDiaetaBlank")}</span>
+        </button>
+      </div>
+      <p className="c4-meta c4-room-diaeta-hint">{v4("rmnHint")}</p>
       <p className="c4-meta">{v4("rmnLocal")}</p>
       <p className="c4-meta">{v4("rmnBlank")}</p>
       <p className="c4-meta">{v4("rmnFloorBlank")}</p>
@@ -102,10 +129,10 @@ export function RoomNotes({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "0" : "1"} aria-pressed={!hidden} onClick={() => setHidden(false)}>{v4("rmnOpen")}</button>
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("rmnHidden")}</button>
       </div>
-      {!shown.length && <p className="c4-pay-empty">{v4("rmnEmpty")}</p>}
-      <ul className="c4-rmn-rows">
+      {!shown.length && <p className="c4-pay-empty c4-room-diaeta-empty">{v4("rmnEmpty")}</p>}
+      <ul className="c4-rmn-rows c4-room-diaeta-list">
         {shown.map((note) => (
-          <li key={note.id} data-pinned={note.pinned ? "1" : "0"}>
+          <li key={note.id} className="c4-room-diaeta-card" data-pinned={note.pinned ? "1" : "0"} data-on={note.pinned ? "1" : "0"}>
             <p>{note.text}</p>
             {note.floor ? <p className="c4-meta">{note.floor}</p> : null}
             <div className="c4-row">

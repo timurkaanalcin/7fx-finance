@@ -50,6 +50,10 @@ export function SupplyNotes({ v4 }: { v4: V4 }) {
     writeJson(SUPPLY_KEY, next);
   }, []);
   const shown = visibleNotes(notes, hidden, query);
+  const openCount = notes.filter((note) => !note.hidden).length;
+  const pinCount = notes.filter((note) => note.pinned).length;
+  const hideCount = notes.filter((note) => note.hidden).length;
+  const notePeak = Math.max(1, openCount, pinCount, hideCount);
 
   function store(next: Note[]) {
     setNotes(next);
@@ -57,16 +61,39 @@ export function SupplyNotes({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-supply" aria-label={v4("splTitle")} data-supply="1">
-      <header className="c4-pay-head">
+    <section className="c4-supply c4-supply-cryptoporticus" aria-label={v4("splTitle")} data-supply="1" data-desk="cryptoporticus">
+      <header className="c4-supply-cryptoporticus-mast">
+        <p className="c4-supply-cryptoporticus-seal" data-logo="mono">{v4("splCryptoporticusLogo")}</p>
         <div>
-          <p className="c4-spl-logo" data-logo="mono">{v4("splLogo")}</p>
-          <p className="c4-pay-kicker">{v4("splSub")}</p>
-          <h2 className="c4-title">{v4("splTitle")}</h2>
+          <p className="c4-supply-cryptoporticus-kicker">{v4("splCryptoporticusKicker")}</p>
+          <h2 className="c4-title c4-supply-cryptoporticus-title">{v4("splTitle")}</h2>
+          <p className="c4-supply-cryptoporticus-lead">{v4("splCryptoporticusLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-supply-cryptoporticus-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("splHint")}</p>
+      <ol className="c4-supply-cryptoporticus-index" aria-label={v4("splTitle")}>
+        <li data-tone="gold">{v4("splCryptoporticusOpen")} {openCount}</li>
+        <li data-tone="ink">{v4("splCryptoporticusPinned")} {pinCount}</li>
+        <li data-tone="ivory">{v4("splCryptoporticusHidden")} {hideCount}</li>
+      </ol>
+      <div className="c4-supply-cryptoporticus-chart" aria-label={v4("splTitle")}>
+        <button type="button" className="c4-supply-cryptoporticus-column" data-on={openCount ? "1" : "0"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((openCount / notePeak) * 88))}px` }} />
+          <strong>{openCount}</strong>
+          <span>{v4("splCryptoporticusOpen")}</span>
+        </button>
+        <button type="button" className="c4-supply-cryptoporticus-column" data-on={pinCount ? "1" : "0"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((pinCount / notePeak) * 88))}px` }} />
+          <strong>{pinCount}</strong>
+          <span>{v4("splCryptoporticusPinned")}</span>
+        </button>
+        <button type="button" className="c4-supply-cryptoporticus-column" data-on={hideCount ? "1" : "0"} onClick={() => setHidden(true)}>
+          <i style={{ height: `${Math.max(18, Math.round((hideCount / notePeak) * 88))}px` }} />
+          <strong>{hideCount}</strong>
+          <span>{v4("splCryptoporticusHidden")}</span>
+        </button>
+      </div>
+      <p className="c4-meta c4-supply-cryptoporticus-hint">{v4("splHint")}</p>
       <p className="c4-meta">{v4("splLocal")}</p>
       <p className="c4-meta">{v4("splBlank")}</p>
       <p className="c4-meta">{v4("splBinBlank")}</p>
@@ -97,10 +124,10 @@ export function SupplyNotes({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "0" : "1"} aria-pressed={!hidden} onClick={() => setHidden(false)}>{v4("splOpen")}</button>
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("splHidden")}</button>
       </div>
-      {!shown.length && <p className="c4-pay-empty">{v4("splEmpty")}</p>}
-      <ul className="c4-spl-rows">
+      {!shown.length && <p className="c4-pay-empty c4-supply-cryptoporticus-empty">{v4("splEmpty")}</p>}
+      <ul className="c4-spl-rows c4-supply-cryptoporticus-list">
         {shown.map((note) => (
-          <li key={note.id} data-pinned={note.pinned ? "1" : "0"}>
+          <li key={note.id} className="c4-supply-cryptoporticus-card" data-pinned={note.pinned ? "1" : "0"} data-on={note.pinned ? "1" : "0"}>
             <p>{note.text}</p>
             {note.bin ? <p className="c4-meta">{note.bin}</p> : null}
             <div className="c4-row">
