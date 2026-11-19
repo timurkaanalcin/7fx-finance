@@ -298,15 +298,21 @@ export function QuireLeaves({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-qre" aria-label={v4("qreTitle")} data-quire="1" data-role={role} data-quire-ledger="1">
-      <header className="c4-qre-head">
-        <p className="c4-qre-plate" data-logo="mono">{v4("qreLogo")}</p>
+    <section className="c4-qre c4-qre-bibliotheca" aria-label={v4("qreTitle")} data-quire="1" data-role={role} data-quire-ledger="1" data-desk="bibliotheca">
+      <header className="c4-qre-head c4-qre-bibliotheca-mast">
+        <p className="c4-qre-plate c4-qre-bibliotheca-seal" data-logo="mono">{v4("qreBibliothecaLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("qreSub")}</p>
-          <h2 className="c4-title">{v4("qreTitle")}</h2>
+          <p className="c4-qre-bibliotheca-kicker">{v4("qreBibliothecaKicker")}</p>
+          <h2 className="c4-title c4-qre-bibliotheca-title">{v4("qreTitle")}</h2>
+          <p className="c4-qre-bibliotheca-lead">{v4("qreBibliothecaLead")}</p>
         </div>
-        <p className="c4-qre-count">{shown.length}</p>
+        <p className="c4-qre-count c4-qre-bibliotheca-count">{shown.length}</p>
       </header>
+      <ol className="c4-qre-bibliotheca-index" aria-label={v4("qreBibliothecaKicker")}>
+        <li data-tone="gold">{v4("qreOpen")} {counts.open}</li>
+        <li data-tone="ink">{v4("qreFolded")} {counts.folded}</li>
+        <li data-tone="ivory">{v4("qreFiled")} {counts.filed}</li>
+      </ol>
       <p className="c4-meta">{v4("qreHint")}</p>
       <p className="c4-meta">{v4("qreLocal")}</p>
       <p className="c4-meta">{v4("qreBlank")}</p>
@@ -537,7 +543,7 @@ export function QuireLeaves({ v4 }: { v4: V4 }) {
             const band = dayBand(card.day);
             const kind = dayKind(card.day);
             return (
-              <li key={card.id} data-weight={card.weight || "blank"} data-day={band} data-starred={card.starred ? "1" : "0"}>
+              <li key={card.id} className="c4-qre-bibliotheca-card" data-weight={card.weight || "blank"} data-day={band} data-starred={card.starred ? "1" : "0"}>
                 <span className="c4-qre-clock">{dayLabel(card.day)}</span>
                 <div>
                   {editing === card.id ? (
@@ -638,14 +644,20 @@ export function CourtesyRanks({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-cts" aria-label={v4("ctsTitle")} data-courtesy="1" data-quire-ledger="1">
-      <header className="c4-cts-head">
+    <section className="c4-cts c4-cts-thermopolium" aria-label={v4("ctsTitle")} data-courtesy="1" data-quire-ledger="1" data-desk="thermopolium">
+      <header className="c4-cts-head c4-cts-thermopolium-mast">
+        <p className="c4-cts-thermopolium-seal" data-logo="mono">{v4("ctsThermopoliumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("ctsSub")}</p>
-          <h2 className="c4-title">{v4("ctsTitle")}</h2>
+          <p className="c4-cts-thermopolium-kicker">{v4("ctsThermopoliumKicker")}</p>
+          <h2 className="c4-title c4-cts-thermopolium-title">{v4("ctsTitle")}</h2>
+          <p className="c4-cts-thermopolium-lead">{v4("ctsThermopoliumLead")}</p>
         </div>
-        <p className="c4-qre-count">{v4("ctsRows")} {rows.length}</p>
+        <p className="c4-qre-count c4-cts-thermopolium-count">{v4("ctsRows")} {rows.length}</p>
       </header>
+      <ol className="c4-cts-thermopolium-index" aria-label={v4("ctsThermopoliumKicker")}>
+        <li>{v4("ctsRows")} {rows.length}</li>
+        <li data-tone="gold">{v4("ctsLeadRank")}</li>
+      </ol>
       <p className="c4-meta">{v4("ctsHint")}</p>
       <p className="c4-meta">{v4("ctsLocal")}</p>
       <p className="c4-meta">{v4("ctsEscape")}</p>
@@ -742,7 +754,7 @@ export function CourtesyRanks({ base, v4 }: { base: string; v4: V4 }) {
           const title = titleOf(row.title);
           const rankMark = rankOf(row.title) as Rank;
           return (
-            <li key={row.id} data-rank={rankMark || "blank"} data-title={title || "blank"}>
+            <li key={row.id} className="c4-cts-thermopolium-card" data-rank={rankMark || "blank"} data-title={title || "blank"}>
               <span className="c4-cts-spine" aria-hidden="true" />
               <p>{row.label || row.id}</p>
               <p className="c4-meta">
