@@ -297,15 +297,21 @@ export function SlaPromises({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-prm" aria-label={v4("slaTitle")} data-promise="1" data-role={role}>
-      <header className="c4-prm-head">
-        <p className="c4-prm-plate" data-logo="mono">{v4("slaLogo")}</p>
+    <section className="c4-prm c4-prm-hypocaust" aria-label={v4("slaTitle")} data-promise="1" data-role={role} data-desk="hypocaust">
+      <header className="c4-prm-head c4-prm-hypocaust-mast">
+        <p className="c4-prm-plate c4-prm-hypocaust-seal" data-logo="mono">{v4("prmHypocaustLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("slaSub")}</p>
-          <h2 className="c4-title">{v4("slaTitle")}</h2>
+          <p className="c4-prm-hypocaust-kicker">{v4("prmHypocaustKicker")}</p>
+          <h2 className="c4-title c4-prm-hypocaust-title">{v4("slaTitle")}</h2>
+          <p className="c4-prm-hypocaust-lead">{v4("prmHypocaustLead")}</p>
         </div>
-        <p className="c4-prm-count">{shown.length}</p>
+        <p className="c4-prm-count c4-prm-hypocaust-count">{shown.length}</p>
       </header>
+      <ol className="c4-prm-hypocaust-index" aria-label={v4("prmHypocaustKicker")}>
+        <li data-tone="gold">{v4("slaOpen")} {counts.open}</li>
+        <li data-tone="ink">{v4("slaWaiting")} {counts.waiting}</li>
+        <li data-tone="ivory">{v4("slaClosed")} {counts.closed}</li>
+      </ol>
       <p className="c4-meta">{v4("slaHint")}</p>
       <p className="c4-meta">{v4("slaLocal")}</p>
       <p className="c4-meta">{v4("slaBlank")}</p>
@@ -538,7 +544,7 @@ export function SlaPromises({ v4 }: { v4: V4 }) {
             const band = allowanceBand(card.minutes);
             const half = allowanceHalf(card.minutes);
             return (
-              <li key={card.id} data-pace={card.pace || "blank"} data-minutes={band} data-starred={card.starred ? "1" : "0"}>
+              <li key={card.id} className="c4-prm-hypocaust-card" data-pace={card.pace || "blank"} data-minutes={band} data-starred={card.starred ? "1" : "0"}>
                 <span className="c4-prm-clock">{minuteLabel(card.minutes)}</span>
                 <div>
                   {editing === card.id ? (
@@ -639,14 +645,20 @@ export function CallingCodes({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-clg" aria-label={v4("clgTitle")} data-calling="1">
-      <header className="c4-clg-head">
+    <section className="c4-clg c4-clg-vestibulum" aria-label={v4("clgTitle")} data-calling="1" data-desk="vestibulum">
+      <header className="c4-clg-head c4-clg-vestibulum-mast">
+        <p className="c4-clg-vestibulum-seal" data-logo="mono">{v4("clgVestibulumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("clgSub")}</p>
-          <h2 className="c4-title">{v4("clgTitle")}</h2>
+          <p className="c4-clg-vestibulum-kicker">{v4("clgVestibulumKicker")}</p>
+          <h2 className="c4-title c4-clg-vestibulum-title">{v4("clgTitle")}</h2>
+          <p className="c4-clg-vestibulum-lead">{v4("clgVestibulumLead")}</p>
         </div>
-        <p className="c4-prm-count">{v4("clgRows")} {rows.length}</p>
+        <p className="c4-prm-count c4-clg-vestibulum-count">{v4("clgRows")} {rows.length}</p>
       </header>
+      <ol className="c4-clg-vestibulum-index" aria-label={v4("clgVestibulumKicker")}>
+        <li data-tone="gold">{v4("clgRows")} {rows.length}</li>
+        <li data-tone="ink">{v4("clgLeadRegion")} {leadRegion ? regionName(v4, leadRegion) : "—"}</li>
+      </ol>
       <p className="c4-meta">{v4("clgHint")}</p>
       <p className="c4-meta">{v4("clgLocal")}</p>
       <p className="c4-meta">{v4("clgEscape")}</p>
@@ -743,7 +755,7 @@ export function CallingCodes({ base, v4 }: { base: string; v4: V4 }) {
           const regionMark = dialRegion(row.phone);
           const code = dialCode(row.phone);
           return (
-            <li key={row.id} data-region={regionMark || "blank"} data-code={code || "blank"}>
+            <li key={row.id} className="c4-clg-vestibulum-card" data-region={regionMark || "blank"} data-code={code || "blank"}>
               <span className="c4-clg-spine" aria-hidden="true" />
               <p>{row.label || row.id}</p>
               <p className="c4-meta">
