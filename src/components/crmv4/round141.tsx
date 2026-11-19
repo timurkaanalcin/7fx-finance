@@ -246,15 +246,21 @@ export function StackSlips({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-stack" aria-label={v4("slpTitle")} data-stack="1" data-folio="1">
-      <header className="c4-slp-head">
-        <p className="c4-slp-plate" data-logo="mono">{v4("slpLogo")}</p>
+    <section className="c4-stack c4-stack-hypogeum" aria-label={v4("slpTitle")} data-stack="1" data-folio="1" data-desk="hypogeum">
+      <header className="c4-stack-hypogeum-mast">
+        <p className="c4-stack-hypogeum-seal" data-logo="mono">{v4("slpHypogeumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("slpSub")}</p>
-          <h2 className="c4-title">{v4("slpTitle")}</h2>
+          <p className="c4-stack-hypogeum-kicker">{v4("slpHypogeumKicker")}</p>
+          <h2 className="c4-title c4-stack-hypogeum-title">{v4("slpTitle")}</h2>
+          <p className="c4-stack-hypogeum-lead">{v4("slpHypogeumLead")}</p>
         </div>
-        <p className="c4-slp-count">{shown.length}</p>
+        <p className="c4-stack-hypogeum-count">{shown.length}</p>
       </header>
+      <ol className="c4-stack-hypogeum-index" aria-label={v4("slpHypogeumKicker")}>
+        <li data-tone="gold">{v4("slpWait")} {counts.wait}</li>
+        <li data-tone="ink">{v4("slpLoaned")} {counts.loan}</li>
+        <li data-tone="ivory">{v4("slpReturnedTray")} {counts.back}</li>
+      </ol>
       <p className="c4-meta">{v4("slpHint")}</p>
       <p className="c4-meta">{v4("slpLocal")}</p>
       <p className="c4-meta">{v4("slpBlank")}</p>
@@ -454,7 +460,7 @@ export function StackSlips({ v4 }: { v4: V4 }) {
             const gap = bayGap(slip.bay, desk);
             const aisleLabel = aisleOf(slip.aisle);
             return (
-              <li key={slip.id} data-band={band} data-aisle={aisleLabel} data-passed={gap !== null && gap > 0 && !slip.loaned && !slip.returned ? "1" : "0"}>
+              <li key={slip.id} className="c4-stack-hypogeum-card" data-band={band} data-aisle={aisleLabel} data-passed={gap !== null && gap > 0 && !slip.loaned && !slip.returned ? "1" : "0"}>
                 <span className="c4-slp-spine" aria-hidden="true" />
                 <div>
                   <p className="c4-slp-pips" aria-label={v4("slpRank")}>
@@ -568,14 +574,36 @@ export function CustomerAtlas({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-atlas" aria-label={v4("atlTitle")} data-atlas="1" data-folio="1">
-      <header className="c4-atl-head">
+    <section className="c4-atlas c4-atlas-mithraeum" aria-label={v4("atlTitle")} data-atlas="1" data-folio="1" data-desk="mithraeum">
+      <header className="c4-atlas-mithraeum-mast">
+        <p className="c4-atlas-mithraeum-seal" data-logo="mono">{v4("atlMithraeumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("atlSub")}</p>
-          <h2 className="c4-title">{v4("atlTitle")}</h2>
+          <p className="c4-atlas-mithraeum-kicker">{v4("atlMithraeumKicker")}</p>
+          <h2 className="c4-title c4-atlas-mithraeum-title">{v4("atlTitle")}</h2>
+          <p className="c4-atlas-mithraeum-lead">{v4("atlMithraeumLead")}</p>
         </div>
-        <p className="c4-slp-count">{v4("atlRows")} {rows.length}</p>
+        <p className="c4-atlas-mithraeum-count">{rows.length}</p>
       </header>
+      <ol className="c4-atlas-mithraeum-index" aria-label={v4("atlMithraeumKicker")}>
+        <li data-tone="gold">{v4("atlLead")} {lead || "—"}</li>
+        <li data-tone="ink">{v4("atlRows")} {rows.length}</li>
+        <li data-tone="ivory">{v4("atlBlank")} {blankCount}</li>
+      </ol>
+      {kinds.length > 0 && (
+        <div className="c4-atlas-mithraeum-chart" aria-label={v4("atlKinds")}>
+          {kinds.slice(0, 3).map((line) => {
+            const name = line.kind || "blank";
+            const on = kindOn === name;
+            return (
+              <button key={name} type="button" className="c4-atlas-mithraeum-column" data-on={on ? "1" : "0"} onClick={() => { setBlank(false); setSelected(""); setKind(on ? "all" : name); }}>
+                <i style={{ height: `${Math.max(18, Math.round((line.count / widest) * 72))}px` }} />
+                <strong>{line.count}</strong>
+                <span>{kindName(v4, line.kind)}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
       <p className="c4-meta">{v4("atlHint")}</p>
       <p className="c4-meta">{v4("atlLocal")}</p>
       <p className="c4-meta">{v4("atlEscape")}</p>
@@ -671,7 +699,7 @@ export function CustomerAtlas({ base, v4 }: { base: string; v4: V4 }) {
           const mark = addressInitialOf(name);
           const kindMark = addressKindOf(name);
           return (
-            <li key={row.id} data-atlas={name || "blank"}>
+            <li key={row.id} className="c4-atlas-mithraeum-card" data-atlas={name || "blank"}>
               <span className="c4-atl-spine" aria-hidden="true" />
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("atlBlank")}</p>
