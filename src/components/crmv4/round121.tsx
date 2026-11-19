@@ -49,6 +49,10 @@ export function VisitorNotes({ v4 }: { v4: V4 }) {
     writeJson(VISITOR_KEY, next);
   }, []);
   const shown = visibleNotes(notes, hidden, query);
+  const openCount = notes.filter((note) => !note.hidden).length;
+  const pinCount = notes.filter((note) => note.pinned).length;
+  const hideCount = notes.filter((note) => note.hidden).length;
+  const notePeak = Math.max(1, openCount, pinCount, hideCount);
 
   function store(next: Note[]) {
     setNotes(next);
@@ -56,16 +60,39 @@ export function VisitorNotes({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-visitor" aria-label={v4("bdgTitle")} data-visitor="1">
-      <header className="c4-pay-head">
+    <section className="c4-visitor c4-visitor-prothyron" aria-label={v4("bdgTitle")} data-visitor="1" data-desk="prothyron">
+      <header className="c4-visitor-prothyron-mast">
+        <p className="c4-visitor-prothyron-seal" data-logo="mono">{v4("bdgProthyronLogo")}</p>
         <div>
-          <p className="c4-bdg-logo" data-logo="mono">{v4("bdgLogo")}</p>
-          <p className="c4-pay-kicker">{v4("bdgSub")}</p>
-          <h2 className="c4-title">{v4("bdgTitle")}</h2>
+          <p className="c4-visitor-prothyron-kicker">{v4("bdgProthyronKicker")}</p>
+          <h2 className="c4-title c4-visitor-prothyron-title">{v4("bdgTitle")}</h2>
+          <p className="c4-visitor-prothyron-lead">{v4("bdgProthyronLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-visitor-prothyron-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("bdgHint")}</p>
+      <ol className="c4-visitor-prothyron-index" aria-label={v4("bdgTitle")}>
+        <li data-tone="gold">{v4("bdgProthyronOpen")} {openCount}</li>
+        <li data-tone="ink">{v4("bdgProthyronPinned")} {pinCount}</li>
+        <li data-tone="ivory">{v4("bdgProthyronHidden")} {hideCount}</li>
+      </ol>
+      <div className="c4-visitor-prothyron-chart" aria-label={v4("bdgTitle")}>
+        <button type="button" className="c4-visitor-prothyron-column" data-on={openCount ? "1" : "0"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((openCount / notePeak) * 88))}px` }} />
+          <strong>{openCount}</strong>
+          <span>{v4("bdgProthyronOpen")}</span>
+        </button>
+        <button type="button" className="c4-visitor-prothyron-column" data-on={pinCount ? "1" : "0"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((pinCount / notePeak) * 88))}px` }} />
+          <strong>{pinCount}</strong>
+          <span>{v4("bdgProthyronPinned")}</span>
+        </button>
+        <button type="button" className="c4-visitor-prothyron-column" data-on={hideCount ? "1" : "0"} onClick={() => setHidden(true)}>
+          <i style={{ height: `${Math.max(18, Math.round((hideCount / notePeak) * 88))}px` }} />
+          <strong>{hideCount}</strong>
+          <span>{v4("bdgProthyronHidden")}</span>
+        </button>
+      </div>
+      <p className="c4-meta c4-visitor-prothyron-hint">{v4("bdgHint")}</p>
       <p className="c4-meta">{v4("bdgLocal")}</p>
       <p className="c4-meta">{v4("bdgBlank")}</p>
       <p className="c4-meta">{v4("bdgBadgeBlank")}</p>
@@ -96,10 +123,10 @@ export function VisitorNotes({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "0" : "1"} aria-pressed={!hidden} onClick={() => setHidden(false)}>{v4("bdgOpen")}</button>
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("bdgHidden")}</button>
       </div>
-      {!shown.length && <p className="c4-pay-empty">{v4("bdgEmpty")}</p>}
-      <ul className="c4-bdg-rows">
+      {!shown.length && <p className="c4-pay-empty c4-visitor-prothyron-empty">{v4("bdgEmpty")}</p>}
+      <ul className="c4-bdg-rows c4-visitor-prothyron-list">
         {shown.map((note) => (
-          <li key={note.id} data-pinned={note.pinned ? "1" : "0"}>
+          <li key={note.id} className="c4-visitor-prothyron-card" data-pinned={note.pinned ? "1" : "0"} data-on={note.pinned ? "1" : "0"}>
             <p>{note.text}</p>
             {note.badge ? <p className="c4-meta">{note.badge}</p> : null}
             <div className="c4-row">
@@ -148,6 +175,8 @@ export function DepositMethods({ base, v4 }: { base: string; v4: V4 }) {
   const chips = visibleMethods(present, hiddenMethods, showHidden);
   const method = activeMethod(selected, chips);
   const shown = visibleDeposits(rows, method, blank, query);
+  const named = lines.filter((line) => line.method);
+  const methodPeak = Math.max(1, ...lines.map((line) => line.count));
 
   function store(next: string[], clear: string) {
     setHiddenMethods(next);
@@ -156,15 +185,38 @@ export function DepositMethods({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-dep-glance" aria-label={v4("dmgTitle")} data-dep-glance="1">
-      <header className="c4-pay-head">
+    <section className="c4-dep-glance c4-method-hypostyle" aria-label={v4("dmgTitle")} data-dep-glance="1" data-desk="hypostyle">
+      <header className="c4-method-hypostyle-mast">
+        <p className="c4-method-hypostyle-seal" data-logo="mono">{v4("dmgHypostyleLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("dmgSub")}</p>
-          <h2 className="c4-title">{v4("dmgTitle")}</h2>
+          <p className="c4-method-hypostyle-kicker">{v4("dmgHypostyleKicker")}</p>
+          <h2 className="c4-title c4-method-hypostyle-title">{v4("dmgTitle")}</h2>
+          <p className="c4-method-hypostyle-lead">{v4("dmgHypostyleLead")}</p>
         </div>
-        <p className="c4-meta">{v4("dmgRows")} {rows.length}</p>
+        <p className="c4-method-hypostyle-count">{rows.length}</p>
       </header>
-      <p className="c4-meta">{v4("dmgHint")}</p>
+      <ol className="c4-method-hypostyle-index" aria-label={v4("dmgTitle")}>
+        <li data-tone="gold">{v4("dmgHypostyleShown")} {named.length}</li>
+        <li data-tone="ink">{v4("dmgHypostyleHidden")} {hiddenMethods.length}</li>
+        <li data-tone="ivory">{v4("dmgHypostyleBlank")} {blankCount}</li>
+      </ol>
+      <div className="c4-method-hypostyle-chart" aria-label={v4("dmgTitle")}>
+        {named.slice(0, 6).map((line) => (
+          <button key={line.method} type="button" className="c4-method-hypostyle-column" data-on={method === line.method ? "1" : "0"} onClick={() => { setBlank(false); setSelected(method === line.method ? "" : line.method); }}>
+            <i style={{ height: `${Math.max(18, Math.round((line.count / methodPeak) * 88))}px` }} />
+            <strong>{line.count}</strong>
+            <span>{line.method}</span>
+          </button>
+        ))}
+        {blankCount > 0 && (
+          <button type="button" className="c4-method-hypostyle-column" data-on={blank ? "1" : "0"} onClick={() => { setBlank((value) => !value); setSelected(""); }}>
+            <i style={{ height: `${Math.max(18, Math.round((blankCount / methodPeak) * 88))}px` }} />
+            <strong>{blankCount}</strong>
+            <span>{v4("dmgHypostyleBlank")}</span>
+          </button>
+        )}
+      </div>
+      <p className="c4-meta c4-method-hypostyle-hint">{v4("dmgHint")}</p>
       <p className="c4-meta">{v4("dmgLocal")}</p>
       <p className="c4-row">
         <Link className="c4-btn" href={crmv4Href(base, "deposit")}>{v4("dmgBoard")}</Link>
@@ -199,11 +251,11 @@ export function DepositMethods({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("dmgSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("dmgEmpty")}</p>}
-      <ul className="c4-dmg-rows">
+      <ul className="c4-dmg-rows c4-method-hypostyle-list">
         {shown.map((row) => {
           const name = methodText(row.method);
           return (
-            <li key={row.id} data-method={name || "blank"}>
+            <li key={row.id} className="c4-method-hypostyle-card" data-method={name || "blank"} data-on={method && name === method ? "1" : "0"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("dmgBlank")}</p>
             </li>
