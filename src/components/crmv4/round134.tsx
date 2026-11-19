@@ -132,6 +132,7 @@ export function LampCards({ v4 }: { v4: V4 }) {
   const timeline = lampTimeline(cards, query);
   const counts = lampCounts(cards);
   const total = cards.length;
+  const lampPeak = Math.max(1, counts.dark, counts.lit, counts.held);
 
   function store(next: LampCard[]) {
     setCards(next);
@@ -166,16 +167,39 @@ export function LampCards({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-lamp" aria-label={v4("lmpTitle")} data-lamp="1" data-folio="1">
-      <header className="c4-lmp-head">
-        <p className="c4-lmp-plate" data-logo="mono">{v4("lmpLogo")}</p>
+    <section className="c4-lamp c4-lamp-exedra" aria-label={v4("lmpTitle")} data-lamp="1" data-folio="1" data-desk="exedra">
+      <header className="c4-lamp-exedra-mast">
+        <p className="c4-lamp-exedra-seal" data-logo="mono">{v4("lmpExedraLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("lmpSub")}</p>
-          <h2 className="c4-title">{v4("lmpTitle")}</h2>
+          <p className="c4-lamp-exedra-kicker">{v4("lmpExedraKicker")}</p>
+          <h2 className="c4-title c4-lamp-exedra-title">{v4("lmpTitle")}</h2>
+          <p className="c4-lamp-exedra-lead">{v4("lmpExedraLead")}</p>
         </div>
-        <p className="c4-lmp-count">{shown.length}</p>
+        <p className="c4-lamp-exedra-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("lmpHint")}</p>
+      <ol className="c4-lamp-exedra-index" aria-label={v4("lmpTitle")}>
+        <li data-tone="gold">{v4("lmpExedraDark")} {counts.dark}</li>
+        <li data-tone="ink">{v4("lmpExedraLit")} {counts.lit}</li>
+        <li data-tone="ivory">{v4("lmpExedraHeld")} {counts.held}</li>
+      </ol>
+      <div className="c4-lamp-exedra-chart" aria-label={v4("lmpTitle")}>
+        <button type="button" className="c4-lamp-exedra-column" data-on={tray === "dark" ? "1" : "0"} onClick={() => { setTray("dark"); setBoard("cards"); }}>
+          <i style={{ height: `${Math.max(18, Math.round((counts.dark / lampPeak) * 88))}px` }} />
+          <strong>{counts.dark}</strong>
+          <span>{v4("lmpExedraDark")}</span>
+        </button>
+        <button type="button" className="c4-lamp-exedra-column" data-on={tray === "lit" ? "1" : "0"} onClick={() => { setTray("lit"); setBoard("cards"); }}>
+          <i style={{ height: `${Math.max(18, Math.round((counts.lit / lampPeak) * 88))}px` }} />
+          <strong>{counts.lit}</strong>
+          <span>{v4("lmpExedraLit")}</span>
+        </button>
+        <button type="button" className="c4-lamp-exedra-column" data-on={tray === "held" ? "1" : "0"} onClick={() => { setTray("held"); setBoard("cards"); }}>
+          <i style={{ height: `${Math.max(18, Math.round((counts.held / lampPeak) * 88))}px` }} />
+          <strong>{counts.held}</strong>
+          <span>{v4("lmpExedraHeld")}</span>
+        </button>
+      </div>
+      <p className="c4-meta c4-lamp-exedra-hint">{v4("lmpHint")}</p>
       <p className="c4-meta">{v4("lmpLocal")}</p>
       <p className="c4-meta">{v4("lmpBlank")}</p>
       <p className="c4-meta">{v4("lmpBayBlank")}</p>
@@ -291,12 +315,12 @@ export function LampCards({ v4 }: { v4: V4 }) {
           <button key={item} type="button" className="c4-chip" data-on={tagFilter === item ? "1" : "0"} aria-pressed={tagFilter === item} onClick={() => setTagFilter(tagFilter === item ? "" : item)}>{item}</button>
         ))}
       </div>
-      {board === "cards" && !shown.length && <p className="c4-pay-empty">{v4("lmpEmpty")}</p>}
-      {board === "timeline" && !timeline.length && <p className="c4-pay-empty">{v4("lmpEmpty")}</p>}
+      {board === "cards" && !shown.length && <p className="c4-pay-empty c4-lamp-exedra-empty">{v4("lmpEmpty")}</p>}
+      {board === "timeline" && !timeline.length && <p className="c4-pay-empty c4-lamp-exedra-empty">{v4("lmpEmpty")}</p>}
       {board === "cards" && (
-        <ul className="c4-lmp-rows">
+        <ul className="c4-lmp-rows c4-lamp-exedra-list">
           {shown.map((card) => (
-            <li key={card.id} data-pinned={card.pinned ? "1" : "0"} data-lit={card.lit ? "1" : "0"} data-held={card.held ? "1" : "0"} data-reviewed={card.reviewed ? "1" : "0"} data-kept={card.kept ? "1" : "0"}>
+            <li key={card.id} className="c4-lamp-exedra-card" data-on={card.pinned ? "1" : "0"} data-pinned={card.pinned ? "1" : "0"} data-lit={card.lit ? "1" : "0"} data-held={card.held ? "1" : "0"} data-reviewed={card.reviewed ? "1" : "0"} data-kept={card.kept ? "1" : "0"}>
               <span className="c4-lmp-wick" aria-hidden="true" />
               <div>
                 {editing === card.id ? (
@@ -392,16 +416,44 @@ export function BrokerNames({ base, v4 }: { base: string; v4: V4 }) {
     if (clear && activeBroker(selected, [clear])) setSelected("");
   }
 
+  const namedCount = Math.max(0, rows.length - blankCount);
+  const hiddenCount = hiddenBrokers.length;
+  const brokerPeak = Math.max(1, namedCount, blankCount, hiddenCount);
+
   return (
-    <section className="c4-broker" aria-label={v4("bknTitle")} data-broker="1" data-folio="1">
-      <header className="c4-bkn-head">
+    <section className="c4-broker c4-broker-fauces" aria-label={v4("bknTitle")} data-broker="1" data-folio="1" data-desk="fauces">
+      <header className="c4-broker-fauces-mast">
+        <p className="c4-broker-fauces-seal" data-logo="mono">{v4("bknFaucesLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("bknSub")}</p>
-          <h2 className="c4-title">{v4("bknTitle")}</h2>
+          <p className="c4-broker-fauces-kicker">{v4("bknFaucesKicker")}</p>
+          <h2 className="c4-title c4-broker-fauces-title">{v4("bknTitle")}</h2>
+          <p className="c4-broker-fauces-lead">{v4("bknFaucesLead")}</p>
         </div>
-        <p className="c4-lmp-count">{v4("bknRows")} {rows.length}</p>
+        <p className="c4-broker-fauces-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("bknHint")}</p>
+      <ol className="c4-broker-fauces-index" aria-label={v4("bknTitle")}>
+        <li data-tone="gold">{v4("bknFaucesNamed")} {namedCount}</li>
+        <li data-tone="ink">{v4("bknFaucesBlank")} {blankCount}</li>
+        <li data-tone="ivory">{v4("bknFaucesHidden")} {hiddenCount}</li>
+      </ol>
+      <div className="c4-broker-fauces-chart" aria-label={v4("bknTitle")}>
+        <button type="button" className="c4-broker-fauces-column" data-on={!blank && !brokerName ? "1" : "0"} onClick={() => { setBlank(false); setSelected(""); }}>
+          <i style={{ height: `${Math.max(18, Math.round((namedCount / brokerPeak) * 88))}px` }} />
+          <strong>{namedCount}</strong>
+          <span>{v4("bknFaucesNamed")}</span>
+        </button>
+        <button type="button" className="c4-broker-fauces-column" data-on={blank ? "1" : "0"} onClick={() => { setBlank(true); setSelected(""); }}>
+          <i style={{ height: `${Math.max(18, Math.round((blankCount / brokerPeak) * 88))}px` }} />
+          <strong>{blankCount}</strong>
+          <span>{v4("bknFaucesBlank")}</span>
+        </button>
+        <button type="button" className="c4-broker-fauces-column" data-on={showHidden ? "1" : "0"} onClick={() => setShowHidden(true)}>
+          <i style={{ height: `${Math.max(18, Math.round((hiddenCount / brokerPeak) * 88))}px` }} />
+          <strong>{hiddenCount}</strong>
+          <span>{v4("bknFaucesHidden")}</span>
+        </button>
+      </div>
+      <p className="c4-meta c4-broker-fauces-hint">{v4("bknHint")}</p>
       <p className="c4-meta">{v4("bknLocal")}</p>
       <p className="c4-meta">{v4("bknEscape")}</p>
       {lead ? <p className="c4-bkn-lead"><span>{v4("bknLead")}</span> {lead}</p> : null}
@@ -411,7 +463,7 @@ export function BrokerNames({ base, v4 }: { base: string; v4: V4 }) {
       </p>
       {loading && !rows.length && <p className="c4-meta">{v4("bknLoading")}</p>}
       {failed && !rows.length && <p className="c4-meta">{v4("bknFailed")}</p>}
-      {!loading && !failed && !rows.length && <p className="c4-pay-empty">{v4("bknNone")}</p>}
+      {!loading && !failed && !rows.length && <p className="c4-pay-empty c4-broker-fauces-empty">{v4("bknNone")}</p>}
       {blankCount > 0 && (
         <button type="button" className="c4-bkn-blank" data-on={blank ? "1" : "0"} aria-pressed={blank} onClick={() => { setBlank((value) => !value); setSelected(""); }}>
           <span>{v4("bknBlank")}</span>
@@ -447,12 +499,12 @@ export function BrokerNames({ base, v4 }: { base: string; v4: V4 }) {
           setQuery("");
         }} />
       </label>
-      {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("bknEmpty")}</p>}
-      <ul className="c4-bkn-rows">
+      {!shown.length && rows.length > 0 && <p className="c4-pay-empty c4-broker-fauces-empty">{v4("bknEmpty")}</p>}
+      <ul className="c4-bkn-rows c4-broker-fauces-list">
         {shown.map((row) => {
           const name = brokerText(row.brokerName);
           return (
-            <li key={row.id} data-broker={name || "blank"}>
+            <li key={row.id} className="c4-broker-fauces-card" data-on={name ? "1" : "0"} data-broker={name || "blank"}>
               <span className="c4-bkn-spine" aria-hidden="true" />
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("bknBlank")}</p>
