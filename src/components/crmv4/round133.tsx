@@ -69,6 +69,10 @@ export function BellSlips({ v4 }: { v4: V4 }) {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
   const shown = visibleBells(slips, tray, query);
+  const waitCount = slips.filter((slip) => !slip.rung && !slip.held).length;
+  const rungCount = slips.filter((slip) => slip.rung && !slip.held).length;
+  const bareCount = slips.filter((slip) => !slip.floor).length;
+  const slipPeak = Math.max(1, waitCount, rungCount, bareCount);
 
   function store(next: BellSlip[]) {
     setSlips(next);
@@ -98,16 +102,39 @@ export function BellSlips({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-bell" aria-label={v4("bllTitle")} data-bell="1" data-folio="1">
-      <header className="c4-bll-head">
-        <p className="c4-bll-plate" data-logo="mono">{v4("bllLogo")}</p>
+    <section className="c4-bell c4-bell-andron" aria-label={v4("bllTitle")} data-bell="1" data-folio="1" data-desk="andron">
+      <header className="c4-bell-andron-mast">
+        <p className="c4-bell-andron-seal" data-logo="mono">{v4("bllAndronLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("bllSub")}</p>
-          <h2 className="c4-title">{v4("bllTitle")}</h2>
+          <p className="c4-bell-andron-kicker">{v4("bllAndronKicker")}</p>
+          <h2 className="c4-title c4-bell-andron-title">{v4("bllTitle")}</h2>
+          <p className="c4-bell-andron-lead">{v4("bllAndronLead")}</p>
         </div>
-        <p className="c4-bll-count">{shown.length}</p>
+        <p className="c4-bell-andron-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("bllHint")}</p>
+      <ol className="c4-bell-andron-index" aria-label={v4("bllTitle")}>
+        <li data-tone="gold">{v4("bllAndronWaiting")} {waitCount}</li>
+        <li data-tone="ink">{v4("bllAndronRung")} {rungCount}</li>
+        <li data-tone="ivory">{v4("bllAndronFloor")} {bareCount}</li>
+      </ol>
+      <div className="c4-bell-andron-chart" aria-label={v4("bllTitle")}>
+        <button type="button" className="c4-bell-andron-column" data-on={tray === "waiting" ? "1" : "0"} onClick={() => setTray("waiting")}>
+          <i style={{ height: `${Math.max(18, Math.round((waitCount / slipPeak) * 88))}px` }} />
+          <strong>{waitCount}</strong>
+          <span>{v4("bllAndronWaiting")}</span>
+        </button>
+        <button type="button" className="c4-bell-andron-column" data-on={tray === "rung" ? "1" : "0"} onClick={() => setTray("rung")}>
+          <i style={{ height: `${Math.max(18, Math.round((rungCount / slipPeak) * 88))}px` }} />
+          <strong>{rungCount}</strong>
+          <span>{v4("bllAndronRung")}</span>
+        </button>
+        <button type="button" className="c4-bell-andron-column" data-on={bareCount ? "1" : "0"} onClick={() => setTray("waiting")}>
+          <i style={{ height: `${Math.max(18, Math.round((bareCount / slipPeak) * 88))}px` }} />
+          <strong>{bareCount}</strong>
+          <span>{v4("bllAndronFloor")}</span>
+        </button>
+      </div>
+      <p className="c4-meta c4-bell-andron-hint">{v4("bllHint")}</p>
       <p className="c4-meta">{v4("bllLocal")}</p>
       <p className="c4-meta">{v4("bllBlank")}</p>
       <p className="c4-meta">{v4("bllFloorBlank")}</p>
@@ -151,10 +178,10 @@ export function BellSlips({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-chip" data-on={tray === "rung" ? "1" : "0"} aria-pressed={tray === "rung"} onClick={() => setTray("rung")}>{v4("bllRung")}</button>
         <button type="button" className="c4-chip" data-on={tray === "held" ? "1" : "0"} aria-pressed={tray === "held"} onClick={() => setTray("held")}>{v4("bllHeld")}</button>
       </div>
-      {!shown.length && <p className="c4-pay-empty">{v4("bllEmpty")}</p>}
-      <ul className="c4-bll-rows">
+      {!shown.length && <p className="c4-pay-empty c4-bell-andron-empty">{v4("bllEmpty")}</p>}
+      <ul className="c4-bll-rows c4-bell-andron-list">
         {shown.map((slip) => (
-          <li key={slip.id} data-pinned={slip.pinned ? "1" : "0"} data-rung={slip.rung ? "1" : "0"} data-held={slip.held ? "1" : "0"}>
+          <li key={slip.id} className="c4-bell-andron-card" data-pinned={slip.pinned ? "1" : "0"} data-rung={slip.rung ? "1" : "0"} data-held={slip.held ? "1" : "0"} data-on={slip.pinned ? "1" : "0"}>
             <span className="c4-bll-tab" aria-hidden="true" />
             <div>
               <p>{slip.text}</p>

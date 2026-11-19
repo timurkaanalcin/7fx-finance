@@ -69,6 +69,10 @@ export function PorterSlips({ v4 }: { v4: V4 }) {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
   const shown = visibleSlips(slips, tray, query);
+  const openCount = slips.filter((slip) => !slip.hidden && !slip.called).length;
+  const calledCount = slips.filter((slip) => slip.called && !slip.hidden).length;
+  const bareCount = slips.filter((slip) => !slip.wing).length;
+  const slipPeak = Math.max(1, openCount, calledCount, bareCount);
 
   function store(next: Slip[]) {
     setSlips(next);
@@ -98,16 +102,39 @@ export function PorterSlips({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-porter" aria-label={v4("prtTitle")} data-porter="1" data-folio="1">
-      <header className="c4-prt-head">
-        <p className="c4-prt-plate" data-logo="mono">{v4("prtLogo")}</p>
+    <section className="c4-porter c4-porter-oecus" aria-label={v4("prtTitle")} data-porter="1" data-folio="1" data-desk="oecus">
+      <header className="c4-porter-oecus-mast">
+        <p className="c4-porter-oecus-seal" data-logo="mono">{v4("prtOecusLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("prtSub")}</p>
-          <h2 className="c4-title">{v4("prtTitle")}</h2>
+          <p className="c4-porter-oecus-kicker">{v4("prtOecusKicker")}</p>
+          <h2 className="c4-title c4-porter-oecus-title">{v4("prtTitle")}</h2>
+          <p className="c4-porter-oecus-lead">{v4("prtOecusLead")}</p>
         </div>
-        <p className="c4-prt-count">{shown.length}</p>
+        <p className="c4-porter-oecus-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("prtHint")}</p>
+      <ol className="c4-porter-oecus-index" aria-label={v4("prtTitle")}>
+        <li data-tone="gold">{v4("prtOecusOpen")} {openCount}</li>
+        <li data-tone="ink">{v4("prtOecusCalled")} {calledCount}</li>
+        <li data-tone="ivory">{v4("prtOecusWing")} {bareCount}</li>
+      </ol>
+      <div className="c4-porter-oecus-chart" aria-label={v4("prtTitle")}>
+        <button type="button" className="c4-porter-oecus-column" data-on={tray === "open" ? "1" : "0"} onClick={() => setTray("open")}>
+          <i style={{ height: `${Math.max(18, Math.round((openCount / slipPeak) * 88))}px` }} />
+          <strong>{openCount}</strong>
+          <span>{v4("prtOecusOpen")}</span>
+        </button>
+        <button type="button" className="c4-porter-oecus-column" data-on={tray === "called" ? "1" : "0"} onClick={() => setTray("called")}>
+          <i style={{ height: `${Math.max(18, Math.round((calledCount / slipPeak) * 88))}px` }} />
+          <strong>{calledCount}</strong>
+          <span>{v4("prtOecusCalled")}</span>
+        </button>
+        <button type="button" className="c4-porter-oecus-column" data-on={bareCount ? "1" : "0"} onClick={() => setTray("open")}>
+          <i style={{ height: `${Math.max(18, Math.round((bareCount / slipPeak) * 88))}px` }} />
+          <strong>{bareCount}</strong>
+          <span>{v4("prtOecusWing")}</span>
+        </button>
+      </div>
+      <p className="c4-meta c4-porter-oecus-hint">{v4("prtHint")}</p>
       <p className="c4-meta">{v4("prtLocal")}</p>
       <p className="c4-meta">{v4("prtBlank")}</p>
       <p className="c4-meta">{v4("prtWingBlank")}</p>
@@ -151,10 +178,10 @@ export function PorterSlips({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-chip" data-on={tray === "called" ? "1" : "0"} aria-pressed={tray === "called"} onClick={() => setTray("called")}>{v4("prtCalled")}</button>
         <button type="button" className="c4-chip" data-on={tray === "hidden" ? "1" : "0"} aria-pressed={tray === "hidden"} onClick={() => setTray("hidden")}>{v4("prtHidden")}</button>
       </div>
-      {!shown.length && <p className="c4-pay-empty">{v4("prtEmpty")}</p>}
-      <ul className="c4-prt-rows">
+      {!shown.length && <p className="c4-pay-empty c4-porter-oecus-empty">{v4("prtEmpty")}</p>}
+      <ul className="c4-prt-rows c4-porter-oecus-list">
         {shown.map((slip) => (
-          <li key={slip.id} data-pinned={slip.pinned ? "1" : "0"} data-called={slip.called ? "1" : "0"}>
+          <li key={slip.id} className="c4-porter-oecus-card" data-pinned={slip.pinned ? "1" : "0"} data-called={slip.called ? "1" : "0"} data-on={slip.pinned ? "1" : "0"}>
             <span className="c4-prt-tab" aria-hidden="true" />
             <div>
               <p>{slip.text}</p>
