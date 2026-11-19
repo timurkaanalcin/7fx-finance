@@ -201,16 +201,25 @@ export function SideGlance({ base, v4 }: { base: string; v4: V4 }) {
     if (clear && activeSide(selected, [clear])) setSelected("");
   }
 
+  const otherCount = others.reduce((sum, line) => sum + line.count, 0);
+  const sidePeak = Math.max(1, split.buy, split.sell, otherCount);
   return (
-    <section className="c4-side-glance" aria-label={v4("sdTitle")} data-side-glance="1">
-      <header className="c4-pay-head">
+    <section className="c4-side-glance c4-side-cloister" aria-label={v4("sdTitle")} data-side-glance="1" data-desk="cloister">
+      <header className="c4-side-cloister-mast">
+        <p className="c4-side-cloister-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("sdSub")}</p>
-          <h2 className="c4-title">{v4("sdTitle")}</h2>
+          <p className="c4-side-cloister-kicker">{v4("sdCloisterKicker")}</p>
+          <h2 className="c4-title c4-side-cloister-title">{v4("sdTitle")}</h2>
+          <p className="c4-side-cloister-lead">{v4("sdCloisterLead")}</p>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-side-cloister-count">{chips.length}</p>
       </header>
-      <p className="c4-meta">{v4("sdHint")}</p>
+      <ol className="c4-side-cloister-index" aria-label={v4("sdTitle")}>
+        <li data-tone="gold">{v4("sdCloisterBuy")}</li>
+        <li data-tone="ink">{v4("sdCloisterSell")}</li>
+        <li data-tone="ivory">{v4("sdCloisterOther")}</li>
+      </ol>
+      <p className="c4-meta c4-side-cloister-hint">{v4("sdHint")}</p>
       <p className="c4-meta">{v4("sdLocal")}</p>
       <p className="c4-row">
         <Link className="c4-btn" href={crmv4Href(base, "blotter")}>{v4("sdOpen")}</Link>
@@ -219,6 +228,23 @@ export function SideGlance({ base, v4 }: { base: string; v4: V4 }) {
       {data.error && <p className="c4-meta">{v4("sdFailed")}</p>}
       {!data.loading && !data.error && !orders.length && <p className="c4-pay-empty">{v4("sdNone")}</p>}
       {!data.loading && !present.length && orders.length > 0 && <p className="c4-pay-empty">{v4("sdEmpty")}</p>}
+      <div className="c4-side-cloister-chart" aria-label={v4("sdTitle")}>
+        <button type="button" className="c4-side-cloister-column" data-on={kind === "buy" ? "1" : "0"} data-side="buy" onClick={() => setSelected(kind === "buy" ? "" : "buy")}>
+          <i style={{ height: `${Math.max(18, Math.round((split.buy / sidePeak) * 88))}px` }} />
+          <strong>{split.buy}</strong>
+          <span>{v4("sdCloisterBuy")}</span>
+        </button>
+        <button type="button" className="c4-side-cloister-column" data-on={kind === "sell" ? "1" : "0"} data-side="sell" onClick={() => setSelected(kind === "sell" ? "" : "sell")}>
+          <i style={{ height: `${Math.max(18, Math.round((split.sell / sidePeak) * 88))}px` }} />
+          <strong>{split.sell}</strong>
+          <span>{v4("sdCloisterSell")}</span>
+        </button>
+        <button type="button" className="c4-side-cloister-column" data-on={kind ? "0" : "1"} data-side="other" onClick={() => setSelected("")}>
+          <i style={{ height: `${Math.max(18, Math.round((otherCount / sidePeak) * 88))}px` }} />
+          <strong>{otherCount}</strong>
+          <span>{v4("sdCloisterOther")}</span>
+        </button>
+      </div>
       <p className="c4-meta" data-side-split="">{v4("sdBuy")} {split.buy} · {v4("sdSell")} {split.sell}</p>
       {others.length > 0 && (
         <ul className="c4-side-other">
@@ -249,9 +275,9 @@ export function SideGlance({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("sdSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && orders.length > 0 && <p className="c4-pay-empty">{v4("sdEmpty")}</p>}
-      <ul className="c4-side-rows">
+      <ul className="c4-side-rows c4-side-cloister-list">
         {shown.map((row) => (
-          <li key={row.id} data-side={String(row.side || "").trim().toUpperCase()}>
+          <li key={row.id} className="c4-side-cloister-card" data-side={String(row.side || "").trim().toUpperCase()} data-on={kind && kind === String(row.side || "").trim().toLowerCase() ? "1" : "0"}>
             <p>{row.label}</p>
             <p className="c4-meta">{String(row.side || "").trim().toUpperCase()}</p>
             {row.userId && <Link className="c4-btn" href={crmv4Href(base, `customers/${row.userId}`)}>{v4("sdCustomer")}</Link>}
