@@ -163,6 +163,8 @@ export function TicketStatus({ base, v4 }: { base: string; v4: V4 }) {
   const chips = visibleStatuses(present, hiddenStatuses, showHidden);
   const status = activeStatus(selected, chips);
   const shown = visibleTickets(rows, status, blank, query);
+  const named = lines.filter((line) => line.status);
+  const peak = Math.max(1, ...named.map((line) => line.count));
 
   function store(next: string[], clear: string) {
     setHiddenStatuses(next);
@@ -171,15 +173,22 @@ export function TicketStatus({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-ticket-glance" aria-label={v4("tzTitle")} data-ticket-glance="1">
-      <header className="c4-pay-head">
+    <section className="c4-ticket-glance c4-ticket-gallery" aria-label={v4("tzTitle")} data-ticket-glance="1" data-desk="gallery">
+      <header className="c4-ticket-gallery-mast">
+        <p className="c4-ticket-gallery-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("tzSub")}</p>
-          <h2 className="c4-title">{v4("tzTitle")}</h2>
+          <p className="c4-ticket-gallery-kicker">{v4("tzGalleryKicker")}</p>
+          <h2 className="c4-title c4-ticket-gallery-title">{v4("tzTitle")}</h2>
+          <p className="c4-ticket-gallery-lead">{v4("tzGalleryLead")}</p>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-ticket-gallery-count">{chips.length}</p>
       </header>
-      <p className="c4-meta">{v4("tzHint")}</p>
+      <ol className="c4-ticket-gallery-index" aria-label={v4("tzTitle")}>
+        <li data-tone="gold">{v4("tzShown")}</li>
+        <li data-tone="ink">{v4("tzHidden")}</li>
+        <li data-tone="ivory">{v4("tzBlank")}</li>
+      </ol>
+      <p className="c4-meta c4-ticket-gallery-hint">{v4("tzHint")}</p>
       <p className="c4-meta">{v4("tzLocal")}</p>
       <p className="c4-row">
         <Link className="c4-btn" href={crmv4Href(base, "support")}>{v4("tzBoard")}</Link>
@@ -187,6 +196,17 @@ export function TicketStatus({ base, v4 }: { base: string; v4: V4 }) {
       {data.loading && !rows.length && <p className="c4-meta">{v4("tzLoading")}</p>}
       {data.error && <p className="c4-meta">{v4("tzFailed")}</p>}
       {!data.loading && !data.error && !rows.length && <p className="c4-pay-empty">{v4("tzNone")}</p>}
+      {named.length > 0 && (
+        <div className="c4-ticket-gallery-chart" aria-label={v4("tzTitle")}>
+          {named.map((line) => (
+            <button key={line.status} type="button" className="c4-ticket-gallery-column" data-on={status === line.status ? "1" : "0"} data-status={line.status} onClick={() => { setBlank(false); setSelected(status === line.status ? "" : line.status); }}>
+              <i style={{ height: `${Math.max(18, Math.round((line.count / peak) * 88))}px` }} />
+              <strong>{line.count}</strong>
+              <span>{line.status}</span>
+            </button>
+          ))}
+        </div>
+      )}
       {blankCount > 0 && (
         <button type="button" className="c4-tz-blank" data-on={blank ? "1" : "0"} aria-pressed={blank} onClick={() => { setBlank((value) => !value); setSelected(""); }}>
           <span>{v4("tzBlank")}</span>
@@ -214,11 +234,11 @@ export function TicketStatus({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("tzSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("tzEmpty")}</p>}
-      <ul className="c4-tz-rows">
+      <ul className="c4-tz-rows c4-ticket-gallery-list">
         {shown.map((row) => {
           const name = statusText(row.status);
           return (
-            <li key={row.id} data-status={name || "blank"}>
+            <li key={row.id} className="c4-ticket-gallery-card" data-status={name || "blank"} data-on={status && status === name ? "1" : "0"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("tzBlank")}</p>
               {row.userId && <Link className="c4-btn" href={crmv4Href(base, `customers/${row.userId}`)}>{v4("tzCustomer")}</Link>}

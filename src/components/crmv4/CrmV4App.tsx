@@ -288,6 +288,7 @@ import { DioptraSights, EmailPlates } from "./round297";
 import { GromaCrosses, ZonePlates } from "./round298";
 import { GraphometerArcs, SystemPlates } from "./round299";
 import { CircumferentorDials, NoticePlates } from "./round300";
+import { HavenPlates, NaviculaDials } from "./round301";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1127,6 +1128,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "osp") return v4("ospTitle");
     if (tab === "cfc") return v4("cfcTitle");
     if (tab === "ntc") return v4("ntcTitle");
+    if (tab === "nvc") return v4("nvcTitle");
+    if (tab === "hvn") return v4("hvnTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1650,6 +1653,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "osp") return v4("ospSub");
     if (tab === "cfc") return v4("cfcSub");
     if (tab === "ntc") return v4("ntcSub");
+    if (tab === "nvc") return v4("nvcSub");
+    if (tab === "hvn") return v4("hvnSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -2310,6 +2315,8 @@ function Shell({ base, section, name }: Props) {
             {view === "osp" && <SystemPlates base={base} v4={v4} />}
             {view === "cfc" && <CircumferentorDials base={base} v4={v4} />}
             {view === "ntc" && <NoticePlates base={base} v4={v4} />}
+            {view === "nvc" && <NaviculaDials base={base} v4={v4} />}
+            {view === "hvn" && <HavenPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
