@@ -156,6 +156,8 @@ export function ReasonGlance({ base, v4 }: { base: string; v4: V4 }) {
   const chips = visibleReasons(present, hiddenReasons, showHidden);
   const reason = activeReason(selected, chips);
   const shown = visibleWithdrawals(rows, reason, blank, query);
+  const namedLines = lines.filter((line) => line.reason);
+  const peak = Math.max(1, blankCount, ...namedLines.map((line) => line.count));
 
   function store(next: string[], clear: string) {
     setHiddenReasons(next);
@@ -164,15 +166,22 @@ export function ReasonGlance({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-reason-glance" aria-label={v4("wrTitle")} data-reason-glance="1">
-      <header className="c4-pay-head">
+    <section className="c4-reason-glance c4-reason-tribune" aria-label={v4("wrTitle")} data-reason-glance="1" data-desk="tribune">
+      <header className="c4-reason-tribune-mast">
+        <p className="c4-reason-tribune-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("wrSub")}</p>
-          <h2 className="c4-title">{v4("wrTitle")}</h2>
+          <p className="c4-reason-tribune-kicker">{v4("wrTribuneKicker")}</p>
+          <h2 className="c4-title c4-reason-tribune-title">{v4("wrTitle")}</h2>
+          <p className="c4-reason-tribune-lead">{v4("wrTribuneLead")}</p>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-reason-tribune-count">{chips.length}</p>
       </header>
-      <p className="c4-meta">{v4("wrHint")}</p>
+      <ol className="c4-reason-tribune-index" aria-label={v4("wrTitle")}>
+        <li data-tone="gold">{v4("wrTribuneNamed")}</li>
+        <li data-tone="ink">{v4("wrTribuneBlank")}</li>
+        <li data-tone="ivory">{v4("wrTribuneQuiet")}</li>
+      </ol>
+      <p className="c4-meta c4-reason-tribune-hint">{v4("wrHint")}</p>
       <p className="c4-meta">{v4("wrLocal")}</p>
       <p className="c4-row">
         <Link className="c4-btn" href={crmv4Href(base, "payboard")}>{v4("wrBoard")}</Link>
@@ -180,6 +189,20 @@ export function ReasonGlance({ base, v4 }: { base: string; v4: V4 }) {
       {data.loading && !rows.length && <p className="c4-meta">{v4("wrLoading")}</p>}
       {data.error && <p className="c4-meta">{v4("wrFailed")}</p>}
       {!data.loading && !data.error && !rows.length && <p className="c4-pay-empty">{v4("wrNone")}</p>}
+      <div className="c4-reason-tribune-chart" aria-label={v4("wrTitle")}>
+        {namedLines.map((line) => (
+          <button key={line.reason} type="button" className="c4-reason-tribune-column" data-on={reason === line.reason ? "1" : "0"} data-reason={line.reason} onClick={() => { setBlank(false); setSelected(reason === line.reason ? "" : line.reason); }}>
+            <i style={{ height: `${Math.max(18, Math.round((line.count / peak) * 88))}px` }} />
+            <strong>{line.count}</strong>
+            <span>{line.reason}</span>
+          </button>
+        ))}
+        <button type="button" className="c4-reason-tribune-column" data-on={blank ? "1" : "0"} data-reason="blank" onClick={() => { setBlank((value) => !value); setSelected(""); }}>
+          <i style={{ height: `${Math.max(18, Math.round((blankCount / peak) * 88))}px` }} />
+          <strong>{blankCount}</strong>
+          <span>{v4("wrTribuneBlank")}</span>
+        </button>
+      </div>
       {blankCount > 0 && (
         <button type="button" className="c4-reason-blank" data-on={blank ? "1" : "0"} aria-pressed={blank} onClick={() => { setBlank((value) => !value); setSelected(""); }}>
           <span>{v4("wrBlank")}</span>
@@ -204,11 +227,11 @@ export function ReasonGlance({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("wrSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("wrEmpty")}</p>}
-      <ul className="c4-reason-rows">
+      <ul className="c4-reason-rows c4-reason-tribune-list">
         {shown.map((row) => {
           const note = reasonText(row.note);
           return (
-            <li key={row.id} data-reason={note || "blank"}>
+            <li key={row.id} className="c4-reason-tribune-card" data-reason={note || "blank"} data-on={reason && reason === note ? "1" : "0"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{note || v4("wrBlank")}</p>
               {row.userId && <Link className="c4-btn" href={crmv4Href(base, `customers/${row.userId}`)}>{v4("wrCustomer")}</Link>}
