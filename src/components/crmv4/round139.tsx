@@ -245,15 +245,21 @@ export function WatchSlips({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-watch" aria-label={v4("wchTitle")} data-watch="1" data-folio="1">
-      <header className="c4-wch-head">
-        <p className="c4-wch-plate" data-logo="mono">{v4("wchLogo")}</p>
+    <section className="c4-watch c4-watch-odeon" aria-label={v4("wchTitle")} data-watch="1" data-folio="1" data-desk="odeon">
+      <header className="c4-watch-odeon-mast">
+        <p className="c4-watch-odeon-seal" data-logo="mono">{v4("wchOdeonLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("wchSub")}</p>
-          <h2 className="c4-title">{v4("wchTitle")}</h2>
+          <p className="c4-watch-odeon-kicker">{v4("wchOdeonKicker")}</p>
+          <h2 className="c4-title c4-watch-odeon-title">{v4("wchTitle")}</h2>
+          <p className="c4-watch-odeon-lead">{v4("wchOdeonLead")}</p>
         </div>
-        <p className="c4-wch-count">{shown.length}</p>
+        <p className="c4-watch-odeon-count">{shown.length}</p>
       </header>
+      <ol className="c4-watch-odeon-index" aria-label={v4("wchOdeonKicker")}>
+        <li data-tone="gold">{v4("wchOdeonOpen")} {counts.open}</li>
+        <li data-tone="ink">{v4("wchOdeonArmed")} {counts.armed}</li>
+        <li data-tone="ivory">{v4("wchOdeonDone")} {counts.done}</li>
+      </ol>
       <p className="c4-meta">{v4("wchHint")}</p>
       <p className="c4-meta">{v4("wchLocal")}</p>
       <p className="c4-meta">{v4("wchBlank")}</p>
@@ -448,7 +454,7 @@ export function WatchSlips({ v4 }: { v4: V4 }) {
             const gap = minuteGap(slip.minute, desk);
             const toneLabel = toneOf(slip.tone);
             return (
-              <li key={slip.id} data-band={band} data-tone={toneLabel} data-passed={gap !== null && gap > 0 && !slip.armed && !slip.done ? "1" : "0"}>
+              <li key={slip.id} className="c4-watch-odeon-card" data-band={band} data-tone={toneLabel} data-passed={gap !== null && gap > 0 && !slip.armed && !slip.done ? "1" : "0"}>
                 <span className="c4-wch-spine" aria-hidden="true" />
                 <div>
                   <p className="c4-wch-pips" aria-label={v4("wchRank")}>
@@ -561,14 +567,21 @@ export function CustomerSystems({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-system" aria-label={v4("ostTitle")} data-system="1" data-folio="1">
-      <header className="c4-ost-head">
+    <section className="c4-system c4-system-xystus" aria-label={v4("ostTitle")} data-system="1" data-folio="1" data-desk="xystus">
+      <header className="c4-system-xystus-mast">
+        <p className="c4-system-xystus-seal" data-logo="mono">{v4("ostXystusLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("ostSub")}</p>
-          <h2 className="c4-title">{v4("ostTitle")}</h2>
+          <p className="c4-system-xystus-kicker">{v4("ostXystusKicker")}</p>
+          <h2 className="c4-title c4-system-xystus-title">{v4("ostTitle")}</h2>
+          <p className="c4-system-xystus-lead">{v4("ostXystusLead")}</p>
         </div>
-        <p className="c4-wch-count">{v4("ostRows")} {rows.length}</p>
+        <p className="c4-system-xystus-count">{rows.length}</p>
       </header>
+      <ol className="c4-system-xystus-index" aria-label={v4("ostXystusKicker")}>
+        <li data-tone="gold">{v4("ostXystusNamed")} {present.length}</li>
+        <li data-tone="ink">{v4("ostXystusBlank")} {blankCount}</li>
+        <li data-tone="ivory">{v4("ostXystusLeading")} {lead || "—"}</li>
+      </ol>
       <p className="c4-meta">{v4("ostHint")}</p>
       <p className="c4-meta">{v4("ostLocal")}</p>
       <p className="c4-meta">{v4("ostEscape")}</p>
@@ -664,7 +677,7 @@ export function CustomerSystems({ base, v4 }: { base: string; v4: V4 }) {
           const mark = osInitialOf(name);
           const familyMark = osFamilyOf(name);
           return (
-            <li key={row.id} data-system={name || "blank"}>
+            <li key={row.id} className="c4-system-xystus-card" data-system={name || "blank"}>
               <span className="c4-ost-spine" aria-hidden="true" />
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("ostBlank")}</p>
