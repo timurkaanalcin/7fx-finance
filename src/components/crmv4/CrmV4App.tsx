@@ -283,6 +283,7 @@ import { ClepsydraBowls, TidePlates } from "./round292";
 import { PlanisphereDiscs, SealPlates } from "./round293";
 import { LatchPlates, TorquetumArcs } from "./round294";
 import { HeliometerHalves, PlumbPlates } from "./round295";
+import { TriquetrumRules, UsernamePlates } from "./round296";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1112,6 +1113,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "lbp") return v4("lbpTitle");
     if (tab === "hlm") return v4("hlmTitle");
     if (tab === "pmb") return v4("pmbTitle");
+    if (tab === "tqt") return v4("tqtTitle");
+    if (tab === "unp") return v4("unpTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1627,6 +1630,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "lbp") return v4("lbpSub");
     if (tab === "hlm") return v4("hlmSub");
     if (tab === "pmb") return v4("pmbSub");
+    if (tab === "tqt") return v4("tqtSub");
+    if (tab === "unp") return v4("unpSub");
     if (tab === "plates") return v4("pltSub");
     return "";
   }
@@ -2277,6 +2282,8 @@ function Shell({ base, section, name }: Props) {
             {view === "lbp" && <LatchPlates base={base} v4={v4} />}
             {view === "hlm" && <HeliometerHalves base={base} v4={v4} />}
             {view === "pmb" && <PlumbPlates base={base} v4={v4} />}
+            {view === "tqt" && <TriquetrumRules base={base} v4={v4} />}
+            {view === "unp" && <UsernamePlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
