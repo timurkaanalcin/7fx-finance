@@ -148,6 +148,8 @@ export function CountryGlance({ base, v4 }: { base: string; v4: V4 }) {
   const chips = visibleCountries(present, hiddenCountries, showHidden);
   const country = activeCountry(selected, chips);
   const shown = visibleCustomers(rows, country, blank, query);
+  const namedLines = lines.filter((line) => line.country).slice(0, 4);
+  const peak = Math.max(1, blankCount, ...namedLines.map((line) => line.count));
 
   function store(next: string[], clear: string) {
     setHiddenCountries(next);
@@ -156,15 +158,22 @@ export function CountryGlance({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-country-glance" aria-label={v4("cyTitle")} data-country-glance="1">
-      <header className="c4-pay-head">
+    <section className="c4-country-glance c4-country-cloister" aria-label={v4("cyTitle")} data-country-glance="1" data-desk="cloister">
+      <header className="c4-country-cloister-mast">
+        <p className="c4-country-cloister-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("cySub")}</p>
-          <h2 className="c4-title">{v4("cyTitle")}</h2>
+          <p className="c4-country-cloister-kicker">{v4("cyCloisterKicker")}</p>
+          <h2 className="c4-title c4-country-cloister-title">{v4("cyTitle")}</h2>
+          <p className="c4-country-cloister-lead">{v4("cyCloisterLead")}</p>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-country-cloister-count">{chips.length}</p>
       </header>
-      <p className="c4-meta">{v4("cyHint")}</p>
+      <ol className="c4-country-cloister-index" aria-label={v4("cyTitle")}>
+        <li data-tone="gold">{v4("cyCloisterNamed")}</li>
+        <li data-tone="ink">{v4("cyCloisterBlank")}</li>
+        <li data-tone="ivory">{v4("cyCloisterOpen")}</li>
+      </ol>
+      <p className="c4-meta c4-country-cloister-hint">{v4("cyHint")}</p>
       <p className="c4-meta">{v4("cyLocal")}</p>
       <p className="c4-row">
         <Link className="c4-btn" href={crmv4Href(base, "customers")}>{v4("cyBoard")}</Link>
@@ -172,6 +181,20 @@ export function CountryGlance({ base, v4 }: { base: string; v4: V4 }) {
       {data.loading && !rows.length && <p className="c4-meta">{v4("cyLoading")}</p>}
       {data.error && <p className="c4-meta">{v4("cyFailed")}</p>}
       {!data.loading && !data.error && !rows.length && <p className="c4-pay-empty">{v4("cyNone")}</p>}
+      <div className="c4-country-cloister-chart" aria-label={v4("cyTitle")}>
+        {namedLines.map((line) => (
+          <button key={line.country} type="button" className="c4-country-cloister-column" data-on={country === line.country ? "1" : "0"} data-country={line.country} onClick={() => { setBlank(false); setSelected(country === line.country ? "" : line.country); }}>
+            <i style={{ height: `${Math.max(18, Math.round((line.count / peak) * 88))}px` }} />
+            <strong>{line.count}</strong>
+            <span>{line.country}</span>
+          </button>
+        ))}
+        <button type="button" className="c4-country-cloister-column" data-on={blank ? "1" : "0"} data-country="blank" onClick={() => { setBlank((value) => !value); setSelected(""); }}>
+          <i style={{ height: `${Math.max(18, Math.round((blankCount / peak) * 88))}px` }} />
+          <strong>{blankCount}</strong>
+          <span>{v4("cyCloisterBlank")}</span>
+        </button>
+      </div>
       {blankCount > 0 && (
         <button type="button" className="c4-country-blank" data-on={blank ? "1" : "0"} aria-pressed={blank} onClick={() => { setBlank((value) => !value); setSelected(""); }}>
           <span>{v4("cyBlank")}</span>
@@ -196,11 +219,11 @@ export function CountryGlance({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("cySearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("cyEmpty")}</p>}
-      <ul className="c4-country-rows">
+      <ul className="c4-country-rows c4-country-cloister-list">
         {shown.map((row) => {
           const name = countryText(row.country);
           return (
-            <li key={row.id} data-country={name || "blank"}>
+            <li key={row.id} className="c4-country-cloister-card" data-country={name || "blank"} data-on={country && country === name ? "1" : "0"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("cyBlank")}</p>
               <Link className="c4-btn" href={crmv4Href(base, `customers/${row.id}`)}>{v4("cyCustomer")}</Link>
