@@ -247,16 +247,22 @@ export function KeyCards({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-key" aria-label={v4("kcdTitle")} data-key="1" data-folio="1">
-      <header className="c4-kcd-head">
-        <p className="c4-kcd-plate" data-logo="mono">{v4("kcdLogo")}</p>
+    <section className="c4-key c4-key-lararium" aria-label={v4("kcdTitle")} data-key="1" data-folio="1" data-desk="lararium">
+      <header className="c4-key-lararium-mast">
+        <p className="c4-key-lararium-seal" data-logo="mono">{v4("kcdLarariumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("kcdSub")}</p>
-          <h2 className="c4-title">{v4("kcdTitle")}</h2>
+          <p className="c4-key-lararium-kicker">{v4("kcdLarariumKicker")}</p>
+          <h2 className="c4-title c4-key-lararium-title">{v4("kcdTitle")}</h2>
+          <p className="c4-key-lararium-lead">{v4("kcdLarariumLead")}</p>
         </div>
-        <p className="c4-kcd-count">{shown.length}</p>
+        <p className="c4-key-lararium-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("kcdHint")}</p>
+      <ol className="c4-key-lararium-index" aria-label={v4("kcdLarariumKicker")}>
+        <li data-tone="gold">{v4("kcdCut")} {counts.cut}</li>
+        <li data-tone="ink">{v4("kcdIssued")} {counts.issued}</li>
+        <li data-tone="ivory">{v4("kcdReturnedTray")} {counts.returned}</li>
+      </ol>
+      <p className="c4-meta c4-key-lararium-hint">{v4("kcdHint")}</p>
       <p className="c4-meta">{v4("kcdLocal")}</p>
       <p className="c4-meta">{v4("kcdBlank")}</p>
       <p className="c4-meta">{v4("kcdGuestBlank")}</p>
@@ -448,14 +454,14 @@ export function KeyCards({ v4 }: { v4: V4 }) {
       </p>
       {board === "cards" && !shown.length && <p className="c4-pay-empty">{v4("kcdEmpty")}</p>}
       {board === "cards" && (
-        <ul className="c4-kcd-rows">
+        <ul className="c4-kcd-rows c4-key-lararium-list">
           {shown.map((card) => {
             const band = floorBand(card.floor);
             const clashes = keyClashIds(cards, card.id);
             const gap = floorGap(card.floor, desk);
             const wingLabel = wingOf(card.wing);
             return (
-              <li key={card.id} data-band={band} data-wing={wingLabel} data-passed={gap !== null && gap > 0 && !card.issued && !card.returned ? "1" : "0"}>
+              <li key={card.id} className="c4-key-lararium-card" data-band={band} data-wing={wingLabel} data-on={card.id === nextId ? "1" : "0"} data-passed={gap !== null && gap > 0 && !card.issued && !card.returned ? "1" : "0"}>
                 <span className="c4-kcd-spine" aria-hidden="true" />
                 <div>
                   <p className="c4-kcd-pips" aria-label={v4("kcdRank")}>
@@ -569,15 +575,22 @@ export function CustomerDevices({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-device" aria-label={v4("dvcTitle")} data-device="1" data-folio="1">
-      <header className="c4-dvc-head">
+    <section className="c4-device c4-device-tepidarium" aria-label={v4("dvcTitle")} data-device="1" data-folio="1" data-desk="tepidarium">
+      <header className="c4-device-tepidarium-mast">
+        <p className="c4-device-tepidarium-seal" data-logo="mono">{v4("dvcTepidariumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("dvcSub")}</p>
-          <h2 className="c4-title">{v4("dvcTitle")}</h2>
+          <p className="c4-device-tepidarium-kicker">{v4("dvcTepidariumKicker")}</p>
+          <h2 className="c4-title c4-device-tepidarium-title">{v4("dvcTitle")}</h2>
+          <p className="c4-device-tepidarium-lead">{v4("dvcTepidariumLead")}</p>
         </div>
-        <p className="c4-kcd-count">{v4("dvcRows")} {rows.length}</p>
+        <p className="c4-device-tepidarium-count">{rows.length}</p>
       </header>
-      <p className="c4-meta">{v4("dvcHint")}</p>
+      <ol className="c4-device-tepidarium-index" aria-label={v4("dvcTepidariumKicker")}>
+        <li data-tone="gold">{v4("dvcTepidariumNamed")} {Math.max(0, rows.length - blankCount)}</li>
+        <li data-tone="ink">{v4("dvcTepidariumBlank")} {blankCount}</li>
+        <li data-tone="ivory">{v4("dvcTepidariumLeading")} {lead ? 1 : 0}</li>
+      </ol>
+      <p className="c4-meta c4-device-tepidarium-hint">{v4("dvcHint")}</p>
       <p className="c4-meta">{v4("dvcLocal")}</p>
       <p className="c4-meta">{v4("dvcEscape")}</p>
       {lead ? <p className="c4-dvc-lead"><span>{v4("dvcLead")}</span> {lead}</p> : null}
@@ -666,13 +679,13 @@ export function CustomerDevices({ base, v4 }: { base: string; v4: V4 }) {
         }} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("dvcEmpty")}</p>}
-      <ul className="c4-dvc-rows">
+      <ul className="c4-dvc-rows c4-device-tepidarium-list">
         {shown.map((row) => {
           const name = deviceText(row.lastDevice);
           const mark = deviceInitialOf(name);
           const classMark = deviceClassOf(name);
           return (
-            <li key={row.id} data-device={name || "blank"}>
+            <li key={row.id} className="c4-device-tepidarium-card" data-device={name || "blank"} data-on={device && name === device ? "1" : "0"}>
               <span className="c4-dvc-spine" aria-hidden="true" />
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("dvcBlank")}</p>
