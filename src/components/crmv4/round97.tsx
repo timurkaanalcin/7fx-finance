@@ -130,6 +130,8 @@ export function SymbolGlance({ base, v4 }: { base: string; v4: V4 }) {
   const chips = visibleSymbols(present, hiddenSymbols, showHidden);
   const symbol = activeSymbol(selected, chips);
   const shown = visibleOrders(rows, symbol, blank, query);
+  const named = lines.filter((line) => line.symbol);
+  const peak = Math.max(1, ...named.map((line) => line.count));
 
   function store(next: string[], clear: string) {
     setHiddenSymbols(next);
@@ -138,15 +140,22 @@ export function SymbolGlance({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-symbol-glance" aria-label={v4("ymTitle")} data-symbol-glance="1">
-      <header className="c4-pay-head">
+    <section className="c4-symbol-glance c4-symbol-oratory" aria-label={v4("ymTitle")} data-symbol-glance="1" data-desk="oratory">
+      <header className="c4-symbol-oratory-mast">
+        <p className="c4-symbol-oratory-seal" data-logo="mono">7FX</p>
         <div>
-          <p className="c4-pay-kicker">{v4("ymSub")}</p>
-          <h2 className="c4-title">{v4("ymTitle")}</h2>
+          <p className="c4-symbol-oratory-kicker">{v4("ymOratoryKicker")}</p>
+          <h2 className="c4-title c4-symbol-oratory-title">{v4("ymTitle")}</h2>
+          <p className="c4-symbol-oratory-lead">{v4("ymOratoryLead")}</p>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-symbol-oratory-count">{chips.length}</p>
       </header>
-      <p className="c4-meta">{v4("ymHint")}</p>
+      <ol className="c4-symbol-oratory-index" aria-label={v4("ymTitle")}>
+        <li data-tone="gold">{v4("ymShown")}</li>
+        <li data-tone="ink">{v4("ymHidden")}</li>
+        <li data-tone="ivory">{v4("ymBlank")}</li>
+      </ol>
+      <p className="c4-meta c4-symbol-oratory-hint">{v4("ymHint")}</p>
       <p className="c4-meta">{v4("ymLocal")}</p>
       <p className="c4-row">
         <Link className="c4-btn" href={crmv4Href(base, "blotter")}>{v4("ymBoard")}</Link>
@@ -154,6 +163,17 @@ export function SymbolGlance({ base, v4 }: { base: string; v4: V4 }) {
       {data.loading && !rows.length && <p className="c4-meta">{v4("ymLoading")}</p>}
       {data.error && <p className="c4-meta">{v4("ymFailed")}</p>}
       {!data.loading && !data.error && !rows.length && <p className="c4-pay-empty">{v4("ymNone")}</p>}
+      {named.length > 0 && (
+        <div className="c4-symbol-oratory-chart" aria-label={v4("ymTitle")}>
+          {named.map((line) => (
+            <button key={line.symbol} type="button" className="c4-symbol-oratory-column" data-on={symbol === line.symbol ? "1" : "0"} data-symbol={line.symbol} onClick={() => { setBlank(false); setSelected(symbol === line.symbol ? "" : line.symbol); }}>
+              <i style={{ height: `${Math.max(18, Math.round((line.count / peak) * 88))}px` }} />
+              <strong>{line.count}</strong>
+              <span>{line.symbol}</span>
+            </button>
+          ))}
+        </div>
+      )}
       {blankCount > 0 && (
         <button type="button" className="c4-symbol-blank" data-on={blank ? "1" : "0"} aria-pressed={blank} onClick={() => { setBlank((value) => !value); setSelected(""); }}>
           <span>{v4("ymBlank")}</span>
@@ -178,11 +198,11 @@ export function SymbolGlance({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("ymSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("ymEmpty")}</p>}
-      <ul className="c4-symbol-rows">
+      <ul className="c4-symbol-rows c4-symbol-oratory-list">
         {shown.map((row) => {
           const name = symbolText(row.symbol);
           return (
-            <li key={row.id} data-symbol={name || "blank"}>
+            <li key={row.id} className="c4-symbol-oratory-card" data-symbol={name || "blank"} data-on={symbol && symbol === name ? "1" : "0"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("ymBlank")}</p>
               {row.userId && <Link className="c4-btn" href={crmv4Href(base, `customers/${row.userId}`)}>{v4("ymCustomer")}</Link>}
