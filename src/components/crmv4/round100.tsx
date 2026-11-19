@@ -103,17 +103,37 @@ export function LayoutLock({ v4 }: { v4: V4 }) {
     if (!lock.locked) publish(lock, applied);
   }
 
+  const hiddenCount = layout.order.length - visibleCount;
+  const peak = Math.max(1, visibleCount, hiddenCount);
   return (
-    <section className="c4-layout-lock" aria-label={v4("lxTitle")} data-layout-lock="1" data-locked={lock.locked ? "1" : "0"}>
-      <header className="c4-pay-head">
+    <section className="c4-layout-lock c4-layout-chapel" aria-label={v4("lxTitle")} data-layout-lock="1" data-desk="chapel" data-locked={lock.locked ? "1" : "0"}>
+      <header className="c4-layout-chapel-mast">
+        <p className="c4-layout-chapel-seal" data-logo="mono">{v4("lxLogo")}</p>
         <div>
-          <p className="c4-lock-logo" data-logo="mono">{v4("lxLogo")}</p>
-          <p className="c4-pay-kicker">{v4("lxSub")}</p>
-          <h2 className="c4-title">{v4("lxTitle")}</h2>
+          <p className="c4-layout-chapel-kicker">{v4("lxChapelKicker")}</p>
+          <h2 className="c4-title c4-layout-chapel-title">{v4("lxTitle")}</h2>
+          <p className="c4-layout-chapel-lead">{v4("lxChapelLead")}</p>
         </div>
-        <p className="c4-meta">{visibleCount}</p>
+        <p className="c4-layout-chapel-count">{visibleCount}</p>
       </header>
-      <p className="c4-meta">{v4("lxHint")}</p>
+      <ol className="c4-layout-chapel-index" aria-label={v4("lxTitle")}>
+        <li data-tone="gold">{v4("lxShown")}</li>
+        <li data-tone="ink">{v4("lxHidden")}</li>
+        <li data-tone="ivory">{lock.locked ? v4("lxLocked") : v4("lxOpen")}</li>
+      </ol>
+      <div className="c4-layout-chapel-chart" aria-label={v4("lxTitle")}>
+        <button type="button" className="c4-layout-chapel-column" data-on={visibleCount ? "1" : "0"}>
+          <i style={{ height: `${Math.max(18, Math.round((visibleCount / peak) * 88))}px` }} />
+          <strong>{visibleCount}</strong>
+          <span>{v4("lxShown")}</span>
+        </button>
+        <button type="button" className="c4-layout-chapel-column" data-on={hiddenCount ? "1" : "0"}>
+          <i style={{ height: `${Math.max(18, Math.round((hiddenCount / peak) * 88))}px` }} />
+          <strong>{hiddenCount}</strong>
+          <span>{v4("lxHidden")}</span>
+        </button>
+      </div>
+      <p className="c4-meta c4-layout-chapel-hint">{v4("lxHint")}</p>
       <p className="c4-meta">{v4("lxLocal")}</p>
       <p className="c4-meta">{lock.locked ? v4("lxLocked") : v4("lxOpen")}</p>
       {lock.locked && <p className="c4-meta">{v4("lxFrozen")}</p>}
@@ -139,13 +159,13 @@ export function LayoutLock({ v4 }: { v4: V4 }) {
         <input className="c4-field" aria-label={v4("lxSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && <p className="c4-pay-empty">{v4("lxEmpty")}</p>}
-      <ul className="c4-lock-list">
+      <ul className="c4-lock-list c4-layout-chapel-list">
         {shown.map((id) => {
           const on = !layout.hidden.includes(id);
           const index = layout.order.indexOf(id);
           const name = v4(PANEL_LABEL[id]);
           return (
-            <li key={id} className="c4-lock-card" data-panel={id} data-on={on ? "1" : "0"}>
+            <li key={id} className="c4-lock-card c4-layout-chapel-card" data-panel={id} data-on={on ? "1" : "0"}>
               <p>{name}</p>
               <p className="c4-meta">{on ? v4("lxShown") : v4("lxHidden")}</p>
               <div className="c4-row">
