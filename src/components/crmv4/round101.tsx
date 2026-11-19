@@ -49,6 +49,10 @@ export function DraftStash({ v4 }: { v4: V4 }) {
     writeJson(DRAFT_KEY, next);
   }, []);
   const shown = visibleDrafts(drafts, query, hidden);
+  const pinnedCount = shown.filter((draft) => draft.pinned).length;
+  const hiddenCount = drafts.filter((draft) => draft.hidden).length;
+  const openCount = drafts.filter((draft) => !draft.hidden).length;
+  const peak = Math.max(1, openCount, hiddenCount, pinnedCount);
 
   function store(next: Draft[]) {
     setDrafts(next);
@@ -56,15 +60,39 @@ export function DraftStash({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-draft-stash" aria-label={v4("dfTitle")} data-draft-stash="1">
-      <header className="c4-pay-head">
+    <section className="c4-draft-stash c4-draft-reliquary" aria-label={v4("dfTitle")} data-draft-stash="1" data-desk="reliquary">
+      <header className="c4-draft-reliquary-mast">
+        <p className="c4-draft-reliquary-seal" data-logo="mono">{v4("dfReliquaryLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("dfSub")}</p>
-          <h2 className="c4-title">{v4("dfTitle")}</h2>
+          <p className="c4-draft-reliquary-kicker">{v4("dfReliquaryKicker")}</p>
+          <h2 className="c4-title c4-draft-reliquary-title">{v4("dfTitle")}</h2>
+          <p className="c4-draft-reliquary-lead">{v4("dfReliquaryLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-draft-reliquary-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("dfHint")}</p>
+      <ol className="c4-draft-reliquary-index" aria-label={v4("dfTitle")}>
+        <li data-tone="gold">{v4("dfShown")}</li>
+        <li data-tone="ink">{v4("dfHidden")}</li>
+        <li data-tone="ivory">{v4("dfPin")}</li>
+      </ol>
+      <div className="c4-draft-reliquary-chart" aria-label={v4("dfTitle")}>
+        <button type="button" className="c4-draft-reliquary-column" data-on={hidden ? "0" : "1"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((openCount / peak) * 88))}px` }} />
+          <strong>{openCount}</strong>
+          <span>{v4("dfShown")}</span>
+        </button>
+        <button type="button" className="c4-draft-reliquary-column" data-on={hidden ? "1" : "0"} onClick={() => setHidden(true)}>
+          <i style={{ height: `${Math.max(18, Math.round((hiddenCount / peak) * 88))}px` }} />
+          <strong>{hiddenCount}</strong>
+          <span>{v4("dfHidden")}</span>
+        </button>
+        <button type="button" className="c4-draft-reliquary-column" data-on={pinnedCount ? "1" : "0"}>
+          <i style={{ height: `${Math.max(18, Math.round((pinnedCount / peak) * 88))}px` }} />
+          <strong>{pinnedCount}</strong>
+          <span>{v4("dfPin")}</span>
+        </button>
+      </div>
+      <p className="c4-meta c4-draft-reliquary-hint">{v4("dfHint")}</p>
       <p className="c4-meta">{v4("dfLocal")}</p>
       <form className="c4-row" onSubmit={(event) => {
         event.preventDefault();
@@ -88,10 +116,10 @@ export function DraftStash({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "0" : "1"} aria-pressed={!hidden} onClick={() => setHidden(false)}>{v4("dfShown")}</button>
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("dfHidden")}</button>
       </div>
-      {!shown.length && <p className="c4-pay-empty">{v4("dfEmpty")}</p>}
-      <ul className="c4-draft-list">
+      {!shown.length && <p className="c4-pay-empty c4-draft-reliquary-empty">{v4("dfEmpty")}</p>}
+      <ul className="c4-draft-list c4-draft-reliquary-list">
         {shown.map((draft) => (
-          <li key={draft.id} className="c4-draft-card" data-pinned={draft.pinned ? "1" : "0"}>
+          <li key={draft.id} className="c4-draft-card c4-draft-reliquary-card" data-pinned={draft.pinned ? "1" : "0"} data-on={draft.pinned ? "1" : "0"}>
             <p>{draft.text}</p>
             <div className="c4-row">
               <button type="button" className="c4-btn" onClick={() => store(toggleDraftPin(drafts, draft.id))}>{draft.pinned ? v4("dfUnpin") : v4("dfPin")}</button>
