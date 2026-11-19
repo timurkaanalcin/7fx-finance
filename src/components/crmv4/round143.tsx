@@ -304,15 +304,21 @@ export function RibbonCards({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-rib" aria-label={v4("ribTitle")} data-ribbon="1" data-role={role} data-ribbon-atelier="1">
-      <header className="c4-rib-head">
-        <p className="c4-rib-plate" data-logo="mono">{v4("ribLogo")}</p>
+    <section className="c4-rib c4-rib-laconicum" aria-label={v4("ribTitle")} data-ribbon="1" data-role={role} data-ribbon-atelier="1" data-desk="laconicum">
+      <header className="c4-rib-laconicum-mast">
+        <p className="c4-rib-laconicum-seal" data-logo="mono">{v4("ribLaconicumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("ribSub")}</p>
-          <h2 className="c4-title">{v4("ribTitle")}</h2>
+          <p className="c4-rib-laconicum-kicker">{v4("ribLaconicumKicker")}</p>
+          <h2 className="c4-title c4-rib-laconicum-title">{v4("ribTitle")}</h2>
+          <p className="c4-rib-laconicum-lead">{v4("ribLaconicumLead")}</p>
         </div>
-        <p className="c4-rib-count">{shown.length}</p>
+        <p className="c4-rib-laconicum-count">{shown.length}</p>
       </header>
+      <ol className="c4-rib-laconicum-index" aria-label={v4("ribLaconicumKicker")}>
+        <li data-tone="gold">{v4("ribOpen")} {counts.open}</li>
+        <li data-tone="ink">{v4("ribHeld")} {counts.held}</li>
+        <li data-tone="ivory">{v4("ribDone")} {counts.done}</li>
+      </ol>
       <p className="c4-meta">{v4("ribHint")}</p>
       <p className="c4-meta">{v4("ribLocal")}</p>
       <p className="c4-meta">{v4("ribBlank")}</p>
@@ -525,7 +531,7 @@ export function RibbonCards({ v4 }: { v4: V4 }) {
             const laneLabel = laneOf(ribbon.lane);
             const gradeLabel = gradeOf(ribbon.grade);
             return (
-              <li key={ribbon.id} data-band={band} data-lane={laneLabel} data-grade={gradeLabel} data-late={gap !== null && gap > 0 && !ribbon.held && !ribbon.done ? "1" : "0"}>
+              <li key={ribbon.id} className="c4-rib-laconicum-card" data-band={band} data-lane={laneLabel} data-grade={gradeLabel} data-late={gap !== null && gap > 0 && !ribbon.held && !ribbon.done ? "1" : "0"} data-on={gap !== null && gap > 0 && !ribbon.held && !ribbon.done ? "1" : "0"}>
                 <span className="c4-rib-hour">{hourLabel(ribbon.hour)}</span>
                 <div>
                   <p className="c4-rib-pips" aria-label={v4("ribGrade")}>
@@ -644,14 +650,36 @@ export function InvalidReasons({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-reason" aria-label={v4("rsnTitle")} data-reason="1" data-ribbon-atelier="1">
-      <header className="c4-rsn-head">
+    <section className="c4-reason c4-reason-sudatorium" aria-label={v4("rsnTitle")} data-reason="1" data-ribbon-atelier="1" data-desk="sudatorium">
+      <header className="c4-reason-sudatorium-mast">
+        <p className="c4-reason-sudatorium-seal" data-logo="mono">{v4("rsnSudatoriumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("rsnSub")}</p>
-          <h2 className="c4-title">{v4("rsnTitle")}</h2>
+          <p className="c4-reason-sudatorium-kicker">{v4("rsnSudatoriumKicker")}</p>
+          <h2 className="c4-title c4-reason-sudatorium-title">{v4("rsnTitle")}</h2>
+          <p className="c4-reason-sudatorium-lead">{v4("rsnSudatoriumLead")}</p>
         </div>
-        <p className="c4-rib-count">{v4("rsnRows")} {rows.length}</p>
+        <p className="c4-reason-sudatorium-count">{rows.length}</p>
       </header>
+      <ol className="c4-reason-sudatorium-index" aria-label={v4("rsnSudatoriumKicker")}>
+        <li data-tone="gold">{v4("rsnLead")} {lead || "—"}</li>
+        <li data-tone="ink">{v4("rsnRows")} {rows.length}</li>
+        <li data-tone="ivory">{v4("rsnBlank")} {blankCount}</li>
+      </ol>
+      {families.length > 0 && (
+        <div className="c4-reason-sudatorium-chart" aria-label={v4("rsnFamily")}>
+          {families.map((line) => {
+            const name = line.family || "blank";
+            const height = Math.max(18, Math.round((line.count / widest) * 88));
+            return (
+              <button key={name} type="button" className="c4-reason-sudatorium-column" data-on={familyOn === (line.family || "blank") ? "1" : "0"} onClick={() => { setBlank(false); setSelected(""); setFamily(familyOn === (line.family || "blank") ? "all" : (line.family || "blank")); }}>
+                <i style={{ height: `${height}px` }} />
+                <strong>{line.count}</strong>
+                <span>{familyName(v4, line.family)}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
       <p className="c4-meta">{v4("rsnHint")}</p>
       <p className="c4-meta">{v4("rsnLocal")}</p>
       <p className="c4-meta">{v4("rsnEscape")}</p>
@@ -760,7 +788,7 @@ export function InvalidReasons({ base, v4 }: { base: string; v4: V4 }) {
           const familyMark = familyOf(name);
           const lengthMark = lengthOf(name);
           return (
-            <li key={row.id} data-reason={name || "blank"}>
+            <li key={row.id} className="c4-reason-sudatorium-card" data-reason={name || "blank"} data-on={reason && reason === name ? "1" : "0"}>
               <span className="c4-rsn-spine" aria-hidden="true" />
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("rsnBlank")}</p>

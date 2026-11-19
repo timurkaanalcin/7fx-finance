@@ -104187,3 +104187,260 @@
   [data-crmv4-root] .c4-isogonic-column i,
   [data-crmv4-root] .c4-region-frigidarium-column i { transition: none; }
 }
+
+/* Round 323 — karrusel rules, loxodrome plates, ivory ribbon laconicum, graphite reason sudatorium. */
+[data-crmv4-root] .c4-karrusel,
+[data-crmv4-root] .c4-loxodrome {
+  color: #1c1a17;
+  background:
+    radial-gradient(120px 80px at 12% 0, rgba(198, 161, 91, 0.35), transparent 70%),
+    #f6f1e8;
+  border: 1px solid rgba(138, 106, 59, 0.45);
+  border-radius: 28px;
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+}
+[data-crmv4-root] .c4-loxodrome {
+  background:
+    linear-gradient(180deg, rgba(198, 161, 91, 0.18), transparent 28%),
+    #161411;
+  color: #f6f1e8;
+  border-color: #c6a15b;
+  border-radius: 8px 28px;
+}
+[data-crmv4-root] .c4-karrusel-mast,
+[data-crmv4-root] .c4-loxodrome-mast,
+[data-crmv4-root] .c4-rib-laconicum-mast,
+[data-crmv4-root] .c4-reason-sudatorium-mast {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: end;
+  margin: 0;
+}
+[data-crmv4-root] .c4-karrusel-seal[data-logo="mono"],
+[data-crmv4-root] .c4-loxodrome-seal[data-logo="mono"],
+[data-crmv4-root] .c4-rib-laconicum-seal[data-logo="mono"],
+[data-crmv4-root] .c4-reason-sudatorium-seal[data-logo="mono"] {
+  margin: 0;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border: 1px solid currentColor;
+  background: transparent;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  font-weight: 650;
+}
+[data-crmv4-root] .c4-karrusel-seal[data-logo="mono"],
+[data-crmv4-root] .c4-rib-laconicum-seal[data-logo="mono"] {
+  color: #1c1a17;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 4px transparent, inset 0 0 0 5px #c6a15b;
+}
+[data-crmv4-root] .c4-loxodrome-seal[data-logo="mono"],
+[data-crmv4-root] .c4-reason-sudatorium-seal[data-logo="mono"] {
+  color: #f6f1e8;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 4px #161411, inset 0 0 0 5px #c6a15b;
+}
+[data-crmv4-root] .c4-karrusel-kicker,
+[data-crmv4-root] .c4-loxodrome-kicker,
+[data-crmv4-root] .c4-rib-laconicum-kicker,
+[data-crmv4-root] .c4-reason-sudatorium-kicker {
+  margin: 0;
+  color: #8a6a3b;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-karrusel-count,
+[data-crmv4-root] .c4-loxodrome-count,
+[data-crmv4-root] .c4-rib-laconicum-count,
+[data-crmv4-root] .c4-reason-sudatorium-count {
+  margin: 0;
+  font-size: 28px;
+  font-variant-numeric: tabular-nums;
+  color: #c6a15b;
+}
+[data-crmv4-root] .c4-karrusel-hint,
+[data-crmv4-root] .c4-loxodrome-hint,
+[data-crmv4-root] .c4-rib-laconicum-lead,
+[data-crmv4-root] .c4-reason-sudatorium-lead { margin: 6px 0 0; max-width: 68ch; line-height: 1.45; }
+[data-crmv4-root] .c4-loxodrome-hint,
+[data-crmv4-root] .c4-loxodrome-meta,
+[data-crmv4-root] .c4-loxodrome .c4-title,
+[data-crmv4-root] .c4-reason-sudatorium-title,
+[data-crmv4-root] .c4-reason-sudatorium-lead,
+[data-crmv4-root] .c4-reason.c4-reason-sudatorium .c4-meta,
+[data-crmv4-root] .c4-reason.c4-reason-sudatorium .c4-title { color: #f6f1e8; }
+[data-crmv4-root] .c4-karrusel-index,
+[data-crmv4-root] .c4-rib-laconicum-index,
+[data-crmv4-root] .c4-reason-sudatorium-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-karrusel-index li,
+[data-crmv4-root] .c4-rib-laconicum-index li,
+[data-crmv4-root] .c4-reason-sudatorium-index li {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(198, 161, 91, 0.6);
+  font-size: 12px;
+}
+[data-crmv4-root] .c4-karrusel-index li[data-tone="gold"],
+[data-crmv4-root] .c4-rib-laconicum-index li[data-tone="gold"],
+[data-crmv4-root] .c4-reason-sudatorium-index li[data-tone="gold"] { color: #8a6a3b; background: #fbf7f0; }
+[data-crmv4-root] .c4-karrusel-index li[data-tone="ink"],
+[data-crmv4-root] .c4-rib-laconicum-index li[data-tone="ink"] { background: #1c1a17; color: #f6f1e8; }
+[data-crmv4-root] .c4-reason-sudatorium-index li[data-tone="ink"],
+[data-crmv4-root] .c4-reason-sudatorium-index li[data-tone="ivory"] { color: #f6f1e8; background: #241f1a; }
+[data-crmv4-root] .c4-karrusel-chart,
+[data-crmv4-root] .c4-loxodrome-chart,
+[data-crmv4-root] .c4-reason-sudatorium-chart {
+  display: flex;
+  align-items: end;
+  gap: 8px;
+  min-height: 120px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255, 253, 248, 0.72);
+  border: 1px solid rgba(198, 161, 91, 0.45);
+}
+[data-crmv4-root] .c4-loxodrome-chart,
+[data-crmv4-root] .c4-reason-sudatorium-chart { background: #1c1916; border-color: rgba(198, 161, 91, 0.45); }
+[data-crmv4-root] .c4-karrusel-column,
+[data-crmv4-root] .c4-loxodrome-column,
+[data-crmv4-root] .c4-reason-sudatorium-column {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-width: 56px;
+  min-height: 44px;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+}
+[data-crmv4-root] .c4-karrusel-column i,
+[data-crmv4-root] .c4-loxodrome-column i,
+[data-crmv4-root] .c4-reason-sudatorium-column i {
+  display: block;
+  width: 18px;
+  background: #c6a15b;
+  border-radius: 10px 10px 2px 2px;
+}
+[data-crmv4-root] .c4-karrusel-column[data-on="1"] i,
+[data-crmv4-root] .c4-loxodrome-column[data-on="1"] i,
+[data-crmv4-root] .c4-reason-sudatorium-column[data-on="1"] i { background: #e7d3a1; }
+[data-crmv4-root] .c4-karrusel-form,
+[data-crmv4-root] .c4-karrusel-tools,
+[data-crmv4-root] .c4-loxodrome-tools,
+[data-crmv4-root] .c4-karrusel-bulk,
+[data-crmv4-root] .c4-loxodrome-bulk { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; }
+[data-crmv4-root] .c4-karrusel-list,
+[data-crmv4-root] .c4-loxodrome-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+[data-crmv4-root] .c4-karrusel-card,
+[data-crmv4-root] .c4-loxodrome-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255, 253, 248, 0.94);
+  border: 1px solid rgba(198, 161, 91, 0.7);
+}
+[data-crmv4-root] .c4-loxodrome-card { background: #241f1a; color: #f6f1e8; }
+[data-crmv4-root] .c4-karrusel-card[data-on="1"],
+[data-crmv4-root] .c4-loxodrome-card[data-on="1"] { outline: 2px solid #c6a15b; }
+[data-crmv4-root] .c4-karrusel .c4-btn,
+[data-crmv4-root] .c4-loxodrome .c4-btn,
+[data-crmv4-root] .c4-karrusel .c4-chip,
+[data-crmv4-root] .c4-loxodrome .c4-chip,
+[data-crmv4-root] .c4-rib-laconicum .c4-btn,
+[data-crmv4-root] .c4-rib-laconicum .c4-chip,
+[data-crmv4-root] .c4-reason-sudatorium .c4-btn,
+[data-crmv4-root] .c4-reason-sudatorium .c4-chip { min-height: 44px; }
+[data-crmv4-root] .c4-karrusel .c4-btn:focus-visible,
+[data-crmv4-root] .c4-loxodrome .c4-btn:focus-visible,
+[data-crmv4-root] .c4-karrusel .c4-chip:focus-visible,
+[data-crmv4-root] .c4-loxodrome .c4-chip:focus-visible,
+[data-crmv4-root] .c4-rib-laconicum .c4-btn:focus-visible,
+[data-crmv4-root] .c4-reason-sudatorium .c4-btn:focus-visible,
+[data-crmv4-root] .c4-karrusel-column:focus-visible,
+[data-crmv4-root] .c4-loxodrome-column:focus-visible,
+[data-crmv4-root] .c4-reason-sudatorium-column:focus-visible { outline: 2px solid #c6a15b; outline-offset: 2px; }
+[data-crmv4-root] .c4-rib.c4-rib-laconicum {
+  color: #1c1a17;
+  background:
+    radial-gradient(80% 40% at 50% 0, rgba(198, 161, 91, 0.28), transparent 70%),
+    #f7f1e6;
+  border: 1px solid rgba(138, 106, 59, 0.5);
+  border-radius: 72px 72px 18px 18px;
+  padding: 22px 16px 18px;
+  box-shadow: inset 0 14px 0 rgba(198, 161, 91, 0.16);
+}
+[data-crmv4-root] .c4-reason.c4-reason-sudatorium {
+  color: #f6f1e8;
+  background:
+    linear-gradient(#8a6a3b, #8a6a3b) 18px 0 / 3px 100% no-repeat,
+    #141210;
+  border: 1px solid #c6a15b;
+  border-radius: 8px 36px 8px 36px;
+  padding: 16px 12px 22px 28px;
+}
+[data-crmv4-root] .c4-rib.c4-rib-laconicum .c4-rib-rows li.c4-rib-laconicum-card {
+  background: #fffdf8;
+  border: 1px solid rgba(198, 161, 91, 0.55);
+  border-radius: 18px;
+  padding: 12px;
+}
+[data-crmv4-root] .c4-reason.c4-reason-sudatorium .c4-rsn-rows li.c4-reason-sudatorium-card {
+  background: #241f1a;
+  color: #f6f1e8;
+  border: 1px solid rgba(198, 161, 91, 0.4);
+  border-radius: 12px;
+  padding: 12px;
+}
+[data-crmv4-root] .c4-reason.c4-reason-sudatorium .c4-rsn-rows li.c4-reason-sudatorium-card p,
+[data-crmv4-root] .c4-reason.c4-reason-sudatorium .c4-rsn-rows li.c4-reason-sudatorium-card .c4-meta { color: #f6f1e8; }
+[data-crmv4-root] .c4-rib-laconicum-card[data-on="1"],
+[data-crmv4-root] .c4-reason-sudatorium-card[data-on="1"] { outline: 2px solid #c6a15b; }
+[data-crmv4-root][data-theme="dark"] .c4-karrusel,
+[data-crmv4-root][data-theme="dark"] .c4-rib.c4-rib-laconicum {
+  color: #f6f1e8;
+  background: #241f1a;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-karrusel-card,
+[data-crmv4-root][data-theme="dark"] .c4-rib.c4-rib-laconicum .c4-rib-rows li.c4-rib-laconicum-card { background: #1c1a17; color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-karrusel-seal[data-logo="mono"],
+[data-crmv4-root][data-theme="dark"] .c4-rib-laconicum-seal[data-logo="mono"] { color: #f6f1e8; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-karrusel-mast,
+  [data-crmv4-root] .c4-loxodrome-mast,
+  [data-crmv4-root] .c4-rib-laconicum-mast,
+  [data-crmv4-root] .c4-reason-sudatorium-mast { grid-template-columns: auto minmax(0, 1fr); }
+  [data-crmv4-root] .c4-karrusel .c4-title,
+  [data-crmv4-root] .c4-loxodrome .c4-title,
+  [data-crmv4-root] .c4-rib-laconicum-title,
+  [data-crmv4-root] .c4-reason-sudatorium-title { font-size: 1.35rem; }
+  [data-crmv4-root] .c4-rib.c4-rib-laconicum { border-radius: 36px 36px 14px 14px; }
+  [data-crmv4-root] .c4-karrusel-card,
+  [data-crmv4-root] .c4-loxodrome-card { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-karrusel-card,
+  [data-crmv4-root] .c4-loxodrome-card,
+  [data-crmv4-root] .c4-rib-laconicum-card,
+  [data-crmv4-root] .c4-reason-sudatorium-card,
+  [data-crmv4-root] .c4-karrusel-column i,
+  [data-crmv4-root] .c4-loxodrome-column i,
+  [data-crmv4-root] .c4-reason-sudatorium-column i { transition: none; }
+}
