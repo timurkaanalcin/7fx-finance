@@ -52,6 +52,10 @@ export function LockerNotes({ v4 }: { v4: V4 }) {
     writeJson(LOCKER_KEY, next);
   }, []);
   const shown = visibleNotes(notes, hidden, query);
+  const openCount = notes.filter((note) => !note.hidden).length;
+  const pinCount = notes.filter((note) => note.pinned).length;
+  const hideCount = notes.filter((note) => note.hidden).length;
+  const notePeak = Math.max(1, openCount, pinCount, hideCount);
 
   function store(next: Note[]) {
     setNotes(next);
@@ -59,16 +63,39 @@ export function LockerNotes({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-locker" aria-label={v4("lokTitle")} data-locker="1">
-      <header className="c4-pay-head">
+    <section className="c4-locker c4-locker-aedicula" aria-label={v4("lokTitle")} data-locker="1" data-desk="aedicula">
+      <header className="c4-locker-aedicula-mast">
+        <p className="c4-locker-aedicula-seal" data-logo="mono">{v4("lokAediculaLogo")}</p>
         <div>
-          <p className="c4-lok-logo" data-logo="mono">{v4("lokLogo")}</p>
-          <p className="c4-pay-kicker">{v4("lokSub")}</p>
-          <h2 className="c4-title">{v4("lokTitle")}</h2>
+          <p className="c4-locker-aedicula-kicker">{v4("lokAediculaKicker")}</p>
+          <h2 className="c4-title c4-locker-aedicula-title">{v4("lokTitle")}</h2>
+          <p className="c4-locker-aedicula-lead">{v4("lokAediculaLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-locker-aedicula-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("lokHint")}</p>
+      <ol className="c4-locker-aedicula-index" aria-label={v4("lokTitle")}>
+        <li data-tone="gold">{v4("lokAediculaOpen")} {openCount}</li>
+        <li data-tone="ink">{v4("lokAediculaPinned")} {pinCount}</li>
+        <li data-tone="ivory">{v4("lokAediculaHidden")} {hideCount}</li>
+      </ol>
+      <div className="c4-locker-aedicula-chart" aria-label={v4("lokTitle")}>
+        <button type="button" className="c4-locker-aedicula-column" data-on={openCount ? "1" : "0"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((openCount / notePeak) * 88))}px` }} />
+          <strong>{openCount}</strong>
+          <span>{v4("lokAediculaOpen")}</span>
+        </button>
+        <button type="button" className="c4-locker-aedicula-column" data-on={pinCount ? "1" : "0"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((pinCount / notePeak) * 88))}px` }} />
+          <strong>{pinCount}</strong>
+          <span>{v4("lokAediculaPinned")}</span>
+        </button>
+        <button type="button" className="c4-locker-aedicula-column" data-on={hideCount ? "1" : "0"} onClick={() => setHidden(true)}>
+          <i style={{ height: `${Math.max(18, Math.round((hideCount / notePeak) * 88))}px` }} />
+          <strong>{hideCount}</strong>
+          <span>{v4("lokAediculaHidden")}</span>
+        </button>
+      </div>
+      <p className="c4-meta c4-locker-aedicula-hint">{v4("lokHint")}</p>
       <p className="c4-meta">{v4("lokLocal")}</p>
       <p className="c4-meta">{v4("lokBlank")}</p>
       <p className="c4-meta">{v4("lokTagBlank")}</p>
@@ -99,10 +126,10 @@ export function LockerNotes({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "0" : "1"} aria-pressed={!hidden} onClick={() => setHidden(false)}>{v4("lokOpen")}</button>
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("lokHidden")}</button>
       </div>
-      {!shown.length && <p className="c4-pay-empty">{v4("lokEmpty")}</p>}
-      <ul className="c4-lok-rows">
+      {!shown.length && <p className="c4-pay-empty c4-locker-aedicula-empty">{v4("lokEmpty")}</p>}
+      <ul className="c4-lok-rows c4-locker-aedicula-list">
         {shown.map((note) => (
-          <li key={note.id} data-pinned={note.pinned ? "1" : "0"}>
+          <li key={note.id} className="c4-locker-aedicula-card" data-pinned={note.pinned ? "1" : "0"} data-on={note.pinned ? "1" : "0"}>
             <p>{note.text}</p>
             {note.tag ? <p className="c4-meta">{note.tag}</p> : null}
             <div className="c4-row">
@@ -157,6 +184,7 @@ export function TradeSymbols({ base, v4 }: { base: string; v4: V4 }) {
   const chips = visibleSymbols(present, hiddenSymbols, showHidden);
   const symbol = activeSymbol(selected, chips);
   const shown = visibleTrades(rows, symbol, blank, query);
+  const peak = Math.max(1, ...lines.map((line) => line.count), blankCount);
 
   function store(next: string[], clear: string) {
     setHiddenSymbols(next);
@@ -165,15 +193,38 @@ export function TradeSymbols({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-trade-sym" aria-label={v4("tsyTitle")} data-trade-sym="1">
-      <header className="c4-pay-head">
+    <section className="c4-trade-sym c4-symbol-peristyle" aria-label={v4("tsyTitle")} data-trade-sym="1" data-desk="peristyle">
+      <header className="c4-symbol-peristyle-mast">
+        <p className="c4-symbol-peristyle-seal" data-logo="mono">{v4("tsyPeristyleLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("tsySub")}</p>
-          <h2 className="c4-title">{v4("tsyTitle")}</h2>
+          <p className="c4-symbol-peristyle-kicker">{v4("tsyPeristyleKicker")}</p>
+          <h2 className="c4-title c4-symbol-peristyle-title">{v4("tsyTitle")}</h2>
+          <p className="c4-symbol-peristyle-lead">{v4("tsyPeristyleLead")}</p>
         </div>
-        <p className="c4-meta">{v4("tsyRows")} {rows.length}</p>
+        <p className="c4-symbol-peristyle-count">{rows.length}</p>
       </header>
-      <p className="c4-meta">{v4("tsyHint")}</p>
+      <ol className="c4-symbol-peristyle-index" aria-label={v4("tsyTitle")}>
+        <li data-tone="gold">{v4("tsyPeristyleShown")} {chips.length}</li>
+        <li data-tone="ink">{v4("tsyPeristyleHidden")} {hiddenSymbols.length}</li>
+        <li data-tone="ivory">{v4("tsyPeristyleBlank")} {blankCount}</li>
+      </ol>
+      <div className="c4-symbol-peristyle-chart" aria-label={v4("tsyTitle")}>
+        {lines.filter((line) => line.symbol).map((line) => (
+          <button key={line.symbol} type="button" className="c4-symbol-peristyle-column" data-on={symbol === line.symbol ? "1" : "0"} data-symbol={line.symbol} onClick={() => { setBlank(false); setSelected(symbol === line.symbol ? "" : line.symbol); }}>
+            <i style={{ height: `${Math.max(18, Math.round((line.count / peak) * 88))}px` }} />
+            <strong>{line.count}</strong>
+            <span>{line.symbol}</span>
+          </button>
+        ))}
+        {blankCount > 0 && (
+          <button type="button" className="c4-symbol-peristyle-column" data-on={blank ? "1" : "0"} data-symbol="blank" onClick={() => { setBlank((value) => !value); setSelected(""); }}>
+            <i style={{ height: `${Math.max(18, Math.round((blankCount / peak) * 88))}px` }} />
+            <strong>{blankCount}</strong>
+            <span>{v4("tsyPeristyleBlank")}</span>
+          </button>
+        )}
+      </div>
+      <p className="c4-meta c4-symbol-peristyle-hint">{v4("tsyHint")}</p>
       <p className="c4-meta">{v4("tsyLocal")}</p>
       <p className="c4-row">
         <Link className="c4-btn" href={crmv4Href(base, "blotter")}>{v4("tsyBoard")}</Link>
@@ -208,11 +259,11 @@ export function TradeSymbols({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("tsySearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("tsyEmpty")}</p>}
-      <ul className="c4-tsy-rows">
+      <ul className="c4-tsy-rows c4-symbol-peristyle-list">
         {shown.map((row) => {
           const name = symbolText(row.symbol);
           return (
-            <li key={row.id} data-symbol={name || "blank"} data-kind={row.kind}>
+            <li key={row.id} className="c4-symbol-peristyle-card" data-symbol={name || "blank"} data-kind={row.kind} data-on={symbol && name === symbol ? "1" : "0"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("tsyBlank")}</p>
               <p className="c4-meta">{row.kind === "position" ? v4("tsyPosition") : v4("tsyOrder")}</p>
