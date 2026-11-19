@@ -298,15 +298,21 @@ export function VellumSlips({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-vlm" aria-label={v4("vlmTitle")} data-vellum="1" data-role={role} data-vellum-ledger="1">
-      <header className="c4-vlm-head">
-        <p className="c4-vlm-plate" data-logo="mono">{v4("vlmLogo")}</p>
+    <section className="c4-vlm c4-vlm-solarium" aria-label={v4("vlmTitle")} data-vellum="1" data-role={role} data-vellum-ledger="1" data-desk="solarium">
+      <header className="c4-vlm-head c4-vlm-solarium-mast">
+        <p className="c4-vlm-plate c4-vlm-solarium-seal" data-logo="mono">{v4("vlmSolariumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("vlmSub")}</p>
-          <h2 className="c4-title">{v4("vlmTitle")}</h2>
+          <p className="c4-vlm-solarium-kicker">{v4("vlmSolariumKicker")}</p>
+          <h2 className="c4-title c4-vlm-solarium-title">{v4("vlmTitle")}</h2>
+          <p className="c4-vlm-solarium-lead">{v4("vlmSolariumLead")}</p>
         </div>
-        <p className="c4-vlm-count">{shown.length}</p>
+        <p className="c4-vlm-count c4-vlm-solarium-count">{shown.length}</p>
       </header>
+      <ol className="c4-vlm-solarium-index" aria-label={v4("vlmSolariumKicker")}>
+        <li data-tone="gold">{v4("vlmOpen")} {counts.open}</li>
+        <li data-tone="ink">{v4("vlmHeld")} {counts.held}</li>
+        <li data-tone="ivory">{v4("vlmDoneTray")} {counts.done}</li>
+      </ol>
       <p className="c4-meta">{v4("vlmHint")}</p>
       <p className="c4-meta">{v4("vlmLocal")}</p>
       <p className="c4-meta">{v4("vlmBlank")}</p>
@@ -539,7 +545,7 @@ export function VellumSlips({ v4 }: { v4: V4 }) {
             const clashes = vellumClashIds(cards, card.id);
             const watch = hourWatch(card.hour);
             return (
-              <li key={card.id} data-tone={card.tone || "blank"} data-watch={watch} data-pinned={card.pinned ? "1" : "0"}>
+              <li key={card.id} className="c4-vlm-solarium-card" data-tone={card.tone || "blank"} data-watch={watch} data-pinned={card.pinned ? "1" : "0"}>
                 <span className="c4-vlm-clock">{hourLabel(card.hour)}</span>
                 <div>
                   {editing === card.id ? (
@@ -643,14 +649,21 @@ export function HouseholdMarks({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-hhd" aria-label={v4("hhdTitle")} data-house="1" data-vellum-ledger="1">
-      <header className="c4-hhd-head">
+    <section className="c4-hhd c4-hhd-cavum" aria-label={v4("hhdTitle")} data-house="1" data-vellum-ledger="1" data-desk="cavum">
+      <header className="c4-hhd-head c4-hhd-cavum-mast">
+        <p className="c4-hhd-cavum-seal" data-logo="mono">{v4("hhdCavumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("hhdSub")}</p>
-          <h2 className="c4-title">{v4("hhdTitle")}</h2>
+          <p className="c4-hhd-cavum-kicker">{v4("hhdCavumKicker")}</p>
+          <h2 className="c4-title c4-hhd-cavum-title">{v4("hhdTitle")}</h2>
+          <p className="c4-hhd-cavum-lead">{v4("hhdCavumLead")}</p>
         </div>
-        <p className="c4-vlm-count">{v4("hhdRows")} {rows.length}</p>
+        <p className="c4-vlm-count c4-hhd-cavum-count">{v4("hhdRows")} {rows.length}</p>
       </header>
+      <ol className="c4-hhd-cavum-index" aria-label={v4("hhdCavumKicker")}>
+        <li data-tone="gold">{leadStay ? stayName(v4, leadStay) : "—"}</li>
+        <li data-tone="ink">{v4("hhdRows")} {rows.length}</li>
+        <li data-tone="ivory">{leadHouse ? houseName(v4, leadHouse) : "—"}</li>
+      </ol>
       <p className="c4-meta">{v4("hhdHint")}</p>
       <p className="c4-meta">{v4("hhdLocal")}</p>
       <p className="c4-meta">{v4("hhdEscape")}</p>
@@ -750,7 +763,7 @@ export function HouseholdMarks({ base, v4 }: { base: string; v4: V4 }) {
           const houseMark = mailHouse(row.mail) as MailHouse;
           const domain = mailDomain(row.mail);
           return (
-            <li key={row.id} data-stay={stayMark || "blank"} data-house={houseMark || "blank"}>
+            <li key={row.id} className="c4-hhd-cavum-card" data-stay={stayMark || "blank"} data-house={houseMark || "blank"}>
               <span className="c4-hhd-spine" aria-hidden="true" />
               <p>{row.label || row.id}</p>
               <p className="c4-meta">
