@@ -310,6 +310,7 @@ import { FoliotRules, RutterPlates } from "./round319";
 import { FuseeRules, SnailPlates } from "./round320";
 import { RemontoireRules, RhumbPlates } from "./round321";
 import { IsogonicPlates, TourbillonRules } from "./round322";
+import { KarruselRules, LoxodromePlates } from "./round323";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1193,6 +1194,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "rhb") return v4("rhbTitle");
     if (tab === "trb") return v4("trbTitle");
     if (tab === "isg") return v4("isgTitle");
+    if (tab === "krs") return v4("krsTitle");
+    if (tab === "lxd") return v4("lxdTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1735,6 +1738,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "rhb") return v4("rhbSub");
     if (tab === "trb") return v4("trbSub");
     if (tab === "isg") return v4("isgSub");
+    if (tab === "krs") return v4("krsSub");
+    if (tab === "lxd") return v4("lxdSub");
     return "";
   }
 
@@ -2438,6 +2443,8 @@ function Shell({ base, section, name }: Props) {
             {view === "rhb" && <RhumbPlates base={base} v4={v4} />}
             {view === "trb" && <TourbillonRules base={base} v4={v4} />}
             {view === "isg" && <IsogonicPlates base={base} v4={v4} />}
+            {view === "krs" && <KarruselRules base={base} v4={v4} />}
+            {view === "lxd" && <LoxodromePlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
