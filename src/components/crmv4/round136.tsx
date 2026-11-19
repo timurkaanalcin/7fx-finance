@@ -188,15 +188,38 @@ export function CallWindows({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-call" aria-label={v4("cwnTitle")} data-call="1" data-folio="1">
-      <header className="c4-cwn-head">
-        <p className="c4-cwn-plate" data-logo="mono">{v4("cwnLogo")}</p>
+    <section className="c4-call c4-call-triclinium" aria-label={v4("cwnTitle")} data-call="1" data-folio="1" data-desk="triclinium">
+      <header className="c4-call-triclinium-mast">
+        <p className="c4-call-triclinium-seal" data-logo="mono">{v4("cwnTricliniumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("cwnSub")}</p>
-          <h2 className="c4-title">{v4("cwnTitle")}</h2>
+          <p className="c4-call-triclinium-kicker">{v4("cwnTricliniumKicker")}</p>
+          <h2 className="c4-title c4-call-triclinium-title">{v4("cwnTitle")}</h2>
+          <p className="c4-call-triclinium-lead">{v4("cwnTricliniumLead")}</p>
         </div>
-        <p className="c4-cwn-count">{shown.length}</p>
+        <p className="c4-call-triclinium-count">{shown.length}</p>
       </header>
+      <ol className="c4-call-triclinium-index" aria-label={v4("cwnTitle")}>
+        <li data-tone="gold">{v4("cwnTricliniumOpen")} {counts.open}</li>
+        <li data-tone="ink">{v4("cwnTricliniumFolded")} {counts.parked}</li>
+        <li data-tone="ivory">{v4("cwnTricliniumPassed")} {counts.done}</li>
+      </ol>
+      <div className="c4-call-triclinium-chart" aria-label={v4("cwnKpi")}>
+        <button type="button" className="c4-call-triclinium-column" data-on={tray === "open" ? "1" : "0"} onClick={() => { setTray("open"); setBoard("slips"); }}>
+          <i style={{ height: `${Math.max(18, Math.round((counts.open / Math.max(1, counts.open, counts.parked, counts.done)) * 88))}px` }} />
+          <strong>{counts.open}</strong>
+          <span>{v4("cwnTricliniumOpen")}</span>
+        </button>
+        <button type="button" className="c4-call-triclinium-column" data-on={tray === "parked" ? "1" : "0"} onClick={() => { setTray("parked"); setBoard("slips"); }}>
+          <i style={{ height: `${Math.max(18, Math.round((counts.parked / Math.max(1, counts.open, counts.parked, counts.done)) * 88))}px` }} />
+          <strong>{counts.parked}</strong>
+          <span>{v4("cwnTricliniumFolded")}</span>
+        </button>
+        <button type="button" className="c4-call-triclinium-column" data-on={tray === "done" ? "1" : "0"} onClick={() => { setTray("done"); setBoard("slips"); }}>
+          <i style={{ height: `${Math.max(18, Math.round((counts.done / Math.max(1, counts.open, counts.parked, counts.done)) * 88))}px` }} />
+          <strong>{counts.done}</strong>
+          <span>{v4("cwnTricliniumPassed")}</span>
+        </button>
+      </div>
       <p className="c4-meta">{v4("cwnHint")}</p>
       <p className="c4-meta">{v4("cwnLocal")}</p>
       <p className="c4-meta">{v4("cwnBlank")}</p>
@@ -327,16 +350,16 @@ export function CallWindows({ v4 }: { v4: V4 }) {
           <button key={item} type="button" className="c4-chip" data-on={bandOn === item ? "1" : "0"} aria-pressed={bandOn === item} onClick={() => setBandFilter(bandOn === item ? "all" : item)}>{bandName(v4, item)}</button>
         ))}
       </div>
-      {board === "slips" && !shown.length && <p className="c4-pay-empty">{v4("cwnEmpty")}</p>}
-      {board === "timeline" && !timeline.length && <p className="c4-pay-empty">{v4("cwnEmpty")}</p>}
+      {board === "slips" && !shown.length && <p className="c4-pay-empty c4-call-triclinium-empty">{v4("cwnEmpty")}</p>}
+      {board === "timeline" && !timeline.length && <p className="c4-pay-empty c4-call-triclinium-empty">{v4("cwnEmpty")}</p>}
       {board === "slips" && (
-        <ul className="c4-cwn-rows">
+        <ul className="c4-cwn-rows c4-call-triclinium-list">
           {shown.map((slip) => {
             const band = bandOf(slip.start, slip.end);
             const span = spanMinutes(slip.start, slip.end);
             const clashes = clashIds(slips, slip.id);
             return (
-              <li key={slip.id} data-rank={slip.rank} data-parked={slip.parked ? "1" : "0"} data-done={slip.done ? "1" : "0"} data-mute={slip.mute ? "1" : "0"} data-band={band}>
+              <li key={slip.id} className="c4-call-triclinium-card" data-rank={slip.rank} data-parked={slip.parked ? "1" : "0"} data-done={slip.done ? "1" : "0"} data-mute={slip.mute ? "1" : "0"} data-band={band}>
                 <span className="c4-cwn-pips" aria-label={`${v4("cwnRank")} ${slip.rank}`}>
                   {[1, 2].map((pip) => <i key={pip} data-on={slip.rank >= pip ? "1" : "0"} />)}
                 </span>
@@ -445,14 +468,21 @@ export function CustomerTimezones({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-zone" aria-label={v4("zonTitle")} data-zone="1" data-folio="1">
-      <header className="c4-zon-head">
+    <section className="c4-zone c4-zone-peristyle" aria-label={v4("zonTitle")} data-zone="1" data-folio="1" data-desk="peristyle">
+      <header className="c4-zone-peristyle-mast">
+        <p className="c4-zone-peristyle-seal" data-logo="mono">{v4("zonPeristyleLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("zonSub")}</p>
-          <h2 className="c4-title">{v4("zonTitle")}</h2>
+          <p className="c4-zone-peristyle-kicker">{v4("zonPeristyleKicker")}</p>
+          <h2 className="c4-title c4-zone-peristyle-title">{v4("zonTitle")}</h2>
+          <p className="c4-zone-peristyle-lead">{v4("zonPeristyleLead")}</p>
         </div>
-        <p className="c4-cwn-count">{v4("zonRows")} {rows.length}</p>
+        <p className="c4-zone-peristyle-count">{v4("zonRows")} {rows.length}</p>
       </header>
+      <ol className="c4-zone-peristyle-index" aria-label={v4("zonTitle")}>
+        <li data-tone="gold">{v4("zonPeristyleNamed")} {present.length}</li>
+        <li data-tone="ink">{v4("zonPeristyleBlank")} {blankCount}</li>
+        <li data-tone="ivory">{v4("zonPeristyleHidden")} {hiddenZones.length}</li>
+      </ol>
       <p className="c4-meta">{v4("zonHint")}</p>
       <p className="c4-meta">{v4("zonLocal")}</p>
       <p className="c4-meta">{v4("zonEscape")}</p>
@@ -464,14 +494,14 @@ export function CustomerTimezones({ base, v4 }: { base: string; v4: V4 }) {
       </p>
       {loading && !rows.length && <p className="c4-meta">{v4("zonLoading")}</p>}
       {failed && !rows.length && <p className="c4-meta">{v4("zonFailed")}</p>}
-      {!loading && !failed && !rows.length && <p className="c4-pay-empty">{v4("zonNone")}</p>}
+      {!loading && !failed && !rows.length && <p className="c4-pay-empty c4-zone-peristyle-empty">{v4("zonNone")}</p>}
       {regions.length > 0 && (
-        <section className="c4-zon-chart" aria-label={v4("zonRegions")}>
+        <section className="c4-zon-chart c4-zone-peristyle-chart" aria-label={v4("zonRegions")}>
           {regions.map((line) => {
             const share = zoneShare(line.count, rows.length);
             const height = Math.max(8, Math.round((line.count / tallest) * 88));
             return (
-              <p key={line.region || "blank"} className="c4-zon-col" data-region={line.region || "blank"}>
+              <p key={line.region || "blank"} className="c4-zon-col c4-zone-peristyle-column" data-region={line.region || "blank"}>
                 <span className="c4-zon-bar" style={{ height }} aria-hidden="true" />
                 <span>{line.region || v4("zonBlankRegion")}</span>
                 <span>{line.count}</span>
@@ -527,12 +557,12 @@ export function CustomerTimezones({ base, v4 }: { base: string; v4: V4 }) {
           setQuery("");
         }} />
       </label>
-      {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("zonEmpty")}</p>}
-      <ul className="c4-zon-rows">
+      {!shown.length && rows.length > 0 && <p className="c4-pay-empty c4-zone-peristyle-empty">{v4("zonEmpty")}</p>}
+      <ul className="c4-zon-rows c4-zone-peristyle-list">
         {shown.map((row) => {
           const name = timezoneText(row.timezone);
           return (
-            <li key={row.id} data-zone={name || "blank"}>
+            <li key={row.id} className="c4-zone-peristyle-card" data-zone={name || "blank"}>
               <span className="c4-zon-spine" aria-hidden="true" />
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("zonBlank")}</p>
