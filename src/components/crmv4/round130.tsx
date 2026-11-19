@@ -50,6 +50,10 @@ export function ConciergeNotes({ v4 }: { v4: V4 }) {
     writeJson(CONCIERGE_KEY, next);
   }, []);
   const shown = visibleNotes(notes, hidden, query);
+  const openCount = notes.filter((note) => !note.hidden).length;
+  const pinCount = notes.filter((note) => note.pinned).length;
+  const errandCount = notes.filter((note) => !note.errand).length;
+  const notePeak = Math.max(1, openCount, pinCount, errandCount);
 
   function store(next: Note[]) {
     setNotes(next);
@@ -57,16 +61,39 @@ export function ConciergeNotes({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-concierge" aria-label={v4("cncTitle")} data-concierge="1">
-      <header className="c4-cnc-head">
-        <p className="c4-cnc-seal" data-logo="mono">{v4("cncLogo")}</p>
+    <section className="c4-concierge c4-concierge-tablinum" aria-label={v4("cncTitle")} data-concierge="1" data-desk="tablinum">
+      <header className="c4-concierge-tablinum-mast">
+        <p className="c4-concierge-tablinum-seal" data-logo="mono">{v4("cncTablinumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("cncSub")}</p>
-          <h2 className="c4-title">{v4("cncTitle")}</h2>
+          <p className="c4-concierge-tablinum-kicker">{v4("cncTablinumKicker")}</p>
+          <h2 className="c4-title c4-concierge-tablinum-title">{v4("cncTitle")}</h2>
+          <p className="c4-concierge-tablinum-lead">{v4("cncTablinumLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-concierge-tablinum-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("cncHint")}</p>
+      <ol className="c4-concierge-tablinum-index" aria-label={v4("cncTitle")}>
+        <li data-tone="gold">{v4("cncTablinumOpen")} {openCount}</li>
+        <li data-tone="ink">{v4("cncTablinumPinned")} {pinCount}</li>
+        <li data-tone="ivory">{v4("cncTablinumErrand")} {errandCount}</li>
+      </ol>
+      <div className="c4-concierge-tablinum-chart" aria-label={v4("cncTitle")}>
+        <button type="button" className="c4-concierge-tablinum-column" data-on={openCount ? "1" : "0"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((openCount / notePeak) * 88))}px` }} />
+          <strong>{openCount}</strong>
+          <span>{v4("cncTablinumOpen")}</span>
+        </button>
+        <button type="button" className="c4-concierge-tablinum-column" data-on={pinCount ? "1" : "0"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((pinCount / notePeak) * 88))}px` }} />
+          <strong>{pinCount}</strong>
+          <span>{v4("cncTablinumPinned")}</span>
+        </button>
+        <button type="button" className="c4-concierge-tablinum-column" data-on={errandCount ? "1" : "0"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((errandCount / notePeak) * 88))}px` }} />
+          <strong>{errandCount}</strong>
+          <span>{v4("cncTablinumErrand")}</span>
+        </button>
+      </div>
+      <p className="c4-meta c4-concierge-tablinum-hint">{v4("cncHint")}</p>
       <p className="c4-meta">{v4("cncLocal")}</p>
       <p className="c4-meta">{v4("cncBlank")}</p>
       <p className="c4-meta">{v4("cncErrandBlank")}</p>
@@ -97,10 +124,10 @@ export function ConciergeNotes({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "0" : "1"} aria-pressed={!hidden} onClick={() => setHidden(false)}>{v4("cncOpen")}</button>
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("cncHidden")}</button>
       </div>
-      {!shown.length && <p className="c4-pay-empty">{v4("cncEmpty")}</p>}
-      <ul className="c4-cnc-rows">
+      {!shown.length && <p className="c4-pay-empty c4-concierge-tablinum-empty">{v4("cncEmpty")}</p>}
+      <ul className="c4-cnc-rows c4-concierge-tablinum-list">
         {shown.map((note) => (
-          <li key={note.id} data-pinned={note.pinned ? "1" : "0"}>
+          <li key={note.id} className="c4-concierge-tablinum-card" data-pinned={note.pinned ? "1" : "0"} data-on={note.pinned ? "1" : "0"}>
             <div>
               <p>{note.text}</p>
               {note.errand ? <p className="c4-cnc-errand">{note.errand}</p> : null}

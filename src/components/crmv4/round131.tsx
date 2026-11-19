@@ -51,6 +51,10 @@ export function ValetNotes({ v4 }: { v4: V4 }) {
     writeJson(VALET_KEY, next);
   }, []);
   const shown = visibleNotes(notes, hidden, query);
+  const openCount = notes.filter((note) => !note.hidden).length;
+  const hideCount = notes.filter((note) => note.hidden).length;
+  const standCount = notes.filter((note) => !note.stand).length;
+  const notePeak = Math.max(1, openCount, hideCount, standCount);
 
   function store(next: Note[]) {
     setNotes(next);
@@ -73,16 +77,39 @@ export function ValetNotes({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-valet" aria-label={v4("vltTitle")} data-valet="1">
-      <header className="c4-vlt-head">
-        <p className="c4-vlt-plate" data-logo="mono">{v4("vltLogo")}</p>
+    <section className="c4-valet c4-valet-cubiculum" aria-label={v4("vltTitle")} data-valet="1" data-desk="cubiculum">
+      <header className="c4-valet-cubiculum-mast">
+        <p className="c4-valet-cubiculum-seal" data-logo="mono">{v4("vltCubiculumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("vltSub")}</p>
-          <h2 className="c4-title">{v4("vltTitle")}</h2>
+          <p className="c4-valet-cubiculum-kicker">{v4("vltCubiculumKicker")}</p>
+          <h2 className="c4-title c4-valet-cubiculum-title">{v4("vltTitle")}</h2>
+          <p className="c4-valet-cubiculum-lead">{v4("vltCubiculumLead")}</p>
         </div>
-        <p className="c4-vlt-count">{shown.length}</p>
+        <p className="c4-valet-cubiculum-count">{shown.length}</p>
       </header>
-      <p className="c4-meta">{v4("vltHint")}</p>
+      <ol className="c4-valet-cubiculum-index" aria-label={v4("vltTitle")}>
+        <li data-tone="gold">{v4("vltCubiculumShown")} {openCount}</li>
+        <li data-tone="ink">{v4("vltCubiculumHidden")} {hideCount}</li>
+        <li data-tone="ivory">{v4("vltCubiculumStand")} {standCount}</li>
+      </ol>
+      <div className="c4-valet-cubiculum-chart" aria-label={v4("vltTitle")}>
+        <button type="button" className="c4-valet-cubiculum-column" data-on={openCount ? "1" : "0"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((openCount / notePeak) * 88))}px` }} />
+          <strong>{openCount}</strong>
+          <span>{v4("vltCubiculumShown")}</span>
+        </button>
+        <button type="button" className="c4-valet-cubiculum-column" data-on={hideCount ? "1" : "0"} onClick={() => setHidden(true)}>
+          <i style={{ height: `${Math.max(18, Math.round((hideCount / notePeak) * 88))}px` }} />
+          <strong>{hideCount}</strong>
+          <span>{v4("vltCubiculumHidden")}</span>
+        </button>
+        <button type="button" className="c4-valet-cubiculum-column" data-on={standCount ? "1" : "0"} onClick={() => setHidden(false)}>
+          <i style={{ height: `${Math.max(18, Math.round((standCount / notePeak) * 88))}px` }} />
+          <strong>{standCount}</strong>
+          <span>{v4("vltCubiculumStand")}</span>
+        </button>
+      </div>
+      <p className="c4-meta c4-valet-cubiculum-hint">{v4("vltHint")}</p>
       <p className="c4-meta">{v4("vltLocal")}</p>
       <p className="c4-meta">{v4("vltBlank")}</p>
       <p className="c4-meta">{v4("vltStandBlank")}</p>
@@ -120,10 +147,10 @@ export function ValetNotes({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "0" : "1"} aria-pressed={!hidden} onClick={() => setHidden(false)}>{v4("vltOpen")}</button>
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("vltHidden")}</button>
       </div>
-      {!shown.length && <p className="c4-pay-empty">{v4("vltEmpty")}</p>}
-      <ul className="c4-vlt-rows">
+      {!shown.length && <p className="c4-pay-empty c4-valet-cubiculum-empty">{v4("vltEmpty")}</p>}
+      <ul className="c4-vlt-rows c4-valet-cubiculum-list">
         {shown.map((note) => (
-          <li key={note.id} data-pinned={note.pinned ? "1" : "0"}>
+          <li key={note.id} className="c4-valet-cubiculum-card" data-pinned={note.pinned ? "1" : "0"} data-on={note.pinned ? "1" : "0"}>
             <span className="c4-vlt-perf" aria-hidden="true" />
             <div>
               <p>{note.text}</p>
