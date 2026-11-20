@@ -60,6 +60,8 @@ export function SnoozeList({ base, v4 }: { base: string; v4: V4 }) {
   }, [data.loading, data.error, presentKey]);
   const shown = visiblePeople(rows, snoozes, query, snoozed);
   const notes = new Map(snoozes.map((item) => [item.id, item.note]));
+  const awake = Math.max(0, rows.length - snoozes.length);
+  const snoozePeak = Math.max(1, awake, snoozes.length);
 
   function store(next: Snooze[]) {
     setSnoozes(next);
@@ -67,14 +69,25 @@ export function SnoozeList({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-snooze-list" aria-label={v4("nqTitle")} data-snooze-list="1">
-      <header className="c4-pay-head">
+    <section className="c4-snooze-list c4-snooze-propylaeum" aria-label={v4("nqTitle")} data-snooze-list="1" data-desk="propylaeum">
+      <header className="c4-pay-head c4-nq-propylaeum-mast">
+        <p className="c4-nq-propylaeum-seal" data-logo="mono">{v4("nqPropylaeumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("nqSub")}</p>
-          <h2 className="c4-title">{v4("nqTitle")}</h2>
+          <p className="c4-nq-propylaeum-kicker">{v4("nqPropylaeumKicker")}</p>
+          <h2 className="c4-title c4-nq-propylaeum-title">{v4("nqTitle")}</h2>
+          <p className="c4-nq-propylaeum-lead">{v4("nqPropylaeumLead")}</p>
         </div>
-        <p className="c4-meta">{snoozes.length}</p>
+        <p className="c4-nq-propylaeum-count">{shown.length}</p>
       </header>
+      <ol className="c4-nq-propylaeum-index" aria-label={v4("nqPropylaeumKicker")}>
+        <li data-tone="gold">{v4("nqPropylaeumRows")} {rows.length}</li>
+        <li data-tone="ink">{v4("nqPropylaeumShown")} {shown.length}</li>
+        <li data-tone="ivory">{v4("nqPropylaeumSnoozed")} {snoozes.length}</li>
+      </ol>
+      <div className="c4-nq-propylaeum-jars" aria-hidden="true">
+        <i style={{ height: `${Math.max(18, Math.round((awake / snoozePeak) * 64))}px` }} />
+        <i style={{ height: `${Math.max(18, Math.round((snoozes.length / snoozePeak) * 64))}px` }} />
+      </div>
       <p className="c4-meta">{v4("nqHint")}</p>
       <p className="c4-meta">{v4("nqLocal")}</p>
       <p className="c4-meta">{v4("nqBlank")}</p>
@@ -95,11 +108,11 @@ export function SnoozeList({ base, v4 }: { base: string; v4: V4 }) {
       {data.error && <p className="c4-meta">{v4("nqFailed")}</p>}
       {!data.loading && !data.error && !rows.length && <p className="c4-pay-empty">{v4("nqNone")}</p>}
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("nqEmpty")}</p>}
-      <ul className="c4-snooze-rows">
+      <ul className="c4-snooze-rows c4-nq-propylaeum-list">
         {shown.map((row) => {
           const saved = notes.get(row.id);
           return (
-            <li key={row.id} data-customer={row.id} data-snoozed={saved !== undefined ? "1" : "0"}>
+            <li key={row.id} className="c4-nq-propylaeum-card" data-customer={row.id} data-snoozed={saved !== undefined ? "1" : "0"}>
               <p>{row.name || row.email || row.id}</p>
               <p className="c4-meta">{row.email || ""}</p>
               {saved ? <p className="c4-meta">{saved}</p> : null}
@@ -148,6 +161,7 @@ export function DepositMethod({ base, v4 }: { base: string; v4: V4 }) {
   const chips = visibleMethods(present, hiddenMethods, showHidden);
   const method = activeMethod(selected, chips);
   const shown = visibleDeposits(rows, method, blank, query);
+  const methodPeak = Math.max(1, ...lines.map((line) => line.count));
 
   function store(next: string[], clear: string) {
     setHiddenMethods(next);
@@ -156,14 +170,26 @@ export function DepositMethod({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-dep-method" aria-label={v4("mgTitle")} data-dep-method="1">
-      <header className="c4-pay-head">
+    <section className="c4-dep-method c4-dep-bouleuterion" aria-label={v4("mgTitle")} data-dep-method="1" data-desk="bouleuterion">
+      <header className="c4-pay-head c4-mg-bouleuterion-mast">
+        <p className="c4-mg-bouleuterion-seal" data-logo="mono">{v4("mgBouleuterionLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("mgSub")}</p>
-          <h2 className="c4-title">{v4("mgTitle")}</h2>
+          <p className="c4-mg-bouleuterion-kicker">{v4("mgBouleuterionKicker")}</p>
+          <h2 className="c4-title c4-mg-bouleuterion-title">{v4("mgTitle")}</h2>
+          <p className="c4-mg-bouleuterion-lead">{v4("mgBouleuterionLead")}</p>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-mg-bouleuterion-count">{shown.length}</p>
       </header>
+      <ol className="c4-mg-bouleuterion-index" aria-label={v4("mgBouleuterionKicker")}>
+        <li data-tone="gold">{v4("mgBouleuterionRows")} {rows.length}</li>
+        <li data-tone="ink">{v4("mgBouleuterionShown")} {shown.length}</li>
+        <li data-tone="ivory">{v4("mgBouleuterionBlank")} {blankCount}</li>
+      </ol>
+      <div className="c4-mg-bouleuterion-crates" aria-hidden="true">
+        {lines.filter((line) => line.method).map((line) => (
+          <i key={line.method} style={{ width: `${Math.max(18, Math.round((line.count / methodPeak) * 72))}px` }} />
+        ))}
+      </div>
       <p className="c4-meta">{v4("mgHint")}</p>
       <p className="c4-meta">{v4("mgLocal")}</p>
       <p className="c4-row">
@@ -199,11 +225,11 @@ export function DepositMethod({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("mgSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("mgEmpty")}</p>}
-      <ul className="c4-mg-rows">
+      <ul className="c4-mg-rows c4-mg-bouleuterion-list">
         {shown.map((row) => {
           const name = methodText(row.method);
           return (
-            <li key={row.id} data-method={name || "blank"}>
+            <li key={row.id} className="c4-mg-bouleuterion-card" data-method={name || "blank"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("mgBlank")}</p>
             </li>
