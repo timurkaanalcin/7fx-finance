@@ -343,6 +343,7 @@ import { LastCountryPlates, RegulatorRules } from "./round352";
 import { BrokerPlates as HouseBrokerPlates, FuseeRules as ConicalFuseeRules } from "./round353";
 import { PerlageRules, SourcePlates as LeadSourcePlates } from "./round354";
 import { GuillocheRules, ExpiryPlates } from "./round355";
+import { AnglageRules, ReadOnlyPlates } from "./round356";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1292,6 +1293,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "lsr") return v4("lsrTitle");
     if (tab === "gll") return v4("gllTitle");
     if (tab === "exp") return v4("expTitle");
+    if (tab === "agl") return v4("aglTitle");
+    if (tab === "sel") return v4("selTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -2667,6 +2670,8 @@ function Shell({ base, section, name }: Props) {
             {view === "lsr" && <LeadSourcePlates base={base} v4={v4} />}
             {view === "gll" && <GuillocheRules base={base} v4={v4} />}
             {view === "exp" && <ExpiryPlates base={base} v4={v4} />}
+            {view === "agl" && <AnglageRules base={base} v4={v4} />}
+            {view === "sel" && <ReadOnlyPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

@@ -79,15 +79,20 @@ export function CsvColumnDesk({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-csv-presets" aria-label={v4("xvTitle")} data-csv-presets="1">
-      <header className="c4-pay-head">
+    <section className="c4-csv-presets c4-csv-naos" aria-label={v4("xvTitle")} data-csv-presets="1" data-csv-naos="1">
+      <header className="c4-pay-head c4-xv-naos-mast">
+        <p className="c4-xv-naos-seal" data-logo="mono">{v4("xvNaosLogo")}</p>
         <div>
-          <p className="c4-csv-logo" data-logo="mono">{v4("xvLogo")}</p>
-          <p className="c4-pay-kicker">{v4("xvSub")}</p>
+          <p className="c4-xv-naos-kicker">{v4("xvNaosKicker")}</p>
           <h2 className="c4-title">{v4("xvTitle")}</h2>
+          <p className="c4-xv-naos-lead">{v4("xvNaosLead")}</p>
         </div>
-        <p className="c4-meta">{picked.length}</p>
+        <p className="c4-xv-naos-count">{picked.length}</p>
       </header>
+      <ol className="c4-xv-naos-index" aria-label={v4("xvNaosKicker")}>
+        <li data-tone="gold">{v4("xvNaosTiers")} {visible.length}</li>
+        <li data-tone="ink">{v4("xvNaosOpen")} {picked.length}</li>
+      </ol>
       <p className="c4-meta">{v4("xvHint")}</p>
       <p className="c4-meta">{v4("xvLocal")}</p>
       <p className="c4-meta">{v4("xvUnknown")}</p>
@@ -121,7 +126,7 @@ export function CsvColumnDesk({ base, v4 }: { base: string; v4: V4 }) {
       {!loading && !failed && !rows.length && <p className="c4-pay-empty">{v4("xvNone")}</p>}
       <h3 className="c4-title">{v4("xvPreview")}</h3>
       {!rows.length && <p className="c4-pay-empty">{v4("xvEmpty")}</p>}
-      <div className="c4-csv-sheet">
+      <div className="c4-csv-sheet c4-xv-naos-sheet">
         <table className="c4-csv-table">
           <thead>
             <tr>{picked.map((col) => <th key={col} scope="col">{v4(LABEL[col])}</th>)}</tr>
@@ -170,14 +175,20 @@ export function AuditDayStrip({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-audit-days" aria-label={v4("uyTitle")} data-audit-days="1">
-      <header className="c4-pay-head">
+    <section className="c4-audit-days c4-audit-adyton" aria-label={v4("uyTitle")} data-audit-days="1" data-audit-adyton="1">
+      <header className="c4-pay-head c4-uy-adyton-mast">
+        <p className="c4-uy-adyton-seal" data-logo="mono">{v4("uyAdytonLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("uySub")}</p>
+          <p className="c4-uy-adyton-kicker">{v4("uyAdytonKicker")}</p>
           <h2 className="c4-title">{v4("uyTitle")}</h2>
+          <p className="c4-uy-adyton-lead">{v4("uyAdytonLead")}</p>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-uy-adyton-count">{chips.length}</p>
       </header>
+      <ol className="c4-uy-adyton-index" aria-label={v4("uyAdytonKicker")}>
+        <li data-tone="gold">{v4("uyAdytonOpen")} {chips.length}</li>
+        <li data-tone="ink">{v4("uyAdytonBlank")} {blankCount}</li>
+      </ol>
       <p className="c4-meta">{v4("uyHint")}</p>
       <p className="c4-meta">{v4("uyLocal")}</p>
       <p className="c4-row">
@@ -213,11 +224,11 @@ export function AuditDayStrip({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("uySearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("uyEmpty")}</p>}
-      <ul className="c4-uy-rows">
+      <ul className="c4-uy-rows c4-uy-adyton-list">
         {shown.map((row) => {
           const stamp = utcDay(row.at);
           return (
-            <li key={row.id} data-day={stamp || "blank"}>
+            <li key={row.id} className="c4-uy-adyton-card" data-day={stamp || "blank"}>
               <p>{row.action || row.id}</p>
               <p className="c4-meta">{[row.actor, row.target].filter(Boolean).join(" · ")}</p>
               <p className="c4-meta">{stamp || v4("uyBlank")}</p>
