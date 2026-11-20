@@ -183,6 +183,7 @@ export function TradeSides({ base, v4 }: { base: string; v4: V4 }) {
   const chips = visibleSides(present, hiddenSides, showHidden);
   const side = activeSide(selected, chips);
   const shown = visibleTrades(rows, side, blank, query);
+  const peak = Math.max(1, ...lines.map((line) => line.count));
 
   function store(next: string[], clear: string) {
     setHiddenSides(next);
@@ -191,14 +192,26 @@ export function TradeSides({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-trade-side" aria-label={v4("sdgTitle")} data-trade-side="1">
-      <header className="c4-pay-head">
+    <section className="c4-trade-side c4-trade-side-macellum" aria-label={v4("sdgTitle")} data-trade-side="1" data-desk="macellum">
+      <header className="c4-pay-head c4-sdg-macellum-mast">
+        <p className="c4-sdg-macellum-seal" data-logo="mono">{v4("sdgMacellumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("sdgSub")}</p>
-          <h2 className="c4-title">{v4("sdgTitle")}</h2>
+          <p className="c4-sdg-macellum-kicker">{v4("sdgMacellumKicker")}</p>
+          <h2 className="c4-title c4-sdg-macellum-title">{v4("sdgTitle")}</h2>
+          <p className="c4-sdg-macellum-lead">{v4("sdgMacellumLead")}</p>
         </div>
-        <p className="c4-meta">{v4("sdgRows")} {rows.length}</p>
+        <p className="c4-sdg-macellum-count">{shown.length}</p>
       </header>
+      <ol className="c4-sdg-macellum-index" aria-label={v4("sdgMacellumKicker")}>
+        <li data-tone="gold">{v4("sdgMacellumRows")} {rows.length}</li>
+        <li data-tone="ink">{v4("sdgMacellumShown")} {shown.length}</li>
+        <li data-tone="ivory">{v4("sdgMacellumBlank")} {blankCount}</li>
+      </ol>
+      <div className="c4-sdg-macellum-stalls" aria-hidden="true">
+        {lines.filter((line) => line.side).map((line) => (
+          <i key={line.side} style={{ height: `${Math.max(12, Math.round((line.count / peak) * 56))}px` }} />
+        ))}
+      </div>
       <p className="c4-meta">{v4("sdgHint")}</p>
       <p className="c4-meta">{v4("sdgLocal")}</p>
       <p className="c4-row">
@@ -238,7 +251,7 @@ export function TradeSides({ base, v4 }: { base: string; v4: V4 }) {
         {shown.map((row) => {
           const name = sideText(row.side);
           return (
-            <li key={row.id} data-side={name || "blank"} data-kind={row.kind}>
+            <li key={row.id} className="c4-sdg-macellum-card" data-side={name || "blank"} data-kind={row.kind}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("sdgBlank")}</p>
               <p className="c4-meta">{row.kind === "position" ? v4("sdgPosition") : v4("sdgOrder")}</p>
