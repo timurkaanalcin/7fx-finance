@@ -172,6 +172,7 @@ export function LeadStatuses({ base, v4 }: { base: string; v4: V4 }) {
   const chips = visibleStatuses(present, hiddenStatuses, showHidden);
   const status = activeStatus(selected, chips);
   const shown = visibleLeads(rows, status, blank, query);
+  const peak = Math.max(1, ...lines.map((line) => line.count));
 
   function store(next: string[], clear: string) {
     setHiddenStatuses(next);
@@ -180,14 +181,26 @@ export function LeadStatuses({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-lead-stat" aria-label={v4("ldsTitle")} data-lead-stat="1">
-      <header className="c4-pay-head">
+    <section className="c4-lead-stat c4-lead-stat-crypta" aria-label={v4("ldsTitle")} data-lead-stat="1" data-desk="crypta">
+      <header className="c4-pay-head c4-lds-crypta-mast">
+        <p className="c4-lds-crypta-seal" data-logo="mono">{v4("ldsCryptaLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("ldsSub")}</p>
-          <h2 className="c4-title">{v4("ldsTitle")}</h2>
+          <p className="c4-lds-crypta-kicker">{v4("ldsCryptaKicker")}</p>
+          <h2 className="c4-title c4-lds-crypta-title">{v4("ldsTitle")}</h2>
+          <p className="c4-lds-crypta-lead">{v4("ldsCryptaLead")}</p>
         </div>
-        <p className="c4-meta">{v4("ldsRows")} {rows.length}</p>
+        <p className="c4-lds-crypta-count">{shown.length}</p>
       </header>
+      <ol className="c4-lds-crypta-index" aria-label={v4("ldsCryptaKicker")}>
+        <li data-tone="gold">{v4("ldsCryptaRows")} {rows.length}</li>
+        <li data-tone="ink">{v4("ldsCryptaShown")} {shown.length}</li>
+        <li data-tone="ivory">{v4("ldsCryptaBlank")} {blankCount}</li>
+      </ol>
+      <div className="c4-lds-crypta-stalls" aria-hidden="true">
+        {lines.filter((line) => line.status).map((line) => (
+          <i key={line.status} style={{ height: `${Math.max(12, Math.round((line.count / peak) * 56))}px` }} />
+        ))}
+      </div>
       <p className="c4-meta">{v4("ldsHint")}</p>
       <p className="c4-meta">{v4("ldsLocal")}</p>
       <p className="c4-row">
@@ -227,7 +240,7 @@ export function LeadStatuses({ base, v4 }: { base: string; v4: V4 }) {
         {shown.map((row) => {
           const name = statusText(row.status);
           return (
-            <li key={row.id} data-status={name || "blank"}>
+            <li key={row.id} className="c4-lds-crypta-card" data-status={name || "blank"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("ldsBlank")}</p>
             </li>

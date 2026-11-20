@@ -172,6 +172,7 @@ export function AffiliateChannels({ base, v4 }: { base: string; v4: V4 }) {
   const chips = visibleChannels(present, hiddenChannels, showHidden);
   const channel = activeChannel(selected, chips);
   const shown = visibleTraders(rows, channel, blank, query);
+  const peak = Math.max(1, ...lines.map((line) => line.count));
 
   function store(next: string[], clear: string) {
     setHiddenChannels(next);
@@ -180,14 +181,26 @@ export function AffiliateChannels({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-aff-chan" aria-label={v4("acgTitle")} data-aff-chan="1">
-      <header className="c4-pay-head">
+    <section className="c4-aff-chan c4-aff-chan-porticus" aria-label={v4("acgTitle")} data-aff-chan="1" data-desk="porticus">
+      <header className="c4-pay-head c4-acg-porticus-mast">
+        <p className="c4-acg-porticus-seal" data-logo="mono">{v4("acgPorticusLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("acgSub")}</p>
-          <h2 className="c4-title">{v4("acgTitle")}</h2>
+          <p className="c4-acg-porticus-kicker">{v4("acgPorticusKicker")}</p>
+          <h2 className="c4-title c4-acg-porticus-title">{v4("acgTitle")}</h2>
+          <p className="c4-acg-porticus-lead">{v4("acgPorticusLead")}</p>
         </div>
-        <p className="c4-meta">{v4("acgRows")} {rows.length}</p>
+        <p className="c4-acg-porticus-count">{shown.length}</p>
       </header>
+      <ol className="c4-acg-porticus-index" aria-label={v4("acgPorticusKicker")}>
+        <li data-tone="gold">{v4("acgPorticusRows")} {rows.length}</li>
+        <li data-tone="ink">{v4("acgPorticusShown")} {shown.length}</li>
+        <li data-tone="ivory">{v4("acgPorticusBlank")} {blankCount}</li>
+      </ol>
+      <div className="c4-acg-porticus-basins" aria-hidden="true">
+        {lines.filter((line) => line.channel).map((line) => (
+          <i key={line.channel} style={{ height: `${Math.max(18, Math.round((line.count / peak) * 64))}px` }} />
+        ))}
+      </div>
       <p className="c4-meta">{v4("acgHint")}</p>
       <p className="c4-meta">{v4("acgLocal")}</p>
       <p className="c4-row">
@@ -227,7 +240,7 @@ export function AffiliateChannels({ base, v4 }: { base: string; v4: V4 }) {
         {shown.map((row) => {
           const name = channelText(row.channel);
           return (
-            <li key={row.id} data-channel={name || "blank"}>
+            <li key={row.id} className="c4-acg-porticus-card" data-channel={name || "blank"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("acgBlank")}</p>
             </li>

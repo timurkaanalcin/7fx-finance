@@ -330,6 +330,7 @@ import { ForenamePlates, OscillatorRules } from "./round339";
 import { DevicePlates as LastDevicePlates, EscapeWheelRules } from "./round340";
 import { MoonPhaseRules, SurnamePlates as LastNamePlates } from "./round341";
 import { ResidencyPlates, SonnerieRules } from "./round342";
+import { LeverRules, StreetLanePlates } from "./round343";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1253,6 +1254,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "lnm") return v4("lnmTitle");
     if (tab === "snr") return v4("snrTitle");
     if (tab === "rsd") return v4("rsdTitle");
+    if (tab === "lvr") return v4("lvrTitle");
+    if (tab === "stt") return v4("sttTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1835,6 +1838,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "lnm") return v4("lnmSub");
     if (tab === "snr") return v4("snrSub");
     if (tab === "rsd") return v4("rsdSub");
+    if (tab === "lvr") return v4("lvrSub");
+    if (tab === "stt") return v4("sttSub");
     return "";
   }
 
@@ -2578,6 +2583,8 @@ function Shell({ base, section, name }: Props) {
             {view === "lnm" && <LastNamePlates base={base} v4={v4} />}
             {view === "snr" && <SonnerieRules base={base} v4={v4} />}
             {view === "rsd" && <ResidencyPlates base={base} v4={v4} />}
+            {view === "lvr" && <LeverRules base={base} v4={v4} />}
+            {view === "stt" && <StreetLanePlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
