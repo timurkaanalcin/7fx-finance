@@ -325,6 +325,7 @@ import { DetentRules, TellurionPlates } from "./round334";
 import { GongPlates, RepeaterRules } from "./round335";
 import { BackstaffPlates, BarrelRules } from "./round336";
 import { CoaxialRules, TypeplatePlates } from "./round337";
+import { KeylessRules, RoleplatePlates } from "./round338";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1238,6 +1239,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "bks") return v4("bksTitle");
     if (tab === "cax") return v4("caxTitle");
     if (tab === "ctp") return v4("ctpTitle");
+    if (tab === "klw") return v4("klwTitle");
+    if (tab === "rlp") return v4("rlpTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1810,6 +1813,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "bks") return v4("bksSub");
     if (tab === "cax") return v4("caxSub");
     if (tab === "ctp") return v4("ctpSub");
+    if (tab === "klw") return v4("klwSub");
+    if (tab === "rlp") return v4("rlpSub");
     return "";
   }
 
@@ -2543,6 +2548,8 @@ function Shell({ base, section, name }: Props) {
             {view === "bks" && <BackstaffPlates base={base} v4={v4} />}
             {view === "cax" && <CoaxialRules base={base} v4={v4} />}
             {view === "ctp" && <TypeplatePlates base={base} v4={v4} />}
+            {view === "klw" && <KeylessRules base={base} v4={v4} />}
+            {view === "rlp" && <RoleplatePlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
