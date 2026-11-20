@@ -317,6 +317,7 @@ import { DeadbeatRules, DiptychPlates } from "./round326";
 import { CylinderRules, RetePlates } from "./round327";
 import { GunterPlates, VirguleRules } from "./round328";
 import { NocturlabePlates, StackfreedRules } from "./round329";
+import { ContrateRules, JacquemartPlates } from "./round330";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1214,6 +1215,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "gnt") return v4("gntTitle");
     if (tab === "sfr") return v4("sfrTitle");
     if (tab === "nlb") return v4("nlbTitle");
+    if (tab === "ctr") return v4("ctrTitle");
+    if (tab === "jcq") return v4("jcqTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1770,6 +1773,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "gnt") return v4("gntSub");
     if (tab === "sfr") return v4("sfrSub");
     if (tab === "nlb") return v4("nlbSub");
+    if (tab === "ctr") return v4("ctrSub");
+    if (tab === "jcq") return v4("jcqSub");
     return "";
   }
 
@@ -2487,6 +2492,8 @@ function Shell({ base, section, name }: Props) {
             {view === "gnt" && <GunterPlates base={base} v4={v4} />}
             {view === "sfr" && <StackfreedRules base={base} v4={v4} />}
             {view === "nlb" && <NocturlabePlates base={base} v4={v4} />}
+            {view === "ctr" && <ContrateRules base={base} v4={v4} />}
+            {view === "jcq" && <JacquemartPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

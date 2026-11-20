@@ -302,15 +302,21 @@ export function ShiftBriefings({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-brf" aria-label={v4("brfTitle")} data-briefing="1" data-role={role}>
-      <header className="c4-brf-head">
-        <p className="c4-brf-plate" data-logo="mono">{v4("brfLogo")}</p>
+    <section className="c4-brf c4-brf-apodyterium" aria-label={v4("brfTitle")} data-briefing="1" data-role={role} data-desk="apodyterium">
+      <header className="c4-brf-head c4-brf-apodyterium-mast">
+        <p className="c4-brf-plate c4-brf-apodyterium-seal" data-logo="mono">{v4("brfApodyteriumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("brfSub")}</p>
-          <h2 className="c4-title">{v4("brfTitle")}</h2>
+          <p className="c4-brf-apodyterium-kicker">{v4("brfApodyteriumKicker")}</p>
+          <h2 className="c4-title c4-brf-apodyterium-title">{v4("brfTitle")}</h2>
+          <p className="c4-brf-apodyterium-lead">{v4("brfApodyteriumLead")}</p>
         </div>
-        <p className="c4-brf-count">{shown.length}</p>
+        <p className="c4-brf-count c4-brf-apodyterium-count">{shown.length}</p>
       </header>
+      <ol className="c4-brf-apodyterium-index" aria-label={v4("brfApodyteriumKicker")}>
+        <li data-tone="gold">{v4("brfOpen")}</li>
+        <li data-tone="ink">{v4("brfPark")}</li>
+        <li>{v4("brfSeal")}</li>
+      </ol>
       <details className="c4-brf-rules">
         <summary>{v4("brfRules")}</summary>
         <p className="c4-meta">{v4("brfHint")}</p>
@@ -545,7 +551,7 @@ export function ShiftBriefings({ v4 }: { v4: V4 }) {
             const band = quarterBand(card.quarter);
             const pair = quarterPair(card.quarter);
             return (
-              <li key={card.id} data-tone={card.tone || "blank"} data-quarter={band} data-pinned={card.pinned ? "1" : "0"}>
+              <li key={card.id} className="c4-brf-apodyterium-card" data-tone={card.tone || "blank"} data-quarter={band} data-pinned={card.pinned ? "1" : "0"}>
                 <span className="c4-brf-clock">{quarterLabel(card.quarter)}</span>
                 <div>
                   {editing === card.id ? (
@@ -654,14 +660,21 @@ export function SpokenLanguages({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-lex" aria-label={v4("lexTitle")} data-lexicon="1">
-      <header className="c4-lex-head">
+    <section className="c4-lex c4-lex-frigidarium" aria-label={v4("lexTitle")} data-lexicon="1" data-desk="frigidarium">
+      <header className="c4-lex-head c4-lex-frigidarium-mast">
+        <p className="c4-lex-frigidarium-seal" data-logo="mono">{v4("lexFrigidariumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("lexSub")}</p>
-          <h2 className="c4-title">{v4("lexTitle")}</h2>
+          <p className="c4-lex-frigidarium-kicker">{v4("lexFrigidariumKicker")}</p>
+          <h2 className="c4-title c4-lex-frigidarium-title">{v4("lexTitle")}</h2>
+          <p className="c4-lex-frigidarium-lead">{v4("lexFrigidariumLead")}</p>
         </div>
-        <p className="c4-brf-count">{v4("lexRows")} {rows.length}</p>
+        <p className="c4-brf-count c4-lex-frigidarium-count">{v4("lexRows")} {rows.length}</p>
       </header>
+      <ol className="c4-lex-frigidarium-index" aria-label={v4("lexFrigidariumKicker")}>
+        <li data-tone="gold">{v4("lexAllTongue")}</li>
+        <li data-tone="ink">{v4("lexUnmarked")}</li>
+        <li>{v4("lexLeadTongue")}</li>
+      </ol>
       <details className="c4-brf-rules">
         <summary>{v4("lexRules")}</summary>
         <p className="c4-meta">{v4("lexHint")}</p>
@@ -768,7 +781,7 @@ export function SpokenLanguages({ base, v4 }: { base: string; v4: V4 }) {
           const tongueMark = spokenTongue(row.language);
           const scriptMark = scriptOf(row.language);
           return (
-            <li key={row.id} data-tongue={tongueMark || "blank"} data-script={scriptMark || "blank"}>
+            <li key={row.id} className="c4-lex-frigidarium-card" data-tongue={tongueMark || "blank"} data-script={scriptMark || "blank"}>
               <span className="c4-lex-letter" aria-hidden="true">{letterOf(row.language) || "—"}</span>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">
