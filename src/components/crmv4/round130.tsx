@@ -174,6 +174,7 @@ export function RetentionStatuses({ base, v4 }: { base: string; v4: V4 }) {
   const chips = visibleRetains(present, hiddenRetains, showHidden);
   const retain = activeRetain(selected, chips);
   const shown = visibleCustomers(rows, retain, blank, query);
+  const peak = Math.max(1, ...lines.map((line) => line.count));
 
   function store(next: string[], clear: string) {
     setHiddenRetains(next);
@@ -182,14 +183,26 @@ export function RetentionStatuses({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-retain" aria-label={v4("rtnTitle")} data-retain="1">
-      <header className="c4-pay-head">
+    <section className="c4-retain c4-retain-thermopolium" aria-label={v4("rtnTitle")} data-retain="1" data-desk="thermopolium">
+      <header className="c4-pay-head c4-rtn-thermopolium-mast">
+        <p className="c4-rtn-thermopolium-seal" data-logo="mono">{v4("rtnThermopoliumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("rtnSub")}</p>
-          <h2 className="c4-title">{v4("rtnTitle")}</h2>
+          <p className="c4-rtn-thermopolium-kicker">{v4("rtnThermopoliumKicker")}</p>
+          <h2 className="c4-title c4-rtn-thermopolium-title">{v4("rtnTitle")}</h2>
+          <p className="c4-rtn-thermopolium-lead">{v4("rtnThermopoliumLead")}</p>
         </div>
-        <p className="c4-meta">{v4("rtnRows")} {rows.length}</p>
+        <p className="c4-rtn-thermopolium-count">{shown.length}</p>
       </header>
+      <ol className="c4-rtn-thermopolium-index" aria-label={v4("rtnThermopoliumKicker")}>
+        <li data-tone="gold">{v4("rtnThermopoliumRows")} {rows.length}</li>
+        <li data-tone="ink">{v4("rtnThermopoliumShown")} {shown.length}</li>
+        <li data-tone="ivory">{v4("rtnThermopoliumBlank")} {blankCount}</li>
+      </ol>
+      <div className="c4-rtn-thermopolium-jars" aria-hidden="true">
+        {lines.filter((line) => line.retain).map((line) => (
+          <i key={line.retain} style={{ height: `${Math.max(18, Math.round((line.count / peak) * 64))}px` }} />
+        ))}
+      </div>
       <p className="c4-meta">{v4("rtnHint")}</p>
       <p className="c4-meta">{v4("rtnLocal")}</p>
       <p className="c4-row">
@@ -225,11 +238,11 @@ export function RetentionStatuses({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("rtnSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("rtnEmpty")}</p>}
-      <ul className="c4-rtn-rows">
+      <ul className="c4-rtn-rows c4-rtn-thermopolium-list">
         {shown.map((row) => {
           const name = retainText(row.retain);
           return (
-            <li key={row.id} data-retain={name || "blank"}>
+            <li key={row.id} className="c4-rtn-thermopolium-card" data-retain={name || "blank"}>
               <span className="c4-rtn-rail" aria-hidden="true" />
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("rtnBlank")}</p>

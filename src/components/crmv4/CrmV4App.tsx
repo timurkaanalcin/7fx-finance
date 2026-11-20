@@ -332,6 +332,7 @@ import { MoonPhaseRules, SurnamePlates as LastNamePlates } from "./round341";
 import { ResidencyPlates, SonnerieRules } from "./round342";
 import { LeverRules, StreetLanePlates } from "./round343";
 import { EmailLanePlates, RattrapanteRules } from "./round344";
+import { LanguagePlates as DeskLanguagePlates, TourbillonRules as DeskTourbillonRules } from "./round345";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1259,6 +1260,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "stt") return v4("sttTitle");
     if (tab === "rtp") return v4("rtpTitle");
     if (tab === "mpx") return v4("mpxTitle");
+    if (tab === "tbx") return v4("tbxTitle");
+    if (tab === "lgx") return v4("lgxTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1845,6 +1848,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "stt") return v4("sttSub");
     if (tab === "rtp") return v4("rtpSub");
     if (tab === "mpx") return v4("mpxSub");
+    if (tab === "tbx") return v4("tbxSub");
+    if (tab === "lgx") return v4("lgxSub");
     return "";
   }
 
@@ -2592,6 +2597,8 @@ function Shell({ base, section, name }: Props) {
             {view === "stt" && <StreetLanePlates base={base} v4={v4} />}
             {view === "rtp" && <RattrapanteRules base={base} v4={v4} />}
             {view === "mpx" && <EmailLanePlates base={base} v4={v4} />}
+            {view === "tbx" && <DeskTourbillonRules base={base} v4={v4} />}
+            {view === "lgx" && <DeskLanguagePlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
