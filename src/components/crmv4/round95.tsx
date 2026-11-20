@@ -49,14 +49,20 @@ export function SessionNote({ v4 }: { v4: V4 }) {
   }, []);
 
   return (
-    <section className="c4-session-note" aria-label={v4("syTitle")} data-session-note="1">
-      <header className="c4-pay-head">
+    <section className="c4-session-note c4-session-megaron" aria-label={v4("syTitle")} data-session-note="1" data-desk="megaron">
+      <header className="c4-pay-head c4-sy-megaron-mast">
+        <p className="c4-sy-megaron-seal" data-logo="mono">{v4("syMegaronLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("sySub")}</p>
-          <h2 className="c4-title">{v4("syTitle")}</h2>
+          <p className="c4-sy-megaron-kicker">{v4("syMegaronKicker")}</p>
+          <h2 className="c4-title c4-sy-megaron-title">{v4("syTitle")}</h2>
+          <p className="c4-sy-megaron-lead">{v4("syMegaronLead")}</p>
         </div>
-        <p className="c4-meta">{saved ? 1 : 0}</p>
+        <p className="c4-sy-megaron-count">{saved ? 1 : 0}</p>
       </header>
+      <ol className="c4-sy-megaron-index" aria-label={v4("syMegaronKicker")}>
+        <li data-tone="gold">{v4("syMegaronDay")} {day || "—"}</li>
+        <li data-tone="ink">{saved ? v4("syMegaronSaved") : v4("syMegaronClear")}</li>
+      </ol>
       <p className="c4-meta">{v4("syHint")}</p>
       <p className="c4-meta">{v4("syLocal")}</p>
       {day && <p className="c4-meta" data-session-day="">{v4("syDay")} {day}</p>}
@@ -83,7 +89,7 @@ export function SessionNote({ v4 }: { v4: V4 }) {
       </form>
       <p className="c4-meta">{v4("syBlank")}</p>
       {!saved && <p className="c4-pay-empty">{v4("syEmpty")}</p>}
-      {saved && <p className="c4-session-card" data-session-saved="">{saved}</p>}
+      {saved && <p className="c4-session-card c4-sy-megaron-card" data-session-saved="">{saved}</p>}
     </section>
   );
 }

@@ -66,6 +66,8 @@ export function TagPalette({ v4 }: { v4: V4 }) {
     writeJson(PALETTE_KEY, next);
   }, []);
   const shown = visibleTags(tags, query, hidden);
+  const pinnedCount = tags.filter((tag) => tag.pinned && !tag.hidden).length;
+  const hiddenCount = tags.filter((tag) => tag.hidden).length;
 
   function store(next: DeskTag[]) {
     setTags(next);
@@ -73,14 +75,21 @@ export function TagPalette({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-tag-palette" aria-label={v4("plTitle")} data-tag-palette="1">
-      <header className="c4-pay-head">
+    <section className="c4-tag-palette c4-tag-lesche" aria-label={v4("plTitle")} data-tag-palette="1" data-desk="lesche">
+      <header className="c4-pay-head c4-pl-lesche-mast">
+        <p className="c4-pl-lesche-seal" data-logo="mono">{v4("plLescheLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("plSub")}</p>
-          <h2 className="c4-title">{v4("plTitle")}</h2>
+          <p className="c4-pl-lesche-kicker">{v4("plLescheKicker")}</p>
+          <h2 className="c4-title c4-pl-lesche-title">{v4("plTitle")}</h2>
+          <p className="c4-pl-lesche-lead">{v4("plLescheLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-pl-lesche-count">{shown.length}</p>
       </header>
+      <ol className="c4-pl-lesche-index" aria-label={v4("plLescheKicker")}>
+        <li data-tone="gold">{v4("plLeschePinned")} {pinnedCount}</li>
+        <li data-tone="ink">{v4("plLescheShown")} {shown.length}</li>
+        <li data-tone="ivory">{v4("plLescheHidden")} {hiddenCount}</li>
+      </ol>
       <p className="c4-meta">{v4("plHint")}</p>
       <p className="c4-meta">{v4("plLocal")}</p>
       <form className="c4-row" onSubmit={(event) => {
@@ -118,7 +127,7 @@ export function TagPalette({ v4 }: { v4: V4 }) {
       {!shown.length && <p className="c4-pay-empty">{v4("plEmpty")}</p>}
       <ul className="c4-palette-list">
         {shown.map((tag) => (
-          <li key={tag.id} className="c4-palette-card" data-pinned={tag.pinned ? "1" : "0"} data-color={tag.color}>
+          <li key={tag.id} className="c4-palette-card c4-pl-lesche-card" data-pinned={tag.pinned ? "1" : "0"} data-color={tag.color}>
             <p><span className="c4-swatch" style={{ background: SWATCH[tag.color] }} aria-hidden /> {tag.name}</p>
             <p className="c4-meta">{v4(COLOR_LABEL[tag.color])}</p>
             <div className="c4-row">
