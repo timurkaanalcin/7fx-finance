@@ -322,6 +322,7 @@ import { EquationPlates, HairspringRules } from "./round331";
 import { MainspringRules, PlanispherePlates } from "./round332";
 import { OvercoilRules, TorquetumPlates } from "./round333";
 import { DetentRules, TellurionPlates } from "./round334";
+import { GongPlates, RepeaterRules } from "./round335";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1229,6 +1230,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "tqm") return v4("tqmTitle");
     if (tab === "dtn") return v4("dtnTitle");
     if (tab === "tln") return v4("tlnTitle");
+    if (tab === "rpt") return v4("rptTitle");
+    if (tab === "gng") return v4("gngTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1795,6 +1798,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "tqm") return v4("tqmSub");
     if (tab === "dtn") return v4("dtnSub");
     if (tab === "tln") return v4("tlnSub");
+    if (tab === "rpt") return v4("rptSub");
+    if (tab === "gng") return v4("gngSub");
     return "";
   }
 
@@ -2522,6 +2527,8 @@ function Shell({ base, section, name }: Props) {
             {view === "tqm" && <TorquetumPlates base={base} v4={v4} />}
             {view === "dtn" && <DetentRules base={base} v4={v4} />}
             {view === "tln" && <TellurionPlates base={base} v4={v4} />}
+            {view === "rpt" && <RepeaterRules base={base} v4={v4} />}
+            {view === "gng" && <GongPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
