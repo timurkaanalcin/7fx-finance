@@ -334,6 +334,9 @@ import { LeverRules, StreetLanePlates } from "./round343";
 import { EmailLanePlates, RattrapanteRules } from "./round344";
 import { LanguagePlates as DeskLanguagePlates, TourbillonRules as DeskTourbillonRules } from "./round345";
 import { ContactPlates as LastContactPlates, FoudroyanteRules } from "./round346";
+import { AssignmentPlates, RetrogradeRules } from "./round347";
+import { ChronographRules, TimezonePlates } from "./round348";
+import { TachymeterRules, AffiliatePlates } from "./round349";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1263,6 +1266,12 @@ function Shell({ base, section, name }: Props) {
     if (tab === "mpx") return v4("mpxTitle");
     if (tab === "tbx") return v4("tbxTitle");
     if (tab === "lgx") return v4("lgxTitle");
+    if (tab === "rtg") return v4("rtgTitle");
+    if (tab === "asg") return v4("asgTitle");
+    if (tab === "chg") return v4("chgTitle");
+    if (tab === "tzn") return v4("tznTitle");
+    if (tab === "tch") return v4("tchTitle");
+    if (tab === "afc") return v4("afcTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1851,6 +1860,12 @@ function Shell({ base, section, name }: Props) {
     if (tab === "mpx") return v4("mpxSub");
     if (tab === "tbx") return v4("tbxSub");
     if (tab === "lgx") return v4("lgxSub");
+    if (tab === "rtg") return v4("rtgSub");
+    if (tab === "asg") return v4("asgSub");
+    if (tab === "chg") return v4("chgSub");
+    if (tab === "tzn") return v4("tznSub");
+    if (tab === "tch") return v4("tchSub");
+    if (tab === "afc") return v4("afcSub");
     return "";
   }
 
@@ -2602,6 +2617,12 @@ function Shell({ base, section, name }: Props) {
             {view === "lgx" && <DeskLanguagePlates base={base} v4={v4} />}
             {view === "fdx" && <FoudroyanteRules base={base} v4={v4} />}
             {view === "ctx" && <LastContactPlates base={base} v4={v4} />}
+            {view === "rtg" && <RetrogradeRules base={base} v4={v4} />}
+            {view === "asg" && <AssignmentPlates base={base} v4={v4} />}
+            {view === "chg" && <ChronographRules base={base} v4={v4} />}
+            {view === "tzn" && <TimezonePlates base={base} v4={v4} />}
+            {view === "tch" && <TachymeterRules base={base} v4={v4} />}
+            {view === "afc" && <AffiliatePlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
