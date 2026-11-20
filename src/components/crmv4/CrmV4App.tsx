@@ -347,6 +347,7 @@ import { AnglageRules, ReadOnlyPlates } from "./round356";
 import { GenevaRules, GradePlates } from "./round357";
 import { SoleilRules, VisitPlates } from "./round358";
 import { AgentPlates, AzurageRules } from "./round359";
+import { FlinqueRules, MethodKeeperPlates } from "./round360";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1304,6 +1305,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "vst") return v4("vstTitle");
     if (tab === "azr") return v4("azrTitle");
     if (tab === "agt") return v4("agtTitle");
+    if (tab === "flq") return v4("flqTitle");
+    if (tab === "mkp") return v4("mkpTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1916,6 +1919,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "vst") return v4("vstSub");
     if (tab === "azr") return v4("azrSub");
     if (tab === "agt") return v4("agtSub");
+    if (tab === "flq") return v4("flqSub");
+    if (tab === "mkp") return v4("mkpSub");
     return "";
   }
 
@@ -2693,6 +2698,8 @@ function Shell({ base, section, name }: Props) {
             {view === "vst" && <VisitPlates base={base} v4={v4} />}
             {view === "azr" && <AzurageRules base={base} v4={v4} />}
             {view === "agt" && <AgentPlates base={base} v4={v4} />}
+            {view === "flq" && <FlinqueRules base={base} v4={v4} />}
+            {view === "mkp" && <MethodKeeperPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
