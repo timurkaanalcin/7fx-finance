@@ -51,6 +51,7 @@ export function MeetingNotes({ v4 }: { v4: V4 }) {
     writeJson(MEET_KEY, next);
   }, []);
   const shown = visibleNotes(notes, hidden, query);
+  const pinned = notes.filter((note) => note.pinned).length;
 
   function store(next: Note[]) {
     setNotes(next);
@@ -58,15 +59,23 @@ export function MeetingNotes({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-meet-notes" aria-label={v4("mnTitle")} data-meet-notes="1">
-      <header className="c4-pay-head">
+    <section className="c4-meet-notes c4-meet-peribolos" aria-label={v4("mnTitle")} data-meet-notes="1" data-meet-peribolos="1">
+      <header className="c4-pay-head c4-mn-peribolos-mast">
+        <p className="c4-mn-peribolos-seal" data-logo="mono">{v4("mnPeribolosLogo")}</p>
         <div>
           <p className="c4-mn-logo" data-logo="mono">{v4("mnLogo")}</p>
+          <p className="c4-mn-peribolos-kicker">{v4("mnPeribolosKicker")}</p>
+          <p className="c4-mn-peribolos-lead">{v4("mnPeribolosLead")}</p>
           <p className="c4-pay-kicker">{v4("mnSub")}</p>
           <h2 className="c4-title">{v4("mnTitle")}</h2>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-mn-peribolos-count">{shown.length}</p>
       </header>
+      <ol className="c4-mn-peribolos-index" aria-label={v4("mnPeribolosKicker")}>
+        <li data-tone="gold">{v4("mnPeribolosTiers")} {notes.length}</li>
+        <li data-tone="ink">{v4("mnPeribolosOpen")} {shown.length}</li>
+        <li data-tone="ivory">{v4("mnPin")} {pinned}</li>
+      </ol>
       <p className="c4-meta">{v4("mnHint")}</p>
       <p className="c4-meta">{v4("mnLocal")}</p>
       <p className="c4-meta">{v4("mnBlank")}</p>
@@ -99,9 +108,9 @@ export function MeetingNotes({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("mnHidden")}</button>
       </div>
       {!shown.length && <p className="c4-pay-empty">{v4("mnEmpty")}</p>}
-      <ul className="c4-mn-rows">
+      <ul className="c4-mn-rows c4-mn-peribolos-list">
         {shown.map((note) => (
-          <li key={note.id} data-pinned={note.pinned ? "1" : "0"}>
+          <li key={note.id} className="c4-mn-peribolos-card" data-pinned={note.pinned ? "1" : "0"}>
             <p>{note.text}</p>
             {note.attendee ? <p className="c4-meta">{note.attendee}</p> : null}
             <div className="c4-row">
@@ -150,14 +159,21 @@ export function OrderStatuses({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-order-stat" aria-label={v4("jqTitle")} data-order-stat="1">
-      <header className="c4-pay-head">
+    <section className="c4-order-stat c4-order-dromos" aria-label={v4("jqTitle")} data-order-stat="1" data-order-dromos="1">
+      <header className="c4-pay-head c4-jq-dromos-mast">
+        <p className="c4-jq-dromos-seal" data-logo="mono">{v4("jqDromosLogo")}</p>
         <div>
+          <p className="c4-jq-dromos-kicker">{v4("jqDromosKicker")}</p>
+          <p className="c4-jq-dromos-lead">{v4("jqDromosLead")}</p>
           <p className="c4-pay-kicker">{v4("jqSub")}</p>
           <h2 className="c4-title">{v4("jqTitle")}</h2>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-jq-dromos-count">{chips.length}</p>
       </header>
+      <ol className="c4-jq-dromos-index" aria-label={v4("jqDromosKicker")}>
+        <li data-tone="gold">{v4("jqDromosOpen")} {chips.length}</li>
+        <li data-tone="ink">{v4("jqDromosBlank")} {blankCount}</li>
+      </ol>
       <p className="c4-meta">{v4("jqHint")}</p>
       <p className="c4-meta">{v4("jqLocal")}</p>
       <p className="c4-row">
@@ -193,11 +209,11 @@ export function OrderStatuses({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("jqSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("jqEmpty")}</p>}
-      <ul className="c4-jq-rows">
+      <ul className="c4-jq-rows c4-jq-dromos-list">
         {shown.map((row) => {
           const name = statusText(row.status);
           return (
-            <li key={row.id} data-status={name || "blank"}>
+            <li key={row.id} className="c4-jq-dromos-card" data-status={name || "blank"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("jqBlank")}</p>
             </li>
