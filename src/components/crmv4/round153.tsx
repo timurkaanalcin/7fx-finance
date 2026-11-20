@@ -311,15 +311,21 @@ export function KilnSlips({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-kln" aria-label={v4("klnTitle")} data-kiln="1" data-role={role}>
-      <header className="c4-kln-head">
-        <p className="c4-kln-plate" data-logo="mono">{v4("klnLogo")}</p>
+    <section className="c4-kln c4-kln-figlina" aria-label={v4("klnTitle")} data-kiln="1" data-role={role} data-desk="figlina">
+      <header className="c4-kln-head c4-kln-figlina-mast">
+        <p className="c4-kln-plate c4-kln-figlina-seal" data-logo="mono">{v4("klnFiglinaLogo")}</p>
         <div>
-          <p className="c4-kln-kicker">{v4("klnSub")}</p>
-          <h2 className="c4-title">{v4("klnTitle")}</h2>
+          <p className="c4-kln-figlina-kicker">{v4("klnFiglinaKicker")}</p>
+          <h2 className="c4-title c4-kln-figlina-title">{v4("klnTitle")}</h2>
+          <p className="c4-kln-figlina-lead">{v4("klnFiglinaLead")}</p>
         </div>
-        <p className="c4-kln-count">{shown.length}</p>
+        <p className="c4-kln-count c4-kln-figlina-count">{shown.length}</p>
       </header>
+      <ol className="c4-kln-figlina-index" aria-label={v4("klnFiglinaKicker")}>
+        <li data-tone="gold">{v4("klnOpen")} {counts.open}</li>
+        <li data-tone="ink">{v4("klnHeld")} {counts.held}</li>
+        <li data-tone="ivory">{v4("klnNotice")} {counts.late}</li>
+      </ol>
       <details className="c4-kln-rules">
         <summary>{v4("klnRules")}</summary>
         <p className="c4-meta">{v4("klnHint")}</p>
@@ -538,7 +544,7 @@ export function KilnSlips({ v4 }: { v4: V4 }) {
             const pair = hourPair(card.hour);
             const editingCard = editing === card.id;
             return (
-              <li key={card.id} data-heat={card.heat || "blank"} data-glaze={card.glaze || "blank"} data-watch={watchOf(card.hour)}>
+              <li key={card.id} className="c4-kln-figlina-card" data-heat={card.heat || "blank"} data-glaze={card.glaze || "blank"} data-watch={watchOf(card.hour)}>
                 <span className="c4-kln-coals" aria-hidden="true">
                   {[0, 1, 2].map((index) => <i key={index} data-on={index < coals(card.heat) ? "1" : "0"} />)}
                 </span>
@@ -666,14 +672,21 @@ export function UsernameHandles({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-hdl" aria-label={v4("hdlTitle")} data-handles="1">
-      <header className="c4-hdl-head">
+    <section className="c4-hdl c4-hdl-armamentarium" aria-label={v4("hdlTitle")} data-handles="1" data-desk="armamentarium">
+      <header className="c4-hdl-head c4-hdl-armamentarium-mast">
+        <p className="c4-hdl-armamentarium-seal" data-logo="mono">{v4("hdlArmamentariumLogo")}</p>
         <div>
-          <p className="c4-kln-kicker">{v4("hdlSub")}</p>
-          <h2 className="c4-title">{v4("hdlTitle")}</h2>
+          <p className="c4-hdl-armamentarium-kicker">{v4("hdlArmamentariumKicker")}</p>
+          <h2 className="c4-title c4-hdl-armamentarium-title">{v4("hdlTitle")}</h2>
+          <p className="c4-hdl-armamentarium-lead">{v4("hdlArmamentariumLead")}</p>
         </div>
-        <p className="c4-kln-count">{v4("hdlRows")} {rows.length}</p>
+        <p className="c4-kln-count c4-hdl-armamentarium-count">{v4("hdlRows")} {rows.length}</p>
       </header>
+      <ol className="c4-hdl-armamentarium-index" aria-label={v4("hdlArmamentariumKicker")}>
+        <li data-tone="gold">{v4("hdlRows")} {rows.length}</li>
+        <li data-tone="ink">{v4("hdlUnmarked")} {blankLetter}</li>
+        <li data-tone="ivory">{v4("hdlLeadLetter")} {leadLetter || "—"}</li>
+      </ol>
       <details className="c4-kln-rules">
         <summary>{v4("hdlRules")}</summary>
         <p className="c4-meta">{v4("hdlHint")}</p>
@@ -782,7 +795,7 @@ export function UsernameHandles({ base, v4 }: { base: string; v4: V4 }) {
           const spanMark = spanOf(row.handle);
           const voiceMark = voiceOf(row.handle);
           return (
-            <li key={row.id} data-span={spanMark || "blank"} data-voice={voiceMark || "blank"}>
+            <li key={row.id} className="c4-hdl-armamentarium-card" data-span={spanMark || "blank"} data-voice={voiceMark || "blank"}>
               <span className="c4-hdl-face" aria-hidden="true">{letterMark || "—"}</span>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">
