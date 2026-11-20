@@ -50,6 +50,7 @@ export function CallbackQueue({ v4 }: { v4: V4 }) {
     writeJson(CALLBACK_KEY, next);
   }, []);
   const shown = visibleNotes(notes, hidden, query);
+  const pinned = notes.filter((note) => note.pinned).length;
 
   function store(next: Note[]) {
     setNotes(next);
@@ -57,15 +58,23 @@ export function CallbackQueue({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-callback-queue" aria-label={v4("cbTitle")} data-callback-queue="1">
-      <header className="c4-pay-head">
+    <section className="c4-callback-queue c4-callback-lararium" aria-label={v4("cbTitle")} data-callback-queue="1" data-callback-lararium="1">
+      <header className="c4-pay-head c4-cb-lararium-mast">
+        <p className="c4-cb-lararium-seal" data-logo="mono">{v4("cbLarariumLogo")}</p>
         <div>
           <p className="c4-cb-logo" data-logo="mono">{v4("cbLogo")}</p>
+          <p className="c4-cb-lararium-kicker">{v4("cbLarariumKicker")}</p>
+          <p className="c4-cb-lararium-lead">{v4("cbLarariumLead")}</p>
           <p className="c4-pay-kicker">{v4("cbSub")}</p>
           <h2 className="c4-title">{v4("cbTitle")}</h2>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-cb-lararium-count">{shown.length}</p>
       </header>
+      <ol className="c4-cb-lararium-index" aria-label={v4("cbLarariumKicker")}>
+        <li data-tone="gold">{v4("cbLarariumTiers")} {notes.length}</li>
+        <li data-tone="ink">{v4("cbLarariumOpen")} {shown.length}</li>
+        <li data-tone="ivory">{v4("cbPin")} {pinned}</li>
+      </ol>
       <p className="c4-meta">{v4("cbHint")}</p>
       <p className="c4-meta">{v4("cbLocal")}</p>
       <p className="c4-meta">{v4("cbBlank")}</p>
@@ -98,9 +107,9 @@ export function CallbackQueue({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("cbHidden")}</button>
       </div>
       {!shown.length && <p className="c4-pay-empty">{v4("cbEmpty")}</p>}
-      <ul className="c4-cb-rows">
+      <ul className="c4-cb-rows c4-cb-lararium-list">
         {shown.map((note) => (
-          <li key={note.id} data-pinned={note.pinned ? "1" : "0"}>
+          <li key={note.id} className="c4-cb-lararium-card" data-pinned={note.pinned ? "1" : "0"}>
             <p>{note.text}</p>
             {note.when ? <p className="c4-meta">{note.when}</p> : null}
             <div className="c4-row">
@@ -149,14 +158,21 @@ export function CasePriorities({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-case-prio" aria-label={v4("zpTitle")} data-case-prio="1">
-      <header className="c4-pay-head">
+    <section className="c4-case-prio c4-case-triclinium" aria-label={v4("zpTitle")} data-case-prio="1" data-case-triclinium="1">
+      <header className="c4-pay-head c4-zp-triclinium-mast">
+        <p className="c4-zp-triclinium-seal" data-logo="mono">{v4("zpTricliniumLogo")}</p>
         <div>
+          <p className="c4-zp-triclinium-kicker">{v4("zpTricliniumKicker")}</p>
+          <p className="c4-zp-triclinium-lead">{v4("zpTricliniumLead")}</p>
           <p className="c4-pay-kicker">{v4("zpSub")}</p>
           <h2 className="c4-title">{v4("zpTitle")}</h2>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-zp-triclinium-count">{chips.length}</p>
       </header>
+      <ol className="c4-zp-triclinium-index" aria-label={v4("zpTricliniumKicker")}>
+        <li data-tone="gold">{v4("zpTricliniumOpen")} {chips.length}</li>
+        <li data-tone="ink">{v4("zpTricliniumBlank")} {blankCount}</li>
+      </ol>
       <p className="c4-meta">{v4("zpHint")}</p>
       <p className="c4-meta">{v4("zpLocal")}</p>
       <p className="c4-row">
@@ -192,11 +208,11 @@ export function CasePriorities({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("zpSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("zpEmpty")}</p>}
-      <ul className="c4-zp-rows">
+      <ul className="c4-zp-rows c4-zp-triclinium-list">
         {shown.map((row) => {
           const name = priorityText(row.priority);
           return (
-            <li key={row.id} data-priority={name || "blank"}>
+            <li key={row.id} className="c4-zp-triclinium-card" data-priority={name || "blank"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("zpBlank")}</p>
             </li>
