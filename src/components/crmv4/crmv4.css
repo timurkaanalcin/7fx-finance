@@ -106703,3 +106703,313 @@
   [data-crmv4-root] .c4-brf-apodyterium-card,
   [data-crmv4-root] .c4-lex-frigidarium-card { transition: none; }
 }
+
+/* Round 331 — hairspring rules, equation plates, ivory dispatch tepidarium, graphite wing palaestra. */
+[data-crmv4-root] .c4-hairspring {
+  color: #1c1a17;
+  background:
+    radial-gradient(circle at 100% 0, rgba(198, 161, 91, 0.34), transparent 28%),
+    linear-gradient(180deg, #fffdf8 0%, #f3ecdf 100%);
+  border: 1px solid #8a6a3b;
+  border-radius: 28px 28px 8px 8px;
+  padding: 18px 16px 22px;
+  box-shadow: inset 0 6px 0 #c6a15b;
+}
+[data-crmv4-root] .c4-hairspring-mast,
+[data-crmv4-root] .c4-equation-mast,
+[data-crmv4-root] .c4-dsp-tepidarium-mast,
+[data-crmv4-root] .c4-dsk-palaestra-mast {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: end;
+  margin: 0;
+}
+[data-crmv4-root] .c4-hairspring-seal[data-logo="mono"],
+[data-crmv4-root] .c4-equation-seal[data-logo="mono"] {
+  margin: 0;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  background: #1c1a17;
+  color: #f6f1e8;
+  border: 0;
+  border-radius: 50% 50% 18% 18%;
+  box-shadow: inset 0 -8px 0 #c6a15b;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  font-weight: 650;
+}
+[data-crmv4-root] .c4-hairspring-kicker,
+[data-crmv4-root] .c4-equation-kicker,
+[data-crmv4-root] .c4-dsp-tepidarium-kicker,
+[data-crmv4-root] .c4-dsk-palaestra-kicker {
+  margin: 0;
+  color: #8a6a3b;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-hairspring-count,
+[data-crmv4-root] .c4-equation-count,
+[data-crmv4-root] .c4-dsp-tepidarium-count,
+[data-crmv4-root] .c4-dsk-palaestra-count {
+  margin: 0;
+  min-width: 44px;
+  text-align: right;
+  color: #8a6a3b;
+  font-variant-numeric: tabular-nums;
+  font-size: 28px;
+}
+[data-crmv4-root] .c4-hairspring-index,
+[data-crmv4-root] .c4-dsp-tepidarium-index,
+[data-crmv4-root] .c4-dsk-palaestra-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-hairspring-index li,
+[data-crmv4-root] .c4-dsp-tepidarium-index li,
+[data-crmv4-root] .c4-dsk-palaestra-index li {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid #c6a15b;
+  background: #fffdf8;
+}
+[data-crmv4-root] .c4-hairspring-index li[data-tone="ink"],
+[data-crmv4-root] .c4-dsp-tepidarium-index li[data-tone="ink"] { background: #1c1a17; color: #f6f1e8; }
+[data-crmv4-root] .c4-hairspring-index li[data-tone="gold"],
+[data-crmv4-root] .c4-dsp-tepidarium-index li[data-tone="gold"],
+[data-crmv4-root] .c4-dsk-palaestra-index li[data-tone="gold"] { color: #8a6a3b; }
+[data-crmv4-root] .c4-hairspring-chart,
+[data-crmv4-root] .c4-equation-chart { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+[data-crmv4-root] .c4-hairspring-column,
+[data-crmv4-root] .c4-equation-column {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-width: 52px;
+  min-height: 44px;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+}
+[data-crmv4-root] .c4-hairspring-column i,
+[data-crmv4-root] .c4-equation-column i {
+  display: block;
+  width: 18px;
+  background: #c6a15b;
+  border-radius: 18px 18px 4px 4px;
+}
+[data-crmv4-root] .c4-hairspring-column[data-on="1"] i,
+[data-crmv4-root] .c4-equation-column[data-on="1"] i { background: #1c1a17; width: 26px; }
+[data-crmv4-root] .c4-hairspring-form,
+[data-crmv4-root] .c4-hairspring-tools,
+[data-crmv4-root] .c4-hairspring-view,
+[data-crmv4-root] .c4-hairspring-bulk,
+[data-crmv4-root] .c4-equation-tools,
+[data-crmv4-root] .c4-equation-bulk { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; }
+[data-crmv4-root] .c4-hairspring-list,
+[data-crmv4-root] .c4-equation-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+[data-crmv4-root] .c4-hairspring-card,
+[data-crmv4-root] .c4-equation-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  background: #fffdf8;
+  border: 1px solid rgba(138, 106, 59, 0.45);
+  border-radius: 8px 28px 8px 28px;
+  padding: 12px;
+}
+[data-crmv4-root] .c4-hairspring .c4-btn,
+[data-crmv4-root] .c4-hairspring .c4-chip,
+[data-crmv4-root] .c4-equation .c4-btn,
+[data-crmv4-root] .c4-equation .c4-chip,
+[data-crmv4-root] .c4-dsp.c4-dsp-tepidarium .c4-btn,
+[data-crmv4-root] .c4-dsp.c4-dsp-tepidarium .c4-chip,
+[data-crmv4-root] .c4-dsk.c4-dsk-palaestra .c4-btn,
+[data-crmv4-root] .c4-dsk.c4-dsk-palaestra .c4-chip { min-height: 44px; }
+[data-crmv4-root] .c4-hairspring .c4-btn:focus-visible,
+[data-crmv4-root] .c4-hairspring .c4-chip:focus-visible,
+[data-crmv4-root] .c4-equation .c4-btn:focus-visible,
+[data-crmv4-root] .c4-equation .c4-chip:focus-visible,
+[data-crmv4-root] .c4-hairspring-column:focus-visible,
+[data-crmv4-root] .c4-equation-column:focus-visible,
+[data-crmv4-root] .c4-dsp.c4-dsp-tepidarium .c4-btn:focus-visible,
+[data-crmv4-root] .c4-dsp.c4-dsp-tepidarium .c4-chip:focus-visible,
+[data-crmv4-root] .c4-dsk.c4-dsk-palaestra .c4-btn:focus-visible,
+[data-crmv4-root] .c4-dsk.c4-dsk-palaestra .c4-chip:focus-visible { outline: 2px solid #c6a15b; outline-offset: 2px; }
+[data-crmv4-root] .c4-hairspring[data-density="close"] .c4-hairspring-card { padding: 6px 10px; border-radius: 8px; }
+[data-crmv4-root] .c4-equation {
+  color: #f6f1e8;
+  background:
+    linear-gradient(90deg, #c6a15b 0 8px, transparent 8px) 0 0 / 100% 100%,
+    #161310;
+  border: 1px solid #c6a15b;
+  border-radius: 8px 40px 8px 40px;
+  padding: 18px 16px 20px 22px;
+}
+[data-crmv4-root] .c4-equation-seal[data-logo="mono"] {
+  color: #f6f1e8;
+  background: transparent;
+  border: 2px solid #f6f1e8;
+  box-shadow: inset 0 0 0 4px #161310, inset 0 0 0 5px #c6a15b;
+}
+[data-crmv4-root] .c4-equation-card { background: #1c1916; color: #f6f1e8; border-color: #8a6a3b; }
+[data-crmv4-root] .c4-equation .c4-title,
+[data-crmv4-root] .c4-equation .c4-meta,
+[data-crmv4-root] .c4-equation-hint,
+[data-crmv4-root] .c4-equation-meta { color: #f6f1e8; }
+[data-crmv4-root] .c4-dsp.c4-dsp-tepidarium {
+  color: #1c1a17;
+  background:
+    linear-gradient(#fffdf8, #fffdf8) 0 18px / 100% calc(100% - 18px) no-repeat,
+    repeating-linear-gradient(90deg, #c6a15b 0 10px, #f6efe2 10px 22px);
+  border: 1px solid #c6a15b;
+  border-radius: 36px 36px 14px 14px;
+  padding: 22px 16px 24px;
+  box-shadow: inset 0 0 0 1px rgba(198, 161, 91, 0.35);
+}
+[data-crmv4-root] .c4-dsp-tepidarium-seal[data-logo="mono"] {
+  margin: 0;
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  background: #fffdf8;
+  color: #1c1a17;
+  border: 1px solid #1c1a17;
+  border-radius: 50%;
+  box-shadow: 0 8px 0 #c6a15b;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  font-weight: 650;
+}
+[data-crmv4-root] .c4-dsp-tepidarium-title,
+[data-crmv4-root] .c4-dsk-palaestra-title,
+[data-crmv4-root] .c4-hairspring .c4-title,
+[data-crmv4-root] .c4-equation .c4-title { letter-spacing: -0.03em; }
+[data-crmv4-root] .c4-dsp-tepidarium-title::before,
+[data-crmv4-root] .c4-dsk-palaestra-title::before,
+[data-crmv4-root] .c4-hairspring .c4-title::before,
+[data-crmv4-root] .c4-equation .c4-title::before { background: #c6a15b; }
+[data-crmv4-root] .c4-dsp-tepidarium-lead,
+[data-crmv4-root] .c4-dsk-palaestra-lead { margin: 6px 0 0; max-width: 62ch; line-height: 1.45; }
+[data-crmv4-root] .c4-dsp.c4-dsp-tepidarium .c4-dsp-rows { display: grid; gap: 14px; }
+[data-crmv4-root] .c4-dsp.c4-dsp-tepidarium .c4-dsp-rows li.c4-dsp-tepidarium-card {
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  align-items: center;
+  background: #fffdf8;
+  border: 1px solid rgba(138, 106, 59, 0.45);
+  border-radius: 22px;
+  padding: 14px 14px 14px 18px;
+  box-shadow: inset 8px 0 0 #c6a15b;
+}
+[data-crmv4-root] .c4-dsp.c4-dsp-tepidarium .c4-dsp-rows li.c4-dsp-tepidarium-card .c4-row {
+  grid-column: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+[data-crmv4-root] .c4-dsk.c4-dsk-palaestra {
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 10px 100% no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) 100% 0 / 10px 100% no-repeat,
+    #141210;
+  border: 1px solid #8a6a3b;
+  border-radius: 6px;
+  padding: 18px 22px 24px;
+}
+[data-crmv4-root] .c4-dsk-palaestra-seal[data-logo="mono"] {
+  margin: 0;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  color: #f6f1e8;
+  border: 2px solid #c6a15b;
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 6px #141210, inset 0 0 0 7px #8a6a3b;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  font-weight: 650;
+}
+[data-crmv4-root] .c4-dsk-palaestra-title,
+[data-crmv4-root] .c4-dsk-palaestra-lead,
+[data-crmv4-root] .c4-dsk.c4-dsk-palaestra .c4-meta,
+[data-crmv4-root] .c4-dsk.c4-dsk-palaestra .c4-title { color: #f6f1e8; }
+[data-crmv4-root] .c4-dsk-palaestra-kicker { color: #e7d3a1; }
+[data-crmv4-root] .c4-dsk-palaestra-index li { background: transparent; color: #f6f1e8; border-color: #8a6a3b; }
+[data-crmv4-root] .c4-dsk.c4-dsk-palaestra .c4-btn,
+[data-crmv4-root] .c4-dsk.c4-dsk-palaestra .c4-chip {
+  background: transparent;
+  color: #f6f1e8;
+  border: 1px solid #c6a15b;
+}
+[data-crmv4-root] .c4-dsk.c4-dsk-palaestra .c4-dsk-rows { display: grid; gap: 8px; }
+[data-crmv4-root] .c4-dsk.c4-dsk-palaestra .c4-dsk-rows li.c4-dsk-palaestra-card {
+  grid-template-columns: 56px minmax(0, 1fr);
+  align-items: center;
+  background: rgba(20, 18, 16, 0.72);
+  color: #f6f1e8;
+  border: 1px solid rgba(198, 161, 91, 0.45);
+  border-radius: 4px 18px 4px 18px;
+  padding: 12px 12px 12px 16px;
+  box-shadow: inset 4px 0 0 #c6a15b;
+}
+[data-crmv4-root] .c4-dsk.c4-dsk-palaestra .c4-dsk-rows li.c4-dsk-palaestra-card .c4-meta { grid-column: 2; }
+[data-crmv4-root] .c4-dsk.c4-dsk-palaestra .c4-dsk-rows li.c4-dsk-palaestra-card p,
+[data-crmv4-root] .c4-dsk.c4-dsk-palaestra .c4-dsk-rows li.c4-dsk-palaestra-card .c4-meta { color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-hairspring,
+[data-crmv4-root][data-theme="dark"] .c4-dsp.c4-dsp-tepidarium {
+  color: #f6f1e8;
+  background: #241f1a;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-hairspring-card,
+[data-crmv4-root][data-theme="dark"] .c4-dsp.c4-dsp-tepidarium .c4-dsp-rows li.c4-dsp-tepidarium-card {
+  background: #1c1a17;
+  color: #f6f1e8;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-dsp-tepidarium-title,
+[data-crmv4-root][data-theme="dark"] .c4-dsp-tepidarium-lead,
+[data-crmv4-root][data-theme="dark"] .c4-dsp.c4-dsp-tepidarium .c4-meta,
+[data-crmv4-root][data-theme="dark"] .c4-hairspring-hint { color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-dsp-tepidarium-seal[data-logo="mono"] { color: #f6f1e8; background: #1c1a17; box-shadow: 0 8px 0 #c6a15b; }
+[data-crmv4-root][data-theme="dark"] .c4-dsp-tepidarium-index li,
+[data-crmv4-root][data-theme="dark"] .c4-hairspring-index li { background: #1c1a17; color: #f6f1e8; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-hairspring-mast,
+  [data-crmv4-root] .c4-equation-mast,
+  [data-crmv4-root] .c4-dsp-tepidarium-mast,
+  [data-crmv4-root] .c4-dsk-palaestra-mast { grid-template-columns: auto minmax(0, 1fr) auto; }
+  [data-crmv4-root] .c4-dsp-tepidarium-title,
+  [data-crmv4-root] .c4-dsk-palaestra-title { font-size: 1.35rem; }
+  [data-crmv4-root] .c4-hairspring,
+  [data-crmv4-root] .c4-equation { border-radius: 12px; }
+  [data-crmv4-root] .c4-dsp.c4-dsp-tepidarium { border-radius: 18px; padding: 18px 12px 20px; }
+  [data-crmv4-root] .c4-dsk.c4-dsk-palaestra { border-radius: 12px; padding: 16px 14px 20px; }
+  [data-crmv4-root] .c4-hairspring-card,
+  [data-crmv4-root] .c4-equation-card,
+  [data-crmv4-root] .c4-dsp.c4-dsp-tepidarium .c4-dsp-rows li.c4-dsp-tepidarium-card { grid-template-columns: minmax(0, 1fr); }
+  [data-crmv4-root] .c4-dsp.c4-dsp-tepidarium .c4-dsp-rows li.c4-dsp-tepidarium-card .c4-row { justify-content: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-hairspring-column i,
+  [data-crmv4-root] .c4-equation-column i,
+  [data-crmv4-root] .c4-dsp-tepidarium-card,
+  [data-crmv4-root] .c4-dsk-palaestra-card { transition: none; }
+}
