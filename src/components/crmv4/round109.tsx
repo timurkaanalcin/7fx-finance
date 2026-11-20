@@ -57,15 +57,20 @@ export function RowDensityDesk({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-row-density" aria-label={v4("rdTitle")} data-row-density-desk="1" data-mode={mode}>
-      <header className="c4-pay-head">
+    <section className="c4-row-density c4-row-exedra" aria-label={v4("rdTitle")} data-row-density-desk="1" data-row-exedra="1" data-mode={mode}>
+      <header className="c4-pay-head c4-rd-exedra-mast">
+        <p className="c4-rd-exedra-seal" data-logo="mono">{v4("rdExedraLogo")}</p>
         <div>
-          <p className="c4-density-logo" data-logo="mono">{v4("rdLogo")}</p>
-          <p className="c4-pay-kicker">{v4("rdSub")}</p>
+          <p className="c4-rd-exedra-kicker">{v4("rdExedraKicker")}</p>
           <h2 className="c4-title">{v4("rdTitle")}</h2>
+          <p className="c4-rd-exedra-lead">{v4("rdExedraLead")}</p>
         </div>
-        <p className="c4-meta">{v4(DENSITY_LABEL[mode])}</p>
+        <p className="c4-rd-exedra-count">{v4(DENSITY_LABEL[mode])}</p>
       </header>
+      <ol className="c4-rd-exedra-index" aria-label={v4("rdExedraKicker")}>
+        <li data-tone="gold">{v4("rdExedraTiers")} 3</li>
+        <li data-tone="ink">{v4("rdExedraOpen")} {v4(DENSITY_LABEL[mode])}</li>
+      </ol>
       <p className="c4-meta">{v4("rdHint")}</p>
       <p className="c4-meta">{v4("rdLocal")}</p>
       <p className="c4-meta">{v4("rdUnknown")}</p>
@@ -76,9 +81,9 @@ export function RowDensityDesk({ v4 }: { v4: V4 }) {
         ))}
         <button type="button" className="c4-btn" onClick={() => choose(resetDensity())}>{v4("rdReset")}</button>
       </div>
-      <ul className="c4-density-rows">
+      <ul className="c4-density-rows c4-rd-exedra-list">
         {ROW_DENSITIES.map((item) => (
-          <li key={item} className="c4-density-card" data-sample={item}>{v4(DENSITY_LABEL[item])}</li>
+          <li key={item} className="c4-density-card c4-rd-exedra-card" data-sample={item}>{v4(DENSITY_LABEL[item])}</li>
         ))}
       </ul>
     </section>
@@ -126,14 +131,20 @@ export function IbCountry({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-ib-country" aria-label={v4("icTitle")} data-ib-country="1">
-      <header className="c4-pay-head">
+    <section className="c4-ib-country c4-ib-tholos" aria-label={v4("icTitle")} data-ib-country="1" data-ib-tholos="1">
+      <header className="c4-pay-head c4-ic-tholos-mast">
+        <p className="c4-ic-tholos-seal" data-logo="mono">{v4("icTholosLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("icSub")}</p>
+          <p className="c4-ic-tholos-kicker">{v4("icTholosKicker")}</p>
           <h2 className="c4-title">{v4("icTitle")}</h2>
+          <p className="c4-ic-tholos-lead">{v4("icTholosLead")}</p>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-ic-tholos-count">{chips.length}</p>
       </header>
+      <ol className="c4-ic-tholos-index" aria-label={v4("icTholosKicker")}>
+        <li data-tone="gold">{v4("icTholosOpen")} {chips.length}</li>
+        <li data-tone="ink">{v4("icTholosBlank")} {blankCount}</li>
+      </ol>
       <p className="c4-meta">{v4("icHint")}</p>
       <p className="c4-meta">{v4("icLocal")}</p>
       <p className="c4-row">
@@ -169,11 +180,11 @@ export function IbCountry({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("icSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("icEmpty")}</p>}
-      <ul className="c4-ic-rows">
+      <ul className="c4-ic-rows c4-ic-tholos-list">
         {shown.map((row) => {
           const name = countryText(row.country);
           return (
-            <li key={row.id} data-country={name || "blank"}>
+            <li key={row.id} className="c4-ic-tholos-card" data-country={name || "blank"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("icBlank")}</p>
               <Link className="c4-btn" href={crmv4Href(base, `customers/${row.userId}`)}>{v4("icCustomer")}</Link>

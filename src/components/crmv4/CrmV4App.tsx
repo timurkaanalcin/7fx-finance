@@ -342,6 +342,7 @@ import { FirstTradePlates, RehautRules } from "./round351";
 import { LastCountryPlates, RegulatorRules } from "./round352";
 import { BrokerPlates as HouseBrokerPlates, FuseeRules as ConicalFuseeRules } from "./round353";
 import { PerlageRules, SourcePlates as LeadSourcePlates } from "./round354";
+import { GuillocheRules, ExpiryPlates } from "./round355";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1289,6 +1290,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "hbk") return v4("hbkTitle");
     if (tab === "pgl") return v4("pglTitle");
     if (tab === "lsr") return v4("lsrTitle");
+    if (tab === "gll") return v4("gllTitle");
+    if (tab === "exp") return v4("expTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1893,6 +1896,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "lco") return v4("lcoSub");
     if (tab === "pgl") return v4("pglSub");
     if (tab === "lsr") return v4("lsrSub");
+    if (tab === "gll") return v4("gllSub");
+    if (tab === "exp") return v4("expSub");
     return "";
   }
 
@@ -2660,6 +2665,8 @@ function Shell({ base, section, name }: Props) {
             {view === "hbk" && <HouseBrokerPlates base={base} v4={v4} />}
             {view === "pgl" && <PerlageRules base={base} v4={v4} />}
             {view === "lsr" && <LeadSourcePlates base={base} v4={v4} />}
+            {view === "gll" && <GuillocheRules base={base} v4={v4} />}
+            {view === "exp" && <ExpiryPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
