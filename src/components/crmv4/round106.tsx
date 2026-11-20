@@ -89,14 +89,20 @@ export function ColorTags({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-color-tags" aria-label={v4("qaTitle")} data-color-tags="1">
-      <header className="c4-pay-head">
+    <section className="c4-color-tags c4-color-pinakotheke" aria-label={v4("qaTitle")} data-color-tags="1" data-tag-gallery="1">
+      <header className="c4-pay-head c4-qa-pinakotheke-mast">
+        <p className="c4-qa-pinakotheke-seal" data-logo="mono">{v4("qaPinakothekeLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("qaSub")}</p>
+          <p className="c4-qa-pinakotheke-kicker">{v4("qaPinakothekeKicker")}</p>
           <h2 className="c4-title">{v4("qaTitle")}</h2>
+          <p className="c4-qa-pinakotheke-lead">{v4("qaPinakothekeLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-qa-pinakotheke-count">{shown.length}</p>
       </header>
+      <ol className="c4-qa-pinakotheke-index" aria-label={v4("qaTitle")}>
+        <li data-tone="gold">{v4("qaPinakothekePinned")} {tags.filter((item) => item.pinned).length}</li>
+        <li data-tone="ink">{v4("qaPinakothekeOpen")} {shown.length}</li>
+      </ol>
       <p className="c4-meta">{v4("qaHint")}</p>
       <p className="c4-meta">{v4("qaLocal")}</p>
       <form className="c4-row" onSubmit={(event) => {
@@ -138,9 +144,9 @@ export function ColorTags({ base, v4 }: { base: string; v4: V4 }) {
       {data.error && <p className="c4-meta">{v4("qaFailed")}</p>}
       {!data.loading && !data.error && !people.length && <p className="c4-pay-empty">{v4("qaNone")}</p>}
       {!shown.length && <p className="c4-pay-empty">{v4("qaEmpty")}</p>}
-      <ul className="c4-tag-list">
+      <ul className="c4-tag-list c4-qa-pinakotheke-list">
         {shown.map((tag) => (
-          <li key={tag.id} className="c4-tag-card" data-pinned={tag.pinned ? "1" : "0"} data-color={tag.color}>
+          <li key={tag.id} className="c4-tag-card c4-qa-pinakotheke-card" data-pinned={tag.pinned ? "1" : "0"} data-color={tag.color}>
             <p><span className="c4-tag-swatch" style={{ background: SWATCH[tag.color] }} />{tag.text}</p>
             <p className="c4-meta">{tag.color}</p>
             <div className="c4-row">
@@ -203,14 +209,20 @@ export function TradeSide({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-trade-side" aria-label={v4("ysTitle")} data-trade-side="1">
-      <header className="c4-pay-head">
+    <section className="c4-trade-side c4-trade-stoa" aria-label={v4("ysTitle")} data-trade-side="1" data-trade-colonnade="1">
+      <header className="c4-pay-head c4-ys-stoa-mast">
+        <p className="c4-ys-stoa-seal" data-logo="mono">{v4("ysStoaLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("ysSub")}</p>
+          <p className="c4-ys-stoa-kicker">{v4("ysStoaKicker")}</p>
           <h2 className="c4-title">{v4("ysTitle")}</h2>
+          <p className="c4-ys-stoa-lead">{v4("ysStoaLead")}</p>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-ys-stoa-count">{chips.length}</p>
       </header>
+      <ol className="c4-ys-stoa-index" aria-label={v4("ysTitle")}>
+        <li data-tone="gold">{v4("ysStoaOpen")} {chips.length}</li>
+        <li data-tone="ink">{v4("ysStoaBlank")} {blankCount}</li>
+      </ol>
       <p className="c4-meta">{v4("ysHint")}</p>
       <p className="c4-meta">{v4("ysLocal")}</p>
       <p className="c4-row">
@@ -246,11 +258,11 @@ export function TradeSide({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("ysSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("ysEmpty")}</p>}
-      <ul className="c4-ys-rows">
+      <ul className="c4-ys-rows c4-ys-stoa-list">
         {shown.map((row) => {
           const name = sideText(row.side);
           return (
-            <li key={row.id} data-side={name || "blank"}>
+            <li key={row.id} className="c4-ys-stoa-card" data-side={name || "blank"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("ysBlank")}</p>
             </li>

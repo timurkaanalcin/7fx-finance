@@ -340,6 +340,7 @@ import { TachymeterRules, AffiliatePlates } from "./round349";
 import { MarkPlates, PulsometerRules } from "./round350";
 import { FirstTradePlates, RehautRules } from "./round351";
 import { LastCountryPlates, RegulatorRules } from "./round352";
+import { BrokerPlates as HouseBrokerPlates, FuseeRules as ConicalFuseeRules } from "./round353";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1283,6 +1284,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "fdp") return v4("fdpTitle");
     if (tab === "rgr") return v4("rgrTitle");
     if (tab === "lco") return v4("lcoTitle");
+    if (tab === "fus") return v4("fusTitle");
+    if (tab === "hbk") return v4("hbkTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -2648,6 +2651,8 @@ function Shell({ base, section, name }: Props) {
             {view === "fdp" && <FirstTradePlates base={base} v4={v4} />}
             {view === "rgr" && <RegulatorRules base={base} v4={v4} />}
             {view === "lco" && <LastCountryPlates base={base} v4={v4} />}
+            {view === "fus" && <ConicalFuseeRules base={base} v4={v4} />}
+            {view === "hbk" && <HouseBrokerPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
