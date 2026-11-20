@@ -72,15 +72,22 @@ export function WatchWords({ v4 }: { v4: V4 }) {
     writeJson(WATCH_KEY, next);
   }
 
+  const pinnedCount = shown.filter((word) => word.pinned).length;
   return (
-    <section className="c4-watch-words" aria-label={v4("wwTitle")} data-watch-words="1">
-      <header className="c4-pay-head">
+    <section className="c4-watch-words c4-watch-skene" aria-label={v4("wwTitle")} data-watch-words="1" data-desk="skene">
+      <header className="c4-pay-head c4-ww-skene-mast">
+        <p className="c4-ww-skene-seal" data-logo="mono">{v4("wwSkeneLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("wwSub")}</p>
-          <h2 className="c4-title">{v4("wwTitle")}</h2>
+          <p className="c4-ww-skene-kicker">{v4("wwSkeneKicker")}</p>
+          <h2 className="c4-title c4-ww-skene-title">{v4("wwTitle")}</h2>
+          <p className="c4-ww-skene-lead">{v4("wwSkeneLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-ww-skene-count">{shown.length}</p>
       </header>
+      <ol className="c4-ww-skene-index" aria-label={v4("wwSkeneKicker")}>
+        <li data-tone="gold">{v4("wwSkenePinned")} {pinnedCount}</li>
+        <li data-tone="ink">{v4("wwSkeneShown")} {shown.length}</li>
+      </ol>
       <p className="c4-meta">{v4("wwHint")}</p>
       <p className="c4-meta">{v4("wwLocal")}</p>
       <form className="c4-row" onSubmit={(event) => {
@@ -108,7 +115,7 @@ export function WatchWords({ v4 }: { v4: V4 }) {
       {!shown.length && <p className="c4-pay-empty">{v4("wwEmpty")}</p>}
       <ul className="c4-watch-list">
         {shown.map((word) => (
-          <li key={word.id} className="c4-watch-card" data-pinned={word.pinned ? "1" : "0"}>
+          <li key={word.id} className="c4-watch-card c4-ww-skene-card" data-pinned={word.pinned ? "1" : "0"}>
             <p>{word.text}</p>
             <div className="c4-row">
               <button type="button" className="c4-btn" onClick={() => store(toggleWordPin(words, word.id))}>{word.pinned ? v4("wwUnpin") : v4("wwPin")}</button>

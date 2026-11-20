@@ -63,14 +63,20 @@ export function MuteList({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-mute-list" aria-label={v4("muTitle")} data-mute-list="1">
-      <header className="c4-pay-head">
+    <section className="c4-mute-list c4-mute-telesterion" aria-label={v4("muTitle")} data-mute-list="1" data-desk="telesterion">
+      <header className="c4-pay-head c4-mu-telesterion-mast">
+        <p className="c4-mu-telesterion-seal" data-logo="mono">{v4("muTelesterionLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("muSub")}</p>
-          <h2 className="c4-title">{v4("muTitle")}</h2>
+          <p className="c4-mu-telesterion-kicker">{v4("muTelesterionKicker")}</p>
+          <h2 className="c4-title c4-mu-telesterion-title">{v4("muTitle")}</h2>
+          <p className="c4-mu-telesterion-lead">{v4("muTelesterionLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-mu-telesterion-count">{shown.length}</p>
       </header>
+      <ol className="c4-mu-telesterion-index" aria-label={v4("muTelesterionKicker")}>
+        <li data-tone="gold">{v4("muTelesterionMuted")} {muted.length}</li>
+        <li data-tone="ink">{v4("muTelesterionShown")} {shown.length}</li>
+      </ol>
       <p className="c4-meta">{v4("muHint")}</p>
       <p className="c4-meta">{v4("muLocal")}</p>
       {data.loading && !rows.length && <p className="c4-meta">{v4("muLoading")}</p>}
@@ -87,7 +93,7 @@ export function MuteList({ base, v4 }: { base: string; v4: V4 }) {
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("muEmpty")}</p>}
       <ul className="c4-mute-rows">
         {shown.map((row) => (
-          <li key={row.id} data-muted={showMuted ? "1" : "0"}>
+          <li key={row.id} className="c4-mu-telesterion-card" data-muted={showMuted ? "1" : "0"}>
             <p>{row.name || row.email || row.id}</p>
             <div className="c4-row">
               <button type="button" className="c4-btn" onClick={() => store(showMuted ? unmuteId(muted, row.id, present) : muteId(muted, row.id, present))}>{showMuted ? v4("muUnmute") : v4("muMute")}</button>
