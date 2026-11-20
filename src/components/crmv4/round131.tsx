@@ -198,6 +198,7 @@ export function PotentialStatuses({ base, v4 }: { base: string; v4: V4 }) {
   const chips = visiblePotentials(present, hiddenPotentials, showHidden);
   const potential = activePotential(selected, chips);
   const shown = visibleCustomers(rows, potential, blank, query);
+  const peak = Math.max(1, ...lines.map((line) => line.count));
 
   function store(next: string[], clear: string) {
     setHiddenPotentials(next);
@@ -206,14 +207,26 @@ export function PotentialStatuses({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-potential" aria-label={v4("potTitle")} data-potential="1">
-      <header className="c4-pot-head">
+    <section className="c4-potential c4-potential-horreum" aria-label={v4("potTitle")} data-potential="1" data-desk="horreum">
+      <header className="c4-pot-head c4-pot-horreum-mast">
+        <p className="c4-pot-horreum-seal" data-logo="mono">{v4("potHorreumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("potSub")}</p>
-          <h2 className="c4-title">{v4("potTitle")}</h2>
+          <p className="c4-pot-horreum-kicker">{v4("potHorreumKicker")}</p>
+          <h2 className="c4-title c4-pot-horreum-title">{v4("potTitle")}</h2>
+          <p className="c4-pot-horreum-lead">{v4("potHorreumLead")}</p>
         </div>
-        <p className="c4-vlt-count">{v4("potRows")} {rows.length}</p>
+        <p className="c4-pot-horreum-count">{shown.length}</p>
       </header>
+      <ol className="c4-pot-horreum-index" aria-label={v4("potHorreumKicker")}>
+        <li data-tone="gold">{v4("potHorreumRows")} {rows.length}</li>
+        <li data-tone="ink">{v4("potHorreumShown")} {shown.length}</li>
+        <li data-tone="ivory">{v4("potHorreumBlank")} {blankCount}</li>
+      </ol>
+      <div className="c4-pot-horreum-crates" aria-hidden="true">
+        {lines.filter((line) => line.potential).map((line) => (
+          <i key={line.potential} style={{ width: `${Math.max(18, Math.round((line.count / peak) * 72))}px` }} />
+        ))}
+      </div>
       <p className="c4-meta">{v4("potHint")}</p>
       <p className="c4-meta">{v4("potLocal")}</p>
       <p className="c4-row">
@@ -250,11 +263,11 @@ export function PotentialStatuses({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("potSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("potEmpty")}</p>}
-      <ul className="c4-pot-rows">
+      <ul className="c4-pot-rows c4-pot-horreum-list">
         {shown.map((row) => {
           const name = potentialText(row.potential);
           return (
-            <li key={row.id} data-potential={name || "blank"}>
+            <li key={row.id} className="c4-pot-horreum-card" data-potential={name || "blank"}>
               <span className="c4-pot-spine" aria-hidden="true" />
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("potBlank")}</p>
