@@ -172,6 +172,7 @@ export function KycStatuses({ base, v4 }: { base: string; v4: V4 }) {
   const chips = visibleStatuses(present, hiddenStatuses, showHidden);
   const status = activeStatus(selected, chips);
   const shown = visibleCustomers(rows, status, blank, query);
+  const peak = Math.max(1, ...lines.map((line) => line.count));
 
   function store(next: string[], clear: string) {
     setHiddenStatuses(next);
@@ -180,14 +181,26 @@ export function KycStatuses({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-kyc-sg" aria-label={v4("kysTitle")} data-kyc-sg="1">
-      <header className="c4-pay-head">
+    <section className="c4-kyc-sg c4-kyc-sg-nymphaeum" aria-label={v4("kysTitle")} data-kyc-sg="1" data-desk="nymphaeum">
+      <header className="c4-pay-head c4-kys-nymphaeum-mast">
+        <p className="c4-kys-nymphaeum-seal" data-logo="mono">{v4("kysNymphaeumLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("kysSub")}</p>
-          <h2 className="c4-title">{v4("kysTitle")}</h2>
+          <p className="c4-kys-nymphaeum-kicker">{v4("kysNymphaeumKicker")}</p>
+          <h2 className="c4-title c4-kys-nymphaeum-title">{v4("kysTitle")}</h2>
+          <p className="c4-kys-nymphaeum-lead">{v4("kysNymphaeumLead")}</p>
         </div>
-        <p className="c4-meta">{v4("kysRows")} {rows.length}</p>
+        <p className="c4-kys-nymphaeum-count">{shown.length}</p>
       </header>
+      <ol className="c4-kys-nymphaeum-index" aria-label={v4("kysNymphaeumKicker")}>
+        <li data-tone="gold">{v4("kysNymphaeumRows")} {rows.length}</li>
+        <li data-tone="ink">{v4("kysNymphaeumShown")} {shown.length}</li>
+        <li data-tone="ivory">{v4("kysNymphaeumBlank")} {blankCount}</li>
+      </ol>
+      <div className="c4-kys-nymphaeum-basins" aria-hidden="true">
+        {lines.filter((line) => line.status).map((line) => (
+          <i key={line.status} style={{ width: `${Math.max(18, Math.round((line.count / peak) * 100))}%` }} />
+        ))}
+      </div>
       <p className="c4-meta">{v4("kysHint")}</p>
       <p className="c4-meta">{v4("kysLocal")}</p>
       <p className="c4-row">
@@ -227,7 +240,7 @@ export function KycStatuses({ base, v4 }: { base: string; v4: V4 }) {
         {shown.map((row) => {
           const name = statusText(row.status);
           return (
-            <li key={row.id} data-status={name || "blank"}>
+            <li key={row.id} className="c4-kys-nymphaeum-card" data-status={name || "blank"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("kysBlank")}</p>
             </li>
