@@ -327,7 +327,8 @@ import { BackstaffPlates, BarrelRules } from "./round336";
 import { CoaxialRules, TypeplatePlates } from "./round337";
 import { KeylessRules, RoleplatePlates } from "./round338";
 import { ForenamePlates, OscillatorRules } from "./round339";
-import { DevicePlates, EscapeWheelRules } from "./round340";
+import { DevicePlates as LastDevicePlates, EscapeWheelRules } from "./round340";
+import { MoonPhaseRules, SurnamePlates as LastNamePlates } from "./round341";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1247,6 +1248,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "fnm") return v4("fnmTitle");
     if (tab === "ewl") return v4("ewlTitle");
     if (tab === "dvp") return v4("dvpTitle");
+    if (tab === "mph") return v4("mphTitle");
+    if (tab === "lnm") return v4("lnmTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1825,6 +1828,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "fnm") return v4("fnmSub");
     if (tab === "ewl") return v4("ewlSub");
     if (tab === "dvp") return v4("dvpSub");
+    if (tab === "mph") return v4("mphSub");
+    if (tab === "lnm") return v4("lnmSub");
     return "";
   }
 
@@ -2563,7 +2568,9 @@ function Shell({ base, section, name }: Props) {
             {view === "osc" && <OscillatorRules base={base} v4={v4} />}
             {view === "fnm" && <ForenamePlates base={base} v4={v4} />}
             {view === "ewl" && <EscapeWheelRules base={base} v4={v4} />}
-            {view === "dvp" && <DevicePlates base={base} v4={v4} />}
+            {view === "dvp" && <LastDevicePlates base={base} v4={v4} />}
+            {view === "mph" && <MoonPhaseRules base={base} v4={v4} />}
+            {view === "lnm" && <LastNamePlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

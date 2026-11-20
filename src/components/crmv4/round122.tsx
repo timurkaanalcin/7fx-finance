@@ -171,6 +171,7 @@ export function WithdrawalStatuses({ base, v4 }: { base: string; v4: V4 }) {
   const chips = visibleStatuses(present, hiddenStatuses, showHidden);
   const status = activeStatus(selected, chips);
   const shown = visibleWithdrawals(rows, status, blank, query);
+  const peak = Math.max(1, ...lines.map((line) => line.count));
 
   function store(next: string[], clear: string) {
     setHiddenStatuses(next);
@@ -179,14 +180,26 @@ export function WithdrawalStatuses({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-wd-stat" aria-label={v4("wsgTitle")} data-wd-stat="1">
-      <header className="c4-pay-head">
+    <section className="c4-wd-stat c4-wd-stat-alveus" aria-label={v4("wsgTitle")} data-wd-stat="1" data-desk="alveus">
+      <header className="c4-pay-head c4-wd-alveus-mast">
+        <p className="c4-wd-alveus-seal" data-logo="mono">{v4("wsgAlveusLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("wsgSub")}</p>
-          <h2 className="c4-title">{v4("wsgTitle")}</h2>
+          <p className="c4-wd-alveus-kicker">{v4("wsgAlveusKicker")}</p>
+          <h2 className="c4-title c4-wd-alveus-title">{v4("wsgTitle")}</h2>
+          <p className="c4-wd-alveus-lead">{v4("wsgAlveusLead")}</p>
         </div>
-        <p className="c4-meta">{v4("wsgRows")} {rows.length}</p>
+        <p className="c4-wd-alveus-count">{shown.length}</p>
       </header>
+      <ol className="c4-wd-alveus-index" aria-label={v4("wsgAlveusKicker")}>
+        <li data-tone="gold">{v4("wsgAlveusRows")} {rows.length}</li>
+        <li data-tone="ink">{v4("wsgAlveusShown")} {shown.length}</li>
+        <li data-tone="ivory">{v4("wsgAlveusBlank")} {blankCount}</li>
+      </ol>
+      <div className="c4-wd-alveus-chart" aria-hidden="true">
+        {lines.filter((line) => line.status).map((line) => (
+          <i key={line.status} style={{ height: `${Math.max(8, Math.round((line.count / peak) * 48))}px` }} />
+        ))}
+      </div>
       <p className="c4-meta">{v4("wsgHint")}</p>
       <p className="c4-meta">{v4("wsgLocal")}</p>
       <p className="c4-row">
@@ -226,7 +239,7 @@ export function WithdrawalStatuses({ base, v4 }: { base: string; v4: V4 }) {
         {shown.map((row) => {
           const name = statusText(row.status);
           return (
-            <li key={row.id} data-status={name || "blank"}>
+            <li key={row.id} className="c4-wd-alveus-card" data-status={name || "blank"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("wsgBlank")}</p>
             </li>
