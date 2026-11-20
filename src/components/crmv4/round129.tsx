@@ -174,6 +174,7 @@ export function KycFileStatuses({ base, v4 }: { base: string; v4: V4 }) {
   const chips = visibleFiles(present, hiddenFiles, showHidden);
   const file = activeFile(selected, chips);
   const shown = visibleDocs(rows, file, blank, query);
+  const peak = Math.max(1, ...lines.map((line) => line.count));
 
   function store(next: string[], clear: string) {
     setHiddenFiles(next);
@@ -182,14 +183,26 @@ export function KycFileStatuses({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-kyc-file" aria-label={v4("kflTitle")} data-kyc-file="1">
-      <header className="c4-pay-head">
+    <section className="c4-kyc-file c4-kyc-file-officina" aria-label={v4("kflTitle")} data-kyc-file="1" data-desk="officina">
+      <header className="c4-pay-head c4-kfl-officina-mast">
+        <p className="c4-kfl-officina-seal" data-logo="mono">{v4("kflOfficinaLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("kflSub")}</p>
-          <h2 className="c4-title">{v4("kflTitle")}</h2>
+          <p className="c4-kfl-officina-kicker">{v4("kflOfficinaKicker")}</p>
+          <h2 className="c4-title c4-kfl-officina-title">{v4("kflTitle")}</h2>
+          <p className="c4-kfl-officina-lead">{v4("kflOfficinaLead")}</p>
         </div>
-        <p className="c4-kfl-stamp">{v4("kflRows")} {rows.length}</p>
+        <p className="c4-kfl-officina-count">{shown.length}</p>
       </header>
+      <ol className="c4-kfl-officina-index" aria-label={v4("kflOfficinaKicker")}>
+        <li data-tone="gold">{v4("kflOfficinaRows")} {rows.length}</li>
+        <li data-tone="ink">{v4("kflOfficinaShown")} {shown.length}</li>
+        <li data-tone="ivory">{v4("kflOfficinaBlank")} {blankCount}</li>
+      </ol>
+      <div className="c4-kfl-officina-rail" aria-hidden="true">
+        {lines.filter((line) => line.file).map((line) => (
+          <i key={line.file} style={{ height: `${Math.max(12, Math.round((line.count / peak) * 52))}px` }} />
+        ))}
+      </div>
       <p className="c4-meta">{v4("kflHint")}</p>
       <p className="c4-meta">{v4("kflLocal")}</p>
       <p className="c4-row">
@@ -225,11 +238,11 @@ export function KycFileStatuses({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("kflSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("kflEmpty")}</p>}
-      <ul className="c4-kfl-rows">
+      <ul className="c4-kfl-rows c4-kfl-officina-list">
         {shown.map((row) => {
           const name = fileText(row.file);
           return (
-            <li key={row.id} data-file={name || "blank"}>
+            <li key={row.id} className="c4-kfl-officina-card" data-file={name || "blank"}>
               <p>{row.label || row.id}</p>
               <p className="c4-kfl-stamp">{name || v4("kflBlank")}</p>
             </li>

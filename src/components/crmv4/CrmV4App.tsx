@@ -331,6 +331,7 @@ import { DevicePlates as LastDevicePlates, EscapeWheelRules } from "./round340";
 import { MoonPhaseRules, SurnamePlates as LastNamePlates } from "./round341";
 import { ResidencyPlates, SonnerieRules } from "./round342";
 import { LeverRules, StreetLanePlates } from "./round343";
+import { EmailLanePlates, RattrapanteRules } from "./round344";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1256,6 +1257,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "rsd") return v4("rsdTitle");
     if (tab === "lvr") return v4("lvrTitle");
     if (tab === "stt") return v4("sttTitle");
+    if (tab === "rtp") return v4("rtpTitle");
+    if (tab === "mpx") return v4("mpxTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1840,6 +1843,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "rsd") return v4("rsdSub");
     if (tab === "lvr") return v4("lvrSub");
     if (tab === "stt") return v4("sttSub");
+    if (tab === "rtp") return v4("rtpSub");
+    if (tab === "mpx") return v4("mpxSub");
     return "";
   }
 
@@ -2585,6 +2590,8 @@ function Shell({ base, section, name }: Props) {
             {view === "rsd" && <ResidencyPlates base={base} v4={v4} />}
             {view === "lvr" && <LeverRules base={base} v4={v4} />}
             {view === "stt" && <StreetLanePlates base={base} v4={v4} />}
+            {view === "rtp" && <RattrapanteRules base={base} v4={v4} />}
+            {view === "mpx" && <EmailLanePlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
