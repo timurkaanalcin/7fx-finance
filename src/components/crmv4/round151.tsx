@@ -310,15 +310,22 @@ export function DispatchSlips({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-dsp" aria-label={v4("dspTitle")} data-dispatch="1" data-role={role}>
-      <header className="c4-dsp-head">
-        <p className="c4-dsp-plate" data-logo="mono">{v4("dspLogo")}</p>
+    <section className="c4-dsp c4-dsp-tepidarium" aria-label={v4("dspTitle")} data-dispatch="1" data-role={role} data-desk="tepidarium">
+      <header className="c4-dsp-head c4-dsp-tepidarium-mast">
+        <p className="c4-dsp-plate c4-dsp-tepidarium-seal" data-logo="mono">{v4("dspTepidariumLogo")}</p>
         <div>
-          <p className="c4-dsp-kicker">{v4("dspSub")}</p>
-          <h2 className="c4-title">{v4("dspTitle")}</h2>
+          <p className="c4-dsp-tepidarium-kicker">{v4("dspTepidariumKicker")}</p>
+          <h2 className="c4-title c4-dsp-tepidarium-title">{v4("dspTitle")}</h2>
+          <p className="c4-dsp-tepidarium-lead">{v4("dspTepidariumLead")}</p>
         </div>
-        <p className="c4-dsp-count">{shown.length}</p>
+        <p className="c4-dsp-count c4-dsp-tepidarium-count">{shown.length}</p>
       </header>
+      <ol className="c4-dsp-tepidarium-index" aria-label={v4("dspTepidariumKicker")}>
+        <li data-tone="gold">{v4("dspOpen")} {counts.open}</li>
+        <li data-tone="ink">{v4("dspHeld")} {counts.held}</li>
+        <li data-tone="ivory">{v4("dspFiled")} {counts.filed}</li>
+        <li data-tone="gold">{v4("dspNotice")} {counts.late}</li>
+      </ol>
       <details className="c4-dsp-rules">
         <summary>{v4("dspRules")}</summary>
         <p className="c4-meta">{v4("dspHint")}</p>
@@ -536,7 +543,7 @@ export function DispatchSlips({ v4 }: { v4: V4 }) {
             const gap = gapLabel(v4, card.hour, clock);
             const pair = hourPair(card.hour);
             return (
-              <li key={card.id} data-pace={card.pace || "blank"} data-lane={card.lane || "blank"} data-hour={hourBand(card.hour)}>
+              <li key={card.id} className="c4-dsp-tepidarium-card" data-pace={card.pace || "blank"} data-lane={card.lane || "blank"} data-hour={hourBand(card.hour)}>
                 <span className="c4-dsp-clock">{hourLabel(card.hour)}</span>
                 <div>
                   {editing === card.id ? (
@@ -665,14 +672,21 @@ export function DeskWings({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-dsk" aria-label={v4("dskTitle")} data-wings="1">
-      <header className="c4-dsk-head">
+    <section className="c4-dsk c4-dsk-palaestra" aria-label={v4("dskTitle")} data-wings="1" data-desk="palaestra">
+      <header className="c4-dsk-head c4-dsk-palaestra-mast">
+        <p className="c4-dsk-palaestra-seal" data-logo="mono">{v4("dskPalaestraLogo")}</p>
         <div>
-          <p className="c4-dsp-kicker">{v4("dskSub")}</p>
-          <h2 className="c4-title">{v4("dskTitle")}</h2>
+          <p className="c4-dsk-palaestra-kicker">{v4("dskPalaestraKicker")}</p>
+          <h2 className="c4-title c4-dsk-palaestra-title">{v4("dskTitle")}</h2>
+          <p className="c4-dsk-palaestra-lead">{v4("dskPalaestraLead")}</p>
         </div>
-        <p className="c4-dsp-count">{v4("dskRows")} {rows.length}</p>
+        <p className="c4-dsp-count c4-dsk-palaestra-count">{v4("dskRows")} {rows.length}</p>
       </header>
+      <ol className="c4-dsk-palaestra-index" aria-label={v4("dskPalaestraKicker")}>
+        <li data-tone="gold">{v4("dskLeadDesk")} {leadDesk || "—"}</li>
+        <li data-tone="ivory">{v4("dskLeadWing")} {leadWing ? wingName(v4, leadWing) : "—"}</li>
+        <li data-tone="ink">{v4("dskRows")} {rows.length}</li>
+      </ol>
       <details className="c4-dsp-rules">
         <summary>{v4("dskRules")}</summary>
         <p className="c4-meta">{v4("dskHint")}</p>
@@ -788,7 +802,7 @@ export function DeskWings({ base, v4 }: { base: string; v4: V4 }) {
           const wingMark = wingOf(row.desk);
           const spanMark = spanOf(row.desk);
           return (
-            <li key={row.id} data-wing={wingMark || "blank"} data-span={spanMark || "blank"}>
+            <li key={row.id} className="c4-dsk-palaestra-card" data-wing={wingMark || "blank"} data-span={spanMark || "blank"}>
               <span className="c4-dsk-letter" aria-hidden="true">{initialOf(row.desk) || "—"}</span>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">
