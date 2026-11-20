@@ -312,15 +312,21 @@ export function DocketSlips({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-dkt" aria-label={v4("dktTitle")} data-dockets="1" data-role={role}>
-      <header className="c4-dkt-head">
-        <p className="c4-dkt-plate" data-logo="mono">{v4("dktLogo")}</p>
+    <section className="c4-dkt c4-dkt-fullonica" aria-label={v4("dktTitle")} data-dockets="1" data-role={role} data-desk="fullonica">
+      <header className="c4-dkt-head c4-dkt-fullonica-mast">
+        <p className="c4-dkt-plate c4-dkt-fullonica-seal" data-logo="mono">{v4("dktFullonicaLogo")}</p>
         <div>
-          <p className="c4-dkt-kicker">{v4("dktSub")}</p>
-          <h2 className="c4-title">{v4("dktTitle")}</h2>
+          <p className="c4-dkt-kicker c4-dkt-fullonica-kicker">{v4("dktFullonicaKicker")}</p>
+          <h2 className="c4-title c4-dkt-fullonica-title">{v4("dktTitle")}</h2>
+          <p className="c4-dkt-fullonica-lead">{v4("dktFullonicaLead")}</p>
         </div>
-        <p className="c4-dkt-count">{shown.length}</p>
+        <p className="c4-dkt-count c4-dkt-fullonica-count">{shown.length}</p>
       </header>
+      <ol className="c4-dkt-fullonica-index" aria-label={v4("dktFullonicaKicker")}>
+        <li data-tone="gold">{v4("dktOpen")} {counts.open}</li>
+        <li data-tone="ink">{v4("dktParked")} {counts.parked}</li>
+        <li data-tone="ivory">{v4("dktNotice")} {counts.late}</li>
+      </ol>
       <details className="c4-dkt-rules">
         <summary>{v4("dktRules")}</summary>
         <p className="c4-meta">{v4("dktHint")}</p>
@@ -539,7 +545,7 @@ export function DocketSlips({ v4 }: { v4: V4 }) {
             const ring = ringOf(card.docket);
             const editingCard = editing === card.id;
             return (
-              <li key={card.id} data-wax={card.wax || "blank"} data-cloth={card.cloth || "blank"} data-watch={watchOf(card.docket)}>
+              <li key={card.id} className="c4-dkt-fullonica-card" data-wax={card.wax || "blank"} data-cloth={card.cloth || "blank"} data-watch={watchOf(card.docket)}>
                 <span className="c4-dkt-folio" aria-hidden="true">{numberLabel(card.docket)}</span>
                 <span className="c4-dkt-seals" aria-hidden="true">
                   {[0, 1, 2].map((index) => <i key={index} data-on={index < seals(card.wax) ? "1" : "0"} />)}
@@ -668,14 +674,21 @@ export function FamilyNames({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-fam" aria-label={v4("famTitle")} data-family="1">
-      <header className="c4-fam-head">
+    <section className="c4-fam c4-fam-sphaeristerium" aria-label={v4("famTitle")} data-family="1" data-desk="sphaeristerium">
+      <header className="c4-fam-head c4-fam-sphaeristerium-mast">
+        <p className="c4-fam-sphaeristerium-seal" data-logo="mono">{v4("famSphaeristeriumLogo")}</p>
         <div>
-          <p className="c4-dkt-kicker">{v4("famSub")}</p>
-          <h2 className="c4-title">{v4("famTitle")}</h2>
+          <p className="c4-fam-sphaeristerium-kicker">{v4("famSphaeristeriumKicker")}</p>
+          <h2 className="c4-title c4-fam-sphaeristerium-title">{v4("famTitle")}</h2>
+          <p className="c4-fam-sphaeristerium-lead">{v4("famSphaeristeriumLead")}</p>
         </div>
-        <p className="c4-dkt-count">{v4("famRows")} {rows.length}</p>
+        <p className="c4-dkt-count c4-fam-sphaeristerium-count">{v4("famRows")} {rows.length}</p>
       </header>
+      <ol className="c4-fam-sphaeristerium-index" aria-label={v4("famSphaeristeriumKicker")}>
+        <li data-tone="gold">{rows.length}</li>
+        <li data-tone="ink">{leadInitial || "—"}</li>
+        <li data-tone="ivory">{shown.length}</li>
+      </ol>
       <details className="c4-dkt-rules">
         <summary>{v4("famRules")}</summary>
         <p className="c4-meta">{v4("famHint")}</p>
@@ -784,7 +797,7 @@ export function FamilyNames({ base, v4 }: { base: string; v4: V4 }) {
           const spanMark = spanOf(row.family);
           const shapeMark = shapeOf(row.family);
           return (
-            <li key={row.id} data-span={spanMark || "blank"} data-shape={shapeMark || "blank"}>
+            <li key={row.id} className="c4-fam-sphaeristerium-card" data-span={spanMark || "blank"} data-shape={shapeMark || "blank"}>
               <span className="c4-fam-face" aria-hidden="true">{initialMark || "—"}</span>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">

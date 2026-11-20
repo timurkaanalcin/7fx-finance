@@ -108027,3 +108027,457 @@
   [data-crmv4-root] .c4-detent-card,
   [data-crmv4-root] .c4-tellurion-card { transition: none; }
 }
+
+/* Round 335 — repeater rules, gong plates, ivory docket fullonica, graphite family sphaeristerium. */
+[data-crmv4-root] .c4-repeater {
+  color: #1c1a17;
+  background:
+    radial-gradient(circle at 18% 0, rgba(198, 161, 91, 0.45), transparent 28%),
+    repeating-radial-gradient(circle at 18% 0, rgba(198, 161, 91, 0.35) 0 2px, transparent 2px 14px),
+    linear-gradient(180deg, #fffdf8 0%, #f3ecdf 100%);
+  border: 1px solid #8a6a3b;
+  border-radius: 28px 28px 8px 8px;
+  padding: 22px 16px 24px;
+  box-shadow: inset 0 0 0 1px rgba(198, 161, 91, 0.45);
+}
+[data-crmv4-root] .c4-repeater-mast,
+[data-crmv4-root] .c4-gong-mast,
+[data-crmv4-root] .c4-dkt-fullonica-mast,
+[data-crmv4-root] .c4-fam-sphaeristerium-mast {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: end;
+  margin: 0;
+}
+[data-crmv4-root] .c4-repeater-seal[data-logo="mono"],
+[data-crmv4-root] .c4-gong-seal[data-logo="mono"] {
+  margin: 0;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  background: #1c1a17;
+  color: #f6f1e8;
+  border: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 0 6px #fffdf8, 0 0 0 8px #c6a15b;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  font-weight: 650;
+}
+[data-crmv4-root] .c4-repeater-kicker,
+[data-crmv4-root] .c4-gong-kicker,
+[data-crmv4-root] .c4-dkt-fullonica-kicker,
+[data-crmv4-root] .c4-fam-sphaeristerium-kicker {
+  margin: 0;
+  color: #8a6a3b;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-repeater-count,
+[data-crmv4-root] .c4-gong-count,
+[data-crmv4-root] .c4-dkt-fullonica-count,
+[data-crmv4-root] .c4-fam-sphaeristerium-count {
+  margin: 0;
+  min-width: 44px;
+  text-align: right;
+  color: #8a6a3b;
+  font-variant-numeric: tabular-nums;
+  font-size: 28px;
+}
+[data-crmv4-root] .c4-repeater-index,
+[data-crmv4-root] .c4-dkt-fullonica-index,
+[data-crmv4-root] .c4-fam-sphaeristerium-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-repeater-index li,
+[data-crmv4-root] .c4-dkt-fullonica-index li,
+[data-crmv4-root] .c4-fam-sphaeristerium-index li {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid #c6a15b;
+  background: #fffdf8;
+}
+[data-crmv4-root] .c4-repeater-index li[data-tone="ink"],
+[data-crmv4-root] .c4-dkt-fullonica-index li[data-tone="ink"] { background: #1c1a17; color: #f6f1e8; }
+[data-crmv4-root] .c4-repeater-index li[data-tone="gold"],
+[data-crmv4-root] .c4-dkt-fullonica-index li[data-tone="gold"],
+[data-crmv4-root] .c4-fam-sphaeristerium-index li[data-tone="gold"] { color: #8a6a3b; }
+[data-crmv4-root] .c4-repeater-chart,
+[data-crmv4-root] .c4-gong-chart { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+[data-crmv4-root] .c4-repeater-column,
+[data-crmv4-root] .c4-gong-column {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-width: 52px;
+  min-height: 44px;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+}
+[data-crmv4-root] .c4-repeater-column i,
+[data-crmv4-root] .c4-gong-column i {
+  display: block;
+  width: 18px;
+  height: 36px;
+  background: #c6a15b;
+  border-radius: 18px 18px 4px 4px;
+}
+[data-crmv4-root] .c4-repeater-column[data-on="1"] i,
+[data-crmv4-root] .c4-gong-column[data-on="1"] i { background: #1c1a17; width: 24px; }
+[data-crmv4-root] .c4-repeater-form,
+[data-crmv4-root] .c4-repeater-tools,
+[data-crmv4-root] .c4-repeater-view,
+[data-crmv4-root] .c4-repeater-bulk,
+[data-crmv4-root] .c4-gong-tools,
+[data-crmv4-root] .c4-gong-bulk { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; }
+[data-crmv4-root] .c4-repeater-list,
+[data-crmv4-root] .c4-gong-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+[data-crmv4-root] .c4-repeater-card,
+[data-crmv4-root] .c4-gong-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  background: #fffdf8;
+  border: 1px solid rgba(138, 106, 59, 0.45);
+  border-radius: 999px;
+  padding: 12px 16px;
+  box-shadow: inset 0 0 0 1px rgba(198, 161, 91, 0.35);
+}
+[data-crmv4-root] .c4-repeater .c4-btn,
+[data-crmv4-root] .c4-repeater .c4-chip,
+[data-crmv4-root] .c4-gong .c4-btn,
+[data-crmv4-root] .c4-gong .c4-chip,
+[data-crmv4-root] .c4-dkt.c4-dkt-fullonica .c4-btn,
+[data-crmv4-root] .c4-dkt.c4-dkt-fullonica .c4-chip,
+[data-crmv4-root] .c4-fam.c4-fam-sphaeristerium .c4-btn,
+[data-crmv4-root] .c4-fam.c4-fam-sphaeristerium .c4-chip { min-height: 44px; }
+[data-crmv4-root] .c4-repeater .c4-btn:focus-visible,
+[data-crmv4-root] .c4-repeater .c4-chip:focus-visible,
+[data-crmv4-root] .c4-gong .c4-btn:focus-visible,
+[data-crmv4-root] .c4-gong .c4-chip:focus-visible,
+[data-crmv4-root] .c4-repeater-column:focus-visible,
+[data-crmv4-root] .c4-gong-column:focus-visible,
+[data-crmv4-root] .c4-dkt.c4-dkt-fullonica .c4-btn:focus-visible,
+[data-crmv4-root] .c4-dkt.c4-dkt-fullonica .c4-chip:focus-visible,
+[data-crmv4-root] .c4-fam.c4-fam-sphaeristerium .c4-btn:focus-visible,
+[data-crmv4-root] .c4-fam.c4-fam-sphaeristerium .c4-chip:focus-visible { outline: 2px solid #c6a15b; outline-offset: 2px; }
+[data-crmv4-root] .c4-repeater[data-density="close"] .c4-repeater-card { padding: 6px 12px; }
+[data-crmv4-root] .c4-gong {
+  color: #f6f1e8;
+  background:
+    conic-gradient(from 220deg at 0 0, rgba(198, 161, 91, 0.55), transparent 28%),
+    #141210;
+  border: 1px solid #c6a15b;
+  border-radius: 0 72px 12px 12px;
+  padding: 20px 18px 22px;
+}
+[data-crmv4-root] .c4-gong-seal[data-logo="mono"] {
+  color: #1c1a17;
+  background: #c6a15b;
+  border-radius: 0 40px 0 40px;
+  box-shadow: 8px 8px 0 #8a6a3b;
+}
+[data-crmv4-root] .c4-gong-card { background: #1c1916; color: #f6f1e8; border-color: #8a6a3b; border-radius: 8px; }
+[data-crmv4-root] .c4-gong .c4-title,
+[data-crmv4-root] .c4-gong .c4-meta,
+[data-crmv4-root] .c4-gong-hint,
+[data-crmv4-root] .c4-gong-meta { color: #f6f1e8; }
+[data-crmv4-root] .c4-gong-kicker { color: #e7d3a1; }
+[data-crmv4-root] .c4-dkt.c4-dkt-fullonica {
+  color: #1c1a17;
+  background:
+    repeating-linear-gradient(0deg, #c6a15b 0 2px, transparent 2px 18px),
+    linear-gradient(180deg, #fffdf8 0%, #f6efe3 100%);
+  border: 1px solid #8a6a3b;
+  border-radius: 90px 90px 12px 12px;
+  padding: 28px 16px 26px;
+  box-shadow: inset 0 -12px 0 rgba(198, 161, 91, 0.35);
+}
+[data-crmv4-root] .c4-dkt-fullonica-seal[data-logo="mono"] {
+  margin: 0;
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  background: #1c1a17;
+  color: #f6f1e8;
+  border: 0;
+  border-radius: 40px 40px 8px 8px;
+  box-shadow: 0 8px 0 #c6a15b;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  font-weight: 650;
+}
+[data-crmv4-root] .c4-dkt-fullonica-title,
+[data-crmv4-root] .c4-fam-sphaeristerium-title,
+[data-crmv4-root] .c4-repeater .c4-title,
+[data-crmv4-root] .c4-gong .c4-title { letter-spacing: -0.03em; }
+[data-crmv4-root] .c4-dkt-fullonica-title::before,
+[data-crmv4-root] .c4-fam-sphaeristerium-title::before,
+[data-crmv4-root] .c4-repeater .c4-title::before,
+[data-crmv4-root] .c4-gong .c4-title::before { background: #c6a15b; }
+[data-crmv4-root] .c4-dkt-fullonica-lead,
+[data-crmv4-root] .c4-fam-sphaeristerium-lead { margin: 6px 0 0; max-width: 62ch; line-height: 1.45; }
+[data-crmv4-root] .c4-dkt.c4-dkt-fullonica .c4-dkt-rows { display: grid; gap: 12px; }
+[data-crmv4-root] .c4-dkt.c4-dkt-fullonica .c4-dkt-rows li.c4-dkt-fullonica-card {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  background: #fffdf8;
+  border: 1px solid rgba(138, 106, 59, 0.45);
+  border-radius: 18px 18px 6px 6px;
+  padding: 14px;
+  box-shadow: inset 0 6px 0 #c6a15b;
+}
+[data-crmv4-root] .c4-fam.c4-fam-sphaeristerium {
+  color: #f6f1e8;
+  background:
+    repeating-linear-gradient(90deg, rgba(198, 161, 91, 0.55) 0 2px, transparent 2px 28px),
+    #12110f;
+  border: 1px solid #8a6a3b;
+  border-radius: 2px;
+  padding: 20px 18px 24px;
+}
+[data-crmv4-root] .c4-fam-sphaeristerium-seal[data-logo="mono"] {
+  margin: 0;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  background: #1c1a17;
+  color: #f6f1e8;
+  border: 2px solid #c6a15b;
+  border-radius: 2px;
+  box-shadow: 6px 6px 0 #8a6a3b;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  font-weight: 650;
+}
+[data-crmv4-root] .c4-fam-sphaeristerium-title,
+[data-crmv4-root] .c4-fam-sphaeristerium-lead,
+[data-crmv4-root] .c4-fam.c4-fam-sphaeristerium .c4-meta,
+[data-crmv4-root] .c4-fam.c4-fam-sphaeristerium .c4-title { color: #f6f1e8; }
+[data-crmv4-root] .c4-fam-sphaeristerium-kicker { color: #e7d3a1; }
+[data-crmv4-root] .c4-fam-sphaeristerium-index li { background: transparent; color: #f6f1e8; border-color: #8a6a3b; border-radius: 2px; }
+[data-crmv4-root] .c4-fam.c4-fam-sphaeristerium .c4-btn,
+[data-crmv4-root] .c4-fam.c4-fam-sphaeristerium .c4-chip {
+  background: transparent;
+  color: #f6f1e8;
+  border: 1px solid #c6a15b;
+  border-radius: 2px;
+}
+[data-crmv4-root] .c4-fam.c4-fam-sphaeristerium .c4-fam-rows { display: grid; gap: 8px; }
+[data-crmv4-root] .c4-fam.c4-fam-sphaeristerium .c4-fam-rows li.c4-fam-sphaeristerium-card {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  background: rgba(20, 18, 16, 0.78);
+  color: #f6f1e8;
+  border: 1px solid rgba(198, 161, 91, 0.55);
+  border-radius: 2px;
+  padding: 12px 14px;
+  box-shadow: inset 4px 0 0 #c6a15b;
+}
+[data-crmv4-root] .c4-fam.c4-fam-sphaeristerium .c4-fam-rows li.c4-fam-sphaeristerium-card .c4-meta,
+[data-crmv4-root] .c4-fam.c4-fam-sphaeristerium .c4-fam-rows li.c4-fam-sphaeristerium-card p { color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-repeater,
+[data-crmv4-root][data-theme="dark"] .c4-dkt.c4-dkt-fullonica {
+  color: #f6f1e8;
+  background: #241f1a;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-repeater-card,
+[data-crmv4-root][data-theme="dark"] .c4-dkt.c4-dkt-fullonica .c4-dkt-rows li.c4-dkt-fullonica-card {
+  background: #1c1a17;
+  color: #f6f1e8;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-dkt-fullonica-title,
+[data-crmv4-root][data-theme="dark"] .c4-dkt-fullonica-lead,
+[data-crmv4-root][data-theme="dark"] .c4-dkt.c4-dkt-fullonica .c4-meta,
+[data-crmv4-root][data-theme="dark"] .c4-repeater-hint { color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-dkt-fullonica-seal[data-logo="mono"] { color: #f6f1e8; background: #1c1a17; box-shadow: 0 8px 0 #c6a15b; }
+[data-crmv4-root][data-theme="dark"] .c4-dkt-fullonica-index li,
+[data-crmv4-root][data-theme="dark"] .c4-repeater-index li { background: #1c1a17; color: #f6f1e8; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-repeater-mast,
+  [data-crmv4-root] .c4-gong-mast,
+  [data-crmv4-root] .c4-dkt-fullonica-mast,
+  [data-crmv4-root] .c4-fam-sphaeristerium-mast { grid-template-columns: auto minmax(0, 1fr) auto; }
+  [data-crmv4-root] .c4-dkt-fullonica-title,
+  [data-crmv4-root] .c4-fam-sphaeristerium-title { font-size: 1.35rem; }
+  [data-crmv4-root] .c4-repeater,
+  [data-crmv4-root] .c4-gong { border-radius: 12px; }
+  [data-crmv4-root] .c4-dkt.c4-dkt-fullonica { border-radius: 36px 36px 12px 12px; padding: 18px 12px 20px; }
+  [data-crmv4-root] .c4-fam.c4-fam-sphaeristerium { border-radius: 2px; padding: 16px 12px 20px; }
+  [data-crmv4-root] .c4-repeater-card,
+  [data-crmv4-root] .c4-gong-card,
+  [data-crmv4-root] .c4-dkt.c4-dkt-fullonica .c4-dkt-rows li.c4-dkt-fullonica-card,
+  [data-crmv4-root] .c4-fam.c4-fam-sphaeristerium .c4-fam-rows li.c4-fam-sphaeristerium-card { grid-template-columns: minmax(0, 1fr); border-radius: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-repeater-column i,
+  [data-crmv4-root] .c4-gong-column i,
+  [data-crmv4-root] .c4-dkt-fullonica-card,
+  [data-crmv4-root] .c4-fam-sphaeristerium-card { transition: none; }
+}
+
+/* Round 335 distinctive rack, gong, fullonica trough, and sphaeristerium court. */
+[data-crmv4-root] .c4-repeater {
+  background:
+    repeating-linear-gradient(90deg, rgba(198, 161, 91, 0.55) 0 1px, transparent 1px 16px),
+    linear-gradient(180deg, #fffdf8 0%, #f4ecdf 100%);
+  border-radius: 4px 4px 28px 28px;
+}
+[data-crmv4-root] .c4-gong {
+  background:
+    radial-gradient(circle at 50% 0, rgba(198, 161, 91, 0.45), transparent 42%),
+    #141210;
+  border-radius: 120px 120px 16px 16px;
+}
+[data-crmv4-root] .c4-gong-seal[data-logo="mono"] {
+  border-radius: 50%;
+  box-shadow: 0 0 0 6px #141210, 0 0 0 8px #c6a15b;
+}
+[data-crmv4-root] .c4-dkt.c4-dkt-fullonica {
+  background:
+    radial-gradient(circle at 50% 0, rgba(198, 161, 91, 0.55) 0 18px, transparent 19px),
+    repeating-radial-gradient(circle at 50% 0, rgba(28, 26, 23, 0.18) 0 1px, transparent 1px 7px),
+    linear-gradient(180deg, #fffdf8 0%, #f3eadc 100%);
+  border-radius: 160px 160px 18px 18px;
+  box-shadow: inset 0 0 0 1px rgba(198, 161, 91, 0.55);
+}
+[data-crmv4-root] .c4-dkt-fullonica-seal[data-logo="mono"] {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 10px #c6a15b, 0 8px 0 #8a6a3b;
+}
+[data-crmv4-root] .c4-dkt.c4-dkt-fullonica .c4-dkt-rows li.c4-dkt-fullonica-card {
+  grid-template-columns: 56px 28px minmax(0, 1fr);
+  border-radius: 28px 8px 28px 8px;
+  box-shadow: inset 8px 0 0 #c6a15b;
+}
+[data-crmv4-root] .c4-fam.c4-fam-sphaeristerium {
+  background:
+    linear-gradient(90deg, transparent 0 48%, rgba(198, 161, 91, 0.85) 48% 52%, transparent 52% 100%),
+    radial-gradient(circle at 12% 20%, rgba(246, 241, 232, 0.08), transparent 28%),
+    #161410;
+  border-radius: 28px;
+  box-shadow: inset 0 0 0 10px #1c1a17, inset 0 0 0 11px #c6a15b;
+}
+[data-crmv4-root] .c4-fam-sphaeristerium-seal[data-logo="mono"] {
+  border-radius: 50% 50% 12px 12px;
+}
+[data-crmv4-root] .c4-fam.c4-fam-sphaeristerium .c4-fam-rows {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+[data-crmv4-root] .c4-fam.c4-fam-sphaeristerium .c4-fam-rows li.c4-fam-sphaeristerium-card {
+  border-radius: 18px 18px 4px 4px;
+  background: #f6f1e8;
+  color: #1c1a17;
+  box-shadow: inset 0 -6px 0 #c6a15b;
+}
+[data-crmv4-root] .c4-fam.c4-fam-sphaeristerium .c4-fam-rows li.c4-fam-sphaeristerium-card p,
+[data-crmv4-root] .c4-fam.c4-fam-sphaeristerium .c4-fam-rows li.c4-fam-sphaeristerium-card .c4-meta { color: #1c1a17; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-dkt.c4-dkt-fullonica { border-radius: 72px 72px 12px 12px; padding: 22px 12px 18px; }
+  [data-crmv4-root] .c4-fam.c4-fam-sphaeristerium { border-radius: 16px; padding: 16px 12px 18px; }
+  [data-crmv4-root] .c4-fam.c4-fam-sphaeristerium .c4-fam-rows { grid-template-columns: minmax(0, 1fr); }
+  [data-crmv4-root] .c4-repeater,
+  [data-crmv4-root] .c4-gong { border-radius: 12px; }
+}
+[data-crmv4-root][data-theme="dark"] .c4-dkt.c4-dkt-fullonica {
+  color: #f6f1e8;
+  background:
+    radial-gradient(circle at 50% 0, rgba(198, 161, 91, 0.7) 0 16px, transparent 17px),
+    repeating-radial-gradient(circle at 50% 0, rgba(246, 241, 232, 0.16) 0 1px, transparent 1px 7px),
+    #241f1a;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-dkt.c4-dkt-fullonica .c4-dkt-rows li.c4-dkt-fullonica-card {
+  background: #1c1a17;
+  color: #f6f1e8;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-dkt-fullonica-card,
+  [data-crmv4-root] .c4-fam-sphaeristerium-card,
+  [data-crmv4-root] .c4-repeater-card,
+  [data-crmv4-root] .c4-gong-card { transition: none; }
+}
+
+/* Round 335 — fullonica trough and sphaeristerium court, still graphite, ivory, and champagne. */
+[data-crmv4-root] .c4-repeater {
+  background:
+    repeating-linear-gradient(90deg, #c6a15b 0 2px, transparent 2px 18px),
+    linear-gradient(180deg, #fffdf8 0%, #f4ecdf 100%);
+  border-radius: 4px 48px 4px 48px;
+}
+[data-crmv4-root] .c4-gong {
+  background:
+    radial-gradient(circle at 50% 18%, transparent 0 46px, #c6a15b 47px 49px, transparent 50px),
+    radial-gradient(circle at 50% 18%, rgba(198, 161, 91, 0.35), transparent 38%),
+    #141210;
+  border-radius: 50% 50% 18px 18px;
+}
+[data-crmv4-root] .c4-dkt.c4-dkt-fullonica {
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 72px / 100% 8px no-repeat,
+    linear-gradient(180deg, #fffdf8 0%, #f3eadc 100%);
+  border-radius: 80px 12px 80px 12px;
+  box-shadow: inset 0 -14px 0 rgba(198, 161, 91, 0.45);
+}
+[data-crmv4-root] .c4-dkt.c4-dkt-fullonica .c4-dkt-rows li.c4-dkt-fullonica-card {
+  background:
+    repeating-linear-gradient(180deg, rgba(198, 161, 91, 0.35) 0 1px, transparent 1px 8px),
+    #fffdf8;
+  border-radius: 18px 4px 18px 4px;
+}
+[data-crmv4-root] .c4-fam.c4-fam-sphaeristerium {
+  background:
+    radial-gradient(circle at 50% 42%, transparent 0 72px, rgba(198, 161, 91, 0.85) 73px 75px, transparent 76px),
+    #161410;
+  border-radius: 36px;
+}
+[data-crmv4-root] .c4-fam.c4-fam-sphaeristerium .c4-fam-rows li.c4-fam-sphaeristerium-card {
+  border-radius: 999px;
+  background: #f6f1e8;
+  color: #1c1a17;
+}
+[data-crmv4-root] .c4-fam.c4-fam-sphaeristerium .c4-fam-rows li.c4-fam-sphaeristerium-card p,
+[data-crmv4-root] .c4-fam.c4-fam-sphaeristerium .c4-fam-rows li.c4-fam-sphaeristerium-card .c4-meta { color: #1c1a17; }
+[data-crmv4-root][data-theme="dark"] .c4-dkt.c4-dkt-fullonica {
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 64px / 100% 8px no-repeat,
+    #241f1a;
+}
+[data-crmv4-root][data-theme="dark"] .c4-dkt.c4-dkt-fullonica .c4-dkt-rows li.c4-dkt-fullonica-card {
+  background: #1c1a17;
+  color: #f6f1e8;
+}
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-dkt.c4-dkt-fullonica { border-radius: 28px 12px; padding: 18px 12px 20px; }
+  [data-crmv4-root] .c4-fam.c4-fam-sphaeristerium { border-radius: 18px; padding: 16px 12px 18px; }
+  [data-crmv4-root] .c4-fam.c4-fam-sphaeristerium .c4-fam-rows { grid-template-columns: minmax(0, 1fr); }
+  [data-crmv4-root] .c4-repeater,
+  [data-crmv4-root] .c4-gong { border-radius: 12px; }
+}
