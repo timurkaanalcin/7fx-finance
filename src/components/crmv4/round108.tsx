@@ -70,14 +70,20 @@ export function FollowQueue({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-follow-queue" aria-label={v4("ffTitle")} data-follow-queue="1">
-      <header className="c4-pay-head">
+    <section className="c4-follow-queue c4-follow-parodos" aria-label={v4("ffTitle")} data-follow-queue="1" data-desk="parodos">
+      <header className="c4-pay-head c4-ff-parodos-mast">
+        <p className="c4-ff-parodos-seal" data-logo="mono">{v4("ffParodosLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("ffSub")}</p>
+          <p className="c4-ff-parodos-kicker">{v4("ffParodosKicker")}</p>
           <h2 className="c4-title">{v4("ffTitle")}</h2>
+          <p className="c4-ff-parodos-lead">{v4("ffParodosLead")}</p>
         </div>
-        <p className="c4-meta">{follows.filter((item) => !item.done).length}</p>
+        <p className="c4-ff-parodos-count">{follows.filter((item) => !item.done).length}</p>
       </header>
+      <ol className="c4-ff-parodos-index" aria-label={v4("ffTitle")}>
+        <li data-tone="gold">{v4("ffParodosOpen")} {follows.filter((item) => !item.done).length}</li>
+        <li data-tone="ink">{v4("ffParodosDone")} {follows.filter((item) => item.done).length}</li>
+      </ol>
       <p className="c4-meta">{v4("ffHint")}</p>
       <p className="c4-meta">{v4("ffLocal")}</p>
       <p className="c4-meta">{v4("ffBlank")}</p>
@@ -114,9 +120,9 @@ export function FollowQueue({ base, v4 }: { base: string; v4: V4 }) {
       {data.error && <p className="c4-meta">{v4("ffFailed")}</p>}
       {!data.loading && !data.error && !people.length && <p className="c4-pay-empty">{v4("ffNone")}</p>}
       {!shown.length && people.length > 0 && <p className="c4-pay-empty">{v4("ffEmpty")}</p>}
-      <ul className="c4-follow-rows">
+      <ul className="c4-follow-rows c4-ff-parodos-list">
         {shown.map((row, index) => (
-          <li key={row.id} data-customer={row.id} data-done={done ? "1" : "0"} data-order={row.order}>
+          <li key={row.id} className="c4-ff-parodos-card" data-customer={row.id} data-done={done ? "1" : "0"} data-order={row.order}>
             <p>{row.name || row.email || row.id}</p>
             {row.note ? <p className="c4-meta">{row.note}</p> : null}
             <div className="c4-row">

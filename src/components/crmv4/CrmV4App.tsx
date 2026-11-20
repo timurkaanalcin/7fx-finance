@@ -339,6 +339,7 @@ import { ChronographRules, TimezonePlates } from "./round348";
 import { TachymeterRules, AffiliatePlates } from "./round349";
 import { MarkPlates, PulsometerRules } from "./round350";
 import { FirstTradePlates, RehautRules } from "./round351";
+import { LastCountryPlates, RegulatorRules } from "./round352";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1280,6 +1281,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "mrk") return v4("mrkTitle");
     if (tab === "rht") return v4("rhtTitle");
     if (tab === "fdp") return v4("fdpTitle");
+    if (tab === "rgr") return v4("rgrTitle");
+    if (tab === "lco") return v4("lcoTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1880,6 +1883,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "mrk") return v4("mrkSub");
     if (tab === "rht") return v4("rhtSub");
     if (tab === "fdp") return v4("fdpSub");
+    if (tab === "rgr") return v4("rgrSub");
+    if (tab === "lco") return v4("lcoSub");
     return "";
   }
 
@@ -2641,6 +2646,8 @@ function Shell({ base, section, name }: Props) {
             {view === "mrk" && <MarkPlates base={base} v4={v4} />}
             {view === "rht" && <RehautRules base={base} v4={v4} />}
             {view === "fdp" && <FirstTradePlates base={base} v4={v4} />}
+            {view === "rgr" && <RegulatorRules base={base} v4={v4} />}
+            {view === "lco" && <LastCountryPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

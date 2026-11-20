@@ -62,14 +62,20 @@ export function ReminderChips({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-reminder-chips" aria-label={v4("rmTitle")} data-reminder-chips="1">
-      <header className="c4-pay-head">
+    <section className="c4-reminder-chips c4-reminder-hestiatorion" aria-label={v4("rmTitle")} data-reminder-chips="1" data-desk="hestiatorion">
+      <header className="c4-pay-head c4-rm-hestiatorion-mast">
+        <p className="c4-rm-hestiatorion-seal" data-logo="mono">{v4("rmHestiatorionLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("rmSub")}</p>
+          <p className="c4-rm-hestiatorion-kicker">{v4("rmHestiatorionKicker")}</p>
           <h2 className="c4-title">{v4("rmTitle")}</h2>
+          <p className="c4-rm-hestiatorion-lead">{v4("rmHestiatorionLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-rm-hestiatorion-count">{shown.length}</p>
       </header>
+      <ol className="c4-rm-hestiatorion-index" aria-label={v4("rmTitle")}>
+        <li data-tone="gold">{v4("rmHestiatorionPinned")} {reminders.filter((item) => item.pinned).length}</li>
+        <li data-tone="ink">{v4("rmHestiatorionOpen")} {shown.length}</li>
+      </ol>
       <p className="c4-meta">{v4("rmHint")}</p>
       <p className="c4-meta">{v4("rmLocal")}</p>
       <form className="c4-row" onSubmit={(event) => {
@@ -101,9 +107,9 @@ export function ReminderChips({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("rmHidden")}</button>
       </div>
       {!shown.length && <p className="c4-pay-empty">{v4("rmEmpty")}</p>}
-      <ul className="c4-reminder-list">
+      <ul className="c4-reminder-list c4-rm-hestiatorion-list">
         {shown.map((reminder) => (
-          <li key={reminder.id} className="c4-reminder-card" data-pinned={reminder.pinned ? "1" : "0"}>
+          <li key={reminder.id} className="c4-reminder-card c4-rm-hestiatorion-card" data-pinned={reminder.pinned ? "1" : "0"}>
             <p>{reminder.text}</p>
             {reminder.time && <p className="c4-meta">{reminder.time.replace("Z", "")} {v4("rmUtc")}</p>}
             <div className="c4-row">
