@@ -345,6 +345,7 @@ import { PerlageRules, SourcePlates as LeadSourcePlates } from "./round354";
 import { GuillocheRules, ExpiryPlates } from "./round355";
 import { AnglageRules, ReadOnlyPlates } from "./round356";
 import { GenevaRules, GradePlates } from "./round357";
+import { SoleilRules, VisitPlates } from "./round358";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1298,6 +1299,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "sel") return v4("selTitle");
     if (tab === "gvs") return v4("gvsTitle");
     if (tab === "pts") return v4("ptsTitle");
+    if (tab === "sbr") return v4("sbrTitle");
+    if (tab === "vst") return v4("vstTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1906,6 +1909,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "exp") return v4("expSub");
     if (tab === "gvs") return v4("gvsSub");
     if (tab === "pts") return v4("ptsSub");
+    if (tab === "sbr") return v4("sbrSub");
+    if (tab === "vst") return v4("vstSub");
     return "";
   }
 
@@ -2679,6 +2684,8 @@ function Shell({ base, section, name }: Props) {
             {view === "sel" && <ReadOnlyPlates base={base} v4={v4} />}
             {view === "gvs" && <GenevaRules base={base} v4={v4} />}
             {view === "pts" && <GradePlates base={base} v4={v4} />}
+            {view === "sbr" && <SoleilRules base={base} v4={v4} />}
+            {view === "vst" && <VisitPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

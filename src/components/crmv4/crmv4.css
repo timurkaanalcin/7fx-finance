@@ -116169,3 +116169,313 @@
   [data-crmv4-root] .c4-hc-megaron-card,
   [data-crmv4-root] .c4-geneva-column i { transition: none; }
 }
+
+/* Round 358 — Soleil sunburst, visit plates, ivory handoff epinaos, graphite currency pteroma */
+[data-crmv4-root] .c4-soleil,
+[data-crmv4-root] .c4-vstplate {
+  color: #1c1a17;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(198, 161, 91, 0.55), transparent 42%),
+    repeating-conic-gradient(from 0deg at 50% -20%, #fffdf8 0 8deg, #f3e6d0 8deg 10deg);
+  border: 1px solid #8a6a3b;
+  border-radius: 28px 28px 8px 8px;
+  box-shadow: inset 0 0 0 1px #c6a15b, 0 18px 0 -14px #c6a15b;
+  padding: 22px 18px 20px;
+}
+[data-crmv4-root] .c4-vstplate {
+  color: #f6f1e8;
+  background:
+    radial-gradient(circle at 50% 0, #c6a15b 0 18px, transparent 19px),
+    linear-gradient(#c6a15b, #c6a15b) 0 72px / 100% 1px no-repeat,
+    linear-gradient(180deg, #2a241e 0%, #141210 100%);
+  border-radius: 8px;
+  border-color: #c6a15b;
+  box-shadow: inset 0 0 0 6px #141210, inset 0 0 0 7px #8a6a3b;
+}
+[data-crmv4-root] .c4-soleil-mast,
+[data-crmv4-root] .c4-vstplate-mast,
+[data-crmv4-root] .c4-hp-epinaos-mast,
+[data-crmv4-root] .c4-qc-pteroma-mast {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: start;
+  margin: 0;
+}
+[data-crmv4-root] .c4-soleil-seal[data-logo="mono"],
+[data-crmv4-root] .c4-vstplate-seal[data-logo="mono"],
+[data-crmv4-root] .c4-hp-epinaos-seal[data-logo="mono"],
+[data-crmv4-root] .c4-qc-pteroma-seal[data-logo="mono"] {
+  margin: 0;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  background: #1c1a17;
+  color: #f6f1e8;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 5px #c6a15b, 0 0 0 4px #fffdf8, 0 0 0 6px #8a6a3b;
+}
+[data-crmv4-root] .c4-vstplate-seal[data-logo="mono"],
+[data-crmv4-root] .c4-qc-pteroma-seal[data-logo="mono"] {
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 8px #141210, inset 0 0 0 9px #c6a15b;
+}
+[data-crmv4-root] .c4-soleil-kicker,
+[data-crmv4-root] .c4-vstplate-kicker,
+[data-crmv4-root] .c4-hp-epinaos-kicker,
+[data-crmv4-root] .c4-qc-pteroma-kicker {
+  margin: 0;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 11px;
+  color: #8a6a3b;
+}
+[data-crmv4-root] .c4-vstplate-kicker,
+[data-crmv4-root] .c4-qc-pteroma-kicker { color: #c6a15b; }
+[data-crmv4-root] .c4-soleil-count,
+[data-crmv4-root] .c4-vstplate-count,
+[data-crmv4-root] .c4-hp-epinaos-count,
+[data-crmv4-root] .c4-qc-pteroma-count {
+  margin: 0;
+  min-width: 52px;
+  min-height: 52px;
+  display: grid;
+  place-items: center;
+  padding: 0 10px;
+  background: #1c1a17;
+  color: #f6f1e8;
+  font-variant-numeric: tabular-nums;
+}
+[data-crmv4-root] .c4-soleil-count,
+[data-crmv4-root] .c4-hp-epinaos-count { border-radius: 50%; box-shadow: 0 0 0 4px #c6a15b; }
+[data-crmv4-root] .c4-vstplate-count,
+[data-crmv4-root] .c4-qc-pteroma-count { color: #c6a15b; box-shadow: inset 0 0 0 1px #c6a15b; }
+[data-crmv4-root] .c4-soleil-index,
+[data-crmv4-root] .c4-hp-epinaos-index,
+[data-crmv4-root] .c4-qc-pteroma-index {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  align-self: start;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  height: auto;
+}
+[data-crmv4-root] .c4-soleil-index li,
+[data-crmv4-root] .c4-hp-epinaos-index li,
+[data-crmv4-root] .c4-qc-pteroma-index li {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px solid #c6a15b;
+}
+[data-crmv4-root] .c4-soleil-index li[data-tone="gold"],
+[data-crmv4-root] .c4-hp-epinaos-index li[data-tone="gold"],
+[data-crmv4-root] .c4-qc-pteroma-index li[data-tone="gold"] { background: #c6a15b; color: #1c1a17; }
+[data-crmv4-root] .c4-soleil-index li[data-tone="ink"],
+[data-crmv4-root] .c4-hp-epinaos-index li[data-tone="ink"],
+[data-crmv4-root] .c4-qc-pteroma-index li[data-tone="ink"] { background: #1c1a17; color: #f6f1e8; }
+[data-crmv4-root] .c4-soleil-index li[data-tone="ivory"] { background: #fffdf8; color: #1c1a17; }
+[data-crmv4-root] .c4-soleil-chart,
+[data-crmv4-root] .c4-vstplate-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  min-height: 120px;
+  margin: 8px 0;
+}
+[data-crmv4-root] .c4-soleil-column,
+[data-crmv4-root] .c4-vstplate-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  min-width: 56px;
+  min-height: 44px;
+  background: transparent;
+  border: 0;
+  color: inherit;
+}
+[data-crmv4-root] .c4-soleil-column i,
+[data-crmv4-root] .c4-vstplate-column i {
+  display: block;
+  width: 12px;
+  background: #c6a15b;
+  border-radius: 8px 8px 0 0;
+}
+[data-crmv4-root] .c4-soleil-column[data-on="1"] i { background: #1c1a17; width: 16px; }
+[data-crmv4-root] .c4-vstplate-column[data-on="1"] i { background: #f6f1e8; width: 16px; }
+[data-crmv4-root] .c4-soleil-card,
+[data-crmv4-root] .c4-vstplate-card,
+[data-crmv4-root] .c4-hp-epinaos-card,
+[data-crmv4-root] .c4-qc-pteroma-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  background: #fffdf8;
+  color: #1c1a17;
+  box-shadow: inset 8px 0 0 #c6a15b;
+  padding: 12px;
+  min-height: 44px;
+}
+[data-crmv4-root] .c4-soleil-list,
+[data-crmv4-root] .c4-vstplate-list,
+[data-crmv4-root] .c4-hp-epinaos-list,
+[data-crmv4-root] .c4-qc-pteroma-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-soleil-actions,
+[data-crmv4-root] .c4-vstplate-actions,
+[data-crmv4-root] .c4-soleil-tools,
+[data-crmv4-root] .c4-vstplate-tools,
+[data-crmv4-root] .c4-soleil-bulk,
+[data-crmv4-root] .c4-vstplate-bulk {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+[data-crmv4-root] .c4-soleil-form,
+[data-crmv4-root] .c4-soleil-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+}
+[data-crmv4-root] .c4-soleil .c4-btn,
+[data-crmv4-root] .c4-vstplate .c4-btn,
+[data-crmv4-root] .c4-soleil .c4-chip,
+[data-crmv4-root] .c4-vstplate .c4-chip,
+[data-crmv4-root] .c4-handoff-polish.c4-handoff-epinaos .c4-btn,
+[data-crmv4-root] .c4-handoff-polish.c4-handoff-epinaos .c4-chip,
+[data-crmv4-root] .c4-ccy-glance.c4-ccy-pteroma .c4-btn,
+[data-crmv4-root] .c4-ccy-glance.c4-ccy-pteroma .c4-chip { min-height: 44px; }
+[data-crmv4-root] .c4-soleil .c4-btn:focus-visible,
+[data-crmv4-root] .c4-vstplate .c4-btn:focus-visible,
+[data-crmv4-root] .c4-soleil .c4-field:focus-visible,
+[data-crmv4-root] .c4-vstplate .c4-field:focus-visible,
+[data-crmv4-root] .c4-handoff-polish.c4-handoff-epinaos .c4-btn:focus-visible,
+[data-crmv4-root] .c4-handoff-polish.c4-handoff-epinaos .c4-field:focus-visible,
+[data-crmv4-root] .c4-ccy-glance.c4-ccy-pteroma .c4-btn:focus-visible,
+[data-crmv4-root] .c4-ccy-glance.c4-ccy-pteroma .c4-field:focus-visible {
+  outline: 2px solid #c6a15b;
+  outline-offset: 2px;
+}
+[data-crmv4-root] .c4-soleil .c4-title::before,
+[data-crmv4-root] .c4-vstplate .c4-title::before,
+[data-crmv4-root] .c4-handoff-polish.c4-handoff-epinaos .c4-title::before,
+[data-crmv4-root] .c4-ccy-glance.c4-ccy-pteroma .c4-title::before { display: none; }
+[data-crmv4-root] .c4-handoff-polish.c4-handoff-epinaos {
+  align-content: start;
+  height: auto;
+  color: #1c1a17;
+  background:
+    repeating-linear-gradient(90deg, #c6a15b 0 10px, #fffdf8 10px 18px) 0 0 / 100% 12px no-repeat,
+    linear-gradient(#8a6a3b, #8a6a3b) 0 12px / 14px 14px no-repeat,
+    linear-gradient(#8a6a3b, #8a6a3b) 100% 12px / 14px 14px no-repeat,
+    linear-gradient(180deg, #fffdf8 0%, #f6efe2 100%);
+  border: 1px solid #8a6a3b;
+  border-radius: 0 0 22px 22px;
+  box-shadow: inset 0 18px 0 #fffdf8, inset 0 0 0 1px #c6a15b;
+  padding: 32px 18px 18px;
+}
+[data-crmv4-root] .c4-hp-epinaos-lead { margin: 4px 0 0; max-width: 46rem; color: #5c5148; }
+[data-crmv4-root] .c4-handoff-polish.c4-handoff-epinaos .c4-hp-epinaos-card {
+  background: #fffdf8;
+  box-shadow: inset 0 0 0 1px #e7d3ae, inset 10px 0 0 #c6a15b;
+}
+[data-crmv4-root] .c4-ccy-glance.c4-ccy-pteroma {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  height: auto;
+  gap: 12px;
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 16px 16px / 8px calc(100% - 32px) no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) calc(100% - 24px) 16px / 8px calc(100% - 32px) no-repeat,
+    linear-gradient(#8a6a3b, #8a6a3b) 28px 16px / 2px calc(100% - 32px) no-repeat,
+    linear-gradient(#8a6a3b, #8a6a3b) calc(100% - 30px) 16px / 2px calc(100% - 32px) no-repeat,
+    linear-gradient(180deg, #2a241e 0%, #141210 100%);
+  border: 1px solid #c6a15b;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px #8a6a3b;
+  padding: 22px 36px 18px;
+}
+[data-crmv4-root] .c4-qc-pteroma-lead,
+[data-crmv4-root] .c4-ccy-glance.c4-ccy-pteroma .c4-title,
+[data-crmv4-root] .c4-ccy-glance.c4-ccy-pteroma > .c4-meta { color: #f6f1e8; }
+[data-crmv4-root] .c4-qc-pteroma-lead { margin: 4px 0 0; max-width: 46rem; }
+[data-crmv4-root] .c4-ccy-glance.c4-ccy-pteroma .c4-qc-pteroma-card,
+[data-crmv4-root] .c4-ccy-glance.c4-ccy-pteroma .c4-qc-pteroma-card p { color: #1c1a17; }
+[data-crmv4-root] .c4-ccy-glance.c4-ccy-pteroma .c4-qc-pteroma-card .c4-meta { color: #5c5148; }
+[data-crmv4-root] .c4-qc-pteroma-list { padding-inline: 8px; }
+[data-crmv4-root][data-theme="dark"] .c4-soleil {
+  color: #1c1a17;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(198, 161, 91, 0.55), transparent 42%),
+    repeating-conic-gradient(from 0deg at 50% -20%, #fffdf8 0 8deg, #f3e6d0 8deg 10deg);
+  box-shadow: inset 0 0 0 1px #c6a15b, 0 18px 0 -14px #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-vstplate,
+[data-crmv4-root][data-theme="dark"] .c4-ccy-glance.c4-ccy-pteroma {
+  color: #f6f1e8;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-handoff-polish.c4-handoff-epinaos {
+  color: #1c1a17;
+  background:
+    repeating-linear-gradient(90deg, #c6a15b 0 10px, #fffdf8 10px 18px) 0 0 / 100% 12px no-repeat,
+    linear-gradient(#8a6a3b, #8a6a3b) 0 12px / 14px 14px no-repeat,
+    linear-gradient(#8a6a3b, #8a6a3b) 100% 12px / 14px 14px no-repeat,
+    linear-gradient(180deg, #fffdf8 0%, #f6efe2 100%);
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-handoff-polish.c4-handoff-epinaos .c4-hp-epinaos-card,
+[data-crmv4-root][data-theme="dark"] .c4-ccy-glance.c4-ccy-pteroma .c4-qc-pteroma-card {
+  background: #fffdf8;
+  color: #1c1a17;
+}
+[data-crmv4-root][data-theme="dark"] .c4-handoff-polish.c4-handoff-epinaos .c4-hp-epinaos-card p,
+[data-crmv4-root][data-theme="dark"] .c4-ccy-glance.c4-ccy-pteroma .c4-qc-pteroma-card p { color: #1c1a17; }
+[data-crmv4-root][data-theme="dark"] .c4-ccy-glance.c4-ccy-pteroma .c4-qc-pteroma-card .c4-meta { color: #5c5148; }
+[data-crmv4-root][data-theme="dark"] .c4-handoff-polish.c4-handoff-epinaos .c4-field,
+[data-crmv4-root][data-theme="dark"] .c4-handoff-polish.c4-handoff-epinaos .c4-btn,
+[data-crmv4-root][data-theme="dark"] .c4-ccy-glance.c4-ccy-pteroma .c4-field,
+[data-crmv4-root][data-theme="dark"] .c4-ccy-glance.c4-ccy-pteroma .c4-btn,
+[data-crmv4-root][data-theme="dark"] .c4-soleil .c4-field,
+[data-crmv4-root][data-theme="dark"] .c4-soleil .c4-btn,
+[data-crmv4-root][data-theme="dark"] .c4-vstplate .c4-field,
+[data-crmv4-root][data-theme="dark"] .c4-vstplate .c4-btn {
+  background: #fffdf8;
+  color: #1c1a17;
+  border-color: #c6a15b;
+}
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-soleil-mast,
+  [data-crmv4-root] .c4-vstplate-mast,
+  [data-crmv4-root] .c4-hp-epinaos-mast,
+  [data-crmv4-root] .c4-qc-pteroma-mast { grid-template-columns: 52px minmax(0, 1fr) 52px; }
+  [data-crmv4-root] .c4-soleil,
+  [data-crmv4-root] .c4-vstplate,
+  [data-crmv4-root] .c4-handoff-polish.c4-handoff-epinaos,
+  [data-crmv4-root] .c4-ccy-glance.c4-ccy-pteroma { margin: 8px; padding: 16px 12px; }
+  [data-crmv4-root] .c4-soleil-form,
+  [data-crmv4-root] .c4-soleil-view { grid-template-columns: 1fr; }
+  [data-crmv4-root] .c4-ccy-glance.c4-ccy-pteroma { padding-inline: 28px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-qc-pteroma-card,
+  [data-crmv4-root] .c4-hp-epinaos-card,
+  [data-crmv4-root] .c4-soleil-column i { transition: none; }
+}

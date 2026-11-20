@@ -56,15 +56,22 @@ export function HandoffPolish({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-handoff-polish" aria-label={v4("hpTitle")} data-handoff-polish="1">
-      <header className="c4-pay-head">
+    <section className="c4-handoff-polish c4-handoff-epinaos" aria-label={v4("hpTitle")} data-handoff-polish="1" data-handoff-epinaos="1">
+      <header className="c4-pay-head c4-hp-epinaos-mast">
+        <p className="c4-hp-epinaos-seal" data-logo="mono">{v4("hpEpinaosLogo")}</p>
         <div>
           <p className="c4-hp-logo" data-logo="mono">{v4("hpLogo")}</p>
+          <p className="c4-hp-epinaos-kicker">{v4("hpEpinaosKicker")}</p>
+          <p className="c4-hp-epinaos-lead">{v4("hpEpinaosLead")}</p>
           <p className="c4-pay-kicker">{v4("hpSub")}</p>
           <h2 className="c4-title">{v4("hpTitle")}</h2>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-hp-epinaos-count">{shown.length}</p>
       </header>
+      <ol className="c4-hp-epinaos-index" aria-label={v4("hpEpinaosKicker")}>
+        <li data-tone="gold">{v4("hpEpinaosTiers")} {notes.length}</li>
+        <li data-tone="ink">{v4("hpEpinaosOpen")} {shown.length}</li>
+      </ol>
       <p className="c4-meta">{v4("hpHint")}</p>
       <p className="c4-meta">{v4("hpLocal")}</p>
       <p className="c4-meta">{v4("hpBlank")}</p>
@@ -94,9 +101,9 @@ export function HandoffPolish({ base, v4 }: { base: string; v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("hpHidden")}</button>
       </div>
       {!shown.length && <p className="c4-pay-empty">{v4("hpEmpty")}</p>}
-      <ul className="c4-hp-rows">
+      <ul className="c4-hp-rows c4-hp-epinaos-list">
         {shown.map((note) => (
-          <li key={note.id} data-pinned={note.pinned ? "1" : "0"}>
+          <li key={note.id} className="c4-hp-epinaos-card" data-pinned={note.pinned ? "1" : "0"}>
             <p>{note.text}</p>
             <div className="c4-row">
               <button type="button" className="c4-btn" onClick={() => store(toggleNotePin(notes, note.id))}>{note.pinned ? v4("hpUnpin") : v4("hpPin")}</button>
@@ -145,14 +152,21 @@ export function DepositCurrencies({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-ccy-glance" aria-label={v4("qcTitle")} data-ccy-glance="1">
-      <header className="c4-pay-head">
+    <section className="c4-ccy-glance c4-ccy-pteroma" aria-label={v4("qcTitle")} data-ccy-glance="1" data-ccy-pteroma="1">
+      <header className="c4-pay-head c4-qc-pteroma-mast">
+        <p className="c4-qc-pteroma-seal" data-logo="mono">{v4("qcPteromaLogo")}</p>
         <div>
+          <p className="c4-qc-pteroma-kicker">{v4("qcPteromaKicker")}</p>
+          <p className="c4-qc-pteroma-lead">{v4("qcPteromaLead")}</p>
           <p className="c4-pay-kicker">{v4("qcSub")}</p>
           <h2 className="c4-title">{v4("qcTitle")}</h2>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-qc-pteroma-count">{chips.length}</p>
       </header>
+      <ol className="c4-qc-pteroma-index" aria-label={v4("qcPteromaKicker")}>
+        <li data-tone="gold">{v4("qcPteromaOpen")} {chips.length}</li>
+        <li data-tone="ink">{v4("qcPteromaBlank")} {blankCount}</li>
+      </ol>
       <p className="c4-meta">{v4("qcHint")}</p>
       <p className="c4-meta">{v4("qcLocal")}</p>
       <p className="c4-row">
@@ -188,11 +202,11 @@ export function DepositCurrencies({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("qcSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("qcEmpty")}</p>}
-      <ul className="c4-qc-rows">
+      <ul className="c4-qc-rows c4-qc-pteroma-list">
         {shown.map((row) => {
           const code = currencyCode(row.currency);
           return (
-            <li key={row.id} data-currency={code || "blank"}>
+            <li key={row.id} className="c4-qc-pteroma-card" data-currency={code || "blank"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{code || v4("qcBlank")}</p>
               {row.status ? <p className="c4-meta">{row.status}</p> : null}
