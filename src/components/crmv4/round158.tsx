@@ -331,15 +331,21 @@ export function AviaryPerches({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-avp" aria-label={v4("avpTitle")} data-perches="1" data-role={role}>
-      <header className="c4-avp-head">
-        <p className="c4-avp-plate" data-logo="mono">{v4("avpLogo")}</p>
+    <section className="c4-avp c4-avp-cenaculum" aria-label={v4("avpTitle")} data-perches="1" data-role={role} data-desk="cenaculum">
+      <header className="c4-avp-head c4-avp-cenaculum-mast">
+        <p className="c4-avp-plate c4-avp-cenaculum-seal" data-logo="mono">{v4("avpCenaculumLogo")}</p>
         <div>
-          <p className="c4-avp-kicker">{v4("avpSub")}</p>
-          <h2 className="c4-title">{v4("avpTitle")}</h2>
+          <p className="c4-avp-kicker c4-avp-cenaculum-kicker">{v4("avpCenaculumKicker")}</p>
+          <h2 className="c4-title c4-avp-cenaculum-title">{v4("avpTitle")}</h2>
+          <p className="c4-avp-cenaculum-lead">{v4("avpCenaculumLead")}</p>
         </div>
-        <p className="c4-avp-count">{shown.length}</p>
+        <p className="c4-avp-count c4-avp-cenaculum-count">{shown.length}</p>
       </header>
+      <ol className="c4-avp-cenaculum-index" aria-label={v4("avpCenaculumKicker")}>
+        <li data-tone="gold">{v4("avpOpen")} {counts.open}</li>
+        <li data-tone="ink">{v4("avpRoosted")} {counts.roosted}</li>
+        <li data-tone="ivory">{v4("avpCaged")} {counts.caged}</li>
+      </ol>
       <details className="c4-avp-rules">
         <summary>{v4("avpRules")}</summary>
         <p className="c4-meta">{v4("avpHint")}</p>
@@ -571,7 +577,7 @@ export function AviaryPerches({ v4 }: { v4: V4 }) {
             const wing = wingOf(card.perch);
             const editingCard = editing === card.id;
             return (
-              <li key={card.id} data-song={card.song || "blank"} data-plumage={card.plumage || "blank"} data-loft={loftOf(card.perch)}>
+              <li key={card.id} className="c4-avp-cenaculum-card" data-song={card.song || "blank"} data-plumage={card.plumage || "blank"} data-loft={loftOf(card.perch)}>
                 <span className="c4-avp-folio" aria-hidden="true">{perchLabel(card.perch)}</span>
                 <span className="c4-avp-marks" aria-hidden="true">
                   {[0, 1, 2].map((index) => <i key={index} data-on={index < marks(card.song) ? "1" : "0"} />)}
@@ -690,14 +696,21 @@ export function PresenceWatches({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-psw" aria-label={v4("pswTitle")} data-watches="1">
-      <header className="c4-psw-head">
+    <section className="c4-psw c4-psw-sacellum" aria-label={v4("pswTitle")} data-watches="1" data-desk="sacellum">
+      <header className="c4-psw-head c4-psw-sacellum-mast">
+        <p className="c4-psw-sacellum-seal" data-logo="mono">{v4("pswSacellumLogo")}</p>
         <div>
-          <p className="c4-avp-kicker">{v4("pswSub")}</p>
-          <h2 className="c4-title">{v4("pswTitle")}</h2>
+          <p className="c4-avp-kicker c4-psw-sacellum-kicker">{v4("pswSacellumKicker")}</p>
+          <h2 className="c4-title c4-psw-sacellum-title">{v4("pswTitle")}</h2>
+          <p className="c4-psw-sacellum-lead">{v4("pswSacellumLead")}</p>
         </div>
-        <p className="c4-avp-count">{v4("pswRows")} {rows.length}</p>
+        <p className="c4-avp-count c4-psw-sacellum-count">{v4("pswRows")} {rows.length}</p>
       </header>
+      <ol className="c4-psw-sacellum-index" aria-label={v4("pswSacellumKicker")}>
+        <li data-tone="gold">{rows.length}</li>
+        <li data-tone="ink">{leadShelf ? shelfName(v4, leadShelf) : "—"}</li>
+        <li data-tone="ivory">{leadFold ? foldName(v4, leadFold) : "—"}</li>
+      </ol>
       <details className="c4-avp-rules">
         <summary>{v4("pswRules")}</summary>
         <p className="c4-meta">{v4("pswHint")}</p>
@@ -806,7 +819,7 @@ export function PresenceWatches({ base, v4 }: { base: string; v4: V4 }) {
           const foldMark = foldOf(row.lastSeenAt);
           const quietMark = quietOf(row.lastSeenAt);
           return (
-            <li key={row.id} data-shelf={shelfMark || "blank"} data-fold={foldMark || "blank"} data-span={spanMark || "blank"} data-quiet={quietMark || "blank"}>
+            <li key={row.id} className="c4-psw-sacellum-card" data-shelf={shelfMark || "blank"} data-fold={foldMark || "blank"} data-span={spanMark || "blank"} data-quiet={quietMark || "blank"}>
               <span className="c4-psw-face" aria-hidden="true">{watch || "—"}</span>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">
