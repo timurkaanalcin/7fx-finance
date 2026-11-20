@@ -50,6 +50,7 @@ export function StaffPolish({ base, v4 }: { base: string; v4: V4 }) {
     writeJson(STAFF_KEY, next);
   }, []);
   const shown = visibleStaff(staff, hidden, query);
+  const pinned = staff.filter((person) => person.pinned).length;
 
   function store(next: Staff[]) {
     setStaff(next);
@@ -57,15 +58,23 @@ export function StaffPolish({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-staff-polish" aria-label={v4("spTitle")} data-staff-polish="1">
-      <header className="c4-pay-head">
+    <section className="c4-staff-polish c4-staff-propylaea" aria-label={v4("spTitle")} data-staff-polish="1" data-staff-propylaea="1">
+      <header className="c4-pay-head c4-sp-propylaea-mast">
+        <p className="c4-sp-propylaea-seal" data-logo="mono">{v4("spPropylaeaLogo")}</p>
         <div>
           <p className="c4-sp-logo" data-logo="mono">{v4("spLogo")}</p>
+          <p className="c4-sp-propylaea-kicker">{v4("spPropylaeaKicker")}</p>
+          <p className="c4-sp-propylaea-lead">{v4("spPropylaeaLead")}</p>
           <p className="c4-pay-kicker">{v4("spSub")}</p>
           <h2 className="c4-title">{v4("spTitle")}</h2>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-sp-propylaea-count">{shown.length}</p>
       </header>
+      <ol className="c4-sp-propylaea-index" aria-label={v4("spPropylaeaKicker")}>
+        <li data-tone="gold">{v4("spPropylaeaTiers")} {staff.length}</li>
+        <li data-tone="ink">{v4("spPropylaeaOpen")} {shown.length}</li>
+        <li data-tone="ivory">{v4("spPin")} {pinned}</li>
+      </ol>
       <p className="c4-meta">{v4("spHint")}</p>
       <p className="c4-meta">{v4("spLocal")}</p>
       <p className="c4-meta">{v4("spBlank")}</p>
@@ -101,9 +110,9 @@ export function StaffPolish({ base, v4 }: { base: string; v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("spHidden")}</button>
       </div>
       {!shown.length && <p className="c4-pay-empty">{v4("spEmpty")}</p>}
-      <ul className="c4-sp-rows">
+      <ul className="c4-sp-rows c4-sp-propylaea-list">
         {shown.map((person) => (
-          <li key={person.id} data-pinned={person.pinned ? "1" : "0"}>
+          <li key={person.id} className="c4-sp-propylaea-card" data-pinned={person.pinned ? "1" : "0"}>
             <p>{person.name}</p>
             {person.role ? <p className="c4-meta">{person.role}</p> : null}
             <div className="c4-row">
@@ -153,14 +162,21 @@ export function WithdrawalMethods({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-wd-methods" aria-label={v4("wgTitle")} data-wd-methods="1">
-      <header className="c4-pay-head">
+    <section className="c4-wd-methods c4-wd-sekos" aria-label={v4("wgTitle")} data-wd-methods="1" data-wd-sekos="1">
+      <header className="c4-pay-head c4-wg-sekos-mast">
+        <p className="c4-wg-sekos-seal" data-logo="mono">{v4("wgSekosLogo")}</p>
         <div>
+          <p className="c4-wg-sekos-kicker">{v4("wgSekosKicker")}</p>
+          <p className="c4-wg-sekos-lead">{v4("wgSekosLead")}</p>
           <p className="c4-pay-kicker">{v4("wgSub")}</p>
           <h2 className="c4-title">{v4("wgTitle")}</h2>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-wg-sekos-count">{chips.length}</p>
       </header>
+      <ol className="c4-wg-sekos-index" aria-label={v4("wgSekosKicker")}>
+        <li data-tone="gold">{v4("wgSekosOpen")} {chips.length}</li>
+        <li data-tone="ink">{v4("wgSekosBlank")} {blankCount}</li>
+      </ol>
       <p className="c4-meta">{v4("wgHint")}</p>
       <p className="c4-meta">{v4("wgLocal")}</p>
       <p className="c4-row">
@@ -196,11 +212,11 @@ export function WithdrawalMethods({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("wgSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("wgEmpty")}</p>}
-      <ul className="c4-wg-rows">
+      <ul className="c4-wg-rows c4-wg-sekos-list">
         {shown.map((row) => {
           const name = methodText(row.method);
           return (
-            <li key={row.id} data-method={name || "blank"}>
+            <li key={row.id} className="c4-wg-sekos-card" data-method={name || "blank"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("wgBlank")}</p>
               {row.status ? <p className="c4-meta">{row.status}</p> : null}
