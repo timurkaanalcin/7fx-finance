@@ -110849,3 +110849,349 @@
   [data-crmv4-root] .c4-lead-stat.c4-lead-stat-crypta { border-radius: 40px 40px 8px 8px; }
   [data-crmv4-root] .c4-lead-stat.c4-lead-stat-crypta .c4-lds-rows { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Round 344 — rattrapante rules, email plates, ivory account caupona, graphite file officina */
+[data-crmv4-root] .c4-rattrapante,
+[data-crmv4-root] .c4-email {
+  color: #1c1a17;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 3px no-repeat,
+    linear-gradient(180deg, #fffdf8 0%, #efe4d0 100%);
+  border: 1px solid #8a6a3b;
+  border-radius: 22px 6px 22px 6px;
+  padding: 22px 18px 20px;
+}
+[data-crmv4-root] .c4-email {
+  color: #f6f1e8;
+  background:
+    linear-gradient(90deg, #c6a15b 0 8px, transparent 8px),
+    linear-gradient(180deg, #2a241e 0%, #141210 100%);
+  border-color: #c6a15b;
+  border-radius: 6px 22px 6px 22px;
+}
+[data-crmv4-root] .c4-rattrapante-mast,
+[data-crmv4-root] .c4-email-mast,
+[data-crmv4-root] .c4-aty-caupona-mast,
+[data-crmv4-root] .c4-kfl-officina-mast {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: start;
+  margin: 0 0 14px;
+}
+[data-crmv4-root] .c4-rattrapante-seal[data-logo="mono"],
+[data-crmv4-root] .c4-email-seal[data-logo="mono"],
+[data-crmv4-root] .c4-aty-caupona-seal[data-logo="mono"],
+[data-crmv4-root] .c4-kfl-officina-seal[data-logo="mono"] {
+  margin: 0;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  background: #1c1a17;
+  color: #f6f1e8;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+[data-crmv4-root] .c4-rattrapante-seal[data-logo="mono"] { border-radius: 50%; box-shadow: inset 0 0 0 5px #c6a15b; }
+[data-crmv4-root] .c4-email-seal[data-logo="mono"] { border-radius: 4px; box-shadow: inset 0 0 0 5px #c6a15b; }
+[data-crmv4-root] .c4-aty-caupona-seal[data-logo="mono"] { border-radius: 8px 8px 26px 26px; box-shadow: inset 0 0 0 5px #c6a15b; }
+[data-crmv4-root] .c4-kfl-officina-seal[data-logo="mono"] { border-radius: 2px; box-shadow: inset 0 0 0 5px #c6a15b; }
+[data-crmv4-root] .c4-rattrapante-kicker,
+[data-crmv4-root] .c4-email-kicker,
+[data-crmv4-root] .c4-aty-caupona-kicker,
+[data-crmv4-root] .c4-kfl-officina-kicker {
+  margin: 0;
+  color: #8a6a3b;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+[data-crmv4-root] .c4-email-kicker,
+[data-crmv4-root] .c4-kfl-officina-kicker { color: #c6a15b; }
+[data-crmv4-root] .c4-rattrapante-lead,
+[data-crmv4-root] .c4-email-lead,
+[data-crmv4-root] .c4-aty-caupona-lead,
+[data-crmv4-root] .c4-kfl-officina-lead { margin: 4px 0 0; max-width: 46rem; }
+[data-crmv4-root] .c4-rattrapante-count,
+[data-crmv4-root] .c4-email-count,
+[data-crmv4-root] .c4-aty-caupona-count,
+[data-crmv4-root] .c4-kfl-officina-count {
+  margin: 0;
+  min-width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  background: #1c1a17;
+  color: #f6f1e8;
+  font-variant-numeric: tabular-nums;
+}
+[data-crmv4-root] .c4-rattrapante-count { border-radius: 50%; }
+[data-crmv4-root] .c4-email-count,
+[data-crmv4-root] .c4-kfl-officina-count { border-radius: 4px; color: #c6a15b; }
+[data-crmv4-root] .c4-aty-caupona-count { border-radius: 8px 8px 22px 22px; }
+[data-crmv4-root] .c4-rattrapante-chart,
+[data-crmv4-root] .c4-email-chart {
+  display: flex;
+  align-items: end;
+  gap: 14px;
+  min-height: 120px;
+  overflow: hidden;
+}
+[data-crmv4-root] .c4-rattrapante-column,
+[data-crmv4-root] .c4-email-column {
+  display: grid;
+  align-items: end;
+  justify-items: center;
+  gap: 4px;
+  min-width: 56px;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+}
+[data-crmv4-root] .c4-rattrapante-column i,
+[data-crmv4-root] .c4-email-column i {
+  display: block;
+  width: 10px;
+  background: #c6a15b;
+  border-radius: 10px 10px 0 0;
+}
+[data-crmv4-root] .c4-rattrapante-column[data-on="1"] i { background: #1c1a17; width: 16px; }
+[data-crmv4-root] .c4-email-column[data-on="1"] i { background: #f6f1e8; width: 16px; }
+[data-crmv4-root] .c4-email .c4-title,
+[data-crmv4-root] .c4-email .c4-meta,
+[data-crmv4-root] .c4-email-hint { color: #f6f1e8; }
+[data-crmv4-root] .c4-email-card {
+  background: #f6f1e8;
+  color: #1c1a17;
+  border-radius: 2px 16px 2px 16px;
+  box-shadow: inset 0 4px 0 #c6a15b;
+}
+[data-crmv4-root] .c4-email-card .c4-meta { color: #1c1a17; }
+[data-crmv4-root] .c4-rattrapante-card {
+  background: #fffdf8;
+  border-radius: 16px 4px 16px 4px;
+  box-shadow: inset 4px 0 0 #c6a15b;
+}
+[data-crmv4-root] .c4-acct-type.c4-acct-type-caupona {
+  color: #1c1a17;
+  background:
+    repeating-linear-gradient(90deg, #c6a15b 0 18px, #8a6a3b 18px 22px, #fffdf8 22px 40px),
+    linear-gradient(180deg, #fffdf8 0 72px, #f4ead8 72px);
+  background-size: 100% 18px, 100% 100%;
+  background-repeat: no-repeat;
+  border: 1px solid #8a6a3b;
+  border-radius: 0 0 48px 48px;
+  box-shadow: inset 0 0 0 7px #fffdf8, inset 0 0 0 8px #c6a15b;
+  padding: 28px 18px 20px;
+}
+[data-crmv4-root] .c4-aty-caupona-index,
+[data-crmv4-root] .c4-kfl-officina-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-aty-caupona-index li,
+[data-crmv4-root] .c4-kfl-officina-index li {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px solid #c6a15b;
+}
+[data-crmv4-root] .c4-aty-caupona-index li { border-radius: 0 0 16px 16px; }
+[data-crmv4-root] .c4-aty-caupona-index li[data-tone="gold"] { background: #c6a15b; color: #1c1a17; }
+[data-crmv4-root] .c4-aty-caupona-index li[data-tone="ink"] { background: #1c1a17; color: #f6f1e8; }
+[data-crmv4-root] .c4-aty-caupona-index li[data-tone="ivory"] { background: #fffdf8; color: #1c1a17; }
+[data-crmv4-root] .c4-aty-caupona-awning {
+  display: flex;
+  align-items: end;
+  gap: 8px;
+  min-height: 72px;
+  margin: 0 0 14px;
+  padding: 8px 10px 0;
+  background: #fffdf8;
+  border: 1px solid #c6a15b;
+  border-bottom: 0;
+  border-radius: 28px 28px 0 0;
+}
+[data-crmv4-root] .c4-aty-caupona-awning i {
+  display: block;
+  width: 18px;
+  background: linear-gradient(180deg, #c6a15b, #8a6a3b);
+  border-radius: 8px 8px 0 0;
+}
+[data-crmv4-root] .c4-acct-type.c4-acct-type-caupona .c4-aty-caupona-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+[data-crmv4-root] .c4-aty-caupona-card {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px 12px;
+  border-radius: 0 0 22px 22px;
+  background: #fffdf8;
+  border: 1px solid #e7d7bc;
+  box-shadow: inset 0 8px 0 #c6a15b;
+}
+[data-crmv4-root] .c4-kyc-file.c4-kyc-file-officina {
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 10px 100% no-repeat,
+    repeating-linear-gradient(180deg, #1c1a17 0 22px, #241f1a 22px 23px);
+  border: 1px solid #c6a15b;
+  border-radius: 4px;
+  padding: 22px 16px 18px 22px;
+}
+[data-crmv4-root] .c4-kyc-file.c4-kyc-file-officina .c4-title,
+[data-crmv4-root] .c4-kyc-file.c4-kyc-file-officina .c4-meta,
+[data-crmv4-root] .c4-kfl-officina-lead { color: #f6f1e8; }
+[data-crmv4-root] .c4-kfl-officina-index li {
+  border-radius: 2px;
+  background: transparent;
+  color: #f6f1e8;
+  border-color: #8a6a3b;
+}
+[data-crmv4-root] .c4-kfl-officina-index li[data-tone="gold"] { background: #c6a15b; color: #1c1a17; }
+[data-crmv4-root] .c4-kfl-officina-rail {
+  display: flex;
+  align-items: end;
+  gap: 6px;
+  min-height: 64px;
+  margin: 0 0 14px;
+  padding: 8px;
+  background: #141210;
+  border: 1px solid #8a6a3b;
+}
+[data-crmv4-root] .c4-kfl-officina-rail i {
+  display: block;
+  width: 12px;
+  background: #c6a15b;
+}
+[data-crmv4-root] .c4-kyc-file.c4-kyc-file-officina .c4-kfl-officina-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+[data-crmv4-root] .c4-kfl-officina-card {
+  display: grid;
+  gap: 4px;
+  padding: 12px 12px 10px 16px;
+  border-radius: 2px;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 6px 100% no-repeat,
+    #f6f1e8;
+  color: #1c1a17;
+}
+[data-crmv4-root] .c4-kyc-file.c4-kyc-file-officina .c4-kfl-officina-card,
+[data-crmv4-root] .c4-kyc-file.c4-kyc-file-officina .c4-kfl-officina-card p,
+[data-crmv4-root] .c4-kyc-file.c4-kyc-file-officina .c4-kfl-officina-card .c4-meta,
+[data-crmv4-root] .c4-kyc-file.c4-kyc-file-officina .c4-kfl-officina-card .c4-kfl-stamp { color: #1c1a17; }
+[data-crmv4-root] .c4-acct-type.c4-acct-type-caupona .c4-btn,
+[data-crmv4-root] .c4-acct-type.c4-acct-type-caupona .c4-chip,
+[data-crmv4-root] .c4-kyc-file.c4-kyc-file-officina .c4-btn,
+[data-crmv4-root] .c4-kyc-file.c4-kyc-file-officina .c4-chip,
+[data-crmv4-root] .c4-rattrapante .c4-btn,
+[data-crmv4-root] .c4-email .c4-btn,
+[data-crmv4-root] .c4-rattrapante .c4-chip,
+[data-crmv4-root] .c4-email .c4-chip {
+  min-height: 44px;
+  border-color: #c6a15b;
+}
+[data-crmv4-root] .c4-kyc-file.c4-kyc-file-officina .c4-btn,
+[data-crmv4-root] .c4-kyc-file.c4-kyc-file-officina .c4-chip,
+[data-crmv4-root] .c4-email .c4-btn,
+[data-crmv4-root] .c4-email .c4-chip {
+  background: #1c1a17;
+  color: #f6f1e8;
+}
+[data-crmv4-root] .c4-aty-caupona-card:focus-within,
+[data-crmv4-root] .c4-kfl-officina-card:focus-within,
+[data-crmv4-root] .c4-rattrapante .c4-btn:focus-visible,
+[data-crmv4-root] .c4-email .c4-btn:focus-visible,
+[data-crmv4-root] .c4-rattrapante-column:focus-visible,
+[data-crmv4-root] .c4-email-column:focus-visible {
+  outline: 2px solid #c6a15b;
+  outline-offset: 2px;
+}
+[data-crmv4-root][data-theme="dark"] .c4-rattrapante,
+[data-crmv4-root][data-theme="dark"] .c4-acct-type.c4-acct-type-caupona {
+  color: #f6f1e8;
+  background: linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 8px no-repeat, #241f1a;
+  border-color: #c6a15b;
+  box-shadow: none;
+}
+[data-crmv4-root][data-theme="dark"] .c4-rattrapante-card,
+[data-crmv4-root][data-theme="dark"] .c4-aty-caupona-card {
+  background: #1c1a17;
+  color: #f6f1e8;
+}
+[data-crmv4-root][data-theme="dark"] .c4-aty-caupona-lead,
+[data-crmv4-root][data-theme="dark"] .c4-acct-type.c4-acct-type-caupona .c4-meta,
+[data-crmv4-root][data-theme="dark"] .c4-rattrapante .c4-meta { color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-aty-caupona-index li[data-tone="ivory"] { background: #1c1a17; color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-aty-caupona-awning { background: #1c1a17; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-rattrapante-mast,
+  [data-crmv4-root] .c4-email-mast,
+  [data-crmv4-root] .c4-aty-caupona-mast,
+  [data-crmv4-root] .c4-kfl-officina-mast { grid-template-columns: auto minmax(0, 1fr); }
+  [data-crmv4-root] .c4-acct-type.c4-acct-type-caupona { border-radius: 0 0 28px 28px; padding: 18px 12px 14px; }
+  [data-crmv4-root] .c4-kyc-file.c4-kyc-file-officina { padding: 18px 12px 14px 18px; }
+  [data-crmv4-root] .c4-acct-type.c4-acct-type-caupona .c4-aty-caupona-list,
+  [data-crmv4-root] .c4-kyc-file.c4-kyc-file-officina .c4-kfl-officina-list { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-rattrapante-card,
+  [data-crmv4-root] .c4-email-card,
+  [data-crmv4-root] .c4-aty-caupona-card,
+  [data-crmv4-root] .c4-kfl-officina-card { transition: none; }
+}
+
+/* Round 344 specificity — the older row rules must not cover the new desks. */
+[data-crmv4-root] .c4-acct-type.c4-acct-type-caupona .c4-aty-rows li.c4-aty-caupona-card {
+  display: grid;
+  gap: 4px;
+  align-items: start;
+  justify-content: stretch;
+  padding: 14px 16px 12px;
+  border-radius: 0 0 22px 22px;
+  background: #fffdf8;
+  color: #1c1a17;
+  border: 1px solid #e7d7bc;
+  box-shadow: inset 0 8px 0 #c6a15b;
+}
+[data-crmv4-root] .c4-kyc-file.c4-kyc-file-officina .c4-kfl-rows li.c4-kfl-officina-card {
+  display: grid;
+  gap: 4px;
+  align-items: start;
+  justify-content: stretch;
+  padding: 12px 12px 10px 16px;
+  border-radius: 2px;
+  background: linear-gradient(#c6a15b, #c6a15b) 0 0 / 6px 100% no-repeat, #f6f1e8;
+  color: #1c1a17;
+  border: 0;
+  box-shadow: none;
+}
+[data-crmv4-root] .c4-kyc-file.c4-kyc-file-officina .c4-kfl-rows li.c4-kfl-officina-card p,
+[data-crmv4-root] .c4-kyc-file.c4-kyc-file-officina .c4-kfl-rows li.c4-kfl-officina-card .c4-meta,
+[data-crmv4-root] .c4-kyc-file.c4-kyc-file-officina .c4-kfl-rows li.c4-kfl-officina-card .c4-kfl-stamp,
+[data-crmv4-root] .c4-acct-type.c4-acct-type-caupona .c4-aty-rows li.c4-aty-caupona-card p,
+[data-crmv4-root] .c4-acct-type.c4-acct-type-caupona .c4-aty-rows li.c4-aty-caupona-card .c4-meta {
+  color: #1c1a17;
+}
+[data-crmv4-root][data-theme="dark"] .c4-acct-type.c4-acct-type-caupona .c4-aty-rows li.c4-aty-caupona-card {
+  background: #1c1a17;
+  color: #f6f1e8;
+  border-color: #8a6a3b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-acct-type.c4-acct-type-caupona .c4-aty-rows li.c4-aty-caupona-card p,
+[data-crmv4-root][data-theme="dark"] .c4-acct-type.c4-acct-type-caupona .c4-aty-rows li.c4-aty-caupona-card .c4-meta {
+  color: #f6f1e8;
+}

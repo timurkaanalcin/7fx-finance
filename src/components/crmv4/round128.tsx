@@ -172,6 +172,7 @@ export function AccountTypes({ base, v4 }: { base: string; v4: V4 }) {
   const chips = visibleTypes(present, hiddenTypes, showHidden);
   const type = activeType(selected, chips);
   const shown = visibleUsers(rows, type, blank, query);
+  const peak = Math.max(1, ...lines.map((line) => line.count));
 
   function store(next: string[], clear: string) {
     setHiddenTypes(next);
@@ -180,14 +181,26 @@ export function AccountTypes({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-acct-type" aria-label={v4("atyTitle")} data-acct-type="1">
-      <header className="c4-pay-head">
+    <section className="c4-acct-type c4-acct-type-caupona" aria-label={v4("atyTitle")} data-acct-type="1" data-desk="caupona">
+      <header className="c4-pay-head c4-aty-caupona-mast">
+        <p className="c4-aty-caupona-seal" data-logo="mono">{v4("atyCauponaLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("atySub")}</p>
-          <h2 className="c4-title">{v4("atyTitle")}</h2>
+          <p className="c4-aty-caupona-kicker">{v4("atyCauponaKicker")}</p>
+          <h2 className="c4-title c4-aty-caupona-title">{v4("atyTitle")}</h2>
+          <p className="c4-aty-caupona-lead">{v4("atyCauponaLead")}</p>
         </div>
-        <p className="c4-meta">{v4("atyRows")} {rows.length}</p>
+        <p className="c4-aty-caupona-count">{shown.length}</p>
       </header>
+      <ol className="c4-aty-caupona-index" aria-label={v4("atyCauponaKicker")}>
+        <li data-tone="gold">{v4("atyCauponaRows")} {rows.length}</li>
+        <li data-tone="ink">{v4("atyCauponaShown")} {shown.length}</li>
+        <li data-tone="ivory">{v4("atyCauponaBlank")} {blankCount}</li>
+      </ol>
+      <div className="c4-aty-caupona-awning" aria-hidden="true">
+        {lines.filter((line) => line.type).map((line) => (
+          <i key={line.type} style={{ height: `${Math.max(16, Math.round((line.count / peak) * 56))}px` }} />
+        ))}
+      </div>
       <p className="c4-meta">{v4("atyHint")}</p>
       <p className="c4-meta">{v4("atyLocal")}</p>
       <p className="c4-row">
@@ -223,11 +236,11 @@ export function AccountTypes({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("atySearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("atyEmpty")}</p>}
-      <ul className="c4-aty-rows">
+      <ul className="c4-aty-rows c4-aty-caupona-list">
         {shown.map((row) => {
           const name = typeText(row.type);
           return (
-            <li key={row.id} data-type={name || "blank"}>
+            <li key={row.id} className="c4-aty-caupona-card" data-type={name || "blank"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("atyBlank")}</p>
             </li>
