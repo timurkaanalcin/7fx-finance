@@ -68,15 +68,20 @@ export function ReminderPolish({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-remind-polish" aria-label={v4("hcTitle")} data-remind-polish="1">
-      <header className="c4-pay-head">
+    <section className="c4-remind-polish c4-remind-megaron" aria-label={v4("hcTitle")} data-remind-polish="1" data-remind-megaron="1">
+      <header className="c4-pay-head c4-hc-megaron-mast">
+        <p className="c4-hc-megaron-seal" data-logo="mono">{v4("hcMegaronLogo")}</p>
         <div>
-          <p className="c4-hc-logo" data-logo="mono">{v4("hcLogo")}</p>
-          <p className="c4-pay-kicker">{v4("hcSub")}</p>
+          <p className="c4-hc-megaron-kicker">{v4("hcMegaronKicker")}</p>
+          <p className="c4-hc-megaron-lead">{v4("hcMegaronLead")}</p>
           <h2 className="c4-title">{v4("hcTitle")}</h2>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-hc-megaron-count">{shown.length}</p>
       </header>
+      <ol className="c4-hc-megaron-index" aria-label={v4("hcMegaronKicker")}>
+        <li data-tone="gold">{v4("hcMegaronTiers")} {chips.length}</li>
+        <li data-tone="ink">{v4("hcMegaronOpen")} {shown.length}</li>
+      </ol>
       <p className="c4-meta">{v4("hcHint")}</p>
       <p className="c4-meta">{v4("hcLocal")}</p>
       <p className="c4-meta">{v4("hcBlank")}</p>
@@ -110,9 +115,9 @@ export function ReminderPolish({ v4 }: { v4: V4 }) {
         ))}
       </div>
       {!shown.length && <p className="c4-pay-empty">{v4("hcEmpty")}</p>}
-      <ul className="c4-hc-rows">
+      <ul className="c4-hc-rows c4-hc-megaron-list">
         {shown.map((chip) => (
-          <li key={chip.id} data-pinned={chip.pinned ? "1" : "0"} data-done={chip.done ? "1" : "0"}>
+          <li key={chip.id} className="c4-hc-megaron-card" data-pinned={chip.pinned ? "1" : "0"} data-done={chip.done ? "1" : "0"}>
             <p>{chip.text}</p>
             {chip.due ? <p className="c4-meta">{chip.due}</p> : null}
             <div className="c4-row">
@@ -166,14 +171,20 @@ export function RiskGlance({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-risk-glance" aria-label={v4("vpTitle")} data-risk-glance="1">
-      <header className="c4-pay-head">
+    <section className="c4-risk-glance c4-risk-prytaneion" aria-label={v4("vpTitle")} data-risk-glance="1" data-risk-prytaneion="1">
+      <header className="c4-pay-head c4-vp-prytaneion-mast">
+        <p className="c4-vp-prytaneion-seal" data-logo="mono">{v4("vpPrytaneionLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("vpSub")}</p>
+          <p className="c4-vp-prytaneion-kicker">{v4("vpPrytaneionKicker")}</p>
+          <p className="c4-vp-prytaneion-lead">{v4("vpPrytaneionLead")}</p>
           <h2 className="c4-title">{v4("vpTitle")}</h2>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-vp-prytaneion-count">{chips.length}</p>
       </header>
+      <ol className="c4-vp-prytaneion-index" aria-label={v4("vpPrytaneionKicker")}>
+        <li data-tone="gold">{v4("vpPrytaneionOpen")} {chips.length}</li>
+        <li data-tone="ink">{v4("vpPrytaneionBlank")} {blankCount}</li>
+      </ol>
       <p className="c4-meta">{v4("vpHint")}</p>
       <p className="c4-meta">{v4("vpLocal")}</p>
       <p className="c4-row">
@@ -209,11 +220,11 @@ export function RiskGlance({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("vpSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("vpEmpty")}</p>}
-      <ul className="c4-vp-rows">
+      <ul className="c4-vp-rows c4-vp-prytaneion-list">
         {shown.map((row) => {
           const name = riskText(row.risk);
           return (
-            <li key={row.id} data-risk={name || "blank"}>
+            <li key={row.id} className="c4-vp-prytaneion-card" data-risk={name || "blank"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("vpBlank")}</p>
               <Link className="c4-btn" href={crmv4Href(base, `customers/${row.id}`)}>{v4("vpCustomer")}</Link>
