@@ -326,15 +326,21 @@ export function ConservatoryBenches({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-bnk" aria-label={v4("bnkTitle")} data-benches="1" data-role={role}>
-      <header className="c4-bnk-head">
-        <p className="c4-bnk-plate" data-logo="mono">{v4("bnkLogo")}</p>
+    <section className="c4-bnk c4-bnk-caldarium" aria-label={v4("bnkTitle")} data-benches="1" data-role={role} data-desk="caldarium">
+      <header className="c4-bnk-head c4-bnk-caldarium-mast">
+        <p className="c4-bnk-plate c4-bnk-caldarium-seal" data-logo="mono">{v4("bnkCaldariumLogo")}</p>
         <div>
-          <p className="c4-bnk-kicker">{v4("bnkSub")}</p>
-          <h2 className="c4-title">{v4("bnkTitle")}</h2>
+          <p className="c4-bnk-kicker c4-bnk-caldarium-kicker">{v4("bnkCaldariumKicker")}</p>
+          <h2 className="c4-title c4-bnk-caldarium-title">{v4("bnkTitle")}</h2>
+          <p className="c4-bnk-caldarium-lead">{v4("bnkCaldariumLead")}</p>
         </div>
-        <p className="c4-bnk-count">{shown.length}</p>
+        <p className="c4-bnk-count c4-bnk-caldarium-count">{shown.length}</p>
       </header>
+      <ol className="c4-bnk-caldarium-index" aria-label={v4("bnkCaldariumKicker")}>
+        <li data-tone="gold">{v4("bnkOpen")} {counts.open}</li>
+        <li data-tone="ink">{v4("bnkRested")} {counts.rested}</li>
+        <li data-tone="ivory">{v4("bnkPressed")} {counts.pressed}</li>
+      </ol>
       <details className="c4-bnk-rules">
         <summary>{v4("bnkRules")}</summary>
         <p className="c4-meta">{v4("bnkHint")}</p>
@@ -566,7 +572,7 @@ export function ConservatoryBenches({ v4 }: { v4: V4 }) {
             const wing = wingOf(card.bench);
             const editingCard = editing === card.id;
             return (
-              <li key={card.id} data-light={card.light || "blank"} data-bloom={card.bloom || "blank"} data-court={courtOf(card.bench)}>
+              <li key={card.id} className="c4-bnk-caldarium-card" data-light={card.light || "blank"} data-bloom={card.bloom || "blank"} data-court={courtOf(card.bench)}>
                 <span className="c4-bnk-folio" aria-hidden="true">{benchLabel(card.bench)}</span>
                 <span className="c4-bnk-marks" aria-hidden="true">
                   {[0, 1, 2].map((index) => <i key={index} data-on={index < marks(card.light) ? "1" : "0"} />)}
@@ -685,14 +691,21 @@ export function CountryPlates({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-plt" aria-label={v4("pltTitle")} data-plates="1">
-      <header className="c4-plt-head">
+    <section className="c4-plt c4-plt-tabularium" aria-label={v4("pltTitle")} data-plates="1" data-desk="tabularium">
+      <header className="c4-plt-head c4-plt-tabularium-mast">
+        <p className="c4-plt-tabularium-seal" data-logo="mono">{v4("pltTabulariumLogo")}</p>
         <div>
-          <p className="c4-bnk-kicker">{v4("pltSub")}</p>
-          <h2 className="c4-title">{v4("pltTitle")}</h2>
+          <p className="c4-bnk-kicker c4-plt-tabularium-kicker">{v4("pltTabulariumKicker")}</p>
+          <h2 className="c4-title c4-plt-tabularium-title">{v4("pltTitle")}</h2>
+          <p className="c4-plt-tabularium-lead">{v4("pltTabulariumLead")}</p>
         </div>
-        <p className="c4-bnk-count">{v4("pltRows")} {rows.length}</p>
+        <p className="c4-bnk-count c4-plt-tabularium-count">{v4("pltRows")} {rows.length}</p>
       </header>
+      <ol className="c4-plt-tabularium-index" aria-label={v4("pltTabulariumKicker")}>
+        <li data-tone="gold">{rows.length}</li>
+        <li data-tone="ink">{leadShelf ? shelfName(v4, leadShelf) : "—"}</li>
+        <li data-tone="ivory">{leadFold ? foldName(v4, leadFold) : "—"}</li>
+      </ol>
       <details className="c4-bnk-rules">
         <summary>{v4("pltRules")}</summary>
         <p className="c4-meta">{v4("pltHint")}</p>
@@ -800,7 +813,7 @@ export function CountryPlates({ base, v4 }: { base: string; v4: V4 }) {
           const spanMark = spanOf(row.lastCountryName);
           const foldMark = foldOf(row.lastCountryName);
           return (
-            <li key={row.id} data-shelf={shelfMark || "blank"} data-fold={foldMark || "blank"} data-span={spanMark || "blank"}>
+            <li key={row.id} className="c4-plt-tabularium-card" data-shelf={shelfMark || "blank"} data-fold={foldMark || "blank"} data-span={spanMark || "blank"}>
               <span className="c4-plt-face" aria-hidden="true">{shelfMark ? shelfName(v4, shelfMark).slice(0, 1) : "—"}</span>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">

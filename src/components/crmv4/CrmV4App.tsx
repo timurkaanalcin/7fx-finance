@@ -324,6 +324,7 @@ import { OvercoilRules, TorquetumPlates } from "./round333";
 import { DetentRules, TellurionPlates } from "./round334";
 import { GongPlates, RepeaterRules } from "./round335";
 import { BackstaffPlates, BarrelRules } from "./round336";
+import { CoaxialRules, TypeplatePlates } from "./round337";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1233,6 +1234,10 @@ function Shell({ base, section, name }: Props) {
     if (tab === "tln") return v4("tlnTitle");
     if (tab === "rpt") return v4("rptTitle");
     if (tab === "gng") return v4("gngTitle");
+    if (tab === "brl") return v4("brlTitle");
+    if (tab === "bks") return v4("bksTitle");
+    if (tab === "cax") return v4("caxTitle");
+    if (tab === "ctp") return v4("ctpTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1803,6 +1808,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "gng") return v4("gngSub");
     if (tab === "brl") return v4("brlSub");
     if (tab === "bks") return v4("bksSub");
+    if (tab === "cax") return v4("caxSub");
+    if (tab === "ctp") return v4("ctpSub");
     return "";
   }
 
@@ -2534,6 +2541,8 @@ function Shell({ base, section, name }: Props) {
             {view === "gng" && <GongPlates base={base} v4={v4} />}
             {view === "brl" && <BarrelRules base={base} v4={v4} />}
             {view === "bks" && <BackstaffPlates base={base} v4={v4} />}
+            {view === "cax" && <CoaxialRules base={base} v4={v4} />}
+            {view === "ctp" && <TypeplatePlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
