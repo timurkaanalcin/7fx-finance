@@ -51,6 +51,8 @@ export function FilterPresets({ v4 }: { v4: V4 }) {
     writeJson(PRESET_KEY, next);
   }, []);
   const shown = visiblePresets(presets, query, hidden).filter((preset) => !marked || preset.pinned);
+  const pinnedCount = shown.filter((preset) => preset.pinned).length;
+  const hiddenCount = presets.filter((preset) => preset.hidden).length;
 
   function store(next: Preset[]) {
     setPresets(next);
@@ -64,14 +66,21 @@ export function FilterPresets({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-filter-presets" aria-label={v4("fpTitle")} data-filter-presets="1">
-      <header className="c4-pay-head">
+    <section className="c4-filter-presets c4-preset-crepidoma" aria-label={v4("fpTitle")} data-filter-presets="1" data-desk="crepidoma">
+      <header className="c4-pay-head c4-fp-crepidoma-mast">
+        <p className="c4-fp-crepidoma-seal" data-logo="mono">{v4("fpCrepidomaLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("fpSub")}</p>
-          <h2 className="c4-title">{v4("fpTitle")}</h2>
+          <p className="c4-fp-crepidoma-kicker">{v4("fpCrepidomaKicker")}</p>
+          <h2 className="c4-title c4-fp-crepidoma-title">{v4("fpTitle")}</h2>
+          <p className="c4-fp-crepidoma-lead">{v4("fpCrepidomaLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-fp-crepidoma-count">{shown.length}</p>
       </header>
+      <ol className="c4-fp-crepidoma-index" aria-label={v4("fpCrepidomaKicker")}>
+        <li data-tone="gold">{v4("fpCrepidomaPinned")} {pinnedCount}</li>
+        <li data-tone="ink">{v4("fpCrepidomaSaved")} {shown.length}</li>
+        <li data-tone="ivory">{v4("fpCrepidomaClear")} {hiddenCount}</li>
+      </ol>
       <p className="c4-meta">{v4("fpHint")}</p>
       <p className="c4-meta">{v4("fpLocal")}</p>
       <label className="c4-lab">
@@ -109,7 +118,7 @@ export function FilterPresets({ v4 }: { v4: V4 }) {
         {shown.map((preset) => {
           const filters = boardFilters(preset.filters);
           return (
-            <li key={preset.id} className="c4-preset-card" data-pinned={preset.pinned ? "1" : "0"}>
+            <li key={preset.id} className="c4-preset-card c4-fp-crepidoma-card" data-pinned={preset.pinned ? "1" : "0"}>
               <p>{preset.name}</p>
               <p className="c4-meta">{filters.q || filters.marked ? `${filters.q || ""} ${filters.marked ? v4("fpMarked") : ""}`.trim() : v4("fpNone")}</p>
               <div className="c4-row">

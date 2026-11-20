@@ -55,6 +55,8 @@ export function ContactChips({ v4 }: { v4: V4 }) {
     writeJson(CONTACT_KEY, next);
   }, []);
   const shown = visibleContacts(contacts, query, hidden);
+  const pinnedCount = shown.filter((contact) => contact.pinned).length;
+  const hiddenCount = contacts.filter((contact) => contact.hidden).length;
 
   function store(next: Contact[]) {
     setContacts(next);
@@ -62,14 +64,21 @@ export function ContactChips({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-contact-chips" aria-label={v4("ctTitle")} data-contact-chips="1">
-      <header className="c4-pay-head">
+    <section className="c4-contact-chips c4-chip-puteal" aria-label={v4("ctTitle")} data-contact-chips="1" data-desk="puteal">
+      <header className="c4-pay-head c4-ct-puteal-mast">
+        <p className="c4-ct-puteal-seal" data-logo="mono">{v4("ctPutealLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("ctSub")}</p>
-          <h2 className="c4-title">{v4("ctTitle")}</h2>
+          <p className="c4-ct-puteal-kicker">{v4("ctPutealKicker")}</p>
+          <h2 className="c4-title c4-ct-puteal-title">{v4("ctTitle")}</h2>
+          <p className="c4-ct-puteal-lead">{v4("ctPutealLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-ct-puteal-count">{shown.length}</p>
       </header>
+      <ol className="c4-ct-puteal-index" aria-label={v4("ctPutealKicker")}>
+        <li data-tone="gold">{v4("ctPutealPinned")} {pinnedCount}</li>
+        <li data-tone="ink">{v4("ctPutealShown")} {shown.length}</li>
+        <li data-tone="ivory">{v4("ctPutealHidden")} {hiddenCount}</li>
+      </ol>
       <p className="c4-meta">{v4("ctHint")}</p>
       <p className="c4-meta">{v4("ctLocal")}</p>
       <form className="c4-row" onSubmit={(event) => {
@@ -97,7 +106,7 @@ export function ContactChips({ v4 }: { v4: V4 }) {
       {!shown.length && <p className="c4-pay-empty">{v4("ctEmpty")}</p>}
       <ul className="c4-contact-list">
         {shown.map((contact) => (
-          <li key={contact.id} className="c4-contact-card" data-pinned={contact.pinned ? "1" : "0"}>
+          <li key={contact.id} className="c4-contact-card c4-ct-puteal-card" data-pinned={contact.pinned ? "1" : "0"}>
             <p>{contact.label}</p>
             <div className="c4-row">
               <button type="button" className="c4-btn" onClick={() => store(toggleContactPin(contacts, contact.id))}>{contact.pinned ? v4("ctUnpin") : v4("ctPin")}</button>

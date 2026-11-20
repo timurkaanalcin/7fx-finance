@@ -336,6 +336,7 @@ import { LanguagePlates as DeskLanguagePlates, TourbillonRules as DeskTourbillon
 import { ContactPlates as LastContactPlates, FoudroyanteRules } from "./round346";
 import { AssignmentPlates, RetrogradeRules } from "./round347";
 import { ChronographRules, TimezonePlates } from "./round348";
+import { TachymeterRules, AffiliatePlates } from "./round349";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1269,6 +1270,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "asg") return v4("asgTitle");
     if (tab === "chg") return v4("chgTitle");
     if (tab === "tzn") return v4("tznTitle");
+    if (tab === "tch") return v4("tchTitle");
+    if (tab === "afc") return v4("afcTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1861,6 +1864,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "asg") return v4("asgSub");
     if (tab === "chg") return v4("chgSub");
     if (tab === "tzn") return v4("tznSub");
+    if (tab === "tch") return v4("tchSub");
+    if (tab === "afc") return v4("afcSub");
     return "";
   }
 
@@ -2616,6 +2621,8 @@ function Shell({ base, section, name }: Props) {
             {view === "asg" && <AssignmentPlates base={base} v4={v4} />}
             {view === "chg" && <ChronographRules base={base} v4={v4} />}
             {view === "tzn" && <TimezonePlates base={base} v4={v4} />}
+            {view === "tch" && <TachymeterRules base={base} v4={v4} />}
+            {view === "afc" && <AffiliatePlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
