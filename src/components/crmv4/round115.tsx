@@ -51,6 +51,7 @@ export function QuickDial({ v4 }: { v4: V4 }) {
     writeJson(DIAL_KEY, next);
   }, []);
   const shown = visibleDials(dials, hidden, query);
+  const pinned = dials.filter((dial) => dial.pinned).length;
 
   function store(next: Dial[]) {
     setDials(next);
@@ -58,15 +59,23 @@ export function QuickDial({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-quick-dial" aria-label={v4("qdTitle")} data-quick-dial="1">
-      <header className="c4-pay-head">
+    <section className="c4-quick-dial c4-quick-pastas" aria-label={v4("qdTitle")} data-quick-dial="1" data-quick-pastas="1">
+      <header className="c4-pay-head c4-qd-pastas-mast">
+        <p className="c4-qd-pastas-seal" data-logo="mono">{v4("qdPastasLogo")}</p>
         <div>
           <p className="c4-qd-logo" data-logo="mono">{v4("qdLogo")}</p>
+          <p className="c4-qd-pastas-kicker">{v4("qdPastasKicker")}</p>
+          <p className="c4-qd-pastas-lead">{v4("qdPastasLead")}</p>
           <p className="c4-pay-kicker">{v4("qdSub")}</p>
           <h2 className="c4-title">{v4("qdTitle")}</h2>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-qd-pastas-count">{shown.length}</p>
       </header>
+      <ol className="c4-qd-pastas-index" aria-label={v4("qdPastasKicker")}>
+        <li data-tone="gold">{v4("qdPastasTiers")} {dials.length}</li>
+        <li data-tone="ink">{v4("qdPastasOpen")} {shown.length}</li>
+        <li data-tone="ivory">{v4("qdPin")} {pinned}</li>
+      </ol>
       <p className="c4-meta">{v4("qdHint")}</p>
       <p className="c4-meta">{v4("qdLocal")}</p>
       <p className="c4-meta">{v4("qdBlank")}</p>
@@ -99,9 +108,9 @@ export function QuickDial({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("qdHidden")}</button>
       </div>
       {!shown.length && <p className="c4-pay-empty">{v4("qdEmpty")}</p>}
-      <ul className="c4-qd-rows">
+      <ul className="c4-qd-rows c4-qd-pastas-list">
         {shown.map((dial) => (
-          <li key={dial.id} data-pinned={dial.pinned ? "1" : "0"}>
+          <li key={dial.id} className="c4-qd-pastas-card" data-pinned={dial.pinned ? "1" : "0"}>
             <p>{dial.label}</p>
             {dial.phone ? <p className="c4-meta">{dial.phone}</p> : null}
             <div className="c4-row">
@@ -150,14 +159,21 @@ export function TicketAssignees({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-ticket-assign" aria-label={v4("taTitle")} data-ticket-assign="1">
-      <header className="c4-pay-head">
+    <section className="c4-ticket-assign c4-ticket-thalamos" aria-label={v4("taTitle")} data-ticket-assign="1" data-ticket-thalamos="1">
+      <header className="c4-pay-head c4-ta-thalamos-mast">
+        <p className="c4-ta-thalamos-seal" data-logo="mono">{v4("taThalamosLogo")}</p>
         <div>
+          <p className="c4-ta-thalamos-kicker">{v4("taThalamosKicker")}</p>
+          <p className="c4-ta-thalamos-lead">{v4("taThalamosLead")}</p>
           <p className="c4-pay-kicker">{v4("taSub")}</p>
           <h2 className="c4-title">{v4("taTitle")}</h2>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-ta-thalamos-count">{chips.length}</p>
       </header>
+      <ol className="c4-ta-thalamos-index" aria-label={v4("taThalamosKicker")}>
+        <li data-tone="gold">{v4("taThalamosOpen")} {chips.length}</li>
+        <li data-tone="ink">{v4("taThalamosBlank")} {blankCount}</li>
+      </ol>
       <p className="c4-meta">{v4("taHint")}</p>
       <p className="c4-meta">{v4("taLocal")}</p>
       <p className="c4-row">
@@ -193,11 +209,11 @@ export function TicketAssignees({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("taSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("taEmpty")}</p>}
-      <ul className="c4-ta-rows">
+      <ul className="c4-ta-rows c4-ta-thalamos-list">
         {shown.map((row) => {
           const name = assigneeText(row.assignee);
           return (
-            <li key={row.id} data-assignee={name || "blank"}>
+            <li key={row.id} className="c4-ta-thalamos-card" data-assignee={name || "blank"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("taBlank")}</p>
             </li>
