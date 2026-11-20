@@ -51,14 +51,20 @@ export function RecentJumps({ base, v4 }: { base: string; v4: V4 }) {
   }, []);
 
   return (
-    <section className="c4-recent-jumps" aria-label={v4("jvTitle")} data-recent-jumps="1">
-      <header className="c4-pay-head">
+    <section className="c4-recent-jumps c4-jump-stylobate" aria-label={v4("jvTitle")} data-recent-jumps="1" data-desk="stylobate">
+      <header className="c4-pay-head c4-jv-stylobate-mast">
+        <p className="c4-jv-stylobate-seal" data-logo="mono">{v4("jvStylobateLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("jvSub")}</p>
-          <h2 className="c4-title">{v4("jvTitle")}</h2>
+          <p className="c4-jv-stylobate-kicker">{v4("jvStylobateKicker")}</p>
+          <h2 className="c4-title c4-jv-stylobate-title">{v4("jvTitle")}</h2>
+          <p className="c4-jv-stylobate-lead">{v4("jvStylobateLead")}</p>
         </div>
-        <p className="c4-meta">{visits.length}</p>
+        <p className="c4-jv-stylobate-count">{visits.length}</p>
       </header>
+      <ol className="c4-jv-stylobate-index" aria-label={v4("jvStylobateKicker")}>
+        <li data-tone="gold">{v4("jvStylobateLatest")} {visits[0]?.section || "—"}</li>
+        <li data-tone="ink">{v4("jvStylobateShown")} {visits.length}</li>
+      </ol>
       <p className="c4-meta">{v4("jvHint")}</p>
       <p className="c4-meta">{v4("jvLocal")}</p>
       <p className="c4-meta">{v4("jvUnknown")}</p>
@@ -71,7 +77,7 @@ export function RecentJumps({ base, v4 }: { base: string; v4: V4 }) {
       {!visits.length && <p className="c4-pay-empty">{v4("jvEmpty")}</p>}
       <ol className="c4-jump-list">
         {visits.map((visit) => (
-          <li key={visit.section} className="c4-jump-card" data-section={visit.section}>
+          <li key={visit.section} className="c4-jump-card c4-jv-stylobate-card" data-section={visit.section}>
             <p>{visit.section}</p>
             {visit.at && <p className="c4-meta">{visit.at}</p>}
             <Link className="c4-btn" href={crmv4Href(base, sectionPath(visit.section))}>{v4("jvJump")}</Link>
