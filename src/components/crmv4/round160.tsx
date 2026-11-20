@@ -330,15 +330,21 @@ export function BinderyStitches({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-bst" aria-label={v4("bstTitle")} data-stitches="1" data-role={role}>
-      <header className="c4-bst-head">
-        <p className="c4-bst-plate" data-logo="mono">{v4("bstLogo")}</p>
+    <section className="c4-bst c4-bst-laconicum" aria-label={v4("bstTitle")} data-stitches="1" data-role={role} data-desk="laconicum">
+      <header className="c4-bst-head c4-bst-laconicum-mast">
+        <p className="c4-bst-plate c4-bst-laconicum-seal" data-logo="mono">{v4("bstLaconicumLogo")}</p>
         <div>
-          <p className="c4-bst-kicker">{v4("bstSub")}</p>
-          <h2 className="c4-title">{v4("bstTitle")}</h2>
+          <p className="c4-bst-kicker c4-bst-laconicum-kicker">{v4("bstLaconicumKicker")}</p>
+          <h2 className="c4-title c4-bst-laconicum-title">{v4("bstTitle")}</h2>
+          <p className="c4-bst-laconicum-lead">{v4("bstLaconicumLead")}</p>
         </div>
-        <p className="c4-bst-count">{shown.length}</p>
+        <p className="c4-bst-count c4-bst-laconicum-count">{shown.length}</p>
       </header>
+      <ol className="c4-bst-laconicum-index" aria-label={v4("bstLaconicumKicker")}>
+        <li data-tone="gold">{v4("bstOpen")} {counts.open}</li>
+        <li data-tone="ink">{v4("bstBound")} {counts.bound}</li>
+        <li data-tone="ivory">{v4("bstPinned")} {counts.pinned}</li>
+      </ol>
       <details className="c4-bst-rules">
         <summary>{v4("bstRules")}</summary>
         <p className="c4-meta">{v4("bstHint")}</p>
@@ -570,7 +576,7 @@ export function BinderyStitches({ v4 }: { v4: V4 }) {
             const reach = reachOf(card.stitch);
             const editingCard = editing === card.id;
             return (
-              <li key={card.id} data-tension={card.tension || "blank"} data-thread={card.thread || "blank"} data-band={bandOf(card.stitch)}>
+              <li key={card.id} className="c4-bst-laconicum-card" data-tension={card.tension || "blank"} data-thread={card.thread || "blank"} data-band={bandOf(card.stitch)}>
                 <span className="c4-bst-folio" aria-hidden="true">{stitchLabel(card.stitch)}</span>
                 <span className="c4-bst-marks" aria-hidden="true">
                   {[0, 1, 2].map((index) => <i key={index} data-on={index < marks(card.tension) ? "1" : "0"} />)}
@@ -690,14 +696,21 @@ export function CampaignCloths({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-ccl" aria-label={v4("cclTitle")} data-cloths="1">
-      <header className="c4-ccl-head">
+    <section className="c4-ccl c4-ccl-unctorium" aria-label={v4("cclTitle")} data-cloths="1" data-desk="unctorium">
+      <header className="c4-ccl-head c4-ccl-unctorium-mast">
+        <p className="c4-ccl-unctorium-seal" data-logo="mono">{v4("cclUnctoriumLogo")}</p>
         <div>
-          <p className="c4-bst-kicker">{v4("cclSub")}</p>
-          <h2 className="c4-title">{v4("cclTitle")}</h2>
+          <p className="c4-bst-kicker c4-ccl-unctorium-kicker">{v4("cclUnctoriumKicker")}</p>
+          <h2 className="c4-title c4-ccl-unctorium-title">{v4("cclTitle")}</h2>
+          <p className="c4-ccl-unctorium-lead">{v4("cclUnctoriumLead")}</p>
         </div>
-        <p className="c4-bst-count">{v4("cclRows")} {rows.length}</p>
+        <p className="c4-bst-count c4-ccl-unctorium-count">{v4("cclRows")} {rows.length}</p>
       </header>
+      <ol className="c4-ccl-unctorium-index" aria-label={v4("cclUnctoriumKicker")}>
+        <li data-tone="gold">{v4("cclLeadCloth")} {leadCloth || "—"}</li>
+        <li data-tone="ink">{v4("cclRows")} {rows.length}</li>
+        <li data-tone="ivory">{v4("cclLeadLength")} {leadLength ? lengthName(v4, leadLength) : "—"}</li>
+      </ol>
       <details className="c4-bst-rules">
         <summary>{v4("cclRules")}</summary>
         <p className="c4-meta">{v4("cclHint")}</p>
@@ -805,7 +818,7 @@ export function CampaignCloths({ base, v4 }: { base: string; v4: V4 }) {
           const foldMark = foldOf(row.campaign) as ClothFold;
           const cloth = clothName(row.campaign);
           return (
-            <li key={row.id} data-length={lengthMark || "blank"} data-glyph={glyphMark || "blank"} data-fold={foldMark || "blank"}>
+            <li key={row.id} className="c4-ccl-unctorium-card" data-length={lengthMark || "blank"} data-glyph={glyphMark || "blank"} data-fold={foldMark || "blank"}>
               <span className="c4-ccl-face" aria-hidden="true">{cloth ? cloth.slice(0, 1).toUpperCase() : "—"}</span>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">
