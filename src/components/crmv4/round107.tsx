@@ -78,14 +78,20 @@ export function SavedViews({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-saved-views" aria-label={v4("dvTitle")} data-saved-views="1">
-      <header className="c4-pay-head">
+    <section className="c4-saved-views c4-saved-oikos" aria-label={v4("dvTitle")} data-saved-views="1" data-saved-oikos="1">
+      <header className="c4-pay-head c4-dv-oikos-mast">
+        <p className="c4-dv-oikos-seal" data-logo="mono">{v4("dvOikosLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("dvSub")}</p>
+          <p className="c4-dv-oikos-kicker">{v4("dvOikosKicker")}</p>
           <h2 className="c4-title">{v4("dvTitle")}</h2>
+          <p className="c4-dv-oikos-lead">{v4("dvOikosLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-dv-oikos-count">{shown.length}</p>
       </header>
+      <ol className="c4-dv-oikos-index" aria-label={v4("dvOikosKicker")}>
+        <li data-tone="gold">{v4("dvOikosPinned")} {views.length}</li>
+        <li data-tone="ink">{v4("dvOikosOpen")} {shown.length}</li>
+      </ol>
       <p className="c4-meta">{v4("dvHint")}</p>
       <p className="c4-meta">{v4("dvLocal")}</p>
       <form className="c4-row" onSubmit={(event) => {
@@ -123,9 +129,9 @@ export function SavedViews({ v4 }: { v4: V4 }) {
         <input className="c4-field" aria-label={v4("dvSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && <p className="c4-pay-empty">{v4("dvEmpty")}</p>}
-      <ul className="c4-view-list">
+      <ul className="c4-view-list c4-dv-oikos-list">
         {shown.map((view) => (
-          <li key={view.id} className="c4-view-card" data-view={view.id}>
+          <li key={view.id} className="c4-view-card c4-dv-oikos-card" data-view={view.id}>
             <p>{view.name}</p>
             <p className="c4-meta">{view.panels.join(" ") || v4("dvNone")}</p>
             <p className="c4-meta">{`${view.filters.q || ""} ${view.filters.marked ? v4("dvMarked") : ""}`.trim() || v4("dvNone")}</p>
@@ -178,14 +184,20 @@ export function KycStatus({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-kyc-status" aria-label={v4("kyTitle")} data-kyc-status="1">
-      <header className="c4-pay-head">
+    <section className="c4-kyc-status c4-kyc-prodomos" aria-label={v4("kyTitle")} data-kyc-status="1" data-kyc-prodomos="1">
+      <header className="c4-pay-head c4-ky-prodomos-mast">
+        <p className="c4-ky-prodomos-seal" data-logo="mono">{v4("kyProdomosLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("kySub")}</p>
+          <p className="c4-ky-prodomos-kicker">{v4("kyProdomosKicker")}</p>
           <h2 className="c4-title">{v4("kyTitle")}</h2>
+          <p className="c4-ky-prodomos-lead">{v4("kyProdomosLead")}</p>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-ky-prodomos-count">{chips.length}</p>
       </header>
+      <ol className="c4-ky-prodomos-index" aria-label={v4("kyProdomosKicker")}>
+        <li data-tone="gold">{v4("kyProdomosOpen")} {chips.length}</li>
+        <li data-tone="ink">{v4("kyProdomosBlank")} {blankCount}</li>
+      </ol>
       <p className="c4-meta">{v4("kyHint")}</p>
       <p className="c4-meta">{v4("kyLocal")}</p>
       <p className="c4-row">
@@ -221,11 +233,11 @@ export function KycStatus({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("kySearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("kyEmpty")}</p>}
-      <ul className="c4-ky-rows">
+      <ul className="c4-ky-rows c4-ky-prodomos-list">
         {shown.map((row) => {
           const name = statusText(row.status);
           return (
-            <li key={row.id} data-status={name || "blank"}>
+            <li key={row.id} className="c4-ky-prodomos-card" data-status={name || "blank"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("kyBlank")}</p>
               {row.userId && <Link className="c4-btn" href={crmv4Href(base, `customers/${row.userId}`)}>{v4("kyCustomer")}</Link>}
