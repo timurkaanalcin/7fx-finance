@@ -107013,3 +107013,311 @@
   [data-crmv4-root] .c4-dsp-tepidarium-card,
   [data-crmv4-root] .c4-dsk-palaestra-card { transition: none; }
 }
+
+/* Round 332 — mainspring rules, planisphere plates, ivory loom praefurnium, graphite band heliocaminus. */
+[data-crmv4-root] .c4-mainspring {
+  color: #1c1a17;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 8px no-repeat,
+    radial-gradient(circle at 0 0, rgba(198, 161, 91, 0.28), transparent 32%),
+    linear-gradient(180deg, #fffdf8 0%, #f4eee4 100%);
+  border: 1px solid #8a6a3b;
+  border-radius: 18px;
+  padding: 22px 16px 24px;
+  box-shadow: inset 0 0 0 1px rgba(198, 161, 91, 0.4);
+}
+[data-crmv4-root] .c4-mainspring-mast,
+[data-crmv4-root] .c4-planisphere-mast,
+[data-crmv4-root] .c4-lom-praefurnium-mast,
+[data-crmv4-root] .c4-bnd-heliocaminus-mast {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: end;
+  margin: 0;
+}
+[data-crmv4-root] .c4-mainspring-seal[data-logo="mono"],
+[data-crmv4-root] .c4-planisphere-seal[data-logo="mono"] {
+  margin: 0;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  background: #1c1a17;
+  color: #f6f1e8;
+  border: 0;
+  border-radius: 8px;
+  box-shadow: 6px 6px 0 #c6a15b;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  font-weight: 650;
+}
+[data-crmv4-root] .c4-mainspring-kicker,
+[data-crmv4-root] .c4-planisphere-kicker,
+[data-crmv4-root] .c4-lom-praefurnium-kicker,
+[data-crmv4-root] .c4-bnd-heliocaminus-kicker {
+  margin: 0;
+  color: #8a6a3b;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-mainspring-count,
+[data-crmv4-root] .c4-planisphere-count,
+[data-crmv4-root] .c4-lom-praefurnium-count,
+[data-crmv4-root] .c4-bnd-heliocaminus-count {
+  margin: 0;
+  min-width: 44px;
+  text-align: right;
+  color: #8a6a3b;
+  font-variant-numeric: tabular-nums;
+  font-size: 28px;
+}
+[data-crmv4-root] .c4-mainspring-index,
+[data-crmv4-root] .c4-lom-praefurnium-index,
+[data-crmv4-root] .c4-bnd-heliocaminus-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-mainspring-index li,
+[data-crmv4-root] .c4-lom-praefurnium-index li,
+[data-crmv4-root] .c4-bnd-heliocaminus-index li {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid #c6a15b;
+  background: #fffdf8;
+}
+[data-crmv4-root] .c4-mainspring-index li[data-tone="ink"],
+[data-crmv4-root] .c4-lom-praefurnium-index li[data-tone="ink"] { background: #1c1a17; color: #f6f1e8; }
+[data-crmv4-root] .c4-mainspring-index li[data-tone="gold"],
+[data-crmv4-root] .c4-lom-praefurnium-index li[data-tone="gold"],
+[data-crmv4-root] .c4-bnd-heliocaminus-index li[data-tone="gold"] { color: #8a6a3b; }
+[data-crmv4-root] .c4-mainspring-chart,
+[data-crmv4-root] .c4-planisphere-chart { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+[data-crmv4-root] .c4-mainspring-column,
+[data-crmv4-root] .c4-planisphere-column {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-width: 52px;
+  min-height: 44px;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+}
+[data-crmv4-root] .c4-mainspring-column i,
+[data-crmv4-root] .c4-planisphere-column i {
+  display: block;
+  width: 22px;
+  background: #c6a15b;
+  border-radius: 4px 4px 0 0;
+}
+[data-crmv4-root] .c4-mainspring-column[data-on="1"] i,
+[data-crmv4-root] .c4-planisphere-column[data-on="1"] i { background: #1c1a17; width: 28px; }
+[data-crmv4-root] .c4-mainspring-form,
+[data-crmv4-root] .c4-mainspring-tools,
+[data-crmv4-root] .c4-mainspring-view,
+[data-crmv4-root] .c4-mainspring-bulk,
+[data-crmv4-root] .c4-planisphere-tools,
+[data-crmv4-root] .c4-planisphere-bulk { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; }
+[data-crmv4-root] .c4-mainspring-list,
+[data-crmv4-root] .c4-planisphere-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+[data-crmv4-root] .c4-mainspring-card,
+[data-crmv4-root] .c4-planisphere-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  background: #fffdf8;
+  border: 1px solid rgba(138, 106, 59, 0.45);
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: inset 0 3px 0 #c6a15b;
+}
+[data-crmv4-root] .c4-mainspring .c4-btn,
+[data-crmv4-root] .c4-mainspring .c4-chip,
+[data-crmv4-root] .c4-planisphere .c4-btn,
+[data-crmv4-root] .c4-planisphere .c4-chip,
+[data-crmv4-root] .c4-lom.c4-lom-praefurnium .c4-btn,
+[data-crmv4-root] .c4-lom.c4-lom-praefurnium .c4-chip,
+[data-crmv4-root] .c4-bnd.c4-bnd-heliocaminus .c4-btn,
+[data-crmv4-root] .c4-bnd.c4-bnd-heliocaminus .c4-chip { min-height: 44px; }
+[data-crmv4-root] .c4-mainspring .c4-btn:focus-visible,
+[data-crmv4-root] .c4-mainspring .c4-chip:focus-visible,
+[data-crmv4-root] .c4-planisphere .c4-btn:focus-visible,
+[data-crmv4-root] .c4-planisphere .c4-chip:focus-visible,
+[data-crmv4-root] .c4-mainspring-column:focus-visible,
+[data-crmv4-root] .c4-planisphere-column:focus-visible,
+[data-crmv4-root] .c4-lom.c4-lom-praefurnium .c4-btn:focus-visible,
+[data-crmv4-root] .c4-lom.c4-lom-praefurnium .c4-chip:focus-visible,
+[data-crmv4-root] .c4-bnd.c4-bnd-heliocaminus .c4-btn:focus-visible,
+[data-crmv4-root] .c4-bnd.c4-bnd-heliocaminus .c4-chip:focus-visible { outline: 2px solid #c6a15b; outline-offset: 2px; }
+[data-crmv4-root] .c4-mainspring[data-density="close"] .c4-mainspring-card { padding: 6px 10px; }
+[data-crmv4-root] .c4-planisphere {
+  color: #f6f1e8;
+  background:
+    radial-gradient(circle at 88% 0, rgba(198, 161, 91, 0.35), transparent 26%),
+    #141210;
+  border: 1px solid #c6a15b;
+  border-radius: 48px 48px 12px 12px;
+  padding: 20px 18px 22px;
+}
+[data-crmv4-root] .c4-planisphere-seal[data-logo="mono"] {
+  color: #1c1a17;
+  background: #c6a15b;
+  border-radius: 50%;
+  box-shadow: 0 0 0 6px #141210, 0 0 0 8px #8a6a3b;
+}
+[data-crmv4-root] .c4-planisphere-card { background: #1c1916; color: #f6f1e8; border-color: #8a6a3b; }
+[data-crmv4-root] .c4-planisphere .c4-title,
+[data-crmv4-root] .c4-planisphere .c4-meta,
+[data-crmv4-root] .c4-planisphere-hint,
+[data-crmv4-root] .c4-planisphere-meta { color: #f6f1e8; }
+[data-crmv4-root] .c4-planisphere-kicker { color: #e7d3a1; }
+[data-crmv4-root] .c4-lom.c4-lom-praefurnium {
+  color: #1c1a17;
+  background:
+    repeating-linear-gradient(90deg, #c6a15b 0 8px, transparent 8px 18px) 0 0 / 100% 10px no-repeat,
+    linear-gradient(180deg, #fffdf8 0%, #f7f1e6 100%);
+  border: 1px solid #c6a15b;
+  border-radius: 72px 72px 16px 16px;
+  padding: 24px 16px 26px;
+  box-shadow: inset 0 0 0 1px rgba(198, 161, 91, 0.35);
+}
+[data-crmv4-root] .c4-lom-praefurnium-seal[data-logo="mono"] {
+  margin: 0;
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  background: #fffdf8;
+  color: #1c1a17;
+  border: 1px solid #1c1a17;
+  border-radius: 50% 50% 8px 8px;
+  box-shadow: 0 8px 0 #c6a15b;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  font-weight: 650;
+}
+[data-crmv4-root] .c4-lom-praefurnium-title,
+[data-crmv4-root] .c4-bnd-heliocaminus-title,
+[data-crmv4-root] .c4-mainspring .c4-title,
+[data-crmv4-root] .c4-planisphere .c4-title { letter-spacing: -0.03em; }
+[data-crmv4-root] .c4-lom-praefurnium-title::before,
+[data-crmv4-root] .c4-bnd-heliocaminus-title::before,
+[data-crmv4-root] .c4-mainspring .c4-title::before,
+[data-crmv4-root] .c4-planisphere .c4-title::before { background: #c6a15b; }
+[data-crmv4-root] .c4-lom-praefurnium-lead,
+[data-crmv4-root] .c4-bnd-heliocaminus-lead { margin: 6px 0 0; max-width: 62ch; line-height: 1.45; }
+[data-crmv4-root] .c4-lom.c4-lom-praefurnium .c4-lom-rows { display: grid; gap: 12px; }
+[data-crmv4-root] .c4-lom.c4-lom-praefurnium .c4-lom-rows li.c4-lom-praefurnium-card {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  background: #fffdf8;
+  border: 1px solid rgba(138, 106, 59, 0.45);
+  border-radius: 18px;
+  padding: 14px 14px 14px 16px;
+  box-shadow: inset 8px 0 0 #c6a15b;
+}
+[data-crmv4-root] .c4-bnd.c4-bnd-heliocaminus {
+  color: #f6f1e8;
+  background:
+    radial-gradient(circle at 50% 0, rgba(198, 161, 91, 0.28), transparent 42%),
+    #141210;
+  border: 1px solid #8a6a3b;
+  border-radius: 28px;
+  padding: 20px 18px 24px;
+}
+[data-crmv4-root] .c4-bnd-heliocaminus-seal[data-logo="mono"] {
+  margin: 0;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  color: #f6f1e8;
+  border: 2px solid #c6a15b;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 6px #141210, inset 0 0 0 7px #8a6a3b;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  font-weight: 650;
+}
+[data-crmv4-root] .c4-bnd-heliocaminus-title,
+[data-crmv4-root] .c4-bnd-heliocaminus-lead,
+[data-crmv4-root] .c4-bnd.c4-bnd-heliocaminus .c4-meta,
+[data-crmv4-root] .c4-bnd.c4-bnd-heliocaminus .c4-title { color: #f6f1e8; }
+[data-crmv4-root] .c4-bnd-heliocaminus-kicker { color: #e7d3a1; }
+[data-crmv4-root] .c4-bnd-heliocaminus-index li { background: transparent; color: #f6f1e8; border-color: #8a6a3b; }
+[data-crmv4-root] .c4-bnd.c4-bnd-heliocaminus .c4-btn,
+[data-crmv4-root] .c4-bnd.c4-bnd-heliocaminus .c4-chip {
+  background: transparent;
+  color: #f6f1e8;
+  border: 1px solid #c6a15b;
+}
+[data-crmv4-root] .c4-bnd.c4-bnd-heliocaminus .c4-bnd-rows { display: grid; gap: 8px; }
+[data-crmv4-root] .c4-bnd.c4-bnd-heliocaminus .c4-bnd-rows li.c4-bnd-heliocaminus-card {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  background: rgba(20, 18, 16, 0.72);
+  color: #f6f1e8;
+  border: 1px solid rgba(198, 161, 91, 0.45);
+  border-radius: 999px;
+  padding: 12px 16px;
+  box-shadow: inset 0 0 0 1px rgba(198, 161, 91, 0.25);
+}
+[data-crmv4-root] .c4-bnd.c4-bnd-heliocaminus .c4-bnd-rows li.c4-bnd-heliocaminus-card .c4-meta,
+[data-crmv4-root] .c4-bnd.c4-bnd-heliocaminus .c4-bnd-rows li.c4-bnd-heliocaminus-card p { color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-mainspring,
+[data-crmv4-root][data-theme="dark"] .c4-lom.c4-lom-praefurnium {
+  color: #f6f1e8;
+  background: #241f1a;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-mainspring-card,
+[data-crmv4-root][data-theme="dark"] .c4-lom.c4-lom-praefurnium .c4-lom-rows li.c4-lom-praefurnium-card {
+  background: #1c1a17;
+  color: #f6f1e8;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-lom-praefurnium-title,
+[data-crmv4-root][data-theme="dark"] .c4-lom-praefurnium-lead,
+[data-crmv4-root][data-theme="dark"] .c4-lom.c4-lom-praefurnium .c4-meta,
+[data-crmv4-root][data-theme="dark"] .c4-mainspring-hint { color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-lom-praefurnium-seal[data-logo="mono"] { color: #f6f1e8; background: #1c1a17; box-shadow: 0 8px 0 #c6a15b; }
+[data-crmv4-root][data-theme="dark"] .c4-lom-praefurnium-index li,
+[data-crmv4-root][data-theme="dark"] .c4-mainspring-index li { background: #1c1a17; color: #f6f1e8; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-mainspring-mast,
+  [data-crmv4-root] .c4-planisphere-mast,
+  [data-crmv4-root] .c4-lom-praefurnium-mast,
+  [data-crmv4-root] .c4-bnd-heliocaminus-mast { grid-template-columns: auto minmax(0, 1fr) auto; }
+  [data-crmv4-root] .c4-lom-praefurnium-title,
+  [data-crmv4-root] .c4-bnd-heliocaminus-title { font-size: 1.35rem; }
+  [data-crmv4-root] .c4-mainspring,
+  [data-crmv4-root] .c4-planisphere { border-radius: 12px; }
+  [data-crmv4-root] .c4-lom.c4-lom-praefurnium { border-radius: 28px 28px 12px 12px; padding: 18px 12px 20px; }
+  [data-crmv4-root] .c4-bnd.c4-bnd-heliocaminus { border-radius: 16px; padding: 16px 12px 20px; }
+  [data-crmv4-root] .c4-mainspring-card,
+  [data-crmv4-root] .c4-planisphere-card,
+  [data-crmv4-root] .c4-lom.c4-lom-praefurnium .c4-lom-rows li.c4-lom-praefurnium-card,
+  [data-crmv4-root] .c4-bnd.c4-bnd-heliocaminus .c4-bnd-rows li.c4-bnd-heliocaminus-card { grid-template-columns: minmax(0, 1fr); border-radius: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-mainspring-column i,
+  [data-crmv4-root] .c4-planisphere-column i,
+  [data-crmv4-root] .c4-lom-praefurnium-card,
+  [data-crmv4-root] .c4-bnd-heliocaminus-card { transition: none; }
+}
