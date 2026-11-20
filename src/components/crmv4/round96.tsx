@@ -52,6 +52,7 @@ export function PinRail({ base, v4 }: { base: string; v4: V4 }) {
     writeJson(RAIL_KEY, next);
   }, []);
   const shown = visibleShortcuts(shortcuts, query, hidden);
+  const pinnedCount = shown.filter((item) => item.pinned).length;
 
   function store(next: Shortcut[]) {
     setShortcuts(next);
@@ -59,14 +60,20 @@ export function PinRail({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-pin-rail" aria-label={v4("rlTitle")} data-pin-rail="1">
-      <header className="c4-pay-head">
+    <section className="c4-pin-rail c4-pin-opisthodomos" aria-label={v4("rlTitle")} data-pin-rail="1" data-desk="opisthodomos">
+      <header className="c4-pay-head c4-rl-opisthodomos-mast">
+        <p className="c4-rl-opisthodomos-seal" data-logo="mono">{v4("rlOpisthodomosLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("rlSub")}</p>
-          <h2 className="c4-title">{v4("rlTitle")}</h2>
+          <p className="c4-rl-opisthodomos-kicker">{v4("rlOpisthodomosKicker")}</p>
+          <h2 className="c4-title c4-rl-opisthodomos-title">{v4("rlTitle")}</h2>
+          <p className="c4-rl-opisthodomos-lead">{v4("rlOpisthodomosLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-rl-opisthodomos-count">{shown.length}</p>
       </header>
+      <ol className="c4-rl-opisthodomos-index" aria-label={v4("rlOpisthodomosKicker")}>
+        <li data-tone="gold">{v4("rlOpisthodomosPinned")} {pinnedCount}</li>
+        <li data-tone="ink">{v4("rlOpisthodomosShown")} {shown.length}</li>
+      </ol>
       <p className="c4-meta">{v4("rlHint")}</p>
       <p className="c4-meta">{v4("rlLocal")}</p>
       <form className="c4-row" onSubmit={(event) => {
@@ -104,7 +111,7 @@ export function PinRail({ base, v4 }: { base: string; v4: V4 }) {
       {!shown.length && <p className="c4-pay-empty">{v4("rlEmpty")}</p>}
       <ol className="c4-rail-list">
         {shown.map((item) => (
-          <li key={item.id} className="c4-rail-card" data-pinned={item.pinned ? "1" : "0"} data-section={item.section}>
+          <li key={item.id} className="c4-rail-card c4-rl-opisthodomos-card" data-pinned={item.pinned ? "1" : "0"} data-section={item.section}>
             <p>{item.name}</p>
             <p className="c4-meta">{item.section}</p>
             <div className="c4-row">

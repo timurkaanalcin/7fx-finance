@@ -113030,3 +113030,386 @@
   [data-crmv4-root] .c4-ct-puteal-card,
   [data-crmv4-root] .c4-fp-crepidoma-card { transition: none; }
 }
+
+/* Round 350 — pulsometer rules and invalid-mark plates */
+[data-crmv4-root] .c4-pulsometer,
+[data-crmv4-root] .c4-mrkplate {
+  color: #1c1a17;
+  background:
+    radial-gradient(circle at 28px 28px, transparent 16px, #c6a15b 17px 19px, transparent 20px),
+    linear-gradient(180deg, #fffdf8 0%, #f3e7d2 100%);
+  border: 1px solid #8a6a3b;
+  border-radius: 28px;
+  padding: 22px 18px 20px;
+}
+[data-crmv4-root] .c4-mrkplate {
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 18px / 100% 1px no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) 0 36px / 100% 1px no-repeat,
+    linear-gradient(180deg, #2a241e 0%, #141210 100%);
+  border-color: #c6a15b;
+  border-radius: 2px;
+}
+[data-crmv4-root] .c4-pulsometer-mast,
+[data-crmv4-root] .c4-mrkplate-mast {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: start;
+  margin: 0 0 14px;
+}
+[data-crmv4-root] .c4-pulsometer-seal[data-logo="mono"],
+[data-crmv4-root] .c4-mrkplate-seal[data-logo="mono"] {
+  margin: 0;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  background: #1c1a17;
+  color: #f6f1e8;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+[data-crmv4-root] .c4-pulsometer-seal[data-logo="mono"] {
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 5px #c6a15b, 0 0 0 4px #fffdf8, 0 0 0 5px #8a6a3b;
+}
+[data-crmv4-root] .c4-mrkplate-seal[data-logo="mono"] {
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 5px #c6a15b;
+}
+[data-crmv4-root] .c4-pulsometer-kicker,
+[data-crmv4-root] .c4-mrkplate-kicker {
+  margin: 0;
+  color: #8a6a3b;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+[data-crmv4-root] .c4-mrkplate-kicker { color: #c6a15b; }
+[data-crmv4-root] .c4-pulsometer-count,
+[data-crmv4-root] .c4-mrkplate-count {
+  margin: 0;
+  min-width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  background: #1c1a17;
+  color: #f6f1e8;
+  font-variant-numeric: tabular-nums;
+}
+[data-crmv4-root] .c4-pulsometer-count { border-radius: 50%; }
+[data-crmv4-root] .c4-mrkplate-count { border-radius: 2px; }
+[data-crmv4-root] .c4-pulsometer-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-pulsometer-index li {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px solid #c6a15b;
+  border-radius: 999px;
+}
+[data-crmv4-root] .c4-pulsometer-index li[data-tone="gold"] { background: #c6a15b; color: #1c1a17; }
+[data-crmv4-root] .c4-pulsometer-index li[data-tone="ink"] { background: #1c1a17; color: #f6f1e8; }
+[data-crmv4-root] .c4-pulsometer-index li[data-tone="ivory"] { background: #fffdf8; color: #1c1a17; }
+[data-crmv4-root] .c4-pulsometer-chart,
+[data-crmv4-root] .c4-mrkplate-chart {
+  display: flex;
+  align-items: end;
+  gap: 14px;
+  min-height: 120px;
+  overflow: hidden;
+}
+[data-crmv4-root] .c4-pulsometer-column,
+[data-crmv4-root] .c4-mrkplate-column {
+  display: grid;
+  align-items: end;
+  justify-items: center;
+  gap: 4px;
+  min-width: 56px;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+}
+[data-crmv4-root] .c4-pulsometer-column i,
+[data-crmv4-root] .c4-mrkplate-column i {
+  display: block;
+  width: 10px;
+  background: #c6a15b;
+  border-radius: 999px 999px 0 0;
+}
+[data-crmv4-root] .c4-pulsometer-column[data-on="1"] i { background: #1c1a17; width: 16px; }
+[data-crmv4-root] .c4-mrkplate-column[data-on="1"] i { background: #f6f1e8; width: 16px; }
+[data-crmv4-root] .c4-mrkplate .c4-title,
+[data-crmv4-root] .c4-mrkplate .c4-meta,
+[data-crmv4-root] .c4-mrkplate-hint { color: #f6f1e8; }
+[data-crmv4-root] .c4-mrkplate-card {
+  background: #f6f1e8;
+  color: #1c1a17;
+  border-radius: 2px;
+  box-shadow: inset 0 4px 0 #c6a15b;
+}
+[data-crmv4-root] .c4-pulsometer-card {
+  background: #fffdf8;
+  border-radius: 18px;
+  box-shadow: inset 0 0 0 1px #e7d7bc, inset 4px 0 0 #c6a15b;
+}
+[data-crmv4-root] .c4-pulsometer-tools,
+[data-crmv4-root] .c4-pulsometer-bulk,
+[data-crmv4-root] .c4-mrkplate-tools,
+[data-crmv4-root] .c4-mrkplate-bulk,
+[data-crmv4-root] .c4-pulsometer-actions,
+[data-crmv4-root] .c4-mrkplate-actions,
+[data-crmv4-root] .c4-pulsometer-links,
+[data-crmv4-root] .c4-mrkplate-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+[data-crmv4-root] .c4-pulsometer-form,
+[data-crmv4-root] .c4-pulsometer-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+  gap: 8px;
+  align-items: end;
+  margin: 8px 0;
+}
+[data-crmv4-root] .c4-pulsometer-list,
+[data-crmv4-root] .c4-mrkplate-list,
+[data-crmv4-root] .c4-pulsometer-views {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-pulsometer-card,
+[data-crmv4-root] .c4-mrkplate-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px 12px;
+  align-items: start;
+  padding: 12px;
+}
+[data-crmv4-root] .c4-pulsometer-actions,
+[data-crmv4-root] .c4-mrkplate-actions { grid-column: 1 / -1; }
+[data-crmv4-root] .c4-pulsometer-search,
+[data-crmv4-root] .c4-mrkplate-search { min-width: min(100%, 220px); flex: 1 1 220px; }
+[data-crmv4-root] .c4-mrkplate-links a { color: #c6a15b; }
+[data-crmv4-root] .c4-pulsometer-links a { color: #8a6a3b; }
+[data-crmv4-root] .c4-pulsometer .c4-title::before,
+[data-crmv4-root] .c4-mrkplate .c4-title::before { display: none; }
+[data-crmv4-root] .c4-pulsometer .c4-btn,
+[data-crmv4-root] .c4-mrkplate .c4-btn,
+[data-crmv4-root] .c4-pulsometer .c4-chip,
+[data-crmv4-root] .c4-mrkplate .c4-chip { min-height: 44px; }
+[data-crmv4-root] .c4-pulsometer .c4-btn:focus-visible,
+[data-crmv4-root] .c4-mrkplate .c4-btn:focus-visible,
+[data-crmv4-root] .c4-pulsometer .c4-field:focus-visible,
+[data-crmv4-root] .c4-mrkplate .c4-field:focus-visible { outline: 2px solid #c6a15b; outline-offset: 2px; }
+[data-crmv4-root][data-theme="dark"] .c4-pulsometer { box-shadow: 0 0 0 1px #c6a15b; }
+[data-crmv4-root][data-theme="dark"] .c4-mrkplate { box-shadow: 0 0 0 1px #8a6a3b; }
+
+
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-pulsometer-card,
+  [data-crmv4-root] .c4-mrkplate-card { grid-template-columns: 1fr; }
+  [data-crmv4-root] .c4-pulsometer-form,
+  [data-crmv4-root] .c4-pulsometer-view { grid-template-columns: 1fr; }
+  [data-crmv4-root] .c4-pulsometer-mast,
+  [data-crmv4-root] .c4-mrkplate-mast,
+  [data-crmv4-root] .c4-rl-opisthodomos-mast,
+  [data-crmv4-root] .c4-jv-stylobate-mast { grid-template-columns: 52px minmax(0, 1fr) 52px; }
+  [data-crmv4-root] .c4-pulsometer,
+  [data-crmv4-root] .c4-mrkplate,
+  [data-crmv4-root] .c4-pin-rail.c4-pin-opisthodomos,
+  [data-crmv4-root] .c4-recent-jumps.c4-jump-stylobate { margin: 8px; padding: 16px 12px; }
+  [data-crmv4-root] .c4-pin-rail.c4-pin-opisthodomos .c4-rail-list,
+  [data-crmv4-root] .c4-recent-jumps.c4-jump-stylobate .c4-jump-list { grid-template-columns: 1fr !important; }
+}
+
+/* Round 350 — ivory pin opisthodomos and graphite jump stylobate */
+[data-crmv4-root] .c4-pin-rail.c4-pin-opisthodomos {
+  color: #1c1a17;
+  background:
+    radial-gradient(ellipse at 50% 0, transparent 42px, #c6a15b 43px 46px, #fffdf8 47px) 50% 0 / 140px 72px no-repeat,
+    linear-gradient(180deg, #fffdf8 0%, #f4ead8 100%);
+  border: 1px solid #8a6a3b;
+  border-radius: 18px 18px 72px 72px;
+  box-shadow: inset 0 0 0 7px #fffdf8, inset 0 0 0 8px #c6a15b;
+  padding: 22px 16px 28px;
+  margin: 12px;
+}
+[data-crmv4-root] .c4-recent-jumps.c4-jump-stylobate {
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 34% 8px no-repeat,
+    linear-gradient(#8a6a3b, #8a6a3b) 0 12px / 67% 8px no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) 0 24px / 100% 8px no-repeat,
+    linear-gradient(180deg, #2a241e 0%, #141210 100%);
+  border: 1px solid #c6a15b;
+  border-radius: 2px;
+  padding: 40px 16px 18px;
+  margin: 12px;
+}
+[data-crmv4-root] .c4-rl-opisthodomos-mast,
+[data-crmv4-root] .c4-jv-stylobate-mast {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: start;
+  margin: 0 0 12px;
+}
+[data-crmv4-root] .c4-rl-opisthodomos-seal[data-logo="mono"],
+[data-crmv4-root] .c4-jv-stylobate-seal[data-logo="mono"] {
+  margin: 0;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  background: #1c1a17;
+  color: #f6f1e8;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+[data-crmv4-root] .c4-rl-opisthodomos-seal[data-logo="mono"] {
+  border-radius: 50% 50% 8px 8px;
+  box-shadow: inset 0 0 0 6px #c6a15b, inset 0 0 0 12px #1c1a17;
+}
+[data-crmv4-root] .c4-jv-stylobate-seal[data-logo="mono"] {
+  border-radius: 2px;
+  box-shadow: inset 0 8px 0 #c6a15b, inset 0 0 0 8px #1c1a17;
+}
+[data-crmv4-root] .c4-rl-opisthodomos-title::before,
+[data-crmv4-root] .c4-jv-stylobate-title::before { display: none; }
+[data-crmv4-root] .c4-rl-opisthodomos-kicker,
+[data-crmv4-root] .c4-jv-stylobate-kicker {
+  margin: 0;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+[data-crmv4-root] .c4-rl-opisthodomos-kicker { color: #8a6a3b; }
+[data-crmv4-root] .c4-jv-stylobate-kicker { color: #c6a15b; }
+[data-crmv4-root] .c4-rl-opisthodomos-lead,
+[data-crmv4-root] .c4-jv-stylobate-lead { margin: 4px 0 0; max-width: 46rem; }
+[data-crmv4-root] .c4-recent-jumps.c4-jump-stylobate .c4-title,
+[data-crmv4-root] .c4-recent-jumps.c4-jump-stylobate .c4-meta,
+[data-crmv4-root] .c4-jv-stylobate-lead { color: #f6f1e8; }
+[data-crmv4-root] .c4-rl-opisthodomos-count,
+[data-crmv4-root] .c4-jv-stylobate-count {
+  margin: 0;
+  min-width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  background: #1c1a17;
+  color: #f6f1e8;
+  font-variant-numeric: tabular-nums;
+}
+[data-crmv4-root] .c4-rl-opisthodomos-count { border-radius: 50% 50% 8px 8px; }
+[data-crmv4-root] .c4-jv-stylobate-count { border-radius: 2px; }
+[data-crmv4-root] .c4-rl-opisthodomos-index,
+[data-crmv4-root] .c4-jv-stylobate-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-rl-opisthodomos-index li,
+[data-crmv4-root] .c4-jv-stylobate-index li {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px solid #c6a15b;
+}
+[data-crmv4-root] .c4-rl-opisthodomos-index li { border-radius: 999px; background: #fffdf8; color: #1c1a17; }
+[data-crmv4-root] .c4-rl-opisthodomos-index li[data-tone="gold"] { background: #c6a15b; color: #1c1a17; }
+[data-crmv4-root] .c4-rl-opisthodomos-index li[data-tone="ink"] { background: #1c1a17; color: #f6f1e8; }
+[data-crmv4-root] .c4-jv-stylobate-index li { border-radius: 2px; background: transparent; color: #f6f1e8; border-color: #8a6a3b; }
+[data-crmv4-root] .c4-jv-stylobate-index li[data-tone="gold"] { background: #c6a15b; color: #1c1a17; }
+[data-crmv4-root] .c4-pin-rail.c4-pin-opisthodomos .c4-rail-list,
+[data-crmv4-root] .c4-recent-jumps.c4-jump-stylobate .c4-jump-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+[data-crmv4-root] .c4-pin-rail.c4-pin-opisthodomos .c4-rail-card.c4-rl-opisthodomos-card {
+  display: grid;
+  gap: 6px;
+  padding: 16px 14px 12px 18px;
+  border-radius: 8px 28px 28px 8px;
+  background: #fffdf8;
+  color: #1c1a17;
+  border: 1px solid #e7d7bc;
+  box-shadow: inset 6px 0 0 #c6a15b;
+}
+[data-crmv4-root] .c4-pin-rail.c4-pin-opisthodomos .c4-rail-card[data-pinned="1"] { box-shadow: inset 6px 0 0 #8a6a3b; }
+[data-crmv4-root] .c4-recent-jumps.c4-jump-stylobate .c4-jump-card.c4-jv-stylobate-card {
+  display: grid;
+  gap: 6px;
+  padding: 18px 14px 12px;
+  border-radius: 2px;
+  background: #f6f1e8;
+  color: #1c1a17;
+  border: 1px solid #8a6a3b;
+  box-shadow: inset 0 8px 0 #c6a15b;
+}
+[data-crmv4-root] .c4-pin-rail.c4-pin-opisthodomos .c4-title,
+[data-crmv4-root] .c4-pin-rail.c4-pin-opisthodomos .c4-rl-opisthodomos-lead,
+[data-crmv4-root] .c4-pin-rail.c4-pin-opisthodomos .c4-meta { color: #1c1a17; }
+[data-crmv4-root] .c4-pin-rail.c4-pin-opisthodomos .c4-btn,
+[data-crmv4-root] .c4-recent-jumps.c4-jump-stylobate .c4-btn,
+[data-crmv4-root] .c4-pin-rail.c4-pin-opisthodomos .c4-chip,
+[data-crmv4-root] .c4-recent-jumps.c4-jump-stylobate .c4-chip { min-height: 44px; }
+[data-crmv4-root] .c4-pin-rail.c4-pin-opisthodomos .c4-btn:focus-visible,
+[data-crmv4-root] .c4-recent-jumps.c4-jump-stylobate .c4-btn:focus-visible,
+[data-crmv4-root] .c4-pin-rail.c4-pin-opisthodomos .c4-field:focus-visible,
+[data-crmv4-root] .c4-recent-jumps.c4-jump-stylobate .c4-field:focus-visible { outline: 2px solid #c6a15b; outline-offset: 2px; }
+[data-crmv4-root][data-theme="dark"] .c4-pin-rail.c4-pin-opisthodomos {
+  color: #1c1a17;
+  background:
+    radial-gradient(ellipse at 50% 0, transparent 42px, #c6a15b 43px 46px, #fffdf8 47px) 50% 0 / 140px 72px no-repeat,
+    linear-gradient(180deg, #fffdf8 0%, #f4ead8 100%);
+  box-shadow: inset 0 0 0 7px #fffdf8, inset 0 0 0 8px #c6a15b, 0 0 0 1px #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-recent-jumps.c4-jump-stylobate {
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 34% 8px no-repeat,
+    linear-gradient(#8a6a3b, #8a6a3b) 0 12px / 67% 8px no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) 0 24px / 100% 8px no-repeat,
+    linear-gradient(180deg, #2a241e 0%, #141210 100%);
+  box-shadow: 0 0 0 1px #8a6a3b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-pin-rail.c4-pin-opisthodomos .c4-rail-card.c4-rl-opisthodomos-card,
+[data-crmv4-root][data-theme="dark"] .c4-recent-jumps.c4-jump-stylobate .c4-jump-card.c4-jv-stylobate-card { color: #1c1a17; }
+[data-crmv4-root][data-theme="dark"] .c4-pin-rail.c4-pin-opisthodomos .c4-field,
+[data-crmv4-root][data-theme="dark"] .c4-pin-rail.c4-pin-opisthodomos .c4-btn,
+[data-crmv4-root][data-theme="dark"] .c4-pin-rail.c4-pin-opisthodomos .c4-lab,
+[data-crmv4-root][data-theme="dark"] .c4-recent-jumps.c4-jump-stylobate .c4-field,
+[data-crmv4-root][data-theme="dark"] .c4-recent-jumps.c4-jump-stylobate .c4-btn {
+  background: #fffdf8;
+  color: #1c1a17;
+  border-color: #c6a15b;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-pulsometer-card,
+  [data-crmv4-root] .c4-mrkplate-card,
+  [data-crmv4-root] .c4-rl-opisthodomos-card,
+  [data-crmv4-root] .c4-jv-stylobate-card { transition: none; }
+}

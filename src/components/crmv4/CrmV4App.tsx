@@ -337,6 +337,7 @@ import { ContactPlates as LastContactPlates, FoudroyanteRules } from "./round346
 import { AssignmentPlates, RetrogradeRules } from "./round347";
 import { ChronographRules, TimezonePlates } from "./round348";
 import { TachymeterRules, AffiliatePlates } from "./round349";
+import { MarkPlates, PulsometerRules } from "./round350";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -2623,6 +2624,8 @@ function Shell({ base, section, name }: Props) {
             {view === "tzn" && <TimezonePlates base={base} v4={v4} />}
             {view === "tch" && <TachymeterRules base={base} v4={v4} />}
             {view === "afc" && <AffiliatePlates base={base} v4={v4} />}
+            {view === "pls" && <PulsometerRules base={base} v4={v4} />}
+            {view === "mrk" && <MarkPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
