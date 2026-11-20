@@ -326,6 +326,7 @@ import { GongPlates, RepeaterRules } from "./round335";
 import { BackstaffPlates, BarrelRules } from "./round336";
 import { CoaxialRules, TypeplatePlates } from "./round337";
 import { KeylessRules, RoleplatePlates } from "./round338";
+import { ForenamePlates, OscillatorRules } from "./round339";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1241,6 +1242,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ctp") return v4("ctpTitle");
     if (tab === "klw") return v4("klwTitle");
     if (tab === "rlp") return v4("rlpTitle");
+    if (tab === "osc") return v4("oscTitle");
+    if (tab === "fnm") return v4("fnmTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1815,6 +1818,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ctp") return v4("ctpSub");
     if (tab === "klw") return v4("klwSub");
     if (tab === "rlp") return v4("rlpSub");
+    if (tab === "osc") return v4("oscSub");
+    if (tab === "fnm") return v4("fnmSub");
     return "";
   }
 
@@ -2550,6 +2555,8 @@ function Shell({ base, section, name }: Props) {
             {view === "ctp" && <TypeplatePlates base={base} v4={v4} />}
             {view === "klw" && <KeylessRules base={base} v4={v4} />}
             {view === "rlp" && <RoleplatePlates base={base} v4={v4} />}
+            {view === "osc" && <OscillatorRules base={base} v4={v4} />}
+            {view === "fnm" && <ForenamePlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

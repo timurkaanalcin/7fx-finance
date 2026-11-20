@@ -334,15 +334,21 @@ export function HearthRelays({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-hrl" aria-label={v4("hrlTitle")} data-relays="1" data-role={role}>
-      <header className="c4-hrl-head">
-        <p className="c4-hrl-plate" data-logo="mono">{v4("hrlLogo")}</p>
+    <section className="c4-hrl c4-hrl-balneum" aria-label={v4("hrlTitle")} data-relays="1" data-role={role} data-desk="balneum">
+      <header className="c4-hrl-head c4-hrl-balneum-mast">
+        <p className="c4-hrl-plate c4-hrl-balneum-seal" data-logo="mono">{v4("hrlBalneumLogo")}</p>
         <div>
-          <p className="c4-hrl-kicker">{v4("hrlSub")}</p>
-          <h2 className="c4-title">{v4("hrlTitle")}</h2>
+          <p className="c4-hrl-kicker c4-hrl-balneum-kicker">{v4("hrlBalneumKicker")}</p>
+          <h2 className="c4-title c4-hrl-balneum-title">{v4("hrlTitle")}</h2>
+          <p className="c4-hrl-balneum-lead">{v4("hrlBalneumLead")}</p>
         </div>
-        <p className="c4-hrl-count">{shown.length}</p>
+        <p className="c4-hrl-count c4-hrl-balneum-count">{shown.length}</p>
       </header>
+      <ol className="c4-hrl-balneum-index" aria-label={v4("hrlBalneumKicker")}>
+        <li data-tone="gold">{v4("hrlOpen")} {counts.open}</li>
+        <li data-tone="ink">{v4("hrlBanked")} {counts.banked}</li>
+        <li data-tone="ivory">{v4("hrlSealed")} {counts.sealed}</li>
+      </ol>
       <details className="c4-hrl-rules">
         <summary>{v4("hrlRules")}</summary>
         <p className="c4-meta">{v4("hrlHint")}</p>
@@ -574,7 +580,7 @@ export function HearthRelays({ v4 }: { v4: V4 }) {
             const reach = reachOf(card.rung);
             const editingCard = editing === card.id;
             return (
-              <li key={card.id} data-flame={card.flame || "blank"} data-wick={card.wick || "blank"} data-bed={bedOf(card.rung)}>
+              <li key={card.id} className="c4-hrl-balneum-card" data-flame={card.flame || "blank"} data-wick={card.wick || "blank"} data-bed={bedOf(card.rung)}>
                 <span className="c4-hrl-folio" aria-hidden="true">{rungLabel(card.rung)}</span>
                 <span className="c4-hrl-marks" aria-hidden="true">
                   {[0, 1, 2].map((index) => <i key={index} data-on={index < marks(card.flame) ? "1" : "0"} />)}
@@ -693,14 +699,21 @@ export function LoginLanterns({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-ltn" aria-label={v4("ltnTitle")} data-lanterns="1">
-      <header className="c4-ltn-head">
+    <section className="c4-ltn c4-ltn-aerarium" aria-label={v4("ltnTitle")} data-lanterns="1" data-desk="aerarium">
+      <header className="c4-ltn-head c4-ltn-aerarium-mast">
+        <p className="c4-ltn-aerarium-seal" data-logo="mono">{v4("ltnAerariumLogo")}</p>
         <div>
-          <p className="c4-hrl-kicker">{v4("ltnSub")}</p>
-          <h2 className="c4-title">{v4("ltnTitle")}</h2>
+          <p className="c4-hrl-kicker c4-ltn-aerarium-kicker">{v4("ltnAerariumKicker")}</p>
+          <h2 className="c4-title c4-ltn-aerarium-title">{v4("ltnTitle")}</h2>
+          <p className="c4-ltn-aerarium-lead">{v4("ltnAerariumLead")}</p>
         </div>
-        <p className="c4-hrl-count">{v4("ltnRows")} {rows.length}</p>
+        <p className="c4-hrl-count c4-ltn-aerarium-count">{v4("ltnRows")} {rows.length}</p>
       </header>
+      <ol className="c4-ltn-aerarium-index" aria-label={v4("ltnAerariumKicker")}>
+        <li data-tone="gold">{v4("ltnLeadSeason")} {leadSeason ? seasonName(v4, leadSeason) : "—"}</li>
+        <li data-tone="ink">{v4("ltnRows")} {rows.length}</li>
+        <li data-tone="ivory">{v4("ltnLeadMoon")} {leadMoon ? moonName(v4, leadMoon) : "—"}</li>
+      </ol>
       <details className="c4-hrl-rules">
         <summary>{v4("ltnRules")}</summary>
         <p className="c4-meta">{v4("ltnHint")}</p>
@@ -808,7 +821,7 @@ export function LoginLanterns({ base, v4 }: { base: string; v4: V4 }) {
           const glassMark = glassOf(row.lastLoginAt) as LanternGlass;
           const watchMark = watchOf(row.lastLoginAt);
           return (
-            <li key={row.id} data-season={seasonMark || "blank"} data-moon={moonMark || "blank"} data-glass={glassMark || "blank"} data-watch={watchMark || "blank"}>
+            <li key={row.id} className="c4-ltn-aerarium-card" data-season={seasonMark || "blank"} data-moon={moonMark || "blank"} data-glass={glassMark || "blank"} data-watch={watchMark || "blank"}>
               <span className="c4-ltn-face" aria-hidden="true">{seasonMark ? seasonMark.slice(0, 1).toUpperCase() : "—"}</span>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">
