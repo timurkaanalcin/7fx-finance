@@ -50,6 +50,8 @@ export function CheckPolish({ v4 }: { v4: V4 }) {
     writeJson(CHECK_KEY, next);
   }, []);
   const shown = visibleItems(items, query, hidden);
+  const openCount = items.filter((item) => !item.done).length;
+  const doneCount = items.filter((item) => item.done).length;
 
   function store(next: CheckItem[]) {
     setItems(next);
@@ -57,14 +59,21 @@ export function CheckPolish({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-check-polish" aria-label={v4("hkTitle")} data-check-polish="1">
-      <header className="c4-pay-head">
+    <section className="c4-check-polish c4-check-pronaos" aria-label={v4("hkTitle")} data-check-polish="1" data-desk="pronaos">
+      <header className="c4-pay-head c4-hk-pronaos-mast">
+        <p className="c4-hk-pronaos-seal" data-logo="mono">{v4("hkPronaosLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("hkSub")}</p>
-          <h2 className="c4-title">{v4("hkTitle")}</h2>
+          <p className="c4-hk-pronaos-kicker">{v4("hkPronaosKicker")}</p>
+          <h2 className="c4-title c4-hk-pronaos-title">{v4("hkTitle")}</h2>
+          <p className="c4-hk-pronaos-lead">{v4("hkPronaosLead")}</p>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-hk-pronaos-count">{shown.length}</p>
       </header>
+      <ol className="c4-hk-pronaos-index" aria-label={v4("hkPronaosKicker")}>
+        <li data-tone="gold">{v4("hkPronaosOpen")} {openCount}</li>
+        <li data-tone="ink">{v4("hkPronaosDone")} {doneCount}</li>
+        <li data-tone="ivory">{v4("hkPronaosShown")} {shown.length}</li>
+      </ol>
       <p className="c4-meta">{v4("hkHint")}</p>
       <p className="c4-meta">{v4("hkLocal")}</p>
       <form className="c4-row" onSubmit={(event) => {
@@ -92,7 +101,7 @@ export function CheckPolish({ v4 }: { v4: V4 }) {
       {!shown.length && <p className="c4-pay-empty">{v4("hkEmpty")}</p>}
       <ul className="c4-check-list">
         {shown.map((item) => (
-          <li key={item.id} className="c4-check-card" data-done={item.done ? "1" : "0"} data-pinned={item.pinned ? "1" : "0"}>
+          <li key={item.id} className="c4-check-card c4-hk-pronaos-card" data-done={item.done ? "1" : "0"} data-pinned={item.pinned ? "1" : "0"}>
             <p>{item.text}</p>
             <div className="c4-row">
               <button type="button" className="c4-btn" onClick={() => store(setItemDone(items, item.id, !item.done))}>{item.done ? v4("hkUndo") : v4("hkDone")}</button>
@@ -144,14 +153,21 @@ export function CasePriority({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-case-priority" aria-label={v4("zqTitle")} data-case-priority="1">
-      <header className="c4-pay-head">
+    <section className="c4-case-priority c4-case-prytaneion" aria-label={v4("zqTitle")} data-case-priority="1" data-desk="prytaneion">
+      <header className="c4-pay-head c4-zq-prytaneion-mast">
+        <p className="c4-zq-prytaneion-seal" data-logo="mono">{v4("zqPrytaneionLogo")}</p>
         <div>
-          <p className="c4-pay-kicker">{v4("zqSub")}</p>
-          <h2 className="c4-title">{v4("zqTitle")}</h2>
+          <p className="c4-zq-prytaneion-kicker">{v4("zqPrytaneionKicker")}</p>
+          <h2 className="c4-title c4-zq-prytaneion-title">{v4("zqTitle")}</h2>
+          <p className="c4-zq-prytaneion-lead">{v4("zqPrytaneionLead")}</p>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-zq-prytaneion-count">{shown.length}</p>
       </header>
+      <ol className="c4-zq-prytaneion-index" aria-label={v4("zqPrytaneionKicker")}>
+        <li data-tone="gold">{v4("zqPrytaneionRows")} {rows.length}</li>
+        <li data-tone="ink">{v4("zqPrytaneionShown")} {shown.length}</li>
+        <li>{v4("zqPrytaneionBlank")} {blankCount}</li>
+      </ol>
       <p className="c4-meta">{v4("zqHint")}</p>
       <p className="c4-meta">{v4("zqLocal")}</p>
       <p className="c4-row">
@@ -191,7 +207,7 @@ export function CasePriority({ base, v4 }: { base: string; v4: V4 }) {
         {shown.map((row) => {
           const name = priorityText(row.priority);
           return (
-            <li key={row.id} data-priority={name || "blank"}>
+            <li key={row.id} className="c4-zq-prytaneion-card" data-priority={name || "blank"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("zqBlank")}</p>
               {row.userId && <Link className="c4-btn" href={crmv4Href(base, `customers/${row.userId}`)}>{v4("zqCustomer")}</Link>}
