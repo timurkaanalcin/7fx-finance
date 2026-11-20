@@ -322,15 +322,21 @@ export function QuaySlips({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-quy" aria-label={v4("quyTitle")} data-quays="1" data-role={role}>
-      <header className="c4-quy-head">
-        <p className="c4-quy-plate" data-logo="mono">{v4("quyLogo")}</p>
+    <section className="c4-quy c4-quy-navalia" aria-label={v4("quyTitle")} data-quays="1" data-role={role} data-desk="navalia">
+      <header className="c4-quy-head c4-quy-navalia-mast">
+        <p className="c4-quy-plate c4-quy-navalia-seal" data-logo="mono">{v4("quyNavaliaLogo")}</p>
         <div>
-          <p className="c4-quy-kicker">{v4("quySub")}</p>
-          <h2 className="c4-title">{v4("quyTitle")}</h2>
+          <p className="c4-quy-kicker c4-quy-navalia-kicker">{v4("quyNavaliaKicker")}</p>
+          <h2 className="c4-title c4-quy-navalia-title">{v4("quyTitle")}</h2>
+          <p className="c4-quy-navalia-lead">{v4("quyNavaliaLead")}</p>
         </div>
-        <p className="c4-quy-count">{shown.length}</p>
+        <p className="c4-quy-count c4-quy-navalia-count">{shown.length}</p>
       </header>
+      <ol className="c4-quy-navalia-index" aria-label={v4("quyNavaliaKicker")}>
+        <li data-tone="gold">{v4("quyOpen")} {counts.open}</li>
+        <li data-tone="ink">{v4("quyHeld")} {counts.held}</li>
+        <li data-tone="ivory">{v4("quyStowed")} {counts.stowed}</li>
+      </ol>
       <details className="c4-quy-rules">
         <summary>{v4("quyRules")}</summary>
         <p className="c4-meta">{v4("quyHint")}</p>
@@ -549,7 +555,7 @@ export function QuaySlips({ v4 }: { v4: V4 }) {
             const ring = ringOf(card.berth);
             const editingCard = editing === card.id;
             return (
-              <li key={card.id} data-tide={card.tide || "blank"} data-timber={card.timber || "blank"} data-watch={watchOf(card.berth)}>
+              <li key={card.id} className="c4-quy-navalia-card" data-tide={card.tide || "blank"} data-timber={card.timber || "blank"} data-watch={watchOf(card.berth)}>
                 <span className="c4-quy-folio" aria-hidden="true">{berthLabel(card.berth)}</span>
                 <span className="c4-quy-marks" aria-hidden="true">
                   {[0, 1, 2].map((index) => <i key={index} data-on={index < marks(card.tide) ? "1" : "0"} />)}
@@ -678,14 +684,21 @@ export function TimezoneBelts({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-zbl" aria-label={v4("zblTitle")} data-belts="1">
-      <header className="c4-zbl-head">
+    <section className="c4-zbl c4-zbl-praetorium" aria-label={v4("zblTitle")} data-belts="1" data-desk="praetorium">
+      <header className="c4-zbl-head c4-zbl-praetorium-mast">
+        <p className="c4-zbl-praetorium-seal" data-logo="mono">{v4("zblPraetoriumLogo")}</p>
         <div>
-          <p className="c4-quy-kicker">{v4("zblSub")}</p>
-          <h2 className="c4-title">{v4("zblTitle")}</h2>
+          <p className="c4-quy-kicker c4-zbl-praetorium-kicker">{v4("zblPraetoriumKicker")}</p>
+          <h2 className="c4-title c4-zbl-praetorium-title">{v4("zblTitle")}</h2>
+          <p className="c4-zbl-praetorium-lead">{v4("zblPraetoriumLead")}</p>
         </div>
-        <p className="c4-quy-count">{v4("zblRows")} {rows.length}</p>
+        <p className="c4-quy-count c4-zbl-praetorium-count">{v4("zblRows")} {rows.length}</p>
       </header>
+      <ol className="c4-zbl-praetorium-index" aria-label={v4("zblPraetoriumKicker")}>
+        <li data-tone="gold">{rows.length}</li>
+        <li data-tone="ink">{leadBelt || "—"}</li>
+        <li data-tone="ivory">{shown.length}</li>
+      </ol>
       <details className="c4-quy-rules">
         <summary>{v4("zblRules")}</summary>
         <p className="c4-meta">{v4("zblHint")}</p>
@@ -793,7 +806,7 @@ export function TimezoneBelts({ base, v4 }: { base: string; v4: V4 }) {
           const spanMark = spanOf(row.timezone);
           const foldMark = foldOf(row.timezone);
           return (
-            <li key={row.id} data-belt={beltMark || "blank"} data-fold={foldMark || "blank"} data-span={spanMark || "blank"}>
+            <li key={row.id} className="c4-zbl-praetorium-card" data-belt={beltMark || "blank"} data-fold={foldMark || "blank"} data-span={spanMark || "blank"}>
               <span className="c4-zbl-face" aria-hidden="true">{beltMark ? beltName(v4, beltMark).slice(0, 1) : "—"}</span>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">

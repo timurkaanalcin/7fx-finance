@@ -323,6 +323,7 @@ import { MainspringRules, PlanispherePlates } from "./round332";
 import { OvercoilRules, TorquetumPlates } from "./round333";
 import { DetentRules, TellurionPlates } from "./round334";
 import { GongPlates, RepeaterRules } from "./round335";
+import { BackstaffPlates, BarrelRules } from "./round336";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1800,6 +1801,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "tln") return v4("tlnSub");
     if (tab === "rpt") return v4("rptSub");
     if (tab === "gng") return v4("gngSub");
+    if (tab === "brl") return v4("brlSub");
+    if (tab === "bks") return v4("bksSub");
     return "";
   }
 
@@ -2529,6 +2532,8 @@ function Shell({ base, section, name }: Props) {
             {view === "tln" && <TellurionPlates base={base} v4={v4} />}
             {view === "rpt" && <RepeaterRules base={base} v4={v4} />}
             {view === "gng" && <GongPlates base={base} v4={v4} />}
+            {view === "brl" && <BarrelRules base={base} v4={v4} />}
+            {view === "bks" && <BackstaffPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
