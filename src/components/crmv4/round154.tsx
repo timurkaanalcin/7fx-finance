@@ -311,15 +311,21 @@ export function PressProofs({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-prf" aria-label={v4("prfTitle")} data-proofs="1" data-role={role}>
-      <header className="c4-prf-head">
-        <p className="c4-prf-plate" data-logo="mono">{v4("prfLogo")}</p>
+    <section className="c4-prf c4-prf-pistrinum" aria-label={v4("prfTitle")} data-proofs="1" data-role={role} data-desk="pistrinum">
+      <header className="c4-prf-head c4-prf-pistrinum-mast">
+        <p className="c4-prf-plate c4-prf-pistrinum-seal" data-logo="mono">{v4("prfPistrinumLogo")}</p>
         <div>
-          <p className="c4-prf-kicker">{v4("prfSub")}</p>
-          <h2 className="c4-title">{v4("prfTitle")}</h2>
+          <p className="c4-prf-pistrinum-kicker">{v4("prfPistrinumKicker")}</p>
+          <h2 className="c4-title c4-prf-pistrinum-title">{v4("prfTitle")}</h2>
+          <p className="c4-prf-pistrinum-lead">{v4("prfPistrinumLead")}</p>
         </div>
-        <p className="c4-prf-count">{shown.length}</p>
+        <p className="c4-prf-count c4-prf-pistrinum-count">{shown.length}</p>
       </header>
+      <ol className="c4-prf-pistrinum-index" aria-label={v4("prfPistrinumKicker")}>
+        <li data-tone="gold">{v4("prfOpen")} {counts.open}</li>
+        <li data-tone="ink">{v4("prfHeld")} {counts.held}</li>
+        <li data-tone="ivory">{v4("prfNotice")} {counts.late}</li>
+      </ol>
       <details className="c4-prf-rules">
         <summary>{v4("prfRules")}</summary>
         <p className="c4-meta">{v4("prfHint")}</p>
@@ -538,7 +544,7 @@ export function PressProofs({ v4 }: { v4: V4 }) {
             const pair = sheetPair(card.sheet);
             const editingCard = editing === card.id;
             return (
-              <li key={card.id} data-ink={card.ink || "blank"} data-stock={card.stock || "blank"} data-gathering={gatheringOf(card.sheet)}>
+              <li key={card.id} className="c4-prf-pistrinum-card" data-ink={card.ink || "blank"} data-stock={card.stock || "blank"} data-gathering={gatheringOf(card.sheet)}>
                 <span className="c4-prf-folio" aria-hidden="true">{sheetLabel(card.sheet)}</span>
                 <span className="c4-prf-drops" aria-hidden="true">
                   {[0, 1, 2].map((index) => <i key={index} data-on={index < drops(card.ink) ? "1" : "0"} />)}
@@ -667,14 +673,21 @@ export function GivenNames({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-gvn" aria-label={v4("gvnTitle")} data-given="1">
-      <header className="c4-gvn-head">
+    <section className="c4-gvn c4-gvn-viridarium" aria-label={v4("gvnTitle")} data-given="1" data-desk="viridarium">
+      <header className="c4-gvn-head c4-gvn-viridarium-mast">
+        <p className="c4-gvn-viridarium-seal" data-logo="mono">{v4("gvnViridariumLogo")}</p>
         <div>
-          <p className="c4-prf-kicker">{v4("gvnSub")}</p>
-          <h2 className="c4-title">{v4("gvnTitle")}</h2>
+          <p className="c4-gvn-viridarium-kicker">{v4("gvnViridariumKicker")}</p>
+          <h2 className="c4-title c4-gvn-viridarium-title">{v4("gvnTitle")}</h2>
+          <p className="c4-gvn-viridarium-lead">{v4("gvnViridariumLead")}</p>
         </div>
-        <p className="c4-prf-count">{v4("gvnRows")} {rows.length}</p>
+        <p className="c4-prf-count c4-gvn-viridarium-count">{v4("gvnRows")} {rows.length}</p>
       </header>
+      <ol className="c4-gvn-viridarium-index" aria-label={v4("gvnViridariumKicker")}>
+        <li data-tone="gold">{v4("gvnRows")} {rows.length}</li>
+        <li data-tone="ink">{v4("gvnUnmarked")} {blankInitial}</li>
+        <li data-tone="ivory">{v4("gvnLeadInitial")} {leadInitial || "—"}</li>
+      </ol>
       <details className="c4-prf-rules">
         <summary>{v4("gvnRules")}</summary>
         <p className="c4-meta">{v4("gvnHint")}</p>
@@ -783,7 +796,7 @@ export function GivenNames({ base, v4 }: { base: string; v4: V4 }) {
           const lengthMark = lengthOf(row.given);
           const endingMark = endingOf(row.given);
           return (
-            <li key={row.id} data-length={lengthMark || "blank"} data-ending={endingMark || "blank"}>
+            <li key={row.id} className="c4-gvn-viridarium-card" data-length={lengthMark || "blank"} data-ending={endingMark || "blank"}>
               <span className="c4-gvn-face" aria-hidden="true">{initialMark || "—"}</span>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">
