@@ -311,15 +311,21 @@ export function LoomTickets({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-lom" aria-label={v4("lomTitle")} data-loom="1" data-role={role}>
-      <header className="c4-lom-head">
-        <p className="c4-lom-plate" data-logo="mono">{v4("lomLogo")}</p>
+    <section className="c4-lom c4-lom-praefurnium" aria-label={v4("lomTitle")} data-loom="1" data-role={role} data-desk="praefurnium">
+      <header className="c4-lom-head c4-lom-praefurnium-mast">
+        <p className="c4-lom-plate c4-lom-praefurnium-seal" data-logo="mono">{v4("lomPraefurniumLogo")}</p>
         <div>
-          <p className="c4-lom-kicker">{v4("lomSub")}</p>
-          <h2 className="c4-title">{v4("lomTitle")}</h2>
+          <p className="c4-lom-praefurnium-kicker">{v4("lomPraefurniumKicker")}</p>
+          <h2 className="c4-title c4-lom-praefurnium-title">{v4("lomTitle")}</h2>
+          <p className="c4-lom-praefurnium-lead">{v4("lomPraefurniumLead")}</p>
         </div>
-        <p className="c4-lom-count">{shown.length}</p>
+        <p className="c4-lom-count c4-lom-praefurnium-count">{shown.length}</p>
       </header>
+      <ol className="c4-lom-praefurnium-index" aria-label={v4("lomPraefurniumKicker")}>
+        <li data-tone="gold">{v4("lomOpen")} {counts.open}</li>
+        <li data-tone="ink">{v4("lomHeld")} {counts.held}</li>
+        <li data-tone="ivory">{v4("lomNotice")} {counts.late}</li>
+      </ol>
       <details className="c4-lom-rules">
         <summary>{v4("lomRules")}</summary>
         <p className="c4-meta">{v4("lomHint")}</p>
@@ -538,7 +544,7 @@ export function LoomTickets({ v4 }: { v4: V4 }) {
             const pair = dayPair(card.day);
             const editingCard = editing === card.id;
             return (
-              <li key={card.id} data-tempo={card.tempo || "blank"} data-cloth={card.cloth || "blank"} data-day={quarterOf(card.day)}>
+              <li key={card.id} className="c4-lom-praefurnium-card" data-tempo={card.tempo || "blank"} data-cloth={card.cloth || "blank"} data-day={quarterOf(card.day)}>
                 <span className="c4-lom-beads" aria-hidden="true">
                   {[0, 1, 2].map((index) => <i key={index} data-on={index < beads(card.tempo) ? "1" : "0"} />)}
                 </span>
@@ -666,14 +672,21 @@ export function LoginBands({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-bnd" aria-label={v4("bndTitle")} data-bands="1">
-      <header className="c4-bnd-head">
+    <section className="c4-bnd c4-bnd-heliocaminus" aria-label={v4("bndTitle")} data-bands="1" data-desk="heliocaminus">
+      <header className="c4-bnd-head c4-bnd-heliocaminus-mast">
+        <p className="c4-bnd-heliocaminus-seal" data-logo="mono">{v4("bndHeliocaminusLogo")}</p>
         <div>
-          <p className="c4-lom-kicker">{v4("bndSub")}</p>
-          <h2 className="c4-title">{v4("bndTitle")}</h2>
+          <p className="c4-bnd-heliocaminus-kicker">{v4("bndHeliocaminusKicker")}</p>
+          <h2 className="c4-title c4-bnd-heliocaminus-title">{v4("bndTitle")}</h2>
+          <p className="c4-bnd-heliocaminus-lead">{v4("bndHeliocaminusLead")}</p>
         </div>
-        <p className="c4-lom-count">{v4("bndRows")} {rows.length}</p>
+        <p className="c4-lom-count c4-bnd-heliocaminus-count">{v4("bndRows")} {rows.length}</p>
       </header>
+      <ol className="c4-bnd-heliocaminus-index" aria-label={v4("bndHeliocaminusKicker")}>
+        <li data-tone="gold">{v4("bndRows")} {rows.length}</li>
+        <li data-tone="ink">{v4("bndUnmarked")} {blankDigit}</li>
+        <li data-tone="ivory">{v4("bndLeadDigit")} {leadDigit || "—"}</li>
+      </ol>
       <details className="c4-lom-rules">
         <summary>{v4("bndRules")}</summary>
         <p className="c4-meta">{v4("bndHint")}</p>
@@ -782,7 +795,7 @@ export function LoginBands({ base, v4 }: { base: string; v4: V4 }) {
           const fitMark = fitOf(row.login);
           const parityMark = parityOf(row.login);
           return (
-            <li key={row.id} data-fit={fitMark || "blank"} data-parity={parityMark || "blank"}>
+            <li key={row.id} className="c4-bnd-heliocaminus-card" data-fit={fitMark || "blank"} data-parity={parityMark || "blank"}>
               <span className="c4-bnd-letter" aria-hidden="true">{digitMark || "—"}</span>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">
