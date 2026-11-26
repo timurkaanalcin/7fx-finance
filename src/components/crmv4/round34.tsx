@@ -142,8 +142,21 @@ export function NoteStudio({ id, notes, tx, locale, v4, onSaved }: { id: string;
     writeJson(TASK_KEY, next);
   }
   return (
-    <section className="c4-note-studio" aria-label={v4("noteTitle")} data-notes="1">
-      <h2 className="c4-title">{v4("noteTitle")}</h2>
+    <section className="c4-note-studio c4-ns-cella" aria-label={v4("noteTitle")} data-notes="1" data-ns-cella="1">
+      <header className="c4-ns-cella-mast">
+        <p className="c4-ns-cella-seal" data-logo="mono">{v4("nsCellaLogo")}</p>
+        <div>
+          <p className="c4-ns-cella-kicker">{v4("nsCellaKicker")}</p>
+          <p className="c4-ns-cella-lead">{v4("nsCellaLead")}</p>
+          <h2 className="c4-title">{v4("noteTitle")}</h2>
+        </div>
+        <p className="c4-ns-cella-count">{ordered.length}</p>
+      </header>
+      <ol className="c4-ns-cella-index" aria-label={v4("nsCellaKicker")}>
+        <li data-tone="gold">{v4("nsCellaShown")} {ordered.length}</li>
+        <li data-tone="ink">{v4("nsCellaHidden")} {mine.length}</li>
+        <li data-tone="ivory">{v4("nsCellaBlank")} {ordered.length ? 0 : 1}</li>
+      </ol>
       <p className="c4-muted">{v4("noteHint")}</p>
       <label className="c4-lab"><span>{v4("noteDraft")}</span>
         <textarea className="c4-field" rows={4} aria-label={v4("noteDraft")} value={draft} onChange={(event) => setDraft(event.target.value)} />
@@ -172,7 +185,7 @@ export function NoteStudio({ id, notes, tx, locale, v4, onSaved }: { id: string;
         {ordered.map((row) => {
           const pinned = notePinned(row.id);
           return (
-            <li key={row.id} data-pinned={pinned ? "1" : "0"}>
+            <li key={row.id} className="c4-ns-cella-card" data-pinned={pinned ? "1" : "0"}>
               <p>{paintMentions(row.body || "", names).map((part, index) => part.mention ? <mark key={index}>{part.text}</mark> : <span key={index}>{part.text}</span>)}</p>
               <span className="c4-muted">{row.authorName || "—"} · {when(row.createdAt, locale)}{pinned ? ` · ${v4("notePinned")}` : ""}</span>
               <button type="button" className="c4-btn" onClick={() => { toggleNotePin(row.id); setTick((n) => n + 1); }}>{pinned ? v4("noteUnpin") : v4("notePin")}</button>
