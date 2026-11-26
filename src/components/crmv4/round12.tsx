@@ -77,8 +77,17 @@ export function MiniNav({ v4 }: { v4: V4 }) {
     ["contact", v4("contactCounts")],
   ] as const;
   return (
-    <nav className="c4-mini-nav" aria-label={v4("miniNav")}>
-      {items.map(([id, label]) => <a key={id} href={`#c4-sec-${id}`}>{label}</a>)}
+    <nav className="c4-mini-nav c4-mini-lambrequin" aria-label={v4("miniNav")} data-mini-lambrequin="1">
+      <header className="c4-mini-lambrequin-mast">
+        <p className="c4-mini-lambrequin-seal" data-logo="mono">{v4("mnLambrequinLogo")}</p>
+        <div>
+          <p className="c4-mini-lambrequin-kicker">{v4("mnLambrequinKicker")}</p>
+          <p className="c4-mini-lambrequin-lead">{v4("mnLambrequinLead")}</p>
+        </div>
+      </header>
+      <div className="c4-mini-lambrequin-links">
+        {items.map(([id, label]) => <a key={id} href={`#c4-sec-${id}`}>{label}</a>)}
+      </div>
     </nav>
   );
 }
@@ -101,15 +110,24 @@ export function Fold({ section, title, children, openByDefault = true }: { secti
 
 export function KeyFacts({ row, locale, v4, balance, equity, country, desk, sale }: { row: UserRow; locale: string; v4: V4; balance: string; equity: string; country: string; desk: string; sale: string }) {
   return (
-    <div className="c4-facts" aria-label={v4("keyFacts")}>
-      <span>{row.name || "—"}</span>
-      <span>{balance}</span>
-      <span>{equity}</span>
-      <span>{country}</span>
-      <span>{desk}</span>
-      <span>{sale}</span>
-      <span className="c4-muted">{locale ? row.phone || "—" : "—"}</span>
-    </div>
+    <section className="c4-facts c4-facts-predella" aria-label={v4("keyFacts")} data-facts-predella="1">
+      <header className="c4-facts-predella-mast">
+        <p className="c4-facts-predella-seal" data-logo="mono">{v4("kfPredellaLogo")}</p>
+        <div>
+          <p className="c4-facts-predella-kicker">{v4("kfPredellaKicker")}</p>
+          <p className="c4-facts-predella-lead">{v4("kfPredellaLead")}</p>
+        </div>
+      </header>
+      <div className="c4-facts-predella-row">
+        <span>{row.name || "—"}</span>
+        <span>{balance}</span>
+        <span>{equity}</span>
+        <span>{country}</span>
+        <span>{desk}</span>
+        <span>{sale}</span>
+        <span className="c4-muted">{locale ? row.phone || "—" : "—"}</span>
+      </div>
+    </section>
   );
 }
 
