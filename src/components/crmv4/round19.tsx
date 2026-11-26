@@ -117,7 +117,21 @@ export function Watchlist({ base, v4 }: { base: string; v4: V4 }) {
   ];
   const shown = visibleHits(hits, hidden, kind, query);
   return (
-    <section className="c4-watch-luxe" aria-label={v4("watchTitle")}>
+    <section className="c4-watch-luxe c4-watch-catechumenon" aria-label={v4("watchTitle")} data-watch-catechumenon="1">
+      <header className="c4-watch-catechumenon-mast">
+        <p className="c4-watch-catechumenon-seal" data-logo="mono">{v4("wtCatechumenonLogo")}</p>
+        <div>
+          <p className="c4-watch-catechumenon-kicker">{v4("wtCatechumenonKicker")}</p>
+          <h2 className="c4-title">{v4("watchTitle")}</h2>
+          <p className="c4-watch-catechumenon-lead">{v4("wtCatechumenonLead")}</p>
+        </div>
+        <p className="c4-watch-catechumenon-count">{shown.length}</p>
+      </header>
+      <ol className="c4-watch-catechumenon-index" aria-label={v4("wtCatechumenonKicker")}>
+        <li data-tone="gold">{v4("watchTitle")} {shown.length}</li>
+        <li>{v4("ruleKyc")} {shown.filter((row) => row.kind === "kyc").length}</li>
+        <li>{v4("watchHint")}</li>
+      </ol>
       <div className="c4-fin-hero">
         <div className="c4-fin-metric"><span>{v4("watchTitle")}</span><strong>{shown.length}</strong></div>
         <div className="c4-fin-metric"><span>{v4("ruleKyc")}</span><strong>{shown.filter((row) => row.kind === "kyc").length}</strong></div>
@@ -130,13 +144,13 @@ export function Watchlist({ base, v4 }: { base: string; v4: V4 }) {
         ))}
         <label className="c4-lab">
           <span>{v4("largeAt")}</span>
-          <input className="c4-field" inputMode="numeric" aria-label={v4("largeAt")} value={String(threshold)} onChange={(event) => {
+          <input className="c4-field" inputMode="numeric" aria-label={v4("largeAt")} aria-required={false} value={String(threshold)} onChange={(event) => {
             const next = Number(event.target.value) || 0;
             setThreshold(next);
             writeJson(LIMIT_KEY, next);
           }} />
         </label>
-        <input className="c4-field" aria-label={v4("watchSearch")} placeholder={v4("watchSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
+        <input className="c4-field" aria-label={v4("watchSearch")} aria-required={false} placeholder={v4("watchSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
         <button type="button" className="c4-btn" onClick={() => downloadCsv("risk-watch.csv", ["name", "rule", "detail", "amount"], shown.map((row) => [row.name, row.kind, row.detail, String(row.amount)]))}>{v4("watchCsv")}</button>
       </div>
       <ListChrome prefs={list} defaults={defaults} labels={{ rule: v4("colRule"), detail: v4("colDetail"), amount: v4("colAmount") }} v4={v4} />
