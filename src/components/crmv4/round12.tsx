@@ -208,10 +208,21 @@ export function MarginGauge({ equity, margin, v4 }: { equity?: number | null; ma
   const level = marginLevel(equity, margin);
   const width = level == null ? 0 : Math.max(0, Math.min(100, level));
   return (
-    <div className="c4-gauge-wrap" aria-label={v4("marginGauge")}>
-      <div className="c4-row c4-between"><span>{v4("marginGauge")}</span><strong>{level == null ? "—" : `${level}%`}</strong></div>
-      <div className="c4-gauge" aria-hidden><i style={{ width: `${width}%` }} /></div>
-    </div>
+    <section className="c4-gauge-wrap c4-margin-mensa" aria-label={v4("marginGauge")} data-margin-mensa="1">
+      <header className="c4-margin-mensa-mast">
+        <p className="c4-margin-mensa-seal" data-logo="mono">{v4("mgMensaLogo")}</p>
+        <div>
+          <p className="c4-margin-mensa-kicker">{v4("mgMensaKicker")}</p>
+          <p className="c4-margin-mensa-lead">{v4("mgMensaLead")}</p>
+        </div>
+      </header>
+      <div className="c4-margin-mensa-read">
+        <span>{v4("marginGauge")}</span>
+        <strong>{level == null ? "—" : `${level}%`}</strong>
+      </div>
+      <div className="c4-gauge c4-margin-mensa-track" aria-hidden><i style={{ width: `${width}%` }} /></div>
+      <ol className="c4-margin-mensa-ticks" aria-hidden><li>0</li><li>25</li><li>50</li><li>75</li><li>100</li></ol>
+    </section>
   );
 }
 
@@ -227,19 +238,28 @@ export function MonthStatement({ id, locale, v4 }: { id: string; locale: string;
   const picked = month || months[0] || "";
   const shown = rows.filter((row) => monthKey(row.createdAt) === picked);
   return (
-    <section className="c4-month">
-      <div className="c4-row">
-        <h3 className="c4-title">{v4("monthStatement")}</h3>
+    <section className="c4-month c4-month-quaternion" data-month-quaternion="1">
+      <header className="c4-month-quaternion-mast">
+        <p className="c4-month-quaternion-seal" data-logo="mono">{v4("msQuaternionLogo")}</p>
+        <div>
+          <p className="c4-month-quaternion-kicker">{v4("msQuaternionKicker")}</p>
+          <h3 className="c4-title">{v4("monthStatement")}</h3>
+          <p className="c4-month-quaternion-lead">{v4("msQuaternionLead")}</p>
+        </div>
+      </header>
+      <div className="c4-month-quaternion-tools">
         <select className="c4-select" aria-label={v4("monthStatement")} value={picked} onChange={(event) => setMonth(event.target.value)}>
           {months.map((item) => <option key={item}>{item}</option>)}
         </select>
         <button type="button" className="c4-btn" onClick={() => window.print()}>{v4("monthStatement")}</button>
       </div>
-      <table className="c4-table">
-        <tbody>
-          {shown.map((row) => <tr key={row.id}><td>{when(row.createdAt, locale)}</td><td>{row.type}</td><td>{money(row.amount, row.currency, locale)}</td></tr>)}
-        </tbody>
-      </table>
+      <div className="c4-month-quaternion-leaf">
+        <table className="c4-table">
+          <tbody>
+            {shown.map((row) => <tr key={row.id}><td>{when(row.createdAt, locale)}</td><td>{row.type}</td><td>{money(row.amount, row.currency, locale)}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
     </section>
   );
 }
