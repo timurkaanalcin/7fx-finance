@@ -352,6 +352,7 @@ import { CadratureRules, JobTitlePlates } from "./round361";
 import { CampaignPlates, ParachuteRules } from "./round362";
 import { GrantPlates, TriovisRules } from "./round363";
 import { DocumentPlates, WolfRules } from "./round364";
+import { MalteseRules, TradingServerPlates } from "./round365";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1319,6 +1320,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "edr") return v4("edrTitle");
     if (tab === "wft") return v4("wftTitle");
     if (tab === "dox") return v4("doxTitle");
+    if (tab === "mlx") return v4("mlxTitle");
+    if (tab === "srv") return v4("srvTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -2728,6 +2731,8 @@ function Shell({ base, section, name }: Props) {
             {view === "edr" && <GrantPlates base={base} v4={v4} />}
             {view === "wft" && <WolfRules base={base} v4={v4} />}
             {view === "dox" && <DocumentPlates base={base} v4={v4} />}
+            {view === "mlx" && <MalteseRules base={base} v4={v4} />}
+            {view === "srv" && <TradingServerPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

@@ -118571,3 +118571,326 @@
   [data-crmv4-root] .c4-kyc-stat.c4-kyc-podium .c4-chip,
   [data-crmv4-root] .c4-kyc-stat.c4-kyc-podium .c4-field { min-height: 44px; }
 }
+
+/* Round 365 — maltese cross rules, server plates, ivory locker pylon, graphite symbol clerestory. */
+[data-crmv4-root] .c4-maltese {
+  color: #1c1a17;
+  background:
+    conic-gradient(from 45deg at 50% 0, transparent 0 12deg, #c6a15b 12deg 33deg, transparent 33deg 57deg, #c6a15b 57deg 78deg, transparent 78deg 102deg, #8a6a3b 102deg 123deg, transparent 123deg 147deg, #c6a15b 147deg 168deg, transparent 168deg 180deg),
+    linear-gradient(180deg, #fffdf8 0%, #f4ecdc 100%);
+  background-size: 120px 36px, 100% 100%;
+  background-repeat: no-repeat;
+  background-position: 50% 0, 0 0;
+  border: 1px solid #8a6a3b;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px #c6a15b, inset 0 0 0 7px #fffdf8, inset 0 0 0 8px #e7d3ae;
+  padding: 28px 18px 18px;
+}
+[data-crmv4-root] .c4-srvplate {
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 3px no-repeat,
+    linear-gradient(#8a6a3b, #8a6a3b) 0 8px / 100% 1px no-repeat,
+    linear-gradient(180deg, #1c1a17 0%, #12100e 100%);
+  border: 1px solid #c6a15b;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 5px #141210, inset 0 0 0 6px #8a6a3b;
+  padding: 28px 18px 18px;
+}
+[data-crmv4-root] .c4-maltese-mast,
+[data-crmv4-root] .c4-srvplate-mast,
+[data-crmv4-root] .c4-lok-pylon-mast,
+[data-crmv4-root] .c4-tsy-clerestory-mast {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: start;
+  margin: 0;
+}
+[data-crmv4-root] .c4-maltese-seal[data-logo="mono"],
+[data-crmv4-root] .c4-srvplate-seal[data-logo="mono"],
+[data-crmv4-root] .c4-lok-pylon-seal[data-logo="mono"],
+[data-crmv4-root] .c4-tsy-clerestory-seal[data-logo="mono"] {
+  margin: 0;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  background: #1c1a17;
+  color: #f6f1e8;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 5px #c6a15b, 0 0 0 4px #fffdf8, 0 0 0 5px #8a6a3b;
+}
+[data-crmv4-root] .c4-srvplate-seal[data-logo="mono"],
+[data-crmv4-root] .c4-tsy-clerestory-seal[data-logo="mono"] {
+  border-radius: 0;
+  box-shadow: inset 0 0 0 8px #141210, inset 0 0 0 9px #c6a15b;
+}
+[data-crmv4-root] .c4-maltese-kicker,
+[data-crmv4-root] .c4-srvplate-kicker,
+[data-crmv4-root] .c4-lok-pylon-kicker,
+[data-crmv4-root] .c4-tsy-clerestory-kicker {
+  margin: 0;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 11px;
+  color: #8a6a3b;
+}
+[data-crmv4-root] .c4-srvplate-kicker,
+[data-crmv4-root] .c4-tsy-clerestory-kicker { color: #c6a15b; }
+[data-crmv4-root] .c4-maltese-count,
+[data-crmv4-root] .c4-srvplate-count,
+[data-crmv4-root] .c4-lok-pylon-count,
+[data-crmv4-root] .c4-tsy-clerestory-count {
+  margin: 0;
+  min-width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #c6a15b;
+  color: #8a6a3b;
+  font-variant-numeric: tabular-nums;
+}
+[data-crmv4-root] .c4-srvplate-count,
+[data-crmv4-root] .c4-tsy-clerestory-count { color: #f6f1e8; }
+[data-crmv4-root] .c4-maltese-hint,
+[data-crmv4-root] .c4-srvplate-hint,
+[data-crmv4-root] .c4-maltese-meta,
+[data-crmv4-root] .c4-srvplate-meta,
+[data-crmv4-root] .c4-lok-pylon-lead,
+[data-crmv4-root] .c4-tsy-clerestory-lead {
+  margin: 4px 0 0;
+  max-width: 46rem;
+  line-height: 1.45;
+}
+[data-crmv4-root] .c4-srvplate-hint,
+[data-crmv4-root] .c4-srvplate .c4-title,
+[data-crmv4-root] .c4-tsy-clerestory-lead,
+[data-crmv4-root] .c4-trade-sym.c4-symbol-clerestory .c4-title,
+[data-crmv4-root] .c4-trade-sym.c4-symbol-clerestory > .c4-meta { color: #f6f1e8; }
+[data-crmv4-root] .c4-maltese-chart,
+[data-crmv4-root] .c4-srvplate-chart {
+  display: flex;
+  align-items: end;
+  gap: 8px;
+  min-height: 120px;
+}
+[data-crmv4-root] .c4-maltese-column,
+[data-crmv4-root] .c4-srvplate-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: end;
+  gap: 4px;
+  min-width: 52px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+[data-crmv4-root] .c4-maltese-column i,
+[data-crmv4-root] .c4-srvplate-column i {
+  display: block;
+  width: 18px;
+  background: linear-gradient(180deg, #c6a15b, #8a6a3b);
+  border-radius: 9px 9px 0 0;
+}
+[data-crmv4-root] .c4-maltese-list,
+[data-crmv4-root] .c4-srvplate-list,
+[data-crmv4-root] .c4-lok-pylon-list,
+[data-crmv4-root] .c4-tsy-clerestory-list,
+[data-crmv4-root] .c4-lok-pylon-index,
+[data-crmv4-root] .c4-tsy-clerestory-index {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-lok-pylon-index,
+[data-crmv4-root] .c4-tsy-clerestory-index,
+[data-crmv4-root] .c4-maltese-index {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+[data-crmv4-root] .c4-maltese-card,
+[data-crmv4-root] .c4-srvplate-card,
+[data-crmv4-root] .c4-lok-pylon-card,
+[data-crmv4-root] .c4-tsy-clerestory-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px 12px;
+  padding: 12px;
+  background: #fffdf8;
+  color: #1c1a17;
+  border: 1px solid #e7d3ae;
+}
+[data-crmv4-root] .c4-maltese-card { border-radius: 18px; box-shadow: inset 0 3px 0 #c6a15b; }
+[data-crmv4-root] .c4-srvplate-card { border-radius: 0; box-shadow: inset 4px 0 0 #8a6a3b; }
+[data-crmv4-root] .c4-lok-pylon-card { border-radius: 0; box-shadow: inset 0 10px 0 #c6a15b; }
+[data-crmv4-root] .c4-trade-sym.c4-symbol-clerestory .c4-tsy-rows li.c4-tsy-clerestory-card {
+  border-radius: 0 0 2px 2px;
+  box-shadow: inset 0 6px 0 #c6a15b;
+  color: #1c1a17;
+  background: #fffdf8;
+}
+[data-crmv4-root] .c4-maltese-actions,
+[data-crmv4-root] .c4-srvplate-actions,
+[data-crmv4-root] .c4-maltese-tools,
+[data-crmv4-root] .c4-srvplate-tools,
+[data-crmv4-root] .c4-maltese-bulk,
+[data-crmv4-root] .c4-srvplate-bulk {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+[data-crmv4-root] .c4-maltese-form,
+[data-crmv4-root] .c4-maltese-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+}
+[data-crmv4-root] .c4-maltese .c4-btn,
+[data-crmv4-root] .c4-srvplate .c4-btn,
+[data-crmv4-root] .c4-maltese .c4-chip,
+[data-crmv4-root] .c4-srvplate .c4-chip,
+[data-crmv4-root] .c4-locker.c4-locker-pylon .c4-btn,
+[data-crmv4-root] .c4-locker.c4-locker-pylon .c4-chip,
+[data-crmv4-root] .c4-trade-sym.c4-symbol-clerestory .c4-btn,
+[data-crmv4-root] .c4-trade-sym.c4-symbol-clerestory .c4-chip { min-height: 44px; }
+[data-crmv4-root] .c4-maltese .c4-btn:focus-visible,
+[data-crmv4-root] .c4-srvplate .c4-btn:focus-visible,
+[data-crmv4-root] .c4-maltese .c4-field:focus-visible,
+[data-crmv4-root] .c4-srvplate .c4-field:focus-visible,
+[data-crmv4-root] .c4-locker.c4-locker-pylon .c4-btn:focus-visible,
+[data-crmv4-root] .c4-locker.c4-locker-pylon .c4-field:focus-visible,
+[data-crmv4-root] .c4-trade-sym.c4-symbol-clerestory .c4-btn:focus-visible,
+[data-crmv4-root] .c4-trade-sym.c4-symbol-clerestory .c4-field:focus-visible {
+  outline: 2px solid #c6a15b;
+  outline-offset: 2px;
+}
+[data-crmv4-root] .c4-maltese .c4-title::before,
+[data-crmv4-root] .c4-srvplate .c4-title::before,
+[data-crmv4-root] .c4-locker.c4-locker-pylon .c4-title::before,
+[data-crmv4-root] .c4-trade-sym.c4-symbol-clerestory .c4-title::before { display: none; }
+[data-crmv4-root] .c4-locker.c4-locker-pylon {
+  align-content: start;
+  height: auto;
+  color: #1c1a17;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 18px 100% no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) 100% 0 / 18px 100% no-repeat,
+    linear-gradient(#8a6a3b, #8a6a3b) 18px 0 / 6px 100% no-repeat,
+    linear-gradient(#8a6a3b, #8a6a3b) calc(100% - 18px) 0 / 6px 100% no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 12px no-repeat,
+    linear-gradient(180deg, #fffdf8 0%, #f7f1e6 100%);
+  border: 1px solid #8a6a3b;
+  border-radius: 2px 2px 0 0;
+  box-shadow: inset 0 0 0 1px #c6a15b;
+  padding: 28px 36px 18px;
+}
+[data-crmv4-root] .c4-trade-sym.c4-symbol-clerestory {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  height: auto;
+  gap: 12px;
+  color: #f6f1e8;
+  background:
+    repeating-linear-gradient(90deg, #c6a15b 0 10px, transparent 10px 22px) 0 0 / 100% 28px no-repeat,
+    linear-gradient(#1c1a17, #1c1a17) 0 28px / 100% 8px no-repeat,
+    linear-gradient(180deg, #141210 0%, #1c1a17 100%);
+  border: 1px solid #8a6a3b;
+  border-radius: 0;
+  box-shadow: inset 0 0 0 1px #c6a15b;
+  padding: 48px 22px 18px;
+}
+[data-crmv4-root] .c4-lok-pylon-index li,
+[data-crmv4-root] .c4-tsy-clerestory-index li,
+[data-crmv4-root] .c4-maltese-index li {
+  padding: 8px 10px;
+  border: 1px solid #e7d3ae;
+  background: #fffdf8;
+  color: #1c1a17;
+}
+[data-crmv4-root] .c4-lok-pylon-index li[data-tone="gold"],
+[data-crmv4-root] .c4-tsy-clerestory-index li[data-tone="gold"],
+[data-crmv4-root] .c4-maltese-index li[data-tone="gold"] { box-shadow: inset 0 3px 0 #c6a15b; }
+[data-crmv4-root][data-theme="dark"] .c4-maltese,
+[data-crmv4-root][data-theme="dark"] .c4-locker.c4-locker-pylon {
+  color: #1c1a17;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-srvplate,
+[data-crmv4-root][data-theme="dark"] .c4-trade-sym.c4-symbol-clerestory {
+  color: #f6f1e8;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-locker.c4-locker-pylon .c4-lok-pylon-card,
+[data-crmv4-root][data-theme="dark"] .c4-trade-sym.c4-symbol-clerestory .c4-tsy-clerestory-card,
+[data-crmv4-root][data-theme="dark"] .c4-maltese .c4-field,
+[data-crmv4-root][data-theme="dark"] .c4-maltese .c4-btn,
+[data-crmv4-root][data-theme="dark"] .c4-srvplate .c4-field,
+[data-crmv4-root][data-theme="dark"] .c4-srvplate .c4-btn,
+[data-crmv4-root][data-theme="dark"] .c4-locker.c4-locker-pylon .c4-field,
+[data-crmv4-root][data-theme="dark"] .c4-locker.c4-locker-pylon .c4-btn,
+[data-crmv4-root][data-theme="dark"] .c4-trade-sym.c4-symbol-clerestory .c4-field,
+[data-crmv4-root][data-theme="dark"] .c4-trade-sym.c4-symbol-clerestory .c4-btn {
+  background: #fffdf8;
+  color: #1c1a17;
+  border-color: #c6a15b;
+}
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-maltese-mast,
+  [data-crmv4-root] .c4-srvplate-mast,
+  [data-crmv4-root] .c4-lok-pylon-mast,
+  [data-crmv4-root] .c4-tsy-clerestory-mast { grid-template-columns: 52px minmax(0, 1fr) 52px; }
+  [data-crmv4-root] .c4-maltese,
+  [data-crmv4-root] .c4-srvplate,
+  [data-crmv4-root] .c4-locker.c4-locker-pylon,
+  [data-crmv4-root] .c4-trade-sym.c4-symbol-clerestory { margin: 8px; padding: 16px 12px; }
+  [data-crmv4-root] .c4-maltese-form,
+  [data-crmv4-root] .c4-maltese-view { grid-template-columns: 1fr; }
+  [data-crmv4-root] .c4-locker.c4-locker-pylon { padding: 24px 22px 16px; }
+  [data-crmv4-root] .c4-trade-sym.c4-symbol-clerestory { padding-top: 44px; }
+  [data-crmv4-root] .c4-maltese-card,
+  [data-crmv4-root] .c4-srvplate-card,
+  [data-crmv4-root] .c4-lok-pylon-card,
+  [data-crmv4-root] .c4-tsy-clerestory-card { grid-template-columns: 1fr; }
+  [data-crmv4-root] .c4-locker.c4-locker-pylon .c4-btn,
+  [data-crmv4-root] .c4-locker.c4-locker-pylon .c4-chip,
+  [data-crmv4-root] .c4-locker.c4-locker-pylon .c4-field,
+  [data-crmv4-root] .c4-trade-sym.c4-symbol-clerestory .c4-btn,
+  [data-crmv4-root] .c4-trade-sym.c4-symbol-clerestory .c4-chip,
+  [data-crmv4-root] .c4-trade-sym.c4-symbol-clerestory .c4-field { min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-lok-pylon-card,
+  [data-crmv4-root] .c4-tsy-clerestory-card,
+  [data-crmv4-root] .c4-maltese-column i { transition: none; }
+}
+[data-crmv4-root] .c4-locker.c4-locker-pylon .c4-lok-pylon-mast,
+[data-crmv4-root] .c4-trade-sym.c4-symbol-clerestory .c4-tsy-clerestory-mast {
+  background: transparent;
+  border: 0;
+  margin: 0 0 12px;
+  padding: 0;
+}
+[data-crmv4-root] .c4-locker.c4-locker-pylon .c4-lok-pylon-kicker,
+[data-crmv4-root] .c4-trade-sym.c4-symbol-clerestory .c4-tsy-clerestory-kicker {
+  font-weight: 600;
+}
+[data-crmv4-root][data-theme="dark"] .c4-locker.c4-locker-pylon .c4-lok-rows li.c4-lok-pylon-card,
+[data-crmv4-root][data-theme="dark"] .c4-locker.c4-locker-pylon .c4-lok-pylon-index li {
+  background: #fffdf8;
+  color: #1c1a17;
+  border-color: #e7d3ae;
+}
+[data-crmv4-root][data-theme="dark"] .c4-locker.c4-locker-pylon .c4-lok-pylon-lead,
+[data-crmv4-root][data-theme="dark"] .c4-locker.c4-locker-pylon .c4-locker-aedicula-lead,
+[data-crmv4-root][data-theme="dark"] .c4-locker.c4-locker-pylon .c4-lok-rows li.c4-lok-pylon-card .c4-meta {
+  color: #3b332e;
+}
