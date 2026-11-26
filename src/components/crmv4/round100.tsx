@@ -218,14 +218,22 @@ export function IbStatusGlance({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-ib-status" aria-label={v4("bxTitle")} data-ib-status="1">
-      <header className="c4-pay-head">
+    <section className="c4-ib-status c4-bx-temenos" aria-label={v4("bxTitle")} data-ib-status="1" data-bx-temenos="1">
+      <header className="c4-pay-head c4-bx-temenos-mast">
+        <p className="c4-bx-temenos-seal" data-logo="mono">{v4("bxTemenosLogo")}</p>
         <div>
+          <p className="c4-bx-temenos-kicker">{v4("bxTemenosKicker")}</p>
+          <p className="c4-bx-temenos-lead">{v4("bxTemenosLead")}</p>
           <p className="c4-pay-kicker">{v4("bxSub")}</p>
           <h2 className="c4-title">{v4("bxTitle")}</h2>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-bx-temenos-count">{chips.length}</p>
       </header>
+      <ol className="c4-bx-temenos-index" aria-label={v4("bxTemenosKicker")}>
+        <li data-tone="gold">{v4("bxTemenosShown")} {shown.length}</li>
+        <li data-tone="ink">{v4("bxTemenosBlank")} {blankCount}</li>
+        <li data-tone="ivory">{v4("bxTemenosHidden")} {hiddenStatuses.length}</li>
+      </ol>
       <p className="c4-meta">{v4("bxHint")}</p>
       <p className="c4-meta">{v4("bxLocal")}</p>
       <p className="c4-row">
@@ -261,11 +269,11 @@ export function IbStatusGlance({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("bxSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("bxEmpty")}</p>}
-      <ul className="c4-ib-rows">
+      <ul className="c4-ib-rows c4-bx-temenos-list">
         {shown.map((row) => {
           const name = statusText(row.status);
           return (
-            <li key={row.id} data-status={name || "blank"}>
+            <li key={row.id} className="c4-bx-temenos-card" data-status={name || "blank"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("bxBlank")}</p>
               <Link className="c4-btn" href={crmv4Href(base, `customers/${row.userId}`)}>{v4("bxCustomer")}</Link>

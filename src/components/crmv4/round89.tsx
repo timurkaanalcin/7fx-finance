@@ -59,6 +59,9 @@ export function DeskCheck({ v4 }: { v4: V4 }) {
     writeJson(CHECK_KEY, next);
   }, []);
   const shown = visibleItems(items, query, mode);
+  const openCount = items.filter((item) => !item.done && !item.hidden).length;
+  const doneCount = items.filter((item) => item.done).length;
+  const hiddenCount = items.filter((item) => item.hidden).length;
 
   function store(next: Item[]) {
     setItems(next);
@@ -66,14 +69,23 @@ export function DeskCheck({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-desk-check" aria-label={v4("chTitle")} data-desk-check="1">
-      <header className="c4-pay-head">
+    <section className="c4-desk-check c4-ch-chalcidicum" aria-label={v4("chTitle")} data-desk-check="1" data-ch-chalcidicum="1">
+      <header className="c4-pay-head c4-ch-chalcidicum-mast">
+        <p className="c4-ch-chalcidicum-seal" data-logo="mono">{v4("chChalcidicumLogo")}</p>
         <div>
+          <p className="c4-ch-chalcidicum-kicker">{v4("chChalcidicumKicker")}</p>
+          <p className="c4-ch-chalcidicum-lead">{v4("chChalcidicumLead")}</p>
           <p className="c4-pay-kicker">{v4("chSub")}</p>
           <h2 className="c4-title">{v4("chTitle")}</h2>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-ch-chalcidicum-count">{shown.length}</p>
       </header>
+      <ol className="c4-ch-chalcidicum-index" aria-label={v4("chChalcidicumKicker")}>
+        <li data-tone="gold">{v4("chChalcidicumShown")} {shown.length}</li>
+        <li data-tone="ink">{v4("chChalcidicumOpen")} {openCount}</li>
+        <li data-tone="ivory">{v4("chChalcidicumDone")} {doneCount}</li>
+        <li data-tone="ivory">{v4("chChalcidicumHidden")} {hiddenCount}</li>
+      </ol>
       <p className="c4-meta">{v4("chHint")}</p>
       <p className="c4-meta">{v4("chLocal")}</p>
       <form className="c4-row" onSubmit={(event) => {
@@ -101,9 +113,9 @@ export function DeskCheck({ v4 }: { v4: V4 }) {
         ))}
       </div>
       {!shown.length && <p className="c4-pay-empty">{v4("chEmpty")}</p>}
-      <ol className="c4-check-list">
+      <ol className="c4-check-list c4-ch-chalcidicum-list">
         {shown.map((item) => (
-          <li key={item.id} className="c4-check-card" data-pinned={item.pinned ? "1" : "0"} data-done={item.done ? "1" : "0"}>
+          <li key={item.id} className="c4-check-card c4-ch-chalcidicum-card" data-pinned={item.pinned ? "1" : "0"} data-done={item.done ? "1" : "0"}>
             <p>{item.text}</p>
             <div className="c4-row">
               <button type="button" className="c4-btn" onClick={() => store(setItemDone(items, item.id, !item.done))}>{item.done ? v4("chUndo") : v4("chDone")}</button>
