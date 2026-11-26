@@ -623,7 +623,7 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
         />
       )}
       {u && (
-        <Fold section="facts" title={v4("keyFacts")}>
+        <Fold v4={v4} section="facts" title={v4("keyFacts")}>
           <KeyFacts row={u} locale={locale} v4={v4} balance={money(u.balance ?? u.account?.balance, u.currency || u.account?.currency, locale)} equity={money(u.equity ?? u.account?.equity, u.currency || u.account?.currency, locale)} country={u.country || "—"} desk={u.desk || "—"} sale={u.saleStatus || "—"} />
           <MarginGauge equity={u.equity ?? u.account?.equity} margin={margin} v4={v4} />
         <div className="c4-form c4-form-2">
@@ -637,22 +637,22 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
         </div>
         </Fold>
       )}
-      <Fold section="money" title={v4("recentTx")}>
+      <Fold v4={v4} section="money" title={v4("recentTx")}>
         <TxMini id={id} locale={locale} v4={v4} />
         <MonthStatement id={id} locale={locale} v4={v4} />
       </Fold>
-      <Fold section="book" title={v4("liveBook")}>
+      <Fold v4={v4} section="book" title={v4("liveBook")}>
         <LiveBook id={id} locale={locale} v4={v4} />
       </Fold>
-      <Fold section="docs" title={v4("docAsk")} openByDefault={false}>
+      <Fold v4={v4} section="docs" title={v4("docAsk")} openByDefault={false}>
         <DocAsk v4={v4} />
       </Fold>
-      <Fold section="contact" title={v4("contactCounts")}>
+      <Fold v4={v4} section="contact" title={v4("contactCounts")}>
         <ContactSummary email={u?.email} id={id} v4={v4} />
         <DncFlag id={id} v4={v4} />
         <PreferTime id={id} v4={v4} />
       </Fold>
-      {u && <Fold section="tools" title={v4("fold")} openByDefault={false}><div className="c4-detail-tools"><SimilarList row={u} v4={v4} /><HandoffNote id={id} v4={v4} tx={tx} /><NoteCloud notes={user.data?.notes || []} v4={v4} /><EditLog id={id} v4={v4} /><PresenceFacts row={u} v4={v4} /><CallWindow country={u.country} v4={v4} /><CustomerQr url={shareUrl} v4={v4} /><RatioCard id={id} v4={v4} /><OnboardTrack row={u} v4={v4} /><WelcomeList id={id} v4={v4} /><ExpiryNote expiresAt={(u as UserRow & { expiresAt?: string | null }).expiresAt} v4={v4} /><CompletenessMeter row={u} v4={v4} /><InlineProfile id={id} user={u} tx={tx} v4={v4} onDone={user.reload} /><JourneyMap id={id} v4={v4} /><WinLossCard id={id} v4={v4} /><EquityCurve id={id} v4={v4} /><DocGallery id={id} v4={v4} /><TeamThread id={id} name="" v4={v4} tx={tx} /><CallbackButton id={id} name={u.name || u.email || ""} v4={v4} tx={tx} /><ValueSpark id={id} tx={tx} v4={v4} locale={locale} /><RetentionForm id={id} tx={tx} v4={v4} onDone={user.reload} /><StatementView id={id} tx={tx} v4={v4} locale={locale} /><NoteTemplates v4={v4} onUse={async (body) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { addNote: body }); user.reload(); }} /><DocumentsCenter id={id} email={u.email || ""} tx={tx} v4={v4} locale={locale} /><TradingOverview id={id} tx={tx} v4={v4} locale={locale} /></div></Fold>}
+      {u && <Fold v4={v4} section="tools" title={v4("fold")} openByDefault={false}><div className="c4-detail-tools"><SimilarList row={u} v4={v4} /><HandoffNote id={id} v4={v4} tx={tx} /><NoteCloud notes={user.data?.notes || []} v4={v4} /><EditLog id={id} v4={v4} /><PresenceFacts row={u} v4={v4} /><CallWindow country={u.country} v4={v4} /><CustomerQr url={shareUrl} v4={v4} /><RatioCard id={id} v4={v4} /><OnboardTrack row={u} v4={v4} /><WelcomeList id={id} v4={v4} /><ExpiryNote expiresAt={(u as UserRow & { expiresAt?: string | null }).expiresAt} v4={v4} /><CompletenessMeter row={u} v4={v4} /><InlineProfile id={id} user={u} tx={tx} v4={v4} onDone={user.reload} /><JourneyMap id={id} v4={v4} /><WinLossCard id={id} v4={v4} /><EquityCurve id={id} v4={v4} /><DocGallery id={id} v4={v4} /><TeamThread id={id} name="" v4={v4} tx={tx} /><CallbackButton id={id} name={u.name || u.email || ""} v4={v4} tx={tx} /><ValueSpark id={id} tx={tx} v4={v4} locale={locale} /><RetentionForm id={id} tx={tx} v4={v4} onDone={user.reload} /><StatementView id={id} tx={tx} v4={v4} locale={locale} /><NoteTemplates v4={v4} onUse={async (body) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { addNote: body }); user.reload(); }} /><DocumentsCenter id={id} email={u.email || ""} tx={tx} v4={v4} locale={locale} /><TradingOverview id={id} tx={tx} v4={v4} locale={locale} /></div></Fold>}
       <div className="c4-with-side c4-detail-luxe">
         <nav className="c4-side" aria-label={tx("customers")}>
           {PARTS.map((item) => (
