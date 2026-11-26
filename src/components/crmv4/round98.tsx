@@ -126,14 +126,22 @@ export function ChannelGlance({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-ticket-channel" aria-label={v4("tcTitle")} data-ticket-channel="1">
-      <header className="c4-pay-head">
+    <section className="c4-ticket-channel c4-ticket-dromos" aria-label={v4("tcTitle")} data-ticket-channel="1" data-ticket-dromos="1">
+      <header className="c4-pay-head c4-tc-dromos-mast">
+        <p className="c4-tc-dromos-seal" data-logo="mono">{v4("tcDromosLogo")}</p>
         <div>
+          <p className="c4-tc-dromos-kicker">{v4("tcDromosKicker")}</p>
+          <p className="c4-tc-dromos-lead">{v4("tcDromosLead")}</p>
           <p className="c4-pay-kicker">{v4("tcSub")}</p>
           <h2 className="c4-title">{v4("tcTitle")}</h2>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-tc-dromos-count">{chips.length}</p>
       </header>
+      <ol className="c4-tc-dromos-index" aria-label={v4("tcDromosKicker")}>
+        <li data-tone="gold">{v4("tcDromosShown")} {shown.length}</li>
+        <li data-tone="ink">{v4("tcDromosBlank")} {blankCount}</li>
+        <li data-tone="ivory">{v4("tcDromosHidden")} {hiddenChannels.length}</li>
+      </ol>
       <p className="c4-meta">{v4("tcHint")}</p>
       <p className="c4-meta">{v4("tcLocal")}</p>
       <p className="c4-row">
@@ -166,11 +174,11 @@ export function ChannelGlance({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("tcSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("tcEmpty")}</p>}
-      <ul className="c4-ticket-rows">
+      <ul className="c4-ticket-rows c4-tc-dromos-list">
         {shown.map((row) => {
           const name = channelText(row.channel);
           return (
-            <li key={row.id} data-channel={name || "blank"}>
+            <li key={row.id} className="c4-tc-dromos-card" data-channel={name || "blank"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("tcBlank")}</p>
               {row.userId && <Link className="c4-btn" href={crmv4Href(base, `customers/${row.userId}`)}>{v4("tcCustomer")}</Link>}
