@@ -360,6 +360,7 @@ import { NielloRules, DocumentReviewPlates } from "./round369";
 import { CloisonRules, DocumentTypePlates } from "./round370";
 import { BasseTailleRules, SaleStagePlates } from "./round371";
 import { GranulationNests, KeeperGrantPlates } from "./round372";
+import { CaptionPlates, DamasceneRibbons } from "./round373";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1343,6 +1344,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "ssp") return v4("sspTitle");
     if (tab === "grn") return v4("grnTitle");
     if (tab === "kpr") return v4("kprTitle");
+    if (tab === "dmc") return v4("dmcTitle");
+    if (tab === "cap") return v4("capTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1969,6 +1972,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "lis") return v4("lisSub");
     if (tab === "grn") return v4("grnSub");
     if (tab === "kpr") return v4("kprSub");
+    if (tab === "dmc") return v4("dmcSub");
+    if (tab === "cap") return v4("capSub");
     return "";
   }
 
@@ -2772,6 +2777,8 @@ function Shell({ base, section, name }: Props) {
             {view === "ssp" && <SaleStagePlates base={base} v4={v4} />}
             {view === "grn" && <GranulationNests base={base} v4={v4} />}
             {view === "kpr" && <KeeperGrantPlates base={base} v4={v4} />}
+            {view === "dmc" && <DamasceneRibbons base={base} v4={v4} />}
+            {view === "cap" && <CaptionPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

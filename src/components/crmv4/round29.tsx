@@ -209,7 +209,21 @@ export function InboxDesk({ v4, tx, locale }: { v4: V4; tx: Tx; locale: string }
     }
   }
   return (
-    <section className="c4-inbox-luxe c4-inbox-gallery c4-inbox-cellar" aria-label={v4("inboxTitle")} data-inbox="1" data-desk="cellar">
+    <section className="c4-inbox-luxe c4-inbox-gallery c4-inbox-cellar c4-inbox-prothesis" aria-label={v4("inboxTitle")} data-inbox="1" data-desk="cellar" data-inbox-prothesis="1">
+      <header className="c4-inbox-prothesis-mast">
+        <p className="c4-inbox-prothesis-seal" data-logo="mono">{v4("ibProthesisLogo")}</p>
+        <div>
+          <p className="c4-inbox-prothesis-kicker">{v4("ibProthesisKicker")}</p>
+          <h2 className="c4-title">{v4("inboxTitle")}</h2>
+          <p className="c4-inbox-prothesis-lead">{v4("ibProthesisLead")}</p>
+        </div>
+        <p className="c4-inbox-prothesis-count">{threads.length}</p>
+      </header>
+      <ol className="c4-inbox-prothesis-index" aria-label={v4("ibProthesisKicker")}>
+        <li data-tone="gold">{v4("inboxTitle")} {threads.length}</li>
+        <li>{v4("inboxSearch")}</li>
+        <li>{v4("inboxHint")}</li>
+      </ol>
       <header className="c4-inbox-gallery-mast">
         <div>
           <p className="c4-inbox-gallery-kicker">{v4("inboxHint")}</p>
@@ -219,7 +233,7 @@ export function InboxDesk({ v4, tx, locale }: { v4: V4; tx: Tx; locale: string }
       </header>
       <div className="c4-kyc-split c4-inbox-gallery-split">
         <div>
-          <label className="c4-lab"><span>{v4("inboxSearch")}</span><input className="c4-field" aria-label={v4("inboxSearch")} value={query} onChange={(event) => setQuery(event.target.value)} /></label>
+          <label className="c4-lab"><span>{v4("inboxSearch")}</span><input className="c4-field" aria-label={v4("inboxSearch")} aria-required={false} value={query} onChange={(event) => setQuery(event.target.value)} /></label>
           {!threads.length && <p className="c4-empty-gold">{v4("inboxEmpty")}</p>}
           <ul className="c4-kyc-queue">
             {threads.map((row) => {
