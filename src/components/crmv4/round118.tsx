@@ -54,6 +54,7 @@ export function ParkingNotes({ v4 }: { v4: V4 }) {
     writeJson(PARK_KEY, next);
   }, []);
   const shown = visibleNotes(notes, hidden, query);
+  const pinned = notes.filter((note) => note.pinned).length;
 
   function store(next: Note[]) {
     setNotes(next);
@@ -61,15 +62,23 @@ export function ParkingNotes({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-park-spot" aria-label={v4("bayTitle")} data-park-spot="1">
-      <header className="c4-pay-head">
+    <section className="c4-park-spot c4-park-carceres" aria-label={v4("bayTitle")} data-park-spot="1" data-park-carceres="1">
+      <header className="c4-pay-head c4-bay-carceres-mast">
+        <p className="c4-bay-carceres-seal" data-logo="mono">{v4("bayCarceresLogo")}</p>
         <div>
           <p className="c4-bay-logo" data-logo="mono">{v4("bayLogo")}</p>
+          <p className="c4-bay-carceres-kicker">{v4("bayCarceresKicker")}</p>
+          <p className="c4-bay-carceres-lead">{v4("bayCarceresLead")}</p>
           <p className="c4-pay-kicker">{v4("baySub")}</p>
           <h2 className="c4-title">{v4("bayTitle")}</h2>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-bay-carceres-count">{shown.length}</p>
       </header>
+      <ol className="c4-bay-carceres-index" aria-label={v4("bayCarceresKicker")}>
+        <li data-tone="gold">{v4("bayCarceresTiers")} {notes.length}</li>
+        <li data-tone="ink">{v4("bayCarceresOpen")} {shown.length}</li>
+        <li data-tone="ivory">{v4("bayPin")} {pinned}</li>
+      </ol>
       <p className="c4-meta">{v4("bayHint")}</p>
       <p className="c4-meta">{v4("bayLocal")}</p>
       <p className="c4-meta">{v4("bayBlank")}</p>
@@ -102,9 +111,9 @@ export function ParkingNotes({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("bayHidden")}</button>
       </div>
       {!shown.length && <p className="c4-pay-empty">{v4("bayEmpty")}</p>}
-      <ul className="c4-bay-rows">
+      <ul className="c4-bay-rows c4-bay-carceres-list">
         {shown.map((note) => (
-          <li key={note.id} data-pinned={note.pinned ? "1" : "0"}>
+          <li key={note.id} className="c4-bay-carceres-card" data-pinned={note.pinned ? "1" : "0"}>
             <p>{note.text}</p>
             {note.bay ? <p className="c4-meta">{note.bay}</p> : null}
             <div className="c4-row">
@@ -159,14 +168,21 @@ export function LeadSources({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-lead-src" aria-label={v4("lsgTitle")} data-lead-src="1">
-      <header className="c4-pay-head">
+    <section className="c4-lead-src c4-lead-spina" aria-label={v4("lsgTitle")} data-lead-src="1" data-lead-spina="1">
+      <header className="c4-pay-head c4-lsg-spina-mast">
+        <p className="c4-lsg-spina-seal" data-logo="mono">{v4("lsgSpinaLogo")}</p>
         <div>
+          <p className="c4-lsg-spina-kicker">{v4("lsgSpinaKicker")}</p>
+          <p className="c4-lsg-spina-lead">{v4("lsgSpinaLead")}</p>
           <p className="c4-pay-kicker">{v4("lsgSub")}</p>
           <h2 className="c4-title">{v4("lsgTitle")}</h2>
         </div>
-        <p className="c4-meta">{v4("lsgRows")} {rows.length}</p>
+        <p className="c4-lsg-spina-count">{chips.length}</p>
       </header>
+      <ol className="c4-lsg-spina-index" aria-label={v4("lsgSpinaKicker")}>
+        <li data-tone="gold">{v4("lsgSpinaOpen")} {chips.length}</li>
+        <li data-tone="ink">{v4("lsgSpinaBlank")} {blankCount}</li>
+      </ol>
       <p className="c4-meta">{v4("lsgHint")}</p>
       <p className="c4-meta">{v4("lsgLocal")}</p>
       <p className="c4-row">
@@ -203,11 +219,11 @@ export function LeadSources({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("lsgSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("lsgEmpty")}</p>}
-      <ul className="c4-lsg-rows">
+      <ul className="c4-lsg-rows c4-lsg-spina-list">
         {shown.map((row) => {
           const name = sourceText(row.source);
           return (
-            <li key={row.id} data-source={name || "blank"}>
+            <li key={row.id} className="c4-lsg-spina-card" data-source={name || "blank"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("lsgBlank")}</p>
             </li>
