@@ -67,14 +67,22 @@ export function FocusDesk({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-focus-desk" aria-label={v4("fmTitle")} data-focus-desk="1">
-      <header className="c4-pay-head">
+    <section className="c4-focus-desk c4-fm-hypogeum" aria-label={v4("fmTitle")} data-focus-desk="1" data-fm-hypogeum="1">
+      <header className="c4-pay-head c4-fm-hypogeum-mast">
+        <p className="c4-fm-hypogeum-seal" data-logo="mono">{v4("fmHypogeumLogo")}</p>
         <div>
+          <p className="c4-fm-hypogeum-kicker">{v4("fmHypogeumKicker")}</p>
+          <p className="c4-fm-hypogeum-lead">{v4("fmHypogeumLead")}</p>
           <p className="c4-pay-kicker">{v4("fmSub")}</p>
           <h2 className="c4-title">{v4("fmTitle")}</h2>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-fm-hypogeum-count">{shown.length}</p>
       </header>
+      <ol className="c4-fm-hypogeum-index" aria-label={v4("fmHypogeumKicker")}>
+        <li data-tone="gold">{v4("fmHypogeumShown")} {shown.length}</li>
+        <li data-tone="ink">{v4("fmHypogeumHidden")} {hidden.length}</li>
+        <li data-tone="ivory">{v4("fmHypogeumBlank")} {FOCUS_PANELS.length}</li>
+      </ol>
       <p className="c4-meta">{v4("fmHint")}</p>
       <p className="c4-meta">{v4("fmLocal")}</p>
       <p className="c4-meta">{v4("fmLogo")}</p>
@@ -90,9 +98,9 @@ export function FocusDesk({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-btn" onClick={() => store([])}>{v4("fmAll")}</button>
       </div>
       {!shown.length && <p className="c4-pay-empty">{v4("fmEmpty")}</p>}
-      <ul className="c4-focus-list">
+      <ul className="c4-focus-list c4-fm-hypogeum-list">
         {shown.map((id) => (
-          <li key={id} className="c4-focus-card" data-panel={id} data-hidden={hidden.includes(id) ? "1" : "0"}>
+          <li key={id} className="c4-focus-card c4-fm-hypogeum-card" data-panel={id} data-hidden={hidden.includes(id) ? "1" : "0"}>
             <p>{names[id]}</p>
             <button type="button" className="c4-btn" onClick={() => store(togglePanel(hidden, id))}>{hidden.includes(id) ? v4("fmShow") : v4("fmHide")}</button>
           </li>
