@@ -95,9 +95,18 @@ export function CampaignBoard({ rows, v4, locale }: { rows: LeadRow[]; v4: V4; l
   const cohort = cohortOf(rows, left?.campaign || "");
   const maxFunnel = Math.max(1, ...funnel.map((row) => row.count));
   return (
-    <section className="c4-card c4-mkt-table">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("campaigns")}</h3></div>
-      <table className="c4-table">
+    <section className="c4-campaign-atelier c4-mkt-table" aria-label={v4("campaigns")} data-campaign-atelier="1">
+      <header className="c4-campaign-atelier-mast">
+        <p className="c4-campaign-atelier-seal" data-logo="mono">{v4("campaignAtelierLogo")}</p>
+        <div>
+          <p className="c4-campaign-atelier-kicker">{v4("campaignAtelierKicker")}</p>
+          <h3 className="c4-title">{v4("campaigns")}</h3>
+          <p className="c4-campaign-atelier-lead">{v4("campaignAtelierLead")}</p>
+        </div>
+        <p className="c4-campaign-atelier-count">{stats.length}</p>
+      </header>
+      <div className="c4-campaign-atelier-ledger">
+      <table className="c4-table c4-campaign-atelier-table">
         <thead><tr><th>{v4("campaigns")}</th><th /><th>{v4("cpl")}</th><th>{v4("cpa")}</th><th>{v4("spend")}</th><th>{v4("budget")}</th><th>{v4("pacing")}</th></tr></thead>
         <tbody>
           {stats.map((row) => {
@@ -129,7 +138,8 @@ export function CampaignBoard({ rows, v4, locale }: { rows: LeadRow[]; v4: V4; l
           })}
         </tbody>
       </table>
-      <div className="c4-row c4-pad">
+      </div>
+      <div className="c4-campaign-atelier-compare c4-row c4-pad">
         <label className="c4-lab"><span>{v4("compare")}</span>
           <select className="c4-select" aria-label={v4("compare")} value={left?.campaign || ""} onChange={(event) => setPick(event.target.value)}>
             {stats.map((row) => <option key={row.campaign}>{row.campaign}</option>)}
@@ -138,9 +148,9 @@ export function CampaignBoard({ rows, v4, locale }: { rows: LeadRow[]; v4: V4; l
         <select className="c4-select" aria-label={v4("compare")} value={right?.campaign || ""} onChange={(event) => setOther(event.target.value)}>
           {stats.map((row) => <option key={row.campaign}>{row.campaign}</option>)}
         </select>
-        {left && right && <p>{left.campaign} {left.leads} · {money(left.balance, "USD", locale)} / {right.campaign} {right.leads} · {money(right.balance, "USD", locale)}</p>}
+        {left && right && <p className="c4-campaign-atelier-pair">{left.campaign} {left.leads} · {money(left.balance, "USD", locale)} / {right.campaign} {right.leads} · {money(right.balance, "USD", locale)}</p>}
       </div>
-      <div className="c4-mkt-grid">
+      <div className="c4-campaign-atelier-split c4-mkt-grid">
         <div>
           <h3 className="c4-title c4-pad">{v4("funnel")} {left?.campaign || ""}</h3>
           {funnel.map((row) => <div key={row.status} className="c4-mkt-bar"><span>{row.status}</span><i style={{ width: `${(row.count / maxFunnel) * 100}%` }} /><em>{row.count}</em></div>)}
@@ -322,11 +332,27 @@ export function RetentionHeat({ rows, v4 }: { rows: LeadRow[]; v4: V4 }) {
   const labels = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
   const max = Math.max(1, ...days);
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("heat")}</h3></div>
-      <div className="c4-heat">
-        {days.map((count, index) => <div key={labels[index]} style={{ opacity: 0.35 + (count / max) * 0.65 }}><span>{labels[index]}</span><strong>{count}</strong></div>)}
-      </div>
+    <section className="c4-retention-kiln" aria-label={v4("heat")} data-retention-kiln="1">
+      <header className="c4-retention-kiln-mast">
+        <p className="c4-retention-kiln-seal" data-logo="mono">{v4("retentionKilnLogo")}</p>
+        <div>
+          <p className="c4-retention-kiln-kicker">{v4("retentionKilnKicker")}</p>
+          <h3 className="c4-title">{v4("heat")}</h3>
+          <p className="c4-retention-kiln-lead">{v4("retentionKilnLead")}</p>
+        </div>
+        <p className="c4-retention-kiln-count">{days.reduce((sum, count) => sum + count, 0)}</p>
+      </header>
+      <ol className="c4-retention-kiln-shelf">
+        {days.map((count, index) => (
+          <li key={labels[index]}>
+            <span className="c4-retention-kiln-stack" aria-hidden="true">
+              <i style={{ height: `${Math.max(8, Math.round((count / max) * 100))}%` }} />
+            </span>
+            <strong>{count}</strong>
+            <span>{labels[index]}</span>
+          </li>
+        ))}
+      </ol>
     </section>
   );
 }
