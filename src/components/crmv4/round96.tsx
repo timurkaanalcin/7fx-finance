@@ -166,14 +166,22 @@ export function DepStatusGlance({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-dep-status" aria-label={v4("dzTitle")} data-dep-status="1">
-      <header className="c4-pay-head">
+    <section className="c4-dep-status c4-dep-thesaurus" aria-label={v4("dzTitle")} data-dep-status="1" data-dep-thesaurus="1">
+      <header className="c4-pay-head c4-dz-thesaurus-mast">
+        <p className="c4-dz-thesaurus-seal" data-logo="mono">{v4("dzThesaurusLogo")}</p>
         <div>
+          <p className="c4-dz-thesaurus-kicker">{v4("dzThesaurusKicker")}</p>
+          <p className="c4-dz-thesaurus-lead">{v4("dzThesaurusLead")}</p>
           <p className="c4-pay-kicker">{v4("dzSub")}</p>
           <h2 className="c4-title">{v4("dzTitle")}</h2>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-dz-thesaurus-count">{chips.length}</p>
       </header>
+      <ol className="c4-dz-thesaurus-index" aria-label={v4("dzThesaurusKicker")}>
+        <li data-tone="gold">{v4("dzThesaurusShown")} {shown.length}</li>
+        <li data-tone="ink">{v4("dzThesaurusBlank")} {blankCount}</li>
+        <li data-tone="ivory">{v4("dzThesaurusHidden")} {hiddenStatuses.length}</li>
+      </ol>
       <p className="c4-meta">{v4("dzHint")}</p>
       <p className="c4-meta">{v4("dzLocal")}</p>
       <p className="c4-row">
@@ -206,11 +214,11 @@ export function DepStatusGlance({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("dzSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("dzEmpty")}</p>}
-      <ul className="c4-dep-rows">
+      <ul className="c4-dep-rows c4-dz-thesaurus-list">
         {shown.map((row) => {
           const name = statusText(row.status);
           return (
-            <li key={row.id} data-status={name || "blank"}>
+            <li key={row.id} className="c4-dz-thesaurus-card" data-status={name || "blank"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("dzBlank")}</p>
               {row.userId && <Link className="c4-btn" href={crmv4Href(base, `customers/${row.userId}`)}>{v4("dzCustomer")}</Link>}
