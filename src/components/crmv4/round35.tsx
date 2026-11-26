@@ -43,9 +43,22 @@ export function TodayHero({ base, name, v4, locale }: { base: string; name: stri
   const depMoney = sumsByCurrency(depRows.filter((row) => !row.status || String(row.status).toUpperCase() === "PENDING").map((row, index) => ({ id: String(index), amount: row.amount, currency: row.currency })));
   const wdMoney = sumsByCurrency(wdRows.filter((row) => !row.status || String(row.status).toUpperCase() === "PENDING").map((row, index) => ({ id: String(index), amount: row.amount, currency: row.currency })));
   return (
-    <section className="c4-today-hero" aria-label={v4("heroTitle")} data-hero="1">
-      <p className="c4-muted">{name || "—"}</p>
-      <h2 className="c4-title">{v4("heroTitle")}</h2>
+    <section className="c4-today-hero c4-th-ambon" aria-label={v4("heroTitle")} data-hero="1" data-th-ambon="1">
+      <header className="c4-th-ambon-mast">
+        <p className="c4-th-ambon-seal" data-logo="mono">{v4("thAmbonLogo")}</p>
+        <div>
+          <p className="c4-th-ambon-kicker">{v4("thAmbonKicker")}</p>
+          <p className="c4-th-ambon-lead">{v4("thAmbonLead")}</p>
+          <p className="c4-muted">{name || "—"}</p>
+          <h2 className="c4-title">{v4("heroTitle")}</h2>
+        </div>
+        <p className="c4-th-ambon-count">{counts.reduce((sum, item) => sum + item.n, 0)}</p>
+      </header>
+      <ol className="c4-th-ambon-index" aria-label={v4("thAmbonKicker")}>
+        <li data-tone="gold">{v4("thAmbonShown")} {counts.filter((item) => item.n > 0).length}</li>
+        <li data-tone="ink">{v4("thAmbonHidden")} {counts.filter((item) => item.n === 0).length}</li>
+        <li data-tone="ivory">{v4("thAmbonBlank")} {counts.length}</li>
+      </ol>
       <p className="c4-muted">{v4("heroHint")}</p>
       <div className="c4-today-counts">
         {counts.map((item) => (
