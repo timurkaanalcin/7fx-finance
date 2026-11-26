@@ -373,9 +373,22 @@ export function AffiliateBoard({ rows, v4 }: { rows: { name?: string; leads?: nu
     return () => { live = false; };
   }, [code]);
   return (
-    <section className="c4-card c4-aff-board">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("leaderboard")}</h3></div>
-      <table className="c4-table">
+    <section className="c4-card c4-aff-board c4-aff-feretory" aria-label={v4("leaderboard")} data-aff-feretory="1">
+      <header className="c4-aff-feretory-mast">
+        <p className="c4-aff-feretory-seal" data-logo="mono">{v4("afFeretoryLogo")}</p>
+        <div>
+          <p className="c4-aff-feretory-kicker">{v4("afFeretoryKicker")}</p>
+          <h3 className="c4-title">{v4("leaderboard")}</h3>
+          <p className="c4-aff-feretory-lead">{v4("afFeretoryLead")}</p>
+        </div>
+        <p className="c4-aff-feretory-count">{ranked.length}</p>
+      </header>
+      <ol className="c4-aff-feretory-index" aria-label={v4("afFeretoryKicker")}>
+        <li data-tone="gold">{v4("leaderboard")} {ranked.length}</li>
+        <li>{ranked[0]?.name || "—"}</li>
+        <li>{ranked.reduce((sum, row) => sum + (row.leads ?? 0), 0)}</li>
+      </ol>
+      <table className="c4-table c4-aff-feretory-table">
         <tbody>
           {ranked.map((row, index) => (
             <tr key={row.name || index}><td>{index + 1}</td><td>{row.name || "—"}</td><td>{row.leads ?? 0}</td><td>{row.deposits ?? 0}</td></tr>
@@ -384,7 +397,7 @@ export function AffiliateBoard({ rows, v4 }: { rows: { name?: string; leads?: nu
       </table>
       <div className="c4-row c4-pad">
         <label className="c4-lab"><span>{v4("affLink")}</span>
-          <input className="c4-field" aria-label={v4("affLink")} value={code} onChange={(event) => setCode(event.target.value)} />
+          <input className="c4-field" aria-label={v4("affLink")} aria-required={false} value={code} onChange={(event) => setCode(event.target.value)} />
         </label>
         <button type="button" className="c4-btn" onClick={async () => {
           try { await navigator.clipboard.writeText(link); setCopied(v4("affLink")); } catch { setCopied(link); }

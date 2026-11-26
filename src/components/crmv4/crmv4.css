@@ -122463,3 +122463,301 @@
 [data-crmv4-root][data-theme="dark"] .c4-alert-consistorium .c4-alert-list .c4-muted { color: #5f564e; }
 [data-crmv4-root] .c4-watch-catechumenon > .c4-watch-catechumenon-mast .c4-title,
 [data-crmv4-root] .c4-watch-catechumenon > .c4-watch-catechumenon-mast .c4-watch-catechumenon-lead { color: #f6f1e8; }
+
+[data-crmv4-root] .c4-vignette {
+  color: #f6f1e8;
+  background:
+    linear-gradient(90deg, rgba(198, 161, 91, 0.55) 0 3px, transparent 3px),
+    linear-gradient(165deg, #1c1a17 0%, #12100e 100%);
+  border: 1px solid #c6a15b;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px #8a6a3b, inset 0 0 0 8px #141210, inset 0 0 0 9px #c6a15b;
+  padding: 22px 18px 18px;
+}
+[data-crmv4-root] .c4-docmark {
+  color: #1c1a17;
+  background:
+    linear-gradient(180deg, #1c1a17 0 6px, transparent 6px),
+    linear-gradient(180deg, #fffdf8 0%, #f4ead8 100%);
+  border: 1px solid #8a6a3b;
+  border-radius: 18px 2px;
+  box-shadow: inset 0 0 0 1px #c6a15b, inset 0 0 0 7px #fffdf8, inset 0 0 0 8px #c6a15b;
+  padding: 22px 18px 18px;
+}
+[data-crmv4-root] .c4-vignette-mast,
+[data-crmv4-root] .c4-docmark-mast,
+[data-crmv4-root] .c4-doc-aumbry-mast,
+[data-crmv4-root] .c4-aff-feretory-mast {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  margin: 0 0 14px;
+}
+[data-crmv4-root] .c4-vignette-seal[data-logo="mono"],
+[data-crmv4-root] .c4-docmark-seal[data-logo="mono"],
+[data-crmv4-root] .c4-doc-aumbry-seal[data-logo="mono"],
+[data-crmv4-root] .c4-aff-feretory-seal[data-logo="mono"] {
+  width: 52px;
+  height: 52px;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: #1c1a17;
+  background: #f6f1e8;
+  border: 1px solid #c6a15b;
+  border-radius: 2px;
+  filter: grayscale(1);
+}
+[data-crmv4-root] .c4-vignette-seal[data-logo="mono"],
+[data-crmv4-root] .c4-aff-feretory-seal[data-logo="mono"] {
+  color: #f6f1e8;
+  background: transparent;
+}
+[data-crmv4-root] .c4-vignette-kicker,
+[data-crmv4-root] .c4-docmark-kicker,
+[data-crmv4-root] .c4-doc-aumbry-kicker,
+[data-crmv4-root] .c4-aff-feretory-kicker {
+  margin: 0 0 4px;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #8a6a3b;
+}
+[data-crmv4-root] .c4-vignette-kicker,
+[data-crmv4-root] .c4-aff-feretory-kicker { color: #c6a15b; }
+[data-crmv4-root] .c4-vignette-count,
+[data-crmv4-root] .c4-docmark-count,
+[data-crmv4-root] .c4-doc-aumbry-count,
+[data-crmv4-root] .c4-aff-feretory-count {
+  margin: 0;
+  min-width: 44px;
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+  font-variant-numeric: tabular-nums;
+  color: #1c1a17;
+  background: #fffdf8;
+  border: 1px solid #c6a15b;
+}
+[data-crmv4-root] .c4-vignette-count,
+[data-crmv4-root] .c4-aff-feretory-count { color: #f6f1e8; background: transparent; }
+[data-crmv4-root] .c4-vignette-hint,
+[data-crmv4-root] .c4-docmark-hint,
+[data-crmv4-root] .c4-doc-aumbry-lead,
+[data-crmv4-root] .c4-aff-feretory-lead {
+  margin: 0 0 12px;
+  max-width: 68ch;
+}
+[data-crmv4-root] .c4-vignette-index,
+[data-crmv4-root] .c4-docmark-index,
+[data-crmv4-root] .c4-doc-aumbry-index,
+[data-crmv4-root] .c4-aff-feretory-index {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-vignette-index li,
+[data-crmv4-root] .c4-docmark-index li,
+[data-crmv4-root] .c4-doc-aumbry-index li,
+[data-crmv4-root] .c4-aff-feretory-index li {
+  margin: 0;
+  padding: 8px 10px;
+  border-top: 2px solid #c6a15b;
+  background: rgba(255, 253, 248, 0.08);
+}
+[data-crmv4-root] .c4-docmark-index li,
+[data-crmv4-root] .c4-doc-aumbry-index li { background: #fffdf8; color: #1c1a17; }
+[data-crmv4-root] .c4-vignette-index li[data-tone="gold"],
+[data-crmv4-root] .c4-docmark-index li[data-tone="gold"],
+[data-crmv4-root] .c4-doc-aumbry-index li[data-tone="gold"],
+[data-crmv4-root] .c4-aff-feretory-index li[data-tone="gold"] { border-top-color: #8a6a3b; }
+[data-crmv4-root] .c4-vignette-chart,
+[data-crmv4-root] .c4-docmark-chart {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: end;
+  min-height: 112px;
+  margin: 0 0 14px;
+}
+[data-crmv4-root] .c4-vignette-column,
+[data-crmv4-root] .c4-docmark-column {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-width: 52px;
+  min-height: 44px;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  border: 0;
+}
+[data-crmv4-root] .c4-vignette-column i,
+[data-crmv4-root] .c4-docmark-column i {
+  display: block;
+  width: 18px;
+  background: #c6a15b;
+  border-radius: 2px 2px 0 0;
+}
+[data-crmv4-root] .c4-vignette-column[data-on="1"] i,
+[data-crmv4-root] .c4-docmark-column[data-on="1"] i { background: #8a6a3b; }
+[data-crmv4-root] .c4-vignette-form,
+[data-crmv4-root] .c4-vignette-tools,
+[data-crmv4-root] .c4-vignette-bulk,
+[data-crmv4-root] .c4-docmark-tools,
+[data-crmv4-root] .c4-docmark-bulk {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: end;
+  margin: 0 0 12px;
+}
+[data-crmv4-root] .c4-vignette .c4-btn,
+[data-crmv4-root] .c4-vignette .c4-chip,
+[data-crmv4-root] .c4-docmark .c4-btn,
+[data-crmv4-root] .c4-docmark .c4-chip,
+[data-crmv4-root] .c4-doc-aumbry .c4-btn,
+[data-crmv4-root] .c4-doc-aumbry .c4-chip,
+[data-crmv4-root] .c4-aff-feretory .c4-btn,
+[data-crmv4-root] .c4-aff-feretory .c4-chip { min-height: 44px; }
+[data-crmv4-root] .c4-vignette .c4-btn:focus-visible,
+[data-crmv4-root] .c4-vignette .c4-field:focus-visible,
+[data-crmv4-root] .c4-docmark .c4-btn:focus-visible,
+[data-crmv4-root] .c4-docmark .c4-field:focus-visible,
+[data-crmv4-root] .c4-doc-aumbry .c4-btn:focus-visible,
+[data-crmv4-root] .c4-doc-aumbry .c4-field:focus-visible,
+[data-crmv4-root] .c4-aff-feretory .c4-btn:focus-visible,
+[data-crmv4-root] .c4-aff-feretory .c4-field:focus-visible {
+  outline: 2px solid #c6a15b;
+  outline-offset: 2px;
+}
+[data-crmv4-root] .c4-vignette-list,
+[data-crmv4-root] .c4-docmark-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-vignette-card,
+[data-crmv4-root] .c4-docmark-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: start;
+  margin: 0;
+  padding: 12px;
+  background: #fffdf8;
+  color: #1c1a17;
+  border: 1px solid #c6a15b;
+}
+[data-crmv4-root] .c4-vignette-card { box-shadow: inset 3px 0 0 #c6a15b; }
+[data-crmv4-root] .c4-docmark-card { box-shadow: inset 0 -3px 0 #c6a15b; }
+[data-crmv4-root] .c4-doc-desk.c4-doc-aumbry {
+  color: #1c1a17;
+  background:
+    radial-gradient(circle at 12px 12px, rgba(198, 161, 91, 0.45) 0 1px, transparent 2px) 0 0 / 22px 22px,
+    linear-gradient(180deg, #fffdf8 0%, #f4ead8 100%);
+  border: 1px solid #c6a15b;
+  border-radius: 22px;
+  box-shadow: inset 0 0 0 6px #fffdf8, inset 0 0 0 7px #8a6a3b;
+  padding: 18px 16px 16px;
+  margin: 12px 0;
+}
+[data-crmv4-root] .c4-doc-aumbry .c4-title,
+[data-crmv4-root] .c4-doc-aumbry .c4-doc-aumbry-lead { color: #1c1a17; background: transparent; }
+[data-crmv4-root] .c4-doc-aumbry .c4-doc-line,
+[data-crmv4-root] .c4-doc-aumbry .c4-fin-metric {
+  background: #fffdf8;
+  border: 1px solid #c6a15b;
+  color: #1c1a17;
+  border-radius: 2px;
+}
+[data-crmv4-root] .c4-aff-board.c4-aff-feretory {
+  color: #f6f1e8;
+  background:
+    linear-gradient(180deg, rgba(198, 161, 91, 0.45) 0 2px, transparent 2px),
+    linear-gradient(180deg, #1c1a17 0%, #12100e 100%);
+  border: 1px solid #c6a15b;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 8px #141210, inset 0 0 0 9px #8a6a3b;
+  padding: 18px 16px 16px;
+}
+[data-crmv4-root] .c4-aff-feretory .c4-title,
+[data-crmv4-root] .c4-aff-feretory .c4-aff-feretory-lead,
+[data-crmv4-root] .c4-aff-feretory .c4-muted { color: #f6f1e8; background: transparent; }
+[data-crmv4-root] .c4-aff-feretory .c4-table,
+[data-crmv4-root] .c4-aff-feretory .c4-qr {
+  background: #fffdf8;
+  color: #1c1a17;
+  border: 1px solid #c6a15b;
+  border-radius: 2px;
+}
+[data-crmv4-root] .c4-aff-feretory .c4-table td { color: #1c1a17; }
+[data-crmv4-root] .c4-doc-aumbry .c4-field,
+[data-crmv4-root] .c4-doc-aumbry .c4-chip,
+[data-crmv4-root] .c4-aff-feretory .c4-field,
+[data-crmv4-root] .c4-aff-feretory .c4-chip {
+  color: #1c1a17;
+  background: #fffdf8;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-docmark,
+[data-crmv4-root][data-theme="dark"] .c4-doc-desk.c4-doc-aumbry {
+  color: #f6f1e8;
+  background: #141210;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-docmark .c4-title,
+[data-crmv4-root][data-theme="dark"] .c4-doc-aumbry .c4-title,
+[data-crmv4-root][data-theme="dark"] .c4-doc-aumbry .c4-doc-aumbry-lead { color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-vignette,
+[data-crmv4-root][data-theme="dark"] .c4-aff-board.c4-aff-feretory {
+  color: #f6f1e8;
+  background: #0e0d0b;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-vignette-card,
+[data-crmv4-root][data-theme="dark"] .c4-docmark-card,
+[data-crmv4-root][data-theme="dark"] .c4-doc-aumbry .c4-doc-line,
+[data-crmv4-root][data-theme="dark"] .c4-aff-feretory .c4-table {
+  background: #fffdf8;
+  color: #1c1a17;
+}
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-vignette,
+  [data-crmv4-root] .c4-docmark,
+  [data-crmv4-root] .c4-doc-desk.c4-doc-aumbry,
+  [data-crmv4-root] .c4-aff-board.c4-aff-feretory {
+    margin-inline: 0;
+    max-width: 100%;
+    padding: 16px 12px;
+  }
+  [data-crmv4-root] .c4-vignette-mast,
+  [data-crmv4-root] .c4-docmark-mast,
+  [data-crmv4-root] .c4-doc-aumbry-mast,
+  [data-crmv4-root] .c4-aff-feretory-mast { grid-template-columns: 52px minmax(0, 1fr); }
+  [data-crmv4-root] .c4-vignette-card,
+  [data-crmv4-root] .c4-docmark-card,
+  [data-crmv4-root] .c4-doc-aumbry-row { grid-template-columns: 1fr; }
+  [data-crmv4-root] .c4-vignette-index,
+  [data-crmv4-root] .c4-docmark-index,
+  [data-crmv4-root] .c4-doc-aumbry-index,
+  [data-crmv4-root] .c4-aff-feretory-index { grid-template-columns: 1fr; }
+  [data-crmv4-root] .c4-doc-aumbry .c4-btn,
+  [data-crmv4-root] .c4-doc-aumbry .c4-field,
+  [data-crmv4-root] .c4-aff-feretory .c4-btn,
+  [data-crmv4-root] .c4-aff-feretory .c4-field { min-height: 44px; width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-vignette-card,
+  [data-crmv4-root] .c4-docmark-card,
+  [data-crmv4-root] .c4-vignette-column i,
+  [data-crmv4-root] .c4-docmark-column i { transition: none; }
+}
