@@ -34,9 +34,23 @@ export function SystemDesk({ area, tx, v4 }: { area: SysSection; tx: Tx; v4: V4 
   useEffect(() => { setActive(picked ? methodOn(picked) : true); }, [picked]);
   const currencies = accountCurrencies(people.data?.users || []);
   const deskRows = desks.data?.desks || [];
+  const tally = area === "methods" ? rows.length : area === "desks" ? deskRows.length : currencies.length;
   return (
-    <section className="c4-sys-desk" aria-label={v4("sysTitle")} data-sys="1" data-area={area}>
-      <h2 className="c4-title">{v4("sysTitle")}</h2>
+    <section className="c4-sys-desk c4-sys-laconicum" aria-label={v4("sysTitle")} data-sys="1" data-area={area} data-sys-laconicum="1">
+      <header className="c4-sys-laconicum-mast">
+        <p className="c4-sys-laconicum-seal" data-logo="mono">{v4("syLaconicumLogo")}</p>
+        <div>
+          <p className="c4-sys-laconicum-kicker">{v4("syLaconicumKicker")}</p>
+          <h2 className="c4-title">{v4("sysTitle")}</h2>
+          <p className="c4-sys-laconicum-lead">{v4("syLaconicumLead")}</p>
+        </div>
+        <p className="c4-sys-laconicum-count">{tally}</p>
+      </header>
+      <ol className="c4-sys-laconicum-index" aria-label={v4("syLaconicumKicker")}>
+        <li data-tone="gold">{v4("sysCount")} {tally}</li>
+        <li>{area === "methods" ? v4("sysActive") : area === "desks" ? v4("sysDeskHint") : v4("sysCurrencyHint")}</li>
+        <li>{v4("sysHint")}</li>
+      </ol>
       <p className="c4-muted">{v4("sysHint")}</p>
       {area === "methods" && (
         <>
@@ -62,7 +76,7 @@ export function SystemDesk({ area, tx, v4 }: { area: SysSection; tx: Tx; v4: V4 
             }}>
               <label className="c4-lab">
                 <span>{v4("sysPick")}</span>
-                <select className="c4-select" aria-label={v4("sysPick")} value={methodId} onChange={(event) => setMethodId(event.target.value)}>
+                <select className="c4-select" aria-label={v4("sysPick")} aria-required={false} value={methodId} onChange={(event) => setMethodId(event.target.value)}>
                   <option value="">{v4("sysPick")}</option>
                   {rows.map((row) => <option key={row.id} value={row.id}>{row.label || row.id}</option>)}
                 </select>

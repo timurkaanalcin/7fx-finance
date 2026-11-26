@@ -362,6 +362,7 @@ import { BasseTailleRules, SaleStagePlates } from "./round371";
 import { GranulationNests, KeeperGrantPlates } from "./round372";
 import { CaptionPlates, DamasceneRibbons } from "./round373";
 import { ChampleveWells, VoidStamps } from "./round374";
+import { FrostMarks, PliqueLanterns } from "./round375";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1349,6 +1350,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "cap") return v4("capTitle");
     if (tab === "chv") return v4("chvTitle");
     if (tab === "vod") return v4("vodTitle");
+    if (tab === "plq") return v4("plqTitle");
+    if (tab === "frs") return v4("frsTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1979,6 +1982,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "cap") return v4("capSub");
     if (tab === "chv") return v4("chvSub");
     if (tab === "vod") return v4("vodSub");
+    if (tab === "plq") return v4("plqSub");
+    if (tab === "frs") return v4("frsSub");
     return "";
   }
 
@@ -2786,6 +2791,8 @@ function Shell({ base, section, name }: Props) {
             {view === "cap" && <CaptionPlates base={base} v4={v4} />}
             {view === "chv" && <ChampleveWells base={base} v4={v4} />}
             {view === "vod" && <VoidStamps base={base} v4={v4} />}
+            {view === "plq" && <PliqueLanterns base={base} v4={v4} />}
+            {view === "frs" && <FrostMarks base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
