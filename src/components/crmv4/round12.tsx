@@ -35,9 +35,16 @@ export function isDnc(id: string): boolean {
 export function ProfileList({ base, current, v4 }: { base: string; current: string; v4: V4 }) {
   const data = useJson<{ users?: UserRow[] }>("/api/admin/users?view=table&take=24&meta=0&role=TRADER");
   return (
-    <aside className="c4-profile-list" aria-label={v4("splitList")}>
-      <h3 className="c4-title">{v4("splitList")}</h3>
-      <ul>
+    <aside className="c4-profile-list c4-split-socle" aria-label={v4("splitList")} data-split-socle="1">
+      <header className="c4-split-socle-mast">
+        <p className="c4-split-socle-seal" data-logo="mono">{v4("slSocleLogo")}</p>
+        <div>
+          <p className="c4-split-socle-kicker">{v4("slSocleKicker")}</p>
+          <h3 className="c4-title">{v4("splitList")}</h3>
+          <p className="c4-split-socle-lead">{v4("slSocleLead")}</p>
+        </div>
+      </header>
+      <ul className="c4-split-socle-links">
         {(data.data?.users || []).map((row) => (
           <li key={row.id}>
             <a href={crmv4Href(base, `customers/${row.id}`)} data-on={row.id === current ? "1" : "0"}>{row.name || row.email || row.id}</a>
@@ -92,13 +99,20 @@ export function MiniNav({ v4 }: { v4: V4 }) {
   );
 }
 
-export function Fold({ section, title, children, openByDefault = true }: { section: string; title: string; children: ReactNode; openByDefault?: boolean }) {
+export function Fold({ section, title, children, openByDefault = true, v4 }: { section: string; title: string; children: ReactNode; openByDefault?: boolean; v4: V4 }) {
   const store = `crmv4-fold-${section}`;
   const [open, setOpen] = useState(openByDefault);
   useEffect(() => { setOpen(readJson<boolean>(store, openByDefault) !== false); }, [store, openByDefault]);
   return (
-    <section id={`c4-sec-${section}`} className="c4-fold" data-open={open ? "1" : "0"}>
-      <button type="button" className="c4-fold-h" aria-expanded={open} onClick={() => {
+    <section id={`c4-sec-${section}`} className="c4-fold c4-fold-archivolt" data-open={open ? "1" : "0"} data-fold-archivolt="1">
+      <header className="c4-fold-archivolt-mast">
+        <p className="c4-fold-archivolt-seal" data-logo="mono">{v4("faArchivoltLogo")}</p>
+        <div>
+          <p className="c4-fold-archivolt-kicker">{v4("faArchivoltKicker")}</p>
+          <p className="c4-fold-archivolt-lead">{v4("faArchivoltLead")}</p>
+        </div>
+      </header>
+      <button type="button" className="c4-fold-h c4-fold-archivolt-toggle" aria-expanded={open} onClick={() => {
         const next = !open;
         setOpen(next);
         writeJson(store, next);
