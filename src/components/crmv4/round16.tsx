@@ -131,7 +131,21 @@ function LeadBoard({ rows, v4, base, selected, store }: { rows: LeadCard[]; v4: 
   }
 
   return (
-    <section className="c4-lead-luxe" aria-label={v4("leadBoard")}>
+    <section className="c4-lead-luxe c4-lead-sudatorium" aria-label={v4("leadBoard")} data-lead-sudatorium="1">
+      <header className="c4-lead-sudatorium-mast">
+        <p className="c4-lead-sudatorium-seal" data-logo="mono">{v4("ldSudatoriumLogo")}</p>
+        <div>
+          <p className="c4-lead-sudatorium-kicker">{v4("ldSudatoriumKicker")}</p>
+          <h2 className="c4-title">{v4("leadBoard")}</h2>
+          <p className="c4-lead-sudatorium-lead">{v4("ldSudatoriumLead")}</p>
+        </div>
+        <p className="c4-lead-sudatorium-count">{filtered.length}</p>
+      </header>
+      <ol className="c4-lead-sudatorium-index" aria-label={v4("ldSudatoriumKicker")}>
+        <li data-tone="gold">{v4("dueToday")} {due.today}</li>
+        <li>{v4("overdueFollow")} {due.late}</li>
+        <li>{v4("winShare")} {share == null ? "—" : `${share}%`}</li>
+      </ol>
       <div className="c4-fin-hero">
         <div className="c4-fin-metric"><span>{v4("leadBoard")}</span><strong>{filtered.length}</strong></div>
         <div className="c4-fin-metric"><span>{v4("dueToday")}</span><strong>{due.today}</strong></div>
@@ -140,7 +154,7 @@ function LeadBoard({ rows, v4, base, selected, store }: { rows: LeadCard[]; v4: 
       </div>
       <p className="c4-muted c4-pad">{v4("leadHint")}</p>
       <div className="c4-row c4-pad">
-        <input className="c4-field" aria-label={v4("boardSearch")} placeholder={v4("boardSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
+        <input className="c4-field" aria-label={v4("boardSearch")} aria-required={false} placeholder={v4("boardSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
         <button type="button" className="c4-chip" data-on={hideEmpty ? "1" : "0"} onClick={() => setHideEmpty((on) => !on)}>{v4("hideEmpty")}</button>
         <button type="button" className="c4-btn" onClick={() => downloadCsv("lead-board.csv", ["name", "email", "stage", "follow"], filtered.map((row) => [String(row.name || ""), String(row.email || ""), stageFor(row, store.stages), store.follow[row.id] || ""]))}>{v4("boardCsv")}</button>
         <button type="button" className="c4-btn c4-phone-only" onClick={() => focusStage(phoneStage - 1)}>{v4("prevStage")}</button>
@@ -189,7 +203,7 @@ function LeadBoard({ rows, v4, base, selected, store }: { rows: LeadCard[]; v4: 
                         <option value="cold">{v4("heatCold")}</option>
                       </select>
                     </label>
-                    <input className="c4-field" aria-label={v4("leadNote")} placeholder={v4("leadNote")} value={store.notes[row.id] || ""} onChange={(event) => store.setNote(row.id, event.target.value)} />
+                    <input className="c4-field" aria-label={v4("leadNote")} aria-required={false} placeholder={v4("leadNote")} value={store.notes[row.id] || ""} onChange={(event) => store.setNote(row.id, event.target.value)} />
                   </article>
                 );
               })}
