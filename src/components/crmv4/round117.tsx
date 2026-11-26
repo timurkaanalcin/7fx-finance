@@ -50,6 +50,7 @@ export function VisitLog({ v4 }: { v4: V4 }) {
     writeJson(VISIT_KEY, next);
   }, []);
   const shown = visibleNotes(notes, hidden, query);
+  const pinned = notes.filter((note) => note.pinned).length;
 
   function store(next: Note[]) {
     setNotes(next);
@@ -57,15 +58,23 @@ export function VisitLog({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-visit-log" aria-label={v4("vlTitle")} data-visit-log="1">
-      <header className="c4-pay-head">
+    <section className="c4-visit-log c4-visit-atrium" aria-label={v4("vlTitle")} data-visit-log="1" data-visit-atrium="1">
+      <header className="c4-pay-head c4-vl-atrium-mast">
+        <p className="c4-vl-atrium-seal" data-logo="mono">{v4("vlAtriumLogo")}</p>
         <div>
           <p className="c4-vl-logo" data-logo="mono">{v4("vlLogo")}</p>
+          <p className="c4-vl-atrium-kicker">{v4("vlAtriumKicker")}</p>
+          <p className="c4-vl-atrium-lead">{v4("vlAtriumLead")}</p>
           <p className="c4-pay-kicker">{v4("vlSub")}</p>
           <h2 className="c4-title">{v4("vlTitle")}</h2>
         </div>
-        <p className="c4-meta">{shown.length}</p>
+        <p className="c4-vl-atrium-count">{shown.length}</p>
       </header>
+      <ol className="c4-vl-atrium-index" aria-label={v4("vlAtriumKicker")}>
+        <li data-tone="gold">{v4("vlAtriumTiers")} {notes.length}</li>
+        <li data-tone="ink">{v4("vlAtriumOpen")} {shown.length}</li>
+        <li data-tone="ivory">{v4("vlPin")} {pinned}</li>
+      </ol>
       <p className="c4-meta">{v4("vlHint")}</p>
       <p className="c4-meta">{v4("vlLocal")}</p>
       <p className="c4-meta">{v4("vlBlank")}</p>
@@ -98,9 +107,9 @@ export function VisitLog({ v4 }: { v4: V4 }) {
         <button type="button" className="c4-chip" data-on={hidden ? "1" : "0"} aria-pressed={hidden} onClick={() => setHidden(true)}>{v4("vlHidden")}</button>
       </div>
       {!shown.length && <p className="c4-pay-empty">{v4("vlEmpty")}</p>}
-      <ul className="c4-vl-rows">
+      <ul className="c4-vl-rows c4-vl-atrium-list">
         {shown.map((note) => (
-          <li key={note.id} data-pinned={note.pinned ? "1" : "0"}>
+          <li key={note.id} className="c4-vl-atrium-card" data-pinned={note.pinned ? "1" : "0"}>
             <p>{note.text}</p>
             {note.place ? <p className="c4-meta">{note.place}</p> : null}
             <div className="c4-row">
@@ -149,14 +158,22 @@ export function DocumentStatuses({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-kyc-stat" aria-label={v4("ydTitle")} data-kyc-stat="1">
-      <header className="c4-pay-head">
+    <section className="c4-kyc-stat c4-kyc-podium" aria-label={v4("ydTitle")} data-kyc-stat="1" data-kyc-podium="1">
+      <header className="c4-pay-head c4-yd-podium-mast">
+        <p className="c4-yd-podium-seal" data-logo="mono">{v4("ydPodiumLogo")}</p>
         <div>
+          <p className="c4-yd-podium-kicker">{v4("ydPodiumKicker")}</p>
+          <p className="c4-yd-podium-lead">{v4("ydPodiumLead")}</p>
           <p className="c4-pay-kicker">{v4("ydSub")}</p>
           <h2 className="c4-title">{v4("ydTitle")}</h2>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-yd-podium-count">{chips.length}</p>
       </header>
+      <ol className="c4-yd-podium-index" aria-label={v4("ydPodiumKicker")}>
+        <li data-tone="gold">{v4("ydPodiumOpen")} {chips.length}</li>
+        <li data-tone="ink">{v4("ydAll")} {rows.length}</li>
+        <li data-tone="ivory">{v4("ydBlank")} {blankCount}</li>
+      </ol>
       <p className="c4-meta">{v4("ydHint")}</p>
       <p className="c4-meta">{v4("ydLocal")}</p>
       <p className="c4-row">
@@ -192,11 +209,11 @@ export function DocumentStatuses({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("ydSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("ydEmpty")}</p>}
-      <ul className="c4-yd-rows">
+      <ul className="c4-yd-rows c4-yd-podium-list">
         {shown.map((row) => {
           const name = statusText(row.status);
           return (
-            <li key={row.id} data-status={name || "blank"}>
+            <li key={row.id} className="c4-yd-podium-card" data-status={name || "blank"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("ydBlank")}</p>
             </li>

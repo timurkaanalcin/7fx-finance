@@ -351,6 +351,7 @@ import { FlinqueRules, MethodKeeperPlates } from "./round360";
 import { CadratureRules, JobTitlePlates } from "./round361";
 import { CampaignPlates, ParachuteRules } from "./round362";
 import { GrantPlates, TriovisRules } from "./round363";
+import { DocumentPlates, WolfRules } from "./round364";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1316,6 +1317,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "cgn") return v4("cgnTitle");
     if (tab === "tvs") return v4("tvsTitle");
     if (tab === "edr") return v4("edrTitle");
+    if (tab === "wft") return v4("wftTitle");
+    if (tab === "dox") return v4("doxTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1936,6 +1939,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "cgn") return v4("cgnSub");
     if (tab === "tvs") return v4("tvsSub");
     if (tab === "edr") return v4("edrSub");
+    if (tab === "wft") return v4("wftSub");
+    if (tab === "dox") return v4("doxSub");
     return "";
   }
 
@@ -2721,6 +2726,8 @@ function Shell({ base, section, name }: Props) {
             {view === "cgn" && <CampaignPlates base={base} v4={v4} />}
             {view === "tvs" && <TriovisRules base={base} v4={v4} />}
             {view === "edr" && <GrantPlates base={base} v4={v4} />}
+            {view === "wft" && <WolfRules base={base} v4={v4} />}
+            {view === "dox" && <DocumentPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
