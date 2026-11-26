@@ -162,14 +162,22 @@ export function ChannelGlance({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-channel-glance" aria-label={v4("dcTitle")} data-channel-glance="1">
-      <header className="c4-pay-head">
+    <section className="c4-channel-glance c4-dc-ambulacrum" aria-label={v4("dcTitle")} data-channel-glance="1" data-dc-ambulacrum="1">
+      <header className="c4-pay-head c4-dc-ambulacrum-mast">
+        <p className="c4-dc-ambulacrum-seal" data-logo="mono">{v4("dcAmbulacrumLogo")}</p>
         <div>
+          <p className="c4-dc-ambulacrum-kicker">{v4("dcAmbulacrumKicker")}</p>
+          <p className="c4-dc-ambulacrum-lead">{v4("dcAmbulacrumLead")}</p>
           <p className="c4-pay-kicker">{v4("dcSub")}</p>
           <h2 className="c4-title">{v4("dcTitle")}</h2>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-dc-ambulacrum-count">{chips.length}</p>
       </header>
+      <ol className="c4-dc-ambulacrum-index" aria-label={v4("dcAmbulacrumKicker")}>
+        <li data-tone="gold">{v4("dcAmbulacrumShown")} {chips.length}</li>
+        <li data-tone="ink">{v4("dcAmbulacrumHidden")} {hiddenChannels.length}</li>
+        <li data-tone="ivory">{v4("dcAmbulacrumBlank")} {blankCount}</li>
+      </ol>
       <p className="c4-meta">{v4("dcHint")}</p>
       <p className="c4-meta">{v4("dcLocal")}</p>
       <p className="c4-row">
@@ -202,11 +210,11 @@ export function ChannelGlance({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("dcSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("dcEmpty")}</p>}
-      <ul className="c4-channel-rows">
+      <ul className="c4-channel-rows c4-dc-ambulacrum-list">
         {shown.map((row) => {
           const name = channelText(row.method);
           return (
-            <li key={row.id} data-channel={name || "blank"}>
+            <li key={row.id} className="c4-dc-ambulacrum-card" data-channel={name || "blank"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("dcBlank")}</p>
               {row.userId && <Link className="c4-btn" href={crmv4Href(base, `customers/${row.userId}`)}>{v4("dcCustomer")}</Link>}

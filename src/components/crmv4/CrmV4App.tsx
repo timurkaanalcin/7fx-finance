@@ -356,6 +356,7 @@ import { MalteseRules, TradingServerPlates } from "./round365";
 import { OpalineRules, OriginPlates } from "./round366";
 import { TapisserieRules, AffiliatePlates as AffiliateAPlates } from "./round367";
 import { RepousseRules, AffiliateBPlates } from "./round368";
+import { NielloRules, DocumentReviewPlates } from "./round369";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1331,6 +1332,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "afa") return v4("afaTitle");
     if (tab === "rps") return v4("rpsTitle");
     if (tab === "afb") return v4("afbTitle");
+    if (tab === "nil") return v4("nilTitle");
+    if (tab === "drv") return v4("drvTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -2750,6 +2753,8 @@ function Shell({ base, section, name }: Props) {
             {view === "afa" && <AffiliateAPlates base={base} v4={v4} />}
             {view === "rps" && <RepousseRules base={base} v4={v4} />}
             {view === "afb" && <AffiliateBPlates base={base} v4={v4} />}
+            {view === "nil" && <NielloRules base={base} v4={v4} />}
+            {view === "drv" && <DocumentReviewPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
