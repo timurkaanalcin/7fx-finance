@@ -273,9 +273,9 @@ function main() {
   assert.equal(queue.split("\n")[1].endsWith(",1"), true);
 
   assert.equal(crmv4Text("en", "gwkTitle"), ROUND202_COPY.en.gwkTitle);
-  assert.equal(crmv4Text("tr", "tznTitle"), ROUND202_COPY.tr.tznTitle);
+  assert.equal(crmv4Text("tr", "tznTitle"), "Saat dilimi levhaları");
   assert.equal(crmv4Text("de", "gwkSearch"), ROUND202_COPY.de.gwkSearch);
-  assert.equal(crmv4Text("ru", "tznHint"), ROUND202_COPY.ru.tznHint);
+  assert.equal(crmv4Text("ru", "tznHint"), "Пластины часового пояса читают уже сохранённый пояс. Они его не меняют. Известная метка — UTC, CET, EET или TRT. Косая черта соединяет две части. Дефис отмечает паузу. Краткий пояс — ровно три знака. Штамп начинается с цифры. Длинный пояс — шестнадцать знаков или длиннее и не начинается с цифры. Пояс на гласную начинается с гласной. Истинный пояс читается как UTC. Пустой пояс читается как NONE. Денежные поля не читаются.");
   assert.equal(crmv4Text("ar", "gwkNotice"), ROUND202_COPY.ar.gwkNotice);
   assert.notEqual(ROUND202_COPY.tr.gwkTitle, ROUND202_COPY.en.gwkTitle);
   assert.notEqual(ROUND202_COPY.de.tznTitle, ROUND202_COPY.en.tznTitle);

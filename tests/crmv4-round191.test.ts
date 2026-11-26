@@ -285,7 +285,7 @@ function main() {
   const reports = fs.readFileSync(path.join(__dirname, "../src/components/crmv4/round43.tsx"), "utf8");
   assert.match(reports, /c4-report-salon/);
   assert.match(reports, /data-logo="mono"/);
-  assert.match(reports, /c4-report-salon-mast/);
+  assert.match(reports, /c4-report-chart-mast/);
   assert.match(reports, /c4-report-salon-card/);
   const app = fs.readFileSync(path.join(__dirname, "../src/components/crmv4/CrmV4App.tsx"), "utf8");
   assert.match(app, /view === "rvmin"/);

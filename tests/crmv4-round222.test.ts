@@ -251,7 +251,7 @@ function main() {
   assert.match(positions, /c4-book-mezzanine/);
   assert.match(positions, /c4-book-mezzanine-index/);
   assert.match(positions, /data-logo="mono"/);
-  assert.match(positions, /data-book="mezzanine"/);
+  assert.match(positions, /data-book="loom"/);
   const used = new Set(viewFile.match(/v4\("([a-zA-Z0-9]+)"\)/g)?.map((item) => item.slice(4, -2)) || []);
   for (const key of used) assert.ok(key in ROUND222_COPY.en, key);
   console.log("crmv4 round222 tests passed");

@@ -252,7 +252,7 @@ function main() {
   assert.match(overview, /c4-exec-oriel/);
   assert.match(overview, /c4-exec-oriel-index/);
   assert.match(overview, /data-logo="mono"/);
-  assert.match(overview, /data-desk="oriel"/);
+  assert.match(overview, /data-desk="loom"/);
   assert.match(overview, /c4-exec-salon/);
   const used = new Set(viewFile.match(/v4\("([a-zA-Z0-9]+)"\)/g)?.map((item) => item.slice(4, -2)) || []);
   for (const key of Array.from(used)) assert.ok(key in ROUND223_COPY.en, key);

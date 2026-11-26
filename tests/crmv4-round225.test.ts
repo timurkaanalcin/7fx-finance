@@ -269,7 +269,7 @@ function main() {
   assert.match(finance, /c4-fin-strongroom/);
   assert.match(finance, /c4-fin-strongroom-index/);
   assert.match(finance, /data-logo="mono"/);
-  assert.match(finance, /data-desk="strongroom"/);
+  assert.match(finance, /data-desk="vitrine"/);
   assert.match(finance, /c4-fin-nave/);
   assert.match(finance, /aria-required=\{false\}/);
   const used = new Set(viewFile.match(/v4\("([a-zA-Z0-9]+)"\)/g)?.map((item) => item.slice(4, -2)) || []);

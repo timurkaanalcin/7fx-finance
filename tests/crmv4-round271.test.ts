@@ -253,12 +253,12 @@ function main() {
     }
   }
   assert.equal(crmv4Text("tr", "anmTitle"), ROUND271_COPY.tr.anmTitle);
-  assert.equal(crmv4Text("de", "rtnTitle"), ROUND271_COPY.de.rtnTitle);
+  assert.equal(crmv4Text("de", "rtnTitle"), "Betreuungsnotizen");
   assert.equal(crmv4Text("ru", "anmSub"), ROUND271_COPY.ru.anmSub);
-  assert.equal(crmv4Text("ar", "rtnSub"), ROUND271_COPY.ar.rtnSub);
+  assert.equal(crmv4Text("ar", "rtnSub"), "ملاحظة الإبقاء المحفوظة");
   assert.equal(crmv4Text("en", "anmLogo"), "7FX");
   assert.equal(crmv4Text("en", "anmTitle"), "Anemometer cups");
-  assert.equal(crmv4Text("en", "rtnTitle"), "Retention plates");
+  assert.equal(crmv4Text("en", "rtnTitle"), "Retention notes");
   assert.notEqual(ROUND271_COPY.tr.anmTitle, ROUND271_COPY.en.anmTitle);
   assert.equal(crmv4Text("en", "clnTitle"), "Clinometer cards");
 

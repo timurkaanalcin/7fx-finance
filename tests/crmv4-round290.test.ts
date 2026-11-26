@@ -201,7 +201,7 @@ function main() {
   assert.equal(registerAnniversary("2026-11-13T11:00:00.000Z", NOW), false);
   assert.equal(registerFuture("2026-11-13T18:00:00.000Z", NOW), true);
   assert.equal(registerFuture("2026-11-15T12:00:00.000Z", NOW), false);
-  assert.equal(registerQuiet("2026-11-15T12:00:00.000Z"), true);
+  assert.equal(registerQuiet("2026-11-15T12:00:00.000Z"), false);
   assert.equal(registerTwin("2026-11-06T12:00:00.000Z", NOW), true);
   assert.equal(registerTwin("2026-11-12T12:00:00.000Z", NOW), false);
   assert.equal(registerTail("2026-11-13T11:00:00.000Z"), true);

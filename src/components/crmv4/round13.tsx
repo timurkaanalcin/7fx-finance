@@ -192,34 +192,53 @@ export function TrendAndLanding({ rows, v4 }: { rows: LeadRow[]; v4: V4 }) {
   const landing = landingBreakdown(rows);
   const max = Math.max(1, ...trend.map((row) => row.count));
   return (
-    <div className="c4-mkt-grid">
-      <section className="c4-card">
-        <div className="c4-card-h"><h3 className="c4-title">{v4("sourceTrend")}</h3></div>
-        {trend.map((row) => <div key={row.day} className="c4-mkt-bar"><span>{row.day}</span><i style={{ width: `${(row.count / max) * 100}%` }} /><em>{row.count}</em></div>)}
-      </section>
-      <section className="c4-card">
-        <div className="c4-card-h"><h3 className="c4-title">{v4("landing")}</h3></div>
-        {landing.map((row) => <p key={row.label} className="c4-pad">{row.label} · {row.count}</p>)}
-        {!landing.length && <p className="c4-muted c4-pad">{v4("landing")}</p>}
-      </section>
-    </div>
+    <section className="c4-trend-ledger" aria-label={v4("sourceTrend")} data-trend-ledger="1">
+      <header className="c4-trend-ledger-mast">
+        <p className="c4-trend-ledger-seal" data-logo="mono">{v4("trendLedgerLogo")}</p>
+        <div>
+          <p className="c4-trend-ledger-kicker">{v4("trendLedgerKicker")}</p>
+          <h3 className="c4-title">{v4("sourceTrend")}</h3>
+          <p className="c4-trend-ledger-lead">{v4("trendLedgerLead")}</p>
+        </div>
+        <p className="c4-trend-ledger-count">{trend.length}</p>
+      </header>
+      <div className="c4-trend-ledger-split">
+        <div>
+          {trend.map((row) => <div key={row.day} className="c4-trend-ledger-bar"><span>{row.day}</span><i style={{ width: `${(row.count / max) * 100}%` }} /><em>{row.count}</em></div>)}
+        </div>
+        <div>
+          <h3 className="c4-title">{v4("landing")}</h3>
+          {landing.map((row) => <p key={row.label} className="c4-trend-ledger-row"><span>{row.label}</span><strong>{row.count}</strong></p>)}
+          {!landing.length && <p className="c4-trend-ledger-row">{v4("landing")}</p>}
+        </div>
+      </div>
+    </section>
   );
 }
 
 export function LeadFormPreview({ v4 }: { v4: V4 }) {
   const [preview, setPreview] = useState("");
   return (
-    <form className="c4-card c4-pad" onSubmit={(event) => {
+    <form className="c4-lead-slip" data-lead-slip="1" aria-label={v4("leadPreview")} onSubmit={(event) => {
       event.preventDefault();
       const fd = new FormData(event.currentTarget);
       setPreview(`${fd.get("name") || ""} · ${fd.get("email") || ""} · ${fd.get("campaign") || ""}`);
     }}>
-      <h3 className="c4-title">{v4("leadPreview")}</h3>
-      <input className="c4-field" name="name" aria-label={v4("leadPreview")} />
-      <input className="c4-field" name="email" type="email" aria-label={v4("leadPreview")} />
-      <input className="c4-field" name="campaign" aria-label={v4("campaigns")} />
-      <button type="submit" className="c4-btn">{v4("leadPreview")}</button>
-      {preview && <p>{preview}</p>}
+      <header className="c4-lead-slip-mast">
+        <p className="c4-lead-slip-seal" data-logo="mono">{v4("leadSlipLogo")}</p>
+        <div>
+          <p className="c4-lead-slip-kicker">{v4("leadSlipKicker")}</p>
+          <h3 className="c4-title">{v4("leadPreview")}</h3>
+          <p className="c4-lead-slip-lead">{v4("leadSlipLead")}</p>
+        </div>
+      </header>
+      <div className="c4-lead-slip-fields">
+        <input className="c4-field" name="name" aria-label={v4("leadPreview")} aria-required={false} />
+        <input className="c4-field" name="email" type="email" aria-label={v4("leadPreview")} aria-required={false} />
+        <input className="c4-field" name="campaign" aria-label={v4("campaigns")} aria-required={false} />
+        <button type="submit" className="c4-btn">{v4("leadPreview")}</button>
+        {preview && <p className="c4-lead-slip-preview">{preview}</p>}
+      </div>
     </form>
   );
 }

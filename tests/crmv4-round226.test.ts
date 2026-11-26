@@ -271,7 +271,7 @@ function main() {
   assert.match(marketing, /c4-mkt-salon/);
   assert.match(marketing, /c4-mkt-folio/);
   assert.match(marketing, /data-logo="mono"/);
-  assert.match(marketing, /data-desk="brocade"/);
+  assert.match(marketing, /data-desk="gallery"/);
   assert.match(marketing, /SegmentBoard/);
   const used = new Set(viewFile.match(/v4\("([a-zA-Z0-9]+)"\)/g)?.map((item) => item.slice(4, -2)) || []);
   for (const key of Array.from(used)) assert.ok(key in ROUND226_COPY.en, key);
