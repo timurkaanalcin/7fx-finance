@@ -93,7 +93,21 @@ export function DenseList({ base, v4, tx }: { base: string; v4: V4; tx: Tx }) {
   }
 
   return (
-    <section className="c4-dense-desk c4-dense-press" aria-label={v4("dnTitle")} data-dense="1" data-desk="press">
+    <section className="c4-dense-desk c4-dense-press c4-dense-taberna" aria-label={v4("dnTitle")} data-dense="1" data-desk="press" data-dense-taberna="1">
+      <header className="c4-dense-taberna-mast">
+        <p className="c4-dense-taberna-seal" data-logo="mono">{v4("dnTabernaLogo")}</p>
+        <div>
+          <p className="c4-dense-taberna-kicker">{v4("dnTabernaKicker")}</p>
+          <h2 className="c4-title c4-dense-taberna-title">{v4("dnTitle")}</h2>
+          <p className="c4-dense-taberna-lead">{v4("dnTabernaLead")}</p>
+        </div>
+        <p className="c4-dense-taberna-count">{shown.length}</p>
+      </header>
+      <ol className="c4-dense-taberna-index" aria-label={v4("dnTabernaKicker")}>
+        <li data-tone="gold">{v4("dnColumns")}</li>
+        <li data-tone="ink">{v4("dnSearch")}</li>
+        <li data-tone="ivory">{shown.length}</li>
+      </ol>
       <header className="c4-pay-head c4-dense-press-mast">
         <p className="c4-dense-press-seal" data-logo="mono">7FX</p>
         <div>
@@ -111,7 +125,7 @@ export function DenseList({ base, v4, tx }: { base: string; v4: V4; tx: Tx }) {
       {viewer && <p className="c4-meta">{v4("dnViewer")}</p>}
       <label className="c4-lab">
         <span>{v4("dnSearch")}</span>
-        <input className="c4-field" aria-label={v4("dnSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
+        <input className="c4-field" aria-label={v4("dnSearch")} aria-required={false} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       <div className="c4-row" role="group" aria-label={v4("dnColumns")}>
         <span className="c4-meta">{v4("dnColumns")}</span>

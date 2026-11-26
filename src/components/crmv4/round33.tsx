@@ -97,7 +97,21 @@ export function AgendaPage({ base, v4, locale }: { base: string; v4: V4; locale:
     writeJson(FOLLOW_KEY, next);
   }
   return (
-    <section className="c4-agenda-luxe c4-agenda-gallery c4-agenda-refectory" aria-label={v4("agTitle")} data-agenda="1" data-desk="refectory">
+    <section className="c4-agenda-luxe c4-agenda-gallery c4-agenda-refectory c4-agenda-gynaeceum" aria-label={v4("agTitle")} data-agenda="1" data-desk="refectory" data-agenda-gynaeceum="1">
+      <header className="c4-agenda-gynaeceum-mast">
+        <p className="c4-agenda-gynaeceum-seal" data-logo="mono">{v4("agGynaeceumLogo")}</p>
+        <div>
+          <p className="c4-agenda-gynaeceum-kicker">{v4("agGynaeceumKicker")}</p>
+          <h2 className="c4-title c4-agenda-gynaeceum-title">{v4("agTitle")}</h2>
+          <p className="c4-agenda-gynaeceum-lead">{v4("agGynaeceumLead")}</p>
+        </div>
+        <p className="c4-agenda-gynaeceum-count">{late.length}/{cards.length}</p>
+      </header>
+      <ol className="c4-agenda-gynaeceum-index" aria-label={v4("agGynaeceumKicker")}>
+        <li data-tone="gold">{v4("agOverdue")} {late.length}</li>
+        <li data-tone="ink">{v4("agDay")}</li>
+        <li data-tone="ivory">{v4("agWeek")}</li>
+      </ol>
       <header className="c4-agenda-gallery-mast">
         <div>
           <p className="c4-agenda-gallery-kicker">{v4("agHint")}</p>
@@ -116,7 +130,7 @@ export function AgendaPage({ base, v4, locale }: { base: string; v4: V4; locale:
         <button type="button" className="c4-btn" onClick={() => setCursor(today)}>{today}</button>
         <button type="button" className="c4-btn" onClick={() => setCursor(shiftDay(cursor, mode === "week" ? 7 : 1))}>{v4("agNext")}</button>
       </div>
-      <label className="c4-lab"><span>{v4("agSearch")}</span><input className="c4-field c4-agenda-refectory-search" aria-label={v4("agSearch")} value={query} onChange={(event) => setQuery(event.target.value)} /></label>
+      <label className="c4-lab"><span>{v4("agSearch")}</span><input className="c4-field c4-agenda-refectory-search" aria-label={v4("agSearch")} aria-required={false} value={query} onChange={(event) => setQuery(event.target.value)} /></label>
       <h3 className="c4-title c4-agenda-gallery-lane-title">{v4("agOverdue")}</h3>
       {!late.length && <p className="c4-empty-gold">{v4("agNone")}</p>}
       <ul className="c4-agenda-lane c4-agenda-gallery-lane">{late.map((card) => <FollowItem key={`${card.source}-${card.id}-${card.day}`} base={base} card={card} v4={v4} onSave={save} />)}</ul>
