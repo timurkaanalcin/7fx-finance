@@ -172,14 +172,22 @@ export function DocStatusGlance({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-doc-status" aria-label={v4("dsTitle")} data-doc-status="1">
-      <header className="c4-pay-head">
+    <section className="c4-doc-status c4-doc-tablinum" aria-label={v4("dsTitle")} data-doc-status="1" data-doc-tablinum="1">
+      <header className="c4-pay-head c4-ds-tablinum-mast">
+        <p className="c4-ds-tablinum-seal" data-logo="mono">{v4("dsTablinumLogo")}</p>
         <div>
+          <p className="c4-ds-tablinum-kicker">{v4("dsTablinumKicker")}</p>
+          <p className="c4-ds-tablinum-lead">{v4("dsTablinumLead")}</p>
           <p className="c4-pay-kicker">{v4("dsSub")}</p>
           <h2 className="c4-title">{v4("dsTitle")}</h2>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-ds-tablinum-count">{chips.length}</p>
       </header>
+      <ol className="c4-ds-tablinum-index" aria-label={v4("dsTablinumKicker")}>
+        <li data-tone="gold">{v4("dsTablinumShown")} {shown.length}</li>
+        <li data-tone="ink">{v4("dsTablinumBlank")} {blankCount}</li>
+        <li data-tone="ivory">{v4("dsTablinumHidden")} {hiddenStatuses.length}</li>
+      </ol>
       <p className="c4-meta">{v4("dsHint")}</p>
       <p className="c4-meta">{v4("dsLocal")}</p>
       <p className="c4-row">
@@ -212,11 +220,11 @@ export function DocStatusGlance({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("dsSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("dsEmpty")}</p>}
-      <ul className="c4-doc-rows">
+      <ul className="c4-doc-rows c4-ds-tablinum-list">
         {shown.map((row) => {
           const name = statusText(row.status);
           return (
-            <li key={row.id} data-status={name || "blank"}>
+            <li key={row.id} className="c4-ds-tablinum-card" data-status={name || "blank"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("dsBlank")}</p>
               {row.userId && <Link className="c4-btn" href={crmv4Href(base, `customers/${row.userId}`)}>{v4("dsCustomer")}</Link>}
