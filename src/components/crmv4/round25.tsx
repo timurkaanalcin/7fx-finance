@@ -139,7 +139,7 @@ function Metric({ title, hint, actual, shown, target, estimate, gap, gapShown, p
       {hint ? <p className="c4-muted">{hint}</p> : null}
       <p><span className="c4-muted">{v4("goalMtd")}</span> <strong>{shown}</strong></p>
       <label className="c4-lab"><span>{v4("goalTarget")}</span>
-        <input className="c4-field" type="number" min={0} aria-label={`${v4("goalTarget")} ${title}`} value={target || ""} onChange={(event) => onTarget(Math.max(0, Number(event.target.value) || 0))} />
+        <input className="c4-field" type="number" min={0} aria-label={`${v4("goalTarget")} ${title}`} aria-required={false} value={target || ""} onChange={(event) => onTarget(Math.max(0, Number(event.target.value) || 0))} />
       </label>
       <p><span className="c4-muted">{v4("goalEstimate")}</span> <strong>{estimate}</strong></p>
       <p>{gapText(gap, gapShown, v4)}</p>
@@ -172,7 +172,21 @@ export function GoalsPage({ v4, locale }: { v4: V4; locale: string }) {
   const ftdRate = runRate(ftd, span.day, span.days);
   const traderRate = runRate(traders, span.day, span.days);
   return (
-    <section className="c4-goals-luxe c4-goals-night c4-goals-gallery c4-goals-refectory c4-goals-greenhouse" aria-label={v4("goalsTitle")} data-goals="1" data-desk="refectory" data-house="greenhouse">
+    <section className="c4-goals-luxe c4-goals-night c4-goals-gallery c4-goals-refectory c4-goals-greenhouse c4-goals-bema" aria-label={v4("goalsTitle")} data-goals="1" data-desk="refectory" data-house="greenhouse" data-goals-bema="1">
+      <header className="c4-goals-bema-mast">
+        <p className="c4-goals-bema-seal" data-logo="mono">{v4("glBemaLogo")}</p>
+        <div>
+          <p className="c4-goals-bema-kicker">{v4("glBemaKicker")}</p>
+          <h2 className="c4-title c4-goals-bema-title">{v4("goalsTitle")}</h2>
+          <p className="c4-goals-bema-lead">{v4("glBemaLead")}</p>
+        </div>
+        <p className="c4-goals-bema-count">{span.day}/{span.days}</p>
+      </header>
+      <ol className="c4-goals-bema-index" aria-label={v4("glBemaKicker")}>
+        <li data-tone="gold">{v4("goalAhead")}</li>
+        <li data-tone="ink">{v4("goalEven")}</li>
+        <li data-tone="ivory">{v4("goalBehind")}</li>
+      </ol>
       <header className="c4-goals-mast">
         <p className="c4-goals-plate" data-logo="mono">7FX</p>
         <div>
