@@ -368,6 +368,7 @@ import { DocumentMarks, VignetteFrames } from "./round377";
 import { CartoucheRules, GrisaillePhones } from "./round378";
 import { CiseleRules, IntaglioLogins } from "./round379";
 import { BurinRules, ColophonKeepers } from "./round380";
+import { SgraffitoSlips, SinopiaCartoons } from "./round381";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1157,6 +1158,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "itg") return v4("itgTitle");
     if (tab === "brn") return v4("burTitle");
     if (tab === "col") return v4("colTitle");
+    if (tab === "sgf") return v4("sgfTitle");
+    if (tab === "snp") return v4("snpTitle");
     if (tab === "pnd") return v4("pndTitle");
     if (tab === "cht") return v4("chtTitle");
     if (tab === "thd") return v4("thdTitle");
@@ -1375,6 +1378,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "itg") return v4("itgTitle");
     if (tab === "brn") return v4("burTitle");
     if (tab === "col") return v4("colTitle");
+    if (tab === "sgf") return v4("sgfTitle");
+    if (tab === "snp") return v4("snpTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1850,6 +1855,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "itg") return v4("itgSub");
     if (tab === "brn") return v4("burSub");
     if (tab === "col") return v4("colSub");
+    if (tab === "sgf") return v4("sgfSub");
+    if (tab === "snp") return v4("snpSub");
     if (tab === "pnd") return v4("pndSub");
     if (tab === "cht") return v4("chtSub");
     if (tab === "thd") return v4("thdSub");
@@ -2025,6 +2032,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "itg") return v4("itgSub");
     if (tab === "brn") return v4("burSub");
     if (tab === "col") return v4("colSub");
+    if (tab === "sgf") return v4("sgfSub");
+    if (tab === "snp") return v4("snpSub");
     return "";
   }
 
@@ -2844,6 +2853,8 @@ function Shell({ base, section, name }: Props) {
             {view === "itg" && <IntaglioLogins base={base} v4={v4} />}
             {view === "brn" && <BurinRules base={base} v4={v4} />}
             {view === "col" && <ColophonKeepers base={base} v4={v4} />}
+            {view === "sgf" && <SgraffitoSlips base={base} v4={v4} />}
+            {view === "snp" && <SinopiaCartoons base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
