@@ -371,6 +371,7 @@ import { BurinRules, ColophonKeepers } from "./round380";
 import { SgraffitoSlips, SinopiaCartoons } from "./round381";
 import { VerdaccioVeils, BoleGrounds } from "./round382";
 import { MezzotintPlates, MaculatureProofs } from "./round383";
+import { ScagliolaSlabs, VeinCombs } from "./round384";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1166,6 +1167,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "bol") return v4("bolTitle");
     if (tab === "mzt") return v4("mztTitle");
     if (tab === "mac") return v4("macTitle");
+    if (tab === "scg") return v4("scgTitle");
+    if (tab === "ven") return v4("venTitle");
     if (tab === "pnd") return v4("pndTitle");
     if (tab === "cht") return v4("chtTitle");
     if (tab === "thd") return v4("thdTitle");
@@ -1390,6 +1393,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "bol") return v4("bolTitle");
     if (tab === "mzt") return v4("mztTitle");
     if (tab === "mac") return v4("macTitle");
+    if (tab === "scg") return v4("scgTitle");
+    if (tab === "ven") return v4("venTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1871,6 +1876,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "bol") return v4("bolSub");
     if (tab === "mzt") return v4("mztSub");
     if (tab === "mac") return v4("macSub");
+    if (tab === "scg") return v4("scgSub");
+    if (tab === "ven") return v4("venSub");
     if (tab === "pnd") return v4("pndSub");
     if (tab === "cht") return v4("chtSub");
     if (tab === "thd") return v4("thdSub");
@@ -2052,6 +2059,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "bol") return v4("bolSub");
     if (tab === "mzt") return v4("mztSub");
     if (tab === "mac") return v4("macSub");
+    if (tab === "scg") return v4("scgSub");
+    if (tab === "ven") return v4("venSub");
     return "";
   }
 
@@ -2877,6 +2886,8 @@ function Shell({ base, section, name }: Props) {
             {view === "bol" && <BoleGrounds base={base} v4={v4} />}
             {view === "mzt" && <MezzotintPlates base={base} v4={v4} />}
             {view === "mac" && <MaculatureProofs base={base} v4={v4} />}
+            {view === "scg" && <ScagliolaSlabs base={base} v4={v4} />}
+            {view === "ven" && <VeinCombs base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

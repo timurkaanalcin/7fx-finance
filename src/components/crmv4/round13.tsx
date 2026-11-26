@@ -284,17 +284,25 @@ export function SegmentBuilder({ rows, v4 }: { rows: LeadRow[]; v4: V4 }) {
   const saved = rules[0];
   const savedRows = saved ? rows.filter((row) => segmentHit(row, saved)) : [];
   return (
-    <section className="c4-card c4-pad">
-      <h3 className="c4-title">{v4("segmentBuilder")}</h3>
-      <div className="c4-row">
-        <input className="c4-field" aria-label={v4("segmentBuilder")} value={name} onChange={(event) => setName(event.target.value)} />
+    <section className="c4-segment-panel" aria-label={v4("segmentBuilder")} data-segment-panel="1">
+      <header className="c4-segment-panel-mast">
+        <p className="c4-segment-panel-seal" data-logo="mono">{v4("segmentPanelLogo")}</p>
+        <div>
+          <p className="c4-segment-panel-kicker">{v4("segmentPanelKicker")}</p>
+          <h3 className="c4-title">{v4("segmentBuilder")}</h3>
+          <p className="c4-segment-panel-lead">{v4("segmentPanelLead")}</p>
+        </div>
+        <p className="c4-segment-panel-count">{rules.length}</p>
+      </header>
+      <div className="c4-segment-panel-tools">
+        <input className="c4-field" aria-label={v4("segmentBuilder")} aria-required={false} value={name} onChange={(event) => setName(event.target.value)} />
         <select className="c4-select" aria-label={v4("segmentBuilder")} value={field} onChange={(event) => setField(event.target.value as SegmentRule["field"])}>
           <option value="campaign">campaign</option>
           <option value="country">country</option>
           <option value="sale">sale</option>
           <option value="ftd">ftd</option>
         </select>
-        <input className="c4-field" aria-label={v4("segmentSize")} value={value} onChange={(event) => setValue(event.target.value)} />
+        <input className="c4-field" aria-label={v4("segmentSize")} aria-required={false} value={value} onChange={(event) => setValue(event.target.value)} />
         <button type="button" className="c4-btn" onClick={() => {
           if (!name.trim() || !value.trim()) return;
           const next = [{ name: name.trim(), field, value: value.trim() }, ...rules.filter((row) => row.name !== name.trim())];
@@ -302,9 +310,9 @@ export function SegmentBuilder({ rows, v4 }: { rows: LeadRow[]; v4: V4 }) {
           writeJson(SEG_KEY, next);
         }}>{v4("segmentBuilder")}</button>
       </div>
-      <p>{v4("segmentSize")} {size}</p>
+      <p className="c4-segment-panel-meta">{v4("segmentSize")} {size}</p>
       <button type="button" className="c4-btn" onClick={() => downloadCsv("segment.csv", ["name", "email", "campaign"], savedRows.map((row) => [String(row.name || ""), String(row.email || ""), String(row.campaign || "")]))}>{v4("segmentExport")}</button>
-      {rules.map((row) => <span key={row.name} className="c4-chip">{row.name}</span>)}
+      <div className="c4-segment-panel-chips">{rules.map((row) => <span key={row.name} className="c4-chip">{row.name}</span>)}</div>
     </section>
   );
 }
@@ -326,10 +334,20 @@ export function RetentionHeat({ rows, v4 }: { rows: LeadRow[]; v4: V4 }) {
 export function AnniversaryList({ rows, v4 }: { rows: LeadRow[]; v4: V4 }) {
   const list = anniversaries(rows);
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("anniversary")}</h3></div>
-      {list.map((row) => <p key={row.id} className="c4-pad">{row.name || row.email}</p>)}
-      {!list.length && <p className="c4-muted c4-pad">{v4("anniversary")}</p>}
+    <section className="c4-anniversary-rail" aria-label={v4("anniversary")} data-anniversary-rail="1">
+      <header className="c4-anniversary-rail-mast">
+        <p className="c4-anniversary-rail-seal" data-logo="mono">{v4("anniversaryRailLogo")}</p>
+        <div>
+          <p className="c4-anniversary-rail-kicker">{v4("anniversaryRailKicker")}</p>
+          <h3 className="c4-title">{v4("anniversary")}</h3>
+          <p className="c4-anniversary-rail-lead">{v4("anniversaryRailLead")}</p>
+        </div>
+        <p className="c4-anniversary-rail-count">{list.length}</p>
+      </header>
+      <ul className="c4-anniversary-rail-slips">
+        {list.map((row) => <li key={row.id}><strong>{row.name || row.email}</strong></li>)}
+      </ul>
+      {!list.length && <p className="c4-anniversary-rail-empty">{v4("anniversary")}</p>}
     </section>
   );
 }
