@@ -172,7 +172,21 @@ export function DocDesk({ rows, v4 }: { rows: { id: string; status?: string | nu
   }
   const shown = type ? rows.filter((row) => row.docType === type) : rows;
   return (
-    <div className="c4-doc-desk">
+    <section className="c4-doc-desk c4-doc-aumbry" aria-label={v4("docCounts")} data-doc-aumbry="1">
+      <header className="c4-doc-aumbry-mast">
+        <p className="c4-doc-aumbry-seal" data-logo="mono">{v4("dcAumbryLogo")}</p>
+        <div>
+          <p className="c4-doc-aumbry-kicker">{v4("dcAumbryKicker")}</p>
+          <h3 className="c4-title">{v4("docCounts")}</h3>
+          <p className="c4-doc-aumbry-lead">{v4("dcAumbryLead")}</p>
+        </div>
+        <p className="c4-doc-aumbry-count">{shown.length}</p>
+      </header>
+      <ol className="c4-doc-aumbry-index" aria-label={v4("dcAumbryKicker")}>
+        <li data-tone="gold">{v4("docCounts")} {counts.pending}</li>
+        <li>OK {counts.approved}</li>
+        <li>{v4("docTypeFilter")} {counts.rejected}</li>
+      </ol>
       <div className="c4-fin-hero" aria-label={v4("docCounts")}>
         <div className="c4-fin-metric"><span>{v4("docCounts")}</span><strong>{counts.pending}</strong></div>
         <div className="c4-fin-metric"><span>OK</span><strong>{counts.approved}</strong></div>
@@ -183,14 +197,14 @@ export function DocDesk({ rows, v4 }: { rows: { id: string; status?: string | nu
         {types.map((item) => <button key={item} type="button" className="c4-chip" data-on={type === item ? "1" : "0"} onClick={() => setType(item)}>{item}</button>)}
       </div>
       {shown.map((row) => (
-        <div key={row.id} className="c4-doc-line">
+        <div key={row.id} className="c4-doc-line c4-doc-aumbry-row">
           <span>{row.name || row.id}</span>
-          <input className="c4-field" type="date" aria-label={v4("chaseBy")} value={chase[row.id] || ""} onChange={(event) => {
+          <input className="c4-field" type="date" aria-label={v4("chaseBy")} aria-required={false} value={chase[row.id] || ""} onChange={(event) => {
             const next = { ...chase, [row.id]: event.target.value };
             setChase(next);
             writeJson(CHASE_KEY, next);
           }} />
-          <input className="c4-field" aria-label={v4("docTag")} value={tags[row.id] || ""} onChange={(event) => {
+          <input className="c4-field" aria-label={v4("docTag")} aria-required={false} value={tags[row.id] || ""} onChange={(event) => {
             const next = { ...tags, [row.id]: event.target.value };
             setTags(next);
             writeJson(DOCTAG_KEY, next);
@@ -198,7 +212,7 @@ export function DocDesk({ rows, v4 }: { rows: { id: string; status?: string | nu
         </div>
       ))}
       {!shown.length && <p className="c4-empty-gold">{v4("emptyDocs")}</p>}
-    </div>
+    </section>
   );
 }
 
