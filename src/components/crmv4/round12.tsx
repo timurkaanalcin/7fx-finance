@@ -269,8 +269,16 @@ export function DocAsk({ v4 }: { v4: V4 }) {
   useEffect(() => { setPicked(readJson(DOC_KEY, [])); }, []);
   const preview = picked.length ? `Please send: ${picked.join(", ")}.` : v4("docPreview");
   return (
-    <div className="c4-stack">
-      <div className="c4-row">
+    <section className="c4-doc-cartellino" aria-label={v4("docAsk")} data-doc-cartellino="1">
+      <header className="c4-doc-cartellino-mast">
+        <p className="c4-doc-cartellino-seal" data-logo="mono">{v4("daCartellinoLogo")}</p>
+        <div>
+          <p className="c4-doc-cartellino-kicker">{v4("daCartellinoKicker")}</p>
+          <h3 className="c4-title">{v4("docAsk")}</h3>
+          <p className="c4-doc-cartellino-lead">{v4("daCartellinoLead")}</p>
+        </div>
+      </header>
+      <div className="c4-doc-cartellino-chips" role="group" aria-label={v4("docAsk")}>
         {DOC_ITEMS.map((item) => (
           <label key={item} className="c4-chip" data-on={picked.includes(item) ? "1" : "0"}>
             <input type="checkbox" checked={picked.includes(item)} onChange={() => {
@@ -282,8 +290,8 @@ export function DocAsk({ v4 }: { v4: V4 }) {
           </label>
         ))}
       </div>
-      <p className="c4-pad">{v4("docPreview")}: {preview}</p>
-    </div>
+      <p className="c4-doc-cartellino-leaf">{v4("docPreview")}: {preview}</p>
+    </section>
   );
 }
 
@@ -293,11 +301,21 @@ export function ContactSummary({ email, id, v4 }: { email?: string | null; id: s
   const counts = channelCounts(rows);
   const last = lastChannel(rows);
   return (
-    <div>
-      <p className="c4-pad">{v4("lastChannel")} {last || "—"}</p>
-      {counts.map((row) => <p key={row.type} className="c4-pad">{v4("contactCounts")} {row.type} {row.count}</p>)}
-      {!counts.length && <p className="c4-muted c4-pad">{v4("contactCounts")}</p>}
-    </div>
+    <section className="c4-channel-abacus" aria-label={v4("contactCounts")} data-channel-abacus="1">
+      <header className="c4-channel-abacus-mast">
+        <p className="c4-channel-abacus-seal" data-logo="mono">{v4("chAbacusLogo")}</p>
+        <div>
+          <p className="c4-channel-abacus-kicker">{v4("chAbacusKicker")}</p>
+          <h3 className="c4-title">{v4("contactCounts")}</h3>
+          <p className="c4-channel-abacus-lead">{v4("chAbacusLead")}</p>
+        </div>
+      </header>
+      <p className="c4-channel-abacus-last">{v4("lastChannel")} <strong>{last || "—"}</strong></p>
+      <ol className="c4-channel-abacus-wire">
+        {counts.map((row) => <li key={row.type}><span>{row.type}</span><b>{row.count}</b></li>)}
+      </ol>
+      {!counts.length && <p className="c4-muted">{v4("contactCounts")}</p>}
+    </section>
   );
 }
 
