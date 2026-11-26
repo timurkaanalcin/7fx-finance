@@ -365,6 +365,7 @@ import { ChampleveWells, VoidStamps } from "./round374";
 import { FrostMarks, PliqueLanterns } from "./round375";
 import { PaillonSpangles, RetentionNotes } from "./round376";
 import { DocumentMarks, VignetteFrames } from "./round377";
+import { CartoucheRules, GrisaillePhones } from "./round378";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1148,6 +1149,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "rtn") return v4("rtnTitle");
     if (tab === "vgn") return v4("vgnTitle");
     if (tab === "dmk") return v4("dmkTitle");
+    if (tab === "crt") return v4("crtTitle");
+    if (tab === "gsa") return v4("gsaTitle");
     if (tab === "pnd") return v4("pndTitle");
     if (tab === "cht") return v4("chtTitle");
     if (tab === "thd") return v4("thdTitle");
@@ -1360,6 +1363,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "rtn") return v4("rtnTitle");
     if (tab === "vgn") return v4("vgnTitle");
     if (tab === "dmk") return v4("dmkTitle");
+    if (tab === "crt") return v4("crtTitle");
+    if (tab === "gsa") return v4("gsaTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -1829,6 +1834,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "rtn") return v4("rtnSub");
     if (tab === "vgn") return v4("vgnSub");
     if (tab === "dmk") return v4("dmkSub");
+    if (tab === "crt") return v4("crtSub");
+    if (tab === "gsa") return v4("gsaSub");
     if (tab === "pnd") return v4("pndSub");
     if (tab === "cht") return v4("chtSub");
     if (tab === "thd") return v4("thdSub");
@@ -1998,6 +2005,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "rtn") return v4("rtnSub");
     if (tab === "vgn") return v4("vgnSub");
     if (tab === "dmk") return v4("dmkSub");
+    if (tab === "crt") return v4("crtSub");
+    if (tab === "gsa") return v4("gsaSub");
     return "";
   }
 
@@ -2811,6 +2820,8 @@ function Shell({ base, section, name }: Props) {
             {view === "rtn" && <RetentionNotes base={base} v4={v4} />}
             {view === "vgn" && <VignetteFrames base={base} v4={v4} />}
             {view === "dmk" && <DocumentMarks base={base} v4={v4} />}
+            {view === "crt" && <CartoucheRules base={base} v4={v4} />}
+            {view === "gsa" && <GrisaillePhones base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
