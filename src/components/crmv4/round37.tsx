@@ -71,8 +71,21 @@ export function KycStudio({
     setOpen(null);
   }
   return (
-    <section className="c4-kyc-gallery" aria-label={v4("kycTitle")} data-kyc="1">
-      <h2 className="c4-title">{v4("kycTitle")}</h2>
+    <section className="c4-kyc-gallery c4-ks-pastoforion" aria-label={v4("kycTitle")} data-kyc="1" data-ks-pastoforion="1">
+      <header className="c4-ks-pastoforion-mast">
+        <p className="c4-ks-pastoforion-seal" data-logo="mono">{v4("ksPastoforionLogo")}</p>
+        <div>
+          <p className="c4-ks-pastoforion-kicker">{v4("ksPastoforionKicker")}</p>
+          <h2 className="c4-title">{v4("kycTitle")}</h2>
+          <p className="c4-ks-pastoforion-lead">{v4("ksPastoforionLead")}</p>
+        </div>
+        <p className="c4-ks-pastoforion-count">{mine.length}</p>
+      </header>
+      <ol className="c4-ks-pastoforion-index" aria-label={v4("ksPastoforionKicker")}>
+        <li data-tone="gold">{v4("kycCheckName")}</li>
+        <li data-tone="ink">{v4("kycCheckPhoto")}</li>
+        <li data-tone="ivory">{v4("kycCheckExpiry")}</li>
+      </ol>
       <p className="c4-muted">{v4("kycHint")}</p>
       <State loading={loading} error={error} empty={!loading && !error && mine.length === 0} tx={tx} onRetry={onRetry} hint={v4("kycNone")} />
       {!loading && !error && mine.length > 0 && (
@@ -95,13 +108,13 @@ export function KycStudio({
           </fieldset>
           <label className="c4-lab">
             <span>{v4("kycReason")}</span>
-            <input className="c4-field" aria-label={v4("kycReason")} value={reason} onChange={(event) => setReason(event.target.value)} />
+            <input className="c4-field" aria-label={v4("kycReason")} aria-required={false} value={reason} onChange={(event) => setReason(event.target.value)} />
           </label>
           <p className="c4-muted">{v4("kycReasonHint")}</p>
           {!shown.length && <p className="c4-empty c4-empty-card">{v4("kycNone")}</p>}
-          <ul className="c4-kyc-grid">
+          <ul className="c4-kyc-grid c4-ks-pastoforion-list">
             {shown.map((row) => (
-              <li key={row.id}>
+              <li key={row.id} className="c4-ks-pastoforion-card" data-status={row.status || "blank"}>
                 <div className="c4-row c4-between">
                   <strong>{row.name || row.id}</strong>
                   <Status tone={statusTone(row.status)}>{row.status || "—"}</Status>
@@ -182,8 +195,21 @@ export function AuditTimeline({ v4, locale, tx }: { v4: V4; locale: string; tx: 
   const rows = filterAudit(loaded, { actor, action, entity });
   const days = groupAudit(rows);
   return (
-    <section className="c4-audit-time" aria-label={v4("auditTitle")} data-audit="1">
-      <h2 className="c4-title">{v4("auditTitle")}</h2>
+    <section className="c4-audit-time c4-au-synthronon" aria-label={v4("auditTitle")} data-audit="1" data-au-synthronon="1">
+      <header className="c4-au-synthronon-mast">
+        <p className="c4-au-synthronon-seal" data-logo="mono">{v4("auSynthrononLogo")}</p>
+        <div>
+          <p className="c4-au-synthronon-kicker">{v4("auSynthrononKicker")}</p>
+          <h2 className="c4-title">{v4("auditTitle")}</h2>
+          <p className="c4-au-synthronon-lead">{v4("auSynthrononLead")}</p>
+        </div>
+        <p className="c4-au-synthronon-count">{rows.length}</p>
+      </header>
+      <ol className="c4-au-synthronon-index" aria-label={v4("auSynthrononKicker")}>
+        <li data-tone="gold">{v4("auditActor")}</li>
+        <li data-tone="ink">{v4("auditAction")}</li>
+        <li data-tone="ivory">{v4("auditEntity")}</li>
+      </ol>
       <p className="c4-muted">{v4("auditHint")}</p>
       <State loading={data.loading} error={data.error} empty={!data.loading && !data.error && loaded.length === 0} tx={tx} onRetry={data.reload} hint={v4("auditEmpty")} />
       {!data.loading && !data.error && loaded.length > 0 && (
@@ -201,9 +227,9 @@ export function AuditTimeline({ v4, locale, tx }: { v4: V4; locale: string; tx: 
           {days.map((group) => (
             <section key={group.day || "none"}>
               <h3 className="c4-title">{group.day || v4("auditNoDay")}</h3>
-              <ul>
+              <ul className="c4-au-synthronon-list">
                 {group.rows.map((row) => (
-                  <li key={row.id}>
+                  <li key={row.id} className="c4-au-synthronon-card">
                     <div className="c4-row c4-between">
                       <strong>{row.action || "—"}</strong>
                       <Status tone={statusTone(row.level)}>{row.level || "—"}</Status>

@@ -358,6 +358,7 @@ import { TapisserieRules, AffiliatePlates as AffiliateAPlates } from "./round367
 import { RepousseRules, AffiliateBPlates } from "./round368";
 import { NielloRules, DocumentReviewPlates } from "./round369";
 import { CloisonRules, DocumentTypePlates } from "./round370";
+import { BasseTailleRules, SaleStagePlates } from "./round371";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1337,6 +1338,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "drv") return v4("drvTitle");
     if (tab === "czn") return v4("cznTitle");
     if (tab === "dtp") return v4("dtpTitle");
+    if (tab === "btl") return v4("btlTitle");
+    if (tab === "ssp") return v4("sspTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -2760,6 +2763,8 @@ function Shell({ base, section, name }: Props) {
             {view === "drv" && <DocumentReviewPlates base={base} v4={v4} />}
             {view === "czn" && <CloisonRules base={base} v4={v4} />}
             {view === "dtp" && <DocumentTypePlates base={base} v4={v4} />}
+            {view === "btl" && <BasseTailleRules base={base} v4={v4} />}
+            {view === "ssp" && <SaleStagePlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
