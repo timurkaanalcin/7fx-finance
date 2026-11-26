@@ -354,6 +354,7 @@ import { GrantPlates, TriovisRules } from "./round363";
 import { DocumentPlates, WolfRules } from "./round364";
 import { MalteseRules, TradingServerPlates } from "./round365";
 import { OpalineRules, OriginPlates } from "./round366";
+import { TapisserieRules, AffiliatePlates as AffiliateAPlates } from "./round367";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1325,6 +1326,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "srv") return v4("srvTitle");
     if (tab === "opl") return v4("oplTitle");
     if (tab === "lis") return v4("lisTitle");
+    if (tab === "tps") return v4("tpsTitle");
+    if (tab === "afa") return v4("afaTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -2740,6 +2743,8 @@ function Shell({ base, section, name }: Props) {
             {view === "srv" && <TradingServerPlates base={base} v4={v4} />}
             {view === "opl" && <OpalineRules base={base} v4={v4} />}
             {view === "lis" && <OriginPlates base={base} v4={v4} />}
+            {view === "tps" && <TapisserieRules base={base} v4={v4} />}
+            {view === "afa" && <AffiliateAPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

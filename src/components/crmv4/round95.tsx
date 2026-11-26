@@ -132,14 +132,22 @@ export function WithdrawalGlance({ base, v4 }: { base: string; v4: V4 }) {
   }
 
   return (
-    <section className="c4-wd-status" aria-label={v4("wzTitle")} data-wd-status="1">
-      <header className="c4-pay-head">
+    <section className="c4-wd-status c4-wd-castellum" aria-label={v4("wzTitle")} data-wd-status="1" data-wd-castellum="1">
+      <header className="c4-pay-head c4-wz-castellum-mast">
+        <p className="c4-wz-castellum-seal" data-logo="mono">{v4("wzCastellumLogo")}</p>
         <div>
+          <p className="c4-wz-castellum-kicker">{v4("wzCastellumKicker")}</p>
+          <p className="c4-wz-castellum-lead">{v4("wzCastellumLead")}</p>
           <p className="c4-pay-kicker">{v4("wzSub")}</p>
           <h2 className="c4-title">{v4("wzTitle")}</h2>
         </div>
-        <p className="c4-meta">{chips.length}</p>
+        <p className="c4-wz-castellum-count">{chips.length}</p>
       </header>
+      <ol className="c4-wz-castellum-index" aria-label={v4("wzCastellumKicker")}>
+        <li data-tone="gold">{v4("wzCastellumShown")} {shown.length}</li>
+        <li data-tone="ink">{v4("wzCastellumBlank")} {blankCount}</li>
+        <li data-tone="ivory">{v4("wzCastellumHidden")} {hiddenStatuses.length}</li>
+      </ol>
       <p className="c4-meta">{v4("wzHint")}</p>
       <p className="c4-meta">{v4("wzLocal")}</p>
       <p className="c4-row">
@@ -172,11 +180,11 @@ export function WithdrawalGlance({ base, v4 }: { base: string; v4: V4 }) {
         <input className="c4-field" aria-label={v4("wzSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       </label>
       {!shown.length && rows.length > 0 && <p className="c4-pay-empty">{v4("wzEmpty")}</p>}
-      <ul className="c4-wd-rows">
+      <ul className="c4-wd-rows c4-wz-castellum-list">
         {shown.map((row) => {
           const name = statusText(row.status);
           return (
-            <li key={row.id} data-status={name || "blank"}>
+            <li key={row.id} className="c4-wz-castellum-card" data-status={name || "blank"}>
               <p>{row.label || row.id}</p>
               <p className="c4-meta">{name || v4("wzBlank")}</p>
               {row.userId && <Link className="c4-btn" href={crmv4Href(base, `customers/${row.userId}`)}>{v4("wzCustomer")}</Link>}
