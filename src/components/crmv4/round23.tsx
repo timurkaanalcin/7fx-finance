@@ -73,7 +73,21 @@ export function AlertCenter({ base, v4 }: { base: string; v4: V4 }) {
     ...quietAlerts(users, deps),
   ], settings).filter((hit) => !rule || hit.rule === rule);
   return (
-    <section className="c4-alert-luxe" aria-label={v4("alertCenter")}>
+    <section className="c4-alert-luxe c4-alert-consistorium" aria-label={v4("alertCenter")} data-alert-consistorium="1">
+      <header className="c4-alert-consistorium-mast">
+        <p className="c4-alert-consistorium-seal" data-logo="mono">{v4("alConsistoriumLogo")}</p>
+        <div>
+          <p className="c4-alert-consistorium-kicker">{v4("alConsistoriumKicker")}</p>
+          <h2 className="c4-title">{v4("alertCenter")}</h2>
+          <p className="c4-alert-consistorium-lead">{v4("alConsistoriumLead")}</p>
+        </div>
+        <p className="c4-alert-consistorium-count">{hits.length}</p>
+      </header>
+      <ol className="c4-alert-consistorium-index" aria-label={v4("alConsistoriumKicker")}>
+        <li data-tone="gold">{v4("alertCenter")} {hits.length}</li>
+        <li>{v4("alertOn")} {RULES.filter((item) => settings[item]).length}</li>
+        <li>{v4("alertHint")}</li>
+      </ol>
       <div className="c4-fin-hero">
         <div className="c4-fin-metric"><span>{v4("alertCenter")}</span><strong>{hits.length}</strong></div>
         <div className="c4-fin-metric"><span>{v4("alertOn")}</span><strong>{RULES.filter((item) => settings[item]).length}</strong></div>
@@ -89,8 +103,8 @@ export function AlertCenter({ base, v4 }: { base: string; v4: V4 }) {
         ))}
       </div>
       <div className="c4-row c4-pad">
-        <label className="c4-lab"><span>{v4("alertLargeAt")}</span><input className="c4-field" inputMode="numeric" aria-label={v4("alertLargeAt")} value={String(settings.largeAt)} onChange={(event) => save({ ...settings, largeAt: Number(event.target.value) || 0 })} /></label>
-        <label className="c4-lab"><span>{v4("alertSlaHours")}</span><input className="c4-field" inputMode="numeric" aria-label={v4("alertSlaHours")} value={String(settings.slaHours)} onChange={(event) => save({ ...settings, slaHours: Number(event.target.value) || 0 })} /></label>
+        <label className="c4-lab"><span>{v4("alertLargeAt")}</span><input className="c4-field" inputMode="numeric" aria-label={v4("alertLargeAt")} aria-required={false} value={String(settings.largeAt)} onChange={(event) => save({ ...settings, largeAt: Number(event.target.value) || 0 })} /></label>
+        <label className="c4-lab"><span>{v4("alertSlaHours")}</span><input className="c4-field" inputMode="numeric" aria-label={v4("alertSlaHours")} aria-required={false} value={String(settings.slaHours)} onChange={(event) => save({ ...settings, slaHours: Number(event.target.value) || 0 })} /></label>
       </div>
       <ul className="c4-alert-list">
         {hits.map((hit) => (
