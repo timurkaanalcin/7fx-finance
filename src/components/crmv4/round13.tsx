@@ -218,17 +218,25 @@ export function MailGallery({ templates, v4 }: { templates: { id: string; name?:
   const [id, setId] = useState("");
   const current = templates.find((row) => row.id === id) || templates[0];
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("mailGallery")}</h3></div>
-      <div className="c4-gallery">
+    <section className="c4-mail-lacquer" aria-label={v4("mailGallery")} data-mail-lacquer="1">
+      <header className="c4-mail-lacquer-mast">
+        <p className="c4-mail-lacquer-seal" data-logo="mono">{v4("mailLacquerLogo")}</p>
+        <div>
+          <p className="c4-mail-lacquer-kicker">{v4("mailLacquerKicker")}</p>
+          <h3 className="c4-title">{v4("mailGallery")}</h3>
+          <p className="c4-mail-lacquer-lead">{v4("mailLacquerLead")}</p>
+        </div>
+        <p className="c4-mail-lacquer-count">{templates.length}</p>
+      </header>
+      <div className="c4-mail-lacquer-tiles">
         {templates.map((row) => (
-          <button key={row.id} type="button" className="c4-mkt-tile" data-on={current?.id === row.id ? "1" : "0"} onClick={() => setId(row.id)}>
+          <button key={row.id} type="button" className="c4-mail-lacquer-tile" data-on={current?.id === row.id ? "1" : "0"} onClick={() => setId(row.id)}>
             <strong>{row.name}</strong>
             <span>{row.subject}</span>
           </button>
         ))}
       </div>
-      {current && <p className="c4-pad">{current.body}</p>}
+      {current && <p className="c4-mail-lacquer-leaf">{current.body}</p>}
     </section>
   );
 }
@@ -365,10 +373,20 @@ export function WinbackBoard({ v4 }: { v4: V4 }) {
 export function ReferralList({ rows, v4 }: { rows: LeadRow[]; v4: V4 }) {
   const list = rows.filter((row) => row.referralCodeUsed);
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("referral")}</h3></div>
-      {list.map((row) => <p key={row.id} className="c4-pad">{row.name || row.email} · {row.referralCodeUsed}</p>)}
-      {!list.length && <p className="c4-muted c4-pad">{v4("referral")}</p>}
+    <section className="c4-referral-boulle" aria-label={v4("referral")} data-referral-boulle="1">
+      <header className="c4-referral-boulle-mast">
+        <p className="c4-referral-boulle-seal" data-logo="mono">{v4("referralBoulleLogo")}</p>
+        <div>
+          <p className="c4-referral-boulle-kicker">{v4("referralBoulleKicker")}</p>
+          <h3 className="c4-title">{v4("referral")}</h3>
+          <p className="c4-referral-boulle-lead">{v4("referralBoulleLead")}</p>
+        </div>
+        <p className="c4-referral-boulle-count">{list.length}</p>
+      </header>
+      <ul className="c4-referral-boulle-inlays">
+        {list.map((row) => <li key={row.id}><strong>{row.name || row.email}</strong><span>{row.referralCodeUsed}</span></li>)}
+      </ul>
+      {!list.length && <p className="c4-referral-boulle-empty">{v4("referral")}</p>}
     </section>
   );
 }
