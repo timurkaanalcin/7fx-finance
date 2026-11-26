@@ -267,20 +267,29 @@ export function RecordThread({ userId, v4, tx, locale }: { userId: string; v4: V
   }
 
   return (
-    <section className="c4-record-thread" data-thread="" aria-label={v4("thTitle")}>
-      <header>
-        <h3 className="c4-title">{v4("thTitle")}</h3>
-        <p className="c4-meta">{v4("thHint")}</p>
-        <p className="c4-meta" data-loaded={loaded.length}>{v4("thLoaded")} {loaded.length} · {v4("thShowing")} {shown.length}</p>
+    <section className="c4-record-thread c4-th-solea" data-thread="" data-th-solea="1" aria-label={v4("thTitle")}>
+      <header className="c4-th-solea-mast">
+        <p className="c4-th-solea-seal" data-logo="mono">{v4("thSoleaLogo")}</p>
+        <div>
+          <p className="c4-th-solea-kicker">{v4("thSoleaKicker")}</p>
+          <h3 className="c4-title">{v4("thTitle")}</h3>
+          <p className="c4-th-solea-lead">{v4("thSoleaLead")}</p>
+        </div>
+        <p className="c4-th-solea-count">{shown.length}</p>
       </header>
-      <input className="c4-field" aria-label={v4("thSearch")} placeholder={v4("thSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
+      <ol className="c4-th-solea-index" aria-label={v4("thSoleaKicker")}>
+        <li data-tone="gold">{v4("thLoaded")} {loaded.length}</li>
+        <li>{v4("thShowing")} {shown.length}</li>
+        <li>{v4("thHint")}</li>
+      </ol>
+      <input className="c4-field" aria-label={v4("thSearch")} aria-required={false} placeholder={v4("thSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
       {!loaded.length && <p className="c4-meta">{v4("thEmpty")}</p>}
       {loaded.length > 0 && !shown.length && <p className="c4-meta">{v4("thNone")}</p>}
-      <ol className="c4-thread-list">
+      <ol className="c4-thread-list c4-th-solea-list">
         {shown.map((item) => {
           const who = sideOf(item);
           return (
-            <li key={item.id} className="c4-thread-line" data-who={who}>
+            <li key={item.id} className="c4-thread-line c4-th-solea-card" data-who={who}>
               <strong>{v4(WHO[who])}</strong>
               <p>{item.body}</p>
               <span className="c4-meta">{when(item.createdAt, locale)}</span>

@@ -77,13 +77,26 @@ export function ContactFeed({ id, notes, events, v4, locale }: {
   }
 
   return (
-    <section className="c4-feed-luxe" aria-label={v4("feedTitle")}>
+    <section className="c4-feed-luxe c4-fd-diaconicon" aria-label={v4("feedTitle")} data-fd-diaconicon="1">
+      <header className="c4-fd-diaconicon-mast">
+        <p className="c4-fd-diaconicon-seal" data-logo="mono">{v4("fdDiaconiconLogo")}</p>
+        <div>
+          <p className="c4-fd-diaconicon-kicker">{v4("fdDiaconiconKicker")}</p>
+          <h2 className="c4-title">{v4("feedTitle")}</h2>
+          <p className="c4-fd-diaconicon-lead">{v4("fdDiaconiconLead")}</p>
+        </div>
+        <p className="c4-fd-diaconicon-count">{shown.length}</p>
+      </header>
+      <ol className="c4-fd-diaconicon-index" aria-label={v4("fdDiaconiconKicker")}>
+        <li data-tone="gold">{v4("callsLogged")} {callCount(items)}</li>
+        <li>{v4("lastContact")} {latest ? when(latest, locale) : "—"}</li>
+        <li>{v4("feedHint")}</li>
+      </ol>
       <div className="c4-fin-hero">
-        <div className="c4-fin-metric"><span>{v4("feedTitle")}</span><strong>{shown.length}</strong></div>
-        <div className="c4-fin-metric"><span>{v4("callsLogged")}</span><strong>{callCount(items)}</strong></div>
-        <div className="c4-fin-metric"><span>{v4("lastContact")}</span><strong>{latest ? when(latest, locale) : "—"}</strong></div>
+        <div className="c4-fin-metric c4-fd-diaconicon-card"><span>{v4("feedTitle")}</span><strong>{shown.length}</strong></div>
+        <div className="c4-fin-metric c4-fd-diaconicon-card"><span>{v4("callsLogged")}</span><strong>{callCount(items)}</strong></div>
+        <div className="c4-fin-metric c4-fd-diaconicon-card"><span>{v4("lastContact")}</span><strong>{latest ? when(latest, locale) : "—"}</strong></div>
       </div>
-      <p className="c4-muted c4-pad">{v4("feedHint")}</p>
       <form className="c4-form c4-pad" onSubmit={saveCall}>
         <h3 className="c4-title">{v4("logCall")}</h3>
         <p className="c4-muted">{v4("nothingSent")}</p>
@@ -108,7 +121,7 @@ export function ContactFeed({ id, notes, events, v4, locale }: {
         <button type="submit" className="c4-btn c4-btn-hot">{v4("logCall")}</button>
       </form>
       <div className="c4-row c4-pad">
-        <input className="c4-field" aria-label={v4("feedSearch")} placeholder={v4("feedSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
+        <input className="c4-field" aria-label={v4("feedSearch")} aria-required={false} placeholder={v4("feedSearch")} value={query} onChange={(event) => setQuery(event.target.value)} />
         <button type="button" className="c4-btn" onClick={() => downloadCsv("contact-history.csv", ["kind", "at", "title", "detail"], shown.map((row) => [row.kind, row.at, row.title, row.detail]))}>{v4("feedCsv")}</button>
       </div>
       <RecordTimeline items={shown} v4={v4} locale={locale} pins={pins} onPin={togglePin} />
