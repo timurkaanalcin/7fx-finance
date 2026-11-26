@@ -238,13 +238,21 @@ export function SmsPreview({ v4 }: { v4: V4 }) {
   useEffect(() => { setText(readJson<string>(SMS_KEY, "")); }, []);
   const count = smsParts(text);
   return (
-    <section className="c4-card c4-pad">
-      <h3 className="c4-title">{v4("smsPreview")}</h3>
-      <textarea className="c4-field" rows={3} aria-label={v4("smsPreview")} value={text} onChange={(event) => {
+    <section className="c4-sms-palimpsest" aria-label={v4("smsPreview")} data-sms-palimpsest="1">
+      <header className="c4-sms-palimpsest-mast">
+        <p className="c4-sms-palimpsest-seal" data-logo="mono">{v4("smsPalimpsestLogo")}</p>
+        <div>
+          <p className="c4-sms-palimpsest-kicker">{v4("smsPalimpsestKicker")}</p>
+          <h3 className="c4-title">{v4("smsPreview")}</h3>
+          <p className="c4-sms-palimpsest-lead">{v4("smsPalimpsestLead")}</p>
+        </div>
+        <p className="c4-sms-palimpsest-count">{count.parts}</p>
+      </header>
+      <textarea className="c4-field c4-sms-palimpsest-leaf" rows={4} aria-label={v4("smsPreview")} value={text} onChange={(event) => {
         setText(event.target.value);
         writeJson(SMS_KEY, event.target.value);
       }} />
-      <p className="c4-muted">{v4("smsCount")} {count.length} · {count.parts}</p>
+      <p className="c4-sms-palimpsest-meta">{v4("smsCount")} {count.length} · {count.parts}</p>
     </section>
   );
 }
@@ -324,7 +332,7 @@ export function WinbackBoard({ v4 }: { v4: V4 }) {
   const [note, setNote] = useState("");
   useEffect(() => { setRows(readJson(WIN_KEY, [])); }, []);
   return (
-    <form className="c4-card c4-pad" onSubmit={(event) => {
+    <form className="c4-win-intarsia" data-win-intarsia="1" aria-label={v4("winback")} onSubmit={(event) => {
       event.preventDefault();
       if (!name.trim()) return;
       const next = [{ id: String(Date.now()), name: name.trim(), note: note.trim() }, ...rows].slice(0, 8);
@@ -333,11 +341,23 @@ export function WinbackBoard({ v4 }: { v4: V4 }) {
       setName("");
       setNote("");
     }}>
-      <h3 className="c4-title">{v4("winback")}</h3>
-      <input className="c4-field" aria-label={v4("winback")} value={name} onChange={(event) => setName(event.target.value)} />
-      <input className="c4-field" aria-label={v4("winback")} value={note} onChange={(event) => setNote(event.target.value)} />
-      <button type="submit" className="c4-btn">{v4("winback")}</button>
-      {rows.map((row) => <p key={row.id}>{row.name} · {row.note}</p>)}
+      <header className="c4-win-intarsia-mast">
+        <p className="c4-win-intarsia-seal" data-logo="mono">{v4("winIntarsiaLogo")}</p>
+        <div>
+          <p className="c4-win-intarsia-kicker">{v4("winIntarsiaKicker")}</p>
+          <h3 className="c4-title">{v4("winback")}</h3>
+          <p className="c4-win-intarsia-lead">{v4("winIntarsiaLead")}</p>
+        </div>
+        <p className="c4-win-intarsia-count">{rows.length}</p>
+      </header>
+      <div className="c4-win-intarsia-tools">
+        <input className="c4-field" aria-label={v4("winback")} aria-required={false} value={name} onChange={(event) => setName(event.target.value)} />
+        <input className="c4-field" aria-label={v4("winback")} aria-required={false} value={note} onChange={(event) => setNote(event.target.value)} />
+        <button type="submit" className="c4-btn">{v4("winback")}</button>
+      </div>
+      <ul className="c4-win-intarsia-inlays">
+        {rows.map((row) => <li key={row.id}><strong>{row.name}</strong><span>{row.note}</span></li>)}
+      </ul>
     </form>
   );
 }
