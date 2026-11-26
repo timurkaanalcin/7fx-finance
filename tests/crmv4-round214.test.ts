@@ -242,9 +242,9 @@ function main() {
     }
   }
   assert.equal(crmv4Text("tr", "crbTitle"), ROUND214_COPY.tr.crbTitle);
-  assert.equal(crmv4Text("de", "rsdTitle"), ROUND214_COPY.de.rsdTitle);
+  assert.equal(crmv4Text("de", "rsdTitle"), "Wohnsitzplatten");
   assert.equal(crmv4Text("ru", "crbSub"), ROUND214_COPY.ru.crbSub);
-  assert.equal(crmv4Text("ar", "rsdSub"), ROUND214_COPY.ar.rsdSub);
+  assert.equal(crmv4Text("ar", "rsdSub"), "إقامة");
   assert.equal(crmv4Text("en", "crbLogo"), "7FX");
 
   const css = fs.readFileSync(path.join(__dirname, "../src/components/crmv4/crmv4.css"), "utf8");

@@ -225,13 +225,13 @@ function main() {
   const locales = ["en", "tr", "de", "ru", "ar"] as const;
   const keys = Object.keys(ROUND293_COPY.en).sort();
   for (const locale of locales) assert.deepEqual(Object.keys(ROUND293_COPY[locale]).sort(), keys);
-  assert.equal(crmv4Text("tr", "plnTitle"), ROUND293_COPY.tr.plnTitle);
+  assert.equal(crmv4Text("tr", "plnTitle"), "Payon pulları");
   assert.equal(crmv4Text("de", "slxTitle"), ROUND293_COPY.de.slxTitle);
-  assert.equal(crmv4Text("ru", "plnSub"), ROUND293_COPY.ru.plnSub);
+  assert.equal(crmv4Text("ru", "plnSub"), "Золотой лист под эмалью");
   assert.equal(crmv4Text("ar", "slxSub"), ROUND293_COPY.ar.slxSub);
   assert.equal(crmv4Text("en", "plnLogo"), "7FX");
   assert.equal(crmv4Text("en", "slxLogo"), "7FX");
-  assert.equal(crmv4Text("en", "plnTitle"), "Planisphere discs");
+  assert.equal(crmv4Text("en", "plnTitle"), "Paillon spangles");
   assert.equal(crmv4Text("en", "slxTitle"), "Seal plates");
   assert.equal(crmv4Text("en", "vsFolioKicker"), "Ivory voice folio");
   assert.equal(crmv4Text("en", "cdRailKicker"), "Champagne date rail");

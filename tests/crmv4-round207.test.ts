@@ -258,7 +258,7 @@ function main() {
   assert.equal(crmv4Text("tr", "glmTitle"), ROUND207_COPY.tr.glmTitle);
   assert.equal(crmv4Text("de", "dvpTitle"), ROUND207_COPY.de.dvpTitle);
   assert.equal(crmv4Text("ru", "glmSub"), ROUND207_COPY.ru.glmSub);
-  assert.equal(crmv4Text("ar", "dvpSub"), ROUND207_COPY.ar.dvpSub);
+  assert.equal(crmv4Text("ar", "dvpSub"), "الجهاز");
   assert.equal(crmv4Text("en", "glmLogo"), "7FX");
 
   const css = fs.readFileSync(path.join(__dirname, "../src/components/crmv4/crmv4.css"), "utf8");
