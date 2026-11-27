@@ -126128,3 +126128,346 @@
   [data-crmv4-root] .c4-note-quire .c4-field,
   [data-crmv4-root] .c4-digest-gazette .c4-btn { width: calc(100% - 32px); }
 }
+
+/* Round 388 — giornata patches and silence dials. */
+[data-crmv4-root] .c4-giornata,
+[data-crmv4-root] .c4-silence {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  margin: 0 0 16px;
+  padding: 16px;
+  border: 1px solid #1c1a17;
+  border-radius: 2px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+[data-crmv4-root] .c4-giornata {
+  color: #1c1a17;
+  background:
+    linear-gradient(#1c1a17, #1c1a17) 100% 0 / 8px 100% no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) calc(100% - 8px) 0 / 2px 100% no-repeat,
+    repeating-linear-gradient(#fffdf8 0 18px, #f3ecdf 18px 19px);
+  box-shadow: inset 0 0 0 1px #c6a15b;
+}
+[data-crmv4-root] .c4-silence {
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 100% / 100% 4px no-repeat,
+    #1c1a17;
+  box-shadow: inset 0 0 0 1px #8a6a3b;
+}
+[data-crmv4-root] .c4-giornata-mast,
+[data-crmv4-root] .c4-silence-mast {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+[data-crmv4-root] .c4-giornata-seal[data-logo="mono"],
+[data-crmv4-root] .c4-silence-seal[data-logo="mono"] {
+  width: 52px;
+  height: 52px;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: #1c1a17;
+  background: #f6f1e8;
+  border: 0;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px #c6a15b, inset 0 -4px 0 #c6a15b;
+  filter: grayscale(1);
+}
+[data-crmv4-root] .c4-giornata-kicker,
+[data-crmv4-root] .c4-silence-kicker {
+  margin: 0 0 4px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8a6a3b;
+}
+[data-crmv4-root] .c4-silence-kicker { color: #c6a15b; }
+[data-crmv4-root] .c4-giornata .c4-title,
+[data-crmv4-root] .c4-giornata-hint { color: #1c1a17; margin: 0; }
+[data-crmv4-root] .c4-silence .c4-title,
+[data-crmv4-root] .c4-silence-hint { color: #f6f1e8; margin: 0; }
+[data-crmv4-root] .c4-giornata-hint,
+[data-crmv4-root] .c4-silence-hint { font-size: 13px; line-height: 1.45; }
+[data-crmv4-root] .c4-giornata-count,
+[data-crmv4-root] .c4-silence-count {
+  margin: 0;
+  min-width: 44px;
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+  font-variant-numeric: tabular-nums;
+  color: #1c1a17;
+  background: #c6a15b;
+  border: 0;
+}
+[data-crmv4-root] .c4-giornata-index {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-giornata-index li {
+  margin: 0;
+  padding: 8px 10px;
+  min-height: 44px;
+  color: #1c1a17;
+  background: #fffdf8;
+  border-top: 3px solid #c6a15b;
+}
+[data-crmv4-root] .c4-giornata-chart,
+[data-crmv4-root] .c4-silence-chart {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: end;
+  min-height: 112px;
+  margin: 0;
+}
+[data-crmv4-root] .c4-giornata-column,
+[data-crmv4-root] .c4-silence-column {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+[data-crmv4-root] .c4-giornata-column i,
+[data-crmv4-root] .c4-silence-column i {
+  display: block;
+  width: 18px;
+  background: #c6a15b;
+  transition: height 160ms linear;
+}
+[data-crmv4-root] .c4-silence-column i { background: #8a6a3b; }
+[data-crmv4-root] .c4-giornata-column[data-on="1"] i,
+[data-crmv4-root] .c4-silence-column[data-on="1"] i { background: #fffdf8; box-shadow: inset 0 0 0 1px #c6a15b; }
+[data-crmv4-root] .c4-giornata-card,
+[data-crmv4-root] .c4-silence-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: start;
+  margin: 0;
+  padding: 12px;
+  background: #fffdf8;
+  color: #1c1a17;
+  border: 1px solid #c6a15b;
+}
+[data-crmv4-root] .c4-giornata-card { box-shadow: inset -4px 0 0 #1c1a17; }
+[data-crmv4-root] .c4-silence-card { box-shadow: inset 0 3px 0 #c6a15b; }
+[data-crmv4-root] .c4-giornata-actions,
+[data-crmv4-root] .c4-silence-actions,
+[data-crmv4-root] .c4-silence-links,
+[data-crmv4-root] .c4-silence-tools,
+[data-crmv4-root] .c4-silence-bulk,
+[data-crmv4-root] .c4-giornata-form,
+[data-crmv4-root] .c4-giornata-view { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+[data-crmv4-root] .c4-giornata .c4-btn,
+[data-crmv4-root] .c4-giornata .c4-field,
+[data-crmv4-root] .c4-silence .c4-btn,
+[data-crmv4-root] .c4-silence .c4-field {
+  min-height: 44px;
+  background: #fffdf8;
+  color: #1c1a17;
+  border: 1px solid #c6a15b;
+  border-radius: 2px;
+}
+[data-crmv4-root] .c4-giornata :focus-visible,
+[data-crmv4-root] .c4-silence :focus-visible { outline: 2px solid #c6a15b; outline-offset: 2px; }
+[data-crmv4-root] .c4-giornata-meta,
+[data-crmv4-root] .c4-silence-meta { margin: 0; }
+[data-crmv4-root] .c4-giornata-list,
+[data-crmv4-root] .c4-silence-list,
+[data-crmv4-root] .c4-giornata-views,
+[data-crmv4-root] .c4-giornata-time { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+[data-crmv4-root] .c4-giornata-links a,
+[data-crmv4-root] .c4-silence-links a { color: #8a6a3b; min-height: 44px; display: inline-flex; align-items: center; }
+[data-crmv4-root][data-theme="dark"] .c4-giornata {
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 8px 100% no-repeat,
+    #1a1814;
+}
+[data-crmv4-root][data-theme="dark"] .c4-giornata .c4-title,
+[data-crmv4-root][data-theme="dark"] .c4-giornata-hint { color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-giornata-card,
+[data-crmv4-root][data-theme="dark"] .c4-silence-card { background: #221f1b; color: #f6f1e8; }
+[data-crmv4-root][data-theme="light"] .c4-silence {
+  color: #1c1a17;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 4px no-repeat,
+    #fffdf8;
+}
+[data-crmv4-root][data-theme="light"] .c4-silence .c4-title,
+[data-crmv4-root][data-theme="light"] .c4-silence-hint { color: #1c1a17; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-giornata,
+  [data-crmv4-root] .c4-silence { padding: 16px 12px; }
+  [data-crmv4-root] .c4-giornata-mast,
+  [data-crmv4-root] .c4-silence-mast { grid-template-columns: 52px minmax(0, 1fr); }
+  [data-crmv4-root] .c4-giornata-count,
+  [data-crmv4-root] .c4-silence-count { grid-column: 1 / -1; }
+  [data-crmv4-root] .c4-giornata-card,
+  [data-crmv4-root] .c4-silence-card { grid-template-columns: 1fr; }
+  [data-crmv4-root] .c4-giornata-index { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  [data-crmv4-root] .c4-giornata .c4-btn,
+  [data-crmv4-root] .c4-giornata .c4-field,
+  [data-crmv4-root] .c4-silence .c4-btn,
+  [data-crmv4-root] .c4-silence .c4-field { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-giornata-column i,
+  [data-crmv4-root] .c4-silence-column i { transition: none; }
+}
+
+
+/* Round 388 — graphite country gazetteer and ivory hour reliquary. */
+[data-crmv4-root] .c4-country-gazetteer,
+[data-crmv4-root] .c4-hour-reliquary {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0 0 14px;
+  border: 1px solid #1c1a17;
+  border-radius: 2px;
+  box-sizing: border-box;
+  background: #fffdf8;
+  color: #1c1a17;
+}
+[data-crmv4-root] .c4-country-gazetteer-mast,
+[data-crmv4-root] .c4-hour-reliquary-mast {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  gap: 10px 12px;
+  align-items: center;
+  margin: 0;
+  padding: 14px 16px 12px;
+}
+[data-crmv4-root] .c4-country-gazetteer-mast {
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 100% / 100% 3px no-repeat,
+    #1c1a17;
+}
+[data-crmv4-root] .c4-hour-reliquary-mast {
+  color: #1c1a17;
+  background:
+    linear-gradient(#1c1a17, #1c1a17) 0 0 / 100% 3px no-repeat,
+    #f6f1e8;
+}
+[data-crmv4-root] .c4-country-gazetteer-seal[data-logo="mono"],
+[data-crmv4-root] .c4-hour-reliquary-seal[data-logo="mono"] {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  margin: 0;
+  place-items: center;
+  border: 1px solid #c6a15b;
+  color: #c6a15b;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  filter: grayscale(1);
+}
+[data-crmv4-root] .c4-hour-reliquary-seal[data-logo="mono"] { color: #8a6a3b; border-color: #8a6a3b; }
+[data-crmv4-root] .c4-country-gazetteer-kicker,
+[data-crmv4-root] .c4-hour-reliquary-kicker {
+  margin: 0 0 2px;
+  color: #c6a15b;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-hour-reliquary-kicker { color: #8a6a3b; }
+[data-crmv4-root] .c4-country-gazetteer-mast .c4-title,
+[data-crmv4-root] .c4-country-gazetteer-lead { margin: 0; color: #f6f1e8; }
+[data-crmv4-root] .c4-country-gazetteer .c4-title::before,
+[data-crmv4-root] .c4-hour-reliquary .c4-title::before { background: #c6a15b; }
+[data-crmv4-root] .c4-hour-reliquary-mast .c4-title,
+[data-crmv4-root] .c4-hour-reliquary-lead { margin: 0; color: #1c1a17; }
+[data-crmv4-root] .c4-country-gazetteer-lead,
+[data-crmv4-root] .c4-hour-reliquary-lead { max-width: 62ch; font-size: 13px; line-height: 1.45; }
+[data-crmv4-root] .c4-country-gazetteer-count,
+[data-crmv4-root] .c4-hour-reliquary-count {
+  margin: 0;
+  min-width: 36px;
+  padding: 6px 8px;
+  border: 1px solid #c6a15b;
+  color: #c6a15b;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+[data-crmv4-root] .c4-hour-reliquary-count { color: #8a6a3b; border-color: #8a6a3b; }
+[data-crmv4-root] .c4-country-gazetteer-rows,
+[data-crmv4-root] .c4-hour-reliquary-hours { margin: 0; padding: 0 16px 4px; list-style: none; display: grid; gap: 8px; }
+[data-crmv4-root] .c4-country-gazetteer-rows li {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) 36px;
+  gap: 8px;
+  align-items: center;
+  min-height: 44px;
+  margin: 0;
+  padding: 0 0 0 10px;
+  border-bottom: 1px solid #e6dccf;
+  border-inline-start: 3px solid #c6a15b;
+}
+[data-crmv4-root] .c4-country-gazetteer-rows i {
+  display: block;
+  height: 8px;
+  background: #c6a15b;
+}
+[data-crmv4-root] .c4-hour-reliquary-hours {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+[data-crmv4-root] .c4-hour-reliquary-hours li {
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  margin: 0;
+  border: 1px solid #e6dccf;
+  border-top: 3px solid #c6a15b;
+  font-variant-numeric: tabular-nums;
+}
+[data-crmv4-root] .c4-country-gazetteer :focus-visible,
+[data-crmv4-root] .c4-hour-reliquary :focus-visible { outline: 2px solid #c6a15b; outline-offset: 2px; }
+[data-crmv4-root][data-theme="dark"] .c4-country-gazetteer,
+[data-crmv4-root][data-theme="dark"] .c4-hour-reliquary {
+  background: #1c1a17;
+  color: #f6f1e8;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-hour-reliquary-mast { background: #141210; color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-hour-reliquary-mast .c4-title,
+[data-crmv4-root][data-theme="dark"] .c4-hour-reliquary-lead { color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-country-gazetteer-rows li,
+[data-crmv4-root][data-theme="dark"] .c4-hour-reliquary-hours li { border-color: #3a332c; }
+[data-crmv4-root][data-theme="light"] .c4-country-gazetteer-mast { color: #f6f1e8; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-country-gazetteer-mast,
+  [data-crmv4-root] .c4-hour-reliquary-mast { grid-template-columns: 52px minmax(0, 1fr); }
+  [data-crmv4-root] .c4-country-gazetteer-count,
+  [data-crmv4-root] .c4-hour-reliquary-count { grid-column: 1 / -1; justify-self: start; }
+  [data-crmv4-root] .c4-country-gazetteer-rows li { grid-template-columns: 56px minmax(0, 1fr) 32px; }
+  [data-crmv4-root] .c4-hour-reliquary-hours { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-country-gazetteer-rows i { transition: none; }
+}
