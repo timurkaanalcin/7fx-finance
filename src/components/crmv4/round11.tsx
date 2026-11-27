@@ -319,12 +319,21 @@ export function DailyClose({ locale, v4 }: { locale: string; v4: V4 }) {
   const unit = ccy === "TRY" && rate > 0 ? "TRY" : "USD";
   const show = (value?: number) => money(ccy === "TRY" && rate > 0 ? tryAmount(Number(value) || 0, rate) : value, unit, locale);
   return (
-    <section className="c4-card c4-close">
-      <div className="c4-card-h">
-        <h3 className="c4-title">{v4("dailyClose")}</h3>
+    <section className="c4-close-plinth" aria-label={v4("dailyClose")} data-close-plinth="1">
+      <header className="c4-close-plinth-mast">
+        <p className="c4-close-plinth-seal" data-logo="mono">{v4("closePlinthLogo")}</p>
+        <div>
+          <p className="c4-close-plinth-kicker">{v4("closePlinthKicker")}</p>
+          <h3 className="c4-title">{v4("dailyClose")}</h3>
+          <p className="c4-close-plinth-lead">{v4("closePlinthLead")}</p>
+        </div>
         <button type="button" className="c4-btn" onClick={() => window.print()}>{v4("dailyClose")}</button>
-      </div>
-      <p className="c4-pad">{show(k.income)} · {show(k.outcome)} · {show(k.net)}</p>
+      </header>
+      <ol className="c4-close-plinth-steps">
+        <li data-step="1"><strong>{show(k.income)}</strong></li>
+        <li data-step="2"><strong>{show(k.outcome)}</strong></li>
+        <li data-step="3"><strong>{show(k.net)}</strong></li>
+      </ol>
     </section>
   );
 }
@@ -357,10 +366,19 @@ export function ApprovalTimes({ v4 }: { v4: V4 }) {
   const deposits = meanMinutes(tickets.filter((row) => row.kind === "DEPOSIT"));
   const withdrawals = meanMinutes(tickets.filter((row) => row.kind === "WITHDRAW"));
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("depositTime")}</h3></div>
-      <p className="c4-pad">{v4("depositTime")} {deposits == null ? "—" : `${deposits} ${v4("minutesShort")}`}</p>
-      <p className="c4-pad">{v4("withdrawTime")} {withdrawals == null ? "—" : `${withdrawals} ${v4("minutesShort")}`}</p>
+    <section className="c4-approval-dart" aria-label={v4("depositTime")} data-approval-dart="1">
+      <header className="c4-approval-dart-mast">
+        <p className="c4-approval-dart-seal" data-logo="mono">{v4("approvalDartLogo")}</p>
+        <div>
+          <p className="c4-approval-dart-kicker">{v4("approvalDartKicker")}</p>
+          <h3 className="c4-title">{v4("depositTime")}</h3>
+          <p className="c4-approval-dart-lead">{v4("approvalDartLead")}</p>
+        </div>
+      </header>
+      <ul className="c4-approval-dart-rows">
+        <li><i aria-hidden="true" /><span>{v4("depositTime")}</span><strong>{deposits == null ? "—" : `${deposits} ${v4("minutesShort")}`}</strong></li>
+        <li><i aria-hidden="true" /><span>{v4("withdrawTime")}</span><strong>{withdrawals == null ? "—" : `${withdrawals} ${v4("minutesShort")}`}</strong></li>
+      </ul>
     </section>
   );
 }
