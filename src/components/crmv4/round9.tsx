@@ -69,7 +69,7 @@ export function NoteSearch({ v4 }: { v4: V4 }) {
 export function CallComposer({ v4, tx }: { v4: V4; tx: Tx }) {
   const [msg, setMsg] = useState("");
   return (
-    <form className="c4-form c4-pad" onSubmit={async (event) => {
+    <form className="c4-call-scupper" data-call-scupper="1" aria-label={v4("callOutcome")} onSubmit={async (event) => {
       event.preventDefault();
       const fd = new FormData(event.currentTarget);
       const res = await sendJson("/api/admin/communications", "POST", {
@@ -86,7 +86,14 @@ export function CallComposer({ v4, tx }: { v4: V4; tx: Tx }) {
         event.currentTarget.reset();
       }
     }}>
-      <h3 className="c4-title">{v4("callOutcome")}</h3>
+      <header className="c4-call-scupper-mast">
+        <p className="c4-call-scupper-seal" data-logo="mono">{v4("scpScupperLogo")}</p>
+        <div>
+          <p className="c4-call-scupper-kicker">{v4("scpScupperKicker")}</p>
+          <h3 className="c4-title">{v4("callOutcome")}</h3>
+          <p className="c4-call-scupper-lead">{v4("scpScupperLead")}</p>
+        </div>
+      </header>
       <input className="c4-field" name="userId" required aria-label={tx("userId")} placeholder={tx("userId")} />
       <select className="c4-select" name="outcome" aria-label={v4("callOutcome")}>
         <option value="REACHED">{v4("reached")}</option>
