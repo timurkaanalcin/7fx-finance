@@ -280,21 +280,28 @@ export function CountryHeat({ v4 }: { v4: V4 }) {
   const data = useJson<{ users?: UserRow[] }>("/api/admin/users?view=table&take=80&meta=0&role=TRADER");
   const rows = countryHeat(data.data?.users || []);
   const max = Math.max(1, ...rows.map((row) => row.count));
+  const shown = rows.slice(0, 8);
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("countryHeat")}</h3></div>
+    <section className="c4-country-gazetteer" aria-label={v4("countryHeat")} data-country-gazetteer="1">
+      <header className="c4-country-gazetteer-mast">
+        <p className="c4-country-gazetteer-seal" data-logo="mono">{v4("countryGazetteerLogo")}</p>
+        <div>
+          <p className="c4-country-gazetteer-kicker">{v4("countryGazetteerKicker")}</p>
+          <h3 className="c4-title">{v4("countryHeat")}</h3>
+          <p className="c4-country-gazetteer-lead">{v4("countryGazetteerLead")}</p>
+        </div>
+        <p className="c4-country-gazetteer-count">{shown.length}</p>
+      </header>
       {data.loading && <LuxeSkeleton />}
-      <table className="c4-table">
-        <tbody>
-          {rows.slice(0, 8).map((row) => (
-            <tr key={row.country}>
-              <td>{row.country}</td>
-              <td><div className="c4-heat" style={{ width: `${Math.max(8, (row.count / max) * 100)}%` }} /></td>
-              <td>{row.count}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <ul className="c4-country-gazetteer-rows">
+        {shown.map((row) => (
+          <li key={row.country}>
+            <span>{row.country}</span>
+            <i style={{ width: `${Math.max(8, (row.count / max) * 100)}%` }} />
+            <strong>{row.count}</strong>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
@@ -309,14 +316,22 @@ export function HourHeat({ v4 }: { v4: V4 }) {
   const buckets = hourHeat(stamps);
   const max = Math.max(1, ...buckets);
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("hourHeat")}</h3></div>
+    <section className="c4-hour-reliquary" aria-label={v4("hourHeat")} data-hour-reliquary="1">
+      <header className="c4-hour-reliquary-mast">
+        <p className="c4-hour-reliquary-seal" data-logo="mono">{v4("hourReliquaryLogo")}</p>
+        <div>
+          <p className="c4-hour-reliquary-kicker">{v4("hourReliquaryKicker")}</p>
+          <h3 className="c4-title">{v4("hourHeat")}</h3>
+          <p className="c4-hour-reliquary-lead">{v4("hourReliquaryLead")}</p>
+        </div>
+        <p className="c4-hour-reliquary-count">{buckets.reduce((sum, count) => sum + count, 0)}</p>
+      </header>
       {(calls.loading || moneyRows.loading) && <LuxeSkeleton />}
-      <div className="c4-hours" aria-label={v4("hourHeat")}>
+      <ol className="c4-hour-reliquary-hours" aria-label={v4("hourHeat")}>
         {buckets.map((count, hour) => (
-          <span key={hour} title={`${hour}: ${count}`} style={{ opacity: 0.25 + (count / max) * 0.75 }}>{hour}</span>
+          <li key={hour} title={`${hour}: ${count}`} style={{ opacity: 0.35 + (count / max) * 0.65 }}>{hour}</li>
         ))}
-      </div>
+      </ol>
     </section>
   );
 }
