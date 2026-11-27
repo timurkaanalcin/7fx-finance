@@ -75,7 +75,15 @@ export function PerfBoard({ v4 }: { v4: V4 }) {
   }
 
   return (
-    <section className="c4-perf-luxe" aria-label={v4("perfBoard")}>
+    <section className="c4-perf-luxe c4-perf-quirk" aria-label={v4("perfBoard")} data-perf-quirk="1">
+      <header className="c4-perf-quirk-mast">
+        <p className="c4-perf-quirk-seal" data-logo="mono">{v4("perfQuirkLogo")}</p>
+        <div>
+          <p className="c4-perf-quirk-kicker">{v4("perfQuirkKicker")}</p>
+          <h2 className="c4-title">{v4("perfBoard")}</h2>
+          <p className="c4-perf-quirk-lead">{v4("perfQuirkLead")}</p>
+        </div>
+      </header>
       <div className="c4-fin-hero">
         <div className="c4-fin-metric"><span>{v4("perfBoard")}</span><strong>{board.length}</strong></div>
         <div className="c4-fin-metric"><span>{v4(LABEL[metric])}</span><strong>{board.reduce((sum, row) => sum + metricValue(row, metric), 0)}</strong></div>
