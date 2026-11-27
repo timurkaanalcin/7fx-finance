@@ -16,6 +16,7 @@ import { BrandField, HolidayEditor, KpiPicker, ScoreEditor, ThemePresets } from 
 import { LocalData } from "../round20";
 import { sysSection } from "@/lib/crmv4/round39";
 import { PhoneSheet, SystemDesk } from "../round39";
+import { LeadTurnbuckleHead } from "../round420";
 import { Card, Lab, Msg, State, sendJson, useJson, type Tx } from "../kit";
 import Ops from "./Ops";
 
@@ -71,7 +72,7 @@ export default function Settings({ tx }: { tx: Tx }) {
         {!areas.length && <p className="c4-settings-parlor-empty">{v4("setWingEmpty")}</p>}
         <div className="c4-stack c4-settings-parlor-card">
           {area === "general" && <><General tx={tx} /><LocalPrefs /></>}
-          {area === "leads" && <LeadMap tx={tx} />}
+          {area === "leads" && <LeadMap tx={tx} v4={v4} />}
           {system && <SystemDesk area={system} tx={tx} v4={v4} />}
           {area !== "general" && area !== "leads" && !system && <Ops tx={tx} area={area} locale={locale} />}
         </div>
@@ -173,7 +174,7 @@ function General({ tx }: { tx: Tx }) {
 
 type Mapping = { valid?: string[]; invalid?: string[]; potential?: string[] };
 
-function LeadMap({ tx }: { tx: Tx }) {
+function LeadMap({ tx, v4 }: { tx: Tx; v4: (key: Parameters<typeof crmv4Text>[1]) => string }) {
   const data = useJson<{ leadStatusMapping?: Mapping }>("/api/admin/settings");
   const [valid, setValid] = useState<string[]>([]);
   const [invalid, setInvalid] = useState<string[]>([]);
@@ -192,8 +193,15 @@ function LeadMap({ tx }: { tx: Tx }) {
       setOther(other.filter((item) => item !== value));
     } else setList(list.filter((item) => item !== value));
   }
+  const marked = valid.length + invalid.length + potential.length;
   return (
-    <Card title={tx("leadMapping")}>
+    <section className="c4-lead-turnbuckle" data-lead-turnbuckle="1" aria-label={tx("leadMapping")}>
+      <LeadTurnbuckleHead v4={v4} title={tx("leadMapping")} />
+      <ol className="c4-lead-turnbuckle-index" aria-label={tx("leadMapping")}>
+        <li data-tone="gold">{marked}</li>
+        <li data-tone="ink">{tx("validList")}</li>
+        <li data-tone="ivory">{tx("invalidList")}</li>
+      </ol>
       <form
         className="c4-stack"
         style={{ padding: 16 }}
@@ -234,6 +242,6 @@ function LeadMap({ tx }: { tx: Tx }) {
         <button type="submit" className="c4-btn c4-btn-hot">{tx("saveMap")}</button>
         <Msg text={msg} />
       </form>
-    </Card>
+    </section>
   );
 }
