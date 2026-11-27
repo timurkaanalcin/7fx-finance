@@ -60,10 +60,19 @@ export function JourneyMap({ id, v4 }: { id: string; v4: V4 }) {
     trades: (trades.data?.positions || []).length,
     withdrawals: (cash.data?.requests || []).length,
   });
+  const done = steps.filter((step) => step.done).length;
   return (
-    <section className="c4-card c4-journey">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("journey")}</h3></div>
-      <ol className="c4-journey-list">
+    <section className="c4-journey-astragal" aria-label={v4("journey")} data-journey-astragal="1">
+      <header className="c4-journey-astragal-mast">
+        <p className="c4-journey-astragal-seal" data-logo="mono">{v4("journeyAstragalLogo")}</p>
+        <div>
+          <p className="c4-journey-astragal-kicker">{v4("journeyAstragalKicker")}</p>
+          <h3 className="c4-title">{v4("journey")}</h3>
+          <p className="c4-journey-astragal-lead">{v4("journeyAstragalLead")}</p>
+        </div>
+        <p className="c4-journey-astragal-count">{done}</p>
+      </header>
+      <ol className="c4-journey-astragal-rows">
         {steps.map((step) => (
           <li key={step.key} data-done={step.done ? "1" : "0"}>{v4(STEP_KEY[step.key])}</li>
         ))}
