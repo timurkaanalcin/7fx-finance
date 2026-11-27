@@ -518,7 +518,7 @@ export function MarketingNotes({ v4 }: { v4: V4 }) {
   const [text, setText] = useState("");
   useEffect(() => { setRows(readJson(NOTE_KEY, [])); }, []);
   return (
-    <form className="c4-card c4-pad" onSubmit={(event) => {
+    <form className="c4-note-quire" data-note-quire="1" aria-label={v4("mktNotes")} onSubmit={(event) => {
       event.preventDefault();
       if (!text.trim()) return;
       const next = [{ id: String(Date.now()), text: text.trim() }, ...rows].slice(0, 8);
@@ -526,24 +526,45 @@ export function MarketingNotes({ v4 }: { v4: V4 }) {
       writeJson(NOTE_KEY, next);
       setText("");
     }}>
-      <h3 className="c4-title">{v4("mktNotes")}</h3>
-      <input className="c4-field" aria-label={v4("mktNotes")} value={text} onChange={(event) => setText(event.target.value)} />
-      <button type="submit" className="c4-btn">{v4("mktNotes")}</button>
-      {rows.map((row) => <p key={row.id}>{row.text}</p>)}
+      <header className="c4-note-quire-mast">
+        <p className="c4-note-quire-seal" data-logo="mono">{v4("noteQuireLogo")}</p>
+        <div>
+          <p className="c4-note-quire-kicker">{v4("noteQuireKicker")}</p>
+          <h3 className="c4-title">{v4("mktNotes")}</h3>
+          <p className="c4-note-quire-lead">{v4("noteQuireLead")}</p>
+        </div>
+        <p className="c4-note-quire-count">{rows.length}</p>
+      </header>
+      <div className="c4-note-quire-tools">
+        <input className="c4-field" aria-label={v4("mktNotes")} aria-required={false} value={text} onChange={(event) => setText(event.target.value)} />
+        <button type="submit" className="c4-btn">{v4("mktNotes")}</button>
+      </div>
+      <ul className="c4-note-quire-leaves">
+        {rows.map((row) => <li key={row.id}>{row.text}</li>)}
+      </ul>
     </form>
   );
 }
 
 export function WeeklyDigest({ rows, v4 }: { rows: LeadRow[]; v4: V4 }) {
   const stats = campaignStats(rows);
+  const funded = rows.filter((row) => row.ftd).length;
   return (
-    <section className="c4-card c4-digest">
-      <div className="c4-card-h">
-        <h3 className="c4-title">{v4("digest")}</h3>
-        <button type="button" className="c4-btn" onClick={() => window.print()}>{v4("digest")}</button>
-      </div>
-      <p className="c4-pad">{rows.length} · {rows.filter((row) => row.ftd).length}</p>
-      {stats.slice(0, 4).map((row) => <p key={row.campaign} className="c4-pad">{row.campaign} · {row.leads}</p>)}
+    <section className="c4-digest-gazette" data-digest-gazette="1" aria-label={v4("digest")}>
+      <header className="c4-digest-gazette-mast">
+        <p className="c4-digest-gazette-seal" data-logo="mono">{v4("digestGazetteLogo")}</p>
+        <div>
+          <p className="c4-digest-gazette-kicker">{v4("digestGazetteKicker")}</p>
+          <h3 className="c4-title">{v4("digest")}</h3>
+          <p className="c4-digest-gazette-lead">{v4("digestGazetteLead")}</p>
+        </div>
+        <p className="c4-digest-gazette-count">{rows.length}</p>
+      </header>
+      <p className="c4-digest-gazette-rule">{rows.length} · {funded}</p>
+      <ul className="c4-digest-gazette-lines">
+        {stats.slice(0, 4).map((row) => <li key={row.campaign}><span>{row.campaign}</span><strong>{row.leads}</strong></li>)}
+      </ul>
+      <button type="button" className="c4-btn" onClick={() => window.print()}>{v4("digest")}</button>
     </section>
   );
 }
