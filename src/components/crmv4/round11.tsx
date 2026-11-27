@@ -525,7 +525,18 @@ export function NoteCloud({ notes, v4 }: { notes: { body?: string | null }[]; v4
 export function EmailHintLine({ email, v4 }: { email?: string | null; v4: V4 }) {
   const hint = emailHint(String(email || ""));
   if (!hint) return null;
-  return <p className="c4-muted">{v4("emailHint")} {hint.fix || ""}</p>;
+  return (
+    <section className="c4-email-cincture" aria-label={v4("emailHint")} data-email-cincture="1">
+      <header className="c4-email-cincture-mast">
+        <p className="c4-email-cincture-seal" data-logo="mono">{v4("emailCinctureLogo")}</p>
+        <div>
+          <p className="c4-email-cincture-kicker">{v4("emailCinctureKicker")}</p>
+          <p className="c4-email-cincture-lead">{v4("emailCinctureLead")}</p>
+        </div>
+      </header>
+      <p className="c4-email-cincture-fix">{v4("emailHint")} {hint.fix || ""}</p>
+    </section>
+  );
 }
 
 export function BulkRemind({ rows, v4 }: { rows: UserRow[]; v4: V4 }) {
@@ -551,10 +562,26 @@ export function EditLog({ id, v4 }: { id: string; v4: V4 }) {
     return () => window.removeEventListener("crmv4:edits", load);
   }, [id]);
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("editLog")}</h3></div>
-      {rows.map((row) => <p key={`${row.at}-${row.field}`} className="c4-pad">{row.field}: {row.from || "—"} → {row.to}</p>)}
-      {!rows.length && <p className="c4-muted c4-pad">{v4("editLog")}</p>}
+    <section className="c4-edit-merlon" aria-label={v4("editLog")} data-edit-merlon="1">
+      <header className="c4-edit-merlon-mast">
+        <p className="c4-edit-merlon-seal" data-logo="mono">{v4("editMerlonLogo")}</p>
+        <div>
+          <p className="c4-edit-merlon-kicker">{v4("editMerlonKicker")}</p>
+          <h3 className="c4-title">{v4("editLog")}</h3>
+          <p className="c4-edit-merlon-lead">{v4("editMerlonLead")}</p>
+        </div>
+        <p className="c4-edit-merlon-count">{rows.length}</p>
+      </header>
+      <ul className="c4-edit-merlon-rows">
+        {rows.map((row) => (
+          <li key={`${row.at}-${row.field}`}>
+            <span>{row.field}</span>
+            <strong>{row.from || "—"}</strong>
+            <em>{row.to}</em>
+          </li>
+        ))}
+      </ul>
+      {!rows.length && <p className="c4-edit-merlon-empty">{v4("editLog")}</p>}
     </section>
   );
 }
