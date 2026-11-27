@@ -384,6 +384,7 @@ import { AcroterionFinials, AntefixTiles } from "./round393";
 import { SimaCourses, MetopePanels } from "./round394";
 import { EchinusCourses, AbacusPanels } from "./round395";
 import { TriglyphCourses, RegulaPanels } from "./round396";
+import { CaissonCoffers, ImpostPanels } from "./round397";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1205,6 +1206,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "abc") return v4("abcTitle");
     if (tab === "tgl") return v4("tglTitle");
     if (tab === "rgl") return v4("rglTitle");
+    if (tab === "csn") return v4("csnTitle");
+    if (tab === "imp") return v4("impTitle");
     if (tab === "pnd") return v4("pndTitle");
     if (tab === "cht") return v4("chtTitle");
     if (tab === "thd") return v4("thdTitle");
@@ -1455,6 +1458,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "abc") return v4("abcTitle");
     if (tab === "tgl") return v4("tglTitle");
     if (tab === "rgl") return v4("rglTitle");
+    if (tab === "csn") return v4("csnTitle");
+    if (tab === "imp") return v4("impTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -2972,6 +2977,8 @@ function Shell({ base, section, name }: Props) {
             {view === "abc" && <AbacusPanels base={base} v4={v4} />}
             {view === "tgl" && <TriglyphCourses base={base} v4={v4} />}
             {view === "rgl" && <RegulaPanels base={base} v4={v4} />}
+            {view === "csn" && <CaissonCoffers base={base} v4={v4} />}
+            {view === "imp" && <ImpostPanels base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

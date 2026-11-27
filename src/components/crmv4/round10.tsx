@@ -57,10 +57,20 @@ export function LoginAnomalies({ v4 }: { v4: V4 }) {
   const data = useJson<{ rows?: LogRow[] }>("/api/admin/control?part=logs&source=login&level=all&take=40");
   const flagged = anomalyRows((data.data?.rows || []).map((row) => ({ actor: row.actor, ip: ipOf(row.detail), at: row.at })));
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("loginAnomaly")}</h3></div>
-      {flagged.map((row) => <p key={row.actor} className="c4-pad">{row.actor} · {row.ips.join(", ")}</p>)}
-      {!flagged.length && <p className="c4-muted c4-pad">{v4("loginAnomaly")}</p>}
+    <section className="c4-anomaly-spandrel" aria-label={v4("loginAnomaly")} data-anomaly-spandrel="1">
+      <header className="c4-anomaly-spandrel-mast">
+        <p className="c4-anomaly-spandrel-seal" data-logo="mono">{v4("anomalySpandrelLogo")}</p>
+        <div>
+          <p className="c4-anomaly-spandrel-kicker">{v4("anomalySpandrelKicker")}</p>
+          <h3 className="c4-title">{v4("loginAnomaly")}</h3>
+          <p className="c4-anomaly-spandrel-lead">{v4("anomalySpandrelLead")}</p>
+        </div>
+        <p className="c4-anomaly-spandrel-count">{flagged.length}</p>
+      </header>
+      <ul className="c4-anomaly-spandrel-rows">
+        {flagged.map((row) => <li key={row.actor}>{row.actor} · {row.ips.join(", ")}</li>)}
+      </ul>
+      {!flagged.length && <p className="c4-anomaly-spandrel-empty">{v4("loginAnomaly")}</p>}
     </section>
   );
 }
@@ -95,12 +105,26 @@ export function IbTree({ rows, v4 }: { rows: UserRow[]; v4: V4 }) {
     const parent = row.affiliateA || "—";
     map.set(parent, [...(map.get(parent) || []), row.name || row.email || row.id]);
   }
+  const groups = Array.from(map.entries()).slice(0, 6);
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("ibTree")}</h3></div>
-      {Array.from(map.entries()).slice(0, 6).map(([parent, names]) => (
-        <div key={parent} className="c4-pad"><strong>{parent}</strong>{names.slice(0, 4).map((name) => <div key={name} className="c4-rich-item">{name}</div>)}</div>
-      ))}
+    <section className="c4-ib-chambranle" aria-label={v4("ibTree")} data-ib-chambranle="1">
+      <header className="c4-ib-chambranle-mast">
+        <p className="c4-ib-chambranle-seal" data-logo="mono">{v4("ibChambranleLogo")}</p>
+        <div>
+          <p className="c4-ib-chambranle-kicker">{v4("ibChambranleKicker")}</p>
+          <h3 className="c4-title">{v4("ibTree")}</h3>
+          <p className="c4-ib-chambranle-lead">{v4("ibChambranleLead")}</p>
+        </div>
+        <p className="c4-ib-chambranle-count">{groups.length}</p>
+      </header>
+      <ul className="c4-ib-chambranle-rows">
+        {groups.map(([parent, names]) => (
+          <li key={parent}>
+            <strong>{parent}</strong>
+            {names.slice(0, 4).map((name) => <span key={name}>{name}</span>)}
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
