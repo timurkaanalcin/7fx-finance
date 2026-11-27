@@ -370,6 +370,25 @@ export function PreferTime({ id, v4 }: { id: string; v4: V4 }) {
   );
 }
 
+export function NewelCall({ id, v4 }: { id: string; v4: V4 }) {
+  return (
+    <section className="c4-call-newel" aria-label={v4("preferTime")} data-call-newel="1">
+      <header className="c4-call-newel-mast">
+        <p className="c4-call-newel-seal" data-logo="mono">{v4("nwNewelLogo")}</p>
+        <div>
+          <p className="c4-call-newel-kicker">{v4("nwNewelKicker")}</p>
+          <h3 className="c4-title">{v4("doNotCall")}</h3>
+          <p className="c4-call-newel-lead">{v4("nwNewelLead")}</p>
+        </div>
+      </header>
+      <div className="c4-call-newel-row">
+        <DncFlag id={id} v4={v4} />
+        <PreferTime id={id} v4={v4} />
+      </div>
+    </section>
+  );
+}
+
 export function TagManager({ tags, onChange, v4 }: { tags: Record<string, string[]>; onChange: (next: Record<string, string[]>) => void; v4: V4 }) {
   const names: string[] = [];
   for (const list of Object.values(tags)) {
@@ -378,26 +397,36 @@ export function TagManager({ tags, onChange, v4 }: { tags: Record<string, string
   const [colors, setColors] = useState<Record<string, string>>({});
   useEffect(() => { setColors(readJson(COLOR_KEY, {})); }, [tags]);
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("tagManager")}</h3></div>
-      {names.map((tag) => (
-        <div key={tag} className="c4-row c4-pad">
-          <span className="c4-tag" data-tone={colors[tag] || ""}>{tag}</span>
-          {TONES.map((tone) => (
-            <button key={tone} type="button" className="c4-chip" data-on={colors[tag] === tone ? "1" : "0"} aria-label={v4("tagColors")} onClick={() => {
-              const next = { ...colors, [tag]: tone };
-              setColors(next);
-              writeJson(COLOR_KEY, next);
-            }}>{tone}</button>
-          ))}
-          <button type="button" className="c4-btn" onClick={() => {
-            const next: Record<string, string[]> = {};
-            for (const [rowId, list] of Object.entries(tags)) next[rowId] = list.filter((item) => item !== tag);
-            onChange(next);
-          }}>{v4("bulkUntag")}</button>
+    <section className="c4-tag-gargoyle" aria-label={v4("tagManager")} data-tag-gargoyle="1">
+      <header className="c4-tag-gargoyle-mast">
+        <p className="c4-tag-gargoyle-seal" data-logo="mono">{v4("tgGargoyleLogo")}</p>
+        <div>
+          <p className="c4-tag-gargoyle-kicker">{v4("tgGargoyleKicker")}</p>
+          <h3 className="c4-title">{v4("tagManager")}</h3>
+          <p className="c4-tag-gargoyle-lead">{v4("tgGargoyleLead")}</p>
         </div>
-      ))}
-      {!names.length && <p className="c4-muted c4-pad">{v4("tagManager")}</p>}
+        <p className="c4-tag-gargoyle-count">{names.length}</p>
+      </header>
+      <ul className="c4-tag-gargoyle-stones">
+        {names.map((tag) => (
+          <li key={tag}>
+            <span className="c4-tag" data-tone={colors[tag] || ""}>{tag}</span>
+            {TONES.map((tone) => (
+              <button key={tone} type="button" className="c4-chip" data-on={colors[tag] === tone ? "1" : "0"} aria-label={v4("tagColors")} onClick={() => {
+                const next = { ...colors, [tag]: tone };
+                setColors(next);
+                writeJson(COLOR_KEY, next);
+              }}>{tone}</button>
+            ))}
+            <button type="button" className="c4-btn" onClick={() => {
+              const next: Record<string, string[]> = {};
+              for (const [rowId, list] of Object.entries(tags)) next[rowId] = list.filter((item) => item !== tag);
+              onChange(next);
+            }}>{v4("bulkUntag")}</button>
+          </li>
+        ))}
+      </ul>
+      {!names.length && <p className="c4-tag-gargoyle-empty">{v4("tagManager")}</p>}
     </section>
   );
 }

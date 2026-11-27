@@ -22,7 +22,7 @@ import { RatioCard, toggleWatch, watchIds } from "../round8";
 import { DocStage, FREEZE_PRESETS, OnboardTrack, RichNote, WelcomeList } from "../round9";
 import { CallWindow, CustomerQr, ExportColumns, PresenceFacts, nextCallId, scoreOf } from "../round10";
 import { BulkRemind, EditLog, EmailHintLine, HandoffNote, NoteCloud, SimilarList } from "../round11";
-import { BulkUntag, ContactSummary, DncFlag, DocAsk, Fold, KeyFacts, LiveBook, MarginGauge, MiniNav, MonthStatement, PreferTime, ProfileList, QuickSwitch, ShareViewButton, TagManager, TxMini, isDnc } from "../round12";
+import { BulkUntag, ContactSummary, DocAsk, Fold, KeyFacts, LiveBook, MarginGauge, MiniNav, MonthStatement, NewelCall, ProfileList, QuickSwitch, ShareViewButton, TagManager, TxMini, isDnc } from "../round12";
 import { DocDesk } from "../round15";
 import { LeadDesk } from "../round16";
 import { ContactFeed, EntryQuality, applySplit, emailOk } from "../round17";
@@ -649,8 +649,7 @@ export function CustomerDetail({ base, id, tx, locale }: { base: string; id: str
       </Fold>
       <Fold v4={v4} section="contact" title={v4("contactCounts")}>
         <ContactSummary email={u?.email} id={id} v4={v4} />
-        <DncFlag id={id} v4={v4} />
-        <PreferTime id={id} v4={v4} />
+        <NewelCall id={id} v4={v4} />
       </Fold>
       {u && <Fold v4={v4} section="tools" title={v4("fold")} openByDefault={false}><div className="c4-detail-tools"><SimilarList row={u} v4={v4} /><HandoffNote id={id} v4={v4} tx={tx} /><NoteCloud notes={user.data?.notes || []} v4={v4} /><EditLog id={id} v4={v4} /><PresenceFacts row={u} v4={v4} /><CallWindow country={u.country} v4={v4} /><CustomerQr url={shareUrl} v4={v4} /><RatioCard id={id} v4={v4} /><OnboardTrack row={u} v4={v4} /><WelcomeList id={id} v4={v4} /><ExpiryNote expiresAt={(u as UserRow & { expiresAt?: string | null }).expiresAt} v4={v4} /><CompletenessMeter row={u} v4={v4} /><InlineProfile id={id} user={u} tx={tx} v4={v4} onDone={user.reload} /><JourneyMap id={id} v4={v4} /><WinLossCard id={id} v4={v4} /><EquityCurve id={id} v4={v4} /><DocGallery id={id} v4={v4} /><TeamThread id={id} name="" v4={v4} tx={tx} /><CallbackButton id={id} name={u.name || u.email || ""} v4={v4} tx={tx} /><ValueSpark id={id} tx={tx} v4={v4} locale={locale} /><RetentionForm id={id} tx={tx} v4={v4} onDone={user.reload} /><StatementView id={id} tx={tx} v4={v4} locale={locale} /><NoteTemplates v4={v4} onUse={async (body) => { await sendJson(`/api/admin/users/${encodeURIComponent(id)}`, "PATCH", { addNote: body }); user.reload(); }} /><DocumentsCenter id={id} email={u.email || ""} tx={tx} v4={v4} locale={locale} /><TradingOverview id={id} tx={tx} v4={v4} locale={locale} /></div></Fold>}
       <div className="c4-with-side c4-detail-luxe">
