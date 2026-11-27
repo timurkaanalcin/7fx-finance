@@ -166,7 +166,20 @@ export function CsatTrend({ ids, v4 }: { ids: string[]; v4: V4 }) {
 
 export function ResponseStat({ messages, v4 }: { messages: { workerId?: string | null; createdAt?: string }[]; v4: V4 }) {
   const minutes = responseMinutes(messages);
-  return <p className="c4-muted c4-pad">{v4("responseTime")} {minutes == null ? "—" : `${minutes}m`}</p>;
+  const label = minutes == null ? "—" : `${minutes}m`;
+  return (
+    <section className="c4-reply-cymatium" aria-label={v4("responseTime")} data-reply-cymatium="1">
+      <header className="c4-reply-cymatium-mast">
+        <p className="c4-reply-cymatium-seal" data-logo="mono">{v4("replyCymatiumLogo")}</p>
+        <div>
+          <p className="c4-reply-cymatium-kicker">{v4("replyCymatiumKicker")}</p>
+          <h3 className="c4-title">{v4("responseTime")}</h3>
+          <p className="c4-reply-cymatium-lead">{v4("replyCymatiumLead")}</p>
+        </div>
+        <p className="c4-reply-cymatium-count">{label}</p>
+      </header>
+    </section>
+  );
 }
 
 export function FirstTimer({ openedAt, v4 }: { openedAt?: string; v4: V4 }) {
