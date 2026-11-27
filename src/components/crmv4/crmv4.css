@@ -126471,3 +126471,362 @@
 @media (prefers-reduced-motion: reduce) {
   [data-crmv4-root] .c4-country-gazetteer-rows i { transition: none; }
 }
+
+/* Round 389 — pastiglia bosses and cera slips. */
+[data-crmv4-root] .c4-pastiglia,
+[data-crmv4-root] .c4-cera {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  margin: 0 0 16px;
+  padding: 16px;
+  border: 1px solid #1c1a17;
+  border-radius: 2px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+[data-crmv4-root] .c4-pastiglia {
+  color: #1c1a17;
+  background:
+    linear-gradient(#1c1a17, #1c1a17) 100% 0 / 8px 100% no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) calc(100% - 8px) 0 / 2px 100% no-repeat,
+    repeating-linear-gradient(#fffdf8 0 18px, #f3ecdf 18px 19px);
+  box-shadow: inset 0 0 0 1px #c6a15b;
+}
+[data-crmv4-root] .c4-cera {
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 100% / 100% 4px no-repeat,
+    #1c1a17;
+  box-shadow: inset 0 0 0 1px #8a6a3b;
+}
+[data-crmv4-root] .c4-pastiglia-mast,
+[data-crmv4-root] .c4-cera-mast {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+[data-crmv4-root] .c4-pastiglia-seal[data-logo="mono"],
+[data-crmv4-root] .c4-cera-seal[data-logo="mono"] {
+  width: 52px;
+  height: 52px;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: #1c1a17;
+  background: #f6f1e8;
+  border: 0;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px #c6a15b, inset 0 -4px 0 #c6a15b;
+  filter: grayscale(1);
+}
+[data-crmv4-root] .c4-pastiglia-kicker,
+[data-crmv4-root] .c4-cera-kicker {
+  margin: 0 0 4px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8a6a3b;
+}
+[data-crmv4-root] .c4-cera-kicker { color: #c6a15b; }
+[data-crmv4-root] .c4-pastiglia .c4-title,
+[data-crmv4-root] .c4-pastiglia-hint { color: #1c1a17; margin: 0; }
+[data-crmv4-root] .c4-cera .c4-title,
+[data-crmv4-root] .c4-cera-hint { color: #f6f1e8; margin: 0; }
+[data-crmv4-root] .c4-pastiglia-hint,
+[data-crmv4-root] .c4-cera-hint { font-size: 13px; line-height: 1.45; }
+[data-crmv4-root] .c4-pastiglia-count,
+[data-crmv4-root] .c4-cera-count {
+  margin: 0;
+  min-width: 44px;
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+  font-variant-numeric: tabular-nums;
+  color: #1c1a17;
+  background: #c6a15b;
+  border: 0;
+}
+[data-crmv4-root] .c4-pastiglia-index {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-pastiglia-index li {
+  margin: 0;
+  padding: 8px 10px;
+  min-height: 44px;
+  color: #1c1a17;
+  background: #fffdf8;
+  border-top: 3px solid #c6a15b;
+}
+[data-crmv4-root] .c4-pastiglia-chart,
+[data-crmv4-root] .c4-cera-chart {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: end;
+  min-height: 112px;
+  margin: 0;
+}
+[data-crmv4-root] .c4-pastiglia-column,
+[data-crmv4-root] .c4-cera-column {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+[data-crmv4-root] .c4-pastiglia-column i,
+[data-crmv4-root] .c4-cera-column i {
+  display: block;
+  width: 18px;
+  background: #c6a15b;
+  transition: height 160ms linear;
+}
+[data-crmv4-root] .c4-cera-column i { background: #8a6a3b; }
+[data-crmv4-root] .c4-pastiglia-column[data-on="1"] i,
+[data-crmv4-root] .c4-cera-column[data-on="1"] i { background: #fffdf8; box-shadow: inset 0 0 0 1px #c6a15b; }
+[data-crmv4-root] .c4-pastiglia-card,
+[data-crmv4-root] .c4-cera-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: start;
+  margin: 0;
+  padding: 12px;
+  background: #fffdf8;
+  color: #1c1a17;
+  border: 1px solid #c6a15b;
+}
+[data-crmv4-root] .c4-pastiglia-card { box-shadow: inset -4px 0 0 #1c1a17; }
+[data-crmv4-root] .c4-cera-card { box-shadow: inset 0 3px 0 #c6a15b; }
+[data-crmv4-root] .c4-pastiglia-actions,
+[data-crmv4-root] .c4-cera-actions,
+[data-crmv4-root] .c4-cera-links,
+[data-crmv4-root] .c4-cera-tools,
+[data-crmv4-root] .c4-cera-bulk,
+[data-crmv4-root] .c4-pastiglia-form,
+[data-crmv4-root] .c4-pastiglia-view { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+[data-crmv4-root] .c4-pastiglia .c4-btn,
+[data-crmv4-root] .c4-pastiglia .c4-field,
+[data-crmv4-root] .c4-cera .c4-btn,
+[data-crmv4-root] .c4-cera .c4-field {
+  min-height: 44px;
+  background: #fffdf8;
+  color: #1c1a17;
+  border: 1px solid #c6a15b;
+  border-radius: 2px;
+}
+[data-crmv4-root] .c4-pastiglia :focus-visible,
+[data-crmv4-root] .c4-cera :focus-visible { outline: 2px solid #c6a15b; outline-offset: 2px; }
+[data-crmv4-root] .c4-pastiglia-meta,
+[data-crmv4-root] .c4-cera-meta { margin: 0; }
+[data-crmv4-root] .c4-pastiglia-list,
+[data-crmv4-root] .c4-cera-list,
+[data-crmv4-root] .c4-pastiglia-views,
+[data-crmv4-root] .c4-pastiglia-time { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+[data-crmv4-root] .c4-pastiglia-links a,
+[data-crmv4-root] .c4-cera-links a { color: #8a6a3b; min-height: 44px; display: inline-flex; align-items: center; }
+[data-crmv4-root][data-theme="dark"] .c4-pastiglia {
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 8px 100% no-repeat,
+    #1a1814;
+}
+[data-crmv4-root][data-theme="dark"] .c4-pastiglia .c4-title,
+[data-crmv4-root][data-theme="dark"] .c4-pastiglia-hint { color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-pastiglia-card,
+[data-crmv4-root][data-theme="dark"] .c4-cera-card { background: #221f1b; color: #f6f1e8; }
+[data-crmv4-root][data-theme="light"] .c4-cera {
+  color: #1c1a17;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 4px no-repeat,
+    #fffdf8;
+}
+[data-crmv4-root][data-theme="light"] .c4-cera .c4-title,
+[data-crmv4-root][data-theme="light"] .c4-cera-hint { color: #1c1a17; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-pastiglia,
+  [data-crmv4-root] .c4-cera { padding: 16px 12px; }
+  [data-crmv4-root] .c4-pastiglia-mast,
+  [data-crmv4-root] .c4-cera-mast { grid-template-columns: 52px minmax(0, 1fr); }
+  [data-crmv4-root] .c4-pastiglia-count,
+  [data-crmv4-root] .c4-cera-count { grid-column: 1 / -1; }
+  [data-crmv4-root] .c4-pastiglia-card,
+  [data-crmv4-root] .c4-cera-card { grid-template-columns: 1fr; }
+  [data-crmv4-root] .c4-pastiglia-index { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  [data-crmv4-root] .c4-pastiglia .c4-btn,
+  [data-crmv4-root] .c4-pastiglia .c4-field,
+  [data-crmv4-root] .c4-cera .c4-btn,
+  [data-crmv4-root] .c4-cera .c4-field { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-pastiglia-column i,
+  [data-crmv4-root] .c4-cera-column i { transition: none; }
+}
+
+
+
+/* Round 389 — graphite workload cloister and ivory smart-list ambulatory. */
+[data-crmv4-root] .c4-workload-cloister,
+[data-crmv4-root] .c4-smart-ambulatory {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0 0 14px;
+  border: 1px solid #1c1a17;
+  border-radius: 2px;
+  box-sizing: border-box;
+  background: #fffdf8;
+  color: #1c1a17;
+}
+[data-crmv4-root] .c4-workload-cloister-mast,
+[data-crmv4-root] .c4-smart-ambulatory-mast {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  gap: 10px 12px;
+  align-items: center;
+  margin: 0;
+  padding: 14px 16px 12px;
+}
+[data-crmv4-root] .c4-workload-cloister-mast {
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 100% / 100% 3px no-repeat,
+    #1c1a17;
+}
+[data-crmv4-root] .c4-smart-ambulatory-mast {
+  color: #1c1a17;
+  background:
+    linear-gradient(#1c1a17, #1c1a17) 0 0 / 100% 3px no-repeat,
+    #f6f1e8;
+}
+[data-crmv4-root] .c4-workload-cloister-seal[data-logo="mono"],
+[data-crmv4-root] .c4-smart-ambulatory-seal[data-logo="mono"] {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  margin: 0;
+  place-items: center;
+  border: 1px solid #c6a15b;
+  color: #c6a15b;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  filter: grayscale(1);
+}
+[data-crmv4-root] .c4-smart-ambulatory-seal[data-logo="mono"] { color: #8a6a3b; border-color: #8a6a3b; }
+[data-crmv4-root] .c4-workload-cloister-kicker,
+[data-crmv4-root] .c4-smart-ambulatory-kicker {
+  margin: 0 0 2px;
+  color: #c6a15b;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-smart-ambulatory-kicker { color: #8a6a3b; }
+[data-crmv4-root] .c4-workload-cloister-mast .c4-title,
+[data-crmv4-root] .c4-workload-cloister-lead { margin: 0; color: #f6f1e8; }
+[data-crmv4-root] .c4-workload-cloister .c4-title::before,
+[data-crmv4-root] .c4-smart-ambulatory .c4-title::before { background: #c6a15b; }
+[data-crmv4-root] .c4-smart-ambulatory-mast .c4-title,
+[data-crmv4-root] .c4-smart-ambulatory-lead { margin: 0; color: #1c1a17; }
+[data-crmv4-root] .c4-workload-cloister-lead,
+[data-crmv4-root] .c4-smart-ambulatory-lead { max-width: 62ch; font-size: 13px; line-height: 1.45; }
+[data-crmv4-root] .c4-workload-cloister-count,
+[data-crmv4-root] .c4-smart-ambulatory-count {
+  margin: 0;
+  min-width: 36px;
+  padding: 6px 8px;
+  border: 1px solid #c6a15b;
+  color: #c6a15b;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+[data-crmv4-root] .c4-smart-ambulatory-count { color: #8a6a3b; border-color: #8a6a3b; }
+[data-crmv4-root] .c4-workload-cloister-rows,
+[data-crmv4-root] .c4-smart-ambulatory-lanes { margin: 0; padding: 0 16px 4px; list-style: none; display: grid; gap: 8px; }
+[data-crmv4-root] .c4-workload-cloister-rows li {
+  display: grid;
+  grid-template-columns: minmax(72px, 28%) minmax(0, 1fr) 36px 44px;
+  gap: 8px;
+  align-items: center;
+  min-height: 44px;
+  margin: 0;
+  padding: 0 0 0 10px;
+  border-bottom: 1px solid #e6dccf;
+  border-inline-start: 3px solid #c6a15b;
+}
+[data-crmv4-root] .c4-workload-cloister-rows i {
+  display: block;
+  height: 8px;
+  background: #c6a15b;
+}
+[data-crmv4-root] .c4-workload-cloister-rows em {
+  margin: 0;
+  color: #8a6a3b;
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+[data-crmv4-root] .c4-smart-ambulatory-lanes {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+[data-crmv4-root] .c4-smart-ambulatory-lane {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+  min-height: 44px;
+  margin: 0;
+  padding: 10px;
+  border: 1px solid #e6dccf;
+  border-top: 3px solid #c6a15b;
+}
+[data-crmv4-root] .c4-smart-ambulatory-lane h4 { margin: 0; font-size: 13px; }
+[data-crmv4-root] .c4-smart-ambulatory-lane a {
+  color: #1c1a17;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+[data-crmv4-root] .c4-workload-cloister :focus-visible,
+[data-crmv4-root] .c4-smart-ambulatory :focus-visible { outline: 2px solid #c6a15b; outline-offset: 2px; }
+[data-crmv4-root][data-theme="dark"] .c4-workload-cloister,
+[data-crmv4-root][data-theme="dark"] .c4-smart-ambulatory {
+  background: #1c1a17;
+  color: #f6f1e8;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-smart-ambulatory-mast { background: #141210; color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-smart-ambulatory-mast .c4-title,
+[data-crmv4-root][data-theme="dark"] .c4-smart-ambulatory-lead,
+[data-crmv4-root][data-theme="dark"] .c4-smart-ambulatory-lane a { color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-workload-cloister-rows li,
+[data-crmv4-root][data-theme="dark"] .c4-smart-ambulatory-lane { border-color: #3a332c; }
+[data-crmv4-root][data-theme="light"] .c4-workload-cloister-mast { color: #f6f1e8; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-workload-cloister-mast,
+  [data-crmv4-root] .c4-smart-ambulatory-mast { grid-template-columns: 52px minmax(0, 1fr); }
+  [data-crmv4-root] .c4-workload-cloister-count,
+  [data-crmv4-root] .c4-smart-ambulatory-count { grid-column: 1 / -1; justify-self: start; }
+  [data-crmv4-root] .c4-workload-cloister-rows li { grid-template-columns: minmax(56px, 34%) minmax(0, 1fr) 28px 40px; }
+  [data-crmv4-root] .c4-smart-ambulatory-lanes { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-crmv4-root] .c4-workload-cloister-rows i { transition: none; }
+}
