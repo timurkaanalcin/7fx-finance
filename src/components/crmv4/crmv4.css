@@ -136749,3 +136749,386 @@
 [data-crmv4-root] .c4-tlm413 {
   border-radius: 8px 48px 8px 8px;
 }
+
+/* Round 414 — orillon courses and crossette document plates. */
+[data-crmv4-root] .c4-orl414-count {
+  color: #1c1a17;
+  background: #f6f1e8;
+  border-inline: 2px solid #c6a15b;
+}
+[data-crmv4-root] .c4-orl414-chart { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px;
+}
+[data-crmv4-root] .c4-xst414-chart { display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 8px;
+}
+[data-crmv4-root] .c4-orl414-column,
+[data-crmv4-root] .c4-xst414-column {
+  display: grid;
+  gap: 6px;
+  min-height: 44px;
+  padding: 8px;
+  border: 0;
+  text-align: start;
+  cursor: pointer;
+  font: inherit;
+}
+[data-crmv4-root] .c4-orl414-column {
+  color: #1c1a17;
+  background: #fffdf8;
+  border-inline: 2px solid #8a6a3b;
+}
+[data-crmv4-root] .c4-xst414-column {
+  color: #f6f1e8;
+  background: #1c1a17;
+  border-top: 3px solid #c6a15b;
+}
+[data-crmv4-root] .c4-orl414-column i,
+[data-crmv4-root] .c4-xst414-column i {
+  display: block;
+  height: 8px;
+  background: #c6a15b;
+}
+[data-crmv4-root] .c4-orl414-column[data-on="1"],
+[data-crmv4-root] .c4-xst414-column[data-on="1"] { outline: 2px solid #c6a15b; outline-offset: 2px;
+}
+[data-crmv4-root] .c4-orl414-form,
+[data-crmv4-root] .c4-orl414-tools,
+[data-crmv4-root] .c4-orl414-bulk,
+[data-crmv4-root] .c4-orl414-view,
+[data-crmv4-root] .c4-xst414-tools,
+[data-crmv4-root] .c4-xst414-bulk,
+[data-crmv4-root] .c4-orl414-actions,
+[data-crmv4-root] .c4-xst414-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: end;
+}
+[data-crmv4-root] .c4-orl414-list,
+[data-crmv4-root] .c4-xst414-list,
+[data-crmv4-root] .c4-orl414-views,
+[data-crmv4-root] .c4-orl414-time {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-orl414-card,
+[data-crmv4-root] .c4-xst414-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 12px;
+}
+[data-crmv4-root] .c4-orl414-card {
+  background: #fffdf8;
+  border-inline-start: 10px solid #1c1a17;
+  border-radius: 0 0 18px 0;
+}
+[data-crmv4-root] .c4-orl414-card[data-quiet="1"] { background: #f6f1e8;
+}
+[data-crmv4-root] .c4-orl414-card[data-overdue="1"] { box-shadow: inset 0 0 0 1px #8a6a3b;
+}
+[data-crmv4-root] .c4-xst414-card {
+  color: #f6f1e8;
+  background: #1c1a17;
+  border-top: 3px solid #c6a15b;
+  border-inline-start: 3px solid #c6a15b;
+}
+[data-crmv4-root] .c4-orl414-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-orl414-index li {
+  min-height: 44px;
+  padding: 10px 12px;
+  border-inline: 2px solid #c6a15b;
+  background: #f6f1e8;
+}
+[data-crmv4-root] .c4-orl414-index li[data-tone="gold"] { background: #c6a15b;
+}
+[data-crmv4-root] .c4-orl414-notices {
+  margin: 0;
+  padding: 8px 12px;
+  background: #f6f1e8;
+  border-inline-start: 8px solid #8a6a3b;
+}
+[data-crmv4-root] .c4-orl414-links a,
+[data-crmv4-root] .c4-xst414-links a {
+  color: #8a6a3b;
+  margin-inline-end: 12px;
+}
+[data-crmv4-root] .c4-orl414[data-density="tight"] .c4-orl414-card { padding: 6px 8px; }
+/* Round 408 — ivory krepis arch and graphite imbrex surname. */
+[data-crmv4-root] .c4-orl414,
+[data-crmv4-root] .c4-xst414 {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  margin: 0 0 16px;
+  box-sizing: border-box;
+}
+[data-crmv4-root] .c4-orl414 {
+  padding: 18px 22px 16px;
+  color: #1c1a17;
+  background:
+    linear-gradient(#1c1a17, #1c1a17) 0 0 / 10px 100% no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) 10px 0 / 2px 100% no-repeat,
+    #fffdf8;
+  border: 1px solid #1c1a17;
+  border-radius: 0 36px 0 36px;
+  box-shadow: inset 0 -1px 0 #c6a15b;
+}
+[data-crmv4-root] .c4-xst414 {
+  padding: 22px 18px 16px;
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 28px 3px no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 3px 28px no-repeat,
+    #141310;
+  border: 1px solid #8a6a3b;
+  border-radius: 0;
+  box-shadow: 12px 12px 0 rgba(198, 161, 91, 0.18);
+}
+[data-crmv4-root] .c4-orl414-mast,
+[data-crmv4-root] .c4-xst414-mast {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+[data-crmv4-root] .c4-orl414-seal[data-logo="mono"],
+[data-crmv4-root] .c4-xst414-seal[data-logo="mono"] {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin: 0;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  line-height: 1;
+}
+[data-crmv4-root] .c4-orl414-seal[data-logo="mono"] {
+  color: #f6f1e8;
+  background: #1c1a17;
+  border-radius: 0 0 18px 0;
+  box-shadow: 6px -6px 0 #c6a15b;
+}
+[data-crmv4-root] .c4-xst414-seal[data-logo="mono"] {
+  color: #1c1a17;
+  background: #c6a15b;
+  border-radius: 0;
+  box-shadow: -6px 6px 0 #f6f1e8;
+}
+[data-crmv4-root] .c4-orl414-kicker,
+[data-crmv4-root] .c4-xst414-kicker {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-orl414-kicker { color: #8a6a3b; }
+[data-crmv4-root] .c4-xst414-kicker { color: #c6a15b; }
+[data-crmv4-root] .c4-orl414 .c4-title,
+[data-crmv4-root] .c4-xst414 .c4-title { margin: 0; }
+[data-crmv4-root] .c4-orl414-hint,
+[data-crmv4-root] .c4-xst414-hint,
+[data-crmv4-root] .c4-orl414-note,
+[data-crmv4-root] .c4-xst414-note,
+[data-crmv4-root] .c4-orl414-meta,
+[data-crmv4-root] .c4-xst414-meta { margin: 0; font-size: 13px; line-height: 1.45; }
+[data-crmv4-root] .c4-orl414-count,
+[data-crmv4-root] .c4-xst414-count {
+  margin: 0;
+  min-width: 44px;
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+}
+[data-crmv4-root] .c4-xst414-count { color: #c6a15b; border: 1px solid #8a6a3b; }
+[data-crmv4-root] .c4-orl414 .c4-btn,
+[data-crmv4-root] .c4-orl414 .c4-chip,
+[data-crmv4-root] .c4-orl414 .c4-field,
+[data-crmv4-root] .c4-xst414 .c4-btn,
+[data-crmv4-root] .c4-xst414 .c4-chip,
+[data-crmv4-root] .c4-xst414 .c4-field { min-height: 44px; }
+[data-crmv4-root] .c4-orl414 :focus-visible,
+[data-crmv4-root] .c4-xst414 :focus-visible { outline: 2px solid #c6a15b; outline-offset: 2px; }
+[data-crmv4-root][data-theme="dark"] .c4-orl414 {
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 10px 100% no-repeat,
+    linear-gradient(#8a6a3b, #8a6a3b) 10px 0 / 2px 100% no-repeat,
+    #1c1a17;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-orl414-card,
+[data-crmv4-root][data-theme="dark"] .c4-orl414-column,
+[data-crmv4-root][data-theme="dark"] .c4-orl414-notices,
+[data-crmv4-root][data-theme="dark"] .c4-orl414-index li {
+  color: #f6f1e8;
+  background: #141310;
+}
+[data-crmv4-root][data-theme="light"] .c4-xst414 { color: #f6f1e8; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-orl414-mast,
+  [data-crmv4-root] .c4-xst414-mast { grid-template-columns: 52px minmax(0, 1fr); }
+  [data-crmv4-root] .c4-orl414-count,
+  [data-crmv4-root] .c4-xst414-count { grid-column: 2; justify-self: end; }
+  [data-crmv4-root] .c4-orl414-chart,
+  [data-crmv4-root] .c4-orl414-card,
+  [data-crmv4-root] .c4-xst414-card { grid-template-columns: 1fr; }
+}
+
+/* Round 414 — ivory tag gargoyle and graphite call newel. */
+[data-crmv4-root] .c4-tag-gargoyle,
+[data-crmv4-root] .c4-call-newel {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  margin: 0 0 16px;
+  box-sizing: border-box;
+}
+[data-crmv4-root] .c4-tag-gargoyle {
+  padding: 16px 18px 14px;
+  color: #1c1a17;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 4px no-repeat,
+    #fffdf8;
+  border: 1px solid #1c1a17;
+  border-radius: 18px 2px 18px 2px;
+}
+[data-crmv4-root] .c4-call-newel {
+  padding: 16px 18px 14px;
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 100% / 100% 4px no-repeat,
+    #141310;
+  border: 1px solid #c6a15b;
+  border-radius: 2px 18px 2px 18px;
+}
+[data-crmv4-root] .c4-tag-gargoyle-mast,
+[data-crmv4-root] .c4-call-newel-mast {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+[data-crmv4-root] .c4-tag-gargoyle-seal[data-logo="mono"],
+[data-crmv4-root] .c4-call-newel-seal[data-logo="mono"] {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin: 0;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  line-height: 1;
+}
+[data-crmv4-root] .c4-tag-gargoyle-seal[data-logo="mono"] {
+  color: #f6f1e8;
+  background: #1c1a17;
+  border-radius: 26px 2px 26px 2px;
+}
+[data-crmv4-root] .c4-call-newel-seal[data-logo="mono"] {
+  color: #1c1a17;
+  background: #c6a15b;
+  border-radius: 2px;
+}
+[data-crmv4-root] .c4-tag-gargoyle-kicker,
+[data-crmv4-root] .c4-call-newel-kicker {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-tag-gargoyle-kicker { color: #8a6a3b; }
+[data-crmv4-root] .c4-call-newel-kicker { color: #c6a15b; }
+[data-crmv4-root] .c4-tag-gargoyle .c4-title,
+[data-crmv4-root] .c4-call-newel .c4-title,
+[data-crmv4-root] .c4-tag-gargoyle-lead,
+[data-crmv4-root] .c4-call-newel-lead { margin: 0; }
+[data-crmv4-root] .c4-tag-gargoyle-lead,
+[data-crmv4-root] .c4-call-newel-lead { font-size: 13px; line-height: 1.45; }
+[data-crmv4-root] .c4-tag-gargoyle-count {
+  margin: 0;
+  min-width: 44px;
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+  color: #1c1a17;
+  background: #f6f1e8;
+  border: 1px solid #c6a15b;
+}
+[data-crmv4-root] .c4-tag-gargoyle-stones {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-tag-gargoyle-stones li,
+[data-crmv4-root] .c4-call-newel-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 10px;
+}
+[data-crmv4-root] .c4-tag-gargoyle-stones li {
+  background: #f6f1e8;
+  border-inline-start: 8px solid #c6a15b;
+}
+[data-crmv4-root] .c4-call-newel-row {
+  background: #1c1a17;
+  border-top: 1px solid #8a6a3b;
+}
+[data-crmv4-root] .c4-call-newel .c4-lab,
+[data-crmv4-root] .c4-call-newel .c4-lab span { color: #f6f1e8; }
+[data-crmv4-root] .c4-call-newel .c4-field {
+  color: #1c1a17;
+  background: #fffdf8;
+  border: 1px solid #c6a15b;
+}
+[data-crmv4-root] .c4-tag-gargoyle .c4-btn,
+[data-crmv4-root] .c4-tag-gargoyle .c4-chip,
+[data-crmv4-root] .c4-call-newel .c4-btn,
+[data-crmv4-root] .c4-call-newel .c4-chip,
+[data-crmv4-root] .c4-call-newel .c4-field { min-height: 44px; }
+[data-crmv4-root] .c4-tag-gargoyle-empty { margin: 0; color: #8a6a3b; }
+[data-crmv4-root] .c4-tag-gargoyle :focus-visible,
+[data-crmv4-root] .c4-call-newel :focus-visible { outline: 2px solid #c6a15b; outline-offset: 2px; }
+[data-crmv4-root][data-theme="dark"] .c4-tag-gargoyle {
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 4px no-repeat,
+    #1c1a17;
+}
+[data-crmv4-root][data-theme="dark"] .c4-tag-gargoyle-stones li,
+[data-crmv4-root][data-theme="dark"] .c4-tag-gargoyle-count {
+  color: #f6f1e8;
+  background: #141310;
+}
+[data-crmv4-root][data-theme="light"] .c4-call-newel { color: #f6f1e8; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-tag-gargoyle,
+  [data-crmv4-root] .c4-call-newel { padding: 14px 12px; }
+  [data-crmv4-root] .c4-tag-gargoyle-mast,
+  [data-crmv4-root] .c4-call-newel-mast { grid-template-columns: 52px minmax(0, 1fr); }
+  [data-crmv4-root] .c4-tag-gargoyle-count { grid-column: 2; justify-self: end; }
+  [data-crmv4-root] .c4-orl414,
+  [data-crmv4-root] .c4-xst414 { padding: 14px 12px 14px; }
+  [data-crmv4-root] .c4-orl414 { border-radius: 0 24px 0 24px; }
+}

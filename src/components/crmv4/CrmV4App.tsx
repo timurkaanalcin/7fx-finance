@@ -401,6 +401,7 @@ import { ArchitraveCourses, ProsceniumPlates } from "./round410";
 import { PeristasisCourses, PendentivePlates } from "./round411";
 import { MetopeCourses, TriglyphPlates } from "./round412";
 import { CaryatidCourses, TelamonPlates } from "./round413";
+import { OrillonCourses, CrossettePlates } from "./round414";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1256,6 +1257,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "trg") return v4("trgTitle");
     if (tab === "cyd") return v4("cydTitle");
     if (tab === "tlm") return v4("tlmTitle");
+    if (tab === "orl") return v4("ornTitle");
+    if (tab === "xst") return v4("xstTitle");
     if (tab === "pnd") return v4("pndTitle");
     if (tab === "cht") return v4("chtTitle");
     if (tab === "thd") return v4("thdTitle");
@@ -1540,6 +1543,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "trg") return v4("trgTitle");
     if (tab === "cyd") return v4("cydTitle");
     if (tab === "tlm") return v4("tlmTitle");
+    if (tab === "orl") return v4("ornTitle");
+    if (tab === "xst") return v4("xstTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -2210,6 +2215,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "trg") return v4("trgSub");
     if (tab === "cyd") return v4("cydSub");
     if (tab === "tlm") return v4("tlmSub");
+    if (tab === "orl") return v4("ornSub");
+    if (tab === "xst") return v4("xstSub");
     return "";
   }
 
@@ -3095,6 +3102,8 @@ function Shell({ base, section, name }: Props) {
             {view === "trg" && <TriglyphPlates base={base} v4={v4} />}
             {view === "cyd" && <CaryatidCourses base={base} v4={v4} />}
             {view === "tlm" && <TelamonPlates base={base} v4={v4} />}
+            {view === "orl" && <OrillonCourses base={base} v4={v4} />}
+            {view === "xst" && <CrossettePlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
