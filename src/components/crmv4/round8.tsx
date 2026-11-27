@@ -91,10 +91,20 @@ export function WatchAlerts({ rows, v4 }: { rows: UserRow[]; v4: V4 }) {
     setAlerts(diffs);
   }, [watchKey, rows]);
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("watchlist")} {watched.length}</h3></div>
-      {alerts.map((row) => <p key={`${row.id}-${row.kind}`} className="c4-pad">{row.name} · {row.kind}</p>)}
-      {!alerts.length && <p className="c4-muted c4-pad">{v4("watchlist")}</p>}
+    <section className="c4-watch-acroterion" aria-label={v4("watchlist")} data-watch-acroterion="1">
+      <header className="c4-watch-acroterion-mast">
+        <p className="c4-watch-acroterion-seal" data-logo="mono">{v4("wacAcroLogo")}</p>
+        <div>
+          <p className="c4-watch-acroterion-kicker">{v4("wacAcroKicker")}</p>
+          <h3 className="c4-title">{v4("watchlist")} {watched.length}</h3>
+          <p className="c4-watch-acroterion-lead">{v4("wacAcroLead")}</p>
+        </div>
+        <p className="c4-watch-acroterion-count">{alerts.length}</p>
+      </header>
+      <ul className="c4-watch-acroterion-rows">
+        {alerts.map((row) => <li key={`${row.id}-${row.kind}`}><span>{row.name}</span><span>{row.kind}</span></li>)}
+      </ul>
+      {!alerts.length && <p className="c4-watch-acroterion-empty">{v4("watchlist")}</p>}
     </section>
   );
 }
@@ -105,16 +115,27 @@ export function ExposureAlert({ v4 }: { v4: V4 }) {
   useEffect(() => { setLimit(Number(readJson(LIMIT_KEY, 0)) || 0); }, []);
   const hot = overThreshold(exposureBySymbol(data.data?.positions || []), limit);
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("exposureLimit")}</h3></div>
-      <label className="c4-lab c4-pad"><span>{v4("exposureLimit")}</span>
+    <section className="c4-exposure-antefix" aria-label={v4("exposureLimit")} data-exposure-antefix="1">
+      <header className="c4-exposure-antefix-mast">
+        <p className="c4-exposure-antefix-seal" data-logo="mono">{v4("eanAnteLogo")}</p>
+        <div>
+          <p className="c4-exposure-antefix-kicker">{v4("eanAnteKicker")}</p>
+          <h3 className="c4-title">{v4("exposureLimit")}</h3>
+          <p className="c4-exposure-antefix-lead">{v4("eanAnteLead")}</p>
+        </div>
+        <p className="c4-exposure-antefix-count">{hot.length}</p>
+      </header>
+      <label className="c4-lab c4-exposure-antefix-limit"><span>{v4("exposureLimit")}</span>
         <input className="c4-field" type="number" min={0} value={limit || ""} aria-label={v4("exposureLimit")} onChange={(event) => {
           const next = Number(event.target.value) || 0;
           setLimit(next);
           writeJson(LIMIT_KEY, next);
         }} />
       </label>
-      {hot.map((row) => <p key={row.symbol} className="c4-pad">{row.symbol} · {row.exposure.toFixed(2)}</p>)}
+      <ul className="c4-exposure-antefix-rows">
+        {hot.map((row) => <li key={row.symbol}><span>{row.symbol}</span><strong>{row.exposure.toFixed(2)}</strong></li>)}
+      </ul>
+      {!hot.length && <p className="c4-exposure-antefix-empty">{v4("exposureLimit")}</p>}
     </section>
   );
 }
