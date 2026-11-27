@@ -116,8 +116,15 @@ export function QuickSheet({ open, onClose, onSearch, v4, tx, closeLabel }: {
   const local = kind === "call";
   return (
     <div className="c4-palette-back" role="presentation" onClick={onClose}>
-      <div role="dialog" aria-modal="true" aria-label={v4("quickPlus")} className="c4-palette c4-quick-luxe" onClick={(event) => event.stopPropagation()}>
-        <h2 className="c4-title">{v4("quickPlus")}</h2>
+      <div role="dialog" aria-modal="true" aria-label={v4("quickPlus")} className="c4-palette c4-quick-luxe c4-quick-dosseret" data-quick-dosseret="1" onClick={(event) => event.stopPropagation()}>
+        <header className="c4-quick-dosseret-mast">
+          <p className="c4-quick-dosseret-seal" data-logo="mono">{v4("quickDosseretLogo")}</p>
+          <div>
+            <p className="c4-quick-dosseret-kicker">{v4("quickDosseretKicker")}</p>
+            <h2 className="c4-title">{v4("quickPlus")}</h2>
+            <p className="c4-quick-dosseret-lead">{v4("quickDosseretLead")}</p>
+          </div>
+        </header>
         <p className="c4-muted">{v4("quickHint")}</p>
         <div className="c4-row">
           {(["customer", "note", "reminder", "call"] as const).map((item) => (

@@ -23,8 +23,15 @@ export function LocalData({ v4 }: { v4: V4 }) {
   }
   useEffect(() => { refresh(); }, []);
   return (
-    <section className="c4-local-luxe" aria-label={v4("localData")}>
-      <h3 className="c4-title">{v4("localData")}</h3>
+    <section className="c4-local-luxe c4-local-tegula" aria-label={v4("localData")} data-local-tegula="1">
+      <header className="c4-local-tegula-mast">
+        <p className="c4-local-tegula-seal" data-logo="mono">{v4("localTegulaLogo")}</p>
+        <div>
+          <p className="c4-local-tegula-kicker">{v4("localTegulaKicker")}</p>
+          <h3 className="c4-title">{v4("localData")}</h3>
+          <p className="c4-local-tegula-lead">{v4("localTegulaLead")}</p>
+        </div>
+      </header>
       <p className="c4-muted">{v4("localHint")}</p>
       <p>{v4("localCount")} {count}</p>
       <p className="c4-muted">{v4("localKept")}</p>
