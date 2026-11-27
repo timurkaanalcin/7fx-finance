@@ -213,8 +213,16 @@ export function AnnounceFeed({ v4 }: { v4: V4 }) {
   const [text, setText] = useState("");
   useEffect(() => { setRows(readJson(FEED_KEY, [])); }, []);
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("announceFeed")}</h3></div>
+    <section className="c4-announce-crocket" aria-label={v4("announceFeed")} data-announce-crocket="1">
+      <header className="c4-announce-crocket-mast">
+        <p className="c4-announce-crocket-seal" data-logo="mono">{v4("announceCrocketLogo")}</p>
+        <div>
+          <p className="c4-announce-crocket-kicker">{v4("announceCrocketKicker")}</p>
+          <h3 className="c4-title">{v4("announceFeed")}</h3>
+          <p className="c4-announce-crocket-lead">{v4("announceCrocketLead")}</p>
+        </div>
+        <p className="c4-announce-crocket-count">{rows.length}</p>
+      </header>
       <form className="c4-row c4-pad" onSubmit={(event) => {
         event.preventDefault();
         const body = text.trim();
@@ -227,7 +235,9 @@ export function AnnounceFeed({ v4 }: { v4: V4 }) {
         <input className="c4-field" aria-label={v4("announceFeed")} value={text} onChange={(event) => setText(event.target.value)} />
         <button type="submit" className="c4-btn">{v4("announceFeed")}</button>
       </form>
-      {rows.map((row) => <p key={row.id} className="c4-pad">{row.text}</p>)}
+      <ul className="c4-announce-crocket-rows">
+        {rows.map((row) => <li key={row.id}><i aria-hidden="true" />{row.text}</li>)}
+      </ul>
     </section>
   );
 }
@@ -237,13 +247,20 @@ export function GreetingPreview({ v4 }: { v4: V4 }) {
   const [holiday, setHoliday] = useState("");
   const template = "Happy {{holiday}}, {{name}}.";
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("greeting")}</h3></div>
-      <div className="c4-row c4-pad">
+    <section className="c4-greeting-quatrefoil" aria-label={v4("greeting")} data-greeting-quatrefoil="1">
+      <header className="c4-greeting-quatrefoil-mast">
+        <p className="c4-greeting-quatrefoil-seal" data-logo="mono">{v4("greetingQuatrefoilLogo")}</p>
+        <div>
+          <p className="c4-greeting-quatrefoil-kicker">{v4("greetingQuatrefoilKicker")}</p>
+          <h3 className="c4-title">{v4("greeting")}</h3>
+          <p className="c4-greeting-quatrefoil-lead">{v4("greetingQuatrefoilLead")}</p>
+        </div>
+      </header>
+      <div className="c4-row c4-pad c4-greeting-quatrefoil-fields">
         <input className="c4-field" aria-label={v4("greeting")} value={name} onChange={(event) => setName(event.target.value)} />
         <input className="c4-field" aria-label={v4("greeting")} value={holiday} onChange={(event) => setHoliday(event.target.value)} />
       </div>
-      <p className="c4-pad">{fillGreeting(template, { name, holiday })}</p>
+      <p className="c4-greeting-quatrefoil-preview">{fillGreeting(template, { name, holiday })}</p>
     </section>
   );
 }
