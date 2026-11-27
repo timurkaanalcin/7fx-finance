@@ -149,14 +149,27 @@ export function TxMini({ id, locale, v4 }: { id: string; locale: string; v4: V4 
   const data = useJson<{ transactions?: { id: string; type?: string; amount?: number; currency?: string; createdAt?: string }[] }>(`/api/admin/transactions?userId=${encodeURIComponent(id)}&limit=6`);
   const rows = data.data?.transactions || [];
   return (
-    <table className="c4-table">
-      <thead><tr><th>{v4("recentTx")}</th><th /><th /></tr></thead>
-      <tbody>
+    <section className="c4-tx-sedilia" aria-label={v4("recentTx")} data-tx-sedilia="1">
+      <header className="c4-tx-sedilia-mast">
+        <p className="c4-tx-sedilia-seal" data-logo="mono">{v4("txSediliaLogo")}</p>
+        <div>
+          <p className="c4-tx-sedilia-kicker">{v4("txSediliaKicker")}</p>
+          <h3 className="c4-title">{v4("recentTx")}</h3>
+          <p className="c4-tx-sedilia-lead">{v4("txSediliaLead")}</p>
+        </div>
+        <p className="c4-tx-sedilia-count">{rows.length}</p>
+      </header>
+      <ol className="c4-tx-sedilia-seats">
         {rows.map((row) => (
-          <tr key={row.id}><td>{when(row.createdAt, locale)}</td><td>{row.type}</td><td>{money(row.amount, row.currency, locale)}</td></tr>
+          <li key={row.id}>
+            <span>{when(row.createdAt, locale)}</span>
+            <span>{row.type}</span>
+            <span>{money(row.amount, row.currency, locale)}</span>
+          </li>
         ))}
-      </tbody>
-    </table>
+      </ol>
+      {!rows.length && <p className="c4-tx-sedilia-empty">{v4("recentTx")}</p>}
+    </section>
   );
 }
 
@@ -185,22 +198,33 @@ export function LiveBook({ id, locale, v4 }: { id: string; locale: string; v4: V
     return () => { live = false; };
   }, [symbols]);
   return (
-    <table className="c4-table">
-      <thead><tr><th>{v4("liveBook")}</th><th>{v4("livePnl")}</th><th /></tr></thead>
-      <tbody>
-        {open.map((row) => {
-          const quote = quotes[row.symbol || ""] || 0;
-          const live = displayPnl(String(row.side || ""), Number(row.openPrice) || 0, quote, Number(row.volume) || 0);
-          return (
-            <tr key={row.id}>
-              <td>{row.symbol} {row.side}</td>
-              <td>{live == null ? "—" : money(live, "USD", locale)}</td>
-              <td className="c4-muted">{money(row.profit, "USD", locale)}</td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+    <section className="c4-book-ciborium" aria-label={v4("liveBook")} data-book-ciborium="1">
+      <header className="c4-book-ciborium-mast">
+        <p className="c4-book-ciborium-seal" data-logo="mono">{v4("bkCiboriumLogo")}</p>
+        <div>
+          <p className="c4-book-ciborium-kicker">{v4("bkCiboriumKicker")}</p>
+          <h3 className="c4-title">{v4("liveBook")}</h3>
+          <p className="c4-book-ciborium-lead">{v4("bkCiboriumLead")}</p>
+        </div>
+        <p className="c4-book-ciborium-count">{open.length}</p>
+      </header>
+      <div className="c4-book-ciborium-vault">
+        <ol className="c4-book-ciborium-rows">
+          {open.map((row) => {
+            const quote = quotes[row.symbol || ""] || 0;
+            const live = displayPnl(String(row.side || ""), Number(row.openPrice) || 0, quote, Number(row.volume) || 0);
+            return (
+              <li key={row.id}>
+                <span>{row.symbol} {row.side}</span>
+                <span>{v4("livePnl")} {live == null ? "—" : money(live, "USD", locale)}</span>
+                <span className="c4-muted">{money(row.profit, "USD", locale)}</span>
+              </li>
+            );
+          })}
+        </ol>
+        {!open.length && <p className="c4-book-ciborium-empty">{v4("liveBook")}</p>}
+      </div>
+    </section>
   );
 }
 
