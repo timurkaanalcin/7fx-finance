@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { crmv4Text } from "@/lib/crmv4/copy";
 import { crmv4Href } from "@/lib/crmv4/sections";
+import { ImportCleatHead, SponsorTholeHead } from "../round418";
 import { Card, Lab, Msg, State, sendJson, useJson, when, type Tx } from "../kit";
 
 const OPS_TITLE = {
@@ -75,10 +76,10 @@ export default function Ops({ tx, area, locale }: { tx: Tx; area: string; locale
       {area === "methods" && <Methods tx={tx} />}
       {area === "assets" && <Assets tx={tx} needle={needle} empty={v4("sxtOpsEmpty")} />}
       {area === "rates" && <Rates tx={tx} />}
-      {area === "sponsors" && <Sponsors tx={tx} needle={needle} empty={v4("sxtOpsEmpty")} />}
+      {area === "sponsors" && <Sponsors tx={tx} needle={needle} empty={v4("sxtOpsEmpty")} v4={v4} />}
       {area === "licenses" && <Licenses tx={tx} needle={needle} empty={roomCopy(v4, "licCharterEmpty")} v4={v4} />}
       {area === "calendar" && <Calendar tx={tx} needle={needle} empty={roomCopy(v4, "calAlmanacEmpty")} v4={v4} />}
-      {area === "import" && <ImportPanel tx={tx} />}
+      {area === "import" && <ImportPanel tx={tx} v4={v4} />}
     </div>
   );
 }
@@ -291,7 +292,7 @@ function Rates({ tx }: { tx: Tx }) {
   );
 }
 
-function Sponsors({ tx, needle, empty }: { tx: Tx; needle: string; empty: string }) {
+function Sponsors({ tx, needle, empty, v4 }: { tx: Tx; needle: string; empty: string; v4: (key: Parameters<typeof crmv4Text>[1]) => string }) {
   const data = useJson<{ sponsors?: { id: string; name?: string; url?: string | null }[] }>("/api/admin/sponsors");
   const [msg, setMsg] = useState("");
   const rows = (data.data?.sponsors || []).filter((row) => roomHit(needle, `${row.name || ""} ${row.url || ""}`));
@@ -311,7 +312,7 @@ function Sponsors({ tx, needle, empty }: { tx: Tx; needle: string; empty: string
           </li>
         ))}
       </ul>
-      <form className="c4-form c4-ops-form" onSubmit={async (event) => {
+      <form className="c4-sponsor-thole" data-sponsor-thole="1" aria-label={tx("createSponsor")} onSubmit={async (event) => {
         event.preventDefault();
         const fd = new FormData(event.currentTarget);
         const file = fd.get("logo");
@@ -321,6 +322,7 @@ function Sponsors({ tx, needle, empty }: { tx: Tx; needle: string; empty: string
         setMsg(res.ok ? tx("sponsorSaved") : res.error || tx("failed"));
         if (res.ok) { event.currentTarget.reset(); data.reload(); }
       }}>
+        <SponsorTholeHead v4={v4} title={tx("createSponsor")} />
         <Lab label={tx("name")}><input name="name" required className="c4-field" /></Lab>
         <Lab label={tx("url")}><input name="url" className="c4-field" placeholder={tx("httpsOnly")} /></Lab>
         <Lab label={tx("logo")}><input name="logo" type="file" required accept="image/png,image/jpeg,image/webp,image/gif" /></Lab>
@@ -452,14 +454,14 @@ function Calendar({ tx, needle, empty, v4 }: { tx: Tx; needle: string; empty: st
 
 type Parsed = { columns?: string[]; rows?: string[][]; suggestedMapping?: Record<string, string>; rowCount?: number; fileName?: string; format?: string };
 
-function ImportPanel({ tx }: { tx: Tx }) {
+function ImportPanel({ tx, v4 }: { tx: Tx; v4: (key: Parameters<typeof crmv4Text>[1]) => string }) {
   const [parsed, setParsed] = useState<Parsed | null>(null);
   const [msg, setMsg] = useState("");
   const [summary, setSummary] = useState("");
   return (
     <Card title={tx("importLeads")}>
       <p className="c4-muted" style={{ padding: "8px 16px 0" }}>{tx("importConfirm")} {tx("maxRows")}</p>
-      <form className="c4-form c4-ops-form" onSubmit={async (event) => {
+      <form className="c4-import-cleat" data-import-cleat="1" aria-label={tx("importPreview")} onSubmit={async (event) => {
         event.preventDefault();
         const fd = new FormData(event.currentTarget);
         const res = await fetch("/api/admin/import/parse", { method: "POST", body: fd });
@@ -471,6 +473,7 @@ function ImportPanel({ tx }: { tx: Tx }) {
         setParsed(body as Parsed);
         setMsg(tx("mappingReady"));
       }}>
+        <ImportCleatHead v4={v4} title={tx("importPreview")} />
         <Lab label={tx("importFile")}><input name="file" type="file" required /></Lab>
         <button type="submit" className="c4-btn">{tx("importPreview")}</button>
       </form>
