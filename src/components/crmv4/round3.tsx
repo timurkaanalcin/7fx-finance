@@ -213,9 +213,17 @@ export function NoteTemplates({ v4, onUse }: { v4: V4; onUse: (body: string) => 
   const [body, setBody] = useState("");
   useEffect(() => { setItems(readJson(NOTE_KEY, [])); }, []);
   return (
-    <div className="c4-stack">
-      <h3 className="c4-title">{v4("noteTemplates")}</h3>
-      <div className="c4-row">{items.map((item) => <button key={item.id} type="button" className="c4-chip" onClick={() => onUse(item.body)}>{item.body.slice(0, 32)}</button>)}</div>
+    <section className="c4-note-taenia" aria-label={v4("noteTemplates")} data-note-taenia="1">
+      <header className="c4-note-taenia-mast">
+        <p className="c4-note-taenia-seal" data-logo="mono">{v4("noteTaeniaLogo")}</p>
+        <div>
+          <p className="c4-note-taenia-kicker">{v4("noteTaeniaKicker")}</p>
+          <h3 className="c4-title">{v4("noteTemplates")}</h3>
+          <p className="c4-note-taenia-lead">{v4("noteTaeniaLead")}</p>
+        </div>
+        <p className="c4-note-taenia-count">{items.length}</p>
+      </header>
+      <div className="c4-note-taenia-rows">{items.map((item) => <button key={item.id} type="button" className="c4-chip" onClick={() => onUse(item.body)}>{item.body.slice(0, 32)}</button>)}</div>
       <textarea className="c4-field" rows={2} value={body} aria-label={v4("noteTemplates")} onChange={(event) => setBody(event.target.value)} />
       <button type="button" className="c4-btn" onClick={() => {
         if (!body.trim()) return;
@@ -224,7 +232,7 @@ export function NoteTemplates({ v4, onUse }: { v4: V4; onUse: (body: string) => 
         writeJson(NOTE_KEY, next);
         setBody("");
       }}>{v4("useTemplate")}</button>
-    </div>
+    </section>
   );
 }
 
