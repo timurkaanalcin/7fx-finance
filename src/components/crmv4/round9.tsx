@@ -42,11 +42,26 @@ export function NoteSearch({ v4 }: { v4: V4 }) {
   const data = useJson<{ communications?: { id: string; description?: string; title?: string; trader?: string }[] }>("/api/admin/communications?type=NOTE&take=40");
   const [q, setQ] = useState("");
   const rows = (data.data?.communications || []).filter((row) => `${row.description || ""} ${row.title || ""}`.toLowerCase().includes(q.trim().toLowerCase()));
+  const shown = rows.slice(0, 8);
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("noteSearch")}</h3></div>
-      <input className="c4-field" aria-label={v4("noteSearch")} value={q} onChange={(event) => setQ(event.target.value)} />
-      {rows.slice(0, 8).map((row) => <p key={row.id} className="c4-pad">{row.trader || "—"} · {row.description || row.title}</p>)}
+    <section className="c4-note-carling" aria-label={v4("noteSearch")} data-note-carling="1">
+      <header className="c4-note-carling-mast">
+        <p className="c4-note-carling-seal" data-logo="mono">{v4("nclCarlingLogo")}</p>
+        <div>
+          <p className="c4-note-carling-kicker">{v4("nclCarlingKicker")}</p>
+          <h3 className="c4-title">{v4("noteSearch")}</h3>
+          <p className="c4-note-carling-lead">{v4("nclCarlingLead")}</p>
+        </div>
+        <p className="c4-note-carling-count">{shown.length}</p>
+      </header>
+      <label className="c4-lab">
+        <span>{v4("noteSearch")}</span>
+        <input className="c4-field" aria-label={v4("noteSearch")} value={q} onChange={(event) => setQ(event.target.value)} />
+      </label>
+      <ul className="c4-note-carling-rows">
+        {shown.map((row) => <li key={row.id}>{row.trader || "—"} · {row.description || row.title}</li>)}
+      </ul>
+      {!shown.length && <p className="c4-note-carling-empty">{v4("noteSearch")}</p>}
     </section>
   );
 }

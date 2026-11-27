@@ -38,17 +38,26 @@ export function ActivityStream({ v4 }: { v4: V4 }) {
     const name = row.actor || "—";
     if (!names.includes(name)) names.push(name);
   }
-  const shown = actor ? rows.filter((row) => (row.actor || "—") === actor) : rows;
+  const shown = (actor ? rows.filter((row) => (row.actor || "—") === actor) : rows).slice(0, 12);
   return (
-    <section className="c4-card c4-audit-luxe">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("activityStream")}</h3></div>
-      <label className="c4-lab c4-pad"><span>{v4("staffAudit")}</span>
+    <section className="c4-audit-hawse" aria-label={v4("activityStream")} data-audit-hawse="1">
+      <header className="c4-audit-hawse-mast">
+        <p className="c4-audit-hawse-seal" data-logo="mono">{v4("ahwHawseLogo")}</p>
+        <div>
+          <p className="c4-audit-hawse-kicker">{v4("ahwHawseKicker")}</p>
+          <h3 className="c4-title">{v4("activityStream")}</h3>
+          <p className="c4-audit-hawse-lead">{v4("ahwHawseLead")}</p>
+        </div>
+        <p className="c4-audit-hawse-count">{shown.length}</p>
+      </header>
+      <label className="c4-lab"><span>{v4("staffAudit")}</span>
         <select className="c4-select" aria-label={v4("staffAudit")} value={actor} onChange={(event) => setActor(event.target.value)}>
           <option value="">{v4("activityStream")}</option>
           {names.map((name) => <option key={name}>{name}</option>)}
         </select>
       </label>
-      <ul>{shown.slice(0, 12).map((row) => <li key={row.id} className="c4-pad">{row.actor || "—"} · {row.action} · {row.target || ""}</li>)}</ul>
+      <ul className="c4-audit-hawse-rows">{shown.map((row) => <li key={row.id}>{row.actor || "—"} · {row.action} · {row.target || ""}</li>)}</ul>
+      {!shown.length && <p className="c4-audit-hawse-empty">{v4("activityStream")}</p>}
     </section>
   );
 }
