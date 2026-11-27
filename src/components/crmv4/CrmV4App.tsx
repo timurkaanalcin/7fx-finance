@@ -399,6 +399,7 @@ import { ImbrexPlates, KrepisCourses } from "./round408";
 import { CanalisPlates, HypotrachelionCourses } from "./round409";
 import { ArchitraveCourses, ProsceniumPlates } from "./round410";
 import { PeristasisCourses, PendentivePlates } from "./round411";
+import { MetopeCourses, TriglyphPlates } from "./round412";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1250,6 +1251,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "psc") return v4("pscTitle");
     if (tab === "prs") return v4("psiTitle");
     if (tab === "pdv") return v4("pdnTitle");
+    if (tab === "mte") return v4("mteTitle");
+    if (tab === "trg") return v4("trgTitle");
     if (tab === "pnd") return v4("pndTitle");
     if (tab === "cht") return v4("chtTitle");
     if (tab === "thd") return v4("thdTitle");
@@ -1530,6 +1533,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "psc") return v4("pscTitle");
     if (tab === "prs") return v4("psiTitle");
     if (tab === "pdv") return v4("pdnTitle");
+    if (tab === "mte") return v4("mteTitle");
+    if (tab === "trg") return v4("trgTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -2196,6 +2201,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "mac") return v4("macSub");
     if (tab === "scg") return v4("scgSub");
     if (tab === "ven") return v4("venSub");
+    if (tab === "mte") return v4("mteSub");
+    if (tab === "trg") return v4("trgSub");
     return "";
   }
 
@@ -3077,6 +3084,8 @@ function Shell({ base, section, name }: Props) {
             {view === "psc" && <ProsceniumPlates base={base} v4={v4} />}
             {view === "prs" && <PeristasisCourses base={base} v4={v4} />}
             {view === "pdv" && <PendentivePlates base={base} v4={v4} />}
+            {view === "mte" && <MetopeCourses base={base} v4={v4} />}
+            {view === "trg" && <TriglyphPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
