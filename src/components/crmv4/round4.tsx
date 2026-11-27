@@ -339,13 +339,27 @@ export function HourHeat({ v4 }: { v4: V4 }) {
 export function WorkloadBoard({ v4 }: { v4: V4 }) {
   const data = useJson<{ users?: UserRow[] }>("/api/admin/users?view=table&take=80&meta=0&role=TRADER");
   const rows = workloadOf(data.data?.users || []);
+  const shown = rows.slice(0, 6);
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("workload")}</h3></div>
+    <section className="c4-workload-cloister" aria-label={v4("workload")} data-workload-cloister="1">
+      <header className="c4-workload-cloister-mast">
+        <p className="c4-workload-cloister-seal" data-logo="mono">{v4("workloadCloisterLogo")}</p>
+        <div>
+          <p className="c4-workload-cloister-kicker">{v4("workloadCloisterKicker")}</p>
+          <h3 className="c4-title">{v4("workload")}</h3>
+          <p className="c4-workload-cloister-lead">{v4("workloadCloisterLead")}</p>
+        </div>
+        <p className="c4-workload-cloister-count">{shown.length}</p>
+      </header>
       {data.loading && <LuxeSkeleton />}
-      <ul className="c4-watch">
-        {rows.slice(0, 6).map((row) => (
-          <li key={row.name} className="c4-watch-row"><span>{row.name}</span><span>{row.count} · {row.share}%</span></li>
+      <ul className="c4-workload-cloister-rows">
+        {shown.map((row) => (
+          <li key={row.name}>
+            <span>{row.name}</span>
+            <i style={{ width: `${Math.max(8, row.share)}%` }} />
+            <strong>{row.count}</strong>
+            <em>{row.share}%</em>
+          </li>
         ))}
       </ul>
     </section>
@@ -360,13 +374,22 @@ export function SmartLists({ base, v4 }: { base: string; v4: V4 }) {
     { key: "richIdle", rows: split.richIdle },
     { key: "kycStale", rows: split.kycStale },
   ];
+  const total = blocks.reduce((sum, block) => sum + block.rows.length, 0);
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("smartLists")}</h3></div>
+    <section className="c4-smart-ambulatory" aria-label={v4("smartLists")} data-smart-ambulatory="1">
+      <header className="c4-smart-ambulatory-mast">
+        <p className="c4-smart-ambulatory-seal" data-logo="mono">{v4("smartAmbulatoryLogo")}</p>
+        <div>
+          <p className="c4-smart-ambulatory-kicker">{v4("smartAmbulatoryKicker")}</p>
+          <h3 className="c4-title">{v4("smartLists")}</h3>
+          <p className="c4-smart-ambulatory-lead">{v4("smartAmbulatoryLead")}</p>
+        </div>
+        <p className="c4-smart-ambulatory-count">{total}</p>
+      </header>
       {data.loading && <LuxeSkeleton />}
-      <div className="c4-smart">
+      <div className="c4-smart-ambulatory-lanes">
         {blocks.map((block) => (
-          <div key={block.key}>
+          <div key={block.key} className="c4-smart-ambulatory-lane">
             <h4>{v4(block.key)} · {block.rows.length}</h4>
             {block.rows.slice(0, 4).map((row) => (
               <Link key={row.id} href={crmv4Href(base, `customers/${row.id}`)}>{row.name || row.email}</Link>
