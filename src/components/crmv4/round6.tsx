@@ -240,10 +240,27 @@ export function PhoneText({ phone, country }: { phone?: string | null; country?:
 export function DomainBoard({ rows, v4 }: { rows: { email?: string | null }[]; v4: V4 }) {
   const groups = domainGroups(rows).slice(0, 6);
   if (!groups.length) return null;
+  const peak = Math.max(1, ...groups.map((row) => row.count));
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("domains")}</h3></div>
-      {groups.map((row) => <p key={row.domain} className="c4-pad">{row.domain} · {row.count}</p>)}
+    <section className="c4-domain-listel" aria-label={v4("domains")} data-domain-listel="1">
+      <header className="c4-domain-listel-mast">
+        <p className="c4-domain-listel-seal" data-logo="mono">{v4("domainListelLogo")}</p>
+        <div>
+          <p className="c4-domain-listel-kicker">{v4("domainListelKicker")}</p>
+          <h3 className="c4-title">{v4("domains")}</h3>
+          <p className="c4-domain-listel-lead">{v4("domainListelLead")}</p>
+        </div>
+        <p className="c4-domain-listel-count">{groups.length}</p>
+      </header>
+      <ol className="c4-domain-listel-rows">
+        {groups.map((row) => (
+          <li key={row.domain}>
+            <span>{row.domain}</span>
+            <i style={{ width: `${Math.max(12, Math.round((row.count / peak) * 100))}%` }} />
+            <strong>{row.count}</strong>
+          </li>
+        ))}
+      </ol>
     </section>
   );
 }
