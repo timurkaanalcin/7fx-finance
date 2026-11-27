@@ -32,10 +32,18 @@ export function QuickCreate({ v4, tx }: { v4: V4; tx: Tx }) {
   const [open, setOpen] = useState(false);
   const [msg, setMsg] = useState("");
   return (
-    <div className="c4-quick-create">
+    <div className="c4-quick-deadeye" data-quick-deadeye="1">
+      <header className="c4-quick-deadeye-mast">
+        <p className="c4-quick-deadeye-seal" data-logo="mono">{v4("qdeDeadeyeLogo")}</p>
+        <div>
+          <p className="c4-quick-deadeye-kicker">{v4("qdeDeadeyeKicker")}</p>
+          <h3 className="c4-title">{v4("quickCreate")}</h3>
+          <p className="c4-quick-deadeye-lead">{v4("qdeDeadeyeLead")}</p>
+        </div>
+      </header>
       <button type="button" className="c4-btn c4-btn-hot" aria-expanded={open} onClick={() => setOpen((on) => !on)}>{v4("quickCreate")}</button>
       {open && (
-        <form className="c4-card c4-pad" onSubmit={async (event) => {
+        <form className="c4-quick-deadeye-form" onSubmit={async (event) => {
           event.preventDefault();
           const fd = new FormData(event.currentTarget);
           const kind = String(fd.get("kind") || "reminder");
