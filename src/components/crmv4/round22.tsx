@@ -37,7 +37,15 @@ export function FxDesk({ v4, locale }: { v4: V4; locale: string }) {
   const balances = currencyMix((people.data?.users || []).map((row) => ({ currency: row.currency, amount: row.balance })));
   const deposits = currencyMix(cash.data?.requests || []);
   return (
-    <section className="c4-fx-desk" aria-label={v4("fxDesk")}>
+    <section className="c4-fx-desk c4-fx-arch" aria-label={v4("fxDesk")} data-fx-arch="1">
+      <header className="c4-fx-arch-mast">
+        <p className="c4-fx-arch-seal" data-logo="mono">{v4("fxArchLogo")}</p>
+        <div>
+          <p className="c4-fx-arch-kicker">{v4("fxArchKicker")}</p>
+          <h2 className="c4-title">{v4("fxDesk")}</h2>
+          <p className="c4-fx-arch-lead">{v4("fxArchLead")}</p>
+        </div>
+      </header>
       <div className="c4-fin-hero">
         <div className="c4-fin-metric"><span>{v4("fxDesk")}</span><strong>{pairs.filter((row) => row.mid != null).length}</strong></div>
         <div className="c4-fin-metric"><span>{v4("fxAge")}</span><strong>{at || "—"}</strong></div>
