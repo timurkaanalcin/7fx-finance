@@ -141,11 +141,25 @@ export function CsatTrend({ ids, v4 }: { ids: string[]; v4: V4 }) {
   const buckets = [1, 2, 3, 4, 5].map((score) => scores.filter((value) => value === score).length);
   const max = Math.max(1, ...buckets);
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("csatTrend")}</h3></div>
-      {buckets.map((count, index) => (
-        <div key={index} className="c4-chart-row"><span>{index + 1}</span><i style={{ width: `${(count / max) * 100}%` }} /></div>
-      ))}
+    <section className="c4-csat-fleuron" aria-label={v4("csatTrend")} data-csat-fleuron="1">
+      <header className="c4-csat-fleuron-mast">
+        <p className="c4-csat-fleuron-seal" data-logo="mono">{v4("csatFleuronLogo")}</p>
+        <div>
+          <p className="c4-csat-fleuron-kicker">{v4("csatFleuronKicker")}</p>
+          <h3 className="c4-title">{v4("csatTrend")}</h3>
+          <p className="c4-csat-fleuron-lead">{v4("csatFleuronLead")}</p>
+        </div>
+        <p className="c4-csat-fleuron-count">{scores.length}</p>
+      </header>
+      <ol className="c4-csat-fleuron-petals" aria-label={v4("csatTrend")}>
+        {buckets.map((count, index) => (
+          <li key={index}>
+            <i style={{ height: `${Math.max(8, Math.round((count / max) * 72))}px` }} />
+            <strong>{count}</strong>
+            <span>{index + 1}</span>
+          </li>
+        ))}
+      </ol>
     </section>
   );
 }
@@ -255,7 +269,7 @@ export function GoalRing({ v4 }: { v4: V4 }) {
   const goal = readCallTarget();
   const pct = goal.target ? Math.min(100, Math.round((goal.count / goal.target) * 100)) : 0;
   return (
-    <div className="c4-ring" role="img" aria-label={`${v4("goalRing")} ${pct}%`}>
+    <div className="c4-ring c4-socle-ring" role="img" aria-label={`${v4("goalRing")} ${pct}%`}>
       <span>{pct}%</span>
     </div>
   );
@@ -273,16 +287,25 @@ export function MyDay({ name, v4, tx }: { name: string; v4: V4; tx: Tx }) {
   const due = (reminders.data?.reminders || []).filter((row) => String(row.remindAt || "").slice(0, 10) === today);
   useEffect(() => { stampWorkDay(); }, []);
   return (
-    <section className="c4-card c4-myday">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("myDay")} · {name || "—"}</h3>
-        <button type="button" className="c4-btn" onClick={() => window.print()}>{v4("endOfDay")}</button>
-      </div>
-      <div className="c4-row c4-pad">
+    <section className="c4-day-socle c4-myday" aria-label={v4("myDay")} data-day-socle="1">
+      <header className="c4-day-socle-mast">
+        <p className="c4-day-socle-seal" data-logo="mono">{v4("daySocleLogo")}</p>
+        <div>
+          <p className="c4-day-socle-kicker">{v4("daySocleKicker")}</p>
+          <h3 className="c4-title">{v4("myDay")} · {name || "—"}</h3>
+          <p className="c4-day-socle-lead">{v4("daySocleLead")}</p>
+        </div>
+        <p className="c4-day-socle-count">{due.length}</p>
+      </header>
+      <div className="c4-day-socle-body">
         <GoalRing v4={v4} />
         <WorkStreakMark v4={v4} />
       </div>
-      <p className="c4-muted c4-pad">{due.length || tx("noneYet")}</p>
-      {due.map((row) => <p key={row.id} className="c4-pad">{row.body}</p>)}
+      <div className="c4-day-socle-notes">
+        <button type="button" className="c4-btn" onClick={() => window.print()}>{v4("endOfDay")}</button>
+        {!due.length && <p>{tx("noneYet")}</p>}
+        {due.map((row) => <p key={row.id}>{row.body}</p>)}
+      </div>
     </section>
   );
 }
