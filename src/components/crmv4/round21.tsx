@@ -76,7 +76,15 @@ export function StatementSheet({ id, name, email, country, desk, balance, equity
   ].join("\n");
 
   return (
-    <section className="c4-statement-sheet" aria-label={v4("statementSheet")}>
+    <section className="c4-statement-sheet c4-statement-arch" aria-label={v4("statementSheet")} data-statement-arch="1">
+      <header className="c4-statement-arch-mast">
+        <p className="c4-statement-arch-seal" data-logo="mono">{v4("statementArchLogo")}</p>
+        <div>
+          <p className="c4-statement-arch-kicker">{v4("statementArchKicker")}</p>
+          <h2 className="c4-title">{v4("statementSheet")}</h2>
+          <p className="c4-statement-arch-lead">{v4("statementArchLead")}</p>
+        </div>
+      </header>
       <div className="c4-fin-hero">
         <div className="c4-fin-metric"><span>{v4("statementSheet")}</span><strong>{name || "—"}</strong></div>
         <div className="c4-fin-metric"><span>{v4("statementDeposits")}</span><strong>{deps.length}</strong></div>
