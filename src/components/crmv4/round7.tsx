@@ -75,7 +75,16 @@ export function InlineProfile({ id, user, tx, v4, onDone }: { id: string; user: 
     onDone();
   }
   return (
-    <form className="c4-row c4-pad" onSubmit={(event) => {
+    <section className="c4-profile-selvedge" aria-label={v4("inlineSave")} data-profile-selvedge="1">
+      <header className="c4-profile-selvedge-mast">
+        <p className="c4-profile-selvedge-seal" data-logo="mono">{v4("slvSelvedgeLogo")}</p>
+        <div>
+          <p className="c4-profile-selvedge-kicker">{v4("slvSelvedgeKicker")}</p>
+          <h3 className="c4-title">{v4("inlineSave")}</h3>
+          <p className="c4-profile-selvedge-lead">{v4("slvSelvedgeLead")}</p>
+        </div>
+      </header>
+    <form className="c4-row c4-pad c4-profile-selvedge-form" onSubmit={(event) => {
       event.preventDefault();
       void save({ name, phone, country }, { name: user.name || "", phone: user.phone || "", country: user.country || "" });
     }}>
@@ -97,6 +106,7 @@ export function InlineProfile({ id, user, tx, v4, onDone }: { id: string; user: 
       }}>{v4("undoEdit")}</button>}
       {msg && <span className="c4-muted">{msg}</span>}
     </form>
+    </section>
   );
 }
 
