@@ -502,21 +502,30 @@ export function StaffList({ v4 }: { v4: V4 }) {
   const data = useJson<{ workers?: { id: string; name?: string | null; email?: string | null; lastSeenAt?: string | null; lastLogin?: { at?: string | null } | null }[] }>("/api/admin/workers?take=20");
   const rows = data.data?.workers || [];
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("staffPresence")}</h3></div>
+    <section className="c4-staff-peristyle" aria-label={v4("staffPresence")} data-staff-peristyle="1">
+      <header className="c4-staff-peristyle-mast">
+        <p className="c4-staff-peristyle-seal" data-logo="mono">{v4("staffPeristyleLogo")}</p>
+        <div>
+          <p className="c4-staff-peristyle-kicker">{v4("staffPeristyleKicker")}</p>
+          <h3 className="c4-title">{v4("staffPresence")}</h3>
+          <p className="c4-staff-peristyle-lead">{v4("staffPeristyleLead")}</p>
+        </div>
+        <p className="c4-staff-peristyle-count">{rows.length}</p>
+      </header>
       {data.loading && <LuxeSkeleton />}
-      <ul>
+      <ul className="c4-staff-peristyle-rows">
         {rows.map((row) => {
           const seen = row.lastSeenAt || row.lastLogin?.at || null;
           const kind = presenceOf(seen, row.lastLogin?.at || null);
           return (
-            <li key={row.id} className="c4-pad c4-row c4-between">
+            <li key={row.id}>
               <span>{row.name || row.email}</span>
               <span className="c4-status" data-tone={kind === "online" ? "ok" : kind === "away" ? "warn" : "muted"}>{kind}</span>
             </li>
           );
         })}
       </ul>
+      {!data.loading && !rows.length && <p className="c4-staff-peristyle-lead">{v4("staffPresence")}</p>}
     </section>
   );
 }

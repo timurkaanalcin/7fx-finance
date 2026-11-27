@@ -151,11 +151,27 @@ export function CampaignMix({ v4 }: { v4: V4 }) {
   const groups = groupBy(data.data?.users || [], (row) => row.campaign || "—");
   const max = Math.max(1, ...groups.map((row) => row.rows.length));
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("campaignMix")}</h3></div>
-      {groups.slice(0, 8).map((row) => (
-        <div key={row.key} className="c4-funnel-row"><span>{row.key}</span><div className="c4-bar" style={{ width: `${(row.rows.length / max) * 100}%` }} /><strong>{row.rows.length}</strong></div>
-      ))}
+    <section className="c4-campaign-propylaeum" aria-label={v4("campaignMix")} data-campaign-propylaeum="1">
+      <header className="c4-campaign-propylaeum-mast">
+        <p className="c4-campaign-propylaeum-seal" data-logo="mono">{v4("campaignPropylaeumLogo")}</p>
+        <div>
+          <p className="c4-campaign-propylaeum-kicker">{v4("campaignPropylaeumKicker")}</p>
+          <h3 className="c4-title">{v4("campaignMix")}</h3>
+          <p className="c4-campaign-propylaeum-lead">{v4("campaignPropylaeumLead")}</p>
+        </div>
+        <p className="c4-campaign-propylaeum-count">{groups.length}</p>
+      </header>
+      {data.loading && <p className="c4-campaign-propylaeum-lead">{v4("campaignMix")}</p>}
+      <ul className="c4-campaign-propylaeum-rows">
+        {groups.slice(0, 8).map((row) => (
+          <li key={row.key}>
+            <span>{row.key}</span>
+            <i style={{ width: `${Math.max(8, Math.round((row.rows.length / max) * 100))}%` }} />
+            <strong>{row.rows.length}</strong>
+          </li>
+        ))}
+      </ul>
+      {!data.loading && !groups.length && <p className="c4-campaign-propylaeum-lead">{v4("campaignMix")}</p>}
     </section>
   );
 }
