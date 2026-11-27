@@ -132848,3 +132848,317 @@
   [data-crmv4-root] .c4-close-plinth-steps li,
   [data-crmv4-root] .c4-approval-dart-rows li { min-height: 44px; }
 }
+
+/* Round 403 — ivory bucrane medallion, graphite meander key, pinned tondo, churn festoon. */
+[data-crmv4-root] .c4-bucrane,
+[data-crmv4-root] .c4-meander,
+[data-crmv4-root] .c4-pinned-tondo,
+[data-crmv4-root] .c4-churn-festoon {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  margin: 0 0 16px;
+  box-sizing: border-box;
+}
+[data-crmv4-root] .c4-bucrane,
+[data-crmv4-root] .c4-pinned-tondo {
+  padding: 18px 16px 20px;
+  color: #1c1a17;
+  background: #fffdf8;
+  border: 1px solid #1c1a17;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px #c6a15b, 0 1px 0 #8a6a3b;
+}
+[data-crmv4-root] .c4-meander,
+[data-crmv4-root] .c4-churn-festoon {
+  padding: 22px 16px 18px;
+  color: #f6f1e8;
+  background:
+    linear-gradient(90deg, #c6a15b 0 8px, transparent 8px 16px) 0 0 / 16px 8px repeat-x,
+    linear-gradient(#1c1a17, #1c1a17) 0 8px / 100% 8px no-repeat,
+    #141210;
+  border: 1px solid #c6a15b;
+  border-radius: 2px 2px 28px 2px;
+  box-shadow: inset 0 -10px 0 #1c1a17;
+}
+[data-crmv4-root] .c4-bucrane-mast,
+[data-crmv4-root] .c4-meander-mast,
+[data-crmv4-root] .c4-pinned-tondo-mast,
+[data-crmv4-root] .c4-churn-festoon-mast {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+[data-crmv4-root] .c4-bucrane-seal[data-logo="mono"],
+[data-crmv4-root] .c4-meander-seal[data-logo="mono"],
+[data-crmv4-root] .c4-pinned-tondo-seal[data-logo="mono"],
+[data-crmv4-root] .c4-churn-festoon-seal[data-logo="mono"] {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+[data-crmv4-root] .c4-bucrane-seal[data-logo="mono"],
+[data-crmv4-root] .c4-pinned-tondo-seal[data-logo="mono"] {
+  color: #1c1a17;
+  background: #c6a15b;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px #8a6a3b;
+}
+[data-crmv4-root] .c4-meander-seal[data-logo="mono"],
+[data-crmv4-root] .c4-churn-festoon-seal[data-logo="mono"] {
+  color: #c6a15b;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 6px no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) 0 100% / 100% 6px no-repeat,
+    #1c1a17;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px #8a6a3b;
+}
+[data-crmv4-root] .c4-bucrane-kicker,
+[data-crmv4-root] .c4-meander-kicker,
+[data-crmv4-root] .c4-pinned-tondo-kicker,
+[data-crmv4-root] .c4-churn-festoon-kicker {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-bucrane-kicker,
+[data-crmv4-root] .c4-pinned-tondo-kicker { color: #8a6a3b; }
+[data-crmv4-root] .c4-meander-kicker,
+[data-crmv4-root] .c4-churn-festoon-kicker { color: #c6a15b; }
+[data-crmv4-root] .c4-bucrane-mast .c4-title,
+[data-crmv4-root] .c4-pinned-tondo-mast .c4-title,
+[data-crmv4-root] .c4-bucrane-lead,
+[data-crmv4-root] .c4-pinned-tondo-lead { margin: 0; color: #1c1a17; }
+[data-crmv4-root] .c4-meander-mast .c4-title,
+[data-crmv4-root] .c4-churn-festoon-mast .c4-title,
+[data-crmv4-root] .c4-meander-lead,
+[data-crmv4-root] .c4-churn-festoon-lead { margin: 0; color: #f6f1e8; }
+[data-crmv4-root] .c4-pinned-tondo-lead,
+[data-crmv4-root] .c4-churn-festoon-lead,
+[data-crmv4-root] .c4-bucrane-hint,
+[data-crmv4-root] .c4-meander-hint { margin: 0; font-size: 13px; line-height: 1.45; }
+[data-crmv4-root] .c4-meander-hint,
+[data-crmv4-root] .c4-churn-festoon-lead { color: #d9c7a4; }
+[data-crmv4-root] .c4-bucrane .c4-title::before,
+[data-crmv4-root] .c4-meander .c4-title::before,
+[data-crmv4-root] .c4-pinned-tondo .c4-title::before,
+[data-crmv4-root] .c4-churn-festoon .c4-title::before { background: #c6a15b; }
+[data-crmv4-root] .c4-bucrane-count,
+[data-crmv4-root] .c4-meander-count,
+[data-crmv4-root] .c4-pinned-tondo-count,
+[data-crmv4-root] .c4-churn-festoon-count {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  height: 44px;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+[data-crmv4-root] .c4-bucrane-count,
+[data-crmv4-root] .c4-pinned-tondo-count {
+  color: #1c1a17;
+  background: #f6f1e8;
+  border: 1px solid #c6a15b;
+  border-radius: 50%;
+}
+[data-crmv4-root] .c4-meander-count,
+[data-crmv4-root] .c4-churn-festoon-count {
+  color: #1c1a17;
+  background: #c6a15b;
+  border-radius: 2px;
+}
+[data-crmv4-root] .c4-bucrane-chart,
+[data-crmv4-root] .c4-meander-chart {
+  display: grid;
+  gap: 8px;
+}
+[data-crmv4-root] .c4-bucrane-chart { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+[data-crmv4-root] .c4-meander-chart { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+[data-crmv4-root] .c4-bucrane-column,
+[data-crmv4-root] .c4-meander-column {
+  display: grid;
+  gap: 6px;
+  min-height: 44px;
+  padding: 8px;
+  border: 0;
+  text-align: start;
+  cursor: pointer;
+}
+[data-crmv4-root] .c4-bucrane-column {
+  color: #1c1a17;
+  background: #fffdf8;
+  border-bottom: 8px solid #8a6a3b;
+}
+[data-crmv4-root] .c4-bucrane-column i,
+[data-crmv4-root] .c4-meander-column i {
+  display: block;
+  height: 8px;
+  background: #c6a15b;
+  border-radius: 8px;
+}
+[data-crmv4-root] .c4-meander-column {
+  color: #f6f1e8;
+  background: #1c1a17;
+  border-left: 8px solid #8a6a3b;
+}
+[data-crmv4-root] .c4-bucrane-column[data-on="1"],
+[data-crmv4-root] .c4-meander-column[data-on="1"] { outline: 2px solid #c6a15b; outline-offset: 2px; }
+[data-crmv4-root] .c4-bucrane-form,
+[data-crmv4-root] .c4-bucrane-tools,
+[data-crmv4-root] .c4-meander-tools,
+[data-crmv4-root] .c4-bucrane-bulk,
+[data-crmv4-root] .c4-meander-bulk {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: end;
+}
+[data-crmv4-root] .c4-bucrane .c4-btn,
+[data-crmv4-root] .c4-meander .c4-btn,
+[data-crmv4-root] .c4-pinned-tondo a,
+[data-crmv4-root] .c4-churn-festoon a { min-height: 44px; }
+[data-crmv4-root] .c4-bucrane-list,
+[data-crmv4-root] .c4-meander-list,
+[data-crmv4-root] .c4-pinned-tondo-rows,
+[data-crmv4-root] .c4-churn-festoon ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-bucrane-card,
+[data-crmv4-root] .c4-meander-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 12px;
+}
+[data-crmv4-root] .c4-bucrane-card {
+  background: #fffdf8;
+  border: 1px solid #c6a15b;
+  border-radius: 28px 2px 2px 2px;
+}
+[data-crmv4-root] .c4-bucrane-card[data-quiet="1"] { background: #f6f1e8; }
+[data-crmv4-root] .c4-bucrane-card[data-overdue="1"] { border-color: #8a6a3b; }
+[data-crmv4-root] .c4-meander-card {
+  color: #f6f1e8;
+  background: #1c1a17;
+  border-left: 8px solid #c6a15b;
+}
+[data-crmv4-root] .c4-pinned-tondo-rows { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+[data-crmv4-root] .c4-pinned-tondo-rows a,
+[data-crmv4-root] .c4-churn-festoon a {
+  display: grid;
+  place-items: center;
+  padding: 8px 12px;
+  color: #1c1a17;
+  background: #fffdf8;
+  border: 1px solid #c6a15b;
+  border-radius: 999px;
+  text-decoration: none;
+}
+[data-crmv4-root] .c4-churn-festoon-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+[data-crmv4-root] .c4-churn-festoon h4 {
+  margin: 0 0 8px;
+  color: #c6a15b;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-churn-festoon li {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  min-height: 44px;
+}
+[data-crmv4-root] .c4-churn-festoon a {
+  grid-column: 1 / -1;
+  justify-self: start;
+  width: max-content;
+  max-width: 100%;
+}
+[data-crmv4-root] .c4-churn-festoon i {
+  width: 10px;
+  height: 10px;
+  background: #c6a15b;
+  border-radius: 50% 50% 50% 0;
+}
+[data-crmv4-root] .c4-bucrane-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-bucrane-index li {
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 1px solid #c6a15b;
+  border-radius: 999px;
+}
+[data-crmv4-root] .c4-bucrane-index li[data-tone="gold"] { background: #c6a15b; }
+[data-crmv4-root] .c4-bucrane-notices {
+  margin: 0;
+  padding: 8px 12px;
+  background: #f6f1e8;
+  border-left: 4px solid #8a6a3b;
+}
+[data-crmv4-root] .c4-bucrane :focus-visible,
+[data-crmv4-root] .c4-meander :focus-visible,
+[data-crmv4-root] .c4-pinned-tondo :focus-visible,
+[data-crmv4-root] .c4-churn-festoon :focus-visible { outline: 2px solid #c6a15b; outline-offset: 2px; }
+[data-crmv4-root][data-theme="dark"] .c4-bucrane,
+[data-crmv4-root][data-theme="dark"] .c4-pinned-tondo {
+  color: #f6f1e8;
+  background: #1c1a17;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-bucrane-mast .c4-title,
+[data-crmv4-root][data-theme="dark"] .c4-pinned-tondo-mast .c4-title,
+[data-crmv4-root][data-theme="dark"] .c4-bucrane-hint,
+[data-crmv4-root][data-theme="dark"] .c4-pinned-tondo-lead,
+[data-crmv4-root][data-theme="dark"] .c4-bucrane-card { color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-bucrane-card,
+[data-crmv4-root][data-theme="dark"] .c4-bucrane-column { background: #141210; color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-pinned-tondo-rows a { background: #141210; color: #f6f1e8; }
+[data-crmv4-root][data-theme="light"] .c4-meander,
+[data-crmv4-root][data-theme="light"] .c4-churn-festoon { color: #f6f1e8; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-bucrane-mast,
+  [data-crmv4-root] .c4-meander-mast,
+  [data-crmv4-root] .c4-pinned-tondo-mast,
+  [data-crmv4-root] .c4-churn-festoon-mast { grid-template-columns: 52px minmax(0, 1fr); }
+  [data-crmv4-root] .c4-bucrane-count,
+  [data-crmv4-root] .c4-meander-count,
+  [data-crmv4-root] .c4-pinned-tondo-count,
+  [data-crmv4-root] .c4-churn-festoon-count { grid-column: 2; justify-self: end; }
+  [data-crmv4-root] .c4-bucrane-chart,
+  [data-crmv4-root] .c4-meander-chart,
+  [data-crmv4-root] .c4-churn-festoon-grid,
+  [data-crmv4-root] .c4-bucrane-card,
+  [data-crmv4-root] .c4-meander-card { grid-template-columns: 1fr; }
+  [data-crmv4-root] .c4-bucrane .c4-btn,
+  [data-crmv4-root] .c4-meander .c4-btn,
+  [data-crmv4-root] .c4-bucrane .c4-chip,
+  [data-crmv4-root] .c4-meander .c4-chip { min-height: 44px; }
+}
