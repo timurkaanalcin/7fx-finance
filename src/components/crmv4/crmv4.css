@@ -133827,3 +133827,323 @@
   [data-crmv4-root] .c4-embrasure .c4-chip,
   [data-crmv4-root] .c4-email-cincture-fix { min-height: 44px; }
 }
+
+/* Round 406 — ivory mullion courses, graphite transom, handoff rebate, remind cusp. */
+[data-crmv4-root] .c4-mullion,
+[data-crmv4-root] .c4-transom,
+[data-crmv4-root] .c4-handoff-rebate,
+[data-crmv4-root] .c4-remind-cusp {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  margin: 0 0 16px;
+  box-sizing: border-box;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+[data-crmv4-root] .c4-mullion,
+[data-crmv4-root] .c4-handoff-rebate {
+  padding: 18px 22px 16px;
+  color: #1c1a17;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 18px 0 / 2px 100% no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) calc(100% - 18px) 0 / 2px 100% no-repeat,
+    #fffdf8;
+  border: 1px solid #1c1a17;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px #c6a15b;
+}
+[data-crmv4-root] .c4-transom,
+[data-crmv4-root] .c4-remind-cusp {
+  padding: 22px 18px 16px;
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 46px / 100% 3px no-repeat,
+    #141210;
+  border: 1px solid #c6a15b;
+  border-radius: 2px;
+  box-shadow: inset 0 10px 0 #1c1a17;
+}
+[data-crmv4-root] .c4-mullion-mast,
+[data-crmv4-root] .c4-transom-mast,
+[data-crmv4-root] .c4-handoff-rebate-mast,
+[data-crmv4-root] .c4-remind-cusp-mast {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+[data-crmv4-root] .c4-mullion-seal[data-logo="mono"],
+[data-crmv4-root] .c4-transom-seal[data-logo="mono"],
+[data-crmv4-root] .c4-handoff-rebate-seal[data-logo="mono"],
+[data-crmv4-root] .c4-remind-cusp-seal[data-logo="mono"] {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin: 0;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  line-height: 1;
+}
+[data-crmv4-root] .c4-mullion-seal[data-logo="mono"],
+[data-crmv4-root] .c4-handoff-rebate-seal[data-logo="mono"] {
+  color: #1c1a17;
+  background:
+    linear-gradient(#1c1a17, #1c1a17) 50% 0 / 2px 100% no-repeat,
+    #c6a15b;
+  border-radius: 2px;
+}
+[data-crmv4-root] .c4-transom-seal[data-logo="mono"],
+[data-crmv4-root] .c4-remind-cusp-seal[data-logo="mono"] {
+  color: #c6a15b;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 50% / 100% 2px no-repeat,
+    #1c1a17;
+  border: 1px solid #8a6a3b;
+  border-radius: 2px;
+}
+[data-crmv4-root] .c4-remind-cusp-seal[data-logo="mono"] {
+  position: relative;
+}
+[data-crmv4-root] .c4-remind-cusp-seal[data-logo="mono"]::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 7px solid #c6a15b;
+  transform: translateX(-50%);
+}
+[data-crmv4-root] .c4-transom .c4-title::before,
+[data-crmv4-root] .c4-remind-cusp .c4-title::before { background: #c6a15b; }
+[data-crmv4-root] .c4-mullion-kicker,
+[data-crmv4-root] .c4-transom-kicker,
+[data-crmv4-root] .c4-handoff-rebate-kicker,
+[data-crmv4-root] .c4-remind-cusp-kicker {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-mullion-kicker,
+[data-crmv4-root] .c4-handoff-rebate-kicker { color: #8a6a3b; }
+[data-crmv4-root] .c4-transom-kicker,
+[data-crmv4-root] .c4-remind-cusp-kicker { color: #c6a15b; }
+[data-crmv4-root] .c4-mullion .c4-title,
+[data-crmv4-root] .c4-transom .c4-title,
+[data-crmv4-root] .c4-handoff-rebate .c4-title {
+  margin: 2px 0 0;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+[data-crmv4-root] .c4-mullion-hint,
+[data-crmv4-root] .c4-mullion-note,
+[data-crmv4-root] .c4-mullion-meta,
+[data-crmv4-root] .c4-mullion-lead,
+[data-crmv4-root] .c4-transom-hint,
+[data-crmv4-root] .c4-transom-note,
+[data-crmv4-root] .c4-transom-meta,
+[data-crmv4-root] .c4-handoff-rebate-lead,
+[data-crmv4-root] .c4-handoff-rebate-note,
+[data-crmv4-root] .c4-remind-cusp-lead {
+  margin: 0;
+  font-weight: 400;
+  line-height: 1.45;
+}
+[data-crmv4-root] .c4-mullion-count,
+[data-crmv4-root] .c4-transom-count,
+[data-crmv4-root] .c4-remind-cusp-count {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  height: 44px;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+[data-crmv4-root] .c4-mullion-count {
+  color: #1c1a17;
+  background: #f6f1e8;
+  border-inline: 2px solid #c6a15b;
+}
+[data-crmv4-root] .c4-transom-count,
+[data-crmv4-root] .c4-remind-cusp-count {
+  color: #1c1a17;
+  background: #c6a15b;
+}
+[data-crmv4-root] .c4-mullion-chart { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+[data-crmv4-root] .c4-transom-chart { display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 8px; }
+[data-crmv4-root] .c4-mullion-column,
+[data-crmv4-root] .c4-transom-column {
+  display: grid;
+  gap: 6px;
+  min-height: 44px;
+  padding: 8px;
+  border: 0;
+  text-align: start;
+  cursor: pointer;
+  font: inherit;
+}
+[data-crmv4-root] .c4-mullion-column {
+  color: #1c1a17;
+  background: #fffdf8;
+  border-inline: 2px solid #8a6a3b;
+}
+[data-crmv4-root] .c4-transom-column {
+  color: #f6f1e8;
+  background: #1c1a17;
+  border-top: 3px solid #c6a15b;
+}
+[data-crmv4-root] .c4-mullion-column i,
+[data-crmv4-root] .c4-transom-column i {
+  display: block;
+  height: 8px;
+  background: #c6a15b;
+}
+[data-crmv4-root] .c4-mullion-column[data-on="1"],
+[data-crmv4-root] .c4-transom-column[data-on="1"] { outline: 2px solid #c6a15b; outline-offset: 2px; }
+[data-crmv4-root] .c4-mullion-form,
+[data-crmv4-root] .c4-mullion-tools,
+[data-crmv4-root] .c4-mullion-bulk,
+[data-crmv4-root] .c4-mullion-view,
+[data-crmv4-root] .c4-transom-tools,
+[data-crmv4-root] .c4-transom-bulk,
+[data-crmv4-root] .c4-handoff-rebate,
+[data-crmv4-root] .c4-mullion-actions,
+[data-crmv4-root] .c4-transom-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: end;
+}
+[data-crmv4-root] .c4-handoff-rebate { display: grid; align-items: stretch; }
+[data-crmv4-root] .c4-mullion .c4-btn,
+[data-crmv4-root] .c4-mullion .c4-chip,
+[data-crmv4-root] .c4-mullion .c4-field,
+[data-crmv4-root] .c4-transom .c4-btn,
+[data-crmv4-root] .c4-transom .c4-chip,
+[data-crmv4-root] .c4-transom .c4-field,
+[data-crmv4-root] .c4-handoff-rebate .c4-btn,
+[data-crmv4-root] .c4-handoff-rebate .c4-field,
+[data-crmv4-root] .c4-handoff-rebate .c4-select,
+[data-crmv4-root] .c4-remind-cusp .c4-btn { min-height: 44px; }
+[data-crmv4-root] .c4-mullion-list,
+[data-crmv4-root] .c4-transom-list,
+[data-crmv4-root] .c4-mullion-views,
+[data-crmv4-root] .c4-mullion-time {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-mullion-card,
+[data-crmv4-root] .c4-transom-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 12px;
+}
+[data-crmv4-root] .c4-mullion-card {
+  background: #fffdf8;
+  border-inline-start: 8px solid #c6a15b;
+}
+[data-crmv4-root] .c4-mullion-card[data-quiet="1"] { background: #f6f1e8; }
+[data-crmv4-root] .c4-mullion-card[data-overdue="1"] { box-shadow: inset 0 0 0 1px #8a6a3b; }
+[data-crmv4-root] .c4-transom-card {
+  color: #f6f1e8;
+  background: #1c1a17;
+  border-top: 3px solid #c6a15b;
+}
+[data-crmv4-root] .c4-mullion-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-mullion-index li {
+  min-height: 44px;
+  padding: 10px 12px;
+  border-inline: 2px solid #c6a15b;
+  background: #f6f1e8;
+}
+[data-crmv4-root] .c4-mullion-index li[data-tone="gold"] { background: #c6a15b; }
+[data-crmv4-root] .c4-mullion-notices {
+  margin: 0;
+  padding: 8px 12px;
+  background: #f6f1e8;
+  border-inline-start: 8px solid #8a6a3b;
+}
+[data-crmv4-root] .c4-mullion-links a,
+[data-crmv4-root] .c4-transom-links a {
+  color: #8a6a3b;
+  margin-inline-end: 12px;
+}
+[data-crmv4-root] .c4-handoff-rebate .c4-field,
+[data-crmv4-root] .c4-handoff-rebate .c4-select {
+  width: 100%;
+  background: #fffdf8;
+  border: 1px solid #c6a15b;
+  color: #1c1a17;
+}
+[data-crmv4-root] .c4-remind-cusp .c4-btn {
+  justify-self: start;
+  padding-inline: 16px;
+  color: #1c1a17;
+  background: #c6a15b;
+  border: 0;
+}
+[data-crmv4-root] .c4-mullion :focus-visible,
+[data-crmv4-root] .c4-transom :focus-visible,
+[data-crmv4-root] .c4-handoff-rebate :focus-visible,
+[data-crmv4-root] .c4-remind-cusp :focus-visible { outline: 2px solid #c6a15b; outline-offset: 2px; }
+[data-crmv4-root][data-theme="dark"] .c4-mullion,
+[data-crmv4-root][data-theme="dark"] .c4-handoff-rebate {
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 18px 0 / 2px 100% no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) calc(100% - 18px) 0 / 2px 100% no-repeat,
+    #1c1a17;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-mullion-card,
+[data-crmv4-root][data-theme="dark"] .c4-mullion-column,
+[data-crmv4-root][data-theme="dark"] .c4-mullion-notices,
+[data-crmv4-root][data-theme="dark"] .c4-mullion-index li,
+[data-crmv4-root][data-theme="dark"] .c4-handoff-rebate .c4-field,
+[data-crmv4-root][data-theme="dark"] .c4-handoff-rebate .c4-select {
+  color: #f6f1e8;
+  background: #141210;
+}
+[data-crmv4-root][data-theme="light"] .c4-transom,
+[data-crmv4-root][data-theme="light"] .c4-remind-cusp { color: #f6f1e8; }
+[data-crmv4-root] .c4-mullion[data-density="tight"] .c4-mullion-card { padding: 6px 8px; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-mullion-mast,
+  [data-crmv4-root] .c4-transom-mast,
+  [data-crmv4-root] .c4-handoff-rebate-mast,
+  [data-crmv4-root] .c4-remind-cusp-mast { grid-template-columns: 52px minmax(0, 1fr); }
+  [data-crmv4-root] .c4-mullion-count,
+  [data-crmv4-root] .c4-transom-count,
+  [data-crmv4-root] .c4-remind-cusp-count { grid-column: 2; justify-self: end; }
+  [data-crmv4-root] .c4-mullion-chart,
+  [data-crmv4-root] .c4-mullion-card,
+  [data-crmv4-root] .c4-transom-card { grid-template-columns: 1fr; }
+  [data-crmv4-root] .c4-mullion .c4-btn,
+  [data-crmv4-root] .c4-mullion .c4-chip,
+  [data-crmv4-root] .c4-transom .c4-btn,
+  [data-crmv4-root] .c4-transom .c4-chip,
+  [data-crmv4-root] .c4-handoff-rebate .c4-btn,
+  [data-crmv4-root] .c4-remind-cusp .c4-btn { min-height: 44px; }
+}

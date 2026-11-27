@@ -480,7 +480,7 @@ export function HandoffNote({ id, v4, tx }: { id: string; v4: V4; tx: Tx }) {
   const [worker, setWorker] = useState("");
   const [msg, setMsg] = useState("");
   return (
-    <form className="c4-stack c4-pad" onSubmit={async (event) => {
+    <form className="c4-handoff-rebate" data-handoff-rebate="1" aria-label={v4("handoff")} onSubmit={async (event) => {
       event.preventDefault();
       const body = text.trim();
       if (!body && !worker) return;
@@ -489,14 +489,21 @@ export function HandoffNote({ id, v4, tx }: { id: string; v4: V4; tx: Tx }) {
       setMsg(note.ok && assign.ok ? tx("saved") : note.error || assign.error || tx("failed"));
       if (note.ok) setText("");
     }}>
-      <h3 className="c4-title">{v4("handoff")}</h3>
+      <header className="c4-handoff-rebate-mast">
+        <p className="c4-handoff-rebate-seal" data-logo="mono">{v4("handoffRebateLogo")}</p>
+        <div>
+          <p className="c4-handoff-rebate-kicker">{v4("handoffRebateKicker")}</p>
+          <h3 className="c4-title">{v4("handoff")}</h3>
+          <p className="c4-handoff-rebate-lead">{v4("handoffRebateLead")}</p>
+        </div>
+      </header>
       <textarea className="c4-field" rows={2} aria-label={v4("handoff")} value={text} onChange={(event) => setText(event.target.value)} />
       <select className="c4-select" aria-label={v4("handoff")} value={worker} onChange={(event) => setWorker(event.target.value)}>
         <option value="" />
         {(staff.data?.workers || []).map((row) => <option key={row.id} value={row.id}>{row.name || row.id}</option>)}
       </select>
       <button type="submit" className="c4-btn">{v4("handoff")}</button>
-      {msg && <span className="c4-muted">{msg}</span>}
+      {msg && <span className="c4-handoff-rebate-note">{msg}</span>}
     </form>
   );
 }
@@ -543,13 +550,23 @@ export function BulkRemind({ rows, v4 }: { rows: UserRow[]; v4: V4 }) {
   const [msg, setMsg] = useState("");
   if (!rows.length) return null;
   return (
-    <button type="button" className="c4-btn" onClick={async () => {
-      const remindAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
-      for (const row of rows) {
-        await sendJson("/api/admin/calendar", "POST", { body: row.name || row.email || row.id, remindAt });
-      }
-      setMsg(v4("bulkRemind"));
-    }}>{msg || v4("bulkRemind")}</button>
+    <section className="c4-remind-cusp" aria-label={v4("bulkRemind")} data-remind-cusp="1">
+      <header className="c4-remind-cusp-mast">
+        <p className="c4-remind-cusp-seal" data-logo="mono">{v4("remindCuspLogo")}</p>
+        <div>
+          <p className="c4-remind-cusp-kicker">{v4("remindCuspKicker")}</p>
+          <p className="c4-remind-cusp-lead">{v4("remindCuspLead")}</p>
+        </div>
+        <p className="c4-remind-cusp-count">{rows.length}</p>
+      </header>
+      <button type="button" className="c4-btn" onClick={async () => {
+        const remindAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+        for (const row of rows) {
+          await sendJson("/api/admin/calendar", "POST", { body: row.name || row.email || row.id, remindAt });
+        }
+        setMsg(v4("bulkRemind"));
+      }}>{msg || v4("bulkRemind")}</button>
+    </section>
   );
 }
 
