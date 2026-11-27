@@ -133162,3 +133162,376 @@
   [data-crmv4-root] .c4-bucrane .c4-chip,
   [data-crmv4-root] .c4-meander .c4-chip { min-height: 44px; }
 }
+
+/* Round 404 — ivory cymatium fillet, graphite fleuron, similar caulicole, word calyx. */
+[data-crmv4-root] .c4-cymatium,
+[data-crmv4-root] .c4-fleuron,
+[data-crmv4-root] .c4-similar-caulicole,
+[data-crmv4-root] .c4-word-calyx {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  margin: 0 0 16px;
+  box-sizing: border-box;
+}
+[data-crmv4-root] .c4-cymatium,
+[data-crmv4-root] .c4-similar-caulicole {
+  padding: 18px 16px 20px;
+  color: #1c1a17;
+  background: #fffdf8;
+  border: 1px solid #1c1a17;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px #c6a15b, 0 1px 0 #8a6a3b;
+}
+[data-crmv4-root] .c4-fleuron,
+[data-crmv4-root] .c4-word-calyx {
+  padding: 22px 16px 18px;
+  color: #f6f1e8;
+  background:
+    linear-gradient(90deg, #c6a15b 0 8px, transparent 8px 16px) 0 0 / 16px 8px repeat-x,
+    linear-gradient(#1c1a17, #1c1a17) 0 8px / 100% 8px no-repeat,
+    #141210;
+  border: 1px solid #c6a15b;
+  border-radius: 2px 2px 28px 2px;
+  box-shadow: inset 0 -10px 0 #1c1a17;
+}
+[data-crmv4-root] .c4-cymatium-mast,
+[data-crmv4-root] .c4-fleuron-mast,
+[data-crmv4-root] .c4-similar-caulicole-mast,
+[data-crmv4-root] .c4-word-calyx-mast {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+[data-crmv4-root] .c4-cymatium-seal[data-logo="mono"],
+[data-crmv4-root] .c4-fleuron-seal[data-logo="mono"],
+[data-crmv4-root] .c4-similar-caulicole-seal[data-logo="mono"],
+[data-crmv4-root] .c4-word-calyx-seal[data-logo="mono"] {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin: 0;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+[data-crmv4-root] .c4-cymatium-seal[data-logo="mono"],
+[data-crmv4-root] .c4-similar-caulicole-seal[data-logo="mono"] {
+  color: #1c1a17;
+  background: #c6a15b;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px #8a6a3b;
+}
+[data-crmv4-root] .c4-fleuron-seal[data-logo="mono"],
+[data-crmv4-root] .c4-word-calyx-seal[data-logo="mono"] {
+  color: #c6a15b;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 6px no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) 0 100% / 100% 6px no-repeat,
+    #1c1a17;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px #8a6a3b;
+}
+[data-crmv4-root] .c4-cymatium-kicker,
+[data-crmv4-root] .c4-fleuron-kicker,
+[data-crmv4-root] .c4-similar-caulicole-kicker,
+[data-crmv4-root] .c4-word-calyx-kicker {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-cymatium-kicker,
+[data-crmv4-root] .c4-similar-caulicole-kicker { color: #8a6a3b; }
+[data-crmv4-root] .c4-fleuron-kicker,
+[data-crmv4-root] .c4-word-calyx-kicker { color: #c6a15b; }
+[data-crmv4-root] .c4-cymatium-mast .c4-title,
+[data-crmv4-root] .c4-similar-caulicole-mast .c4-title,
+[data-crmv4-root] .c4-cymatium-lead,
+[data-crmv4-root] .c4-similar-caulicole-lead { margin: 0; color: #1c1a17; }
+[data-crmv4-root] .c4-fleuron-mast .c4-title,
+[data-crmv4-root] .c4-word-calyx-mast .c4-title,
+[data-crmv4-root] .c4-fleuron-lead,
+[data-crmv4-root] .c4-word-calyx-lead { margin: 0; color: #f6f1e8; }
+[data-crmv4-root] .c4-similar-caulicole-lead,
+[data-crmv4-root] .c4-word-calyx-lead,
+[data-crmv4-root] .c4-cymatium-hint,
+[data-crmv4-root] .c4-fleuron-hint { margin: 0; font-size: 13px; line-height: 1.45; }
+[data-crmv4-root] .c4-fleuron-hint,
+[data-crmv4-root] .c4-word-calyx-lead { color: #d9c7a4; }
+[data-crmv4-root] .c4-cymatium .c4-title::before,
+[data-crmv4-root] .c4-fleuron .c4-title::before,
+[data-crmv4-root] .c4-similar-caulicole .c4-title::before,
+[data-crmv4-root] .c4-word-calyx .c4-title::before { background: #c6a15b; }
+[data-crmv4-root] .c4-cymatium-count,
+[data-crmv4-root] .c4-fleuron-count,
+[data-crmv4-root] .c4-similar-caulicole-count,
+[data-crmv4-root] .c4-word-calyx-count {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  height: 44px;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+[data-crmv4-root] .c4-cymatium-count,
+[data-crmv4-root] .c4-similar-caulicole-count {
+  color: #1c1a17;
+  background: #f6f1e8;
+  border: 1px solid #c6a15b;
+  border-radius: 50%;
+}
+[data-crmv4-root] .c4-fleuron-count,
+[data-crmv4-root] .c4-word-calyx-count {
+  color: #1c1a17;
+  background: #c6a15b;
+  border-radius: 2px;
+}
+[data-crmv4-root] .c4-cymatium-chart,
+[data-crmv4-root] .c4-fleuron-chart {
+  display: grid;
+  gap: 8px;
+}
+[data-crmv4-root] .c4-cymatium-chart { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+[data-crmv4-root] .c4-fleuron-chart { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+[data-crmv4-root] .c4-cymatium-column,
+[data-crmv4-root] .c4-fleuron-column {
+  display: grid;
+  gap: 6px;
+  min-height: 44px;
+  padding: 8px;
+  border: 0;
+  text-align: start;
+  cursor: pointer;
+}
+[data-crmv4-root] .c4-cymatium-column {
+  color: #1c1a17;
+  background: #fffdf8;
+  border-bottom: 8px solid #8a6a3b;
+}
+[data-crmv4-root] .c4-cymatium-column i,
+[data-crmv4-root] .c4-fleuron-column i {
+  display: block;
+  height: 8px;
+  background: #c6a15b;
+  border-radius: 8px;
+}
+[data-crmv4-root] .c4-fleuron-column {
+  color: #f6f1e8;
+  background: #1c1a17;
+  border-left: 8px solid #8a6a3b;
+}
+[data-crmv4-root] .c4-cymatium-column[data-on="1"],
+[data-crmv4-root] .c4-fleuron-column[data-on="1"] { outline: 2px solid #c6a15b; outline-offset: 2px; }
+[data-crmv4-root] .c4-cymatium-form,
+[data-crmv4-root] .c4-cymatium-tools,
+[data-crmv4-root] .c4-fleuron-tools,
+[data-crmv4-root] .c4-cymatium-bulk,
+[data-crmv4-root] .c4-fleuron-bulk {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: end;
+}
+[data-crmv4-root] .c4-cymatium .c4-btn,
+[data-crmv4-root] .c4-fleuron .c4-btn,
+[data-crmv4-root] .c4-similar-caulicole a,
+[data-crmv4-root] .c4-word-calyx a { min-height: 44px; }
+[data-crmv4-root] .c4-cymatium-list,
+[data-crmv4-root] .c4-fleuron-list,
+[data-crmv4-root] .c4-similar-caulicole-rows,
+[data-crmv4-root] .c4-word-calyx ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-cymatium-card,
+[data-crmv4-root] .c4-fleuron-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 12px;
+}
+[data-crmv4-root] .c4-cymatium-card {
+  background: #fffdf8;
+  border: 1px solid #c6a15b;
+  border-radius: 28px 2px 2px 2px;
+}
+[data-crmv4-root] .c4-cymatium-card[data-quiet="1"] { background: #f6f1e8; }
+[data-crmv4-root] .c4-cymatium-card[data-overdue="1"] { border-color: #8a6a3b; }
+[data-crmv4-root] .c4-fleuron-card {
+  color: #f6f1e8;
+  background: #1c1a17;
+  border-left: 8px solid #c6a15b;
+}
+[data-crmv4-root] .c4-similar-caulicole-rows { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+[data-crmv4-root] .c4-similar-caulicole-rows a,
+[data-crmv4-root] .c4-word-calyx a {
+  display: grid;
+  place-items: center;
+  padding: 8px 12px;
+  color: #1c1a17;
+  background: #fffdf8;
+  border: 1px solid #c6a15b;
+  border-radius: 999px;
+  text-decoration: none;
+}
+[data-crmv4-root] .c4-word-calyx-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+[data-crmv4-root] .c4-word-calyx h4 {
+  margin: 0 0 8px;
+  color: #c6a15b;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-word-calyx li {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  min-height: 44px;
+}
+[data-crmv4-root] .c4-word-calyx a {
+  grid-column: 1 / -1;
+  justify-self: start;
+  width: max-content;
+  max-width: 100%;
+}
+[data-crmv4-root] .c4-word-calyx i {
+  width: 10px;
+  height: 10px;
+  background: #c6a15b;
+  border-radius: 50% 50% 50% 0;
+}
+[data-crmv4-root] .c4-cymatium-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-cymatium-index li {
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 1px solid #c6a15b;
+  border-radius: 999px;
+}
+[data-crmv4-root] .c4-cymatium-index li[data-tone="gold"] { background: #c6a15b; }
+[data-crmv4-root] .c4-cymatium-notices {
+  margin: 0;
+  padding: 8px 12px;
+  background: #f6f1e8;
+  border-left: 4px solid #8a6a3b;
+}
+[data-crmv4-root] .c4-cymatium :focus-visible,
+[data-crmv4-root] .c4-fleuron :focus-visible,
+[data-crmv4-root] .c4-similar-caulicole :focus-visible,
+[data-crmv4-root] .c4-word-calyx :focus-visible { outline: 2px solid #c6a15b; outline-offset: 2px; }
+[data-crmv4-root][data-theme="dark"] .c4-cymatium,
+[data-crmv4-root][data-theme="dark"] .c4-similar-caulicole {
+  color: #f6f1e8;
+  background: #1c1a17;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-cymatium-mast .c4-title,
+[data-crmv4-root][data-theme="dark"] .c4-similar-caulicole-mast .c4-title,
+[data-crmv4-root][data-theme="dark"] .c4-cymatium-hint,
+[data-crmv4-root][data-theme="dark"] .c4-similar-caulicole-lead,
+[data-crmv4-root][data-theme="dark"] .c4-cymatium-card { color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-cymatium-card,
+[data-crmv4-root][data-theme="dark"] .c4-cymatium-column { background: #141210; color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-similar-caulicole-rows a { background: #141210; color: #f6f1e8; }
+[data-crmv4-root][data-theme="light"] .c4-fleuron,
+[data-crmv4-root][data-theme="light"] .c4-word-calyx { color: #f6f1e8; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-cymatium-mast,
+  [data-crmv4-root] .c4-fleuron-mast,
+  [data-crmv4-root] .c4-similar-caulicole-mast,
+  [data-crmv4-root] .c4-word-calyx-mast { grid-template-columns: 52px minmax(0, 1fr); }
+  [data-crmv4-root] .c4-cymatium-count,
+  [data-crmv4-root] .c4-fleuron-count,
+  [data-crmv4-root] .c4-similar-caulicole-count,
+  [data-crmv4-root] .c4-word-calyx-count { grid-column: 2; justify-self: end; }
+  [data-crmv4-root] .c4-cymatium-chart,
+  [data-crmv4-root] .c4-fleuron-chart,
+  [data-crmv4-root] .c4-word-calyx-grid,
+  [data-crmv4-root] .c4-cymatium-card,
+  [data-crmv4-root] .c4-fleuron-card { grid-template-columns: 1fr; }
+  [data-crmv4-root] .c4-cymatium .c4-btn,
+  [data-crmv4-root] .c4-fleuron .c4-btn,
+  [data-crmv4-root] .c4-cymatium .c4-chip,
+  [data-crmv4-root] .c4-fleuron .c4-chip { min-height: 44px; }
+}
+
+[data-crmv4-root] .c4-cymatium {
+  border-radius: 2px;
+  box-shadow: inset 0 5px 0 #c6a15b, inset 0 8px 0 #8a6a3b;
+}
+[data-crmv4-root] .c4-fleuron {
+  background:
+    radial-gradient(circle at 100% 0, #c6a15b 0 10px, transparent 11px),
+    #141210;
+  border-radius: 2px 46px 2px 18px;
+}
+[data-crmv4-root] .c4-cymatium[data-density="tight"] .c4-cymatium-card { padding: 6px 8px; }
+[data-crmv4-root] .c4-similar-caulicole-rows { grid-template-columns: 1fr; }
+[data-crmv4-root] .c4-similar-caulicole-rows li {
+  display: grid;
+  grid-template-columns: 8px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  color: #1c1a17;
+  background: #fffdf8;
+  border-left: 8px solid #c6a15b;
+  border-radius: 0 18px 0 0;
+}
+[data-crmv4-root] .c4-similar-caulicole-rows li::before {
+  content: "";
+  width: 8px;
+  height: 28px;
+  background: #8a6a3b;
+}
+[data-crmv4-root] .c4-word-calyx ul.c4-word-calyx-rows {
+  display: flex;
+  flex-wrap: wrap;
+  grid-template-columns: none;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-word-calyx-rows li {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  color: #1c1a17;
+  background: #f6f1e8;
+  border: 1px solid #c6a15b;
+  border-radius: 22px 22px 4px 22px;
+}
+[data-crmv4-root] .c4-word-calyx-rows strong { color: #8a6a3b; font-weight: 500; }
+[data-crmv4-root][data-theme="dark"] .c4-similar-caulicole-rows li { color: #f6f1e8; background: #141210; }
+[data-crmv4-root][data-theme="dark"] .c4-word-calyx-rows li { color: #f6f1e8; background: #1c1a17; }
+[data-crmv4-root][data-theme="dark"] .c4-word-calyx-rows strong { color: #c6a15b; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-similar-caulicole-rows li,
+  [data-crmv4-root] .c4-word-calyx-rows li { min-height: 44px; }
+}

@@ -456,10 +456,20 @@ export function SimilarList({ row, v4 }: { row: UserRow; v4: V4 }) {
   const data = useJson<{ users?: UserRow[] }>("/api/admin/users?view=table&take=40&meta=0&role=TRADER");
   const matches = similarCustomers(asDesk(row), (data.data?.users || []).map(asDesk));
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("similarCustomers")}</h3></div>
-      {matches.map((item) => <p key={item.id} className="c4-pad">{item.name || item.email}</p>)}
-      {!matches.length && <p className="c4-muted c4-pad">{v4("similarCustomers")}</p>}
+    <section className="c4-similar-caulicole" aria-label={v4("similarCustomers")} data-similar-caulicole="1">
+      <header className="c4-similar-caulicole-mast">
+        <p className="c4-similar-caulicole-seal" data-logo="mono">{v4("similarCaulicoleLogo")}</p>
+        <div>
+          <p className="c4-similar-caulicole-kicker">{v4("similarCaulicoleKicker")}</p>
+          <h3 className="c4-title">{v4("similarCustomers")}</h3>
+          <p className="c4-similar-caulicole-lead">{v4("similarCaulicoleLead")}</p>
+        </div>
+        <p className="c4-similar-caulicole-count">{matches.length}</p>
+      </header>
+      <ul className="c4-similar-caulicole-rows">
+        {matches.map((item) => <li key={item.id}><span>{item.name || item.email}</span></li>)}
+      </ul>
+      {!matches.length && <p className="c4-similar-caulicole-empty">{v4("similarCustomers")}</p>}
     </section>
   );
 }
@@ -494,10 +504,20 @@ export function HandoffNote({ id, v4, tx }: { id: string; v4: V4; tx: Tx }) {
 export function NoteCloud({ notes, v4 }: { notes: { body?: string | null }[]; v4: V4 }) {
   const words = wordCloud(notes.map((note) => note.body || "").join(" "));
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("wordCloud")}</h3></div>
-      <div className="c4-row c4-pad">{words.map((word) => <span key={word.word} className="c4-chip">{word.word} {word.count}</span>)}</div>
-      {!words.length && <p className="c4-muted c4-pad">{v4("wordCloud")}</p>}
+    <section className="c4-word-calyx" aria-label={v4("wordCloud")} data-word-calyx="1">
+      <header className="c4-word-calyx-mast">
+        <p className="c4-word-calyx-seal" data-logo="mono">{v4("wordCalyxLogo")}</p>
+        <div>
+          <p className="c4-word-calyx-kicker">{v4("wordCalyxKicker")}</p>
+          <h3 className="c4-title">{v4("wordCloud")}</h3>
+          <p className="c4-word-calyx-lead">{v4("wordCalyxLead")}</p>
+        </div>
+        <p className="c4-word-calyx-count">{words.length}</p>
+      </header>
+      <ul className="c4-word-calyx-rows">
+        {words.map((word) => <li key={word.word}><span>{word.word}</span><strong>{word.count}</strong></li>)}
+      </ul>
+      {!words.length && <p className="c4-word-calyx-empty">{v4("wordCloud")}</p>}
     </section>
   );
 }
