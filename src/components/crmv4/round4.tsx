@@ -405,12 +405,20 @@ export function NextQueue({ base, v4 }: { base: string; v4: V4 }) {
   const data = useJson<{ users?: UserRow[] }>("/api/admin/users?view=table&take=80&meta=0&role=TRADER");
   const rows = asPeople(data.data?.users || []).map((row) => ({ ...row, kind: nextAction(row) })).filter((row) => row.kind !== "wait").slice(0, 8);
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("nextAction")}</h3></div>
+    <section className="c4-next-narthex" aria-label={v4("nextAction")} data-next-narthex="1">
+      <header className="c4-next-narthex-mast">
+        <p className="c4-next-narthex-seal" data-logo="mono">{v4("nextNarthexLogo")}</p>
+        <div>
+          <p className="c4-next-narthex-kicker">{v4("nextNarthexKicker")}</p>
+          <h3 className="c4-title">{v4("nextAction")}</h3>
+          <p className="c4-next-narthex-lead">{v4("nextNarthexLead")}</p>
+        </div>
+        <p className="c4-next-narthex-count">{rows.length}</p>
+      </header>
       {data.loading && <LuxeSkeleton />}
-      <ul>
+      <ul className="c4-next-narthex-rows">
         {rows.map((row) => (
-          <li key={row.id} className="c4-pad c4-row c4-between">
+          <li key={row.id}>
             <Link href={crmv4Href(base, `customers/${row.id}`)}>{row.name || row.email}</Link>
             <span className="c4-status" data-tone={row.kind === "kyc" ? "warn" : "info"}>{v4(row.kind === "kyc" ? "kycStale" : row.kind === "retain" ? "nextRetain" : "nextCall")}</span>
           </li>
@@ -423,12 +431,28 @@ export function NextQueue({ base, v4 }: { base: string; v4: V4 }) {
 export function MergeList({ v4 }: { v4: V4 }) {
   const data = useJson<{ users?: UserRow[] }>("/api/admin/users?view=table&take=80&meta=0&role=TRADER");
   const groups = mergeSuggestions(asPeople(data.data?.users || []));
+  const shown = groups.slice(0, 6);
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("mergeSuggest")}</h3></div>
+    <section className="c4-merge-exedra" aria-label={v4("mergeSuggest")} data-merge-exedra="1">
+      <header className="c4-merge-exedra-mast">
+        <p className="c4-merge-exedra-seal" data-logo="mono">{v4("mergeExedraLogo")}</p>
+        <div>
+          <p className="c4-merge-exedra-kicker">{v4("mergeExedraKicker")}</p>
+          <h3 className="c4-title">{v4("mergeSuggest")}</h3>
+          <p className="c4-merge-exedra-lead">{v4("mergeExedraLead")}</p>
+        </div>
+        <p className="c4-merge-exedra-count">{shown.length}</p>
+      </header>
       {data.loading && <LuxeSkeleton />}
-      {groups.slice(0, 6).map((group) => <p key={group.key} className="c4-pad">{group.key} · {group.ids.length}</p>)}
-      {!groups.length && !data.loading && <p className="c4-muted c4-pad">{v4("mergeSuggest")}</p>}
+      <ul className="c4-merge-exedra-rows">
+        {shown.map((group) => (
+          <li key={group.key}>
+            <span>{group.key}</span>
+            <strong>{group.ids.length}</strong>
+          </li>
+        ))}
+      </ul>
+      {!shown.length && !data.loading && <p className="c4-merge-exedra-empty">{v4("mergeSuggest")}</p>}
     </section>
   );
 }
