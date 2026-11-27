@@ -32,12 +32,22 @@ const LAST_KEY = "crmv4-last-view";
 export function CompletenessMeter({ row, v4 }: { row: ProfileBits; v4: V4 }) {
   const result = completeness(row);
   return (
-    <section className="c4-card c4-meter">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("complete")} {result.score}%</h3></div>
-      <div className="c4-meter-bar" aria-hidden><span style={{ width: `${result.score}%` }} /></div>
-      <p className="c4-muted c4-pad">{v4("missing")}</p>
-      <ul>{result.missing.map((key) => <li key={key} className="c4-pad">{key}</li>)}</ul>
-      {!result.missing.length && <p className="c4-pad">{v4("complete")}</p>}
+    <section className="c4-complete-annulet" aria-label={v4("complete")} data-complete-annulet="1">
+      <header className="c4-complete-annulet-mast">
+        <p className="c4-complete-annulet-seal" data-logo="mono">{v4("completeAnnuletLogo")}</p>
+        <div>
+          <p className="c4-complete-annulet-kicker">{v4("completeAnnuletKicker")}</p>
+          <h3 className="c4-title">{v4("complete")} {result.score}%</h3>
+          <p className="c4-complete-annulet-lead">{v4("completeAnnuletLead")}</p>
+        </div>
+        <p className="c4-complete-annulet-count">{result.score}</p>
+      </header>
+      <div className="c4-complete-annulet-ring" style={{ ["--annulet" as string]: `${result.score}%` }} aria-hidden>
+        <span>{result.score}</span>
+      </div>
+      <p className="c4-complete-annulet-miss">{v4("missing")}</p>
+      <ul className="c4-complete-annulet-rows">{result.missing.map((key) => <li key={key}>{key}</li>)}</ul>
+      {!result.missing.length && <p className="c4-complete-annulet-done">{v4("complete")}</p>}
     </section>
   );
 }
