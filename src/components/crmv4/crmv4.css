@@ -131479,3 +131479,581 @@
   [data-crmv4-root] .c4-announce-crocket { border-radius: 0; }
   [data-crmv4-root] .c4-greeting-quatrefoil-preview { border-radius: 12px; }
 }
+
+/* Round 400 — euthynteria courses and geison address plates. */
+/* Round 400 — euthynteria rails and geison steps. */
+[data-crmv4-root] .c4-euthynteria,
+[data-crmv4-root] .c4-geison {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  margin: 0 0 16px;
+  padding: 0 0 16px;
+  border: 1px solid #1c1a17;
+  border-radius: 2px;
+  box-sizing: border-box;
+}
+[data-crmv4-root] .c4-euthynteria {
+  color: #1c1a17;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 calc(100% - 10px) / 100% 10px no-repeat,
+    linear-gradient(#8a6a3b, #8a6a3b) 0 100% / 100% 10px no-repeat,
+    #fffdf8;
+  padding-bottom: 26px;
+}
+[data-crmv4-root] .c4-geison {
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 2px no-repeat,
+    #1c1a17;
+  box-shadow: inset 0 -8px 0 #8a6a3b, inset 0 -10px 0 #c6a15b;
+}
+[data-crmv4-root] .c4-euthynteria-mast,
+[data-crmv4-root] .c4-geison-mast {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  margin: 0;
+  padding: 16px 16px 0;
+}
+[data-crmv4-root] .c4-euthynteria-seal[data-logo="mono"],
+[data-crmv4-root] .c4-geison-seal[data-logo="mono"] {
+  width: 52px;
+  height: 52px;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid #c6a15b;
+  background: transparent;
+  color: #8a6a3b;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  filter: grayscale(1);
+}
+[data-crmv4-root] .c4-geison-seal[data-logo="mono"] { color: #c6a15b; border-radius: 2px; }
+[data-crmv4-root] .c4-euthynteria-seal[data-logo="mono"] { border-radius: 2px 12px 2px 12px; }
+[data-crmv4-root] .c4-euthynteria-kicker,
+[data-crmv4-root] .c4-geison-kicker {
+  margin: 0 0 2px;
+  color: #8a6a3b;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-geison-kicker { color: #c6a15b; }
+[data-crmv4-root] .c4-euthynteria .c4-title,
+[data-crmv4-root] .c4-euthynteria-hint,
+[data-crmv4-root] .c4-euthynteria-meta { margin: 0; color: #1c1a17; }
+[data-crmv4-root] .c4-geison .c4-title,
+[data-crmv4-root] .c4-geison-hint,
+[data-crmv4-root] .c4-geison-meta { margin: 0; color: #f6f1e8; }
+[data-crmv4-root] .c4-euthynteria .c4-title::before,
+[data-crmv4-root] .c4-geison .c4-title::before { background: #c6a15b; }
+[data-crmv4-root] .c4-euthynteria-hint,
+[data-crmv4-root] .c4-geison-hint { font-size: 13px; line-height: 1.45; }
+[data-crmv4-root] .c4-euthynteria-count,
+[data-crmv4-root] .c4-geison-count {
+  margin: 0;
+  min-width: 36px;
+  padding: 6px 8px;
+  border: 1px solid #c6a15b;
+  color: #8a6a3b;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+[data-crmv4-root] .c4-geison-count { color: #c6a15b; }
+[data-crmv4-root] .c4-euthynteria-links,
+[data-crmv4-root] .c4-geison-links,
+[data-crmv4-root] .c4-euthynteria-hint,
+[data-crmv4-root] .c4-geison-hint,
+[data-crmv4-root] .c4-euthynteria-note,
+[data-crmv4-root] .c4-geison-note,
+[data-crmv4-root] .c4-euthynteria-meta { padding: 0 16px; }
+[data-crmv4-root] .c4-euthynteria-links a,
+[data-crmv4-root] .c4-geison-links a { color: #8a6a3b; }
+[data-crmv4-root] .c4-geison-links a { color: #c6a15b; }
+[data-crmv4-root] .c4-euthynteria-index,
+[data-crmv4-root] .c4-euthynteria-remind {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0 16px;
+  list-style: none;
+}
+[data-crmv4-root] .c4-euthynteria-index li,
+[data-crmv4-root] .c4-euthynteria-remind li {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 10px;
+  border: 1px solid #e6dccf;
+  border-top: 3px solid #c6a15b;
+  background: #fffdf8;
+}
+[data-crmv4-root] .c4-euthynteria-index li[data-tone="gold"] { background: #1c1a17; color: #f6f1e8; border-color: #c6a15b; }
+[data-crmv4-root] .c4-euthynteria-chart {
+  display: grid;
+  gap: 8px;
+  margin: 0 16px;
+}
+[data-crmv4-root] .c4-euthynteria-column {
+  display: grid;
+  grid-template-columns: minmax(72px, 120px) minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 8px;
+  border: 0;
+  border-bottom: 1px solid #e6dccf;
+  background: transparent;
+  color: inherit;
+  text-align: start;
+}
+[data-crmv4-root] .c4-euthynteria-column span { grid-column: 1; }
+[data-crmv4-root] .c4-euthynteria-column i {
+  grid-column: 2;
+  display: block;
+  height: 8px;
+  min-width: 8px;
+  border-radius: 1px;
+  background: #c6a15b;
+}
+[data-crmv4-root] .c4-euthynteria-column strong { grid-column: 3; }
+[data-crmv4-root] .c4-euthynteria-column[data-on="1"] { background: #f6f1e8; }
+[data-crmv4-root] .c4-euthynteria-column strong { font-variant-numeric: tabular-nums; }
+[data-crmv4-root] .c4-geison-chart {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 16px;
+}
+[data-crmv4-root] .c4-geison-column {
+  display: grid;
+  align-content: end;
+  justify-items: center;
+  gap: 4px;
+  min-height: 96px;
+  padding: 8px 4px;
+  border: 1px solid #8a6a3b;
+  background: #141210;
+  color: #f6f1e8;
+}
+[data-crmv4-root] .c4-geison-column i {
+  display: block;
+  width: 100%;
+  min-height: 4px;
+  background: #c6a15b;
+}
+[data-crmv4-root] .c4-geison-column[data-on="1"] { outline: 1px solid #c6a15b; }
+[data-crmv4-root] .c4-euthynteria-form,
+[data-crmv4-root] .c4-euthynteria-tools,
+[data-crmv4-root] .c4-euthynteria-view,
+[data-crmv4-root] .c4-euthynteria-bulk,
+[data-crmv4-root] .c4-geison-tools,
+[data-crmv4-root] .c4-geison-bulk {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: end;
+  margin: 0;
+  padding: 0 16px;
+}
+[data-crmv4-root] .c4-euthynteria .c4-lab,
+[data-crmv4-root] .c4-geison .c4-lab { flex: 1 1 140px; min-width: 0; }
+[data-crmv4-root] .c4-euthynteria .c4-field,
+[data-crmv4-root] .c4-euthynteria .c4-btn,
+[data-crmv4-root] .c4-euthynteria .c4-chip,
+[data-crmv4-root] .c4-geison .c4-field,
+[data-crmv4-root] .c4-geison .c4-btn,
+[data-crmv4-root] .c4-geison .c4-chip {
+  min-height: 44px;
+  border-radius: 2px;
+}
+[data-crmv4-root] .c4-euthynteria .c4-field,
+[data-crmv4-root] .c4-euthynteria .c4-btn,
+[data-crmv4-root] .c4-euthynteria .c4-chip {
+  border: 1px solid #c6a15b;
+  background: #fffdf8;
+  color: #1c1a17;
+}
+[data-crmv4-root] .c4-geison .c4-field,
+[data-crmv4-root] .c4-geison .c4-btn,
+[data-crmv4-root] .c4-geison .c4-chip {
+  border: 1px solid #8a6a3b;
+  background: #221f1b;
+  color: #f6f1e8;
+}
+[data-crmv4-root] .c4-euthynteria .c4-chip[data-on="1"],
+[data-crmv4-root] .c4-geison .c4-chip[data-on="1"] {
+  background: #1c1a17;
+  color: #f6f1e8;
+  border-color: #c6a15b;
+}
+[data-crmv4-root] .c4-euthynteria-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0 16px;
+  list-style: none;
+}
+[data-crmv4-root] .c4-euthynteria-card,
+[data-crmv4-root] .c4-geison-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #e6dccf;
+  border-radius: 2px;
+  background: #fffdf8;
+}
+[data-crmv4-root] .c4-euthynteria-card { border-top: 3px solid #c6a15b; }
+[data-crmv4-root] .c4-euthynteria-card[data-on="1"] { outline: 2px solid #c6a15b; }
+[data-crmv4-root] .c4-euthynteria-card[data-late="1"],
+[data-crmv4-root] .c4-euthynteria-card[data-overdue="1"] { border-color: #8a6a3b; }
+[data-crmv4-root] .c4-euthynteria-actions,
+[data-crmv4-root] .c4-geison-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  grid-column: 1 / -1;
+}
+[data-crmv4-root] .c4-geison-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0 16px;
+  list-style: none;
+}
+[data-crmv4-root] .c4-geison-card {
+  border: 0;
+  border-left: 3px solid #c6a15b;
+  background: #221f1b;
+  color: #f6f1e8;
+}
+[data-crmv4-root] .c4-euthynteria-time {
+  margin: 0 16px;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+[data-crmv4-root] .c4-euthynteria-time li {
+  display: flex;
+  gap: 8px;
+  min-height: 44px;
+  align-items: center;
+  border-bottom: 1px solid #e6dccf;
+}
+[data-crmv4-root] .c4-euthynteria-time span {
+  min-width: 28px;
+  color: #8a6a3b;
+  font-variant-numeric: tabular-nums;
+}
+[data-crmv4-root] .c4-euthynteria-views { margin: 0; padding: 0 16px; list-style: none; display: grid; gap: 8px; }
+[data-crmv4-root] .c4-euthynteria :focus-visible,
+[data-crmv4-root] .c4-geison :focus-visible { outline: 2px solid #c6a15b; outline-offset: 2px; }
+[data-crmv4-root][data-theme="dark"] .c4-euthynteria {
+  background: #1c1a17;
+  color: #f6f1e8;
+  border-color: #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-euthynteria .c4-title,
+[data-crmv4-root][data-theme="dark"] .c4-euthynteria-hint,
+[data-crmv4-root][data-theme="dark"] .c4-euthynteria-meta,
+[data-crmv4-root][data-theme="dark"] .c4-euthynteria-time li { color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-euthynteria .c4-field,
+[data-crmv4-root][data-theme="dark"] .c4-euthynteria .c4-btn,
+[data-crmv4-root][data-theme="dark"] .c4-euthynteria .c4-chip,
+[data-crmv4-root][data-theme="dark"] .c4-euthynteria-card,
+[data-crmv4-root][data-theme="dark"] .c4-euthynteria-index li {
+  background: #221f1b;
+  color: #f6f1e8;
+  border-color: #3a332c;
+}
+[data-crmv4-root][data-theme="dark"] .c4-euthynteria-index li[data-tone="gold"] { background: #141210; color: #f6f1e8; border-color: #c6a15b; }
+[data-crmv4-root][data-theme="light"] .c4-geison { color: #f6f1e8; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-euthynteria-mast,
+  [data-crmv4-root] .c4-geison-mast { grid-template-columns: 52px minmax(0, 1fr); }
+  [data-crmv4-root] .c4-euthynteria-count,
+  [data-crmv4-root] .c4-geison-count { grid-column: 1 / -1; justify-self: start; }
+  [data-crmv4-root] .c4-euthynteria-list,
+  [data-crmv4-root] .c4-geison-chart { grid-template-columns: 1fr; }
+  [data-crmv4-root] .c4-euthynteria-column { grid-template-columns: minmax(0, 1fr) auto; }
+  [data-crmv4-root] .c4-euthynteria-column i { grid-column: 1 / -1; }
+}
+
+/* Round 400 — ivory euthynteria rail, then a graphite geison step. */
+[data-crmv4-root] .c4-euthynteria {
+  border-radius: 0;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 16px 14px / 4px 28px no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) 24px 14px / 4px 28px no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) 32px 14px / 4px 28px no-repeat,
+    #fffdf8;
+  box-shadow: inset 0 -6px 0 #1c1a17;
+}
+[data-crmv4-root] .c4-euthynteria-seal[data-logo="mono"] { border-radius: 0; }
+[data-crmv4-root] .c4-euthynteria-card { border-radius: 0; }
+[data-crmv4-root] .c4-geison {
+  border-radius: 0;
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 8px no-repeat,
+    #1c1a17;
+  box-shadow: inset 0 12px 0 #141210;
+}
+[data-crmv4-root] .c4-geison-card { border-radius: 0; }
+[data-crmv4-root][data-theme="dark"] .c4-euthynteria {
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 16px 14px / 4px 28px no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) 24px 14px / 4px 28px no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) 32px 14px / 4px 28px no-repeat,
+    #1c1a17;
+}
+[data-crmv4-root][data-theme="light"] .c4-geison { color: #f6f1e8; }
+
+
+/* Round 400 — euthynteria rail on ivory, geison steps on graphite. */
+[data-crmv4-root] .c4-euthynteria {
+  border-radius: 2px;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 16px 16px / 22px 22px no-repeat,
+    linear-gradient(#fffdf8, #fffdf8) 18px 18px / 18px 18px no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) 46px 16px / 22px 22px no-repeat,
+    linear-gradient(#fffdf8, #fffdf8) 48px 18px / 18px 18px no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) 76px 16px / 22px 22px no-repeat,
+    linear-gradient(#fffdf8, #fffdf8) 78px 18px / 18px 18px no-repeat,
+    #fffdf8;
+  box-shadow: inset 0 0 0 1px #c6a15b, inset 0 -8px 0 #1c1a17;
+}
+[data-crmv4-root] .c4-euthynteria-seal[data-logo="mono"] { border-radius: 2px; }
+[data-crmv4-root] .c4-euthynteria-card {
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px #e6dccf, inset 0 8px 0 #fffdf8;
+}
+[data-crmv4-root] .c4-geison {
+  border-radius: 2px 2px 18px 18px;
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 22px / 100% 10px no-repeat,
+    #1c1a17;
+  box-shadow: inset 0 22px 0 #141210;
+}
+[data-crmv4-root] .c4-geison-card { border-radius: 2px; }
+[data-crmv4-root][data-theme="dark"] .c4-euthynteria {
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 16px 16px / 22px 22px no-repeat,
+    linear-gradient(#1c1a17, #1c1a17) 18px 18px / 18px 18px no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) 46px 16px / 22px 22px no-repeat,
+    linear-gradient(#1c1a17, #1c1a17) 48px 18px / 18px 18px no-repeat,
+    linear-gradient(#c6a15b, #c6a15b) 76px 16px / 22px 22px no-repeat,
+    linear-gradient(#1c1a17, #1c1a17) 78px 18px / 18px 18px no-repeat,
+    #1c1a17;
+}
+[data-crmv4-root][data-theme="light"] .c4-geison { color: #f6f1e8; }
+[data-crmv4-root] .c4-euthynteria :focus-visible,
+[data-crmv4-root] .c4-geison :focus-visible { outline: 2px solid #c6a15b; outline-offset: 2px; }
+
+
+
+
+/* Round 400 — euthynteria fillet on ivory, geison step on graphite. */
+[data-crmv4-root] .c4-euthynteria {
+  border-radius: 0 18px 18px 0;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 10px 100% no-repeat,
+    linear-gradient(#8a6a3b, #8a6a3b) 10px 0 / 2px 100% no-repeat,
+    #fffdf8;
+  box-shadow: none;
+}
+[data-crmv4-root] .c4-geison {
+  border-radius: 18px 0 0 18px;
+  color: #f6f1e8;
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 100% 10px no-repeat,
+    #1c1a17;
+  box-shadow: inset 0 12px 0 #141210;
+}
+[data-crmv4-root][data-theme="dark"] .c4-euthynteria {
+  background:
+    linear-gradient(#c6a15b, #c6a15b) 0 0 / 10px 100% no-repeat,
+    linear-gradient(#8a6a3b, #8a6a3b) 10px 0 / 2px 100% no-repeat,
+    #1c1a17;
+  color: #f6f1e8;
+}
+[data-crmv4-root][data-theme="light"] .c4-geison { color: #f6f1e8; }
+
+
+/* Round 400 — graphite city scotia and ivory shift torus. */
+[data-crmv4-root] .c4-desk-city-scotia,
+[data-crmv4-root] .c4-desk-shift-torus {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  margin: 0 0 16px;
+  box-sizing: border-box;
+}
+[data-crmv4-root] .c4-desk-city-scotia {
+  padding: 18px 16px 20px;
+  color: #f6f1e8;
+  background:
+    radial-gradient(120% 28px at 50% 100%, transparent 0 18px, #c6a15b 19px 21px, #1c1a17 22px) bottom / 100% 36px no-repeat,
+    #1c1a17;
+  border: 1px solid #c6a15b;
+  border-radius: 4px 4px 48px 48px;
+  box-shadow: inset 0 8px 0 #c6a15b;
+}
+[data-crmv4-root] .c4-desk-shift-torus {
+  padding: 18px 16px 16px;
+  color: #1c1a17;
+  background: #fffdf8;
+  border: 1px solid #1c1a17;
+  border-radius: 28px;
+  box-shadow: inset 0 0 0 5px #fffdf8, inset 0 0 0 7px #c6a15b;
+}
+[data-crmv4-root] .c4-desk-city-scotia-mast,
+[data-crmv4-root] .c4-desk-shift-torus-mast {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+}
+[data-crmv4-root] .c4-desk-city-scotia-seal[data-logo="mono"],
+[data-crmv4-root] .c4-desk-shift-torus-seal[data-logo="mono"] {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+[data-crmv4-root] .c4-desk-city-scotia-seal[data-logo="mono"] {
+  color: #1c1a17;
+  background: #c6a15b;
+  border-radius: 50% 50% 46% 46%;
+}
+[data-crmv4-root] .c4-desk-shift-torus-seal[data-logo="mono"] {
+  color: #8a6a3b;
+  background:
+    radial-gradient(circle at 50% 50%, #fffdf8 0 14px, transparent 15px),
+    #c6a15b;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 4px #fffdf8, inset 0 0 0 6px #c6a15b;
+}
+[data-crmv4-root] .c4-desk-city-scotia-kicker,
+[data-crmv4-root] .c4-desk-shift-torus-kicker {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+[data-crmv4-root] .c4-desk-city-scotia-kicker { color: #c6a15b; }
+[data-crmv4-root] .c4-desk-shift-torus-kicker { color: #8a6a3b; }
+[data-crmv4-root] .c4-desk-city-scotia-mast .c4-title,
+[data-crmv4-root] .c4-desk-city-scotia-lead { margin: 0; color: #f6f1e8; }
+[data-crmv4-root] .c4-desk-shift-torus-mast .c4-title,
+[data-crmv4-root] .c4-desk-shift-torus-lead { margin: 0; color: #1c1a17; }
+[data-crmv4-root] .c4-desk-city-scotia-lead,
+[data-crmv4-root] .c4-desk-shift-torus-lead { font-size: 13px; line-height: 1.45; }
+[data-crmv4-root] .c4-desk-city-scotia-lead { color: #d9c7a4; }
+[data-crmv4-root] .c4-desk-shift-torus-lead { color: #5c5346; }
+[data-crmv4-root] .c4-desk-city-scotia .c4-title::before,
+[data-crmv4-root] .c4-desk-shift-torus .c4-title::before { background: #c6a15b; }
+[data-crmv4-root] .c4-desk-city-scotia-count,
+[data-crmv4-root] .c4-desk-shift-torus-count {
+  margin: 0;
+  min-width: 36px;
+  padding: 8px 10px;
+  text-align: center;
+  font-weight: 700;
+  border-radius: 999px;
+}
+[data-crmv4-root] .c4-desk-city-scotia-count { color: #1c1a17; background: #c6a15b; }
+[data-crmv4-root] .c4-desk-shift-torus-count { color: #8a6a3b; background: #fffdf8; border: 1px solid #c6a15b; }
+[data-crmv4-root] .c4-desk-city-scotia-rows,
+[data-crmv4-root] .c4-desk-shift-torus-rows {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-crmv4-root] .c4-desk-city-scotia-rows li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  align-items: center;
+  padding: 8px 12px;
+  color: #1c1a17;
+  background: #fffdf8;
+  border-radius: 0 0 18px 18px;
+}
+[data-crmv4-root] .c4-desk-city-scotia-rows strong { color: #8a6a3b; }
+[data-crmv4-root] .c4-desk-shift-torus-rows li {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 14px;
+  color: #1c1a17;
+  background: #fffdf8;
+  border: 1px solid #e4d7c4;
+  border-radius: 999px;
+}
+[data-crmv4-root] .c4-desk-shift-torus-rows i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #c6a15b;
+  box-shadow: 0 0 0 3px #fffdf8, 0 0 0 4px #c6a15b;
+}
+[data-crmv4-root] .c4-desk-city-scotia .c4-field,
+[data-crmv4-root] .c4-desk-city-scotia .c4-btn,
+[data-crmv4-root] .c4-desk-shift-torus .c4-field,
+[data-crmv4-root] .c4-desk-shift-torus .c4-btn { min-height: 44px; }
+[data-crmv4-root] .c4-desk-city-scotia-empty,
+[data-crmv4-root] .c4-desk-shift-torus-empty { margin: 0; color: #8a6a3b; }
+[data-crmv4-root] .c4-desk-city-scotia :focus-visible,
+[data-crmv4-root] .c4-desk-shift-torus :focus-visible { outline: 2px solid #c6a15b; outline-offset: 2px; }
+[data-crmv4-root][data-theme="dark"] .c4-desk-shift-torus {
+  color: #f6f1e8;
+  background: #1c1a17;
+  border-color: #c6a15b;
+  box-shadow: inset 0 0 0 5px #1c1a17, inset 0 0 0 7px #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-desk-shift-torus-mast .c4-title,
+[data-crmv4-root][data-theme="dark"] .c4-desk-shift-torus-lead,
+[data-crmv4-root][data-theme="dark"] .c4-desk-shift-torus-rows li { color: #f6f1e8; }
+[data-crmv4-root][data-theme="dark"] .c4-desk-shift-torus-rows li { background: #141210; border-color: #3a332c; }
+[data-crmv4-root][data-theme="dark"] .c4-desk-shift-torus-seal[data-logo="mono"] {
+  color: #c6a15b;
+  background:
+    radial-gradient(circle at 50% 50%, #141210 0 14px, transparent 15px),
+    #c6a15b;
+  box-shadow: inset 0 0 0 4px #141210, inset 0 0 0 6px #c6a15b;
+}
+[data-crmv4-root][data-theme="dark"] .c4-desk-shift-torus-count { background: #141210; color: #c6a15b; }
+[data-crmv4-root][data-theme="light"] .c4-desk-city-scotia { color: #f6f1e8; }
+@media (max-width: 720px) {
+  [data-crmv4-root] .c4-desk-city-scotia-mast,
+  [data-crmv4-root] .c4-desk-shift-torus-mast { grid-template-columns: 52px minmax(0, 1fr); }
+  [data-crmv4-root] .c4-desk-city-scotia-count,
+  [data-crmv4-root] .c4-desk-shift-torus-count { grid-column: 2; justify-self: end; }
+  [data-crmv4-root] .c4-desk-shift-torus-fields,
+  [data-crmv4-root] .c4-desk-city-scotia form { display: grid; gap: 8px; }
+  [data-crmv4-root] .c4-desk-city-scotia { border-radius: 0 0 36px 36px; }
+  [data-crmv4-root] .c4-desk-shift-torus-rows li { border-radius: 18px; }
+}
