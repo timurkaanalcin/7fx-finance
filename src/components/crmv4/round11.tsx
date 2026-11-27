@@ -135,10 +135,20 @@ export function PinnedHome({ base, v4 }: { base: string; v4: V4 }) {
   useEffect(() => { setPins(readJson(PIN_KEY, [])); }, []);
   const rows = (data.data?.users || []).filter((row) => pins.includes(row.id));
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("pinnedHome")}</h3></div>
-      {rows.map((row) => <a key={row.id} className="c4-pad c4-rich-item" href={crmv4Href(base, `customers/${row.id}`)}>{row.name || row.email}</a>)}
-      {!rows.length && <p className="c4-muted c4-pad">{v4("pinnedHome")}</p>}
+    <section className="c4-pinned-tondo" aria-label={v4("pinnedHome")} data-pinned-tondo="1">
+      <header className="c4-pinned-tondo-mast">
+        <p className="c4-pinned-tondo-seal" data-logo="mono">{v4("pinnedTondoLogo")}</p>
+        <div>
+          <p className="c4-pinned-tondo-kicker">{v4("pinnedTondoKicker")}</p>
+          <h3 className="c4-title">{v4("pinnedHome")}</h3>
+          <p className="c4-pinned-tondo-lead">{v4("pinnedTondoLead")}</p>
+        </div>
+        <p className="c4-pinned-tondo-count">{rows.length}</p>
+      </header>
+      <ul className="c4-pinned-tondo-rows">
+        {rows.map((row) => <li key={row.id}><a href={crmv4Href(base, `customers/${row.id}`)}>{row.name || row.email}</a></li>)}
+      </ul>
+      {!rows.length && <p className="c4-pinned-tondo-empty">{v4("pinnedHome")}</p>}
     </section>
   );
 }
@@ -147,18 +157,33 @@ export function ChurnBoard({ base, v4 }: { base: string; v4: V4 }) {
   const data = useJson<{ users?: UserRow[] }>("/api/admin/users?view=table&take=40&meta=0&role=TRADER");
   const rows = (data.data?.users || []).map(asDesk).filter((row) => isChurn(row));
   return (
-    <div className="c4-book-grid">
-      <section className="c4-card">
-        <div className="c4-card-h"><h3 className="c4-title">{v4("churnRisk")}</h3></div>
-        {rows.map((row) => <p key={row.id} className="c4-pad">{row.name || row.email}</p>)}
-        {!rows.length && <p className="c4-muted c4-pad">{v4("churnRisk")}</p>}
-      </section>
-      <section className="c4-card">
-        <div className="c4-card-h"><h3 className="c4-title">{v4("reengage")}</h3></div>
-        {rows.map((row) => <a key={row.id} className="c4-pad c4-rich-item" href={crmv4Href(base, `customers/${row.id}`)}>{row.name || row.email}</a>)}
-        {!rows.length && <p className="c4-muted c4-pad">{v4("reengage")}</p>}
-      </section>
-    </div>
+    <section className="c4-churn-festoon" aria-label={v4("churnRisk")} data-churn-festoon="1">
+      <header className="c4-churn-festoon-mast">
+        <p className="c4-churn-festoon-seal" data-logo="mono">{v4("churnFestoonLogo")}</p>
+        <div>
+          <p className="c4-churn-festoon-kicker">{v4("churnFestoonKicker")}</p>
+          <h3 className="c4-title">{v4("churnRisk")}</h3>
+          <p className="c4-churn-festoon-lead">{v4("churnFestoonLead")}</p>
+        </div>
+        <p className="c4-churn-festoon-count">{rows.length}</p>
+      </header>
+      <div className="c4-churn-festoon-grid">
+        <section aria-label={v4("churnRisk")}>
+          <h4>{v4("churnRisk")}</h4>
+          <ul>
+            {rows.map((row) => <li key={row.id}><i aria-hidden="true" /><span>{row.name || row.email}</span></li>)}
+          </ul>
+          {!rows.length && <p className="c4-churn-festoon-empty">{v4("churnRisk")}</p>}
+        </section>
+        <section aria-label={v4("reengage")}>
+          <h4>{v4("reengage")}</h4>
+          <ul>
+            {rows.map((row) => <li key={`back-${row.id}`}><a href={crmv4Href(base, `customers/${row.id}`)}>{row.name || row.email}</a></li>)}
+          </ul>
+          {!rows.length && <p className="c4-churn-festoon-empty">{v4("reengage")}</p>}
+        </section>
+      </div>
+    </section>
   );
 }
 
