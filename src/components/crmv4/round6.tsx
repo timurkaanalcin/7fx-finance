@@ -151,12 +151,27 @@ export function SlaHeat({ v4 }: { v4: V4 }) {
   const data = useJson<{ tickets?: { openedAt?: string }[] }>("/api/admin/tickets?status=PENDING");
   const buckets = slaHeat((data.data?.tickets || []).map((row) => row.openedAt));
   const max = Math.max(1, ...buckets);
+  const total = buckets.reduce((sum, count) => sum + count, 0);
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("slaHeat")}</h3></div>
-      <div className="c4-sla" aria-label={v4("slaHeat")}>
-        {buckets.map((count, index) => <span key={index} style={{ opacity: 0.3 + (count / max) * 0.7 }}>{count}</span>)}
-      </div>
+    <section className="c4-sla-mutule" aria-label={v4("slaHeat")} data-sla-mutule="1">
+      <header className="c4-sla-mutule-mast">
+        <p className="c4-sla-mutule-seal" data-logo="mono">{v4("slaMutuleLogo")}</p>
+        <div>
+          <p className="c4-sla-mutule-kicker">{v4("slaMutuleKicker")}</p>
+          <h3 className="c4-title">{v4("slaHeat")}</h3>
+          <p className="c4-sla-mutule-lead">{v4("slaMutuleLead")}</p>
+        </div>
+        <p className="c4-sla-mutule-count">{total}</p>
+      </header>
+      <ol className="c4-sla-mutule-blocks" aria-label={v4("slaHeat")}>
+        {buckets.map((count, index) => (
+          <li key={index}>
+            <i style={{ height: `${Math.max(4, Math.round((count / max) * 36))}px` }} />
+            <strong>{count}</strong>
+            <span>{index + 1}</span>
+          </li>
+        ))}
+      </ol>
     </section>
   );
 }
@@ -238,10 +253,26 @@ const AGE_KEY: Record<Aging, CrmV4CopyKey> = { fresh: "ageFresh", week: "ageWeek
 export function AgingBoard({ rows, v4 }: { rows: { createdAt?: string | null }[]; v4: V4 }) {
   const counts: Record<Aging, number> = { fresh: 0, week: 0, month: 0, old: 0 };
   for (const row of rows) counts[agingBucket(row.createdAt)] += 1;
+  const total = (Object.keys(counts) as Aging[]).reduce((sum, key) => sum + counts[key], 0);
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("aging")}</h3></div>
-      {(Object.keys(counts) as Aging[]).map((key) => <p key={key} className="c4-pad">{v4(AGE_KEY[key])} · {counts[key]}</p>)}
+    <section className="c4-aging-corona" aria-label={v4("aging")} data-aging-corona="1">
+      <header className="c4-aging-corona-mast">
+        <p className="c4-aging-corona-seal" data-logo="mono">{v4("agingCoronaLogo")}</p>
+        <div>
+          <p className="c4-aging-corona-kicker">{v4("agingCoronaKicker")}</p>
+          <h3 className="c4-title">{v4("aging")}</h3>
+          <p className="c4-aging-corona-lead">{v4("agingCoronaLead")}</p>
+        </div>
+        <p className="c4-aging-corona-count">{total}</p>
+      </header>
+      <ul className="c4-aging-corona-rows">
+        {(Object.keys(counts) as Aging[]).map((key) => (
+          <li key={key} data-age={key}>
+            <span>{v4(AGE_KEY[key])}</span>
+            <strong>{counts[key]}</strong>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
