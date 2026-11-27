@@ -141,16 +141,24 @@ export function CommissionCard({ amount, v4, locale }: { amount: number; v4: V4;
   const [rate, setRate] = useState(0);
   useEffect(() => { setRate(Number(readJson(RATE_KEY, 0)) || 0); }, []);
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("commission")}</h3></div>
-      <label className="c4-lab c4-pad"><span>{v4("rate")}</span>
-        <input className="c4-field" type="number" min={0} value={rate || ""} onChange={(event) => {
+    <section className="c4-commission-pelta" aria-label={v4("commission")} data-commission-pelta="1">
+      <header className="c4-commission-pelta-mast">
+        <p className="c4-commission-pelta-seal" data-logo="mono">{v4("comPeltaLogo")}</p>
+        <div>
+          <p className="c4-commission-pelta-kicker">{v4("comPeltaKicker")}</p>
+          <h3 className="c4-title">{v4("commission")}</h3>
+          <p className="c4-commission-pelta-lead">{v4("comPeltaLead")}</p>
+        </div>
+        <p className="c4-commission-pelta-count">{rate || 0}</p>
+      </header>
+      <label className="c4-lab c4-commission-pelta-rate"><span>{v4("rate")}</span>
+        <input className="c4-field" type="number" min={0} aria-label={v4("rate")} value={rate || ""} onChange={(event) => {
           const next = Number(event.target.value) || 0;
           setRate(next);
           writeJson(RATE_KEY, next);
         }} />
       </label>
-      <p className="c4-pad">{money(commissionOf(amount, rate), "USD", locale)}</p>
+      <p className="c4-commission-pelta-figure">{money(commissionOf(amount, rate), "USD", locale)}</p>
     </section>
   );
 }
@@ -160,11 +168,19 @@ export function ImportPreview({ known, v4 }: { known: string[]; v4: V4 }) {
   const rows = text.trim() ? parseLeadCsv(text) : [];
   const dups = duplicateLeads(rows.filter((row) => !row.error), known);
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("importPreview")}</h3></div>
+    <section className="c4-import-clipeus" aria-label={v4("importPreview")} data-import-clipeus="1">
+      <header className="c4-import-clipeus-mast">
+        <p className="c4-import-clipeus-seal" data-logo="mono">{v4("impClipeusLogo")}</p>
+        <div>
+          <p className="c4-import-clipeus-kicker">{v4("impClipeusKicker")}</p>
+          <h3 className="c4-title">{v4("importPreview")}</h3>
+          <p className="c4-import-clipeus-lead">{v4("impClipeusLead")}</p>
+        </div>
+        <p className="c4-import-clipeus-count">{rows.length}</p>
+      </header>
       <textarea className="c4-field" rows={4} aria-label={v4("importPreview")} placeholder="email,name,phone,country" value={text} onChange={(event) => setText(event.target.value)} />
-      <ul>
-        {rows.map((row) => <li key={row.line} className="c4-pad">{row.line}. {row.email || "—"} {row.error ? `· ${row.error}` : ""} {dups.includes(row.email.toLowerCase()) ? `· ${v4("importDup")}` : ""}</li>)}
+      <ul className="c4-import-clipeus-rows">
+        {rows.map((row) => <li key={row.line}><span>{row.line}. {row.email || "—"}</span><span>{row.error ? row.error : ""}{dups.includes(row.email.toLowerCase()) ? ` ${v4("importDup")}` : ""}</span></li>)}
       </ul>
     </section>
   );
