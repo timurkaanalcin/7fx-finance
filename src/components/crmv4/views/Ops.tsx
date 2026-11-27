@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { crmv4Text } from "@/lib/crmv4/copy";
 import { crmv4Href } from "@/lib/crmv4/sections";
 import { ImportCleatHead, SponsorTholeHead } from "../round418";
+import { AssetBreasthookHead, MethodPintleHead } from "../round419";
 import { Card, Lab, Msg, State, sendJson, useJson, when, type Tx } from "../kit";
 
 const OPS_TITLE = {
@@ -73,8 +74,8 @@ export default function Ops({ tx, area, locale }: { tx: Tx; area: string; locale
       </label>
       {area === "desks" && <Desks tx={tx} needle={needle} empty={roomCopy(v4, "dskAtelierEmpty")} v4={v4} />}
       {area === "groups" && <Groups tx={tx} needle={needle} empty={roomCopy(v4, "grpFolioEmpty")} v4={v4} />}
-      {area === "methods" && <Methods tx={tx} />}
-      {area === "assets" && <Assets tx={tx} needle={needle} empty={v4("sxtOpsEmpty")} />}
+      {area === "methods" && <Methods tx={tx} v4={v4} />}
+      {area === "assets" && <Assets tx={tx} needle={needle} empty={v4("sxtOpsEmpty")} v4={v4} />}
       {area === "rates" && <Rates tx={tx} />}
       {area === "sponsors" && <Sponsors tx={tx} needle={needle} empty={v4("sxtOpsEmpty")} v4={v4} />}
       {area === "licenses" && <Licenses tx={tx} needle={needle} empty={roomCopy(v4, "licCharterEmpty")} v4={v4} />}
@@ -182,14 +183,21 @@ function Groups({ tx, needle, empty, v4 }: { tx: Tx; needle: string; empty: stri
   );
 }
 
-function Methods({ tx }: { tx: Tx }) {
+function Methods({ tx, v4 }: { tx: Tx; v4: (key: Parameters<typeof crmv4Text>[1]) => string }) {
   const data = useJson<{ methods?: { id: string; label?: string; type?: string; active?: boolean; iban?: string | null; address?: string | null }[] }>("/api/admin/methods");
   const [msg, setMsg] = useState("");
+  const rows = data.data?.methods || [];
   return (
-    <Card title={tx("methods")}>
-      <State loading={data.loading} error={data.error} empty={!data.loading && !(data.data?.methods || []).length} tx={tx} onRetry={data.reload} />
+    <section className="c4-method-pintle" data-method-pintle="1" aria-label={tx("methods")}>
+      <MethodPintleHead v4={v4} title={tx("methods")} />
+      <ol className="c4-method-pintle-index" aria-label={tx("methods")}>
+        <li data-tone="gold">{rows.length}</li>
+        <li data-tone="ink">{tx("type")}</li>
+        <li data-tone="ivory">{tx("label")}</li>
+      </ol>
+      <State loading={data.loading} error={data.error} empty={!data.loading && !rows.length} tx={tx} onRetry={data.reload} />
       <ul>
-        {(data.data?.methods || []).map((row) => (
+        {rows.map((row) => (
           <li key={row.id} className="c4-ops-row" data-live={row.active === false ? "off" : "on"}>
             <span>{row.label} · {row.type}</span>
             <button type="button" className="c4-btn" onClick={async () => {
@@ -225,17 +233,23 @@ function Methods({ tx }: { tx: Tx }) {
         <button type="submit" className="c4-btn c4-btn-hot">{tx("createMethod")}</button>
         <Msg text={msg} />
       </form>
-    </Card>
+    </section>
   );
 }
 
-function Assets({ tx, needle, empty }: { tx: Tx; needle: string; empty: string }) {
+function Assets({ tx, needle, empty, v4 }: { tx: Tx; needle: string; empty: string; v4: (key: Parameters<typeof crmv4Text>[1]) => string }) {
   const data = useJson<{ assets?: { symbol: string; name?: string; class?: string; enabled?: boolean; effectiveSpread?: number }[] }>("/api/admin/assets");
   const [q, setQ] = useState("");
   const [msg, setMsg] = useState("");
   const rows = (data.data?.assets || []).filter((row) => roomHit(q, `${row.symbol} ${row.name || ""}`) && roomHit(needle, `${row.symbol} ${row.name || ""} ${row.class || ""}`)).slice(0, 40);
   return (
-    <Card title={tx("assets")}>
+    <section className="c4-asset-breasthook" data-asset-breasthook="1" aria-label={tx("assets")}>
+      <AssetBreasthookHead v4={v4} title={tx("assets")} />
+      <ol className="c4-asset-breasthook-index" aria-label={tx("assets")}>
+        <li data-tone="gold">{rows.length}</li>
+        <li data-tone="ink">{tx("symbol")}</li>
+        <li data-tone="ivory">{tx("enabled")}</li>
+      </ol>
       <div className="c4-tools"><input value={q} onChange={(event) => setQ(event.target.value)} className="c4-field" placeholder={tx("searchWord")} aria-label={tx("searchWord")} /></div>
       <State loading={data.loading} error={data.error} empty={!data.loading && !(data.data?.assets || []).length} tx={tx} onRetry={data.reload} />
       {!data.loading && (data.data?.assets || []).length > 0 && rows.length === 0 && <p className="c4-ops-sextant-empty">{empty}</p>}
@@ -252,7 +266,7 @@ function Assets({ tx, needle, empty }: { tx: Tx; needle: string; empty: string }
         ))}
       </ul>
       <Msg text={msg} />
-    </Card>
+    </section>
   );
 }
 
