@@ -173,9 +173,20 @@ export function ImportPreview({ known, v4 }: { known: string[]; v4: V4 }) {
 export function SourceBoard({ rows, v4 }: { rows: { campaign?: string | null; utmSource?: string | null }[]; v4: V4 }) {
   const mix = sourceMix(rows).slice(0, 6);
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("sources")}</h3></div>
-      {mix.map((row) => <p key={row.source} className="c4-pad">{row.source} · {row.count}</p>)}
+    <section className="c4-source-impluvium" aria-label={v4("sources")} data-source-impluvium="1">
+      <header className="c4-source-impluvium-mast">
+        <p className="c4-source-impluvium-seal" data-logo="mono">{v4("srcImpluviumLogo")}</p>
+        <div>
+          <p className="c4-source-impluvium-kicker">{v4("srcImpluviumKicker")}</p>
+          <h3 className="c4-title">{v4("sources")}</h3>
+          <p className="c4-source-impluvium-lead">{v4("srcImpluviumLead")}</p>
+        </div>
+        <p className="c4-source-impluvium-count">{mix.length}</p>
+      </header>
+      <ul className="c4-source-impluvium-rows">
+        {mix.map((row) => <li key={row.source}><span>{row.source}</span><strong>{row.count}</strong></li>)}
+      </ul>
+      {!mix.length && <p className="c4-source-impluvium-empty">{v4("sources")}</p>}
     </section>
   );
 }
@@ -212,9 +223,19 @@ export function StatusWatch({ rows, v4 }: { rows: { id: string; saleStatus?: str
   useEffect(() => { setDiffs(rememberStatuses(rows)); }, [rows]);
   if (!diffs.length) return null;
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("statusChanged")}</h3></div>
-      {diffs.map((row) => <p key={row.id} className="c4-pad">{row.name} · {row.from} → {row.to}</p>)}
+    <section className="c4-status-lararium" aria-label={v4("statusChanged")} data-status-lararium="1">
+      <header className="c4-status-lararium-mast">
+        <p className="c4-status-lararium-seal" data-logo="mono">{v4("stwLarariumLogo")}</p>
+        <div>
+          <p className="c4-status-lararium-kicker">{v4("stwLarariumKicker")}</p>
+          <h3 className="c4-title">{v4("statusChanged")}</h3>
+          <p className="c4-status-lararium-lead">{v4("stwLarariumLead")}</p>
+        </div>
+        <p className="c4-status-lararium-count">{diffs.length}</p>
+      </header>
+      <ul className="c4-status-lararium-rows">
+        {diffs.map((row) => <li key={row.id}><span>{row.name}</span><span>{row.from} → {row.to}</span></li>)}
+      </ul>
     </section>
   );
 }

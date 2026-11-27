@@ -397,6 +397,7 @@ import { MullionCourses, TransomPlates } from "./round406";
 import { ExtradosPlates, IntradosCourses } from "./round407";
 import { ImbrexPlates, KrepisCourses } from "./round408";
 import { CanalisPlates, HypotrachelionCourses } from "./round409";
+import { ArchitraveCourses, ProsceniumPlates } from "./round410";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1244,6 +1245,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "imb") return v4("imbTitle");
     if (tab === "htr") return v4("htrTitle");
     if (tab === "cnl") return v4("cnlTitle");
+    if (tab === "arc") return v4("atvTitle");
+    if (tab === "psc") return v4("pscTitle");
     if (tab === "pnd") return v4("pndTitle");
     if (tab === "cht") return v4("chtTitle");
     if (tab === "thd") return v4("thdTitle");
@@ -1520,6 +1523,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "imb") return v4("imbTitle");
     if (tab === "htr") return v4("htrTitle");
     if (tab === "cnl") return v4("cnlTitle");
+    if (tab === "arc") return v4("atvTitle");
+    if (tab === "psc") return v4("pscTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -3063,6 +3068,8 @@ function Shell({ base, section, name }: Props) {
             {view === "imb" && <ImbrexPlates base={base} v4={v4} />}
             {view === "htr" && <HypotrachelionCourses base={base} v4={v4} />}
             {view === "cnl" && <CanalisPlates base={base} v4={v4} />}
+            {view === "arc" && <ArchitraveCourses base={base} v4={v4} />}
+            {view === "psc" && <ProsceniumPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
