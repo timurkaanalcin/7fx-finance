@@ -139,10 +139,28 @@ export function SymbolDrill({ v4 }: { v4: V4 }) {
 export function PositionAge({ v4 }: { v4: V4 }) {
   const data = useJson<{ positions?: { openedAt?: string; status?: string }[] }>("/api/admin/positions?status=OPEN&take=80");
   const buckets = ageBuckets((data.data?.positions || []).map((row) => row.openedAt));
+  const peak = Math.max(1, ...buckets.map((row) => row.count));
+  const total = buckets.reduce((sum, row) => sum + row.count, 0);
   return (
-    <section className="c4-card c4-chart">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("positionAge")}</h3></div>
-      {buckets.map((row) => <p key={row.label} className="c4-pad c4-tip" data-tip={row.label}>{row.label} · {row.count}</p>)}
+    <section className="c4-position-ovolo" aria-label={v4("positionAge")} data-position-ovolo="1">
+      <header className="c4-position-ovolo-mast">
+        <p className="c4-position-ovolo-seal" data-logo="mono">{v4("positionOvoloLogo")}</p>
+        <div>
+          <p className="c4-position-ovolo-kicker">{v4("positionOvoloKicker")}</p>
+          <h3 className="c4-title">{v4("positionAge")}</h3>
+          <p className="c4-position-ovolo-lead">{v4("positionOvoloLead")}</p>
+        </div>
+        <p className="c4-position-ovolo-count">{total}</p>
+      </header>
+      <ol className="c4-position-ovolo-bands" aria-label={v4("positionAge")}>
+        {buckets.map((row) => (
+          <li key={row.label} data-tip={row.label}>
+            <i style={{ width: `${Math.max(8, Math.round((row.count / peak) * 100))}%` }} />
+            <span>{row.label}</span>
+            <strong>{row.count}</strong>
+          </li>
+        ))}
+      </ol>
     </section>
   );
 }
