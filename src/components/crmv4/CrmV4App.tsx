@@ -407,6 +407,7 @@ import { CoamingPlates, FuttockCourses } from "./round416";
 import { LimberPlates, SpirketingCourses } from "./round417";
 import { BecketPlates, CarvelCourses } from "./round418";
 import { GudgeonPlates, WashboardCourses } from "./round419";
+import { FairleadPlates, GunwaleCourses } from "./round420";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1566,6 +1567,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "lmb") return v4("lmbTitle");
     if (tab === "crv") return v4("crvTitle");
     if (tab === "bkt") return v4("bktTitle");
+    if (tab === "gnw") return v4("gnwTitle");
+    if (tab === "frl") return v4("frlTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -2248,6 +2251,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "bkt") return v4("bktSub");
     if (tab === "wsb") return v4("wsbSub");
     if (tab === "gdg") return v4("gdgSub");
+    if (tab === "gnw") return v4("gnwSub");
+    if (tab === "frl") return v4("frlSub");
     return "";
   }
 
@@ -3145,6 +3150,8 @@ function Shell({ base, section, name }: Props) {
             {view === "bkt" && <BecketPlates base={base} v4={v4} />}
             {view === "wsb" && <WashboardCourses base={base} v4={v4} />}
             {view === "gdg" && <GudgeonPlates base={base} v4={v4} />}
+            {view === "gnw" && <GunwaleCourses base={base} v4={v4} />}
+            {view === "frl" && <FairleadPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

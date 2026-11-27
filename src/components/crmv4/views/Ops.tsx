@@ -7,6 +7,7 @@ import { crmv4Text } from "@/lib/crmv4/copy";
 import { crmv4Href } from "@/lib/crmv4/sections";
 import { ImportCleatHead, SponsorTholeHead } from "../round418";
 import { AssetBreasthookHead, MethodPintleHead } from "../round419";
+import { RateMarlinspikeHead } from "../round420";
 import { Card, Lab, Msg, State, sendJson, useJson, when, type Tx } from "../kit";
 
 const OPS_TITLE = {
@@ -76,7 +77,7 @@ export default function Ops({ tx, area, locale }: { tx: Tx; area: string; locale
       {area === "groups" && <Groups tx={tx} needle={needle} empty={roomCopy(v4, "grpFolioEmpty")} v4={v4} />}
       {area === "methods" && <Methods tx={tx} v4={v4} />}
       {area === "assets" && <Assets tx={tx} needle={needle} empty={v4("sxtOpsEmpty")} v4={v4} />}
-      {area === "rates" && <Rates tx={tx} />}
+      {area === "rates" && <Rates tx={tx} v4={v4} />}
       {area === "sponsors" && <Sponsors tx={tx} needle={needle} empty={v4("sxtOpsEmpty")} v4={v4} />}
       {area === "licenses" && <Licenses tx={tx} needle={needle} empty={roomCopy(v4, "licCharterEmpty")} v4={v4} />}
       {area === "calendar" && <Calendar tx={tx} needle={needle} empty={roomCopy(v4, "calAlmanacEmpty")} v4={v4} />}
@@ -270,7 +271,7 @@ function Assets({ tx, needle, empty, v4 }: { tx: Tx; needle: string; empty: stri
   );
 }
 
-function Rates({ tx }: { tx: Tx }) {
+function Rates({ tx, v4 }: { tx: Tx; v4: (key: Parameters<typeof crmv4Text>[1]) => string }) {
   const data = useJson<{ global?: Record<string, number> }>("/api/admin/rates");
   const [msg, setMsg] = useState("");
   const g = data.data?.global || {};
@@ -285,7 +286,13 @@ function Rates({ tx }: { tx: Tx }) {
     defaultContractMult: "contractMult",
   };
   return (
-    <Card title={tx("rates")}>
+    <section className="c4-rate-marlinspike" data-rate-marlinspike="1" aria-label={tx("rates")}>
+      <RateMarlinspikeHead v4={v4} title={tx("rates")} />
+      <ol className="c4-rate-marlinspike-index" aria-label={tx("rates")}>
+        <li data-tone="gold">{fields.length}</li>
+        <li data-tone="ink">{tx("spread")}</li>
+        <li data-tone="ivory">{tx("leverage")}</li>
+      </ol>
       <State loading={data.loading} error={data.error} empty={false} tx={tx} onRetry={data.reload} />
       <form key={JSON.stringify(g)} className="c4-form c4-form-2 c4-ops-form" onSubmit={async (event) => {
         event.preventDefault();
@@ -302,7 +309,7 @@ function Rates({ tx }: { tx: Tx }) {
         <button type="submit" className="c4-btn c4-btn-hot">{tx("saveRates")}</button>
         <Msg text={msg} />
       </form>
-    </Card>
+    </section>
   );
 }
 
