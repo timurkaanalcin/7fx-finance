@@ -204,16 +204,24 @@ export function DocGallery({ id, v4 }: { id: string; v4: V4 }) {
   const files = useJson<{ documents?: { id: string; title?: string; fileName?: string; mime?: string }[] }>(`/api/admin/customer-documents?userId=${encodeURIComponent(id)}&take=24`);
   const rows = files.data?.documents || [];
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("gallery")}</h3></div>
-      <div className="c4-gallery">
+    <section className="c4-card c4-gallery-deckle" aria-label={v4("gallery")} data-gallery-deckle="1">
+      <header className="c4-gallery-deckle-mast">
+        <p className="c4-gallery-deckle-seal" data-logo="mono">{v4("dkDeckleLogo")}</p>
+        <div>
+          <p className="c4-gallery-deckle-kicker">{v4("dkDeckleKicker")}</p>
+          <h3 className="c4-title">{v4("gallery")}</h3>
+          <p className="c4-gallery-deckle-lead">{v4("dkDeckleLead")}</p>
+        </div>
+        <p className="c4-gallery-deckle-count">{rows.length}</p>
+      </header>
+      <div className="c4-gallery c4-gallery-deckle-frames">
         {rows.map((row) => (
           <figure key={row.id} data-image={String(row.mime || "").startsWith("image/") ? "1" : "0"}>
             <figcaption>{row.title || row.fileName || row.id}</figcaption>
           </figure>
         ))}
       </div>
-      {!rows.length && !files.loading && <p className="c4-muted c4-pad">{v4("gallery")}</p>}
+      {!rows.length && !files.loading && <p className="c4-gallery-deckle-empty c4-muted c4-pad">{v4("gallery")}</p>}
     </section>
   );
 }
