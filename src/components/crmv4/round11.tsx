@@ -172,12 +172,20 @@ export function CityMap({ v4 }: { v4: V4 }) {
   }
   const rows = Array.from(map.entries());
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("cityMap")}</h3></div>
-      {rows.map(([city, count]) => (
-        <div key={city} className="c4-row c4-pad"><span>{city}</span><span className="c4-muted">{count}</span></div>
-      ))}
-      {!rows.length && <p className="c4-muted c4-pad">{v4("cityEmpty")}</p>}
+    <section className="c4-desk-city-scotia" aria-label={v4("cityMap")} data-desk-city-scotia="1">
+      <header className="c4-desk-city-scotia-mast">
+        <p className="c4-desk-city-scotia-seal" data-logo="mono">{v4("cityScotiaLogo")}</p>
+        <div>
+          <p className="c4-desk-city-scotia-kicker">{v4("cityScotiaKicker")}</p>
+          <h3 className="c4-title">{v4("cityMap")}</h3>
+          <p className="c4-desk-city-scotia-lead">{v4("cityScotiaLead")}</p>
+        </div>
+        <p className="c4-desk-city-scotia-count">{rows.length}</p>
+      </header>
+      <ul className="c4-desk-city-scotia-rows">
+        {rows.map(([city, count]) => <li key={city}><span>{city}</span><strong>{count}</strong></li>)}
+      </ul>
+      {!rows.length && <p className="c4-desk-city-scotia-empty">{v4("cityEmpty")}</p>}
     </section>
   );
 }
@@ -188,9 +196,17 @@ export function ShiftBoard({ v4 }: { v4: V4 }) {
   const [day, setDay] = useState("");
   useEffect(() => { setRows(readJson(SHIFT_KEY, [])); }, []);
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("shiftBoard")}</h3></div>
-      <form className="c4-row c4-pad" onSubmit={(event) => {
+    <section className="c4-desk-shift-torus" aria-label={v4("shiftBoard")} data-desk-shift-torus="1">
+      <header className="c4-desk-shift-torus-mast">
+        <p className="c4-desk-shift-torus-seal" data-logo="mono">{v4("shiftTorusLogo")}</p>
+        <div>
+          <p className="c4-desk-shift-torus-kicker">{v4("shiftTorusKicker")}</p>
+          <h3 className="c4-title">{v4("shiftBoard")}</h3>
+          <p className="c4-desk-shift-torus-lead">{v4("shiftTorusLead")}</p>
+        </div>
+        <p className="c4-desk-shift-torus-count">{rows.length}</p>
+      </header>
+      <form className="c4-row c4-pad c4-desk-shift-torus-fields" onSubmit={(event) => {
         event.preventDefault();
         if (!name.trim() || !day.trim()) return;
         const next = [...rows, { id: String(Date.now()), name: name.trim(), day: day.trim(), start: "09:00", end: "17:00" }];
@@ -203,7 +219,9 @@ export function ShiftBoard({ v4 }: { v4: V4 }) {
         <input className="c4-field" aria-label={v4("shiftBoard")} value={day} onChange={(event) => setDay(event.target.value)} />
         <button type="submit" className="c4-btn">{v4("shiftBoard")}</button>
       </form>
-      {rows.map((row) => <p key={row.id} className="c4-pad">{row.name} · {row.day} · {row.start}–{row.end}</p>)}
+      <ul className="c4-desk-shift-torus-rows">
+        {rows.map((row) => <li key={row.id}><i aria-hidden="true" />{row.name} · {row.day} · {row.start}–{row.end}</li>)}
+      </ul>
     </section>
   );
 }
