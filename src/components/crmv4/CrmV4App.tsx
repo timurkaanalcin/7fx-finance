@@ -385,6 +385,7 @@ import { SimaCourses, MetopePanels } from "./round394";
 import { EchinusCourses, AbacusPanels } from "./round395";
 import { TriglyphCourses, RegulaPanels } from "./round396";
 import { CaissonCoffers, ImpostPanels } from "./round397";
+import { DadoPlates, PlinthCourses } from "./round398";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -997,7 +998,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "istmp") return v4("stpTitle");
     if (tab === "vows") return v4("vowTitle");
     if (tab === "span") return v4("spnTitle");
-    if (tab === "plates") return v4("pltTitle");
+    if (tab === "plates") return v4("phcTitle");
     if (tab === "vesper") return v4("vspTitle");
     if (tab === "stem") return v4("stmTitle");
     if (tab === "index") return v4("idxTitle");
@@ -1208,6 +1209,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "rgl") return v4("rglTitle");
     if (tab === "csn") return v4("csnTitle");
     if (tab === "imp") return v4("impTitle");
+    if (tab === "phc") return v4("phcTitle");
+    if (tab === "dad") return v4("dadTitle");
     if (tab === "pnd") return v4("pndTitle");
     if (tab === "cht") return v4("chtTitle");
     if (tab === "thd") return v4("thdTitle");
@@ -1460,6 +1463,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "rgl") return v4("rglTitle");
     if (tab === "csn") return v4("csnTitle");
     if (tab === "imp") return v4("impTitle");
+    if (tab === "phc") return v4("phcTitle");
+    if (tab === "dad") return v4("dadTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -2009,7 +2014,7 @@ function Shell({ base, section, name }: Props) {
     if (tab === "spc") return v4("spcSub");
     if (tab === "arm") return v4("armSub");
     if (tab === "pel") return v4("pelSub");
-    if (tab === "plates") return v4("pltSub");
+    if (tab === "plates") return v4("phcSub");
     if (tab === "flt") return v4("fltSub");
     if (tab === "rtr") return v4("rtrSub");
     if (tab === "fse") return v4("fseSub");
@@ -2979,6 +2984,8 @@ function Shell({ base, section, name }: Props) {
             {view === "rgl" && <RegulaPanels base={base} v4={v4} />}
             {view === "csn" && <CaissonCoffers base={base} v4={v4} />}
             {view === "imp" && <ImpostPanels base={base} v4={v4} />}
+            {view === "phc" && <PlinthCourses base={base} v4={v4} />}
+            {view === "dad" && <DadoPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}

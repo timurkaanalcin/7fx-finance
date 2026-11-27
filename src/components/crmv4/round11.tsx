@@ -311,15 +311,25 @@ export function ApprovalTimes({ v4 }: { v4: V4 }) {
 }
 
 export function Glossary({ v4 }: { v4: V4 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const lines = [v4("glossAum"), v4("glossChurn"), v4("glossEquity"), v4("glossFtd")];
   return (
-    <section className="c4-card">
-      <div className="c4-card-h">
-        <h3 className="c4-title">{v4("glossary")}</h3>
-        <button type="button" className="c4-btn" onClick={() => setOpen((value) => !value)}>{v4("glossary")}</button>
-      </div>
-      {open && lines.map((line) => <p key={line} className="c4-pad">{line}</p>)}
+    <section className="c4-glossary-keystone" aria-label={v4("glossary")} data-glossary-keystone="1">
+      <header className="c4-glossary-keystone-mast">
+        <p className="c4-glossary-keystone-seal" data-logo="mono">{v4("glossaryKeystoneLogo")}</p>
+        <div>
+          <p className="c4-glossary-keystone-kicker">{v4("glossaryKeystoneKicker")}</p>
+          <h3 className="c4-title">{v4("glossary")}</h3>
+          <p className="c4-glossary-keystone-lead">{v4("glossaryKeystoneLead")}</p>
+        </div>
+        <p className="c4-glossary-keystone-count">{lines.length}</p>
+      </header>
+      <button type="button" className="c4-btn c4-glossary-keystone-toggle" aria-expanded={open} onClick={() => setOpen((value) => !value)}>{v4("glossary")}</button>
+      {open && (
+        <ul className="c4-glossary-keystone-rows">
+          {lines.map((line) => <li key={line}>{line}</li>)}
+        </ul>
+      )}
     </section>
   );
 }
@@ -327,9 +337,19 @@ export function Glossary({ v4 }: { v4: V4 }) {
 export function WhatsNew({ v4 }: { v4: V4 }) {
   const lines = [v4("whats1"), v4("whats2"), v4("whats3"), v4("whats4"), v4("whats5"), v4("whats6"), v4("whats7"), v4("whats8"), v4("whats9"), v4("whats10"), v4("whats11")];
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("whatsNew")}</h3></div>
-      <ul>{lines.map((line) => <li key={line} className="c4-pad">{line}</li>)}</ul>
+    <section className="c4-whats-patera" aria-label={v4("whatsNew")} data-whats-patera="1">
+      <header className="c4-whats-patera-mast">
+        <p className="c4-whats-patera-seal" data-logo="mono">{v4("whatsPateraLogo")}</p>
+        <div>
+          <p className="c4-whats-patera-kicker">{v4("whatsPateraKicker")}</p>
+          <h3 className="c4-title">{v4("whatsNew")}</h3>
+          <p className="c4-whats-patera-lead">{v4("whatsPateraLead")}</p>
+        </div>
+        <p className="c4-whats-patera-count">{lines.length}</p>
+      </header>
+      <ul className="c4-whats-patera-rows">
+        {lines.map((line) => <li key={line}><i aria-hidden="true" />{line}</li>)}
+      </ul>
     </section>
   );
 }
