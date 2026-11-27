@@ -87,8 +87,15 @@ export function storeLayout(layout: OverviewLayout) {
 
 export function DeskArrange({ layout, v4, onChange, locked = false }: { layout: OverviewLayout; v4: V4; onChange: (next: OverviewLayout) => void; locked?: boolean }) {
   return (
-    <section className="c4-arrange-luxe" aria-label={v4("arrangeTitle")} data-arrange="1">
-      <h3 className="c4-title">{v4("arrangeTitle")}</h3>
+    <section className="c4-arrange-luxe c4-arrange-pedestal" aria-label={v4("arrangeTitle")} data-arrange="1" data-arrange-pedestal="1">
+      <header className="c4-arrange-pedestal-mast">
+        <p className="c4-arrange-pedestal-seal" data-logo="mono">{v4("arrangePedestalLogo")}</p>
+        <div>
+          <p className="c4-arrange-pedestal-kicker">{v4("arrangePedestalKicker")}</p>
+          <h3 className="c4-title">{v4("arrangeTitle")}</h3>
+          <p className="c4-arrange-pedestal-lead">{v4("arrangePedestalLead")}</p>
+        </div>
+      </header>
       <p className="c4-muted">{v4("arrangeHint")}</p>
       <ul className="c4-arrange-list">
         {layout.order.map((id, index) => {
