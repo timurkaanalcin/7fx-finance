@@ -380,6 +380,7 @@ import { CeraSlips, PastigliaBosses } from "./round389";
 import { CavettoHollows, OgeeScrolls } from "./round390";
 import { DentilCourses, FasciaBands } from "./round391";
 import { ModillionBrackets, GuttaDrops } from "./round392";
+import { AcroterionFinials, AntefixTiles } from "./round393";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1193,6 +1194,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "fas") return v4("fasTitle");
     if (tab === "mdl") return v4("mdlTitle");
     if (tab === "gut") return v4("gutTitle");
+    if (tab === "afn") return v4("afnTitle");
+    if (tab === "atx") return v4("atxTitle");
     if (tab === "pnd") return v4("pndTitle");
     if (tab === "cht") return v4("chtTitle");
     if (tab === "thd") return v4("thdTitle");
@@ -1435,6 +1438,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "fas") return v4("fasTitle");
     if (tab === "mdl") return v4("mdlTitle");
     if (tab === "gut") return v4("gutTitle");
+    if (tab === "afn") return v4("afnTitle");
+    if (tab === "atx") return v4("atxTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -2944,6 +2949,8 @@ function Shell({ base, section, name }: Props) {
             {view === "fas" && <FasciaBands base={base} v4={v4} />}
             {view === "mdl" && <ModillionBrackets base={base} v4={v4} />}
             {view === "gut" && <GuttaDrops base={base} v4={v4} />}
+            {view === "afn" && <AcroterionFinials base={base} v4={v4} />}
+            {view === "atx" && <AntefixTiles base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
