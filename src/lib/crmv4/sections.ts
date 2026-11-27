@@ -724,6 +724,8 @@ export const CRM_V4_SECTIONS = [
   { id: "apo", path: "apo" },
   { id: "eut", path: "eut" },
   { id: "geo", path: "geo" },
+  { id: "tae", path: "tae" },
+  { id: "crn", path: "crn" },
 ] as const;
 
 export type CrmV4SectionId = (typeof CRM_V4_SECTIONS)[number]["id"];

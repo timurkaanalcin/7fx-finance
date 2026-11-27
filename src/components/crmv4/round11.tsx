@@ -287,10 +287,20 @@ export function QualityReport({ v4 }: { v4: V4 }) {
   const data = useJson<{ users?: UserRow[] }>("/api/admin/users?view=table&take=40&meta=0&role=TRADER");
   const rows = qualityRows((data.data?.users || []).map(asDesk));
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("quality")}</h3></div>
-      {rows.map((row) => <p key={row.id} className="c4-pad">{row.label} · {row.problems.join(", ")}</p>)}
-      {!rows.length && <p className="c4-muted c4-pad">{v4("quality")}</p>}
+    <section className="c4-quality-billet" aria-label={v4("quality")} data-quality-billet="1">
+      <header className="c4-quality-billet-mast">
+        <p className="c4-quality-billet-seal" data-logo="mono">{v4("qualityBilletLogo")}</p>
+        <div>
+          <p className="c4-quality-billet-kicker">{v4("qualityBilletKicker")}</p>
+          <h3 className="c4-title">{v4("quality")}</h3>
+          <p className="c4-quality-billet-lead">{v4("qualityBilletLead")}</p>
+        </div>
+        <p className="c4-quality-billet-count">{rows.length}</p>
+      </header>
+      <ul className="c4-quality-billet-rows">
+        {rows.map((row) => <li key={row.id}><i aria-hidden="true" /><span>{row.label}</span><strong>{row.problems.join(", ")}</strong></li>)}
+      </ul>
+      {!rows.length && <p className="c4-quality-billet-empty">{v4("quality")}</p>}
     </section>
   );
 }
@@ -323,10 +333,20 @@ export function BacklogTrend({ v4 }: { v4: V4 }) {
   const data = useJson<{ tickets?: MoneyRow[] }>("/api/admin/tickets?take=80");
   const days = backlogDays(data.data?.tickets || []);
   return (
-    <section className="c4-card">
-      <div className="c4-card-h"><h3 className="c4-title">{v4("backlog")}</h3></div>
-      {days.map((row) => <p key={row.day} className="c4-pad">{row.day} · {row.count}</p>)}
-      {!days.length && <p className="c4-muted c4-pad">{v4("backlog")}</p>}
+    <section className="c4-backlog-chevron" aria-label={v4("backlog")} data-backlog-chevron="1">
+      <header className="c4-backlog-chevron-mast">
+        <p className="c4-backlog-chevron-seal" data-logo="mono">{v4("backlogChevronLogo")}</p>
+        <div>
+          <p className="c4-backlog-chevron-kicker">{v4("backlogChevronKicker")}</p>
+          <h3 className="c4-title">{v4("backlog")}</h3>
+          <p className="c4-backlog-chevron-lead">{v4("backlogChevronLead")}</p>
+        </div>
+        <p className="c4-backlog-chevron-count">{days.length}</p>
+      </header>
+      <ul className="c4-backlog-chevron-rows">
+        {days.map((row) => <li key={row.day}><i aria-hidden="true" /><span>{row.day}</span><strong>{row.count}</strong></li>)}
+      </ul>
+      {!days.length && <p className="c4-backlog-chevron-empty">{v4("backlog")}</p>}
     </section>
   );
 }

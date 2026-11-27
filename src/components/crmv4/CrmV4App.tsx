@@ -388,6 +388,7 @@ import { CaissonCoffers, ImpostPanels } from "./round397";
 import { DadoPlates, PlinthCourses } from "./round398";
 import { ApophygePlates, OrthostateCourses } from "./round399";
 import { EuthynteriaCourses, GeisonPlates } from "./round400";
+import { CoronaPlates, TaeniaCourses } from "./round401";
 import { ROW_DENSITY_KEY, activeDensity, type RowDensity } from "@/lib/crmv4/round109";
 import { JUMP_KEY as RECENT_JUMP_KEY, pushVisit, readVisits } from "@/lib/crmv4/round98";
 import { FOCUS_KEY, readFocus, type FocusPanel } from "@/lib/crmv4/round82";
@@ -1217,6 +1218,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "apo") return v4("apoTitle");
     if (tab === "eut") return v4("eutTitle");
     if (tab === "geo") return v4("geoTitle");
+    if (tab === "tae") return v4("taeTitle");
+    if (tab === "crn") return v4("crnTitle");
     if (tab === "pnd") return v4("pndTitle");
     if (tab === "cht") return v4("chtTitle");
     if (tab === "thd") return v4("thdTitle");
@@ -1475,6 +1478,8 @@ function Shell({ base, section, name }: Props) {
     if (tab === "apo") return v4("apoTitle");
     if (tab === "eut") return v4("eutTitle");
     if (tab === "geo") return v4("geoTitle");
+    if (tab === "tae") return v4("taeTitle");
+    if (tab === "crn") return v4("crnTitle");
     if (tab === "finance") return v4("financeNav");
     if (tab === "more") return tx("more");
     return tx(tab as CrmV2CopyKey);
@@ -3000,6 +3005,8 @@ function Shell({ base, section, name }: Props) {
             {view === "apo" && <ApophygePlates base={base} v4={v4} />}
             {view === "eut" && <EuthynteriaCourses base={base} v4={v4} />}
             {view === "geo" && <GeisonPlates base={base} v4={v4} />}
+            {view === "tae" && <TaeniaCourses base={base} v4={v4} />}
+            {view === "crn" && <CoronaPlates base={base} v4={v4} />}
             {view === "agenda" && <DayStrip base={base} v4={v4} locale={locale} />}
             {view === "insights" && <InsightsHome base={base} v4={v4} locale={locale} />}
             {view === "prefs" && <PrefsHub v4={v4} locale={locale} />}
